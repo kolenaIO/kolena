@@ -1,0 +1,52 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.0.1
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-added-large-files
+    -   id: check-docstring-first
+    -   id: check-yaml
+    -   id: check-toml
+    -   id: debug-statements
+-   repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+    -   id: flake8
+        args: [--extend-ignore, "W503,E203,PAR1,PAR002"]
+        additional_dependencies:
+            - flake8-typing-imports==1.12.0
+            - flake8-quotes==3.3.1
+            - flake8-picky-parentheses==0.4.0
+-   repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+    -   id: black
+        exclude: ^kolena-clip/
+        args: [--line-length, "120"]
+-   repo: https://github.com/asottile/pyupgrade
+    rev: v3.0.0
+    hooks:
+    -   id: pyupgrade
+        args: [--py36-plus]
+-   repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.5.0
+    hooks:
+    -   id: reorder-python-imports
+        args: [--py3-plus]
+-   repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.2.0
+    hooks:
+    -   id: add-trailing-comma
+        args: [--py36-plus]
+-   repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.910
+    hooks:
+    -   id: mypy
+        # TODO We need to pin types-JACK-Client==0.5.10.3 to avoid numpy >1.22 being installed causing mypy errors.
+        #  Needs to be handled when we upgrade numpy in the future
+        additional_dependencies: [types-all, pydantic, "types-JACK-Client==0.5.10.3"]
+-   repo: meta
+    hooks:
+    -   id: check-hooks-apply
+    -   id: check-useless-excludes
