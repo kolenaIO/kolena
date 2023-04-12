@@ -1,9 +1,10 @@
 name: Build
 
 on:
-  push: {}
+  push:
+    branches:
+      - does-not-exist
     # TODO: uncomment once repository tags are set up properly
-    # branches:
     #   - trunk
     # tags:
     #   - "*"
