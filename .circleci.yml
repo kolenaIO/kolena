@@ -1,10 +1,5 @@
 version: 2.1
 
-parameters:
-  kolena-client-run-job:
-    type: boolean
-    default: false
-
 jobs:
   kolena-client-ci:
     parameters:
@@ -14,17 +9,8 @@ jobs:
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
-    working_directory: "~/shipyard/kolena-client"
+    working_directory: "~/kolena-client"
     steps:
-      - when:
-          condition:
-            not: << pipeline.parameters.kolena-client-run-job >>
-          steps:
-            - run:
-                name: skip job
-                command: circleci-agent step halt
-      - checkout:
-          path: "~/shipyard"
       - run: |
           poetry config experimental.new-installer false
           poetry config installer.max-workers 10
