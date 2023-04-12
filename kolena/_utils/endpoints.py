@@ -1,0 +1,58 @@
+from typing import Any
+from typing import Dict
+from urllib.parse import urlencode
+from urllib.parse import urlparse
+
+from kolena._utils.state import _ClientState
+from kolena._utils.state import get_client_state
+from kolena._utils.state import get_endpoint_with_baseurl
+from kolena.errors import InvalidClientStateError
+
+
+def get_endpoint(endpoint_path: str) -> str:
+    client_state = get_client_state()
+    if client_state.base_url is None:
+        raise InvalidClientStateError("missing base_url")
+    return get_endpoint_with_baseurl(client_state.base_url, endpoint_path)
+
+
+def get_platform_url() -> str:
+    return _get_platform_url(get_client_state())
+
+
+# pure function for testing
+def _get_platform_url(client_state: _ClientState) -> str:
+    return f"{_get_platform_origin(client_state)}/{client_state.tenant}"
+
+
+def _get_platform_origin(client_state: _ClientState) -> str:
+    if client_state.base_url is None:
+        raise InvalidClientStateError("missing base_url")
+    base_url = urlparse(client_state.base_url)
+    if base_url.hostname == "localhost":
+        return "http://localhost:3000"
+    gateway_subdomain, *_ = base_url.hostname.split(".")
+    subdomain = "trunk" if "trunk" in gateway_subdomain else "app"
+    return f"https://{subdomain}.kolena.io"
+
+
+def get_results_url(workflow: str, model_id: int, test_suite_id: int) -> str:
+    return _get_results_url(get_client_state(), workflow, model_id, test_suite_id)
+
+
+# pure function for testing
+def _get_results_url(client_state: _ClientState, workflow: str, model_id: int, test_suite_id: int) -> str:
+    from kolena._api.v1.workflow import WorkflowType  # deferred import to avoid circular dependencies
+
+    platform_url = _get_platform_url(client_state)
+    params: Dict[str, Any] = dict(modelIds=model_id, testSuiteId=test_suite_id)
+    if workflow == WorkflowType.FR.value:
+        path = "results/fr"
+    elif workflow == WorkflowType.DETECTION.value:
+        path = "results/object-detection"
+    elif workflow == WorkflowType.CLASSIFICATION.value:
+        path = "results/classification"
+    else:
+        path = "results"
+        params["workflow"] = workflow
+    return f"{platform_url}/{path}?{urlencode(params)}"

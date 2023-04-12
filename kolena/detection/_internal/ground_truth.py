@@ -1,0 +1,7 @@
+from enum import Enum
+
+
+class GroundTruthType(str, Enum):
+    CLASSIFICATION_LABEL = "CLASSIFICATION_LABEL"
+    BOUNDING_BOX = "BOUNDING_BOX"
+    SEGMENTATION_MASK = "SEGMENTATION_MASK"
