@@ -42,9 +42,7 @@ repos:
     rev: v0.910
     hooks:
     -   id: mypy
-        # TODO We need to pin types-JACK-Client==0.5.10.3 to avoid numpy >1.22 being installed causing mypy errors.
-        #  Needs to be handled when we upgrade numpy in the future
-        additional_dependencies: [types-all, pydantic, "types-JACK-Client==0.5.10.3"]
+        additional_dependencies: [types-all, pydantic]
 -   repo: meta
     hooks:
     -   id: check-hooks-apply

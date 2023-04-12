@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  ci_kolena_client:
+  ci:
     strategy:
       fail-fast: true
       matrix:

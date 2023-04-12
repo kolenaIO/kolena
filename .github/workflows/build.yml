@@ -1,15 +1,16 @@
-name: Build (kolena-client)
+name: Build
 
 on:
-  push:
-    branches:
-      - trunk
-    tags:
-      - "*"
+  push: {}
+    # TODO: uncomment once repository tags are set up properly
+    # branches:
+    #   - trunk
+    # tags:
+    #   - "*"
 
 jobs:
-  build_kolena_client:
-    name: Build client Python package on tags and upload as release asset
+  build:
+    name: Build and publish kolena-client Python package and documentation
     env:
       ASSET_BUCKET: kolena-client-assets
     runs-on: ubuntu-latest
