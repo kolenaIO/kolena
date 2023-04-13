@@ -14,5 +14,6 @@
 __pycache__/
 .ipynb_checkpoints/
 dist/
+.mypy_cache/
 
 poetry.lock
