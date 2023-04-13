@@ -1,0 +1,86 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - does-not-exist
+    # TODO: uncomment once repository tags are set up properly
+    #   - trunk
+    # tags:
+    #   - "*"
+
+jobs:
+  build:
+    name: Build and publish kolena-client Python package and documentation
+    env:
+      ASSET_BUCKET: kolena-client-assets
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+      - name: Install Poetry
+        run: pip install poetry==1.2.2
+      - name: Fetch tags to enable autoversioning
+        run: git fetch --prune --unshallow --tags
+      - name: Update kolena-client package version to PEP 440-compliant dev tag
+        if: github.ref_type != 'tag'
+        run: |
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          COMMITS_SINCE_TAG=$(git rev-list $LATEST_TAG..HEAD --count)
+          poetry version $LATEST_TAG.dev$COMMITS_SINCE_TAG
+      - name: Update kolena-client package version to PEP 440-compliant production release tag
+        if: github.ref_type == 'tag'
+        run: poetry version $(git describe --tags --abbrev=0)
+      - name: Install dependencies
+        run: poetry install
+      - name: Run pre-commit checks
+        run: poetry run pre-commit run -a
+      - name: Build client Python package
+        run: poetry build --format=sdist
+      - name: Build client documentation and push to S3
+        if: github.ref_type == 'tag'
+        run: |
+          ./render.sh
+          VERSION=$(poetry run python3 -c "import importlib.metadata; print(importlib.metadata.version('kolena-client'))")
+
+          BUCKET_PATH="s3://$ASSET_BUCKET/docs/$VERSION"
+          echo "pushing documentation to '$BUCKET_PATH'..."
+          aws s3 rm --recursive "$BUCKET_PATH"
+          aws s3 sync ./build "$BUCKET_PATH"
+
+          BUCKET_PATH="s3://$ASSET_BUCKET/docs/latest"
+          echo "pushing documentation to '$BUCKET_PATH'..."
+          aws s3 rm --recursive "$BUCKET_PATH"
+          aws s3 sync ./build "$BUCKET_PATH"
+        working-directory: ./docs
+      - name: Install twine for package distribution
+        run: pip3 install twine
+      - name: Push client dist to trunk CodeArtifact
+        run: |
+          aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
+          twine upload --skip-existing --repository codeartifact ./dist/*
+      - name: Push client dist to production CodeArtifact
+        if: github.ref_type == 'tag'
+        run: |
+          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
+          twine upload --skip-existing --repository codeartifact ./dist/*
+      - name: Create GitHub release with kolena-client build as artifact
+        if: github.ref_type == 'tag'
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          repo_token: ${{ secrets.RELEASE_TOKEN }}
+          prerelease: false
+          files: |
+            ./dist/*.tar.gz
