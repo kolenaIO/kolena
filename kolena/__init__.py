@@ -11,12 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# robots do not like this file
 #
 # flake8: noqa
 # autopep8: off
 # noreorder
 # mypy: ignore-errors
+#
+# (robots do not like this file)
 
 __name__ = "kolena-client"
 __version__: str
