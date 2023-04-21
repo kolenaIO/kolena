@@ -1,3 +1,16 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import dataclasses
 import json
 import time
@@ -240,7 +253,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             self._start_server_side_evaluation()
             return
 
-        # TODO(gh): assert that testing is complete?
+        # TODO: assert that testing is complete?
         t0 = time.time()
         log.info("commencing evaluation")
         if isinstance(self.evaluator, Evaluator):
@@ -275,7 +288,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
 
                 log.info(f"computing test case metrics {configuration_description}")
-                # TODO(gh): sort? order returned from evaluator may not match inferences order
+                # TODO: sort? order returned from evaluator may not match inferences order
                 mts = [metrics for _, metrics in metrics_test_sample]
                 metrics_test_case = evaluator.compute_test_case_metrics(test_case, inferences, mts, configuration)
                 test_case_metrics_by_config[configuration] = metrics_test_case

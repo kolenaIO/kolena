@@ -1,3 +1,16 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import contextlib
 import contextvars
 import functools
@@ -16,13 +29,15 @@ from kolena.errors import InvalidClientStateError
 from kolena.errors import UninitializedError
 
 API_VERSION = "v1"
+API_BASE_URL = "https://api.kolena.io"
+API_BASE_URL_ENV_VAR = "KOLENA_CLIENT_BASE_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
 
 
 class _ClientState:
     def __init__(
         self,
-        base_url: Optional[str] = "https://gateway.kolena.cloud",
+        base_url: Optional[str] = API_BASE_URL,
         api_token: Optional[str] = None,
         jwt_token: Optional[str] = None,
         tenant: Optional[str] = None,
@@ -82,7 +97,7 @@ class _ClientState:
         self.telemetry = False
 
 
-_client_base_url = os.environ.get("KOLENA_CLIENT_BASE_URL", "https://gateway.kolena.cloud")
+_client_base_url = os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
 _client_state = _ClientState(base_url=_client_base_url)
 
 

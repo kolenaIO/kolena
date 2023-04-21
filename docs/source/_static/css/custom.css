@@ -1,5 +1,5 @@
 :root {
-    /* TODO(gh): package this font as a _static asset? */
+    /* TODO: package this font as a _static asset? */
     --pst-font-family-base: Inter, var(--pst-font-family-base-system);
     --pst-font-family-monospace: 'Roboto Mono', var(--pst-font-family-monospace-system);
     --pst-font-family-heading: 'DM Sans', var(--pst-font-family-base);

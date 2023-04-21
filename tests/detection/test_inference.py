@@ -33,7 +33,7 @@ def test_inference__segmentation_mask() -> None:
     test_point1 = (0.1234, 100.213)
     test_point2 = (1.1234, 101.213)
     test_point3 = (2.1234, 110.213)
-    # TODO (andrew): Should we validate that the polygon created is a real polygon?
+    # TODO: Should we validate that the polygon created is a real polygon?
 
     with pytest.raises(ValueError):
         SegmentationMask(test_label, confidence, [test_point1, test_point2])

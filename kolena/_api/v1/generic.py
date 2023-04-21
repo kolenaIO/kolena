@@ -1,3 +1,16 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from enum import Enum
 from typing import Any
 from typing import Dict
@@ -60,7 +73,7 @@ class TestRun:
     @dataclass(frozen=True)
     class EvaluatorConfiguration:
         display_name: str
-        configuration: Dict[str, Any]  # TODO(gh): real type is JSON
+        configuration: Dict[str, Any]  # TODO: real type is JSON
 
     @dataclass(frozen=True)
     class CreateOrRetrieveRequest:
@@ -122,7 +135,13 @@ TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs() 
 class Workflow:
     class Path(str, Enum):
         EVALUATOR = "/generic/workflow/evaluator"
-        REGISTER_EVALUATOR = "/generic/workflow/register-evaluator"
+
+    @dataclass(frozen=True)
+    class EvaluatorRoleConfig:
+        job_role_name: str
+        job_role_arn: str
+        external_id: str
+        assume_role_arn: str
 
     @dataclass(frozen=True)
     class RegisterEvaluatorRequest:
@@ -130,6 +149,7 @@ class Workflow:
         name: str
         image: str
         secret: Optional[str] = None
+        aws_assume_role: Optional[str] = None
 
     @dataclass(frozen=True)
     class EvaluatorResponse:
@@ -137,10 +157,12 @@ class Workflow:
         image: Optional[str] = None
         created: Optional[str] = None
         secret: Optional[str] = None
+        aws_role_config: Optional["Workflow.EvaluatorRoleConfig"] = None
 
     @dataclass(frozen=True)
     class ListEvaluatorsResponse:
         evaluators: List["Workflow.EvaluatorResponse"]
 
 
+Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
 Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()
