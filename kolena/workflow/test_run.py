@@ -253,7 +253,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             self._start_server_side_evaluation()
             return
 
-        # TODO(gh): assert that testing is complete?
+        # TODO: assert that testing is complete?
         t0 = time.time()
         log.info("commencing evaluation")
         if isinstance(self.evaluator, Evaluator):
@@ -288,7 +288,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
 
                 log.info(f"computing test case metrics {configuration_description}")
-                # TODO(gh): sort? order returned from evaluator may not match inferences order
+                # TODO: sort? order returned from evaluator may not match inferences order
                 mts = [metrics for _, metrics in metrics_test_sample]
                 metrics_test_case = evaluator.compute_test_case_metrics(test_case, inferences, mts, configuration)
                 test_case_metrics_by_config[configuration] = metrics_test_case

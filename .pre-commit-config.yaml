@@ -29,7 +29,7 @@ repos:
     hooks:
     -   id: insert-license
         files: ^kolena/.*\.py$
-        args: [--license-filepath, ".github/LICENSE_HEADER.txt"]
+        args: [--license-filepath, "LICENSE_HEADER"]
 -   repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:

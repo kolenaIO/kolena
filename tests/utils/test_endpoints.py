@@ -25,7 +25,7 @@ def assert_url_equals(a: str, b: str) -> None:
     [
         (_ClientState(tenant="test-tenant"), "https://app.kolena.io/test-tenant"),
         (
-            _ClientState(tenant="test-tenant", base_url="https://trunk-gateway.kolena.cloud"),
+            _ClientState(tenant="test-tenant", base_url="https://trunk-api.kolena.io"),
             "https://trunk.kolena.io/test-tenant",
         ),
         (
@@ -47,7 +47,7 @@ def test__get_platform_url(client_state: _ClientState, expected: str) -> None:
             "https://app.kolena.io/test-tenant/results/fr?modelIds=1&testSuiteIds=2",
         ),
         (
-            _ClientState(tenant="test-tenant", base_url="https://trunk-gateway.kolena.cloud"),
+            _ClientState(tenant="test-tenant", base_url="https://trunk-api.kolena.io"),
             WorkflowType.FR.value,
             "https://trunk.kolena.io/test-tenant/results/fr?modelIds=1&testSuiteIds=2",
         ),

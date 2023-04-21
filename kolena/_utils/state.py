@@ -29,13 +29,15 @@ from kolena.errors import InvalidClientStateError
 from kolena.errors import UninitializedError
 
 API_VERSION = "v1"
+API_BASE_URL = "https://api.kolena.io"
+API_BASE_URL_ENV_VAR = "KOLENA_CLIENT_BASE_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
 
 
 class _ClientState:
     def __init__(
         self,
-        base_url: Optional[str] = "https://gateway.kolena.cloud",
+        base_url: Optional[str] = API_BASE_URL,
         api_token: Optional[str] = None,
         jwt_token: Optional[str] = None,
         tenant: Optional[str] = None,
@@ -95,7 +97,7 @@ class _ClientState:
         self.telemetry = False
 
 
-_client_base_url = os.environ.get("KOLENA_CLIENT_BASE_URL", "https://gateway.kolena.cloud")
+_client_base_url = os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
 _client_state = _ClientState(base_url=_client_base_url)
 
 

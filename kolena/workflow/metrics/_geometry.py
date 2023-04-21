@@ -50,6 +50,14 @@ def _iou_bbox(box1: BoundingBox, box2: BoundingBox) -> float:
 
 
 def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float:
+    """
+    Compute the Intersection Over Union (IOU) of two geometries.
+
+    :param a: first geometry in computation.
+    :param b: second geometry in computation.
+    :return: float value of the iou
+    """
+
     if isinstance(a, BoundingBox) and isinstance(b, BoundingBox):
         return _iou_bbox(a, b)
 

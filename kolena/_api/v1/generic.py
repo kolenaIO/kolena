@@ -73,7 +73,7 @@ class TestRun:
     @dataclass(frozen=True)
     class EvaluatorConfiguration:
         display_name: str
-        configuration: Dict[str, Any]  # TODO(gh): real type is JSON
+        configuration: Dict[str, Any]  # TODO: real type is JSON
 
     @dataclass(frozen=True)
     class CreateOrRetrieveRequest:
@@ -135,7 +135,13 @@ TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs() 
 class Workflow:
     class Path(str, Enum):
         EVALUATOR = "/generic/workflow/evaluator"
-        REGISTER_EVALUATOR = "/generic/workflow/register-evaluator"
+
+    @dataclass(frozen=True)
+    class EvaluatorRoleConfig:
+        job_role_name: str
+        job_role_arn: str
+        external_id: str
+        assume_role_arn: str
 
     @dataclass(frozen=True)
     class RegisterEvaluatorRequest:
@@ -143,6 +149,7 @@ class Workflow:
         name: str
         image: str
         secret: Optional[str] = None
+        aws_assume_role: Optional[str] = None
 
     @dataclass(frozen=True)
     class EvaluatorResponse:
@@ -150,10 +157,12 @@ class Workflow:
         image: Optional[str] = None
         created: Optional[str] = None
         secret: Optional[str] = None
+        aws_role_config: Optional["Workflow.EvaluatorRoleConfig"] = None
 
     @dataclass(frozen=True)
     class ListEvaluatorsResponse:
         evaluators: List["Workflow.EvaluatorResponse"]
 
 
+Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
 Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()

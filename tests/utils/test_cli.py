@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
+from kolena._api.v1.generic import Workflow as API
 from kolena._utils.cli import base_command
 
 TEST_API_TOKEN = "XXXX"
@@ -58,13 +59,17 @@ def test__cli_evaluator_common_options() -> None:
         "ubuntu",
         "--secret",
         '"foobar"',
+        "--aws-assume-role",
+        "aws",
         "--api-token",
         TEST_API_TOKEN,
     ]
     runner = CliRunner()
+    mock_register_response = API.EvaluatorResponse(name="abc")
 
     with patch("kolena.initialize", side_effect=mock_initialize):
-        with patch("kolena.workflow.workflow.register_evaluator"):
+        with patch("kolena.workflow.workflow.register_evaluator") as patched:
+            patched.return_value = mock_register_response
             result = runner.invoke(base_command, args)
             assert not result.exception
 
@@ -86,7 +91,8 @@ def test__cli_evaluator_common_options() -> None:
         "--no-include-secret",
     ]
     with patch("kolena.initialize", side_effect=mock_initialize):
-        with patch("kolena.workflow.workflow.get_evaluator"):
+        with patch("kolena.workflow.workflow.get_evaluator") as patched:
+            patched.return_value = mock_register_response
             result = runner.invoke(base_command, args)
             assert not result.exception
 

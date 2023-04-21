@@ -249,7 +249,7 @@ class TestSuiteTestSamplesDataFrame(
 
 class TestCaseEditorDataFrameSchema(pa.SchemaModel):
     test_sample_type: Series[pa.typing.String] = pa.Field(coerce=True)
-    test_sample: Series[JSONObject] = pa.Field(coerce=True)  # TODO(gh): validators?
+    test_sample: Series[JSONObject] = pa.Field(coerce=True)  # TODO: validators?
     test_sample_metadata: Series[JSONObject] = pa.Field(coerce=True)
     ground_truth: Series[JSONObject] = pa.Field(coerce=True, nullable=True)
     remove: Series[pa.typing.Bool] = pa.Field(coerce=True)

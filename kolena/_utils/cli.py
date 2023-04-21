@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
+import json
 import os
 import sys
 from typing import Optional
@@ -98,16 +100,24 @@ def repository_command() -> None:
         "and accessible to the evaluator through environment variable"
     ),
 )
+@click.option(
+    "--aws-assume-role",
+    "-r",
+    required=False,
+    help="the AWS role arn the evaluator would assume to access AWS APIs",
+)
 def evaluator_register(
     workflow: str,
     evaluator_name: str,
     image: str,
     secret: Optional[str] = None,
+    aws_assume_role: Optional[str] = None,
     api_token: Optional[str] = None,
 ) -> None:
     kolena.initialize(api_token)
-    kolena.workflow.workflow.register_evaluator(workflow, evaluator_name, image, secret)
+    evaluator = kolena.workflow.workflow.register_evaluator(workflow, evaluator_name, image, secret, aws_assume_role)
     print(f"Image {image} successfully registered for workflow {workflow} evaluator {evaluator_name}.")
+    print(json.dumps(dataclasses.asdict(evaluator), indent=2))
 
 
 @evaluator_command.command(name="list", help="List registered remote evaluators for a particular workflow")
@@ -143,13 +153,8 @@ def evaluator_get(workflow: str, evaluator_name: str, include_secret: bool, api_
         print("Error: workflow not found", file=sys.stderr)
         sys.exit(1)
 
-    if evaluator.secret:
-        print(
-            f"evaluator_name='{evaluator.name}', image='{evaluator.image}', created='{evaluator.created}',"
-            f" secret='{evaluator.secret}'",
-        )
-    else:
-        print(f"evaluator_name='{evaluator.name}', image='{evaluator.image}', created='{evaluator.created}'")
+    print("Evaluator:")
+    print(json.dumps(dataclasses.asdict(evaluator), indent=2))
 
 
 @repository_command.command(name="create", help="Create a docker repository on kolena docker registry")

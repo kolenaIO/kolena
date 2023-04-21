@@ -448,7 +448,7 @@ def test__serialize__extra_keys() -> None:
 
     obj = Tester._from_dict(dict(a="has", b="extra", c="fields"))  # does not throw
     assert obj.a == "has"
-    # TODO(gh): make extra available somehow?
+    # TODO: make extra available somehow?
 
 
 @pytest.mark.parametrize("dataclass_decorator", [dataclasses.dataclass, pydantic.dataclasses.dataclass])

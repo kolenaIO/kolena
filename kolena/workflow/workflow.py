@@ -34,6 +34,18 @@ _RESERVED_WORKFLOW_NAMES = {"fr", "classification", "detection", "keypoints"}
 
 
 @dataclass(frozen=True)
+class EvaluatorRoleConfig:
+    #: evaluator role arn
+    job_role_arn: str
+
+    #: external_id to be used when assume_role
+    external_id: str
+
+    #: role_arn to be assume-into
+    assume_role_arn: str
+
+
+@dataclass(frozen=True)
 class RemoteEvaluator:
     """
     Remote evaluator for generic workflows.
@@ -53,6 +65,27 @@ class RemoteEvaluator:
 
     #: Sensitive data registered with the evaluator, only included if requested explicitly
     secret: Optional[str] = None
+
+    #: AWS assume role configurations for the evaluator job if configured
+    aws_role_config: Optional[EvaluatorRoleConfig] = None
+
+    @classmethod
+    def _from_api_response(cls, workflow: str, response: API.EvaluatorResponse) -> "RemoteEvaluator":
+        aws_role_config = None
+        if response.aws_role_config:
+            aws_role_config = EvaluatorRoleConfig(
+                job_role_arn=response.aws_role_config.job_role_arn,
+                external_id=response.aws_role_config.external_id,
+                assume_role_arn=response.aws_role_config.assume_role_arn,
+            )
+        return cls(
+            workflow=workflow,
+            name=response.name,
+            image=response.image,
+            created=response.created,
+            secret=response.secret,
+            aws_role_config=aws_role_config,
+        )
 
 
 @dataclass(frozen=True)
@@ -85,55 +118,99 @@ class Workflow:
         _validate_ground_truth_type(self.test_sample_type, self.ground_truth_type)
         _validate_inference_type(self.test_sample_type, self.inference_type)
 
-    # convenience method to register evaluator without command-line
     @kolena_initialized
-    def register_evaluator(self, evaluator_name: str, image: str, secret: Optional[str] = None) -> None:
+    def register_evaluator(
+        self,
+        evaluator_name: str,
+        image: str,
+        secret: Optional[str] = None,
+        aws_assume_role: Optional[str] = None,
+    ) -> RemoteEvaluator:
         """
-        Register a docker image for the evaluator of the workflow. This enables metrics evaluation to be run in
-        kolena platform with the given image.
+        This is a convenience method to register evaluator for the workflow.
 
-        If the evaluator needs to use sensitive data (secret) during its computation, pass it in :param:secret. The
-        content would be store securely in kolena platform. At runtime, the evaluator can access the
-        content in environment variable `KOLENA_EVALUATOR_SECRET` as is.
-
-        :param evaluator_name: name of the evaluator
-        :param image: fully qualified docker image name, i.e. <repository-url>/<image>:<tag>
-        :param secret: sensitive data as string
+        Please see :py:func:`register_evaluator` for details.
         """
-        register_evaluator(workflow=self.name, evaluator_name=evaluator_name, image=image, secret=secret)
+        return register_evaluator(
+            workflow=self.name,
+            evaluator_name=evaluator_name,
+            image=image,
+            secret=secret,
+            aws_assume_role=aws_assume_role,
+        )
 
     @kolena_initialized
-    def get_evaluator(self, evaluator_name: str) -> API.EvaluatorResponse:
-        """Get the docker image registered for the evaluator"""
+    def get_evaluator(self, evaluator_name: str, include_secret: bool = False) -> RemoteEvaluator:
+        """
+        Get the docker image registered for the evaluator
 
-        response = krequests.get(f"{API.Path.EVALUATOR}/{quote(self.name)}/{quote(evaluator_name)}")
-        krequests.raise_for_status(response)
+        Please see :py:func:`get_evaluator` for details.
+        """
 
-        return dacite.from_dict(API.EvaluatorResponse, response.json())
+        return get_evaluator(self.name, evaluator_name, include_secret)
 
 
 @kolena_initialized
-def register_evaluator(workflow: str, evaluator_name: str, image: str, secret: Optional[str] = None) -> None:
+def register_evaluator(
+    workflow: str,
+    evaluator_name: str,
+    image: str,
+    secret: Optional[str] = None,
+    aws_assume_role: Optional[str] = None,
+) -> RemoteEvaluator:
     """
     Register a docker image for the evaluator of the workflow. This enables metrics evaluation to be run in
     kolena platform with the given image.
 
     If the evaluator needs to use sensitive data during its computation, pass it in ``secret``. The content would be
-    store securely in kolena platform. At runtime, the evaluator can access the
-    content in environment variable `KOLENA_EVALUATOR_SECRET`.
+    store securely in kolena platform. At runtime, the evaluator can access the content in environment variable
+    `KOLENA_EVALUATOR_SECRET`.
+
+    If the evaluator needs to interact with AWS APIs, specify the role it would use in ``aws_assume_role``. The
+    runtime would be executed by a Kolena-side AWS role that is configured to assume the ``aws_assume_role`` using a
+    randomly generated `external_id`. The AWS role arn from Kolena and the `external_id` would be returned in the
+    response `aws_assume_role` field. The only configuration on user side is to add Kolena AWS role to
+    ``aws_assume_role``'s trust policy. At runtime, the evaluator code can get the external_id in environment
+    variable `KOLENA_EVALUATOR_EXTERNAL_ID` and the ``aws_assume_role`` would be passed in
+    `KOLENA_EVALUATOR_ASSUME_ROLE_ARN`.
+
+    An example to assume role at evaluator runtime is shown below::
+
+        external_id = os.environ["KOLENA_EVALUATOR_EXTERNAL_ID"]
+        assume_role_arn = os.environ["KOLENA_EVALUATOR_ASSUME_ROLE_ARN"]  # this is the role to assume
+
+        sts = boto3.client("sts")
+        response = sts.assume_role(
+            RoleArn=assume_role_arn,
+            RoleSessionName="metrics-evaluator",
+            ExternalId=external_id,
+        )
+        credentials = response["Credentials"]
+        client = boto3.client(
+            "s3",
+            aws_access_key_id=credentials["AccessKeyId"],
+            aws_secret_access_key=credentials["SecretAccessKey"],
+            aws_session_token=credentials["SessionToken"],
+        )
+        buckets = client.list_buckets()
 
     :param evaluator_name: name of the evaluator; must match evaluator name generated by image
     :param image: fully qualified docker image name, i.e. <repository-url>/<image>:<tag>
     :param secret: sensitive data in string format
+    :param aws_assume_role: AWS role that the evaluator would use to access AWS APIs
+    :return: registered evaluator data
     """
 
     response = krequests.post(
-        API.Path.REGISTER_EVALUATOR,
-        json=dict(workflow=workflow, image=image, name=evaluator_name, secret=secret),
+        API.Path.EVALUATOR,
+        json=dict(workflow=workflow, image=image, name=evaluator_name, secret=secret, aws_assume_role=aws_assume_role),
     )
     krequests.raise_for_status(response)
 
     log.info(f"Image {image} successfully registered for evaluator {evaluator_name}.")
+
+    result = dacite.from_dict(API.EvaluatorResponse, response.json())
+    return RemoteEvaluator._from_api_response(workflow, result)
 
 
 @kolena_initialized
@@ -172,10 +249,4 @@ def get_evaluator(workflow: str, evaluator_name: str, include_secret: bool = Fal
     krequests.raise_for_status(response)
 
     result = dacite.from_dict(API.EvaluatorResponse, response.json())
-    return RemoteEvaluator(
-        workflow=workflow,
-        name=result.name,
-        image=result.image,
-        created=result.created,
-        secret=result.secret,
-    )
+    return RemoteEvaluator._from_api_response(workflow, result)
