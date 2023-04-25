@@ -118,10 +118,6 @@ def upload_image_chips(
         upload_batch(df_chunk)
 
 
-def sanitize_uuid(load_uuid: str) -> str:
-    return load_uuid.replace("-", "_")
-
-
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 

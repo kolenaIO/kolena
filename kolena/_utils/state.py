@@ -97,8 +97,11 @@ class _ClientState:
         self.telemetry = False
 
 
-_client_base_url = os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
-_client_state = _ClientState(base_url=_client_base_url)
+def get_client_base_url() -> str:
+    return os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
+
+
+_client_state = _ClientState(base_url=get_client_base_url())
 
 
 def get_client_state() -> _ClientState:
@@ -130,7 +133,8 @@ def get_endpoint_with_baseurl(base_url: str, endpoint_path: str) -> str:
 
 
 @contextlib.contextmanager
-def kolena_session(base_url: str, api_token: str) -> Iterator[_ClientState]:
+def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[_ClientState]:
+    base_url = base_url or get_client_base_url()
     r = requests.put(
         get_endpoint_with_baseurl(base_url, "token/login"),
         json={"api_token": api_token, "version": API_VERSION},

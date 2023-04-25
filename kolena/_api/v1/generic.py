@@ -115,7 +115,7 @@ class TestRun:
     @dataclass(frozen=True)
     class UpdateMetricsStatusRequest:
         test_run_id: int
-        progress: Optional[float] = None
+        progress: float
         message: str = ""
 
     @dataclass(frozen=True)
