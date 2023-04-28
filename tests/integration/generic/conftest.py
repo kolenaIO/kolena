@@ -70,13 +70,13 @@ def dummy_inference() -> DummyInference:
 
 @pytest.fixture(scope="package")
 def dummy_model() -> Model:
-    name = with_test_prefix("Generic::modelA")
+    name = with_test_prefix(f"{__file__}::modelA")
     return Model(name=name, infer=lambda _: dummy_inference())
 
 
 @pytest.fixture(scope="package")
 def dummy_model_reset() -> Model:
-    name = with_test_prefix("Generic::modelB for reset")
+    name = with_test_prefix(f"{__file__}::modelB for reset")
     return Model(name=name, infer=lambda _: dummy_inference())
 
 
@@ -88,15 +88,15 @@ def dummy_test_suites(
     all_test_samples = list(zip(dummy_test_samples, dummy_ground_truths))
     return [
         TestSuite(
-            with_test_prefix("Generic::TestSuite::A"),
+            with_test_prefix(f"{__file__}::TestSuite::A"),
             test_cases=[
-                TestCase(with_test_prefix("Generic::TestCase::A"), test_samples=all_test_samples),
-                TestCase(with_test_prefix("Generic::TestCase::B"), test_samples=all_test_samples[:5]),
-                TestCase(with_test_prefix("Generic::TestCase::C"), test_samples=all_test_samples[5:]),
+                TestCase(with_test_prefix(f"{__file__}::TestCase::A"), test_samples=all_test_samples),
+                TestCase(with_test_prefix(f"{__file__}::TestCase::B"), test_samples=all_test_samples[:5]),
+                TestCase(with_test_prefix(f"{__file__}::TestCase::C"), test_samples=all_test_samples[5:]),
             ],
         ),
         TestSuite(
-            with_test_prefix("Generic::TestSuite::B"),
+            with_test_prefix(f"{__file__}::TestSuite::B"),
         ),
     ]
 

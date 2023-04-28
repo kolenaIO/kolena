@@ -26,7 +26,7 @@ def test__init(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    name = with_test_prefix("Generic::test__init test case")
+    name = with_test_prefix(f"{__file__}::test__init test case")
     assert_test_case(TestCase(name), name, 0)  # should create
     assert_test_case(TestCase(name), name, 0)  # should load
 
@@ -41,7 +41,7 @@ def test__init__reset(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    name = with_test_prefix("Generic::test__init__reset test case")
+    name = with_test_prefix(f"{__file__}::test__init__reset test case")
     description = f"{name} (description)"
     TestCase(name, description=description, test_samples=list(zip(dummy_test_samples, dummy_ground_truths)))
 
@@ -59,7 +59,7 @@ def test__init__reset_with_overlap(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    name = with_test_prefix("Generic::test__init__reset_with_overlap test case")
+    name = with_test_prefix(f"{__file__}::test__init__reset_with_overlap test case")
     description = f"{name} (description)"
     sample_batch_1 = list(zip(dummy_test_samples[:6], dummy_ground_truths[:6]))
     sample_batch_2 = list(zip(dummy_test_samples[4:], dummy_ground_truths[4:]))
@@ -78,8 +78,8 @@ def test__init__reset_with_other_test_case(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    name = with_test_prefix("Generic::test__init__reset_with_other_test_case test case")
-    name_other = with_test_prefix("Generic::test__init__reset_with_other_test_case test case (other)")
+    name = with_test_prefix(f"{__file__}::test__init__reset_with_other_test_case test case")
+    name_other = with_test_prefix(f"{__file__}::test__init__reset_with_other_test_case test case (other)")
     description = f"{name} (description)"
     sample_batch_1 = list(zip(dummy_test_samples, dummy_ground_truths))
     sample_batch_2 = list(zip(dummy_test_samples[:4], dummy_ground_truths[:4]))
@@ -103,7 +103,7 @@ def test__init__reset_resets_all_past_samples(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    name = with_test_prefix("Generic::test__init__reset_resets_all_past_samples test case")
+    name = with_test_prefix(f"{__file__}::test__init__reset_resets_all_past_samples test case")
     description = f"{name} (description)"
     sample_batch_1 = list(zip(dummy_test_samples[:2], dummy_ground_truths[:2]))
     sample_batch_2 = list(zip(dummy_test_samples[2:4], dummy_ground_truths[2:4]))
@@ -123,7 +123,7 @@ def test__init__reset_resets_all_past_samples(
 
 
 def test__create(with_init: None) -> None:
-    name = with_test_prefix("Generic::test__create test case")
+    name = with_test_prefix(f"{__file__}::test__create test case")
     assert_test_case(TestCase.create(name), name, 0)
 
     with pytest.raises(Exception):  # TODO(gh): better error?
@@ -131,7 +131,7 @@ def test__create(with_init: None) -> None:
 
 
 def test__load(with_init: None) -> None:
-    name = with_test_prefix("Generic::test__load test case")
+    name = with_test_prefix(f"{__file__}::test__load test case")
 
     with pytest.raises(Exception):  # TODO(gh): better error?
         TestCase.load(name)
@@ -141,7 +141,7 @@ def test__load(with_init: None) -> None:
 
 
 def test__load__mismatching_workflows(with_init: None) -> None:
-    name = with_test_prefix("Generic::test__load__mismatching_workflows")
+    name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
     DetectionTestCase(name)
     with pytest.raises(WorkflowMismatchError):
         TestCase(name)
@@ -152,7 +152,7 @@ def test__edit(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    test_case = TestCase(with_test_prefix("Generic::test__edit test case"))
+    test_case = TestCase(with_test_prefix(f"{__file__}::test__edit test case"))
     assert test_case.version == 0
 
     description = "new description"
@@ -173,7 +173,7 @@ def test__edit__reset(
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
     test_case = TestCase(
-        with_test_prefix("Generic::test__edit__reset test case"),
+        with_test_prefix(f"{__file__}::test__edit__reset test case"),
         test_samples=[(dummy_test_samples[0], dummy_ground_truths[0]), (dummy_test_samples[1], dummy_ground_truths[1])],
     )
 
@@ -194,7 +194,7 @@ def test__edit__replace(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    test_case = TestCase(with_test_prefix("Generic::test__edit__replace test case"))
+    test_case = TestCase(with_test_prefix(f"{__file__}::test__edit__replace test case"))
 
     # one pass, first is shadowed
     with test_case.edit() as editor:
@@ -216,7 +216,7 @@ def test__edit__remove(
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
     test_case = TestCase(
-        with_test_prefix("Generic::test__edit__remove test case"),
+        with_test_prefix(f"{__file__}::test__edit__remove test case"),
         test_samples=[
             (dummy_test_samples[0], dummy_ground_truths[0]),
             (dummy_test_samples[1], dummy_ground_truths[1]),
@@ -255,7 +255,7 @@ def test__edit__remove_only(
     gt0, *gt_rest = dummy_ground_truths
     rest = list(zip(ts_rest, gt_rest))
     test_case = TestCase(
-        with_test_prefix("Generic::test__edit__remove_only test case"),
+        with_test_prefix(f"{__file__}::test__edit__remove_only test case"),
         test_samples=[(ts0, gt0), *rest],
     )
 
@@ -274,7 +274,7 @@ def test__edit__description_only(
 ) -> None:
     all_test_samples = list(zip(dummy_test_samples, dummy_ground_truths))
     test_case = TestCase(
-        with_test_prefix("Generic::test__edit__description_only test case"),
+        with_test_prefix(f"{__file__}::test__edit__description_only test case"),
         test_samples=all_test_samples,
     )
 
@@ -293,7 +293,7 @@ def test__edit__update_sample_metadata(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    test_case_name = with_test_prefix("Generic::test__edit__update_sample_metadata test case")
+    test_case_name = with_test_prefix(f"{__file__}::test__edit__update_sample_metadata test case")
     all_test_samples_v1 = list(zip(dummy_test_samples, dummy_ground_truths))
     test_case = TestCase(test_case_name, test_samples=all_test_samples_v1)
     original_version = test_case.version

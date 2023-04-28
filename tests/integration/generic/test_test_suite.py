@@ -20,7 +20,7 @@ from tests.integration.helper import with_test_prefix
 
 @pytest.fixture(scope="module")
 def test_case() -> TestCase:
-    name = with_test_prefix("generic::test_case fixture test case")
+    name = with_test_prefix(f"{__file__}::test_case fixture test case")
     return TestCase(name, description="test case description")
 
 
@@ -29,7 +29,7 @@ def test_case_versions(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> List[TestCase]:
-    name = with_test_prefix("generic::test_case_versions fixture test case")
+    name = with_test_prefix(f"{__file__}::test_case_versions fixture test case")
     test_case = TestCase(name, description="test case description")
     # load copy such that it is not modified by later edits
     test_case_v0 = TestCase(test_case.name, version=test_case.version)
@@ -43,7 +43,7 @@ def test_case_versions(
 
 
 def test__init() -> None:
-    name = with_test_prefix("generic::test__init test suite")
+    name = with_test_prefix(f"{__file__}::test__init test suite")
     description = "A\n\tlong\ndescription including special characters! 🎉"
     test_suite = TestSuite(name, description=description)
     assert test_suite.workflow == DUMMY_WORKFLOW
@@ -60,7 +60,7 @@ def test__init() -> None:
 
 
 def test__init__reset(with_init: None, test_case: TestCase, test_case_versions: List[TestCase]) -> None:
-    name = with_test_prefix("generic::test__init__reset test suite")
+    name = with_test_prefix(f"{__file__}::test__init__reset test suite")
     description = f"{name} (description)"
     TestSuite(name, description=description, test_cases=[test_case, test_case_versions[0]])
 
@@ -72,7 +72,7 @@ def test__init__reset(with_init: None, test_case: TestCase, test_case_versions: 
 
 
 def test__init__with_version(with_init: None) -> None:
-    name = with_test_prefix("generic::test__init__with_version test suite")
+    name = with_test_prefix(f"{__file__}::test__init__with_version test suite")
     description = "test suite description"
     test_suite = TestSuite(name, description=description)
 
@@ -93,14 +93,14 @@ def test__init__with_version(with_init: None) -> None:
 
 
 def test__load__mismatching_workflows() -> None:
-    name = with_test_prefix("generic::test__load__mismatching_workflows")
+    name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
     DetectionTestSuite(name)
     with pytest.raises(WorkflowMismatchError):
         TestSuite(name)
 
 
 def test__edit(with_init: None, test_case_versions: List[TestCase]) -> None:
-    name = with_test_prefix("generic::test__edit test suite")
+    name = with_test_prefix(f"{__file__}::test__edit test suite")
     description = "test__edit test suite description"
     test_suite = TestSuite(name, description=description, test_cases=[test_case_versions[0]])
     assert test_suite.name == name
@@ -117,7 +117,7 @@ def test__edit(with_init: None, test_case_versions: List[TestCase]) -> None:
 
 
 def test__edit__no_op(test_case_versions: List[TestCase]) -> None:
-    test_suite = TestSuite(with_test_prefix("generic::test__edit__no_op test suite"))
+    test_suite = TestSuite(with_test_prefix(f"{__file__}::test__edit__no_op test suite"))
     with test_suite.edit():
         ...
     assert test_suite.version == 0
@@ -135,7 +135,7 @@ def test__edit__no_op(test_case_versions: List[TestCase]) -> None:
 @pytest.mark.skip
 def test__edit__idempotent(test_case: TestCase, test_case_versions: List[TestCase]) -> None:
     test_cases = [test_case, test_case_versions[0]]
-    test_suite = TestSuite(with_test_prefix("generic::test__edit__no_op test suite"), test_cases=test_cases)
+    test_suite = TestSuite(with_test_prefix(f"{__file__}::test__edit__no_op test suite"), test_cases=test_cases)
     assert test_suite.version == 1
 
     # adding the same test cases in the same order doesn't edit the suite, no-op
@@ -147,7 +147,7 @@ def test__edit__idempotent(test_case: TestCase, test_case_versions: List[TestCas
 
 
 def test__edit__same_name_test_case(test_case_versions: List[TestCase]) -> None:
-    test_suite = TestSuite(with_test_prefix("generic::test__edit__same_name_test_case test suite"))
+    test_suite = TestSuite(with_test_prefix(f"{__file__}::test__edit__same_name_test_case test suite"))
     with test_suite.edit() as editor:
         editor.add(test_case_versions[0])
 
@@ -161,7 +161,7 @@ def test__edit__same_name_test_case(test_case_versions: List[TestCase]) -> None:
 
 def test__edit__reset(test_case: TestCase, test_case_versions: List[TestCase]) -> None:
     test_suite = TestSuite(
-        with_test_prefix("generic::test__edit__reset test suite"),
+        with_test_prefix(f"{__file__}::test__edit__reset test suite"),
         test_cases=[
             test_case,
             test_case_versions[0],
@@ -187,18 +187,18 @@ def test__load_test_samples(
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
-    test_case_1 = TestCase(with_test_prefix("generic::test__load_test_samples test case 1"))
+    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__load_test_samples test case 1"))
     with test_case_1.edit() as editor:
         editor.add(dummy_test_samples[0], dummy_ground_truths[0])
         editor.add(dummy_test_samples[1], dummy_ground_truths[1])
 
-    test_case_2 = TestCase(f"{__file__}::test__load_test_samples test case 2")
+    test_case_2 = TestCase(with_test_prefix(f"{__file__}::test__load_test_samples test case 2"))
     with test_case_2.edit() as editor:
         editor.add(dummy_test_samples[2], dummy_ground_truths[2])
         editor.add(dummy_test_samples[1], dummy_ground_truths[1])
 
     test_suite = TestSuite(
-        with_test_prefix("generic::test__load_test_samples test suite"),
+        with_test_prefix(f"{__file__}::test__load_test_samples test suite"),
         test_cases=[
             test_case_1,
             test_case_2,

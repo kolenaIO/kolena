@@ -201,7 +201,7 @@ def test__test__mark_crashed(
     class MarkCrashedDummyEvaluator(DummyEvaluator):
         ...
 
-    name = with_test_prefix("generic::test__test__mark_crashed model")
+    name = with_test_prefix(f"{__file__}::test__test__mark_crashed model")
     model = Model(name=name, infer=infer)
     test_suite = dummy_test_suites[0]
     evaluator = MarkCrashedDummyEvaluator()
@@ -311,7 +311,7 @@ def test__handle_nan_inf() -> None:
             results = [inference.value for _, _, inference in inferences]
             return MyTestCaseMetrics(min=np.min(results), max=np.max(results), avg=np.average(results))
 
-    name = with_test_prefix("generic::test__handle_nan_inf")
+    name = with_test_prefix(f"{__file__}::test__handle_nan_inf")
     _, MyTestCase, MyTestSuite, MyModel = define_workflow("nan_workflow", MyTestSample, MyGroundTruth, MyInference)
 
     values = [-math.inf, math.inf, math.nan]
