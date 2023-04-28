@@ -15,6 +15,7 @@ from tests.integration.generic.dummy import DummyGroundTruth
 from tests.integration.generic.dummy import DummyTestSample
 from tests.integration.generic.dummy import TestCase
 from tests.integration.generic.dummy import TestSuite
+from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
 
 
@@ -206,7 +207,10 @@ def test__load_test_samples(
     )
     test_case_test_samples = test_suite.load_test_samples()
 
-    assert test_case_test_samples == [
-        (test_case_1, [dummy_test_samples[0], dummy_test_samples[1]]),
-        (test_case_2, [dummy_test_samples[2], dummy_test_samples[1]]),
-    ]
+    assert_sorted_list_equal(
+        test_case_test_samples,
+        [
+            (test_case_1, [dummy_test_samples[0], dummy_test_samples[1]]),
+            (test_case_2, [dummy_test_samples[2], dummy_test_samples[1]]),
+        ],
+    )
