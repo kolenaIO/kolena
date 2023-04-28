@@ -65,12 +65,13 @@ jobs:
       - checkout
       - restore_cache:
           key: test-cache-{{ checksum "pyproject.toml" }}
-      - run: |
-          poetry run pytest -vv --cov=kolena --cov-branch tests/unit
-          poetry run coverage xml --data-file .coverage
+      - run:
+          name: Run unit tests
+          command: |
+            poetry run pytest -vv --cov=kolena --cov-branch tests/unit
+            poetry run coverage xml --data-file .coverage
       - codecov/upload:
           file: coverage.xml
-          flags: kolena-client
           upload_name: kolena-client
 
   integration-test:
