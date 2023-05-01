@@ -263,21 +263,21 @@ def test__handle_nan_inf() -> None:
             return True
         return a == b
 
-    @dataclass(frozen=True)
+    @dataclass(frozen=True, order=True)
     class MyTestSample(TestSample):
         value: float
 
         def __eq__(self, other: Any) -> bool:
             return isinstance(other, type(self)) and compare_float(self.value, other.value)
 
-    @dataclass(frozen=True)
+    @dataclass(frozen=True, order=True)
     class MyGroundTruth(GroundTruth):
         value: float
 
         def __eq__(self, other: Any) -> bool:
             return isinstance(other, type(self)) and compare_float(self.value, other.value)
 
-    @dataclass(frozen=True)
+    @dataclass(frozen=True, order=True)
     class MyInference(Inference):
         value: float
 
