@@ -35,7 +35,6 @@ def assert_test_case(test_case: TestCase, name: str, version: int) -> None:
 
 
 def test__init(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -50,7 +49,6 @@ def test__init(
 
 
 def test__init__reset(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -68,7 +66,6 @@ def test__init__reset(
 # @pytest.mark.internal
 @pytest.mark.skip
 def test__init__reset_with_overlap(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -87,7 +84,6 @@ def test__init__reset_with_overlap(
 
 @pytest.mark.skip
 def test__init__reset_with_other_test_case(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -112,7 +108,6 @@ def test__init__reset_with_other_test_case(
 
 @pytest.mark.skip
 def test__init__reset_resets_all_past_samples(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -135,7 +130,7 @@ def test__init__reset_resets_all_past_samples(
     assert_sorted_list_equal(test_case.load_test_samples(), sample_batch_3)
 
 
-def test__create(with_init: None) -> None:
+def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test__create test case")
     assert_test_case(TestCase.create(name), name, 0)
 
@@ -143,7 +138,7 @@ def test__create(with_init: None) -> None:
         TestCase.create(name)
 
 
-def test__load(with_init: None) -> None:
+def test__load() -> None:
     name = with_test_prefix(f"{__file__}::test__load test case")
 
     with pytest.raises(Exception):  # TODO(gh): better error?
@@ -153,7 +148,7 @@ def test__load(with_init: None) -> None:
     assert_test_case(TestCase.load(name), name, 0)
 
 
-def test__load__mismatching_workflows(with_init: None) -> None:
+def test__load__mismatching_workflows() -> None:
     name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
     DetectionTestCase(name)
     with pytest.raises(WorkflowMismatchError):
@@ -161,7 +156,6 @@ def test__load__mismatching_workflows(with_init: None) -> None:
 
 
 def test__edit(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -181,7 +175,6 @@ def test__edit(
 
 
 def test__edit__reset(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -203,7 +196,6 @@ def test__edit__reset(
 
 
 def test__edit__replace(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -224,7 +216,6 @@ def test__edit__replace(
 
 
 def test__edit__remove(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -260,7 +251,6 @@ def test__edit__remove(
 
 
 def test__edit__remove_only(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -281,7 +271,6 @@ def test__edit__remove_only(
 
 @pytest.mark.skip
 def test__edit__description_only(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:
@@ -302,7 +291,6 @@ def test__edit__description_only(
 
 @pytest.mark.skip
 def test__edit__update_sample_metadata(
-    with_init: None,
     dummy_test_samples: List[DummyTestSample],
     dummy_ground_truths: List[DummyGroundTruth],
 ) -> None:

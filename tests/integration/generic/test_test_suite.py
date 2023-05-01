@@ -72,7 +72,7 @@ def test__init() -> None:
     assert test_suite == test_suite3
 
 
-def test__init__reset(with_init: None, test_case: TestCase, test_case_versions: List[TestCase]) -> None:
+def test__init__reset(test_case: TestCase, test_case_versions: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__init__reset test suite")
     description = f"{name} (description)"
     TestSuite(name, description=description, test_cases=[test_case, test_case_versions[0]])
@@ -84,7 +84,7 @@ def test__init__reset(with_init: None, test_case: TestCase, test_case_versions: 
     assert test_suite.test_cases == new_test_cases
 
 
-def test__init__with_version(with_init: None) -> None:
+def test__init__with_version() -> None:
     name = with_test_prefix(f"{__file__}::test__init__with_version test suite")
     description = "test suite description"
     test_suite = TestSuite(name, description=description)
@@ -112,7 +112,7 @@ def test__load__mismatching_workflows() -> None:
         TestSuite(name)
 
 
-def test__edit(with_init: None, test_case_versions: List[TestCase]) -> None:
+def test__edit(test_case_versions: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__edit test suite")
     description = "test__edit test suite description"
     test_suite = TestSuite(name, description=description, test_cases=[test_case_versions[0]])
