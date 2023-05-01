@@ -345,7 +345,7 @@ def test__handle_nan_inf() -> None:
     TestRun(model, test_suite, evaluator).run()
 
     inferences = model.load_inferences(test_case)
-    assert inferences == list(zip(samples, ground_truths, dummy_inferences))
+    assert_sorted_list_equal(inferences, list(zip(samples, ground_truths, dummy_inferences)))
 
 
 def test__test__function_evaluator(
