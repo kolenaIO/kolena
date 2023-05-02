@@ -31,6 +31,7 @@ jobs:
       - when:
           condition:
             not:
+              # TODO: upgrade mypy version to address # https://github.com/python/mypy/issues/13627
               equal: [ "3.10", << parameters.python-version >> ]
           steps:
             - run: poetry run pre-commit run -a
