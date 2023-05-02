@@ -48,7 +48,7 @@ jobs:
           name: Run integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN_PROD}
-            poetry run pytest -vv --durations=0 --cov=kolena --cov-branch tests/integration
+            poetry run pytest -vv --cov-append --durations=0 --cov=kolena --cov-branch tests/integration
       - when:
           # Generate coverage only from one python version
           condition:
