@@ -87,8 +87,7 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN_TRUNK}
-            export KOLENA_CLIENT_BASE_URL=https://trunk-api.kolena.io
+            export KOLENA_TOKEN=${KOLENA_TOKEN_PROD}
             poetry run pytest -vv --durations=0 --cov=kolena --cov-branch tests/integration
             poetry run coverage xml --data-file .coverage
       - codecov/upload:
