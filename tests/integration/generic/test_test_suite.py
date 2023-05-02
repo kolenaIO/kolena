@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-# TODO(gh): these tests are quite similar (but not identical) to other workflow test_test_suite tests. Eventually we
+# TODO: these tests are quite similar (but not identical) to other workflow test_test_suite tests. Eventually we
 #  should unify the implementations and share all tests to reduce testing burden, reduce behavioral inconsistency, and
 #  reduce likelihood of testing holes in a given workflow
 #

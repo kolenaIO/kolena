@@ -44,7 +44,7 @@ N_DUMMY = 10
 
 
 def dummy_test_sample(index: int, directory: str = "default") -> DummyTestSample:
-    # TODO(gh): this type ignore is ridiculous and will be annoying for customers extending our classes
+    # TODO: this type ignore is ridiculous and will be annoying for customers extending our classes
     #  mypy: error: Unexpected keyword argument "locator" for "DummyTestSample"
     return DummyTestSample(  # type: ignore
         locator=fake_locator(index, directory),

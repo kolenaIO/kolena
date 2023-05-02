@@ -134,14 +134,14 @@ def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test__create test case")
     assert_test_case(TestCase.create(name), name, 0)
 
-    with pytest.raises(Exception):  # TODO(gh): better error?
+    with pytest.raises(Exception):  # TODO: better error?
         TestCase.create(name)
 
 
 def test__load() -> None:
     name = with_test_prefix(f"{__file__}::test__load test case")
 
-    with pytest.raises(Exception):  # TODO(gh): better error?
+    with pytest.raises(Exception):  # TODO: better error?
         TestCase.load(name)
 
     TestCase.create(name)
