@@ -3,6 +3,11 @@ version: 2.1
 orbs:
   codecov: codecov/codecov@3.2.4
 
+parameters:
+  python-version:
+    type: string
+    default: "3.9"
+
 jobs:
   kolena-client-ci:
     parameters:
@@ -35,65 +40,26 @@ jobs:
               equal: [ "3.10", << parameters.python-version >> ]
           steps:
             - run: poetry run pre-commit run -a
-
-  test-base:
-    docker:
-      - image: cimg/python:3.9
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
-    steps:
-      - checkout
-      - restore_cache:
-          key: &test-cache test-cache-{{ checksum "pyproject.toml" }}
-      - run: |
-          poetry config experimental.new-installer false
-          poetry config installer.max-workers 10
-          poetry install --no-ansi
-      - save_cache:
-          key: *test-cache
-          paths:
-            - /home/circleci/project/.poetry/virtualenvs
-            - poetry.lock
-
-  unit-test:
-    docker:
-      - image: cimg/python:3.9
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
-    steps:
-      - checkout
-      - restore_cache:
-          key: test-cache-{{ checksum "pyproject.toml" }}
       - run:
           name: Run unit tests
           command: |
             poetry run pytest -vv --cov=kolena --cov-branch tests/unit
-            poetry run coverage xml --data-file .coverage
-      - codecov/upload:
-          file: coverage.xml
-          upload_name: unit
-
-  integration-test:
-    docker:
-      - image: cimg/python:3.9
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
-    steps:
-      - checkout
-      - restore_cache:
-          key: test-cache-{{ checksum "pyproject.toml" }}
       - run:
           name: Run integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN_PROD}
             poetry run pytest -vv --durations=0 --cov=kolena --cov-branch tests/integration
-            poetry run coverage xml --data-file .coverage
-      - codecov/upload:
-          file: coverage.xml
-          upload_name: integration
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Coverage
+                command: |
+                  poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
 
 workflows:
   ci:
@@ -102,12 +68,3 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10" ]
-  test:
-    jobs:
-      - test-base
-      - unit-test:
-          requires:
-            - test-base
-      - integration-test:
-          requires:
-            - test-base
