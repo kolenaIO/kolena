@@ -1,0 +1,70 @@
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@3.2.4
+
+parameters:
+  python-version:
+    type: string
+    default: "3.9"
+
+jobs:
+  kolena-client-ci:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: &kolena-client-ci-cache kolena-client-ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+      - run: |
+          poetry config experimental.new-installer false
+          poetry config installer.max-workers 10
+          poetry install --no-ansi
+      - save_cache:
+          key: *kolena-client-ci-cache
+          paths:
+            - /home/circleci/project/.poetry/virtualenvs
+            - poetry.lock
+      - run: poetry run python3 -c 'import kolena'
+      - when:
+          condition:
+            not:
+              # TODO: upgrade mypy version to address # https://github.com/python/mypy/issues/13627
+              equal: [ "3.10", << parameters.python-version >> ]
+          steps:
+            - run: poetry run pre-commit run -a
+      - run:
+          name: Run unit tests
+          command: |
+            poetry run pytest -vv --cov=kolena --cov-branch tests/unit
+      - run:
+          name: Run integration tests
+          command: |
+            export KOLENA_TOKEN=${KOLENA_TOKEN_PROD}
+            poetry run pytest -vv --cov-append --durations=0 --cov=kolena --cov-branch tests/integration
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Coverage
+                command: |
+                  poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
+
+workflows:
+  ci:
+    jobs:
+      - kolena-client-ci:
+          matrix:
+            parameters:
+              python-version: [ "3.7", "3.8", "3.9", "3.10" ]
