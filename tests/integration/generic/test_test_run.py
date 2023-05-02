@@ -174,21 +174,6 @@ def test__test(
         test_run.upload_inferences([(dummy_test_samples[0], dummy_model.infer(dummy_test_samples[0]))])
 
 
-# @pytest.mark.depends(on=["test__test"])
-@pytest.mark.skip
-def test__test__again(
-    dummy_model: Model,
-    dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
-) -> None:
-    # additional configuration (b), should also recompute and replace metrics for existing configuration (a)
-    evaluator = TestTestDummyEvaluator(
-        configurations=[DummyConfiguration(value="test__test"), DummyConfiguration(value="test__test__again")],
-    )
-    TestRun(dummy_model, dummy_test_suites[0], evaluator).run()
-    TestRun(dummy_model, dummy_test_suites[0], evaluator)
-
-
 def test__test__reset(
     dummy_model_reset: Model,
     dummy_test_suites: List[TestSuite],

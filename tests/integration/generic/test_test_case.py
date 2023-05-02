@@ -11,10 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Callable
-from typing import Dict
 from typing import List
-from typing import Tuple
 
 import pytest
 
@@ -61,73 +58,6 @@ def test__init__reset(
     assert test_case.version == 2
     assert test_case.description == description  # not updated or cleared
     assert sorted(test_case.load_test_samples()) == sorted(new_test_samples)
-
-
-# @pytest.mark.internal
-@pytest.mark.skip
-def test__init__reset_with_overlap(
-    dummy_test_samples: List[DummyTestSample],
-    dummy_ground_truths: List[DummyGroundTruth],
-) -> None:
-    name = with_test_prefix(f"{__file__}::test__init__reset_with_overlap test case")
-    description = f"{name} (description)"
-    sample_batch_1 = list(zip(dummy_test_samples[:6], dummy_ground_truths[:6]))
-    sample_batch_2 = list(zip(dummy_test_samples[4:], dummy_ground_truths[4:]))
-    TestCase(name, description=description, test_samples=sample_batch_1)
-
-    test_case = TestCase(name, test_samples=sample_batch_2, reset=True)
-    assert test_case.version == 2
-    assert test_case.description == description  # not updated or cleared
-    # overlapping samples / gts should be preserved
-    assert sorted(test_case.load_test_samples()) == sorted(sample_batch_2)
-
-
-@pytest.mark.skip
-def test__init__reset_with_other_test_case(
-    dummy_test_samples: List[DummyTestSample],
-    dummy_ground_truths: List[DummyGroundTruth],
-) -> None:
-    name = with_test_prefix(f"{__file__}::test__init__reset_with_other_test_case test case")
-    name_other = with_test_prefix(f"{__file__}::test__init__reset_with_other_test_case test case (other)")
-    description = f"{name} (description)"
-    sample_batch_1 = list(zip(dummy_test_samples, dummy_ground_truths))
-    sample_batch_2 = list(zip(dummy_test_samples[:4], dummy_ground_truths[:4]))
-    sample_batch_3 = list(zip(dummy_test_samples[:2][::-1], dummy_ground_truths[:2][::1]))
-
-    # Create and update test case
-    TestCase(name, description=description, test_samples=sample_batch_1)
-    test_case_other = TestCase(name_other, test_samples=sample_batch_2)
-
-    test_case = TestCase(name, test_samples=sample_batch_3, reset=True)
-    assert test_case.version == 2
-    assert test_case.description == description  # not updated or cleared
-    # sample_batch_2 should be untouched
-    assert_sorted_list_equal(test_case_other.load_test_samples(), sample_batch_2)
-    assert_sorted_list_equal(test_case.load_test_samples(), sample_batch_3)  # sample_batch_1 should be cleared
-
-
-@pytest.mark.skip
-def test__init__reset_resets_all_past_samples(
-    dummy_test_samples: List[DummyTestSample],
-    dummy_ground_truths: List[DummyGroundTruth],
-) -> None:
-    name = with_test_prefix(f"{__file__}::test__init__reset_resets_all_past_samples test case")
-    description = f"{name} (description)"
-    sample_batch_1 = list(zip(dummy_test_samples[:2], dummy_ground_truths[:2]))
-    sample_batch_2 = list(zip(dummy_test_samples[2:4], dummy_ground_truths[2:4]))
-    sample_batch_3 = list(zip(dummy_test_samples[4:], dummy_ground_truths[4:]))
-
-    # Create and update test case
-    initial_test_case = TestCase(name, description=description, test_samples=sample_batch_1)
-    with initial_test_case.edit() as editor:
-        for sample, gt in sample_batch_2:
-            editor.add(sample, gt)
-
-    test_case = TestCase(name, test_samples=sample_batch_3, reset=True)
-    assert test_case.version == 3
-    assert test_case.description == description  # not updated or cleared
-    # both sample_batch_1 and sample_batch_2 should be cleared
-    assert_sorted_list_equal(test_case.load_test_samples(), sample_batch_3)
 
 
 def test__create() -> None:
@@ -267,73 +197,3 @@ def test__edit__remove_only(
 
     assert test_case.version == 2
     assert sorted(test_case.load_test_samples()) == sorted(rest)
-
-
-@pytest.mark.skip
-def test__edit__description_only(
-    dummy_test_samples: List[DummyTestSample],
-    dummy_ground_truths: List[DummyGroundTruth],
-) -> None:
-    all_test_samples = list(zip(dummy_test_samples, dummy_ground_truths))
-    test_case = TestCase(
-        with_test_prefix(f"{__file__}::test__edit__description_only test case"),
-        test_samples=all_test_samples,
-    )
-
-    description = "new description"
-    with test_case.edit() as editor:
-        editor.description(description)
-
-    assert test_case.version == 2
-    assert test_case.description == description
-    assert_sorted_list_equal(test_case.load_test_samples(), all_test_samples)
-
-
-@pytest.mark.skip
-def test__edit__update_sample_metadata(
-    dummy_test_samples: List[DummyTestSample],
-    dummy_ground_truths: List[DummyGroundTruth],
-) -> None:
-    test_case_name = with_test_prefix(f"{__file__}::test__edit__update_sample_metadata test case")
-    all_test_samples_v1 = list(zip(dummy_test_samples, dummy_ground_truths))
-    test_case = TestCase(test_case_name, test_samples=all_test_samples_v1)
-    original_version = test_case.version
-    assert_sorted_list_equal(test_case.load_test_samples(), all_test_samples_v1)
-
-    def generate_samples_with_ground_truths(
-        generate_metadata: Callable[[int], Dict[str, int]],
-    ) -> List[Tuple[DummyTestSample, DummyGroundTruth]]:
-        test_samples = [
-            DummyTestSample(  # type: ignore
-                locator=sample.locator,
-                bbox=sample.bbox,
-                value=sample.value,
-                metadata=generate_metadata(i),
-            )
-            for i, sample in enumerate(dummy_test_samples)
-        ]
-        return list(zip(test_samples, dummy_ground_truths))
-
-    all_test_samples_v2 = generate_samples_with_ground_truths(
-        lambda i: {"index": i, "second_index": i},
-    )
-    with test_case.edit() as editor:
-        for sample, gt in all_test_samples_v2:
-            editor.add(sample, gt)
-    assert_sorted_list_equal(test_case.load_test_samples(), all_test_samples_v2)
-
-    # validate that adding new metadata fields merges the metadata
-    all_test_samples_v3 = generate_samples_with_ground_truths(
-        lambda i: {"second_index": i * 2, "third_index": i * 3},
-    )
-    all_test_samples_merged_metadata = generate_samples_with_ground_truths(
-        lambda i: {"index": i, "second_index": i * 2, "third_index": i * 3},
-    )
-    with test_case.edit() as editor:
-        for sample, gt in all_test_samples_v3:
-            editor.add(sample, gt)
-    assert_sorted_list_equal(test_case.load_test_samples(), all_test_samples_merged_metadata)
-
-    # test samples from original version now also have updated metadata
-    original_test_case = TestCase(test_case_name, version=original_version)
-    assert_sorted_list_equal(original_test_case.load_test_samples(), all_test_samples_merged_metadata)

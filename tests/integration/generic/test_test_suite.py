@@ -145,20 +145,6 @@ def test__edit__no_op(test_case_versions: List[TestCase]) -> None:
     assert test_suite.version == 0
 
 
-@pytest.mark.skip
-def test__edit__idempotent(test_case: TestCase, test_case_versions: List[TestCase]) -> None:
-    test_cases = [test_case, test_case_versions[0]]
-    test_suite = TestSuite(with_test_prefix(f"{__file__}::test__edit__no_op test suite"), test_cases=test_cases)
-    assert test_suite.version == 1
-
-    # adding the same test cases in the same order doesn't edit the suite, no-op
-    with test_suite.edit() as editor:
-        for tc in test_cases:
-            editor.add(tc)
-    assert test_suite.version == 1
-    assert test_suite.test_cases == test_cases
-
-
 def test__edit__same_name_test_case(test_case_versions: List[TestCase]) -> None:
     test_suite = TestSuite(with_test_prefix(f"{__file__}::test__edit__same_name_test_case test suite"))
     with test_suite.edit() as editor:
