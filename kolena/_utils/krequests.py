@@ -17,9 +17,11 @@ from typing import Dict
 
 import requests
 from requests import HTTPError
+from requests_toolbelt import user_agent
 from requests_toolbelt.adapters import socket_options
 
-from kolena import __version__ as version
+from kolena import __name__ as client_name
+from kolena import __version__ as client_version
 from kolena._utils.endpoints import get_endpoint
 from kolena._utils.state import get_client_state
 from kolena._utils.state import kolena_initialized
@@ -58,7 +60,7 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         "Content-Type": "application/json",
         "Authorization": f"Bearer {client_state.jwt_token}",
         "X-Request-ID": uuid.uuid4().hex,
-        "User-Agent": f"kolena/{version}",
+        "User-Agent": user_agent(client_name, client_version),
     }
     return {
         **default_kwargs,
