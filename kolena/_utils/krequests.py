@@ -58,7 +58,7 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         "Content-Type": "application/json",
         "Authorization": f"Bearer {client_state.jwt_token}",
         "X-Request-ID": uuid.uuid4().hex,
-        "User-Agent": f"kolena-client/{version}",
+        "User-Agent": f"kolena/{version}",
     }
     return {
         **default_kwargs,
