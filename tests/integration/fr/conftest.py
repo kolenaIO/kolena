@@ -39,25 +39,19 @@ class TestData:
 
 
 @pytest.fixture(scope="session")
-def test_locators() -> List[str]:
-    return [fake_locator(idx, "fr/dummy_data_set") for idx in range(3)]
-
-
-@pytest.fixture(scope="session")
-def register_test_samples(test_locators: List[str]) -> None:
+def test_samples() -> List[TestCaseRecord]:
+    locators = [fake_locator(idx, "fr/dummy_data_set") for idx in range(3)]
     dataset = with_test_prefix("test_dummy_dataset")
     with TestImages.register() as registrar:
-        for i, locator in enumerate(test_locators):
+        for i, locator in enumerate(locators):
             registrar.add(locator, dataset, 250, 250, tags=dict(age=i))
 
-
-@pytest.fixture(scope="session")
-def test_samples(test_locators: List[str]) -> List[TestCaseRecord]:
     test_samples = []
-    for locator_a in test_locators:
-        for locator_b in test_locators:
+    for locator_a in locators:
+        for locator_b in locators:
             # 0, 4, 8 is the genuine pair
             test_samples.append((locator_a, locator_b, locator_a == locator_b))
+
     return test_samples
 
 
