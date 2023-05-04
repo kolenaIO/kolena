@@ -86,16 +86,16 @@ def fr_test_data() -> TestData:
 
     augmented_images = [
         (
-            images[i][0],
+            fake_locator(i, "bucket-name/test/augs"),
             None,
             # augmented with -1 dimensions should propagate original dimensions
             -1 if i < 2 else 200 + i,
             -1 if i < 2 else 300 + i,
-            fake_locator(i, "bucket-name/test/augs"),
+            images[i][0],
             dict(aug=str(uuid.uuid4())),
             np.random.rand(4).astype(np.float32) * 50 if i < 4 else None,
             None if i < 2 else np.random.rand(10).astype(np.float32) * 50,
-            {str(uuid.uuid4()): str(uuid.uuid4())} if i else None,
+            {str(uuid.uuid4()): str(uuid.uuid4())} if i else {},
         )
         for i in range(6)
     ]
@@ -124,7 +124,22 @@ def fr_augmented_images_df(fr_test_data: TestData) -> pd.DataFrame:
 
 @pytest.fixture(scope="session")
 def fr_augmented_images_expected_df(fr_test_data: TestData) -> pd.DataFrame:
-    return pd.DataFrame.from_records((record for record in fr_test_data.augmented_images), columns=TEST_IMAGE_COLUMNS)
+    expected = []
+    for img, aug in zip(fr_test_data.images, fr_test_data.augmented_images):
+        expected.append(
+            (
+                aug[0],
+                img[1],
+                aug[2] if aug[2] != -1 else img[2],
+                aug[3] if aug[3] != -1 else img[3],
+                aug[4],
+                aug[5],
+                aug[6] if aug[6] is not None else img[6],
+                aug[7] if aug[7] is not None else img[7],
+                aug[8],
+            ),
+        )
+    return pd.DataFrame.from_records(expected, columns=TEST_IMAGE_COLUMNS)
 
 
 @pytest.fixture(scope="session")
