@@ -18,7 +18,7 @@ from tests.integration.conftest import TEST_PREFIX
 
 
 def fake_locator(index: int, directory: str = "default") -> str:
-    return f"https://fake-locator/{directory}/{index}.png"
+    return f"https://fake-locator/{TEST_PREFIX}/{directory}/{index}.png"
 
 
 def with_test_prefix(value: str) -> str:

@@ -11,36 +11,44 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import uuid
+from dataclasses import dataclass
 from typing import List
-from typing import Tuple
 
 import numpy as np
+import pandas as pd
 import pytest as pytest
 
 from kolena.fr import Model
 from kolena.fr import TestCase
 from kolena.fr import TestImages
 from kolena.fr import TestSuite
+from kolena.fr.datatypes import TEST_IMAGE_COLUMNS
 from kolena.fr.datatypes import TestCaseRecord
+from kolena.fr.datatypes import TestImageRecord
+from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-DATASET = "test_dummy_dataset"
 
-
-def get_test_locator(idx: int) -> str:
-    return f"s3://sdk-server-integration-tests-fr/{DATASET}/{idx}.jpg"
+@dataclass
+class TestData:
+    data_sources: List[str]
+    images: List[TestImageRecord]
+    image_pairs: List[TestCaseRecord]
+    augmented_images: List[TestImageRecord]
 
 
 @pytest.fixture(scope="session")
 def test_locators() -> List[str]:
-    return [get_test_locator(idx) for idx in range(3)]
+    return [fake_locator(idx, "fr/dummy_data_set") for idx in range(3)]
 
 
 @pytest.fixture(scope="session")
 def register_test_samples(test_locators: List[str]) -> None:
+    dataset = with_test_prefix("test_dummy_dataset")
     with TestImages.register() as registrar:
         for i, locator in enumerate(test_locators):
-            registrar.add(locator, DATASET, 250, 250, tags=dict(age=i))
+            registrar.add(locator, dataset, 250, 250, tags=dict(age=i))
 
 
 @pytest.fixture(scope="session")
@@ -54,25 +62,69 @@ def test_samples(test_locators: List[str]) -> List[TestCaseRecord]:
 
 
 @pytest.fixture(scope="session")
-def fr_images() -> Tuple[List[str], List[TestCaseRecord]]:
+def fr_test_data() -> TestData:
     locators = [f"s3://fake-bucket/{i}.png" for i in range(6)]
     locator_a = [*locators, locators[0], locators[1], locators[0], locators[1]]
     locator_b = [*locators[1:], locators[0], locators[2], locators[5], locators[0], locators[1]]
     is_same = [True, False, False, False, False, False, False, True, True, True]
 
-    with TestImages.register() as registrar:
-        for i, locator in enumerate(locators):
-            registrar.add(
-                locator,
-                "fake-data-source",
-                (i + 1) * 100,
-                (i + 1) * 100,
-                bounding_box=np.array([10, 10, 20, 20]),
-                landmarks=np.array([10, 10, 20, 20, 30, 30, 40, 40, 50, 50]),
-                tags=None,
-            )
+    data_sources = [with_test_prefix("registered_data_source"), with_test_prefix("registered_second_source")]
+    images = [
+        (
+            fake_locator(i, "bucket-name/test/imgs"),
+            data_sources[0] if i < 4 else data_sources[1],
+            100 + i,
+            200 + i,
+            None,
+            None,
+            np.random.rand(4).astype(np.float32) * 50 if i < 5 else None,
+            np.random.rand(10).astype(np.float32) * 50 if i else None,
+            {str(uuid.uuid4()): str(uuid.uuid4())} if i < 4 else {},
+        )
+        for i in range(6)
+    ]
 
-    return locators, list(zip(locator_a, locator_b, is_same))
+    augmented_images = [
+        (
+            images[i][0],
+            None,
+            # augmented with -1 dimensions should propagate original dimensions
+            -1 if i < 2 else 200 + i,
+            -1 if i < 2 else 300 + i,
+            fake_locator(i, "bucket-name/test/augs"),
+            dict(aug=str(uuid.uuid4())),
+            np.random.rand(4).astype(np.float32) * 50 if i < 4 else None,
+            None if i < 2 else np.random.rand(10).astype(np.float32) * 50,
+            {str(uuid.uuid4()): str(uuid.uuid4())} if i else None,
+        )
+        for i in range(6)
+    ]
+
+    with TestImages.register() as registrar:
+        for record in images:
+            registrar.add(*record[:4], *record[6:])
+
+    return TestData(
+        data_sources=data_sources,
+        images=images,
+        image_pairs=list(zip(locator_a, locator_b, is_same)),
+        augmented_images=augmented_images,
+    )
+
+
+@pytest.fixture(scope="session")
+def fr_images_df(fr_test_data: TestData) -> pd.DataFrame:
+    return pd.DataFrame.from_records((record for record in fr_test_data.images), columns=TEST_IMAGE_COLUMNS)
+
+
+@pytest.fixture(scope="session")
+def fr_augmented_images_df(fr_test_data: TestData) -> pd.DataFrame:
+    return pd.DataFrame.from_records((record for record in fr_test_data.augmented_images), columns=TEST_IMAGE_COLUMNS)
+
+
+@pytest.fixture(scope="session")
+def fr_augmented_images_expected_df(fr_test_data: TestData) -> pd.DataFrame:
+    return pd.DataFrame.from_records((record for record in fr_test_data.augmented_images), columns=TEST_IMAGE_COLUMNS)
 
 
 @pytest.fixture(scope="session")
@@ -81,8 +133,8 @@ def fr_models() -> List[Model]:
 
 
 @pytest.fixture(scope="session")
-def fr_test_cases(fr_images: Tuple[List[str], List[TestCaseRecord]]) -> List[TestCase]:
-    image_pairs = fr_images[1]
+def fr_test_cases(fr_test_data: TestData) -> List[TestCase]:
+    image_pairs = fr_test_data.image_pairs
     test_case_name_a = with_test_prefix("A")
     test_case_a = TestCase(
         test_case_name_a,
