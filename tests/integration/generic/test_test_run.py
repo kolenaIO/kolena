@@ -203,7 +203,7 @@ def test__test__mark_crashed(
     evaluator = MarkCrashedDummyEvaluator()
     test_run = TestRun(model, test_suite, evaluator)
 
-    with patch("kolena.fr.test_run.report_crash") as patched:
+    with patch("kolena.workflow.test_run.report_crash") as patched:
         with pytest.raises(RuntimeError):
             test_run.run()
 

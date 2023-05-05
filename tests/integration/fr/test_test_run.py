@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import List
 from typing import Optional
+from typing import Tuple
 from unittest.mock import patch
 
 import numpy as np
@@ -34,7 +35,6 @@ from kolena.fr import TestCase
 from kolena.fr import TestImages
 from kolena.fr import TestRun
 from kolena.fr import TestSuite
-from kolena.fr.datatypes import TEST_CASE_COLUMNS
 from kolena.fr.datatypes import TestCaseRecord
 from tests.integration.fr.conftest import TestData
 from tests.integration.fr.helper import generate_image_results
@@ -45,11 +45,22 @@ def assert_similarity_equal(df: pd.DataFrame, val: float) -> None:
     assert all([record.similarity == val for record in df.itertuples()])
 
 
+@pytest.fixture(scope="session")
+def fr_test_run_core(fr_test_suites: List[TestSuite]) -> Tuple[Model, TestSuite]:
+    model = Model.create(with_test_prefix(f"{__file__}::test__test_run_core model"), metadata={})
+    return model, fr_test_suites[0]
+
+
 @pytest.fixture
-def fr_test_run(fr_models: List[Model], fr_test_suites: List[TestSuite]) -> TestRun:
-    model = fr_models[0]
+def fr_test_run(fr_test_run_core: Tuple[Model, TestSuite]) -> TestRun:
+    return TestRun(*fr_test_run_core)
+
+
+@pytest.fixture(scope="session")
+def fr_multi_face_test_run(fr_test_suites: List[TestSuite]) -> Tuple[Model, TestSuite]:
+    model = Model.create(with_test_prefix(f"{__file__}::test__multi_face model"), metadata={})
     test_suite = fr_test_suites[0]
-    return TestRun(model, test_suite)
+    return model, test_suite
 
 
 def generate_pair_results(df_emb: EmbeddingDataFrame, df_pair: PairDataFrame) -> PairResultDataFrame:
@@ -72,9 +83,8 @@ def generate_pair_results(df_emb: EmbeddingDataFrame, df_pair: PairDataFrame) ->
 
 
 # Note: create_or_retrieve is deprecated
-def test__create_or_retrieve(fr_models: List[Model], fr_test_suites: List[TestSuite]) -> None:
-    model = fr_models[0]
-    test_suite = fr_test_suites[0]
+def test__create_or_retrieve(fr_test_run_core: Tuple[Model, TestSuite]) -> None:
+    model, test_suite = fr_test_run_core
     input_test_suite_id = test_suite._id
 
     test_run_created = TestRun.create_or_retrieve(model, test_suite)
@@ -205,14 +215,10 @@ def test__upload_image_results(fr_test_run: TestRun) -> None:
     assert len(df_remaining_images) == 0
 
 
-@pytest.mark.skip
 @pytest.mark.depends(on=["test__upload_image_results__validation"])
 def test__load_remaining_pairs(fr_test_data: TestData, fr_test_run: TestRun) -> None:
     data_sources = fr_test_data.data_sources
-    images_1 = TestImages.load(data_source=data_sources[0])[["image_id", "locator"]].sort_values(
-        by="image_id",
-        ignore_index=True,
-    )
+    images = TestImages.load(data_source=data_sources[0])
     image_pairs = fr_test_data.image_pairs
     test_suite_image_pairs = [
         image_pairs[0],
@@ -221,26 +227,24 @@ def test__load_remaining_pairs(fr_test_data: TestData, fr_test_run: TestRun) -> 
         image_pairs[8],
         image_pairs[9],
     ]
-    image_id_1 = images_1[["image_id", "locator"]].rename(columns={"locator": "locator_a", "image_id": "image_a_id"})
-    image_id_1[["image_b_id", "locator_b"]] = image_id_1[["image_a_id", "locator_a"]]
-
-    df_image_pairs = pd.DataFrame.from_records(test_suite_image_pairs, columns=TEST_CASE_COLUMNS)
-    df_image_pair_expected = pd.merge(
-        pd.merge(
-            df_image_pairs,
-            image_id_1,
-            on=["locator_a"],
-        ),
-        image_id_1,
-        on=["locator_b"],
+    images_dict = dict(zip(images.locator, images.image_id))
+    image_pair_ids = sorted(
+        [(images_dict[locator_a], images_dict[locator_b]) for locator_a, locator_b, is_same in test_suite_image_pairs],
     )
-    df_embedding_actual, df_image_pair_actual = fr_test_run.load_remaining_pairs()
-    pandas.testing.assert_frame_equal(df_image_pair_actual, df_image_pair_expected)
 
-    # expected_image_ids = set(expected_image_a_ids).union(set(expected_image_b_ids))
-    # actual_image_ids = set(df_embedding_actual["image_id"].tolist())
-    # assert actual_image_ids == expected_image_ids
-    assert len(df_embedding_actual)
+    columns = ["image_a_id", "image_b_id"]
+    df_image_pair_expected = pd.DataFrame.from_records(
+        image_pair_ids,
+        columns=columns,
+    ).sort_values(by=columns, ignore_index=True)
+    df_embedding_actual, df_image_pair_actual = fr_test_run.load_remaining_pairs()
+    pandas.testing.assert_frame_equal(
+        df_image_pair_actual[columns].sort_values(by=columns, ignore_index=True),
+        df_image_pair_expected,
+    )
+
+    embedding_image_ids = sorted(df_embedding_actual["image_id"].tolist())
+    assert embedding_image_ids == sorted(images_dict.values())
 
     df_embedding_actual, df_image_pair_actual = fr_test_run.load_remaining_pairs(batch_size=1)
     assert len(df_image_pair_actual) == 1
@@ -299,8 +303,8 @@ def test__upload_pair_results(fr_test_run: TestRun) -> None:
 
 
 @pytest.mark.depends(on=["test__upload_pair_results"])
-def test__noop(fr_models: List[Model], fr_test_suites: List[TestSuite]) -> None:
-    model = fr_models[0]
+def test__noop(fr_test_run_core: Tuple[Model, TestSuite], fr_test_suites: List[TestSuite]) -> None:
+    model = fr_test_run_core[0]
     test_suite = fr_test_suites[3]
 
     test_run = TestRun(model, test_suite)
@@ -312,7 +316,6 @@ def test__noop(fr_models: List[Model], fr_test_suites: List[TestSuite]) -> None:
     assert len(df_image_pair) == 0
 
 
-@pytest.mark.skip
 def test__test(fr_test_suites: List[TestSuite]) -> None:
     model = InferenceModel.create(
         with_test_prefix(f"{__file__}::test__test model"),
@@ -321,30 +324,15 @@ def test__test(fr_test_suites: List[TestSuite]) -> None:
         metadata={},
     )
     test_suites = [fr_test_suites[0], fr_test_suites[2]]
-    test(model, test_suites[0])
+    test_run = test(model, test_suites[0])
 
-    test_run = TestRun(model, test_suites[0])
     assert len(test_run.load_remaining_images()) == 0
     assert len(test_run.load_remaining_pairs()[1]) == 0
 
-    test_run = TestRun(model, test_suites[1])
-    assert len(test_run.load_remaining_images()) == 1
-    with pytest.raises(RemoteError) as exc_info:
-        assert len(test_run.load_remaining_pairs()[1]) == 1
-    exc_info_value = str(exc_info.value)
-    expected_error_msg = f"all images in test run '{test_run._id}' have not been processed"
-    assert expected_error_msg in exc_info_value
 
-    # re-triggering should not fail
-    test(model, test_suites[0])
-
-
-def test__test__reset(
-    fr_test_suites: List[TestSuite],
-) -> None:
-    def assert_other_test_untouched() -> None:
-        assert_similarity_equal(other_model.load_pair_results(test_suites[0]), 0.99)
-
+@pytest.mark.depends(on=["test__upload_pair_results"])
+def test__test__reset(fr_models: List[Model], fr_test_suites: List[TestSuite]) -> None:
+    model = fr_models[0]
     test_suites = [fr_test_suites[0], fr_test_suites[2]]
     other_name = with_test_prefix(f"{__file__}::test__test__reset other model")
     other_model = InferenceModel.create(
@@ -355,41 +343,24 @@ def test__test__reset(
     )
     test(other_model, test_suites[0])
 
-    name = with_test_prefix(f"{__file__}::test__test__reset model")
-    model = InferenceModel.create(
-        name,
+    reset_model = InferenceModel.load_by_name(
+        model.data.name,
         extract=lambda _: None,
         compare=lambda _, __: 0.89,
-        metadata={},
     )
-    test(model, test_suites[0], reset=True)
-    df_before_0 = model.load_pair_results(test_suites[0])
-    df_before_1 = model.load_pair_results(test_suites[1])
+    test(reset_model, test_suites[0], reset=True)
+    df_before_0 = reset_model.load_pair_results(test_suites[0])
+    df_before_1 = reset_model.load_pair_results(test_suites[1])
     assert len(df_before_0) == 5
-    # test suite A and B has one common image pair 202
+    # test suite A and B has one common image pair [2]
     # which is the reason why there are pair results for df_before_1 and df_after_1
     assert len(df_before_1) == 1
     assert_similarity_equal(df_before_0, 0.89)
     assert_similarity_equal(df_before_1, 0.89)
-
-    model = InferenceModel.load_by_name(
-        name,
-        extract=lambda _: None,
-        compare=lambda _, __: 0.79,
-    )
-    test(model, test_suites[0], reset=True)
-    df_after_0 = model.load_pair_results(test_suites[0])
-    df_after_1 = model.load_pair_results(test_suites[1])
-    assert len(df_after_0) == 5
-    assert len(df_after_1) == 1
-    assert_similarity_equal(df_after_0, 0.79)
-    assert_similarity_equal(df_after_1, 0.79)
-    assert_other_test_untouched()
+    assert_similarity_equal(other_model.load_pair_results(test_suites[0]), 0.99)
 
 
-def test__test__mark_crashed(
-    fr_test_suites: List[TestSuite],
-) -> None:
+def test__test__mark_crashed(fr_test_suites: List[TestSuite]) -> None:
     def extract(locator: str) -> np.ndarray:
         raise RuntimeError(f"failed to process image: {locator}")
 
@@ -409,10 +380,8 @@ def test__test__mark_crashed(
     patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED)
 
 
-@pytest.mark.skip
-def test__multi_face(fr_test_suites: List[TestSuite]) -> None:
-    model = Model.create(with_test_prefix(f"{__file__}::test__multi_face model"), metadata={})
-    test_suite = fr_test_suites[0]
+def test__multi_face(fr_multi_face_test_run: Tuple[Model, TestSuite]) -> None:
+    model, test_suite = fr_multi_face_test_run
 
     test_run = TestRun(model, test_suite)
 
@@ -456,53 +425,16 @@ def test__multi_face(fr_test_suites: List[TestSuite]) -> None:
     pandas.testing.assert_frame_equal(df_pair_result_actual, df_pair_result_expected)
 
 
-def test__multi_face__reset(fr_test_suites: List[TestSuite]) -> None:
-    name = with_test_prefix(f"{__file__}::test__multi_face__reset model")
-    model = Model.create(name, metadata={})
-    test_suite = fr_test_suites[0]
+@pytest.mark.depends(on=["test__multi_face"])
+def test__multi_face__reset(fr_multi_face_test_run: Tuple[Model, TestSuite]) -> None:
+    model, test_suite = fr_multi_face_test_run
 
-    test_run = TestRun(model, test_suite)
-
-    df_image = test_run.load_remaining_images()
-    n_images = len(df_image)
-    assert n_images == 4
-    df_image_result = pd.DataFrame(
-        dict(
-            image_id=df_image["image_id"].tolist(),
-            bounding_box=[np.random.rand(4).astype(np.float32) for _ in range(n_images)],
-            landmarks=[np.random.rand(10).astype(np.float32) for _ in range(n_images)],
-            quality=np.random.rand(n_images).astype(np.float64).tolist(),
-            acceptability=np.random.rand(n_images).astype(np.float64).tolist(),
-            embedding=[np.random.rand(256).astype(np.float32) for _ in range(n_images)],
-        ),
-    )
-    df_image_result_doubled = pd.concat([df_image_result, df_image_result], ignore_index=True)
-    n_uploaded = test_run.upload_image_results(ImageResultDataFrame(df_image_result_doubled))
-    assert n_uploaded == len(df_image_result_doubled)
-    assert len(test_run.load_remaining_images()) == 0
-
-    df_embedding, df_pair = test_run.load_remaining_pairs()
-
-    assert all(np.shape(record.embedding) == (2, 256) for record in df_embedding.itertuples())
-
-    n_pairs = len(df_pair)
-    df_pair_result = pd.DataFrame(
-        dict(
-            image_pair_id=df_pair["image_pair_id"].tolist() * 4,
-            similarity=[np.random.rand(1)[0] for _ in range(n_pairs * 4)],
-            embedding_a_index=[0, 1, 0, 1] * n_pairs,
-            embedding_b_index=[0, 0, 1, 1] * n_pairs,
-        ),
-    )
-    test_run.upload_pair_results(PairResultDataFrame(df_pair_result))
-    assert len(test_run.load_remaining_pairs()[1]) == 0
-
-    model = InferenceModel.load_by_name(
-        name,
+    reset_model = InferenceModel.load_by_name(
+        model.data.name,
         extract=lambda _: None,
         compare=lambda _, __: 0.79,
     )
-    test(model, test_suite, reset=True)
+    test(reset_model, test_suite, reset=True)
     assert_similarity_equal(model.load_pair_results(test_suite), 0.79)
 
 

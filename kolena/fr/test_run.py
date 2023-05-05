@@ -294,7 +294,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
 
 
 @validate_arguments(config=ValidatorConfig)
-def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> None:
+def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> TestRun:
     """
     Test the provided :class:`kolena.fr.InferenceModel` on one or more provided :class:`kolena.fr.TestSuite` suites. Any
     tests already in progress for this model on these suites are resumed.
@@ -337,6 +337,8 @@ def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> N
         if len(df_pair_result) > 0:
             test_run.upload_pair_results(df_pair_result)
         log.success("completed test run")
+
+        return test_run
 
     except Exception as e:
         report_crash(test_run.data.id, API.Path.MARK_CRASHED)

@@ -172,6 +172,7 @@ def fr_test_cases(fr_test_data: TestData) -> List[TestCase]:
         test_case_name_b,
         description="etc",
         test_samples=[image_pairs[2], image_pairs[6], image_pairs[7]],
+        reset=True,
     )
 
     test_case_b_sub = TestCase(with_test_prefix("B_subset"), description="and more!", test_samples=[image_pairs[2]])
