@@ -15,6 +15,7 @@ import dataclasses
 import datetime
 import functools
 import inspect
+import json
 import traceback as tb
 from abc import ABCMeta
 from enum import Enum
@@ -23,6 +24,7 @@ from typing import Callable
 
 import kolena
 from kolena._api.v1.client_log import ClientLog as API
+from kolena._api.v1.core import TestRun as CoreAPI
 from kolena._utils import krequests
 from kolena._utils.state import _client_state
 
@@ -79,3 +81,9 @@ class WithTelemetry(metaclass=ABCMeta):
             if key.startswith("_") and not key == "__init__" or not callable(value) or inspect.isclass(value):
                 continue
             setattr(cls, key, telemetry(value))
+
+
+def report_crash(id: int, endpoint_path: str):
+    request = CoreAPI.MarkCrashedRequest(test_run_id=id)
+    # note no krequests.raise_for_status -- already in crashed state
+    krequests.post(endpoint_path=endpoint_path, data=json.dumps(dataclasses.asdict(request)))

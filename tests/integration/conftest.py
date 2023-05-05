@@ -34,4 +34,9 @@ def with_init() -> Iterator[None]:
         yield
 
 
+@pytest.fixture(scope="session")
+def kolena_token() -> str:
+    return os.environ["KOLENA_TOKEN"]
+
+
 pytest.register_assert_rewrite("tests.integration.helper")

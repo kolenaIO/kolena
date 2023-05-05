@@ -57,7 +57,7 @@ def test_samples() -> List[TestCaseRecord]:
 
 @pytest.fixture(scope="session")
 def fr_test_data() -> TestData:
-    locators = [f"s3://fake-bucket/{i}.png" for i in range(6)]
+    locators = [fake_locator(i, "bucket-name/test/imgs") for i in range(6)]
     locator_a = [*locators, locators[0], locators[1], locators[0], locators[1]]
     locator_b = [*locators[1:], locators[0], locators[2], locators[5], locators[0], locators[1]]
     is_same = [True, False, False, False, False, False, False, True, True, True]
@@ -65,7 +65,7 @@ def fr_test_data() -> TestData:
     data_sources = [with_test_prefix("registered_data_source"), with_test_prefix("registered_second_source")]
     images = [
         (
-            fake_locator(i, "bucket-name/test/imgs"),
+            locators[i],
             data_sources[0] if i < 4 else data_sources[1],
             100 + i,
             200 + i,
