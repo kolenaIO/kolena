@@ -23,7 +23,6 @@ import pytest
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as TestRunAPI
-from kolena._utils import instrumentation
 from kolena.errors import RemoteError
 from kolena.workflow import define_workflow
 from kolena.workflow import Evaluator
@@ -204,7 +203,7 @@ def test__test__mark_crashed(
     evaluator = MarkCrashedDummyEvaluator()
     test_run = TestRun(model, test_suite, evaluator)
 
-    with patch.object(instrumentation, "report_crash") as patched:
+    with patch("kolena.fr.test_run.report_crash") as patched:
         with pytest.raises(RuntimeError):
             test_run.run()
 

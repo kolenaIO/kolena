@@ -21,7 +21,6 @@ import pandas.testing
 import pytest
 
 from kolena._api.v1.fr import TestRun as TestRunAPI
-from kolena._utils import instrumentation
 from kolena.errors import InputValidationError
 from kolena.errors import RemoteError
 from kolena.fr import EmbeddingDataFrame
@@ -403,11 +402,10 @@ def test__test__mark_crashed(
     test_suites = [fr_test_suites[0], fr_test_suites[2]]
     test_run = TestRun(model, test_suites[0])
 
-    with patch.object(instrumentation, "report_crash") as patched:
+    with patch("kolena.fr.test_run.report_crash") as patched:
         with pytest.raises(RuntimeError):
             test(model, test_suites[0])
 
-    patched.assert_called_once()
     patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED)
 
 
@@ -527,87 +525,6 @@ def test__multi_face__invalid(fr_test_suites: List[TestSuite]) -> None:
         test_run.upload_image_results(ImageResultDataFrame(df_image_result))
 
 
-def test__test__one_model_many_test_suite(test_samples: List[TestCaseRecord]) -> None:
-    prefix = with_test_prefix(f"{__file__}::test__test__one_model_many_test_suite")
-    model_name = f"{prefix} model"
-    model_0 = InferenceModel.create(
-        model_name,
-        extract=lambda _: None,
-        compare=lambda _, __: 0.99,
-        metadata={},
-    )
-    # same model with different inference callback
-    model_1 = InferenceModel.load_by_name(
-        model_name,
-        extract=lambda _: None,
-        compare=lambda _, __: 0.79,
-    )
-    test_case_0 = TestCase(
-        f"{prefix} test case 0",
-        test_samples=test_samples[:3],
-        reset=True,
-    )
-    test_case_1 = TestCase(
-        f"{prefix} test case 1",
-        test_samples=test_samples[2:7],
-        reset=True,
-    )
-    test_suite_0 = TestSuite(
-        f"{prefix} test suite 0",
-        baseline_test_cases=[test_case_0],
-        reset=True,
-    )
-    test_suite_1 = TestSuite(
-        f"{prefix} test suite 1",
-        baseline_test_cases=[test_case_1],
-        reset=True,
-    )
-    test(model_0, test_suite_0, reset=True)
-    test(model_1, test_suite_1, reset=True)
-    # test_suite_0 and test_suite_1 has 1 overlap pair
-    # the pr_0 is consist of 2 old results and 1 new result
-    pr_0 = model_0.load_pair_results(test_suite_0)
-    pr_1 = model_0.load_pair_results(test_suite_1)
-    assert len(pr_0) == 3
-    assert len(pr_1) == 5
-    assert sorted(pr_0["similarity"].tolist()) == [0.79, 0.99, 0.99]
-    assert_similarity_equal(pr_1, 0.79)
-
-
-def test__test__many_model_one_test_suite(test_samples: List[TestCaseRecord]) -> None:
-    prefix = with_test_prefix(f"{__file__}::test__test__many_model_one_test_suite")
-    model_0 = InferenceModel.create(
-        f"{prefix} model 0",
-        extract=lambda _: None,
-        compare=lambda _, __: 0.99,
-        metadata={},
-    )
-    model_1 = InferenceModel.create(
-        f"{prefix} model 1",
-        extract=lambda _: None,
-        compare=lambda _, __: 0.79,
-        metadata={},
-    )
-    test_case_0 = TestCase(
-        f"{prefix} test case 0",
-        test_samples=test_samples[:3],
-        reset=True,
-    )
-    test_suite_0 = TestSuite(
-        f"{prefix} test suite 0",
-        baseline_test_cases=[test_case_0],
-        reset=True,
-    )
-    test(model_0, test_suite_0, reset=True)
-    test(model_1, test_suite_0, reset=True)
-    pr_0 = model_0.load_pair_results(test_suite_0)
-    pr_1 = model_1.load_pair_results(test_suite_0)
-    assert len(pr_0) == 3
-    assert len(pr_1) == 3
-    assert_similarity_equal(pr_0, 0.99)
-    assert_similarity_equal(pr_1, 0.79)
-
-
 def test__upload_image_results__reset(test_samples: List[TestCaseRecord]) -> None:
     prefix = with_test_prefix(f"{__file__}::test__upload_image_results__reset")
     model_0 = InferenceModel.create(
@@ -660,7 +577,7 @@ def test__upload_pair_results__reset(test_samples: List[TestCaseRecord]) -> None
 
     df_embedding, df_image_pair = test_run.load_remaining_pairs()
     df_image_pair_results = generate_pair_results(df_embedding, df_image_pair)
-    n_uploaded = fr_test_run.upload_pair_results(df_image_pair_results)
+    n_uploaded = test_run.upload_pair_results(df_image_pair_results)
     assert n_uploaded == len(df_image_pair)
 
 

@@ -175,7 +175,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
             self.evaluate()
         except Exception as e:
-            report_crash(self._id)
+            report_crash(self._id, API.Path.MARK_CRASHED)
             raise e
 
     def load_test_samples(self) -> List[TestSample]:
