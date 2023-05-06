@@ -435,7 +435,7 @@ def test__multi_face__reset(fr_multi_face_test_run: Tuple[Model, TestSuite]) -> 
         compare=lambda _, __: 0.79,
     )
     test(reset_model, test_suite, reset=True)
-    assert_similarity_equal(model.load_pair_results(test_suite), 0.79)
+    assert_similarity_equal(reset_model.load_pair_results(test_suite), 0.79)
 
 
 def test__multi_face__invalid(fr_test_suites: List[TestSuite]) -> None:
