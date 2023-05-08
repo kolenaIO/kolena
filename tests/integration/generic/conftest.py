@@ -61,11 +61,6 @@ def dummy_ground_truth(index: int) -> DummyGroundTruth:
     return DummyGroundTruth(label=f"ground truth {index}", value=index)
 
 
-@pytest.fixture(scope="package", autouse=True)
-def init_kolena(with_init: None) -> None:
-    ...
-
-
 @pytest.fixture(scope="package")
 def dummy_test_samples() -> List[DummyTestSample]:
     directory = str(uuid.uuid4())

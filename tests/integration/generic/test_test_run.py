@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 import math
 from typing import Any
 from typing import List
@@ -24,7 +23,6 @@ import pytest
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as TestRunAPI
-from kolena._utils import krequests
 from kolena.errors import RemoteError
 from kolena.workflow import define_workflow
 from kolena.workflow import Evaluator
@@ -193,7 +191,7 @@ def test__test__reset(
 def test__test__mark_crashed(
     dummy_test_suites: List[TestSuite],
 ) -> None:
-    def infer(test_sample: DummyTestSample) -> DummyInference:
+    def infer(_: DummyTestSample) -> DummyInference:
         raise RuntimeError
 
     class MarkCrashedDummyEvaluator(DummyEvaluator):
@@ -205,18 +203,11 @@ def test__test__mark_crashed(
     evaluator = MarkCrashedDummyEvaluator()
     test_run = TestRun(model, test_suite, evaluator)
 
-    with patch.object(krequests, "post") as patched:
+    with patch("kolena.workflow.test_run.report_crash") as patched:
         with pytest.raises(RuntimeError):
             test_run.run()
 
-    patched.assert_called_once_with(
-        endpoint_path=TestRunAPI.Path.MARK_CRASHED,
-        data=json.dumps(
-            {
-                "test_run_id": test_run._id,
-            },
-        ),
-    )
+    patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED)
 
 
 def test__evaluator__unconfigured(

@@ -185,6 +185,7 @@ class TestRun:
         COMPLETE_UPLOAD_IMAGE_RESULTS = "/fr/test-run/upload-image-results/complete"
         INIT_LOAD_REMAINING_PAIRS = "/fr/test-run/load-remaining-pairs/init"
         COMPLETE_UPLOAD_PAIR_RESULTS = "/fr/test-run/upload-pair-results/complete"
+        MARK_CRASHED = "/fr/test-run/mark-crashed"
 
     @dataclass(frozen=True)
     class CreateOrRetrieveRequest:

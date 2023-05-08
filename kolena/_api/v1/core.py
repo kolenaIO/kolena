@@ -182,10 +182,10 @@ class Dimension:
     field: str
     datatype: Literal["categorical", "numeric"]
 
-    def is_categorical(self):
+    def is_categorical(self) -> bool:
         return self.datatype == CATEGORICAL
 
-    def is_numeric(self):
+    def is_numeric(self) -> bool:
         return self.datatype == NUMERIC
 
 
@@ -213,7 +213,7 @@ class DimensionSpec:
     columns: conlist(Dimension, min_items=1, max_items=3)
     buckets: Dict[str, List[Union[CategoricalBucket, NumericBucket]]]
 
-    def __post_init_post_parse__(self):
+    def __post_init_post_parse__(self) -> None:
         n_cols = len(self.columns)
         # auto-stratification only supported for single categorical field
         if not self.buckets and not self.should_auto_stratify():
@@ -231,7 +231,7 @@ class DimensionSpec:
                 ):
                     raise ValueError(f"Column {dimension} has incompatible filter.")
 
-    def should_auto_stratify(self):
+    def should_auto_stratify(self) -> bool:
         return not self.buckets and len(self.columns) == 1 and self.columns[0].is_categorical()
 
 
@@ -243,7 +243,7 @@ class BaseStratifyRequest:
     # stratification should be non-empty, and currently restrict to max 3 cross-dimension
     strata: conlist(DimensionSpec, min_items=1, max_items=3)
 
-    def __post_init_post_parse__(self):
+    def __post_init_post_parse__(self) -> None:
         unique_names = {s.name for s in self.strata}
         if len(unique_names) != len(self.strata):
             raise ValueError("Duplicate stratification name")
@@ -260,7 +260,7 @@ class StratifyResponse:
     stratified_test_cases: List[TestCaseInfo]
 
 
-def check_duplicate_fields(strata: List[Dimension]):
+def check_duplicate_fields(strata: List[Dimension]) -> None:
     field_set = set()
     for stratum in strata:
         field = (stratum.column, stratum.field)
