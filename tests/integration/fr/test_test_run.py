@@ -324,7 +324,8 @@ def test__test(fr_test_suites: List[TestSuite]) -> None:
         metadata={},
     )
     test_suites = [fr_test_suites[0], fr_test_suites[2]]
-    test_run = test(model, test_suites[0])
+    test_run = TestRun(model, test_suites[0])
+    test(model, test_suites[0])
 
     assert len(test_run.load_remaining_images()) == 0
     assert len(test_run.load_remaining_pairs()[1]) == 0
