@@ -39,7 +39,7 @@ pydantic = ">=1.8"
 dacite = ">=1.6"
 requests = ">=2.20"
 requests-toolbelt = ">=0.9"
-urllib3 = "<2"  # transient `requests` dependency, pin required to unbreak: https://github.com/psf/requests/issues/6443
+urllib3 = "<2"  # TODO: remove -- this is a transient `requests` dependency: https://github.com/psf/requests/issues/6443
 importlib-metadata = { version = "<5.0", python = "<3.8" }
 tqdm = ">=4,<5"
 Pillow = "^9.1.1"
