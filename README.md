@@ -8,6 +8,9 @@
   <a href="https://codecov.io/gh/kolenaIO/kolena-client" ><img src="https://codecov.io/gh/kolenaIO/kolena-client/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/></a>
   <a href="https://docs.kolena.io"><img src="https://img.shields.io/badge/docs-Tutorial%20%26%20Usage-6434c1" /></a>
   <a href="https://app.kolena.io/api/developer/docs/html/index.html"><img src="https://img.shields.io/badge/docs-API%20Reference-6434c1" /></a>
+  <a href="https://codecov.io/gh/kolenaIO/kolena-client" >
+   <img src="https://codecov.io/gh/kolenaIO/kolena-client/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/>
+  </a>
 </p>
 
 ---

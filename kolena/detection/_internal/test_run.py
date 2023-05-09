@@ -30,7 +30,6 @@ from typing import Union
 import pandera as pa
 from pydantic import validate_arguments
 
-from kolena._api.v1.core import TestRun as CoreAPI
 from kolena._api.v1.detection import CustomMetrics
 from kolena._api.v1.detection import Metrics
 from kolena._api.v1.detection import TestRun as API
@@ -43,6 +42,7 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame_chunk
 from kolena._utils.datatypes import LoadableDataFrame
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
@@ -128,8 +128,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         self._submit_custom_metrics()
         self._active = False
         if exc_type is not None:
-            request = CoreAPI.MarkCrashedRequest(test_run_id=self._id)
-            krequests.post(endpoint_path=API.Path.MARK_CRASHED, data=json.dumps(dataclasses.asdict(request)))
+            report_crash(self._id, API.Path.MARK_CRASHED)
 
     @validate_arguments(config=ValidatorConfig)
     def add_inferences(self, image: _TestImageClass, inferences: Optional[List[_InferenceClass]]) -> None:

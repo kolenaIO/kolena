@@ -29,7 +29,6 @@ from typing import Union
 import pandas as pd
 from pydantic import validate_arguments
 
-from kolena._api.v1.core import TestRun as CoreAPI
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -40,6 +39,7 @@ from kolena._utils.batched_load import upload_data_frame_chunk
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
@@ -175,9 +175,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
             self.evaluate()
         except Exception as e:
-            request = CoreAPI.MarkCrashedRequest(test_run_id=self._id)
-            # note no krequests.raise_for_status -- already in crashed state
-            krequests.post(endpoint_path=API.Path.MARK_CRASHED, data=json.dumps(dataclasses.asdict(request)))
+            report_crash(self._id, API.Path.MARK_CRASHED)
             raise e
 
     def load_test_samples(self) -> List[TestSample]:

@@ -11,27 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
 import warnings
 from typing import Any
 from typing import Dict
 from typing import Optional
 
 import pandas as pd
-import requests
 
-import kolena
-import kolena._api.v1.token as API
-from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.endpoints import get_endpoint
+from kolena._utils import state
 from kolena._utils.endpoints import get_platform_url
 from kolena._utils.instrumentation import upload_log
-from kolena._utils.serde import from_dict
 from kolena._utils.state import _client_state
 from kolena.errors import InputValidationError
-from kolena.errors import InvalidTokenError
-from kolena.errors import UnauthenticatedError
 
 
 def initialize(
@@ -74,15 +66,7 @@ def initialize(
             stacklevel=2,
         )
 
-    request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
-    r = requests.put(get_endpoint("token/login"), json=dataclasses.asdict(request), proxies=proxies)
-
-    try:
-        krequests.raise_for_status(r)
-    except UnauthenticatedError as e:
-        raise InvalidTokenError(e)
-
-    init_response = from_dict(data_class=API.ValidateResponse, data=r.json())
+    init_response = state.get_token(api_token, proxies=proxies)
     derived_telemetry = init_response.tenant_telemetry
     _client_state.update(
         api_token=api_token,

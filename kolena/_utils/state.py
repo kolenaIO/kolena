@@ -13,6 +13,7 @@
 # limitations under the License.
 import contextlib
 import contextvars
+import dataclasses
 import functools
 import os
 from typing import Any
@@ -23,9 +24,13 @@ from typing import Optional
 
 import requests
 
+import kolena
 import kolena._api.v1.token as API
+from kolena._utils import krequests
 from kolena._utils.serde import from_dict
 from kolena.errors import InvalidClientStateError
+from kolena.errors import InvalidTokenError
+from kolena.errors import UnauthenticatedError
 from kolena.errors import UninitializedError
 
 API_VERSION = "v1"
@@ -132,15 +137,31 @@ def get_endpoint_with_baseurl(base_url: str, endpoint_path: str) -> str:
     return f"{base_url}/{API_VERSION}/{endpoint_path.lstrip('/')}"
 
 
+def get_token(
+    api_token: str,
+    base_url: Optional[str] = None,
+    proxies: Optional[Dict[str, str]] = None,
+) -> API.ValidateResponse:
+    base_url = base_url or get_client_base_url()
+    request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
+    r = requests.put(
+        get_endpoint_with_baseurl(base_url, "token/login"),
+        json=dataclasses.asdict(request),
+        proxies=proxies,
+    )
+    try:
+        krequests.raise_for_status(r)
+    except UnauthenticatedError as e:
+        raise InvalidTokenError(e)
+
+    init_response = from_dict(data_class=API.ValidateResponse, data=r.json())
+    return init_response
+
+
 @contextlib.contextmanager
 def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[_ClientState]:
     base_url = base_url or get_client_base_url()
-    r = requests.put(
-        get_endpoint_with_baseurl(base_url, "token/login"),
-        json={"api_token": api_token, "version": API_VERSION},
-    )
-    r.raise_for_status()
-    init_response = from_dict(data_class=API.ValidateResponse, data=r.json())
+    init_response = get_token(api_token, base_url)
     client_state = _ClientState(
         base_url=base_url,
         api_token=api_token,

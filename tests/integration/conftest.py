@@ -28,10 +28,15 @@ def log_test_prefix():
     print(f"Using test prefix '{TEST_PREFIX}'")
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def with_init() -> Iterator[None]:
     with kolena_session(api_token=os.environ["KOLENA_TOKEN"]):
         yield
+
+
+@pytest.fixture(scope="session")
+def kolena_token() -> str:
+    return os.environ["KOLENA_TOKEN"]
 
 
 pytest.register_assert_rewrite("tests.integration.helper")

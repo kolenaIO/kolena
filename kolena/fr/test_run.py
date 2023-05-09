@@ -35,6 +35,7 @@ from kolena._utils.batched_load import upload_image_chips
 from kolena._utils.dataframes.validators import validate_df_record_count
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
@@ -338,7 +339,5 @@ def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> N
         log.success("completed test run")
 
     except Exception as e:
-        request = API.MarkCrashedRequest(test_run_id=test_run.data.id)
-        # note no krequests.raise_for_status -- already in crashed state
-        krequests.post(endpoint_path="/fr/test-run/mark-crashed", data=json.dumps(dataclasses.asdict(request)))
+        report_crash(test_run.data.id, API.Path.MARK_CRASHED)
         raise e
