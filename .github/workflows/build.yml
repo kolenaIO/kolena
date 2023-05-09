@@ -85,11 +85,19 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
+      - name: Install twine for package distribution on CodeArtifact
+        run: pip3 install twine
+
+      - name: Push kolena-client dist to trunk CodeArtifact for backwards compatibility
+        run: |
+          aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
+        working-directory: ${{ env.working-directory }}
+
       - name: Push kolena-client dist to production CodeArtifact for backwards compatibility
         run: |
-          pip3 install twine
           aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
-          twine upload --skip-existing --repository codeartifact ./dist/*
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
 
       - name: Create GitHub release with kolena build as artifact
         uses: marvinpinto/action-automatic-releases@v1.2.1
