@@ -5,8 +5,8 @@
 <p align='center'>
   <a href="https://pypi.python.org/pypi/kolena"><img src="https://img.shields.io/pypi/v/kolena" /></a>
   <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena" /></a>
-  <a href="https://github.com/kolenaIO/kolena"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena-client/trunk" /></a>
-  <a href="https://codecov.io/gh/kolenaIO/kolena-client" ><img src="https://codecov.io/gh/kolenaIO/kolena-client/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/></a>
+  <a href="https://github.com/kolenaIO/kolena"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk" /></a>
+  <a href="https://codecov.io/gh/kolenaIO/kolena" ><img src="https://codecov.io/gh/kolenaIO/kolena/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/></a>
   <a href="https://docs.kolena.io"><img src="https://img.shields.io/badge/resource-docs-6434c1" /></a>
 </p>
 
