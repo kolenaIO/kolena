@@ -1,9 +1,9 @@
-.. kolena-client documentation master file, created by
+.. kolena documentation master file, created by
    sphinx-quickstart on Thu Sep 30 16:33:40 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-API Reference: ``kolena-client``
+API Reference: ``kolena``
 ================================
 
 .. toctree::
