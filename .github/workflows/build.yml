@@ -52,10 +52,8 @@ jobs:
 
       - name: Build 'kolena-client' package for backwards compatibility
         run: |
-          # update first instance of 'kolena' to 'kolena-client' in pyproject.toml
-          sed -i '0,/kolena/{s/kolena/kolena-client/}' pyproject.toml
-          # update first instance of 'kolena' to 'kolena-client' in kolena/__init__.py (package name)
-          sed -i '0,/kolena/{s/kolena/kolena-client/}' kolena/__init__.py
+          # update first instance of 'kolena' to 'kolena-client' in pyproject.toml, kolena/__init__.py (package name)
+          sed -i '0,/kolena/{s/kolena/kolena-client/}' pyproject.toml kolena/__init__.py
           poetry build --format=sdist
 
       - name: Build client documentation and push to S3
