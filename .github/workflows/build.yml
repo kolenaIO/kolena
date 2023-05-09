@@ -5,7 +5,6 @@ on:
     branches:
       - does-not-exist
     # TODO: uncomment once repository tags are set up properly
-    #   - trunk
     # tags:
     #   - "*"
 
@@ -21,36 +20,45 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.9
+
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
+
       - name: Install Poetry
         run: pip install poetry==1.2.2
+
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
-      - name: Update kolena package version to PEP 440-compliant dev tag
-        if: github.ref_type != 'tag'
-        run: |
-          LATEST_TAG=$(git describe --tags --abbrev=0)
-          COMMITS_SINCE_TAG=$(git rev-list $LATEST_TAG..HEAD --count)
-          poetry version $LATEST_TAG.dev$COMMITS_SINCE_TAG
+
       - name: Update kolena package version to PEP 440-compliant production release tag
-        if: github.ref_type == 'tag'
         run: poetry version $(git describe --tags --abbrev=0)
+
       - name: Install dependencies
         run: poetry install
+
       - name: Run pre-commit checks
         run: poetry run pre-commit run -a
-      - name: Build client Python package
+
+      - name: Build 'kolena' Python package
         run: poetry build --format=sdist
+
+      - name: Build 'kolena-client' package for backwards compatibility
+        run: |
+          # update first instance of 'kolena' to 'kolena-client' in pyproject.toml
+          sed -i '0,/kolena/{s/kolena/kolena-client/}' pyproject.toml
+          # update first instance of 'kolena' to 'kolena-client' in kolena/__init__.py (package name)
+          sed -i '0,/kolena/{s/kolena/kolena-client/}' kolena/__init__.py
+          poetry build --format=sdist
+
       - name: Build client documentation and push to S3
-        if: github.ref_type == 'tag'
         run: |
           ./render.sh
           VERSION=$(poetry run python3 -c "import kolena; print(kolena.__version__)")
@@ -65,19 +73,25 @@ jobs:
           aws s3 rm --recursive "$BUCKET_PATH"
           aws s3 sync ./build "$BUCKET_PATH"
         working-directory: ./docs
-      - name: Install twine for package distribution
-        run: pip3 install twine
-      - name: Push client dist to trunk CodeArtifact
+
+      - name: Push kolena, kolena-client dists to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+
+      - name: Push kolena, kolena-client dists to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - name: Push kolena-client dist to production CodeArtifact for backwards compatibility
         run: |
-          aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena
+          pip3 install twine
+          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
           twine upload --skip-existing --repository codeartifact ./dist/*
-      - name: Push client dist to production CodeArtifact
-        if: github.ref_type == 'tag'
-        run: |
-          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena
-          twine upload --skip-existing --repository codeartifact ./dist/*
+
       - name: Create GitHub release with kolena build as artifact
-        if: github.ref_type == 'tag'
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: ${{ secrets.RELEASE_TOKEN }}
