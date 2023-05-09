@@ -3,13 +3,11 @@
 </p>
 
 <p align='center'>
-  <a href="https://pypi.python.org/pypi/kolena-client"><img src="https://img.shields.io/pypi/v/kolena-client" /></a>
-  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena-client" /></a>
-  <a href="https://docs.kolena.io"><img src="https://img.shields.io/badge/docs-Tutorial%20%26%20Usage-6434c1" /></a>
-  <a href="https://app.kolena.io/api/developer/docs/html/index.html"><img src="https://img.shields.io/badge/docs-API%20Reference-6434c1" /></a>
-  <a href="https://codecov.io/gh/kolenaIO/kolena-client" >
-   <img src="https://codecov.io/gh/kolenaIO/kolena-client/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/>
-  </a>
+  <a href="https://pypi.python.org/pypi/kolena"><img src="https://img.shields.io/pypi/v/kolena" /></a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena" /></a>
+  <a href="https://github.com/kolenaIO/kolena"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk" /></a>
+  <a href="https://codecov.io/gh/kolenaIO/kolena" ><img src="https://codecov.io/gh/kolenaIO/kolena/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/></a>
+  <a href="https://docs.kolena.io"><img src="https://img.shields.io/badge/resource-docs-6434c1" /></a>
 </p>
 
 ---
@@ -22,10 +20,11 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 - Meaningfully communicate model capabilities
 - Automate model testing and deployment workflows
 
-`kolena-client` is the Python client library for programmatic interaction with Kolena.
+This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
+platform.
 
 ## Documentation
 
 Visit [docs.kolena.io](https://docs.kolena.io/) for tutorial and usage documentation and the
-[API Reference](https://app.kolena.io/api/developer/docs/html/index.html) for detailed `kolena-client` typing and
+[API Reference](https://app.kolena.io/api/developer/docs/html/index.html) for detailed `kolena` typing and
 function documentation.

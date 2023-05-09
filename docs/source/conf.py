@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath("../kolena"))
 
 # -- Project information -----------------------------------------------------
 
-project = "kolena-client"
+project = "kolena"
 copyright = f"{datetime.now().year} Kolena. All rights reserved"
 author = "Kolena Engineering <eng@kolena.io>"
 

@@ -9,7 +9,7 @@ parameters:
     default: "3.9"
 
 jobs:
-  kolena-client-ci:
+  kolena-ci:
     parameters:
       python-version:
         type: string
@@ -22,13 +22,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &kolena-client-ci-cache kolena-client-ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          key: &kolena-ci-cache kolena-ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
       - run: |
           poetry config experimental.new-installer false
           poetry config installer.max-workers 10
           poetry install --no-ansi
       - save_cache:
-          key: *kolena-client-ci-cache
+          key: *kolena-ci-cache
           paths:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
@@ -64,7 +64,7 @@ jobs:
 workflows:
   ci:
     jobs:
-      - kolena-client-ci:
+      - kolena-ci:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10" ]

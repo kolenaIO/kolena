@@ -19,7 +19,7 @@
 #
 # (robots do not like this file)
 
-__name__ = "kolena-client"
+__name__ = "kolena"
 __version__: str
 
 
