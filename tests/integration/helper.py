@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import uuid
 from typing import Any
 from typing import Iterable
 
@@ -19,6 +20,10 @@ from tests.integration.conftest import TEST_PREFIX
 
 def fake_locator(index: int, directory: str = "default") -> str:
     return f"https://fake-locator/{TEST_PREFIX}/{directory}/{index}.png"
+
+
+def fake_random_locator(directory: str = "default") -> str:
+    return f"https://fake-locator/{TEST_PREFIX}/{directory}/{uuid.uuid4()}.png"
 
 
 def with_test_prefix(value: str) -> str:
