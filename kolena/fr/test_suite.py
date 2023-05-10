@@ -178,7 +178,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
             self.baseline_image_count = other.baseline_image_count
             self.baseline_pair_count_genuine = other.baseline_pair_count_genuine
             self.baseline_pair_count_imposter = other.baseline_pair_count_imposter
-            self.data = other.data
+            self.data = other._data
 
     @classmethod
     def _create_from_data(cls, data: API.EntityData) -> "TestSuite":

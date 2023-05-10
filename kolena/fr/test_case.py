@@ -211,7 +211,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
             self.image_count = other.image_count
             self.pair_count_genuine = other.pair_count_genuine
             self.pair_count_imposter = other.pair_count_imposter
-            self.data = other.data
+            self.data = other._data
 
     class Editor:
         _samples: Dict[str, TestCaseRecord]
