@@ -112,7 +112,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         """Create a new test suite with the provided name."""
         log.info(f"creating new test suite '{name}'")
         request = CoreAPI.TestSuite.CreateRequest(name=name, description=description or "", workflow=workflow.value)
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.TestSuite.EntityData, data=res.json())
         obj = cls._create_from_data(data)
@@ -127,7 +127,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         """Retrieve the existing test suite with the provided name."""
         request = CoreAPI.TestSuite.LoadByNameRequest(name=name, version=version)
         data = json.dumps(dataclasses.asdict(request))
-        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME, data=data)
+        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=data)
         krequests.raise_for_status(res)
         return from_dict(data_class=CoreAPI.TestSuite.EntityData, data=res.json())
 
@@ -298,7 +298,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             test_case_ids=list(editor._test_cases.values()),
         )
         data = json.dumps(dataclasses.asdict(request))
-        res = krequests.post(endpoint_path=API.Path.EDIT, data=data)
+        res = krequests.post(endpoint_path=API.Path.EDIT.value, data=data)
         krequests.raise_for_status(res)
         log.success(f"updated test suite '{self.name}'")
         test_suite_data = from_dict(data_class=CoreAPI.TestSuite.EntityData, data=res.json())

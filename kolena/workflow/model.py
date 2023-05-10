@@ -114,7 +114,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info(f"creating model '{name}'")
         metadata = metadata or {}
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         log.success(f"created model '{name}'")
         return cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
@@ -128,7 +128,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param infer: optional inference function for this model.
         """
         request = CoreAPI.LoadByNameRequest(name=name)
-        res = krequests.put(endpoint_path=API.Path.LOAD, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         return cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
 
@@ -156,9 +156,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             init_request=API.LoadInferencesRequest(
                 model_id=self._id,
                 test_case_id=test_case._id,
-                batch_size=_BatchSize.LOAD_SAMPLES,
+                batch_size=_BatchSize.LOAD_SAMPLES.value,
             ),
-            endpoint_path=API.Path.LOAD_INFERENCES,
+            endpoint_path=API.Path.LOAD_INFERENCES.value,
             df_class=TestSampleDataFrame,
         ):
             for record in df_batch.itertuples():

@@ -45,7 +45,7 @@ STAGE_STATUS__LOADED = "LOADED"
 
 
 def init_upload() -> API.InitiateUploadResponse:
-    init_res = krequests.put(endpoint_path=API.Path.INIT_UPLOAD)
+    init_res = krequests.put(endpoint_path=API.Path.INIT_UPLOAD.value)
     krequests.raise_for_status(init_res)
     init_response = from_dict(data_class=API.InitiateUploadResponse, data=init_res.json())
     return init_response
@@ -81,7 +81,7 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 def upload_image_chips(
     df: _ImageChipsDataFrame,
     path_mapper: AssetPathMapper,
-    batch_size: int = _BatchSize.UPLOAD_CHIPS,
+    batch_size: int = _BatchSize.UPLOAD_CHIPS.value,
 ) -> None:
     def upload_batch(df_batch: _ImageChipsDataFrame) -> None:
         df_batch = df_batch.reset_index(drop=True)  # reset indices so we match the signed_url indices
@@ -106,7 +106,7 @@ def upload_image_chips(
             ],
         )
         upload_response = krequests.put(
-            endpoint_path=AssetAPI.Path.BULK_UPLOAD,
+            endpoint_path=AssetAPI.Path.BULK_UPLOAD.value,
             data=data,
             headers={"Content-Type": data.content_type},
         )
@@ -157,7 +157,7 @@ class _BatchedLoader(Generic[DFType]):
             return
         complete_request = API.CompleteDownloadRequest(uuid=uuid)
         complete_res = krequests.put(
-            endpoint_path=API.Path.COMPLETE_DOWNLOAD,
+            endpoint_path=API.Path.COMPLETE_DOWNLOAD.value,
             data=json.dumps(dataclasses.asdict(complete_request)),
         )
         krequests.raise_for_status(complete_res)

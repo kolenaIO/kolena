@@ -97,7 +97,10 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
             test_suite_ids=[test_suite._id],
             config=config,
         )
-        res = krequests.post(endpoint_path=API.Path.CREATE_OR_RETRIEVE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(
+            endpoint_path=API.Path.CREATE_OR_RETRIEVE.value,
+            data=json.dumps(dataclasses.asdict(request)),
+        )
         krequests.raise_for_status(res)
         response = from_dict(data_class=API.CreateOrRetrieveResponse, data=res.json())
         self._id = response.test_run_id
@@ -128,7 +131,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         self._submit_custom_metrics()
         self._active = False
         if exc_type is not None:
-            report_crash(self._id, API.Path.MARK_CRASHED)
+            report_crash(self._id, API.Path.MARK_CRASHED.value)
 
     @validate_arguments(config=ValidatorConfig)
     def add_inferences(self, image: _TestImageClass, inferences: Optional[List[_InferenceClass]]) -> None:
@@ -160,7 +163,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
 
             self._inferences[image_id] = context_image_inferences
 
-        if self._n_inferences >= _BatchSize.UPLOAD_RESULTS:
+        if self._n_inferences >= _BatchSize.UPLOAD_RESULTS.value:
             log.info(f"uploading batch of '{self._n_inferences}' inference results")
             self._upload_chunk()
             log.success(f"uploaded batch of '{self._n_inferences}' inference results")
@@ -176,7 +179,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
                 yield self._image_from_load_image_record(record)
 
     @validate_arguments(config=ValidatorConfig)
-    def load_images(self, batch_size: int = _BatchSize.LOAD_SAMPLES) -> List[_TestImageClass]:
+    def load_images(self, batch_size: int = _BatchSize.LOAD_SAMPLES.value) -> List[_TestImageClass]:
         """
         Returns a list of images that still need inferences evaluated, bounded in count
         by batch_size. Note that image ground truths will be excluded from the returned
@@ -195,7 +198,10 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         return [self._image_from_load_image_record(record) for record in df_image_batch.itertuples()]
 
     @validate_arguments(config=ValidatorConfig)
-    def _iter_image_batch(self, batch_size: int = _BatchSize.LOAD_SAMPLES) -> Iterator[_LoadTestImagesDataFrameClass]:
+    def _iter_image_batch(
+        self,
+        batch_size: int = _BatchSize.LOAD_SAMPLES.value,
+    ) -> Iterator[_LoadTestImagesDataFrameClass]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
         init_request = API.InitLoadRemainingImagesRequest(
@@ -205,7 +211,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         )
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_REMAINING_IMAGES,
+            endpoint_path=API.Path.INIT_LOAD_REMAINING_IMAGES.value,
             df_class=self._LoadTestImagesDataFrameClass,
         )
 
@@ -239,7 +245,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         log.info("finalizing inference upload for test run")
         request = API.UploadImageResultsRequest(uuid=self._upload_uuid, test_run_id=self._id, reset=self._reset)
         finalize_res = krequests.put(
-            endpoint_path=API.Path.UPLOAD_IMAGE_RESULTS,
+            endpoint_path=API.Path.UPLOAD_IMAGE_RESULTS.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(finalize_res)
@@ -289,6 +295,9 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         log.info("submitting custom metrics for test run")
         custom_metrics = self._compute_custom_metrics()
         request = API.UpdateCustomMetricsRequest(model_id=self._model._id, metrics=custom_metrics)
-        res = krequests.put(endpoint_path=API.Path.UPLOAD_CUSTOM_METRICS, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(
+            endpoint_path=API.Path.UPLOAD_CUSTOM_METRICS.value,
+            data=json.dumps(dataclasses.asdict(request)),
+        )
         krequests.raise_for_status(res)
         log.success("submitted custom metrics for test run")

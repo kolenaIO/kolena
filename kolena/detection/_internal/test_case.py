@@ -128,7 +128,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         """Create a new test case with the provided name."""
         log.info(f"creating new test case '{name}'")
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=workflow.value)
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
@@ -142,7 +142,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     def _load_by_name(cls, name: str, version: Optional[int] = None) -> CoreAPI.EntityData:
         """Load an existing test case with the provided name."""
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
-        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         return from_dict(data_class=CoreAPI.EntityData, data=res.json())
 
@@ -173,10 +173,10 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     def iter_images(self) -> Iterator[_TestImageClass]:
         """Iterate through all images with their associated ground truths in this test case."""
         log.info(f"loading test images for test case '{self.name}'")
-        init_request = CoreAPI.InitLoadContentsRequest(batch_size=_BatchSize.LOAD_SAMPLES, test_case_id=self._id)
+        init_request = CoreAPI.InitLoadContentsRequest(batch_size=_BatchSize.LOAD_SAMPLES.value, test_case_id=self._id)
         for df in _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_IMAGES,
+            endpoint_path=API.Path.INIT_LOAD_IMAGES.value,
             df_class=self._TestImageDataFrameClass,
         ):
             for record in df.itertuples():
@@ -312,7 +312,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         init_response = init_upload()
         df = self._to_data_frame(list(editor._images.values()))
         df_serialized = df.as_serializable()
-        upload_data_frame(df=df_serialized, batch_size=_BatchSize.UPLOAD_RECORDS, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_serialized, batch_size=_BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
 
         request = CoreAPI.CompleteEditRequest(
             test_case_id=self._id,
@@ -322,7 +322,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
             uuid=init_response.uuid,
         )
         complete_res = krequests.put(
-            endpoint_path=API.Path.COMPLETE_EDIT,
+            endpoint_path=API.Path.COMPLETE_EDIT.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(complete_res)

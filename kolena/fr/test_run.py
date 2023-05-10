@@ -82,7 +82,10 @@ class TestRun(ABC, Frozen, WithTelemetry):
             log.info("reset flag is disabled. update existing inferences by enabling the reset flag")
 
         request = API.CreateOrRetrieveRequest(model_id=model.data.id, test_suite_ids=[test_suite._id], reset=reset)
-        res = krequests.post(endpoint_path=API.Path.CREATE_OR_RETRIEVE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(
+            endpoint_path=API.Path.CREATE_OR_RETRIEVE.value,
+            data=json.dumps(dataclasses.asdict(request)),
+        )
         krequests.raise_for_status(res)
         response = from_dict(data_class=TestRun.Data, data=res.json())
 
@@ -127,7 +130,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
             load_all=self._reset,
         )
         with krequests.put(
-            endpoint_path=API.Path.INIT_LOAD_REMAINING_IMAGES,
+            endpoint_path=API.Path.INIT_LOAD_REMAINING_IMAGES.value,
             data=json.dumps(dataclasses.asdict(init_request)),
             stream=True,
         ) as init_res:
@@ -165,7 +168,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
         log.info("uploading inference results for test run")
         init_response = init_upload()
 
-        asset_config_res = krequests.get(endpoint_path=AssetAPI.Path.CONFIG)
+        asset_config_res = krequests.get(endpoint_path=AssetAPI.Path.CONFIG.value)
         krequests.raise_for_status(asset_config_res)
         asset_config = from_dict(data_class=AssetAPI.Config, data=asset_config_res.json())
         asset_path_mapper = AssetPathMapper(asset_config)
@@ -184,11 +187,11 @@ class TestRun(ABC, Frozen, WithTelemetry):
             df=df_validated,
             path_mapper=asset_path_mapper,
         )
-        upload_data_frame(df_result_stage, _BatchSize.UPLOAD_RECORDS, init_response.uuid)
+        upload_data_frame(df_result_stage, _BatchSize.UPLOAD_RECORDS.value, init_response.uuid)
 
         request = API.UploadImageResultsRequest(uuid=init_response.uuid, test_run_id=self.data.id, reset=self._reset)
         finalize_res = krequests.put(
-            endpoint_path=API.Path.COMPLETE_UPLOAD_IMAGE_RESULTS,
+            endpoint_path=API.Path.COMPLETE_UPLOAD_IMAGE_RESULTS.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(finalize_res)
@@ -223,7 +226,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
             load_all=self._reset,
         )
         with krequests.put(
-            endpoint_path=API.Path.INIT_LOAD_REMAINING_PAIRS,
+            endpoint_path=API.Path.INIT_LOAD_REMAINING_PAIRS.value,
             data=json.dumps(dataclasses.asdict(init_request)),
             stream=True,
         ) as init_res:
@@ -280,11 +283,11 @@ class TestRun(ABC, Frozen, WithTelemetry):
 
         df_validated = validate_df_schema(df_pair_result, PairResultDataFrameSchema)
         validate_df_record_count(df_validated)
-        upload_data_frame(df_validated, _BatchSize.UPLOAD_RECORDS, init_response.uuid)
+        upload_data_frame(df_validated, _BatchSize.UPLOAD_RECORDS.value, init_response.uuid)
 
         request = API.UploadPairResultsRequest(uuid=init_response.uuid, test_run_id=self.data.id, reset=self._reset)
         finalize_res = krequests.put(
-            endpoint_path=API.Path.COMPLETE_UPLOAD_PAIR_RESULTS,
+            endpoint_path=API.Path.COMPLETE_UPLOAD_PAIR_RESULTS.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(finalize_res)
@@ -339,5 +342,5 @@ def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> N
         log.success("completed test run")
 
     except Exception as e:
-        report_crash(test_run.data.id, API.Path.MARK_CRASHED)
+        report_crash(test_run.data.id, API.Path.MARK_CRASHED.value)
         raise e

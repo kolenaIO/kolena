@@ -103,10 +103,10 @@ def iter_images(dataset: Optional[str] = None) -> Iterator[TestImage]:
     :param dataset: optionally specify the single dataset to be retrieved. By default, images from all
         datasets are returned
     """
-    init_request = API.InitLoadImagesRequest(dataset=dataset, batch_size=_BatchSize.LOAD_RECORDS)
+    init_request = API.InitLoadImagesRequest(dataset=dataset, batch_size=_BatchSize.LOAD_RECORDS.value)
     for df in _BatchedLoader.iter_data(
         init_request=init_request,
-        endpoint_path=API.Path.INIT_LOAD_IMAGES,
+        endpoint_path=API.Path.INIT_LOAD_IMAGES.value,
         df_class=TestImageDataFrame,
     ):
         for record in df.itertuples():

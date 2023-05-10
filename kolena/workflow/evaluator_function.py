@@ -181,7 +181,7 @@ class _TestCases(TestCases):
             message=message,
         )
         res = krequests.put(
-            endpoint_path=API.Path.UPDATE_METRICS_STATUS,
+            endpoint_path=API.Path.UPDATE_METRICS_STATUS.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)

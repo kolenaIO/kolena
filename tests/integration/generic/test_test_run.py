@@ -207,7 +207,7 @@ def test__test__mark_crashed(
         with pytest.raises(RuntimeError):
             test_run.run()
 
-    patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED)
+    patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED.value)
 
 
 def test__evaluator__unconfigured(

@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Union
 from urllib.parse import urlparse
 
 import pytest
@@ -20,7 +19,6 @@ from kolena._api.v1.workflow import WorkflowType
 from kolena._utils.endpoints import _get_platform_url
 from kolena._utils.endpoints import _get_results_url
 from kolena._utils.state import _ClientState
-from kolena.workflow import Workflow
 
 
 def assert_url_equals(a: str, b: str) -> None:
@@ -91,5 +89,5 @@ def test__get_platform_url(client_state: _ClientState, expected: str) -> None:
         ),
     ],
 )
-def test__get_results_url(client_state: _ClientState, workflow: Union[Workflow, WorkflowType], expected: str) -> None:
+def test__get_results_url(client_state: _ClientState, workflow: str, expected: str) -> None:
     assert_url_equals(_get_results_url(client_state, workflow, 1, 2), expected)

@@ -126,7 +126,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         """
         log.info(f"creating new test case '{name}'")
         request = API.CreateRequest(name=name, description=description or "")
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
         obj = cls._create_from_data(data)
@@ -164,7 +164,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
     def _load_by_name(cls, name: str, version: Optional[int] = None) -> "TestCase":
         log.info(f"loading test case '{name}'")
         request = API.LoadByNameRequest(name=name, version=version)
-        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
         log.success(f"loaded test case '{name}'")
@@ -319,7 +319,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         df = pd.DataFrame(editor._samples.values(), columns=TEST_CASE_COLUMNS)
         df_validated = validate_df_schema(df, TestCaseDataFrameSchema)
 
-        upload_data_frame(df=df_validated, batch_size=_BatchSize.UPLOAD_RECORDS, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_validated, batch_size=_BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
         request = API.CompleteEditRequest(
             test_case_id=self._id,
             current_version=self.version,
@@ -328,7 +328,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
             uuid=init_response.uuid,
         )
         complete_res = krequests.post(
-            endpoint_path=API.Path.COMPLETE_EDIT,
+            endpoint_path=API.Path.COMPLETE_EDIT.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(complete_res)
@@ -348,7 +348,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         init_request = API.InitLoadDataRequest(batch_size=batch_size, test_case_id=self._id)
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_DATA,
+            endpoint_path=API.Path.INIT_LOAD_DATA.value,
             df_class=TestCaseDataFrame,
         )
         log.success(f"loaded image pairs in test case '{self.name}'")

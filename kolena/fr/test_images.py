@@ -184,10 +184,10 @@ class TestImages(Uninstantiable[None]):
         df_validated = TestImageDataFrame(validate_df_schema(df, TestImageDataFrameSchema))
         df_serializable = df_validated.as_serializable()
 
-        upload_data_frame(df=df_serializable, batch_size=_BatchSize.UPLOAD_RECORDS, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_serializable, batch_size=_BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
         request = LoadAPI.WithLoadUUID(uuid=init_response.uuid)
         finalize_res = krequests.put(
-            endpoint_path=API.Path.COMPLETE_REGISTER,
+            endpoint_path=API.Path.COMPLETE_REGISTER.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(finalize_res)
@@ -228,7 +228,7 @@ class TestImages(Uninstantiable[None]):
         )
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_REQUEST,
+            endpoint_path=API.Path.INIT_LOAD_REQUEST.value,
             df_class=TestImageDataFrame,
         )
         log.success(f"loaded test images{from_extra}")

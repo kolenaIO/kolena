@@ -58,7 +58,7 @@ class Model(Uninstantiable["Model.Data"]):
         """
         log.info(f"creating model '{name}'")
         request = API.CreateRequest(name=name, metadata=metadata)
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         log.success(f"created model '{name}'")
         return Model.__factory__(from_dict(data_class=Model.Data, data=res.json()))
@@ -74,7 +74,7 @@ class Model(Uninstantiable["Model.Data"]):
         """
         log.info(f"loading model '{name}'")
         request = API.LoadByNameRequest(name=name)
-        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         log.success(f"loaded model '{name}'")
         return Model.__factory__(from_dict(data_class=Model.Data, data=res.json()))
@@ -146,7 +146,7 @@ class Model(Uninstantiable["Model.Data"]):
         init_request = API.InitLoadPairResultsRequest(batch_size=batch_size, **base_load_request)
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_PAIR_RESULTS,
+            endpoint_path=API.Path.INIT_LOAD_PAIR_RESULTS.value,
             df_class=LoadedPairResultDataFrame,
         )
         log.success(f"loaded pair results from model '{self.data.name}' on {test_object_display_name}")

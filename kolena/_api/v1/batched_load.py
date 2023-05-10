@@ -25,11 +25,11 @@ class BatchedLoad:
 
         @classmethod
         def upload_signed_url(cls, load_uuid: str) -> str:
-            return f"{cls.UPLOAD_SIGNED_URL_STUB}/{load_uuid}"
+            return f"{cls.UPLOAD_SIGNED_URL_STUB.value}/{load_uuid}"
 
         @classmethod
         def download_by_path(cls, path: str) -> str:
-            return f"{cls.DOWNLOAD_BY_PATH_STUB}/{path}"
+            return f"{cls.DOWNLOAD_BY_PATH_STUB.value}/{path}"
 
     @dataclass(frozen=True)
     class WithLoadUUID:

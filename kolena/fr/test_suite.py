@@ -124,7 +124,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         """
         log.info(f"creating test suite '{name}'")
         request = API.CreateRequest(name=name, description=description or "")
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
         obj = cls._create_from_data(data)
@@ -162,7 +162,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
     def _load_by_name(cls, name: str, version: Optional[int] = None) -> "TestSuite":
         log.info(f"loading test suite '{name}'")
         request = API.LoadByNameRequest(name=name, version=version)
-        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         log.success(f"loaded test suite '{name}'")
         return cls._create_from_data(from_dict(data_class=API.EntityData, data=res.json()))
@@ -336,7 +336,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
             baseline_test_case_ids=list(editor._baseline_test_cases.values()),
             non_baseline_test_case_ids=list(editor._non_baseline_test_cases.values()),
         )
-        res = krequests.post(endpoint_path=API.Path.EDIT, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.EDIT.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         test_suite_data = from_dict(data_class=API.EntityData, data=res.json())
         self._populate_from_other(self._create_from_data(test_suite_data))
