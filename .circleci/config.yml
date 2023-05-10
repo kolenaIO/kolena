@@ -56,7 +56,8 @@ jobs:
       - run:
           name: Run integration tests
           command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN_PROD}
+            export KOLENA_TOKEN=${KOLENA_TOKEN}
+            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             poetry run pytest -vv --cov-append --durations=0 --cov=kolena --cov-branch tests/integration
 
       - when:
