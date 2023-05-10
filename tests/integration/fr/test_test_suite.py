@@ -372,14 +372,14 @@ def test__edit__reset(single_test_case: TestCase, multi_version_test_case: List[
     assert test_suite.description == new_description
     assert test_suite.baseline_test_cases == [multi_version_test_case[1]]
 
-    with test_suite.edit(reset=True) as editor:
+    with test_suite.edit(reset=True) as editor:  # no change to test suite contents does not bump version
         editor.add(multi_version_test_case[1], True)
-    assert test_suite.version == 3
+    assert test_suite.version == 2
     assert test_suite.description == new_description  # not updated or cleared
     assert test_suite.baseline_test_cases == [multi_version_test_case[1]]
 
     with test_suite.edit(reset=True) as editor:
         editor.add(multi_version_test_case[2], True)
-    assert test_suite.version == 4
+    assert test_suite.version == 3
     assert test_suite.description == new_description  # not updated or cleared
     assert test_suite.baseline_test_cases == [multi_version_test_case[2]]
