@@ -35,11 +35,11 @@ from kolena._api.v1.detection import Metrics
 from kolena._api.v1.detection import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import DFType
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame_chunk
+from kolena._utils.consts import BatchSize
 from kolena._utils.datatypes import LoadableDataFrame
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
@@ -163,7 +163,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
 
             self._inferences[image_id] = context_image_inferences
 
-        if self._n_inferences >= _BatchSize.UPLOAD_RESULTS.value:
+        if self._n_inferences >= BatchSize.UPLOAD_RESULTS.value:
             log.info(f"uploading batch of '{self._n_inferences}' inference results")
             self._upload_chunk()
             log.success(f"uploaded batch of '{self._n_inferences}' inference results")
@@ -179,7 +179,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
                 yield self._image_from_load_image_record(record)
 
     @validate_arguments(config=ValidatorConfig)
-    def load_images(self, batch_size: int = _BatchSize.LOAD_SAMPLES.value) -> List[_TestImageClass]:
+    def load_images(self, batch_size: int = BatchSize.LOAD_SAMPLES.value) -> List[_TestImageClass]:
         """
         Returns a list of images that still need inferences evaluated, bounded in count
         by batch_size. Note that image ground truths will be excluded from the returned
@@ -200,7 +200,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
     @validate_arguments(config=ValidatorConfig)
     def _iter_image_batch(
         self,
-        batch_size: int = _BatchSize.LOAD_SAMPLES.value,
+        batch_size: int = BatchSize.LOAD_SAMPLES.value,
     ) -> Iterator[_LoadTestImagesDataFrameClass]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
@@ -209,7 +209,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
             batch_size=batch_size,
             load_all=self._reset,
         )
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_REMAINING_IMAGES.value,
             df_class=self._LoadTestImagesDataFrameClass,

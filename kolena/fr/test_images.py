@@ -31,15 +31,15 @@ from kolena._api.v1.batched_load import BatchedLoad as LoadAPI
 from kolena._api.v1.fr import TestImages as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
+from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.uninstantiable import Uninstantiable
 from kolena._utils.validators import ValidatorConfig
 from kolena.fr import TestCase
 from kolena.fr import TestSuite
-from kolena.fr._consts import _BatchSize
 from kolena.fr.datatypes import TEST_IMAGE_COLUMNS
 from kolena.fr.datatypes import TestImageDataFrame
 from kolena.fr.datatypes import TestImageDataFrameSchema
@@ -64,7 +64,7 @@ class TestImages(Uninstantiable[None]):
             original images are returned. Ignored when test case or test suite is provided as ``data_source``
         """
         log.info("loading test images")
-        return _BatchedLoader.concat(
+        return BatchedLoader.concat(
             cls.iter(data_source=data_source, include_augmented=include_augmented),
             TestImageDataFrame,
         )
@@ -184,7 +184,7 @@ class TestImages(Uninstantiable[None]):
         df_validated = TestImageDataFrame(validate_df_schema(df, TestImageDataFrameSchema))
         df_serializable = df_validated.as_serializable()
 
-        upload_data_frame(df=df_serializable, batch_size=_BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_serializable, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
         request = LoadAPI.WithLoadUUID(uuid=init_response.uuid)
         finalize_res = krequests.put(
             endpoint_path=API.Path.COMPLETE_REGISTER.value,
@@ -226,7 +226,7 @@ class TestImages(Uninstantiable[None]):
             test_case_id=test_case_id,
             batch_size=batch_size,
         )
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_REQUEST.value,
             df_class=TestImageDataFrame,

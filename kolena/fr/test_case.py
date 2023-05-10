@@ -28,16 +28,16 @@ from pydantic import validate_arguments
 from kolena._api.v1.fr import TestCase as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
+from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
-from kolena.fr._consts import _BatchSize
 from kolena.fr.datatypes import TEST_CASE_COLUMNS
 from kolena.fr.datatypes import TestCaseDataFrame
 from kolena.fr.datatypes import TestCaseDataFrameSchema
@@ -176,7 +176,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
 
         :return: a DataFrame containing all pairs defined in this test case
         """
-        return _BatchedLoader.concat(self.iter_data(), TestCaseDataFrame)
+        return BatchedLoader.concat(self.iter_data(), TestCaseDataFrame)
 
     @classmethod
     def _create_from_data(cls, data: API.EntityData) -> "TestCase":
@@ -319,7 +319,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         df = pd.DataFrame(editor._samples.values(), columns=TEST_CASE_COLUMNS)
         df_validated = validate_df_schema(df, TestCaseDataFrameSchema)
 
-        upload_data_frame(df=df_validated, batch_size=_BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_validated, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
         request = API.CompleteEditRequest(
             test_case_id=self._id,
             current_version=self.version,
@@ -346,7 +346,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         """
         log.info(f"loading image pairs in test case '{self.name}'")
         init_request = API.InitLoadDataRequest(batch_size=batch_size, test_case_id=self._id)
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_DATA.value,
             df_class=TestCaseDataFrame,

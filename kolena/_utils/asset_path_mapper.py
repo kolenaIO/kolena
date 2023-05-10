@@ -30,7 +30,8 @@ class AssetPathMapper:
     def relative_locator(self, path_stub: str) -> str:
         return f"{self.prefix}/{path_stub}"
 
-    def path_stub(self, test_run_id: int, load_uuid: str, image_id: int, key: str) -> str:
+    @staticmethod
+    def path_stub(test_run_id: int, load_uuid: str, image_id: int, key: str) -> str:
         return f"{test_run_id}/{image_id}/{key}-{load_uuid}.png"
 
     def _absolute_locator(self, relative_locator: str) -> str:

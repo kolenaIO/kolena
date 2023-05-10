@@ -29,8 +29,8 @@ from kolena._api.v1.core import TestSuite as CoreAPI
 from kolena._api.v1.generic import TestSuite as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
+from kolena._utils.consts import BatchSize
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
@@ -261,10 +261,10 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
         test_case_id_to_samples: Dict[int, List[TestSample]] = defaultdict(list)
-        for df_batch in _BatchedLoader.iter_data(
+        for df_batch in BatchedLoader.iter_data(
             init_request=API.LoadTestSamplesRequest(
                 test_suite_id=self._id,
-                batch_size=_BatchSize.LOAD_SAMPLES.value,
+                batch_size=BatchSize.LOAD_SAMPLES.value,
             ),
             endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES.value,
             df_class=TestSuiteTestSamplesDataFrame,

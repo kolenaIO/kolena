@@ -30,11 +30,11 @@ from kolena._api.v1.detection import TestCase as API
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import DFType
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
+from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
@@ -173,8 +173,8 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     def iter_images(self) -> Iterator[_TestImageClass]:
         """Iterate through all images with their associated ground truths in this test case."""
         log.info(f"loading test images for test case '{self.name}'")
-        init_request = CoreAPI.InitLoadContentsRequest(batch_size=_BatchSize.LOAD_SAMPLES.value, test_case_id=self._id)
-        for df in _BatchedLoader.iter_data(
+        init_request = CoreAPI.InitLoadContentsRequest(batch_size=BatchSize.LOAD_SAMPLES.value, test_case_id=self._id)
+        for df in BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_IMAGES.value,
             df_class=self._TestImageDataFrameClass,
@@ -312,7 +312,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         init_response = init_upload()
         df = self._to_data_frame(list(editor._images.values()))
         df_serialized = df.as_serializable()
-        upload_data_frame(df=df_serialized, batch_size=_BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
 
         request = CoreAPI.CompleteEditRequest(
             test_case_id=self._id,

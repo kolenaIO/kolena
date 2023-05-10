@@ -33,9 +33,9 @@ from kolena._api.v1.detection import Model as API
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import DFType
+from kolena._utils.consts import BatchSize
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
@@ -131,7 +131,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     def _iter_inference_batch_for_reference(
         self,
         test_object: Union[_TestCaseClass, _TestSuiteClass],
-        batch_size: int = _BatchSize.LOAD_SAMPLES.value,
+        batch_size: int = BatchSize.LOAD_SAMPLES.value,
     ) -> Iterator[_LoadInferencesDataFrameClass]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
@@ -141,7 +141,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
         test_id_key = "test_case_id" if isinstance(test_object, self._TestCaseClass) else "test_suite_id"
         params = dict(model_id=self._id, batch_size=batch_size, **{test_id_key: test_object._id})
         init_request = API.InitLoadInferencesRequest(**params)
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_INFERENCES.value,
             df_class=self._LoadInferencesDataFrameClass,
@@ -166,14 +166,14 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     def _iter_inference_batch_for_test_suite(
         self,
         test_suite: _TestSuiteClass,
-        batch_size: int = _BatchSize.LOAD_SAMPLES.value,
+        batch_size: int = BatchSize.LOAD_SAMPLES.value,
     ) -> Iterator[_LoadInferencesDataFrameClass]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
         log.info(f"loading inferences from model '{self.name}' on test suite '{test_suite.name}'")
         params = dict(model_id=self._id, batch_size=batch_size, test_suite_id=test_suite._id)
         init_request = API.InitLoadInferencesByTestCaseRequest(**params)
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_INFERENCES_BY_TEST_CASE.value,
             df_class=self._LoadInferencesDataFrameClass,
