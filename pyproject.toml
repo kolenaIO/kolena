@@ -59,6 +59,7 @@ sphinx-autodoc-typehints = "^1.16.0"
 black = { version = "^22.1.0", allow-prereleases = true }
 pytest = "^7"
 pytest-cov = "^4.0.0"
+pytest-depends = "^1.0.1"
 
 [tool.poetry.scripts]
 kolena = 'kolena._utils.cli:run'
