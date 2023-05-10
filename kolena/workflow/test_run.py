@@ -33,7 +33,7 @@ from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame_chunk
 from kolena._utils.dataframes.validators import validate_df_schema
@@ -204,7 +204,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: an iterator exposing the ground truths and inferences for all test samples in the test run.
         """
         log.info(f"loading inferences from model '{self.model.name}' on test suite '{self.test_suite.name}'")
-        for df_batch in _BatchedLoader.iter_data(
+        for df_batch in BatchedLoader.iter_data(
             init_request=API.LoadTestSampleInferencesRequest(
                 test_run_id=self._id,
                 batch_size=_BatchSize.LOAD_SAMPLES,
@@ -382,7 +382,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             batch_size=batch_size,
             load_all=self.reset,
         )
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.LOAD_TEST_SAMPLES,
             df_class=TestSampleDataFrame,

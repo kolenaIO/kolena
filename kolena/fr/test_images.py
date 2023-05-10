@@ -31,7 +31,7 @@ from kolena._api.v1.batched_load import BatchedLoad as LoadAPI
 from kolena._api.v1.fr import TestImages as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.dataframes.validators import validate_df_schema
@@ -64,7 +64,7 @@ class TestImages(Uninstantiable[None]):
             original images are returned. Ignored when test case or test suite is provided as ``data_source``
         """
         log.info("loading test images")
-        return _BatchedLoader.concat(
+        return BatchedLoader.concat(
             cls.iter(data_source=data_source, include_augmented=include_augmented),
             TestImageDataFrame,
         )
@@ -226,7 +226,7 @@ class TestImages(Uninstantiable[None]):
             test_case_id=test_case_id,
             batch_size=batch_size,
         )
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_REQUEST,
             df_class=TestImageDataFrame,

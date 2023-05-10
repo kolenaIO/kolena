@@ -121,7 +121,7 @@ def upload_image_chips(
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-class _BatchedLoader(Generic[DFType]):
+class BatchedLoader(Generic[DFType]):
     @staticmethod
     def load_path(path: str, df_class: Type[DFType]) -> DFType:
         with tempfile.TemporaryFile() as tmp:
@@ -182,6 +182,6 @@ class _BatchedLoader(Generic[DFType]):
                         data=json.loads(line),
                     )
                     load_uuid = partial_response.uuid
-                    yield _BatchedLoader.load_path(partial_response.path, df_class)
+                    yield BatchedLoader.load_path(partial_response.path, df_class)
             finally:
-                _BatchedLoader.complete_load(load_uuid)
+                BatchedLoader.complete_load(load_uuid)

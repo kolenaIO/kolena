@@ -39,7 +39,7 @@ API_BASE_URL_ENV_VAR = "KOLENA_CLIENT_BASE_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
 
 
-class _ClientState:
+class ClientState:
     def __init__(
         self,
         base_url: Optional[str] = API_BASE_URL,
@@ -106,10 +106,10 @@ def get_client_base_url() -> str:
     return os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
 
 
-_client_state = _ClientState(base_url=get_client_base_url())
+_client_state = ClientState(base_url=get_client_base_url())
 
 
-def get_client_state() -> _ClientState:
+def get_client_state() -> ClientState:
     return CLIENT_STATE.get(_client_state)
 
 
@@ -159,10 +159,10 @@ def get_token(
 
 
 @contextlib.contextmanager
-def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[_ClientState]:
+def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[ClientState]:
     base_url = base_url or get_client_base_url()
     init_response = get_token(api_token, base_url)
-    client_state = _ClientState(
+    client_state = ClientState(
         base_url=base_url,
         api_token=api_token,
         jwt_token=init_response.access_token,

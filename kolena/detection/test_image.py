@@ -24,7 +24,7 @@ from pydantic import validate_arguments
 
 from kolena._api.v1.detection import TestImage as API
 from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.validators import ValidatorConfig
 from kolena.detection._datatypes import TestImageDataFrame
 from kolena.detection._internal import BaseTestImage
@@ -104,7 +104,7 @@ def iter_images(dataset: Optional[str] = None) -> Iterator[TestImage]:
         datasets are returned
     """
     init_request = API.InitLoadImagesRequest(dataset=dataset, batch_size=_BatchSize.LOAD_RECORDS)
-    for df in _BatchedLoader.iter_data(
+    for df in BatchedLoader.iter_data(
         init_request=init_request,
         endpoint_path=API.Path.INIT_LOAD_IMAGES,
         df_class=TestImageDataFrame,

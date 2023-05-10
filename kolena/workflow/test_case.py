@@ -29,7 +29,7 @@ from kolena._api.v1.generic import TestCase as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.dataframes.validators import validate_df_schema
@@ -193,7 +193,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_sample_type = self.workflow.test_sample_type
         ground_truth_type = self.workflow.ground_truth_type
         init_request = CoreAPI.InitLoadContentsRequest(batch_size=_BatchSize.LOAD_SAMPLES, test_case_id=self._id)
-        for df in _BatchedLoader.iter_data(
+        for df in BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES,
             df_class=TestSampleDataFrame,

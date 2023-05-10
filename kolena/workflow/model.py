@@ -30,7 +30,7 @@ from kolena._api.v1.generic import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
@@ -152,7 +152,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         log.info(f"loading inferences from model '{self.name}' on test case '{test_case.name}'")
         assert_workflows_match(self.workflow.name, test_case.workflow.name)
-        for df_batch in _BatchedLoader.iter_data(
+        for df_batch in BatchedLoader.iter_data(
             init_request=API.LoadInferencesRequest(
                 model_id=self._id,
                 test_case_id=test_case._id,

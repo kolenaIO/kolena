@@ -16,7 +16,7 @@ from typing import Dict
 from urllib.parse import urlencode
 from urllib.parse import urlparse
 
-from kolena._utils.state import _ClientState
+from kolena._utils.state import ClientState
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena.errors import InvalidClientStateError
@@ -34,11 +34,11 @@ def get_platform_url() -> str:
 
 
 # pure function for testing
-def _get_platform_url(client_state: _ClientState) -> str:
+def _get_platform_url(client_state: ClientState) -> str:
     return f"{_get_platform_origin(client_state)}/{client_state.tenant}"
 
 
-def _get_platform_origin(client_state: _ClientState) -> str:
+def _get_platform_origin(client_state: ClientState) -> str:
     if client_state.base_url is None:
         raise InvalidClientStateError("missing base_url")
     base_url = urlparse(client_state.base_url)
@@ -54,7 +54,7 @@ def get_results_url(workflow: str, model_id: int, test_suite_id: int) -> str:
 
 
 # pure function for testing
-def _get_results_url(client_state: _ClientState, workflow: str, model_id: int, test_suite_id: int) -> str:
+def _get_results_url(client_state: ClientState, workflow: str, model_id: int, test_suite_id: int) -> str:
     from kolena._api.v1.workflow import WorkflowType  # deferred import to avoid circular dependencies
 
     platform_url = _get_platform_url(client_state)

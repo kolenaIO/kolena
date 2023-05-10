@@ -36,7 +36,7 @@ from kolena._api.v1.detection import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils._consts import _BatchSize
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.batched_load import DFType
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame_chunk
@@ -203,7 +203,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
             batch_size=batch_size,
             load_all=self._reset,
         )
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_REMAINING_IMAGES,
             df_class=self._LoadTestImagesDataFrameClass,

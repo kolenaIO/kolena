@@ -26,7 +26,7 @@ from pydantic.dataclasses import dataclass
 from kolena._api.v1.fr import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import BatchedLoader
 from kolena._utils.serde import from_dict
 from kolena._utils.uninstantiable import Uninstantiable
 from kolena._utils.validators import ValidatorConfig
@@ -118,7 +118,7 @@ class Model(Uninstantiable["Model.Data"]):
         :raises ValueError: if an invalid test object was provided
         :raises RemoteError: if the pair results could not be loaded for any reason
         """
-        return _BatchedLoader.concat(self.iter_pair_results(test_object), LoadedPairResultDataFrame)
+        return BatchedLoader.concat(self.iter_pair_results(test_object), LoadedPairResultDataFrame)
 
     def iter_pair_results(
         self,
@@ -144,7 +144,7 @@ class Model(Uninstantiable["Model.Data"]):
         log.info(f"loading pair results from model '{self.data.name}' on {test_object_display_name}")
         base_load_request = dataclasses.asdict(self._get_load_pair_results_request(test_object))
         init_request = API.InitLoadPairResultsRequest(batch_size=batch_size, **base_load_request)
-        yield from _BatchedLoader.iter_data(
+        yield from BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_PAIR_RESULTS,
             df_class=LoadedPairResultDataFrame,
