@@ -65,7 +65,7 @@ def test__init() -> None:
     assert test_suite == test_suite3
 
 
-def test__init__with_test_cases(single_test_case) -> None:
+def test__init__with_test_cases(single_test_case: TestCase) -> None:
     name = with_test_prefix(f"{__file__}::test__init__with_test_cases test suite")
     description = "A\n\tlong\ndescription including special characters! 🎉"
     test_suite = TestSuite(name, description=description, baseline_test_cases=[single_test_case])
@@ -79,7 +79,7 @@ def test__init__with_test_cases(single_test_case) -> None:
     assert test_suite.baseline_pair_count_imposter == 6
 
 
-def test__init__no_baseline_error(single_test_case) -> None:
+def test__init__no_baseline_error(single_test_case: TestCase) -> None:
     name = with_test_prefix(f"{__file__}::test__init__no_baseline_error test suite")
     description = "A\n\tlong\ndescription including special characters! 🎉"
     expected_error_msg = "to a state without any baseline test cases"
@@ -95,7 +95,7 @@ def test__init__no_baseline_error(single_test_case) -> None:
     assert expected_error_msg in exc_info_value
 
 
-def test__init__with_version(single_test_case) -> None:
+def test__init__with_version(single_test_case: TestCase) -> None:
     name = with_test_prefix(f"{__file__}::test__init__with_version test suite")
     description = "test suite description"
     test_suite = TestSuite(name, description=description, baseline_test_cases=[single_test_case])
@@ -103,20 +103,20 @@ def test__init__with_version(single_test_case) -> None:
     test_suite0 = TestSuite(name, version=test_suite.version)
     assert test_suite == test_suite0
 
-    with pytest.raises(NameConflictError):
+    with pytest.raises(NameConflictError):  # TODO: should raise NotFoundError when version is specified
         TestSuite(name, version=123)
 
-    with test_suite.edit() as editor:
-        new_description = "new description"
+    new_description = "new description"
+    with test_suite.edit() as editor:  # description-only edit does not bump version
         editor.description(new_description)
 
     assert test_suite.description == new_description
+    assert test_suite.version == test_suite0.version
     assert test_suite == TestSuite(name, version=test_suite.version)
     assert test_suite == TestSuite(name)
-    assert test_suite0 == TestSuite(name, version=test_suite0.version)
 
 
-def test__init__reset(single_test_case, multi_version_test_case) -> None:
+def test__init__reset(single_test_case: TestCase, multi_version_test_case: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__init__reset test suite")
     description = f"{name} (description)"
     TestSuite(
@@ -141,35 +141,35 @@ def test__init__reset(single_test_case, multi_version_test_case) -> None:
     assert test_suite.non_baseline_test_cases == []
 
 
-def test_load(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
+def test__load(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
     test_suite = fr_test_suites[0]
     test_suite_updated = fr_test_suites[1]
 
     loaded_test_suite = TestSuite.load(test_suite.name)
-    assert loaded_test_suite.data.id == test_suite_updated._id
-    assert loaded_test_suite.data.name == test_suite.name
-    assert loaded_test_suite.data.description == test_suite_updated.description
-    assert loaded_test_suite.data.version == test_suite_updated.version
+    assert loaded_test_suite._id == test_suite_updated._id
+    assert loaded_test_suite.name == test_suite.name
+    assert loaded_test_suite.description == test_suite_updated.description
+    assert loaded_test_suite.version == test_suite_updated.version
 
-    assert loaded_test_suite.data.baseline_test_cases == [fr_test_cases[1].data]
-    assert loaded_test_suite.data.non_baseline_test_cases == [fr_test_cases[2].data]
+    assert loaded_test_suite.baseline_test_cases == [fr_test_cases[1].data]
+    assert loaded_test_suite.non_baseline_test_cases == [fr_test_cases[2].data]
 
 
-def test_load_with_version(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
+def test__load__with_version(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
     # the test suite is an older version
     test_suite = fr_test_suites[0]
     loaded_test_suite = TestSuite.load(test_suite.name, version=test_suite.version)
 
-    assert loaded_test_suite.data.id == test_suite._id
-    assert loaded_test_suite.data.name == test_suite.name
-    assert loaded_test_suite.data.description == test_suite.description
-    assert loaded_test_suite.data.version == test_suite.version
+    assert loaded_test_suite._id == test_suite._id
+    assert loaded_test_suite.name == test_suite.name
+    assert loaded_test_suite.version == test_suite.version
+    # note: not checking description as this is independent of version
 
-    assert loaded_test_suite.data.baseline_test_cases == [fr_test_cases[0].data]
-    assert loaded_test_suite.data.non_baseline_test_cases == [fr_test_cases[2].data]
+    assert [tc.data for tc in loaded_test_suite.baseline_test_cases] == [fr_test_cases[0].data]
+    assert [tc.data for tc in loaded_test_suite.non_baseline_test_cases] == [fr_test_cases[2].data]
 
 
-def test_load_absent(fr_test_suites: List[TestSuite]) -> None:
+def test__load__absent(fr_test_suites: List[TestSuite]) -> None:
     with pytest.raises(NotFoundError):
         TestSuite.load("name of a test suite that does not exist")
 
@@ -178,20 +178,20 @@ def test_load_absent(fr_test_suites: List[TestSuite]) -> None:
         TestSuite.load(fr_test_suites[0].name.lower())
 
 
-def test_create() -> None:
-    name = with_test_prefix(f"{__file__}::test_create test suite")
+def test__create() -> None:
+    name = with_test_prefix(f"{__file__}::test__create test suite")
     description = "\tSome test suite description\nspanning\nmultiple lines."
     test_suite = TestSuite.create(name, description=description)
-    assert test_suite.data.name == name
-    assert test_suite.data.version == 0
-    assert test_suite.data.description == description
+    assert test_suite.name == name
+    assert test_suite.version == 0
+    assert test_suite.description == description
 
     test_suite = TestSuite.create(with_test_prefix(f"{__file__}::test_create test suite 2"))
-    assert test_suite.data.description == ""
+    assert test_suite.description == ""
 
 
-def test_edit(fr_test_cases: List[TestCase]) -> None:
-    name = with_test_prefix(f"{__file__}::test_edit test suite")
+def test__edit(fr_test_cases: List[TestCase]) -> None:
+    name = with_test_prefix(f"{__file__}::test__edit test suite")
     test_suite = TestSuite.create(name)
     test_cases = fr_test_cases
 
@@ -202,9 +202,9 @@ def test_edit(fr_test_cases: List[TestCase]) -> None:
         editor.add(TestCase.load(test_cases[2].name))
         editor.remove(TestCase.load(test_cases[2].name))
 
-    assert test_suite.data.version == 1
-    assert test_suite.data.description == new_description
-    all_test_cases = test_suite.data.baseline_test_cases + test_suite.data.non_baseline_test_cases
+    assert test_suite.version == 1
+    assert test_suite.description == new_description
+    all_test_cases = test_suite.baseline_test_cases + test_suite.non_baseline_test_cases
     actual_names = sorted(tc.name for tc in all_test_cases)
     expected_names = sorted([test_cases[0].name])
     assert actual_names == expected_names
@@ -218,8 +218,8 @@ def test_edit(fr_test_cases: List[TestCase]) -> None:
 
 
 # Note: editor.merge is deprecated
-def test_edit_merge(fr_test_cases: List[TestCase]) -> None:
-    name = with_test_prefix(f"{__file__}::test_edit_merge test suite")
+def test__edit__merge(fr_test_cases: List[TestCase]) -> None:
+    name = with_test_prefix(f"{__file__}::test__edit__merge test suite")
     test_suite = TestSuite.create(name)
     test_cases = fr_test_cases
 
@@ -231,27 +231,27 @@ def test_edit_merge(fr_test_cases: List[TestCase]) -> None:
         editor.merge(TestCase.load(test_cases[1].name))
         editor.add(TestCase.load(test_cases[2].name))
 
-    assert test_suite.data.version == 2
-    all_test_cases = test_suite.data.baseline_test_cases + test_suite.data.non_baseline_test_cases
+    assert test_suite.version == 2
+    all_test_cases = test_suite.baseline_test_cases + test_suite.non_baseline_test_cases
     actual_names = sorted(tc.name for tc in all_test_cases)
     expected_names = sorted([tc.name for tc in test_cases[1:3]])
     assert actual_names == expected_names
     # expect updated test case to still be considered the baseline
-    assert test_suite.data.baseline_test_cases[0].version == test_cases[1].version
+    assert test_suite.baseline_test_cases[0].version == test_cases[1].version
 
 
-def test_edit_no_op() -> None:
-    name = with_test_prefix(f"{__file__}::test_edit_no_op test suite")
+def test__edit__no_op() -> None:
+    name = with_test_prefix(f"{__file__}::test__edit__no_op test suite")
     test_suite = TestSuite.create(name)
-    version = test_suite.data.version
+    version = test_suite.version
     # no-op editor contexts do not bump version
     with test_suite.edit():
         ...
-    assert test_suite.data.version == version
+    assert test_suite.version == version
 
 
-def test_edit_same_name(fr_test_cases: List[TestCase]) -> None:
-    name = with_test_prefix(f"{__file__}::test_edit_same_name test suite")
+def test__edit__same_name(fr_test_cases: List[TestCase]) -> None:
+    name = with_test_prefix(f"{__file__}::test__edit__same_name test suite")
     test_suite = TestSuite.create(name)
     # test_case_1 is updated version of test_case_0
     test_case_0 = fr_test_cases[0]
@@ -272,8 +272,8 @@ def test_edit_same_name(fr_test_cases: List[TestCase]) -> None:
     assert test_suite.baseline_test_cases == [test_case_1]
 
 
-def test_edit_empty(fr_test_cases: List[TestCase]) -> None:
-    name = with_test_prefix(f"{__file__}::test_edit_empty test suite")
+def test__edit__empty(fr_test_cases: List[TestCase]) -> None:
+    name = with_test_prefix(f"{__file__}::test__edit__empty test suite")
     test_suite = TestSuite.create(name)
     test_case = fr_test_cases[0]
 
@@ -286,21 +286,21 @@ def test_edit_empty(fr_test_cases: List[TestCase]) -> None:
             editor.remove(test_case)
 
 
-def test_edit_baseline_counts(fr_test_cases: List[TestCase]) -> None:
-    name = with_test_prefix(f"{__file__}::test_edit_baseline_counts test suite")
+def test__edit__baseline_counts(fr_test_cases: List[TestCase]) -> None:
+    name = with_test_prefix(f"{__file__}::test__edit__baseline_counts test suite")
     test_suite = TestSuite.create(name)
-    assert test_suite.data.baseline_image_count == 0
-    assert test_suite.data.baseline_pair_count_genuine == 0
-    assert test_suite.data.baseline_pair_count_imposter == 0
+    assert test_suite.baseline_image_count == 0
+    assert test_suite.baseline_pair_count_genuine == 0
+    assert test_suite.baseline_pair_count_imposter == 0
 
     test_case_record = fr_test_cases[0]
     test_case = TestCase.load(test_case_record.name, version=test_case_record.version)
     with test_suite.edit() as editor:
         editor.add(test_case, is_baseline=True)
 
-    assert test_suite.data.baseline_image_count == 3
-    assert test_suite.data.baseline_pair_count_genuine == 3
-    assert test_suite.data.baseline_pair_count_imposter == 1
+    assert test_suite.baseline_image_count == 3
+    assert test_suite.baseline_pair_count_genuine == 3
+    assert test_suite.baseline_pair_count_imposter == 1
 
     # this test case has overlapping images and pairs with the previously added test case
     test_case_record = fr_test_cases[2]
@@ -309,12 +309,12 @@ def test_edit_baseline_counts(fr_test_cases: List[TestCase]) -> None:
         editor.add(test_case, is_baseline=True)
 
     # assert images and pairs are properly deduped
-    assert test_suite.data.baseline_image_count == 4
-    assert test_suite.data.baseline_pair_count_genuine == 3
-    assert test_suite.data.baseline_pair_count_imposter == 2
+    assert test_suite.baseline_image_count == 4
+    assert test_suite.baseline_pair_count_genuine == 3
+    assert test_suite.baseline_pair_count_imposter == 2
 
 
-def test__edit__no_baseline_error(single_test_case) -> None:
+def test__edit__no_baseline_error(single_test_case: TestCase) -> None:
     name = with_test_prefix(f"{__file__}::test__edit__no_baseline_error test suite")
     test_suite = TestSuite(name)
     expected_error_msg = "to a state without any baseline test cases"
@@ -356,7 +356,7 @@ def test__edit__no_baseline_error(single_test_case) -> None:
     assert expected_error_msg in exc_info_value
 
 
-def test__edit__reset(single_test_case, multi_version_test_case) -> None:
+def test__edit__reset(single_test_case: TestCase, multi_version_test_case: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__edit__reset test suite")
     test_suite = TestSuite(
         name,
