@@ -28,7 +28,7 @@ from kolena._api.v1.fr import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.asset_path_mapper import AssetPathMapper
-from kolena._utils.batched_load import BatchedLoader
+from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
@@ -142,11 +142,11 @@ class TestRun(ABC, Frozen, WithTelemetry):
                 for line in init_res.iter_lines():
                     partial_response = from_dict(data_class=LoadAPI.InitDownloadPartialResponse, data=json.loads(line))
                     load_uuid = partial_response.uuid
-                    dfs.append(BatchedLoader.load_path(partial_response.path, ImageDataFrame))
+                    dfs.append(_BatchedLoader.load_path(partial_response.path, ImageDataFrame))
                 log.success("loaded remaining images for test run")
-                return BatchedLoader.concat(dfs, ImageDataFrame)
+                return _BatchedLoader.concat(dfs, ImageDataFrame)
             finally:
-                BatchedLoader.complete_load(load_uuid)
+                _BatchedLoader.complete_load(load_uuid)
 
     def upload_image_results(self, df_image_result: ImageResultDataFrame) -> int:
         """
@@ -243,17 +243,17 @@ class TestRun(ABC, Frozen, WithTelemetry):
                         data=json.loads(line),
                     )
                     load_uuid_embedding = partial_response.embeddings.uuid
-                    dfs_embedding.append(BatchedLoader.load_path(partial_response.embeddings.path, EmbeddingDataFrame))
+                    dfs_embedding.append(_BatchedLoader.load_path(partial_response.embeddings.path, EmbeddingDataFrame))
                     load_uuid_pair = partial_response.pairs.uuid
-                    dfs_pair.append(BatchedLoader.load_path(partial_response.pairs.path, PairDataFrame))
+                    dfs_pair.append(_BatchedLoader.load_path(partial_response.pairs.path, PairDataFrame))
 
-                df_embedding = BatchedLoader.concat(dfs_embedding, EmbeddingDataFrame)
-                df_pair = BatchedLoader.concat(dfs_pair, PairDataFrame)
+                df_embedding = _BatchedLoader.concat(dfs_embedding, EmbeddingDataFrame)
+                df_pair = _BatchedLoader.concat(dfs_pair, PairDataFrame)
                 log.success("loaded batch of image pairs for test run")
                 return df_embedding, df_pair
             finally:
                 for uuid in [load_uuid_embedding, load_uuid_pair]:
-                    BatchedLoader.complete_load(uuid)
+                    _BatchedLoader.complete_load(uuid)
 
     def upload_pair_results(self, df_pair_result: PairResultDataFrame) -> int:
         """

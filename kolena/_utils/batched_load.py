@@ -75,7 +75,7 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-class BatchedLoader(Generic[DFType]):
+class _BatchedLoader(Generic[DFType]):
     @staticmethod
     def load_path(path: str, df_class: Type[DFType]) -> DFType:
         with tempfile.TemporaryFile() as tmp:
@@ -136,6 +136,6 @@ class BatchedLoader(Generic[DFType]):
                         data=json.loads(line),
                     )
                     load_uuid = partial_response.uuid
-                    yield BatchedLoader.load_path(partial_response.path, df_class)
+                    yield _BatchedLoader.load_path(partial_response.path, df_class)
             finally:
-                BatchedLoader.complete_load(load_uuid)
+                _BatchedLoader.complete_load(load_uuid)

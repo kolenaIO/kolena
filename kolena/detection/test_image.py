@@ -23,7 +23,7 @@ from deprecation import deprecated
 from pydantic import validate_arguments
 
 from kolena._api.v1.detection import TestImage as API
-from kolena._utils.batched_load import BatchedLoader
+from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import BatchSize
 from kolena._utils.validators import ValidatorConfig
 from kolena.detection._datatypes import TestImageDataFrame
@@ -104,7 +104,7 @@ def iter_images(dataset: Optional[str] = None) -> Iterator[TestImage]:
         datasets are returned
     """
     init_request = API.InitLoadImagesRequest(dataset=dataset, batch_size=BatchSize.LOAD_RECORDS.value)
-    for df in BatchedLoader.iter_data(
+    for df in _BatchedLoader.iter_data(
         init_request=init_request,
         endpoint_path=API.Path.INIT_LOAD_IMAGES.value,
         df_class=TestImageDataFrame,
