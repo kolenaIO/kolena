@@ -13,8 +13,10 @@
 # limitations under the License.
 import io
 import math
+from typing import Tuple
 
 import numpy as np
+import pandas as pd
 from PIL import Image
 from requests_toolbelt import MultipartEncoder
 
@@ -29,22 +31,14 @@ def upload_image_chips(df: _ImageChipsDataFrame, batch_size: int = BatchSize.UPL
     def upload_batch(df_batch: _ImageChipsDataFrame) -> None:
         df_batch = df_batch.reset_index(drop=True)  # reset indices so we match the signed_url indices
 
-        def as_buffer(image_raw: np.ndarray) -> io.BytesIO:
-            pil_image = Image.fromarray(image_raw).convert("RGB")
-            buf = io.BytesIO()
-            pil_image.save(buf, "png")
-            buf.seek(0)
-            return buf
+        def as_path_stub_and_buffer(row: pd.Series) -> Tuple[str, io.BytesIO]:
+            pil_image = Image.fromarray(row["image"]).convert("RGB")
+            image_buf = io.BytesIO()
+            pil_image.save(image_buf, "png")
+            image_buf.seek(0)
+            return AssetPathMapper.path_stub(row["test_run_id"], row["uuid"], row["image_id"], row["key"]), image_buf
 
-        fields = [
-            (
-                "files",
-                AssetPathMapper.path_stub(row["test_run_id"], row["uuid"], row["image_id"], row["key"]),
-                as_buffer(row["image"]),
-            )
-            for _, row in df_batch.iterrows()
-        ]
-        data = MultipartEncoder(fields=fields)
+        data = MultipartEncoder(fields=[("files", as_path_stub_and_buffer(row)) for _, row in df_batch.iterrows()])
         upload_response = krequests.put(
             endpoint_path=AssetAPI.Path.BULK_UPLOAD.value,
             data=data,
