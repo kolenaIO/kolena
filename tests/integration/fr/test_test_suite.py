@@ -113,7 +113,10 @@ def test__init__with_version(single_test_case) -> None:
     assert test_suite.description == new_description
     assert test_suite == TestSuite(name, version=test_suite.version)
     assert test_suite == TestSuite(name)
-    assert test_suite0 == TestSuite(name, version=test_suite0.version)
+    test_suite0_reloaded = TestSuite(name, version=test_suite0.version)
+    assert test_suite0.baseline_test_cases == test_suite0_reloaded.baseline_test_cases
+    assert test_suite0.non_baseline_test_cases == test_suite0_reloaded.non_baseline_test_cases
+    assert test_suite0_reloaded.description == new_description
 
 
 def test__init__reset(single_test_case, multi_version_test_case) -> None:
@@ -157,16 +160,17 @@ def test_load(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) ->
 
 def test_load_with_version(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
     # the test suite is an older version
-    test_suite = fr_test_suites[0]
-    loaded_test_suite = TestSuite.load(test_suite.name, version=test_suite.version)
+    test_suite_prev = fr_test_suites[0]
+    test_suite_updated = fr_test_suites[1]
+    loaded_test_suite = TestSuite.load(test_suite_prev.name, version=test_suite_prev.version)
 
-    assert loaded_test_suite.data.id == test_suite._id
-    assert loaded_test_suite.data.name == test_suite.name
-    assert loaded_test_suite.data.description == test_suite.description
-    assert loaded_test_suite.data.version == test_suite.version
+    assert loaded_test_suite._id == test_suite_prev._id
+    assert loaded_test_suite.name == test_suite_prev.name
+    assert loaded_test_suite.description == test_suite_updated.description
+    assert loaded_test_suite.version == test_suite_prev.version
 
-    assert loaded_test_suite.data.baseline_test_cases == [fr_test_cases[0].data]
-    assert loaded_test_suite.data.non_baseline_test_cases == [fr_test_cases[2].data]
+    assert loaded_test_suite.baseline_test_cases == [fr_test_cases[0]]
+    assert loaded_test_suite.non_baseline_test_cases == [fr_test_cases[2]]
 
 
 def test_load_absent(fr_test_suites: List[TestSuite]) -> None:
@@ -374,12 +378,12 @@ def test__edit__reset(single_test_case, multi_version_test_case) -> None:
 
     with test_suite.edit(reset=True) as editor:
         editor.add(multi_version_test_case[1], True)
-    assert test_suite.version == 3
+    assert test_suite.version == 2
     assert test_suite.description == new_description  # not updated or cleared
     assert test_suite.baseline_test_cases == [multi_version_test_case[1]]
 
     with test_suite.edit(reset=True) as editor:
         editor.add(multi_version_test_case[2], True)
-    assert test_suite.version == 4
+    assert test_suite.version == 3
     assert test_suite.description == new_description  # not updated or cleared
     assert test_suite.baseline_test_cases == [multi_version_test_case[2]]
