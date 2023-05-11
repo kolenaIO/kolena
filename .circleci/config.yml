@@ -9,7 +9,7 @@ parameters:
     default: "3.9"
 
 jobs:
-  kolena-ci:
+  unit-test:
     parameters:
       python-version:
         type: string
@@ -22,13 +22,13 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &kolena-ci-cache kolena-ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          key: &ci-base-cache ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
       - run: |
           poetry config experimental.new-installer false
           poetry config installer.max-workers 10
           poetry install --no-ansi
       - save_cache:
-          key: *kolena-ci-cache
+          key: *ci-base-cache
           paths:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
@@ -44,12 +44,51 @@ jobs:
           name: Run unit tests
           command: |
             poetry run pytest -vv --cov=kolena --cov-branch tests/unit
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Coverage
+                command: |
+                  poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
+
+  integration-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      pytest-group:
+        type: string
+        default: "generic"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
       - run:
-          name: Run integration tests
+          name: Run << parameters.pytest-group >> integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            poetry run pytest -vv --cov-append --durations=0 --cov=kolena --cov-branch tests/integration
+            TEST_GROUP="<< parameters.pytest-group >>"
+            if [ "$TEST_GROUP" = "misc" ]; then
+              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch \
+                --ignore=tests/integration/classification \
+                --ignore=tests/integration/detection \
+                --ignore=tests/integration/generic \
+                --ignore=tests/integration/fr \
+                tests/integration
+            else
+              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch tests/integration/$TEST_GROUP
+            fi
       - when:
           # Generate coverage only from one python version
           condition:
@@ -65,7 +104,15 @@ jobs:
 workflows:
   ci:
     jobs:
-      - kolena-ci:
+      - unit-test:
+          name: unit-test-<< matrix.python-version >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+      - integration-test:
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              pytest-group: [ "detection", "fr", "generic", "misc" ]
+          requires:
+            - unit-test-<< matrix.python-version >>
