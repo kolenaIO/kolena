@@ -9,7 +9,7 @@ parameters:
     default: "3.9"
 
 jobs:
-  unit-test:
+  ci-base:
     parameters:
       python-version:
         type: string
@@ -32,6 +32,21 @@ jobs:
           paths:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
+
+  unit-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
       - run: poetry run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
@@ -106,15 +121,21 @@ jobs:
 workflows:
   ci:
     jobs:
-      - unit-test:
-          name: unit-test-<< matrix.python-version >>
+      - ci-base:
+          name: ci-base-<< matrix.python-version >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+      - unit-test:
+          matrix:
+            parameters:
+              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+          requires:
+            - ci-base-<< matrix.python-version >>
       - integration-test:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ "detection", "fr", "generic", "misc" ]
+              pytest-group: [ "detection", "classification", "fr", "generic", "misc" ]
           requires:
-            - unit-test-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >>
