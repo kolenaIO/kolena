@@ -32,6 +32,7 @@ from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
 from kolena.workflow import BaseVideo
 from kolena.workflow import Composite
+from kolena.workflow import Document
 from kolena.workflow import Image
 from kolena.workflow import ImagePair
 from kolena.workflow import ImageText
@@ -602,3 +603,15 @@ def test__instantiate__video(dataclass: Callable) -> None:
 
     with pytest.raises(ValueError):
         Tester(locator=locator, start=-2, end=-1)
+
+
+@pytest.mark.parametrize("dataclass", [dataclasses.dataclass, pydantic.dataclasses.dataclass])
+def test__instantiate__document(dataclass: Callable) -> None:
+    @dataclass(frozen=True)
+    class Tester(Document):
+        example: Optional[str] = None
+
+    locator = "s3://bucket/path/to/document.pdf"
+    Tester(locator=locator, example="test")
+    Tester(locator=locator, example=None)
+    Tester(locator=locator)

@@ -72,6 +72,27 @@ class LabeledBoundingBox(BoundingBox):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
+class ScoredBoundingBox(BoundingBox):
+    """
+    Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices and a float
+    score.
+    """
+
+    score: float
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredLabeledBoundingBox(BoundingBox):
+    """
+    Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices, a string
+    label, and a float score.
+    """
+
+    label: str
+    score: float
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
 class Polygon(Annotation):
     """Arbitrary polygon specified by three or more pixel coordinates."""
 
@@ -91,6 +112,25 @@ class LabeledPolygon(Polygon):
     """Arbitrary polygon specified by three or more pixel coordinates and a string label."""
 
     label: str
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredPolygon(Polygon):
+    """
+    Arbitrary polygon specified by three or more pixel coordinates and a float score.
+    """
+
+    score: float
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredLabeledPolygon(Polygon):
+    """
+    Arbitrary polygon specified by three or more pixel coordinates with a string label and a float score.
+    """
+
+    label: str
+    score: float
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -140,9 +180,24 @@ class BoundingBox3D(Annotation):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class LabeledBoundingBox3D(BoundingBox3D):
-    """:class:`BoundingBox3D` with additional string label."""
+    """:class:`BoundingBox3D` with an additional string label."""
 
     label: str
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredBoundingBox3D(BoundingBox3D):
+    """:class:`BoundingBox3D` with an additional float score."""
+
+    score: float
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredLabeledBoundingBox3D(BoundingBox3D):
+    """:class:`BoundingBox3D` with an additional string label and float score."""
+
+    label: str
+    score: float
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

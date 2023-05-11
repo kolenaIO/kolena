@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import Any
 from typing import List
+from typing import Union
 
 import pytest
 
@@ -20,8 +21,10 @@ from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow.evaluator import _PlotType
 from kolena.workflow.evaluator import AxisConfig
+from kolena.workflow.evaluator import BarPlot
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Histogram
+from kolena.workflow.evaluator import NullableNumberSeries
 
 
 def test__curve_plot__validate() -> None:
@@ -153,7 +156,7 @@ def test__histogram__validate() -> None:
         ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2]),
     ],
 )
-def test__histogram__validate__invalid(buckets: List[str], frequency: List[Any]) -> None:
+def test__histogram__validate__invalid(buckets: List[Any], frequency: List[Any]) -> None:
     # different length
     with pytest.raises(ValueError):
         Histogram(
@@ -183,3 +186,27 @@ def test__histogram__serialize() -> None:
         "y_config": {"type": "log"},
         "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
     }
+
+
+@pytest.mark.parametrize(
+    "valid,labels,values",
+    [
+        (True, ["a", "b"], [1, 2]),
+        (True, ["a"], [1]),
+        (True, list(str(i) for i in range(10)), list(range(10))),
+        (True, ["a", "b"], [1.5, None]),
+        (True, [1, 2], [1.5, None]),
+        (True, ["a", 2, 3.5], [1.5, None, -1]),
+        (False, ["a"], [1, 2, 3]),
+        (False, ["a", "b"], [1]),
+        (False, ["a"], []),
+        (False, [], [1]),
+        (False, [], []),
+    ],
+)
+def test__bar_plot__validate(valid: bool, labels: List[Union[str, int, float]], values: NullableNumberSeries) -> None:
+    if valid:
+        BarPlot(title="tester", x_label="x", y_label="y", labels=labels, values=values)
+    else:
+        with pytest.raises(ValueError):
+            BarPlot(title="tester", x_label="x", y_label="y", labels=labels, values=values)
