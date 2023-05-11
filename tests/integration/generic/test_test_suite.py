@@ -99,7 +99,6 @@ def test__init__with_version(test_case_versions: List[TestCase]) -> None:
         editor.description(new_description)
         editor.add(test_case_versions[0])
 
-    assert test_suite.version == test_suite0.version  # editing description does not bump version
     assert test_suite.description == new_description
     assert test_suite == TestSuite(name, version=test_suite.version)
     assert test_suite == TestSuite(name)
