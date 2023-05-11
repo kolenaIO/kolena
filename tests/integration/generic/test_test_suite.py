@@ -86,13 +86,12 @@ def test__init__reset(test_case: TestCase, test_case_versions: List[TestCase]) -
 
 def test__init__with_version(test_case_versions: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__init__with_version test suite")
-    description = "test suite description"
-    test_suite = TestSuite(name, description=description)
+    test_suite = TestSuite(name, description="initial description")
 
     test_suite0 = TestSuite(name, version=test_suite.version)
     assert test_suite == test_suite0
 
-    with pytest.raises(NameConflictError):
+    with pytest.raises(NameConflictError):  # TODO: this should be a NotFoundError when version is specified
         TestSuite(name, version=123)
 
     with test_suite.edit() as editor:

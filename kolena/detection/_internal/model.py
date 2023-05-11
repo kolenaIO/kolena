@@ -33,9 +33,9 @@ from kolena._api.v1.detection import Model as API
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import DFType
+from kolena._utils.consts import BatchSize
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
@@ -93,7 +93,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     def _create(cls, workflow: WorkflowType, name: str, metadata: Dict[str, Any]) -> CoreAPI.EntityData:
         log.info(f"creating new model '{name}'")
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=workflow.value)
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         log.success(f"created new model '{name}'")
         return from_dict(data_class=CoreAPI.EntityData, data=res.json())
@@ -102,7 +102,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     @validate_arguments(config=ValidatorConfig)
     def _load_by_name(cls, name: str) -> CoreAPI.EntityData:
         request = CoreAPI.LoadByNameRequest(name=name)
-        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         return from_dict(data_class=CoreAPI.EntityData, data=res.json())
 
@@ -131,7 +131,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     def _iter_inference_batch_for_reference(
         self,
         test_object: Union[_TestCaseClass, _TestSuiteClass],
-        batch_size: int = _BatchSize.LOAD_SAMPLES,
+        batch_size: int = BatchSize.LOAD_SAMPLES.value,
     ) -> Iterator[_LoadInferencesDataFrameClass]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
@@ -143,7 +143,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
         init_request = API.InitLoadInferencesRequest(**params)
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_INFERENCES,
+            endpoint_path=API.Path.INIT_LOAD_INFERENCES.value,
             df_class=self._LoadInferencesDataFrameClass,
         )
         log.success(f"loaded inferences from model '{self.name}' on {test_object_display_name}")
@@ -166,7 +166,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     def _iter_inference_batch_for_test_suite(
         self,
         test_suite: _TestSuiteClass,
-        batch_size: int = _BatchSize.LOAD_SAMPLES,
+        batch_size: int = BatchSize.LOAD_SAMPLES.value,
     ) -> Iterator[_LoadInferencesDataFrameClass]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
@@ -175,7 +175,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
         init_request = API.InitLoadInferencesByTestCaseRequest(**params)
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.INIT_LOAD_INFERENCES_BY_TEST_CASE,
+            endpoint_path=API.Path.INIT_LOAD_INFERENCES_BY_TEST_CASE.value,
             df_class=self._LoadInferencesDataFrameClass,
         )
         log.success(f"loaded inferences from model '{self.name}' on test suite '{test_suite.name}'")

@@ -54,7 +54,7 @@ def upload_log(message: str, status: str) -> None:
         message=message,
         status=status,
     )
-    krequests.post(endpoint_path=API.Path.UPLOAD, json=dataclasses.asdict(request))
+    krequests.post(endpoint_path=API.Path.UPLOAD.value, json=dataclasses.asdict(request))
 
 
 def log_telemetry(e: BaseException) -> None:
@@ -62,7 +62,7 @@ def log_telemetry(e: BaseException) -> None:
         stack = tb.format_stack()
         exc_format = tb.format_exception(None, e, e.__traceback__)
         combined = stack + exc_format
-        upload_log("".join(combined), DatadogLogLevels.ERROR)
+        upload_log("".join(combined), DatadogLogLevels.ERROR.value)
     except BaseException:
         """
         Attempting to upload the telemetry is best-effort. We don't want to have exceptions in that

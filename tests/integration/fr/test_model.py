@@ -33,7 +33,7 @@ from tests.integration.fr.helper import generate_image_results
 from tests.integration.helper import with_test_prefix
 
 
-def test_create() -> None:
+def test__create() -> None:
     model_name = with_test_prefix(f"{__file__} test_create")
     model_metadata = {
         "detector": "det",
@@ -47,21 +47,21 @@ def test_create() -> None:
     assert created_model.data.metadata == model_metadata
 
 
-def test_load_by_name() -> None:
+def test__load_by_name() -> None:
     model_name = with_test_prefix(f"{__file__} test_load_by_name")
     created_model = Model.create(name=model_name, metadata={})
     loaded_model = Model.load_by_name(model_name)
     assert created_model == loaded_model
 
 
-def test_load_by_name_nonexistent() -> None:
+def test__load_by_name__nonexistent() -> None:
     model_name = with_test_prefix(f"{__file__} test_load_by_name_nonexistent")
     # TODO: Should not be HTTPError
     with pytest.raises(HTTPError):
         Model.load_by_name(model_name)
 
 
-def test_create_bad_metadata() -> None:
+def test__create__bad_metadata() -> None:
     model_name = with_test_prefix(f"{__file__} test_create_bad_metadata")
     with pytest.raises(ValidationError):
         Model.create(name=model_name, metadata=cast(Dict[str, Any], None))
@@ -69,7 +69,7 @@ def test_create_bad_metadata() -> None:
         Model.create(name=model_name, metadata=cast(Dict[str, Any], "bogus"))
 
 
-def test_create_existing() -> None:
+def test__create__existing() -> None:
     model_name = with_test_prefix(f"{__file__} test_create_existing")
     Model.create(name=model_name, metadata={})
     # TODO: Should not be HTTPError
@@ -77,7 +77,7 @@ def test_create_existing() -> None:
         Model.create(name=model_name, metadata={})
 
 
-def test_load_by_name_seeded(fr_models: List[Model]) -> None:
+def test__load_by_name__seeded(fr_models: List[Model]) -> None:
     for i, model in enumerate(fr_models):
         db_model = Model.load_by_name(model.data.name)
         assert db_model.data == model.data
@@ -91,7 +91,7 @@ def test_load_by_name_seeded(fr_models: List[Model]) -> None:
         assert inference_model.compare(np.ones(1), np.ones(2)) == 3
 
 
-def test_load_pair_results_empty(fr_test_cases: List[TestCase]) -> None:
+def test__load_pair_results__empty(fr_test_cases: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__} test_load_pair_results_empty")
     model = Model.create(name, dict(test="metadata"))
 
@@ -107,7 +107,7 @@ def test_load_pair_results_empty(fr_test_cases: List[TestCase]) -> None:
     assert len(df) == 0
 
 
-def test_iter_pair_results_empty(fr_test_cases: List[TestCase]) -> None:
+def test__iter_pair_results__empty(fr_test_cases: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__} test_iter_pair_results_empty")
     model = Model.create(name, dict(test="metadata"))
 
@@ -149,7 +149,7 @@ def _seed_results(model_name: str, test_suite: TestSuite) -> Tuple[Model, pd.Dat
     return model, df_expected, fte_locators
 
 
-def test_load_pair_results(fr_test_suites: List[TestSuite]) -> None:
+def test__load_pair_results(fr_test_suites: List[TestSuite]) -> None:
     test_suite = fr_test_suites[0]
     model_name = with_test_prefix(f"{__file__} test_load_pair_results")
     model, df_expected, fte_locators = _seed_results(model_name, test_suite)
@@ -167,7 +167,7 @@ def test_load_pair_results(fr_test_suites: List[TestSuite]) -> None:
     )
 
 
-def test_iter_pair_results(fr_test_suites: List[TestSuite]) -> None:
+def test__iter_pair_results(fr_test_suites: List[TestSuite]) -> None:
     test_suite = fr_test_suites[0]
     model_name = with_test_prefix(f"{__file__} test_iter_pair_results")
     model, df_expected, _ = _seed_results(model_name, test_suite)

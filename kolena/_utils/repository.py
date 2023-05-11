@@ -21,7 +21,7 @@ from kolena._utils import krequests
 
 def create(repository: str) -> None:
     response = krequests.post(
-        endpoint_path=Path.CREATE,
+        endpoint_path=Path.CREATE.value,
         data=json.dumps(dataclasses.asdict(CreateRepositoryRequest(repository=repository))),
     )
     krequests.raise_for_status(response)

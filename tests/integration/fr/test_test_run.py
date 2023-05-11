@@ -378,7 +378,7 @@ def test__test__mark_crashed(fr_test_suites: List[TestSuite]) -> None:
         with pytest.raises(RuntimeError):
             test(model, test_suites[0])
 
-    patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED)
+    patched.assert_called_once_with(test_run._id, TestRunAPI.Path.MARK_CRASHED.value)
 
 
 def test__multi_face(fr_multi_face_test_run: Tuple[Model, TestSuite]) -> None:

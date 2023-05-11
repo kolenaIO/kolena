@@ -33,11 +33,13 @@ jobs:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
       - run: poetry run python3 -c 'import kolena'
+      # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
           condition:
             not:
-              # TODO: upgrade mypy version to address # https://github.com/python/mypy/issues/13627
-              equal: [ "3.10", << parameters.python-version >> ]
+              or:
+                - equal: [ "3.10", << parameters.python-version >> ]
+                - equal: [ "3.11", << parameters.python-version >> ]
           steps:
             - run: poetry run pre-commit run -a
       - run:
@@ -108,7 +110,7 @@ workflows:
           name: unit-test-<< matrix.python-version >>
           matrix:
             parameters:
-              python-version: [ "3.7", "3.8", "3.9", "3.10" ]
+              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
       - integration-test:
           matrix:
             parameters:

@@ -202,7 +202,7 @@ def register_evaluator(
     """
 
     response = krequests.post(
-        API.Path.EVALUATOR,
+        API.Path.EVALUATOR.value,
         json=dict(workflow=workflow, image=image, name=evaluator_name, secret=secret, aws_assume_role=aws_assume_role),
     )
     krequests.raise_for_status(response)
@@ -222,7 +222,7 @@ def list_evaluators(workflow: str) -> List[RemoteEvaluator]:
     :return: list of registered evaluators
     """
 
-    response = krequests.get(f"{API.Path.EVALUATOR}/{quote(workflow)}")
+    response = krequests.get(f"{API.Path.EVALUATOR.value}/{quote(workflow)}")
     krequests.raise_for_status(response)
 
     return [
@@ -243,8 +243,8 @@ def get_evaluator(workflow: str, evaluator_name: str, include_secret: bool = Fal
     """
 
     response = krequests.get(
-        f"{API.Path.EVALUATOR}/{quote(workflow)}/{quote(evaluator_name)}",
-        params={"include_secret": include_secret},
+        endpoint_path=f"{API.Path.EVALUATOR.value}/{quote(workflow)}/{quote(evaluator_name)}",
+        params=dict(include_secret=include_secret),
     )
     krequests.raise_for_status(response)
 

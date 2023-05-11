@@ -191,13 +191,13 @@ def fr_test_suites(fr_test_cases: List[TestCase]) -> List[TestSuite]:
     test_suite_name_a = with_test_prefix("A")
     test_suite_a = TestSuite(
         test_suite_name_a,
-        description="filler",
+        description="this description will be overwritten",
         baseline_test_cases=[fr_test_cases[0]],
         non_baseline_test_cases=[fr_test_cases[2]],
     )
     test_suite_a_updated = TestSuite(
         test_suite_name_a,
-        description="description",
+        description="description overwrites",
         baseline_test_cases=[fr_test_cases[1]],
         non_baseline_test_cases=[fr_test_cases[2]],
         reset=True,

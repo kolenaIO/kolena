@@ -32,10 +32,10 @@ from pydantic import validate_arguments
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame_chunk
+from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
@@ -150,7 +150,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             evaluator=evaluator_display_name,
             configurations=api_configurations,
         )
-        res = krequests.put(endpoint_path=API.Path.CREATE_OR_RETRIEVE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(
+            endpoint_path=API.Path.CREATE_OR_RETRIEVE.value,
+            data=json.dumps(dataclasses.asdict(request)),
+        )
         krequests.raise_for_status(res)
         response = from_dict(data_class=API.CreateOrRetrieveResponse, data=res.json())
         self._id = response.test_run_id
@@ -175,7 +178,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
             self.evaluate()
         except Exception as e:
-            report_crash(self._id, API.Path.MARK_CRASHED)
+            report_crash(self._id, API.Path.MARK_CRASHED.value)
             raise e
 
     def load_test_samples(self) -> List[TestSample]:
@@ -207,9 +210,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         for df_batch in _BatchedLoader.iter_data(
             init_request=API.LoadTestSampleInferencesRequest(
                 test_run_id=self._id,
-                batch_size=_BatchSize.LOAD_SAMPLES,
+                batch_size=BatchSize.LOAD_SAMPLES.value,
             ),
-            endpoint_path=API.Path.LOAD_INFERENCES,
+            endpoint_path=API.Path.LOAD_INFERENCES.value,
             df_class=TestSampleDataFrame,
         ):
             for record in df_batch.itertuples():
@@ -238,7 +241,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         upload_data_frame_chunk(df_serializable, init_response.uuid)
 
         request = API.UploadInferencesRequest(uuid=init_response.uuid, test_run_id=self._id, reset=self.reset)
-        res = krequests.put(endpoint_path=API.Path.UPLOAD_INFERENCES, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(
+            endpoint_path=API.Path.UPLOAD_INFERENCES.value,
+            data=json.dumps(dataclasses.asdict(request)),
+        )
         krequests.raise_for_status(res)
 
     def evaluate(self) -> None:
@@ -374,7 +380,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info("uploading test suite metrics")
         self._upload_test_suite_metrics(test_suite_metrics)
 
-    def _iter_test_samples_batch(self, batch_size: int = _BatchSize.LOAD_SAMPLES) -> Iterator[TestSampleDataFrame]:
+    def _iter_test_samples_batch(
+        self,
+        batch_size: int = BatchSize.LOAD_SAMPLES.value,
+    ) -> Iterator[TestSampleDataFrame]:
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
         init_request = API.LoadRemainingTestSamplesRequest(
@@ -384,7 +393,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         )
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
-            endpoint_path=API.Path.LOAD_TEST_SAMPLES,
+            endpoint_path=API.Path.LOAD_TEST_SAMPLES.value,
             df_class=TestSampleDataFrame,
         )
 
@@ -410,7 +419,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             configuration=_maybe_evaluator_configuration_to_api(configuration),
         )
         res = krequests.put(
-            endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS,
+            endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)
@@ -425,7 +434,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             for config, tc_metrics in tc_metrics_by_config.items()
         ]
         df = pd.DataFrame(records, columns=["test_case_id", "configuration_display_name", "metrics"])
-        return self._upload_aggregate_metrics(API.Path.UPLOAD_TEST_CASE_METRICS, df)
+        return self._upload_aggregate_metrics(API.Path.UPLOAD_TEST_CASE_METRICS.value, df)
 
     def _upload_test_case_plots(
         self,
@@ -438,7 +447,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             for tc_plot in tc_plots or []
         ]
         df = pd.DataFrame(records, columns=["test_case_id", "configuration_display_name", "metrics"])
-        return self._upload_aggregate_metrics(API.Path.UPLOAD_TEST_CASE_PLOTS, df)
+        return self._upload_aggregate_metrics(API.Path.UPLOAD_TEST_CASE_PLOTS.value, df)
 
     def _upload_test_suite_metrics(
         self,
@@ -450,7 +459,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             if ts_metrics is not None
         ]
         df = pd.DataFrame(records, columns=["configuration_display_name", "metrics"])
-        return self._upload_aggregate_metrics(API.Path.UPLOAD_TEST_SUITE_METRICS, df)
+        return self._upload_aggregate_metrics(API.Path.UPLOAD_TEST_SUITE_METRICS.value, df)
 
     def _upload_aggregate_metrics(self, endpoint_path: str, df: pd.DataFrame) -> None:
         df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
@@ -469,7 +478,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     def _start_server_side_evaluation(self) -> None:
         request = API.EvaluateRequest(test_run_id=self._id)
-        res = krequests.put(endpoint_path=API.Path.EVALUATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.EVALUATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
 
 

@@ -29,8 +29,8 @@ from kolena._api.v1.core import TestSuite as CoreAPI
 from kolena._api.v1.generic import TestSuite as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils._consts import _BatchSize
 from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.consts import BatchSize
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
@@ -154,7 +154,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info(f"creating test suite '{name}'")
         cls._validate_test_cases(test_cases)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
-        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
@@ -174,7 +174,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: the loaded test suite.
         """
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
-        res = krequests.put(endpoint_path=API.Path.LOAD, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         return cls._create_from_data(data)
@@ -253,7 +253,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             description=editor._description,
             test_case_ids=[tc._id for tc in editor._test_cases],
         )
-        res = krequests.post(endpoint_path=API.Path.EDIT, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.EDIT.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         test_suite_data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         self._populate_from_other(self._create_from_data(test_suite_data))
@@ -264,9 +264,9 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         for df_batch in _BatchedLoader.iter_data(
             init_request=API.LoadTestSamplesRequest(
                 test_suite_id=self._id,
-                batch_size=_BatchSize.LOAD_SAMPLES,
+                batch_size=BatchSize.LOAD_SAMPLES.value,
             ),
-            endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES,
+            endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES.value,
             df_class=TestSuiteTestSamplesDataFrame,
         ):
             for record in df_batch.itertuples():
