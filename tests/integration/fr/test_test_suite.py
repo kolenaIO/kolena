@@ -115,6 +115,11 @@ def test__init__with_version(single_test_case: TestCase) -> None:
     assert test_suite == TestSuite(name, version=test_suite.version)
     assert test_suite == TestSuite(name)
 
+    test_suite0_reloaded = TestSuite(name, version=test_suite0.version)
+    assert test_suite0.baseline_test_cases == test_suite0_reloaded.baseline_test_cases
+    assert test_suite0.non_baseline_test_cases == test_suite0_reloaded.non_baseline_test_cases
+    assert test_suite0_reloaded.description == new_description
+
 
 def test__init__reset(single_test_case: TestCase, multi_version_test_case: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__init__reset test suite")
@@ -157,16 +162,17 @@ def test__load(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -
 
 def test__load__with_version(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
     # the test suite is an older version
-    test_suite = fr_test_suites[0]
-    loaded_test_suite = TestSuite.load(test_suite.name, version=test_suite.version)
+    test_suite_prev = fr_test_suites[0]
+    test_suite_updated = fr_test_suites[1]
+    loaded_test_suite = TestSuite.load(test_suite_prev.name, version=test_suite_prev.version)
 
-    assert loaded_test_suite._id == test_suite._id
-    assert loaded_test_suite.name == test_suite.name
-    assert loaded_test_suite.version == test_suite.version
-    # note: not checking description as this is independent of version
+    assert loaded_test_suite._id == test_suite_prev._id
+    assert loaded_test_suite.name == test_suite_prev.name
+    assert loaded_test_suite.description == test_suite_updated.description
+    assert loaded_test_suite.version == test_suite_prev.version
 
-    assert [tc.data for tc in loaded_test_suite.baseline_test_cases] == [fr_test_cases[0].data]
-    assert [tc.data for tc in loaded_test_suite.non_baseline_test_cases] == [fr_test_cases[2].data]
+    assert loaded_test_suite.baseline_test_cases == [fr_test_cases[0]]
+    assert loaded_test_suite.non_baseline_test_cases == [fr_test_cases[2]]
 
 
 def test__load__absent(fr_test_suites: List[TestSuite]) -> None:

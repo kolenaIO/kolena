@@ -84,7 +84,7 @@ def test__init__reset(test_case: TestCase, test_case_versions: List[TestCase]) -
     assert test_suite.test_cases == new_test_cases
 
 
-def test__init__with_version() -> None:
+def test__init__with_version(test_case_versions: List[TestCase]) -> None:
     name = with_test_prefix(f"{__file__}::test__init__with_version test suite")
     test_suite = TestSuite(name, description="initial description")
 
@@ -97,11 +97,16 @@ def test__init__with_version() -> None:
     with test_suite.edit() as editor:
         new_description = "new description"
         editor.description(new_description)
+        editor.add(test_case_versions[0])
 
     assert test_suite.version == test_suite0.version  # editing description does not bump version
     assert test_suite.description == new_description
     assert test_suite == TestSuite(name, version=test_suite.version)
     assert test_suite == TestSuite(name)
+
+    test_suite0_reloaded = TestSuite(name, version=test_suite0.version)
+    assert test_suite0.test_cases == test_suite0_reloaded.test_cases
+    assert test_suite0_reloaded.description == new_description
 
 
 def test__load__mismatching_workflows() -> None:

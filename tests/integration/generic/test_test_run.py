@@ -314,9 +314,9 @@ def test__handle_nan_inf() -> None:
     test_suite = MyTestSuite(f"{name} suite one", test_cases=[test_case])
     # use special values in inferences
     dummy_inferences = [MyInference(value=value) for value in values]
-    dummy_inferences_iter = iter(dummy_inferences)
 
-    model = MyModel(f"{name} model", infer=lambda _: next(dummy_inferences_iter))
+    # match inference to test sample
+    model = MyModel(f"{name} model", infer=lambda sample: dummy_inferences[int(sample.value)])
     evaluator = MyEvaluator()
     TestRun(model, test_suite, evaluator).run()
 
