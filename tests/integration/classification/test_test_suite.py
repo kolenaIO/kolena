@@ -14,7 +14,6 @@
 from typing import List
 
 import pytest
-from integration.helper import fake_random_locator
 
 from kolena._api.v1.workflow import WorkflowType
 from kolena.classification import TestCase
@@ -23,6 +22,7 @@ from kolena.classification import TestSuite
 from kolena.detection import TestSuite as DetectionTestSuite
 from kolena.errors import NotFoundError
 from kolena.errors import WorkflowMismatchError
+from tests.integration.helper import fake_random_locator
 from tests.integration.helper import with_test_prefix
 
 

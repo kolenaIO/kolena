@@ -15,8 +15,6 @@ from typing import List
 from typing import Tuple
 
 import pytest
-from integration.helper import fake_locator
-from integration.helper import with_test_prefix
 
 from kolena.classification import InferenceModel
 from kolena.classification import test
@@ -25,6 +23,8 @@ from kolena.classification import TestImage
 from kolena.classification import TestRun
 from kolena.classification import TestSuite
 from kolena.detection import InferenceModel as DetectionModel
+from tests.integration.helper import fake_locator
+from tests.integration.helper import with_test_prefix
 
 N_IMAGES = 5
 
