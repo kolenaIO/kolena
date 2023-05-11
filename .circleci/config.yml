@@ -115,6 +115,6 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ "detection", "fr", "generic", "misc" ]
+              pytest-group: [ "detection", "classification", "fr", "generic", "misc" ]
           requires:
             - unit-test-<< matrix.python-version >>
