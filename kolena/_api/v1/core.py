@@ -138,6 +138,7 @@ class TestSuite:
         name: str
         description: str
         workflow: str
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -152,6 +153,7 @@ class TestSuite:
         description: str
         test_cases: List[TestCase.EntityData]
         workflow: str
+        tags: List[str]
 
     @dataclass(frozen=True)
     class EditRequest:
@@ -160,6 +162,7 @@ class TestSuite:
         name: str
         description: str
         test_case_ids: List[int]
+        tags: Optional[List[str]] = None  # unique set -- list used to preserve ordering
 
     @dataclass(frozen=True)
     class DeleteRequest:

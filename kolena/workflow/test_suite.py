@@ -20,6 +20,7 @@ from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 from typing import Type
 
@@ -31,11 +32,13 @@ from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import BatchSize
+from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
+from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from kolena.workflow import TestSample
 from kolena.workflow._datatypes import TestSuiteTestSamplesDataFrame
@@ -69,6 +72,9 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     #: The :class:`kolena.workflow.TestCase` objects belonging to this test suite.
     test_cases: List[TestCase]
 
+    #: The tags associated with this test suite.
+    tags: Set[str]
+
     @telemetry
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "workflow"):
@@ -85,22 +91,31 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         description: Optional[str] = None,
         test_cases: Optional[List[TestCase]] = None,
         reset: bool = False,
+        tags: Optional[Set[str]] = None,
     ):
-        if type(self) == TestSuite:
-            raise Exception("<TestSuite> must be subclassed.")
+        self._validate_workflow()
         self._validate_test_cases(test_cases)
 
         try:
-            self._populate_from_other(self.load(name, version))
-            if description is not None and self.description != description and not reset:
-                log.warn("test suite already exists, not updating description when reset=False")
-            if test_cases is not None:
-                if self.version > 0 and not reset:
-                    log.warn("test suite already exists, not updating test cases when reset=False")
-                else:
-                    self._hydrate(test_cases, description)
+            other = self.load(name, version)
         except NotFoundError:
-            self._populate_from_other(self.create(name, description, test_cases))
+            other = self.create(name, description, test_cases, tags)
+        self._populate_from_other(other)
+
+        should_update_test_cases = test_cases is not None and test_cases != self.test_cases
+        can_update_test_cases = reset or self.version == 0
+        if should_update_test_cases and not can_update_test_cases:
+            log.warn(f"reset=False, not updating test cases on test suite '{self.name}' (v{self.version})")
+        to_update = [
+            *(["test cases"] if should_update_test_cases and can_update_test_cases else []),
+            *(["description"] if description is not None and description != self.description else []),
+            *(["tags"] if tags is not None and tags != self.tags else []),
+        ]
+        if len(to_update) > 0:
+            log.info(f"updating {', '.join(to_update)} on test suite '{self.name}' (v{self.version})")
+            updated_test_cases = test_cases or self.test_cases if can_update_test_cases else self.test_cases
+            self._hydrate(updated_test_cases, description=description, tags=tags)
+
         self._freeze()
 
     @classmethod
@@ -109,6 +124,11 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             if any(cls.workflow != testcase.workflow for testcase in test_cases):
                 raise TypeError("test case workflow does not match test suite's")
 
+    @classmethod
+    def _validate_workflow(cls) -> None:
+        if cls == TestSuite:
+            raise IncorrectUsageError("<TestSuite> must be subclassed. See `kolena.workflow.define_workflow`")
+
     def _populate_from_other(self, other: "TestSuite") -> None:
         with self._unfrozen():
             self._id = other._id
@@ -116,6 +136,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             self.version = other.version
             self.description = other.description
             self.test_cases = other.test_cases
+            self.tags = other.tags
 
     @classmethod
     def _create_from_data(cls, data: CoreAPI.EntityData) -> "TestSuite":
@@ -126,15 +147,23 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj.version = data.version
         obj.description = data.description
         obj.test_cases = [cls._test_case_type._create_from_data(tc) for tc in data.test_cases]
+        obj.tags = set(data.tags)
         obj._freeze()
         return obj
 
-    def _hydrate(self, test_cases: List[TestCase], description: Optional[str] = None) -> None:
+    def _hydrate(
+        self,
+        test_cases: List[TestCase],
+        description: Optional[str] = None,
+        tags: Optional[Set[str]] = None,
+    ) -> None:
         with self.edit(reset=True) as editor:
             if description is not None:
                 editor.description(description)
             for test_case in test_cases:
                 editor.add(test_case)
+            if tags is not None:
+                editor.tags = tags
 
     @classmethod
     def create(
@@ -142,25 +171,27 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         name: str,
         description: Optional[str] = None,
         test_cases: Optional[List[TestCase]] = None,
+        tags: Optional[Set[str]] = None,
     ) -> "TestSuite":
         """
         Create a new test suite with the provided name.
 
         :param name: the name of the new test suite to create.
         :param description: optional free-form description of the test suite to create.
-        :param test_cases: optionally specify a set of test cases to populate the test suite.
+        :param test_cases: optionally specify a list of test cases to populate the test suite.
+        :param tags: optionally specify a set of tags to attach to the test suite.
         :return: the newly created test suite.
         """
-        log.info(f"creating test suite '{name}'")
+        cls._validate_workflow()
         cls._validate_test_cases(test_cases)
-        request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
-        res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
+        request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name, tags=tags)
+        res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
         if test_cases is not None:
             obj._hydrate(test_cases)
-        log.success(f"created test suite '{name}'")
+        log.info(f"created test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         return obj
 
     @classmethod
@@ -173,11 +204,34 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             version when unset.
         :return: the loaded test suite.
         """
+        cls._validate_workflow()
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
-        res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
-        return cls._create_from_data(data)
+        obj = cls._create_from_data(data)
+        log.info(f"loaded test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
+        return obj
+
+    @classmethod
+    def load_all(cls, *, tags: Optional[Set[str]] = None) -> List["TestSuite"]:
+        """
+        Load the latest version of all non-archived test suites with this workflow.
+
+        :param tags: optionally specify a set of tags to apply as a filter. The loaded test suites will include only
+            test suites with tags matching each of these specified tags, i.e. ``test_suite.tags.intersection == tags``.
+        :return: the latest version of all non-archived test suites, with matching tags when specified.
+        """
+        cls._validate_workflow()
+        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
+        res = krequests.put(endpoint_path=API.Path.LOAD_ALL, data=json.dumps(dataclasses.asdict(request)))
+        krequests.raise_for_status(res)
+        data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
+        objs = [cls._create_from_data(test_suite) for test_suite in data.test_suites]
+        tags_quoted = {f"'{t}'" for t in tags or {}}
+        tags_message = f" with tag{'s' if len(tags) > 1 else ''} {', '.join(tags_quoted)}" if tags else ""
+        log.info(f"loaded {len(objs)} '{cls.workflow.name}' test suites{tags_message}")
+        return objs
 
     class Editor:
         _test_cases: List[TestCase]
@@ -185,14 +239,20 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         _description: str
         _initial_test_case_ids: List[int]
         _initial_description: str
+        _initial_tags: Set[str]
+
+        #: The tags associated with this test suite. Modify this list directly to edit this test suite's tags.
+        tags: Set[str]
 
         @validate_arguments(config=ValidatorConfig)
-        def __init__(self, test_cases: List[TestCase], description: str, reset: bool):
+        def __init__(self, test_cases: List[TestCase], description: str, tags: Set[str], reset: bool):
             self._test_cases = test_cases if not reset else []
             self._reset = reset
             self._description = description
             self._initial_test_case_ids = [tc._id for tc in test_cases]
             self._initial_description = description
+            self._initial_tags = tags
+            self.tags = tags
 
         @validate_arguments(config=ValidatorConfig)
         def description(self, description: str) -> None:
@@ -219,8 +279,11 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             self._test_cases = [tc for tc in self._test_cases if tc.name != test_case.name]
 
         def _edited(self) -> bool:
-            test_case_ids = [tc._id for tc in self._test_cases]
-            return self._description != self._initial_description or self._initial_test_case_ids != test_case_ids
+            return (
+                self._description != self._initial_description
+                or self._initial_test_case_ids != [tc._id for tc in self._test_cases]
+                or self._initial_tags != self.tags
+            )
 
     @contextmanager
     def edit(self, reset: bool = False) -> Iterator[Editor]:
@@ -238,35 +301,36 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         :param reset: clear any and all test cases currently in the test suite.
         """
-        editor = self.Editor(self.test_cases, self.description, reset)
+        editor = self.Editor(self.test_cases, self.description, self.tags, reset)
 
         yield editor
 
         if not editor._edited():
             return
 
-        log.info(f"updating test suite '{self.name}'")
+        log.info(f"editing test suite '{self.name}' (v{self.version})")
         request = CoreAPI.EditRequest(
             test_suite_id=self._id,
             current_version=self.version,
             name=self.name,
             description=editor._description,
             test_case_ids=[tc._id for tc in editor._test_cases],
+            tags=editor.tags,
         )
-        res = krequests.post(endpoint_path=API.Path.EDIT.value, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.post(endpoint_path=API.Path.EDIT, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         test_suite_data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         self._populate_from_other(self._create_from_data(test_suite_data))
-        log.success(f"updated test suite '{self.name}'")
+        log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(self._id)})")
 
     def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
         test_case_id_to_samples: Dict[int, List[TestSample]] = defaultdict(list)
         for df_batch in _BatchedLoader.iter_data(
             init_request=API.LoadTestSamplesRequest(
                 test_suite_id=self._id,
-                batch_size=BatchSize.LOAD_SAMPLES.value,
+                batch_size=BatchSize.LOAD_SAMPLES,
             ),
-            endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES.value,
+            endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES,
             df_class=TestSuiteTestSamplesDataFrame,
         ):
             for record in df_batch.itertuples():

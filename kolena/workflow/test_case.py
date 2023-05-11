@@ -164,7 +164,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj = cls._create_from_data(data)
         if test_samples is not None:
             obj._hydrate(test_samples)
-        log.success(f"created new test case '{name}'")
+        log.success(f"created new test case '{name}' (v{obj.version})")
         return obj
 
     @classmethod
@@ -181,6 +181,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        log.info(f"loaded test case '{name}' (v{data.version})")
         return cls._create_from_data(data)
 
     def load_test_samples(self) -> List[Tuple[TestSample, GroundTruth]]:
@@ -189,7 +190,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     def iter_test_samples(self) -> Iterator[Tuple[TestSample, GroundTruth]]:
         """Iterate through all test samples and ground truths in this test case."""
-        log.info(f"loading test samples in test case '{self.name}'")
+        log.info(f"loading test samples in test case '{self.name}' (v{self.version})")
         test_sample_type = self.workflow.test_sample_type
         ground_truth_type = self.workflow.ground_truth_type
         init_request = CoreAPI.InitLoadContentsRequest(batch_size=BatchSize.LOAD_SAMPLES.value, test_case_id=self._id)
@@ -204,7 +205,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_sample = test_sample_type._from_dict({**record.test_sample, "metadata": metadata_field})
                 ground_truth = ground_truth_type._from_dict(record.ground_truth)
                 yield test_sample, ground_truth
-        log.success(f"loaded test samples in test case '{self.name}'")
+        log.success(f"loaded test samples in test case '{self.name}' (v{self.version})")
 
     class Editor:
         @dataclass(frozen=True)
@@ -291,7 +292,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         if not editor._edited():
             return
 
-        log.info(f"updating test case '{self.name}'")
+        log.info(f"editing test case '{self.name}' (v{self.version})")
         init_response = init_upload()
         df_serialized = editor._to_data_frame().as_serializable()
         upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
@@ -310,4 +311,4 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         krequests.raise_for_status(complete_res)
         test_case_data = from_dict(data_class=CoreAPI.EntityData, data=complete_res.json())
         self._populate_from_other(self._create_from_data(test_case_data))
-        log.success(f"updated test case '{self.name}'")
+        log.success(f"edited test case '{self.name}' (v{self.version})")
