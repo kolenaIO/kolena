@@ -9,7 +9,7 @@ parameters:
     default: "3.9"
 
 jobs:
-  kolena-ci:
+  unit-test:
     parameters:
       python-version:
         type: string
@@ -56,7 +56,7 @@ jobs:
             - codecov/upload:
                 file: coverage.xml
 
-  integration-tests:
+  integration-test:
     parameters:
       python-version:
         type: string
@@ -74,11 +74,21 @@ jobs:
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
       - run:
-          name: Run integration tests
+          name: Run << parameters.pytest-group >> integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            poetry run pytest -vv --durations=0 --cov=kolena --cov-branch tests/integration/<< parameters.pytest-group >>
+            TEST_GROUP="<< parameters.pytest-group >>"
+            if [ "$TEST_GROUP" = "misc" ]; then
+              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch \
+                --ignore=tests/integration/classification \
+                --ignore=tests/integration/detection \
+                --ignore=tests/integration/generic \
+                --ignore=tests/integration/fr \
+                tests/integration
+            else
+              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch tests/integration/$TEST_GROUP
+            fi
       - when:
           # Generate coverage only from one python version
           condition:
@@ -94,15 +104,15 @@ jobs:
 workflows:
   ci:
     jobs:
-      - kolena-ci:
-          name: kolena-ci-<< matrix.python-version >>
+      - unit-test:
+          name: unit-test-<< matrix.python-version >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10" ]
-      - integration-tests:
+      - integration-test:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ "detection" ]
+              pytest-group: [ "detection", "fr", "generic", "misc" ]
           requires:
-            - kolena-ci-<< matrix.python-version >>
+            - unit-test-<< matrix.python-version >>
