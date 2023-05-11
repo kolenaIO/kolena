@@ -69,3 +69,21 @@ def _get_results_url(client_state: _ClientState, workflow: str, model_id: int, t
         path = "results"
         params["workflow"] = workflow
     return f"{platform_url}/{path}?{urlencode(params)}"
+
+
+def get_test_suite_url(test_suite_id: int) -> str:
+    return _get_test_suite_url(get_client_state(), test_suite_id)
+
+
+def _get_test_suite_url(client_state: _ClientState, test_suite_id: int) -> str:
+    platform_url = _get_platform_url(client_state)
+    return f"{platform_url}/testing?{urlencode(dict(testSuiteId=test_suite_id))}"
+
+
+def get_model_url(model_id: int) -> str:
+    return _get_model_url(get_client_state(), model_id)
+
+
+def _get_model_url(client_state: _ClientState, model_id: int) -> str:
+    platform_url = _get_platform_url(client_state)
+    return f"{platform_url}/models?{urlencode(dict(modelIds=model_id))}"
