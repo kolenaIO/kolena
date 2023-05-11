@@ -156,8 +156,8 @@ def test__load(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -
     assert loaded_test_suite.description == test_suite_updated.description
     assert loaded_test_suite.version == test_suite_updated.version
 
-    assert loaded_test_suite.baseline_test_cases == [fr_test_cases[1].data]
-    assert loaded_test_suite.non_baseline_test_cases == [fr_test_cases[2].data]
+    assert loaded_test_suite.data.baseline_test_cases == [fr_test_cases[1].data]
+    assert loaded_test_suite.data.non_baseline_test_cases == [fr_test_cases[2].data]
 
 
 def test__load__with_version(fr_test_suites: List[TestSuite], fr_test_cases: List[TestCase]) -> None:
