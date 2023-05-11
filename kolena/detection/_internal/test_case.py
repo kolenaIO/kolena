@@ -126,7 +126,6 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         images: Optional[List[_TestImageClass]] = None,
     ) -> "BaseTestCase":
         """Create a new test case with the provided name."""
-        log.info(f"creating new test case '{name}'")
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
@@ -134,7 +133,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         obj = cls._create_from_data(data)
         if images is not None:
             obj._hydrate(images)
-        log.success(f"created new test case '{name}'")
+        log.info(f"created test case '{name}'")
         return obj
 
     @classmethod
@@ -144,6 +143,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
+        log.info(f"loaded test case '{name}'")
         return from_dict(data_class=CoreAPI.EntityData, data=res.json())
 
     @validate_arguments(config=ValidatorConfig)
@@ -154,10 +154,8 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         with self.edit(reset=True) as editor:
             if description is not None:
                 editor.description(description)
-            log.info(f"adding images to test case '{self.name}'")
-            for image in log.progress_bar(images):
+            for image in images:
                 editor.add(image)
-            log.success(f"added images to test case '{self.name}'")
 
     @classmethod
     def _create_from_data(cls, data: CoreAPI.EntityData) -> "BaseTestCase":
@@ -308,7 +306,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         if not editor._edited:
             return
 
-        log.info(f"updating test case '{self.name}'")
+        log.info(f"editing test case '{self.name}'")
         init_response = init_upload()
         df = self._to_data_frame(list(editor._images.values()))
         df_serialized = df.as_serializable()
@@ -328,4 +326,4 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(complete_res)
         test_case_data = from_dict(data_class=CoreAPI.EntityData, data=complete_res.json())
         self._populate_from_other(self._create_from_data(test_case_data))
-        log.success(f"updated test case '{self.name}'")
+        log.success(f"edited test case '{self.name}'")

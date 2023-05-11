@@ -27,6 +27,7 @@ from pydantic import validate_arguments
 from kolena._api.v1.fr import TestSuite as API
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
@@ -122,14 +123,13 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         :param test_cases: optionally specify a set of test cases to populate the test suite.
         :return: the newly created test suite.
         """
-        log.info(f"creating test suite '{name}'")
         request = API.CreateRequest(name=name, description=description or "")
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
         obj = cls._create_from_data(data)
         obj._hydrate(baseline_test_cases, non_baseline_test_cases)
-        log.success(f"created test suite '{name}'")
+        log.info(f"created test suite '{name}' ({get_test_suite_url(obj._id)})")
         return obj
 
     @classmethod
@@ -160,12 +160,12 @@ class TestSuite(ABC, Frozen, WithTelemetry):
 
     @classmethod
     def _load_by_name(cls, name: str, version: Optional[int] = None) -> "TestSuite":
-        log.info(f"loading test suite '{name}'")
         request = API.LoadByNameRequest(name=name, version=version)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        log.success(f"loaded test suite '{name}'")
-        return cls._create_from_data(from_dict(data_class=API.EntityData, data=res.json()))
+        obj = cls._create_from_data(from_dict(data_class=API.EntityData, data=res.json()))
+        log.info(f"loaded test suite '{name}' ({get_test_suite_url(obj._id)})")
+        return obj
 
     def _populate_from_other(self, other: "TestSuite") -> None:
         with self._unfrozen():
@@ -327,7 +327,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         if not editor._edited:
             return
 
-        log.info(f"updating test suite '{self.name}'")
+        log.info(f"editing test suite '{self.name}'")
         request = API.EditRequest(
             test_suite_id=self._id,
             current_version=self.version,
@@ -340,4 +340,4 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         test_suite_data = from_dict(data_class=API.EntityData, data=res.json())
         self._populate_from_other(self._create_from_data(test_suite_data))
-        log.success(f"updated test suite '{self.name}'")
+        log.success(f"edited test suite '{self.name}' ({get_test_suite_url(self._id)})")

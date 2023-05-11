@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
-import re
 from collections import defaultdict
 from dataclasses import make_dataclass
 from typing import Any
@@ -39,6 +38,7 @@ from kolena.classification.multiclass.workflow import TestSample
 from kolena.classification.multiclass.workflow import TestSampleMetrics
 from kolena.classification.multiclass.workflow import TestSuiteMetrics
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
+from kolena.workflow import BarPlot
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
@@ -48,10 +48,6 @@ from kolena.workflow import Plot
 from kolena.workflow import TestCases
 
 Result = Tuple[TestSample, GroundTruth, Inference]
-
-
-def _clean_variable_name(name: str) -> str:
-    return re.sub(r"\W+", "_", name)
 
 
 def _compute_test_sample_metric(
@@ -86,6 +82,25 @@ def _compute_test_sample_metric(
     )
 
 
+def _as_class_metric_plot(
+    metric_name: str,
+    metrics_by_label: Dict[str, AggregatedMetrics],
+    labels: List[str],
+) -> BarPlot:
+    if metric_name == "Recall":
+        title = f"{metric_name} (TPR) vs. Class"
+    else:
+        title = f"{metric_name} vs. Class"
+
+    return BarPlot(
+        title=title,
+        x_label="Class",
+        y_label=metric_name,
+        labels=labels,
+        values=[getattr(metrics_by_label[label], metric_name) for label in labels],
+    )
+
+
 def _as_confidence_histogram(
     title: str,
     confidence_scores: List[float],
@@ -112,6 +127,7 @@ def _compute_test_case_plots(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
+    metrics_by_label: Dict[str, AggregatedMetrics],
     confidence_range: Tuple[float, float, int],
 ) -> List[Plot]:
     confidence_all = [mts.classification.confidence for mts in metrics if mts.classification is not None]
@@ -122,11 +138,21 @@ def _compute_test_case_plots(
         mts.classification.confidence for mts in metrics if mts.classification is not None and not mts.is_correct
     ]
 
+    gt_labels = {gt.classification.label for gt in ground_truths}
+    class_metric_plots = [
+        _as_class_metric_plot(field.name, metrics_by_label, labels)
+        for field in dataclasses.fields(AggregatedMetrics)
+        if len(gt_labels) > 2
+        or field.name not in ["Precision", "Recall"]  # Omit single-class TC from precision and recall plots
+    ]
+
     plots = [
+        *class_metric_plots,
         _as_confidence_histogram("Confidence Distribution (All)", confidence_all, confidence_range),
         _as_confidence_histogram("Confidence Distribution (Correct)", confidence_correct, confidence_range),
         _as_confidence_histogram("Confidence Distribution (Incorrect)", confidence_incorrect, confidence_range),
     ]
+
     roc_curve_plot = _compute_test_case_ovr_roc_curve(labels, ground_truths, inferences)
     if roc_curve_plot:
         plots.append(roc_curve_plot)
@@ -187,8 +213,8 @@ def _compute_test_case_ovr_roc_curve(
     if len(curves) > 0:
         return CurvePlot(
             title="Receiver Operating Characteristic (One-vs-Rest)",
-            x_label="False Positive Rate",
-            y_label="True Positive Rate",
+            x_label="False Positive Rate (FPR)",
+            y_label="True Positive Rate (TPR)",
             curves=curves,
         )
     return None
@@ -223,54 +249,42 @@ def _aggregate_label_metrics(
         fpr = n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0
         f1_score = (2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0
         aggregated_metrics[base_label] = AggregatedMetrics(
-            Count=n_tp + n_fn,
             F1=f1_score,
             Precision=precision,
             Recall=recall,
-            TPR=recall,
             FPR=fpr,
         )
     return aggregated_metrics
 
 
 def _compute_test_case_metrics(
-    labels: List[str],
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
-    inferences: List[Inference],
     metrics_test_samples: List[TestSampleMetrics],
+    metrics_by_label: Dict[str, AggregatedMetrics],
 ) -> TestCaseMetrics:
     n_correct = len([metric for metric in metrics_test_samples if metric.is_correct])
     n_images = len(test_samples)
+    n_incorrect = n_images - n_correct
     accuracy = n_correct / n_images
-    values: Dict[str, Any] = dict(
+    labels = {gt.classification.label for gt in ground_truths}
+
+    macro_metrics_by_name: Dict[str, float] = {}
+    for field in dataclasses.fields(AggregatedMetrics):
+        metric_name = field.name
+        metrics = [getattr(metrics_by_label[label], metric_name) for label in labels]
+        macro_metrics_by_name[metric_name] = sum(metrics) / len(metrics)
+
+    return TestCaseMetrics(
         n_correct=n_correct,
+        n_incorrect=n_incorrect,
         accuracy=accuracy,
+        macro_precision=macro_metrics_by_name["Precision"],
+        macro_recall=macro_metrics_by_name["Recall"],
+        macro_f1=macro_metrics_by_name["F1"],
+        macro_tpr=macro_metrics_by_name["Recall"],
+        macro_fpr=macro_metrics_by_name["FPR"],
     )
-    fields: Dict[str, Type] = {}
-
-    aggregated_label_metrics = _aggregate_label_metrics(
-        labels,
-        test_samples,
-        ground_truths,
-        inferences,
-        metrics_test_samples,
-    )
-    for label, aggregated_metrics in aggregated_label_metrics.items():
-        label_name = _clean_variable_name(label)
-        for field in dataclasses.fields(AggregatedMetrics):
-            key = f"{label_name}_{field.name}"
-            value = getattr(aggregated_metrics, field.name)
-            values[key] = value
-            fields[key] = float
-
-    dc = make_dataclass(
-        "WorkflowTestCaseMetrics",
-        bases=(TestCaseMetrics,),
-        fields=list(fields.items()),
-        frozen=True,
-    )
-    return dc(**values)
 
 
 def _compute_test_suite_metrics(
@@ -295,8 +309,6 @@ def _compute_test_suite_metrics(
     metrics_by_label = _aggregate_label_metrics(labels, test_samples, ground_truths, inferences, test_sample_metrics)
     for field in dataclasses.fields(AggregatedMetrics):
         attr = field.name
-        if attr == "Count":
-            continue  # mean and variance for Count not really meaningful
         label_values = [getattr(metric, attr) for metric in metrics_by_label.values()]
         mean_field_name = f"mean_{attr}"
         var_field_name = f"variance_{attr}"
@@ -345,9 +357,18 @@ def MulticlassClassificationEvaluator(
         inferences,
         test_sample_metrics,
     ):
-        test_case_metrics = _compute_test_case_metrics(labels, tc_samples, tc_gts, tc_infs, tc_metrics)
+        aggregated_label_metrics = _aggregate_label_metrics(labels, tc_samples, tc_gts, tc_infs, tc_metrics)
+        test_case_metrics = _compute_test_case_metrics(tc_samples, tc_gts, tc_metrics, aggregated_label_metrics)
         metrics_test_case.append((tc, test_case_metrics))
-        test_case_plots = _compute_test_case_plots(tc.name, labels, tc_gts, tc_infs, tc_metrics, confidence_range)
+        test_case_plots = _compute_test_case_plots(
+            tc.name,
+            labels,
+            tc_gts,
+            tc_infs,
+            tc_metrics,
+            aggregated_label_metrics,
+            confidence_range,
+        )
         plots_test_case.append((tc, test_case_plots))
 
     all_test_case_metrics = [metric for _, metric in metrics_test_case]

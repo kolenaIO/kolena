@@ -92,6 +92,7 @@ class _PlotType(DataType):
     CURVE = "CURVE"
     CONFUSION_MATRIX = "CONFUSION_MATRIX"
     HISTOGRAM = "HISTOGRAM"
+    BAR = "BAR"
 
     @staticmethod
     def _data_category() -> str:
@@ -196,6 +197,40 @@ class Histogram(Plot):
     @staticmethod
     def _data_type() -> _PlotType:
         return _PlotType.HISTOGRAM
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class BarPlot(Plot):
+    """A plot visualizing a set of bars per test case."""
+
+    title: str
+
+    #: Axis label for the axis along which the bars are laid out (``labels``).
+    x_label: str
+
+    #: Axis label for the axis corresponding to bar height (``values``).
+    y_label: str
+
+    #: Labels for each bar with corresponding height specified in ``values``.
+    labels: Sequence[Union[str, int, float]]
+
+    #: Values for each bar with corresponding label specified in ``labels``.
+    values: NullableNumberSeries
+
+    #: Custom format options to allow for control over the display of the numerical plot axis (``values``).
+    config: Optional[AxisConfig] = None
+
+    def __post_init_post_parse__(self) -> None:
+        n_labels, n_values = len(self.labels), len(self.values)
+        if n_labels == 0 or n_values == 0 or n_labels != n_values:
+            raise ValueError(
+                f"Series 'labels' (length: {n_labels}) and 'values' (length: {n_values}) "
+                "must be equal length and non-empty",
+            )
+
+    @staticmethod
+    def _data_type() -> _PlotType:
+        return _PlotType.BAR
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

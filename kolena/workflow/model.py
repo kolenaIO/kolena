@@ -31,6 +31,7 @@ from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import BatchSize
+from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
@@ -111,13 +112,13 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param metadata: optional unstructured metadata to store with this model.
         :return: the newly created model.
         """
-        log.info(f"creating model '{name}'")
         metadata = metadata or {}
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        log.success(f"created model '{name}'")
-        return cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        log.info(f"created model '{name}' ({get_model_url(obj._id)})")
+        return obj
 
     @classmethod
     def load(cls, name: str, infer: Optional[Callable[[TestSample], Inference]] = None) -> "Model":
@@ -130,7 +131,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         request = CoreAPI.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        return cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        log.info(f"loaded model '{name}' ({get_model_url(obj._id)})")
+        return obj
 
     @validate_arguments(config=ValidatorConfig)
     def load_inferences(self, test_case: TestCase) -> List[Tuple[TestSample, GroundTruth, Inference]]:

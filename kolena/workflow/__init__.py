@@ -23,6 +23,7 @@ from .test_sample import Composite
 from .test_sample import Text
 from .test_sample import BaseVideo
 from .test_sample import Video
+from .test_sample import Document
 from .ground_truth import GroundTruth
 from .inference import Inference
 from .workflow import Workflow
@@ -35,6 +36,7 @@ from .evaluator import Curve
 from .evaluator import CurvePlot
 from .evaluator import ConfusionMatrix
 from .evaluator import Histogram
+from .evaluator import BarPlot
 from .evaluator import MetricsTestCase
 from .evaluator import MetricsTestSample
 from .evaluator import MetricsTestSuite
@@ -58,6 +60,7 @@ __all__ = [
     "Text",
     "BaseVideo",
     "Video",
+    "Document",
     "GroundTruth",
     "Inference",
     "Workflow",
@@ -70,6 +73,7 @@ __all__ = [
     "CurvePlot",
     "ConfusionMatrix",
     "Histogram",
+    "BarPlot",
     "MetricsTestCase",
     "MetricsTestSample",
     "MetricsTestSuite",

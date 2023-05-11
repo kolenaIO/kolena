@@ -155,7 +155,6 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param test_samples: optionally specify a set of test samples and ground truths to populate the test case.
         :return: the newly created test case.
         """
-        log.info(f"creating new test case '{name}'")
         cls._validate_test_samples(test_samples)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
@@ -164,7 +163,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj = cls._create_from_data(data)
         if test_samples is not None:
             obj._hydrate(test_samples)
-        log.success(f"created new test case '{name}' (v{obj.version})")
+        log.info(f"created test case '{name}' (v{obj.version})")
         return obj
 
     @classmethod
