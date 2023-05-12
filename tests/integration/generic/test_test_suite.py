@@ -68,8 +68,10 @@ def test__init() -> None:
     test_suite2 = TestSuite(name)
     assert test_suite == test_suite2
 
-    test_suite3 = TestSuite(name, description="different description should be ignored")
-    assert test_suite == test_suite3
+    new_description = "description can be updated without version bump"
+    test_suite3 = TestSuite(name, description=new_description)
+    assert test_suite3.description == new_description
+    assert test_suite3.version == test_suite.version
 
 
 def test__init__reset(test_case: TestCase, test_case_versions: List[TestCase]) -> None:
@@ -106,6 +108,37 @@ def test__init__with_version(test_case_versions: List[TestCase]) -> None:
     test_suite0_reloaded = TestSuite(name, version=test_suite0.version)
     assert test_suite0.test_cases == test_suite0_reloaded.test_cases
     assert test_suite0_reloaded.description == new_description
+
+
+def test__init__with_tags(with_init: None, test_case_versions: List[TestCase]) -> None:
+    name = f"{__file__}::test__init__with_tags test suite"
+    tags = {"example", "tags", "suite"}
+    test_suite = TestSuite(name, tags=tags)
+    assert test_suite.tags == tags
+
+    tags.add("new tag")
+    test_suite = TestSuite(name, tags=tags)  # can always update tags without bumping version
+    assert test_suite.tags == tags
+    assert test_suite.version == 0
+
+    test_suite = TestSuite(name)  # not specifying tags does not clear tags
+    assert test_suite.tags == tags
+    assert test_suite.version == 0
+
+    test_suite = TestSuite(name, tags=set())  # specifying empty tags clears tags
+    assert test_suite.tags == set()
+    assert test_suite.version == 0
+
+    test_suite = TestSuite(name, tags=tags, test_cases=[test_case_versions[0]])  # can update as part of regular update
+    assert test_suite.tags == tags
+    assert test_suite.version == 1
+    assert test_suite.test_cases == [test_case_versions[0]]
+
+    # reset does not clear tags when unspecified
+    test_suite = TestSuite(name, test_cases=[test_case_versions[1]], reset=True)
+    assert test_suite.tags == tags
+    assert test_suite.version == 2
+    assert test_suite.test_cases == [test_case_versions[1]]
 
 
 def test__load__mismatching_workflows() -> None:
