@@ -19,6 +19,7 @@ import requests
 from requests import HTTPError
 from requests_toolbelt import user_agent
 from requests_toolbelt.adapters import socket_options
+from urllib3.util import Retry
 
 from kolena import __name__ as client_name
 from kolena import __version__ as client_version
@@ -48,6 +49,11 @@ STATUS_CODE__CONFLICT = 409
 CONNECTION_CONNECT_TIMEOUT = 15.05
 CONNECTION_READ_TIMEOUT = 60 * 60  # Give kolena server 1 hour to respond to client request
 
+# This only retries for failed DNS lookups, socket connections and connection timeouts.
+# HTTPAdapter sets this to 0 by default. https://requests.readthedocs.io/en/latest/_modules/requests/adapters/
+# Using the Retry object to configure a backoff which is not supported by using an int here.
+MAX_RETRIES = Retry(total=3, connect=3, read=0, redirect=0, status=0, backoff_factor=2)
+
 
 @kolena_initialized
 def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
@@ -72,14 +78,16 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
 @kolena_initialized
 def get(endpoint_path: str, params: Any = None, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path)
-    return requests.get(url=url, params=params, **_with_default_kwargs(**kwargs))
+    with requests.Session() as s:
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
+        return s.get(url=url, params=params, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
 def post(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path)
     with requests.Session() as s:
-        s.mount("https://", socket_options.TCPKeepAliveAdapter())
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.post(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
@@ -87,14 +95,16 @@ def post(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) 
 def put(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path)
     with requests.Session() as s:
-        s.mount("https://", socket_options.TCPKeepAliveAdapter())
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.put(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
 def delete(endpoint_path: str, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path)
-    return requests.delete(url=url, **_with_default_kwargs(**kwargs))
+    with requests.Session() as s:
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
+        return requests.delete(url=url, **_with_default_kwargs(**kwargs))
 
 
 def raise_for_status(response: requests.Response) -> None:

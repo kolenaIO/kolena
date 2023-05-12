@@ -61,18 +61,22 @@ class TestSampleMetrics(MetricsTestSample):
 
 @dataclass(frozen=True)
 class AggregatedMetrics:
-    Count: int
     F1: float
     Precision: float
     Recall: float
-    TPR: float
     FPR: float
 
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
     n_correct: int
+    n_incorrect: int
     accuracy: float
+    macro_precision: float
+    macro_recall: float
+    macro_f1: float
+    macro_tpr: float
+    macro_fpr: float
 
 
 @dataclass(frozen=True)

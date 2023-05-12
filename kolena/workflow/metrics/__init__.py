@@ -11,6 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from ._geometry import InferenceMatches
 from ._geometry import iou
+from ._geometry import match_inferences
 
-__all__ = ["iou"]
+__all__ = [
+    "iou",
+    "InferenceMatches",
+    "match_inferences",
+]

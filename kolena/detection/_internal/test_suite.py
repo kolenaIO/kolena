@@ -31,6 +31,7 @@ from kolena._api.v1.detection import TestSuite as API
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
@@ -110,7 +111,6 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         test_cases: Optional[List[BaseTestCase]] = None,
     ) -> "BaseTestSuite":
         """Create a new test suite with the provided name."""
-        log.info(f"creating new test suite '{name}'")
         request = CoreAPI.TestSuite.CreateRequest(name=name, description=description or "", workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
@@ -118,7 +118,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         obj = cls._create_from_data(data)
         if test_cases is not None:
             obj._hydrate(test_cases)
-        log.success(f"created new test suite '{name}'")
+        log.info(f"created test suite '{name}' ({get_test_suite_url(obj._id)})")
         return obj
 
     @classmethod
@@ -137,11 +137,9 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         with self.edit(reset=True) as editor:
             if description is not None:
                 editor.description(description)
-            if len(test_cases):
-                log.info(f"adding test cases to test suite '{self.name}'")
-                for test_case in log.progress_bar(test_cases):
+            if len(test_cases) > 0:
+                for test_case in test_cases:
                     editor.add(test_case)
-                log.info(f"added test cases to test suite '{self.name}'")
 
     @classmethod
     def _create_from_data(cls, data: CoreAPI.TestSuite.EntityData) -> "BaseTestSuite":
@@ -183,7 +181,9 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         :return: the loaded test suite.
         """
         data = cls._load_by_name(name, version)
-        return cls._create_from_data(data)
+        obj = cls._create_from_data(data)
+        log.info(f"loaded test suite '{name}' ({get_test_suite_url(obj._id)})")
+        return obj
 
     class Editor:
         """
@@ -289,7 +289,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             log.info("no op: nothing edited")
             return
 
-        log.info(f"updating test suite '{self.name}'")
+        log.info(f"edited test suite '{self.name}'")
         request = CoreAPI.TestSuite.EditRequest(
             test_suite_id=self._id,
             current_version=self.version,
@@ -300,8 +300,8 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         data = json.dumps(dataclasses.asdict(request))
         res = krequests.post(endpoint_path=API.Path.EDIT.value, data=data)
         krequests.raise_for_status(res)
-        log.success(f"updated test suite '{self.name}'")
         test_suite_data = from_dict(data_class=CoreAPI.TestSuite.EntityData, data=res.json())
+        log.success(f"edited test suite '{self.name}' ({get_test_suite_url(test_suite_data.id)})")
         with self._unfrozen():
             self.version = test_suite_data.version
             self.description = test_suite_data.description

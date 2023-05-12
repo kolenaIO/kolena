@@ -124,7 +124,6 @@ class TestCase(ABC, Frozen, WithTelemetry):
         :param test_samples: optionally specify a set of test samples to populate the test case.
         :return: the newly created test case.
         """
-        log.info(f"creating new test case '{name}'")
         request = API.CreateRequest(name=name, description=description or "")
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
@@ -132,7 +131,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         obj = cls._create_from_data(data)
         if test_samples is not None:
             obj._hydrate(test_samples)
-        log.success(f"created new test case '{name}'")
+        log.info(f"created test case '{name}'")
         return obj
 
     @classmethod
@@ -162,12 +161,11 @@ class TestCase(ABC, Frozen, WithTelemetry):
 
     @classmethod
     def _load_by_name(cls, name: str, version: Optional[int] = None) -> "TestCase":
-        log.info(f"loading test case '{name}'")
         request = API.LoadByNameRequest(name=name, version=version)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
-        log.success(f"loaded test case '{name}'")
+        log.info(f"loaded test case '{name}'")
         return cls._create_from_data(data)
 
     def load_data(self) -> TestCaseDataFrame:
@@ -314,7 +312,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         if not editor._edited():
             return
 
-        log.info(f"updating test case '{self.name}'")
+        log.info(f"editing test case '{self.name}'")
         init_response = init_upload()
         df = pd.DataFrame(editor._samples.values(), columns=TEST_CASE_COLUMNS)
         df_validated = validate_df_schema(df, TestCaseDataFrameSchema)
@@ -334,7 +332,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(complete_res)
         test_case_data = from_dict(data_class=API.EntityData, data=complete_res.json())
         self._populate_from_other(self._create_from_data(test_case_data))
-        log.success(f"updated test case '{self.name}'")
+        log.success(f"edited test case '{self.name}'")
 
     @validate_arguments
     def iter_data(self, batch_size: int = 10_000_000) -> Iterator[TestCaseDataFrame]:

@@ -74,6 +74,7 @@ class _TestSampleType(DataType):
     IMAGE = "IMAGE"
     TEXT = "TEXT"
     VIDEO = "VIDEO"
+    DOCUMENT = "DOCUMENT"
     COMPOSITE = "COMPOSITE"
     CUSTOM = "CUSTOM"
 
@@ -210,7 +211,19 @@ class Video(BaseVideo):
             raise ValueError(f"Specified start time '{self.start}' and end time '{self.end}' must be non-negative")
 
 
-_TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo]
+@dataclass(frozen=True, config=ValidatorConfig)
+class Document(TestSample):
+    """A remotely linked document, e.g. PDF or TXT file."""
+
+    #: URL (e.g. S3, HTTPS) of the document
+    locator: str
+
+    @classmethod
+    def _data_type(cls) -> _TestSampleType:
+        return _TestSampleType.DOCUMENT
+
+
+_TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo, Document]
 
 
 def _validate_test_sample_type(test_sample_type: Type[TestSample], recurse: bool = True) -> None:

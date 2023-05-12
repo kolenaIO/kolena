@@ -27,6 +27,7 @@ from kolena._api.v1.fr import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.endpoints import get_model_url
 from kolena._utils.serde import from_dict
 from kolena._utils.uninstantiable import Uninstantiable
 from kolena._utils.validators import ValidatorConfig
@@ -56,12 +57,12 @@ class Model(Uninstantiable["Model.Data"]):
         :return: the created model
         :raises ValueError: if a model by the provided name already exists
         """
-        log.info(f"creating model '{name}'")
         request = API.CreateRequest(name=name, metadata=metadata)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        log.success(f"created model '{name}'")
-        return Model.__factory__(from_dict(data_class=Model.Data, data=res.json()))
+        obj = Model.__factory__(from_dict(data_class=Model.Data, data=res.json()))
+        log.info(f"created model '{name}' ({get_model_url(obj.data.id)})")
+        return obj
 
     @classmethod
     def load_by_name(cls, name: str) -> "Model":
@@ -72,12 +73,12 @@ class Model(Uninstantiable["Model.Data"]):
         :return: the retrieved model
         :raises KeyError: if no model with the provided name exists
         """
-        log.info(f"loading model '{name}'")
         request = API.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        log.success(f"loaded model '{name}'")
-        return Model.__factory__(from_dict(data_class=Model.Data, data=res.json()))
+        obj = Model.__factory__(from_dict(data_class=Model.Data, data=res.json()))
+        log.info(f"loaded model '{name}' ({get_model_url(obj.data.id)})")
+        return obj
 
     def _get_load_pair_results_request(
         self,

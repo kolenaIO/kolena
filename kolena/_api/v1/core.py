@@ -79,7 +79,7 @@ class TestCase:
     @dataclass(frozen=True)
     class CreateFromExistingResponse:
         test_case_id: int
-        test_suite_id: int
+        test_suite_id: int  # newly created version ID
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -126,7 +126,7 @@ class TestCase:
 
     @dataclass(frozen=True)
     class BulkCreateFromExistingResult:
-        test_suite_id: int
+        test_suite_id: int  # ID of specific version
         test_suite_name: str
         test_suite_description: Optional[str]
         test_cases: List[TestCaseInfo]
@@ -138,6 +138,7 @@ class TestSuite:
         name: str
         description: str
         workflow: str
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -152,14 +153,16 @@ class TestSuite:
         description: str
         test_cases: List[TestCase.EntityData]
         workflow: str
+        tags: List[str]
 
     @dataclass(frozen=True)
     class EditRequest:
-        test_suite_id: int
+        test_suite_id: int  # ID of version being edited
         current_version: int
         name: str
         description: str
         test_case_ids: List[int]
+        tags: Optional[List[str]] = None  # unique set -- list used to preserve ordering
 
     @dataclass(frozen=True)
     class DeleteRequest:
@@ -178,7 +181,7 @@ NUMERIC = "numeric"
 
 @dataclass(frozen=True)
 class Dimension:
-    column: Literal["test_sample", "test_sample_metadata"]
+    column: Literal["test_sample", "test_sample_metadata", "ground_truth"]
     field: str
     datatype: Literal["categorical", "numeric"]
 
@@ -253,7 +256,7 @@ class BaseStratifyRequest:
 
 @dataclass(frozen=True)
 class StratifyResponse:
-    test_suite_id: int
+    test_suite_id: int  # newly created version ID
     test_suite_name: str
     test_suite_description: str
     base_test_case: TestCaseInfo

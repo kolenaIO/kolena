@@ -36,6 +36,7 @@ from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import DFType
 from kolena._utils.consts import BatchSize
+from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
@@ -91,12 +92,12 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     @classmethod
     @validate_arguments(config=ValidatorConfig)
     def _create(cls, workflow: WorkflowType, name: str, metadata: Dict[str, Any]) -> CoreAPI.EntityData:
-        log.info(f"creating new model '{name}'")
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        log.success(f"created new model '{name}'")
-        return from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        obj = from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        log.info(f"created model '{name}' ({get_model_url(obj.id)})")
+        return obj
 
     @classmethod
     @validate_arguments(config=ValidatorConfig)
@@ -104,7 +105,9 @@ class BaseModel(ABC, Frozen, WithTelemetry):
         request = CoreAPI.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        return from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        obj = from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        log.info(f"loaded model '{name}' ({get_model_url(obj.id)})")
+        return obj
 
     @validate_arguments(config=ValidatorConfig)
     def load_inferences(
