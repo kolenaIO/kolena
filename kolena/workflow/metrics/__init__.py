@@ -14,9 +14,11 @@
 from ._geometry import InferenceMatches
 from ._geometry import iou
 from ._geometry import match_inferences
+from ._geometry import match_inferences_multi_class
 
 __all__ = [
-    "iou",
     "InferenceMatches",
+    "iou",
     "match_inferences",
+    "match_inferences_multi_class",
 ]
