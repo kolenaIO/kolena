@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import defaultdict
 from dataclasses import dataclass
+from typing import Dict
 from typing import Generic
 from typing import List
 from typing import Optional
@@ -103,15 +105,31 @@ class InferenceMatches(Generic[GT, Inf]):
     as precision and recall.
 
     Objects must be a BoundingBox or a Polygon.
-
-    :attribute GT: A union of bounding box and polygon classes with or without a label
-    :attribute Inf: A union of scored bounding box and polygon classes with or without a label
     """
 
     #: Pairs of matched ground truth and inference objects above the IOU threshold. True positives.
     matched: List[Tuple[GT, Inf]]
     #: Unmatched ground truth objects. False negatives.
     unmatched_gt: List[GT]
+    #: Unmatched inference objects. False positives.
+    unmatched_inf: List[Inf]
+
+
+@dataclass(frozen=True)
+class MultiClassInferenceMatches(Generic[GT, Inf]):
+    """
+    The result of :func:`match_inferences_multi_class`, providing lists of matches between ground truth and inference
+    objects, unmatched ground truths, and unmatched inferences. The unmatched ground truths may be matched with an
+    inference of a different class when no inference of its own class is suitable, a confused match.
+    :class:`MultiClassInferenceMatches` can be used to calculate metrics such as precision and recall per class.
+
+    Objects must be a BoundingBox or a Polygon.
+    """
+
+    #: Pairs of matched ground truth and inference objects above the IOU threshold. True positives.
+    matched: List[Tuple[GT, Inf]]
+    #: Pairs of unmatched ground truth objects with its confused match, if it has one. False negatives.
+    unmatched_gt: List[Tuple[GT, Optional[Inf]]]
     #: Unmatched inference objects. False positives.
     unmatched_inf: List[Inf]
 
@@ -191,3 +209,89 @@ def match_inferences(
         )
 
     raise ValueError(f"Mode: '{mode}' is not a valid mode.")
+
+
+def match_inferences_multi_class(
+    ground_truths: List[Union[LabeledBoundingBox, LabeledPolygon]],
+    inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
+    *,
+    ignored_ground_truths: Optional[List[Union[LabeledBoundingBox, LabeledPolygon]]] = None,
+    mode: Literal["pascal"] = "pascal",
+    iou_threshold: float = 0.5,
+) -> MultiClassInferenceMatches[GT, Inf]:
+    """
+    Matches lists of inferences and ground truths with the provided configuration for by performing single class
+    matching per class. Unmatched inferences and ground truths are matched once more to identify confused matchings,
+    where a matching is composed of two objects of different classes.
+
+    PASCAL VOC - For every inference by order of highest confidence, the ground truth of highest IOU is its match.
+    Multiple inferences are able to match with the same ignored ground truth.
+    See the `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+
+    :param ground_truths: A list of BoundingBox or a Polygon ground truths.
+    :param inferences: A list of scored BoundingBox or a Polygon inferences.
+    :param ignored_ground_truths: A list of BoundingBox or a Polygon ground truths to ignore.
+    :param mode: The type of matching methodology to use: ``pascal``, more to come...
+    :param iou_threshold: The IOU threshold cutoff for valid matchings.
+    :return: the matchings (TPs), unmatched ground truths (FNs) and inferences (FPs)
+    """
+    matched: List[Tuple[GT, Inf]] = []
+    unmatched_gt: List[GT] = []
+    unmatched_inf: List[Inf] = []
+    gts_by_class: Dict[str, List[GT]] = defaultdict(list)
+    infs_by_class: Dict[str, List[Inf]] = defaultdict(list)
+    ignored_gts_by_class: Dict[str, List[GT]] = defaultdict(list)
+    all_labels: Set[str] = set()
+
+    if mode == "pascal":
+        matching_function = _match_inferences_single_class_pascal_voc
+    else:
+        raise ValueError(f"Mode: '{mode}' is not a valid mode.")
+
+    # collect all unique labels, store gts and infs of the same label together
+    for gt in ground_truths:
+        gts_by_class[gt.label].append(gt)
+        all_labels.add(gt.label)
+
+    for inf in inferences:
+        infs_by_class[inf.label].append(inf)
+        all_labels.add(inf.label)
+
+    if ignored_ground_truths:
+        for ignored_gt in ignored_ground_truths:
+            ignored_gts_by_class[ignored_gt.label].append(ignored_gt)
+
+    for label in sorted(all_labels):
+        ground_truths_single = gts_by_class[label]
+        inferences_single = infs_by_class[label]
+        ignored_ground_truths_single = ignored_gts_by_class[label]
+
+        single_matches: InferenceMatches = matching_function(
+            ground_truths_single,
+            inferences_single,
+            ignored_ground_truths=ignored_ground_truths_single,
+            iou_threshold=iou_threshold,
+        )
+
+        matched += single_matches.matched
+        unmatched_gt += single_matches.unmatched_gt
+        unmatched_inf += single_matches.unmatched_inf
+
+    confused_matches = matching_function(
+        unmatched_gt,
+        unmatched_inf,
+        ignored_ground_truths=ignored_ground_truths,
+        iou_threshold=iou_threshold,
+    )
+
+    confused = []
+    for gt, inf in confused_matches.matched:
+        if gt.label != inf.label:
+            confused.append((gt, inf))
+            unmatched_gt.remove(gt)
+
+    return MultiClassInferenceMatches(
+        matched=matched,
+        unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
+        unmatched_inf=unmatched_inf,
+    )
