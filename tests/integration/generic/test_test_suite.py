@@ -110,8 +110,8 @@ def test__init__with_version(test_case_versions: List[TestCase]) -> None:
     assert test_suite0_reloaded.description == new_description
 
 
-def test__init__with_tags(with_init: None, test_case_versions: List[TestCase]) -> None:
-    name = f"{__file__}::test__init__with_tags test suite"
+def test__init__with_tags(test_case_versions: List[TestCase]) -> None:
+    name = with_test_prefix(f"{__file__}::test__init__with_tags test suite")
     tags = {"example", "tags", "suite"}
     test_suite = TestSuite(name, tags=tags)
     assert test_suite.tags == tags
