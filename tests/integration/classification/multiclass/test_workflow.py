@@ -39,4 +39,4 @@ def test__multiclass_classification__smoke() -> None:
         return Inference(inferences=[InferenceLabel(label=label, confidence=conf) for label, conf in inferences])
 
     model = Model(f"{name} model", infer=infer)
-    test(model, test_suite)
+    test(model, test_suite)  # TODO: add detailed unit tests for MulticlassClassificationEvaluator
