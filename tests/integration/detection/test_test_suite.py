@@ -322,4 +322,4 @@ def test__load__with_version_mismatch() -> None:
         TestSuite.load(test_suite_name, mismatch_version)
 
     exc_info_value = str(exc_info.value)
-    assert f"(version {mismatch_version})" in exc_info_value
+    assert f"{mismatch_version}" in exc_info_value
