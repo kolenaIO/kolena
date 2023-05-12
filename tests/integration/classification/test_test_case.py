@@ -26,7 +26,7 @@ from tests.integration.helper import with_test_prefix
 
 
 @pytest.fixture(scope="module")
-def test_dataset(with_init: None) -> List[TestImage]:
+def test_dataset() -> List[TestImage]:
     name = with_test_prefix(f"{__file__}::test_dataset fixture dataset")
     return [
         TestImage(fake_random_locator(), dataset=name),
@@ -34,7 +34,7 @@ def test_dataset(with_init: None) -> List[TestImage]:
     ]
 
 
-def test__create(with_init: None) -> None:
+def test__create() -> None:
     test_case_name = with_test_prefix(f"{__file__} test__create test case")
     description = f"{test_case_name} (description)"
     test_case = TestCase.create(test_case_name, description)
@@ -44,7 +44,7 @@ def test__create(with_init: None) -> None:
     assert test_case._workflow == WorkflowType.CLASSIFICATION
 
 
-def test__create__with_images(with_init: None, test_dataset: List[TestImage]) -> None:
+def test__create__with_images(test_dataset: List[TestImage]) -> None:
     name = with_test_prefix(f"{__file__}::test__create__with_images test case")
     description = f"{name} (description)"
     images = test_dataset
@@ -54,14 +54,14 @@ def test__create__with_images(with_init: None, test_dataset: List[TestImage]) ->
     assert test_case._workflow == WorkflowType.CLASSIFICATION
 
 
-def test__load(with_init: None) -> None:
+def test__load() -> None:
     test_case_name = with_test_prefix(f"{__file__} test__load test case")
     test_case = TestCase(test_case_name)
     loaded_test_case = TestCase.load(test_case_name)
     assert test_case == loaded_test_case
 
 
-def test__load__with_version(with_init: None) -> None:
+def test__load__with_version() -> None:
     test_case_name = with_test_prefix(f"{__file__} test__load__with_version test case")
     test_case = TestCase(test_case_name)
     new_description = f"{__file__} test__load__version new description"
@@ -84,7 +84,7 @@ def test__load__with_version(with_init: None) -> None:
     assert loaded_test_case_v1.description == new_description
 
 
-def test__load__mismatch(with_init: None) -> None:
+def test__load__mismatch() -> None:
     test_case_name = with_test_prefix(f"{__file__} test__load__mismatch test case")
     DetectionTestCase(test_case_name)
     with pytest.raises(WorkflowMismatchError) as exc_info:
@@ -95,7 +95,7 @@ def test__load__mismatch(with_init: None) -> None:
     assert TestCase._workflow.value in exc_info_value
 
 
-def test__load__with_version_mismatch(with_init: None) -> None:
+def test__load__with_version_mismatch() -> None:
     test_case_name = with_test_prefix(f"{__file__} test__load__with_version_mismatch test case")
     TestCase(test_case_name)
     mismatch_version = 42
