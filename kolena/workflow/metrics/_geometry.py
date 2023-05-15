@@ -104,7 +104,7 @@ class InferenceMatches(Generic[GT, Inf]):
     unmatched ground truths, and unmatched inferences. After applying some confidence threshold on returned inference
     objects, :class:`InferenceMatches` can be used to calculate metrics such as precision and recall.
 
-    Objects are of type :class:`BoundingBox`` or :class:`Polygon`, depending on inputs provided to
+    Objects are of type :class:`BoundingBox` or :class:`Polygon`, depending on the type of inputs provided to
     :func:`match_inferences`.
     """
 
@@ -214,7 +214,7 @@ class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     :class:`MultiClassInferenceMatches` can be used to calculate metrics such as precision and recall per class, after
     applying some confidence threshold on the returned inference objects.
 
-    Objects are of type :class:`BoundingBox`` or :class:`Polygon`, depending on inputs provided to
+    Objects are of type :class:`BoundingBox`` or :class:`Polygon`, depending on the type of inputs provided to
     :func:`match_inferences`.
     """
 
@@ -252,7 +252,7 @@ def match_inferences_multiclass(
       its match. Multiple inferences are able to match with the same ignored ground truth. See the
       `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
 
-    :param List[LabeledGeometry] ground_truths: a list of :class:`LabeledBoundingBox or :class:`LabeledPolygon` ground
+    :param List[LabeledGeometry] ground_truths: a list of :class:`LabeledBoundingBox` or :class:`LabeledPolygon` ground
         truths.
     :param List[ScoredLabeledGeometry] inferences: a list of :class:`ScoredLabeledBoundingBox` or
         :class:`ScoredLabeledPolygon` inferences.
