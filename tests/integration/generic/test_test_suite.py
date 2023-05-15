@@ -152,7 +152,7 @@ def test__load__mismatching_workflows() -> None:
 
 
 def test__load_all(with_init: None) -> None:
-    workflow = f"{__file__}::test__load_all workflow"
+    workflow = with_test_prefix(f"{__file__}::test__load_all workflow")
     _, TestCase, TestSuite, _ = define_workflow(workflow, DummyTestSample, DummyGroundTruth, DummyInference)
     name = with_test_prefix(f"{__file__}::test__load_all test suite")
     test_suite0 = TestSuite(f"{name} 0")  # no tags, version 0
