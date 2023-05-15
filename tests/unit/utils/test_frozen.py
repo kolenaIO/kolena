@@ -23,7 +23,7 @@ class TestFrozen(Frozen):
         self._freeze()
 
 
-def test_frozen() -> None:
+def test__frozen() -> None:
     obj = TestFrozen()
     with pytest.raises(FrozenObjectError):
         obj.a = "b"
@@ -31,7 +31,7 @@ def test_frozen() -> None:
     assert obj.a == "a"
 
 
-def test_unfrozen() -> None:
+def test__unfrozen() -> None:
     obj = TestFrozen()
     with obj._unfrozen():
         obj.a = "new"

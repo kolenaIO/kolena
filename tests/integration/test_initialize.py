@@ -30,13 +30,13 @@ def clean_client_state() -> Iterator[None]:
         _client_state.reset()
 
 
-def test_initialize(clean_client_state: None, kolena_token: str) -> None:
+def test__initialize(clean_client_state: None, kolena_token: str) -> None:
     kolena.initialize(kolena_token)
     assert _client_state.api_token == kolena_token
     assert _client_state.jwt_token is not None
 
 
-def test_initialize_deprecated_old_client(clean_client_state: None, kolena_token: str) -> None:
+def test__initialize__deprecated_old_client(clean_client_state: None, kolena_token: str) -> None:
     """Manually test acceptance of 'entity' with raw request for client versions prior to 0.29.0"""
     url = _client_state.base_url + "/v1/token/login"
     payload = {"entity": "ignored", "version": "0.28.0", "api_token": kolena_token}
@@ -46,7 +46,7 @@ def test_initialize_deprecated_old_client(clean_client_state: None, kolena_token
     assert resp.json()["access_token"] is not None
 
 
-def test_initialize_invalid_version(clean_client_state: None, kolena_token: str) -> None:
+def test__initialize__invalid_version(clean_client_state: None, kolena_token: str) -> None:
     version = kolena.__version__
     try:
         kolena.__version__ = "0.0.0"
@@ -56,6 +56,6 @@ def test_initialize_invalid_version(clean_client_state: None, kolena_token: str)
         kolena.__version__ = version
 
 
-def test_initialize_bad_token(clean_client_state: None) -> None:
+def test__initialize__bad_token(clean_client_state: None) -> None:
     with pytest.raises(InvalidTokenError):
         kolena.initialize("bad_token")

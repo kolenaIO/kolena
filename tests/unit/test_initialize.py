@@ -54,40 +54,40 @@ def clean_client_state() -> Iterator[None]:
         _client_state.reset()
 
 
-def test_initialize_positional(clean_client_state: None) -> None:
+def test__initialize__positional(clean_client_state: None) -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize("bar")
         assert _client_state.api_token == "bar"
         assert _client_state.jwt_token is not None
 
 
-def test_initialize_keyword(clean_client_state: None) -> None:
+def test__initialize__keyword(clean_client_state: None) -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize(api_token="foo")
         assert _client_state.api_token == "foo"
         assert _client_state.jwt_token is not None
 
 
-def test_initialize_deprecated_positional(clean_client_state: None) -> None:
+def test__initialize__deprecated_positional(clean_client_state: None) -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize("random entity", "def")
         assert _client_state.api_token == "def"
         assert _client_state.jwt_token is not None
 
 
-def test_initialize_deprecated_keyword(clean_client_state: None) -> None:
+def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize(entity="test entity", api_token="abc")
         assert _client_state.api_token == "abc"
         assert _client_state.jwt_token is not None
 
 
-def test_uninitialized_usage(clean_client_state: None) -> None:
+def test__uninitialized_usage(clean_client_state: None) -> None:
     with pytest.raises(UninitializedError):
         kolena.fr.Model.create("test", {})
 
 
-def test_kolena_session(clean_client_state: None) -> None:
+def test__kolena_session(clean_client_state: None) -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
     token_2 = "token tenant two"
@@ -124,7 +124,7 @@ def test_kolena_session(clean_client_state: None) -> None:
         assert get_client_state() == _client_state
 
 
-def test_kolena_session_multithreads(clean_client_state: None) -> None:
+def test__kolena_session__multithread(clean_client_state: None) -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
     token_2 = "token tenant two"

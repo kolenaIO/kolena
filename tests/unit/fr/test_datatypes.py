@@ -20,7 +20,7 @@ from kolena.fr.datatypes import ImageResultDataFrameSchema
 from kolena.fr.datatypes import PairResultDataFrameSchema
 
 
-def test_image_result_schema() -> None:
+def test__image_result_schema() -> None:
     def image_chip() -> np.ndarray:
         return (np.random.rand(112, 112, 3) * 256).astype(np.uint8)
 
@@ -51,7 +51,7 @@ def test_image_result_schema() -> None:
     ImageResultDataFrameSchema.validate(df)
 
 
-def test_pair_result_schema() -> None:
+def test__pair_result_schema() -> None:
     batch_size = 10
     df = pd.DataFrame(
         dict(
