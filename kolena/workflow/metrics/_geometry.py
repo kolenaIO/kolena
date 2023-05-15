@@ -25,6 +25,8 @@ from typing import Union
 from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
+from kolena.errors import InputValidationError
+
 try:
     from typing import Literal
 except ImportError:
@@ -75,7 +77,7 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
 
     :param a: the first geometry in computation.
     :param b: the second geometry in computation.
-    :return: the value of the IOU between geometries `a` and `b`.
+    :return: the value of the IOU between geometries ``a`` and ``b``.
     """
 
     if isinstance(a, BoundingBox) and isinstance(b, BoundingBox):
@@ -93,7 +95,7 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
     return polygon_a.intersection(polygon_b).area / union if union > 0 else 0
 
 
-GT = TypeVar("GT", bound=Union[BoundingBox, Polygon, LabeledBoundingBox, LabeledPolygon])
+GT = TypeVar("GT", bound=Union[BoundingBox, Polygon])
 Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon])
 
 
@@ -101,36 +103,21 @@ Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeled
 class InferenceMatches(Generic[GT, Inf]):
     """
     The result of :func:`match_inferences`, providing lists of matches between ground truth and inference objects,
-    unmatched ground truths, and unmatched inferences. :class:`InferenceMatches` can be used to calculate metrics such
-    as precision and recall.
+    unmatched ground truths, and unmatched inferences. After applying some confidence threshold on returned inference
+    objects, :class:`InferenceMatches` can be used to calculate metrics such as precision and recall.
 
-    Objects must be a BoundingBox or a Polygon.
+    Objects are of type :class:`BoundingBox` or :class:`Polygon`, depending on the type of inputs provided to
+    :func:`match_inferences`.
     """
 
-    #: Pairs of matched ground truth and inference objects above the IOU threshold. True positives.
+    #: Pairs of matched ground truth and inference objects above the IOU threshold. Considered as true positive
+    #: detections after applying some confidence threshold.
     matched: List[Tuple[GT, Inf]]
-    #: Unmatched ground truth objects. False negatives.
+
+    #: Unmatched ground truth objects. Considered as false negatives.
     unmatched_gt: List[GT]
-    #: Unmatched inference objects. False positives.
-    unmatched_inf: List[Inf]
 
-
-@dataclass(frozen=True)
-class MultiClassInferenceMatches(Generic[GT, Inf]):
-    """
-    The result of :func:`match_inferences_multi_class`, providing lists of matches between ground truth and inference
-    objects, unmatched ground truths, and unmatched inferences. The unmatched ground truths may be matched with an
-    inference of a different class when no inference of its own class is suitable, a confused match.
-    :class:`MultiClassInferenceMatches` can be used to calculate metrics such as precision and recall per class.
-
-    Objects must be a BoundingBox or a Polygon.
-    """
-
-    #: Pairs of matched ground truth and inference objects above the IOU threshold. True positives.
-    matched: List[Tuple[GT, Inf]]
-    #: Pairs of unmatched ground truth objects with its confused match, if it has one. False negatives.
-    unmatched_gt: List[Tuple[GT, Optional[Inf]]]
-    #: Unmatched inference objects. False positives.
+    #: Unmatched inference objects. Considered as false positives after applying some confidence threshold.
     unmatched_inf: List[Inf]
 
 
@@ -141,7 +128,6 @@ def _match_inferences_single_class_pascal_voc(
     iou_threshold: float = 0.5,
 ) -> InferenceMatches[GT, Inf]:
     matched: List[Tuple[GT, Inf]] = []
-    unmatched_gt: List[GT] = []
     unmatched_inf: List[Inf] = []
     taken_gts: Set[int] = set()
 
@@ -184,20 +170,26 @@ def match_inferences(
     iou_threshold: float = 0.5,
 ) -> InferenceMatches[GT, Inf]:
     """
-    Matches lists of inferences and ground truths using the provided configuration. This matcher does not consider
-    labels, which is appropriate for single class object matching. For matchings with multiple classes, use the
-    multiclass matcher.
+    Matches model inferences with annotated ground truths using the provided configuration.
 
-    PASCAL VOC - For every inference by order of highest confidence, the ground truth of highest IOU is its match.
-    Multiple inferences are able to match with the same ignored ground truth.
-    See the `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+    This matcher does not consider labels, which is appropriate for single class object matching. To match with multiple
+    classes (i.e. heeding ``label`` classifications), use the multiclass matcher :func:`match_inferences_multiclass`.
 
-    :param ground_truths: A list of BoundingBox or a Polygon ground truths.
-    :param inferences: A list of scored BoundingBox or a Polygon inferences.
-    :param ignored_ground_truths: A list of BoundingBox or a Polygon ground truths to ignore.
-    :param mode: The type of matching methodology to use: ``pascal``, more to come...
-    :param iou_threshold: The IOU threshold cutoff for valid matchings.
-    :return: the matches, unmatched ground truths, and unmatched inferences.
+    Available modes:
+
+    - ``pascal`` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IOU is
+      its match. Multiple inferences are able to match with the same ignored ground truth. See the
+      `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+
+    :param List[Geometry] ground_truths: a list of :class:`BoundingBox` or :class:`Polygon` ground truths.
+    :param List[ScoredGeometry] inferences: a list of :class:`ScoredBoundingBox` or :class:`ScoredPolygon` inferences.
+    :param Optional[List[Geometry]] ignored_ground_truths: optionally specify a list of :class:`BoundingBox` or
+        :class:`Polygon` ground truths to ignore. These ignored ground truths and any inferences matched with them are
+        omitted from the returned :class:`InferenceMatches`.
+    :param Literal["pascal"] mode: the type of matching methodology to use. See available modes above.
+    :param iou_threshold: the IOU (intersection over union, see :meth:`iou`) threshold for valid matches.
+    :return: :class:`InferenceMatches` containing the matches (true positives), unmatched ground truths (false
+        negatives) and unmatched inferences (false positives).
     """
 
     if mode == "pascal":
@@ -208,45 +200,84 @@ def match_inferences(
             iou_threshold=iou_threshold,
         )
 
-    raise ValueError(f"Mode: '{mode}' is not a valid mode.")
+    raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
 
 
-def match_inferences_multi_class(
-    ground_truths: List[Union[LabeledBoundingBox, LabeledPolygon]],
-    inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
+GT_Multiclass = TypeVar("GT_Multiclass", bound=Union[LabeledBoundingBox, LabeledPolygon])
+Inf_Multiclass = TypeVar("Inf_Multiclass", bound=Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon])
+
+
+@dataclass(frozen=True)
+class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
+    """
+    The result of :func:`match_inferences_multiclass`, providing lists of matches between ground truth and inference
+    objects, unmatched ground truths, and unmatched inferences. The unmatched ground truths may be matched with an
+    inference of a different class when no inference of its own class is suitable, a confused match.
+    :class:`MultiClassInferenceMatches` can be used to calculate metrics such as precision and recall per class, after
+    applying some confidence threshold on the returned inference objects.
+
+    Objects are of type :class:`BoundingBox` or :class:`Polygon`, depending on the type of inputs provided to
+    :func:`match_inferences`.
+    """
+
+    #: Pairs of matched ground truth and inference objects above the IOU threshold. Considered as true positive
+    #: detections after applying some confidence threshold.
+    matched: List[Tuple[GT_Multiclass, Inf_Multiclass]]
+
+    #: Pairs of unmatched ground truth objects with its confused inference object (i.e. IOU above threshold with
+    # mismatching ``label``), if such an inference exists. Considered as false negatives and "confused" detections.
+    unmatched_gt: List[Tuple[GT_Multiclass, Optional[Inf_Multiclass]]]
+
+    #: Unmatched inference objects. Considered as false positives after applying some confidence threshold.
+    unmatched_inf: List[Inf_Multiclass]
+
+
+def match_inferences_multiclass(
+    ground_truths: List[GT_Multiclass],
+    inferences: List[Inf_Multiclass],
     *,
-    ignored_ground_truths: Optional[List[Union[LabeledBoundingBox, LabeledPolygon]]] = None,
+    ignored_ground_truths: Optional[List[GT_Multiclass]] = None,
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
-) -> MultiClassInferenceMatches[GT, Inf]:
+) -> MulticlassInferenceMatches[GT_Multiclass, Inf_Multiclass]:
     """
-    Matches lists of inferences and ground truths with the provided configuration for by performing single class
-    matching per class. Unmatched inferences and ground truths are matched once more to identify confused matchings,
-    where a matching is composed of two objects of different classes.
+    Matches model inferences with annotated ground truths using the provided configuration.
 
-    PASCAL VOC - For every inference by order of highest confidence, the ground truth of highest IOU is its match.
-    Multiple inferences are able to match with the same ignored ground truth.
-    See the `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+    This matcher considers ``label`` values matching per class. After matching inferences and ground truths with
+    equivalent ``label`` values, unmatched inferences and unmatched ground truths are matched once more to identify
+    confused matches, where localization succeeded (i.e. IOU above ``iou_threshold``) but classification failed (i.e.
+    mismatching ``label`` values).
 
-    :param ground_truths: A list of BoundingBox or a Polygon ground truths.
-    :param inferences: A list of scored BoundingBox or a Polygon inferences.
-    :param ignored_ground_truths: A list of BoundingBox or a Polygon ground truths to ignore.
-    :param mode: The type of matching methodology to use: ``pascal``, more to come...
-    :param iou_threshold: The IOU threshold cutoff for valid matchings.
-    :return: the matchings (TPs), unmatched ground truths (FNs) and inferences (FPs)
+    Available modes:
+
+    - ``pascal`` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IOU is
+      its match. Multiple inferences are able to match with the same ignored ground truth. See the
+      `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+
+    :param List[LabeledGeometry] ground_truths: a list of :class:`LabeledBoundingBox` or :class:`LabeledPolygon` ground
+        truths.
+    :param List[ScoredLabeledGeometry] inferences: a list of :class:`ScoredLabeledBoundingBox` or
+        :class:`ScoredLabeledPolygon` inferences.
+    :param Optional[List[LabeledGeometry]] ignored_ground_truths: optionally specify a list of
+        :class:`LabeledBoundingBox` or :class:`LabeledPolygon` ground truths to ignore. These ignored ground truths any
+        any inferences matched with them are omitted from the returned :class:`MulticlassInferenceMatches`.
+    :param Literal["pascal"] mode: The type of matching methodology to use. See available modes above.
+    :param iou_threshold: The IOU threshold cutoff for valid matches.
+    :return: :class:`MulticlassInferenceMatches` containing the matches (true positives), unmatched ground truths (false
+        negatives), and unmatched inferences (false positives).
     """
-    matched: List[Tuple[GT, Inf]] = []
-    unmatched_gt: List[GT] = []
-    unmatched_inf: List[Inf] = []
-    gts_by_class: Dict[str, List[GT]] = defaultdict(list)
-    infs_by_class: Dict[str, List[Inf]] = defaultdict(list)
-    ignored_gts_by_class: Dict[str, List[GT]] = defaultdict(list)
+    matched: List[Tuple[GT_Multiclass, Inf_Multiclass]] = []
+    unmatched_gt: List[GT_Multiclass] = []
+    unmatched_inf: List[Inf_Multiclass] = []
+    gts_by_class: Dict[str, List[GT_Multiclass]] = defaultdict(list)
+    infs_by_class: Dict[str, List[Inf_Multiclass]] = defaultdict(list)
+    ignored_gts_by_class: Dict[str, List[GT_Multiclass]] = defaultdict(list)
     all_labels: Set[str] = set()
 
     if mode == "pascal":
         matching_function = _match_inferences_single_class_pascal_voc
     else:
-        raise ValueError(f"Mode: '{mode}' is not a valid mode.")
+        raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
 
     # collect all unique labels, store gts and infs of the same label together
     for gt in ground_truths:
@@ -290,7 +321,7 @@ def match_inferences_multi_class(
             confused.append((gt, inf))
             unmatched_gt.remove(gt)
 
-    return MultiClassInferenceMatches(
+    return MulticlassInferenceMatches(
         matched=matched,
         unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
         unmatched_inf=unmatched_inf,

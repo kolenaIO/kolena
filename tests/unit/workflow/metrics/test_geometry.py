@@ -18,6 +18,7 @@ from typing import Union
 
 import pytest
 
+from kolena.errors import InputValidationError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledPolygon
@@ -25,14 +26,11 @@ from kolena.workflow.annotation import Polygon
 from kolena.workflow.annotation import ScoredBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledPolygon
+from kolena.workflow.metrics import iou
+from kolena.workflow.metrics import match_inferences
+from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics._geometry import GT
 from kolena.workflow.metrics._geometry import Inf
-from kolena.workflow.metrics._geometry import iou
-from kolena.workflow.metrics._geometry import match_inferences
-from kolena.workflow.metrics._geometry import match_inferences_multi_class
-
-# Link to Notion describing tests:
-# https://www.notion.so/kolena/Multi-class-OD-bbox-matcher-8c94243ca4574a019b76836db509b6aa
 
 
 @pytest.mark.parametrize(
@@ -79,7 +77,7 @@ from kolena.workflow.metrics._geometry import match_inferences_multi_class
         (BoundingBox((1, 2), (4, 6)), BoundingBox((0, 0), (3, 4)), 0.2),
     ],
 )
-def test_iou_bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -> None:
+def test__iou__bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -> None:
     assert iou(box1, box2) == pytest.approx(expected_iou, abs=1e-5)
 
 
@@ -107,7 +105,7 @@ def test_iou_bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -> 
         (BoundingBox((0, 0), (4, 4)), BoundingBox((2, 2), (6, 6)), 4 / 28),
     ],
 )
-def test_iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, Polygon], expected_iou: float) -> None:
+def test__iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, Polygon], expected_iou: float) -> None:
     iou_value = iou(points1, points2)
     assert iou_value == pytest.approx(expected_iou, abs=1e-5)
 
@@ -663,7 +661,7 @@ def test_iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, P
         ),
     ],
 )
-def test_match_inferences_single_class(
+def test__match_inferences(
     test_name: str,
     ground_truths: List[GT],
     inferences: List[Inf],
@@ -683,28 +681,11 @@ def test_match_inferences_single_class(
     assert expected_unmatched_inf == matches.unmatched_inf
 
 
-@pytest.mark.parametrize(
-    "test_name, ground_truths, inferences",
-    [
-        (
-            # test_name
-            "1. Fail mode",
-            # ground_truth
-            [LabeledBoundingBox(label="cow", top_left=(100, 100), bottom_right=(110, 110))],
-            # inference
-            [ScoredLabeledBoundingBox(score=0.5, label="cow", top_left=(99, 99), bottom_right=(112, 112))],
-        ),
-    ],
-)
-def test_match_inferences_single_class_fails(
-    test_name: str,
-    ground_truths: List[GT],
-    inferences: List[Inf],
-) -> None:
-    with pytest.raises(Exception):
+def test__match_inferences__invalid_mode() -> None:
+    with pytest.raises(InputValidationError):
         match_inferences(
-            ground_truths,
-            inferences,
+            [BoundingBox(top_left=(100, 100), bottom_right=(110, 110))],
+            [ScoredBoundingBox(score=0.5, top_left=(99, 99), bottom_right=(112, 112))],
             mode="not pascal",
         )
 
@@ -2453,7 +2434,7 @@ def test_match_inferences_single_class_fails(
         ),
     ],
 )
-def test_match_inferences_multi_class(
+def test__match_inferences_multiclass(
     test_name: str,
     ground_truths: List[GT],
     inferences: List[Inf],
@@ -2462,7 +2443,7 @@ def test_match_inferences_multi_class(
     expected_unmatched_gt: List[GT],
     expected_unmatched_inf: List[Inf],
 ) -> None:
-    matches = match_inferences_multi_class(
+    matches = match_inferences_multiclass(
         ground_truths,
         inferences,
         ignored_ground_truths=ignored_ground_truths,
@@ -2475,28 +2456,11 @@ def test_match_inferences_multi_class(
     assert expected_unmatched_inf == matches.unmatched_inf
 
 
-@pytest.mark.parametrize(
-    "test_name, ground_truths, inferences",
-    [
-        (
-            # test_name
-            "M1. Fail mode",
-            # ground_truth
+def test__match_inferences_multiclass__invalid_mode() -> None:
+    with pytest.raises(InputValidationError):
+        match_inferences_multiclass(
             [LabeledBoundingBox(label="cow", top_left=(100, 100), bottom_right=(110, 110))],
-            # inference
             [ScoredLabeledBoundingBox(score=0.5, label="cow", top_left=(99, 99), bottom_right=(112, 112))],
-        ),
-    ],
-)
-def test_match_inferences_multi_class_fails(
-    test_name: str,
-    ground_truths: List[Union[LabeledBoundingBox, LabeledPolygon]],
-    inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
-) -> None:
-    with pytest.raises(Exception):
-        match_inferences_multi_class(
-            ground_truths,
-            inferences,
             mode="not pascal",
         )
 
@@ -2550,7 +2514,7 @@ def test_match_inferences_multi_class_fails(
         ),
     ],
 )
-def test_match_inferences_multi_class_iou(
+def test__match_inferences_multiclass__iou(
     test_name: str,
     ground_truths: List[Union[LabeledBoundingBox, LabeledPolygon]],
     inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
@@ -2558,7 +2522,7 @@ def test_match_inferences_multi_class_iou(
     expected_unmatched_gt: List[GT],
     expected_unmatched_inf: List[Inf],
 ) -> None:
-    matches = match_inferences_multi_class(
+    matches = match_inferences_multiclass(
         ground_truths,
         inferences,
         mode="pascal",
