@@ -14,7 +14,7 @@
 from kolena._utils.dataframes.validators import _is_locator_cell_valid
 
 
-def test_validate_locator() -> None:
+def test__validate_locator() -> None:
     valid_locators = [
         "s3://bucket-name/path/to/image.jpg",
         "gs://bucket/path/to/image.png",

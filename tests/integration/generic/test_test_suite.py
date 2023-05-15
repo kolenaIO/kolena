@@ -152,9 +152,9 @@ def test__load__mismatching_workflows() -> None:
 
 
 def test__load_all(with_init: None) -> None:
-    workflow = f"{__file__}::test__load_all workflow"
+    workflow = with_test_prefix(f"{__file__}::test__load_all workflow")
     _, TestCase, TestSuite, _ = define_workflow(workflow, DummyTestSample, DummyGroundTruth, DummyInference)
-    name = f"{__file__}::test__load_all test suite"
+    name = with_test_prefix(f"{__file__}::test__load_all test suite")
     test_suite0 = TestSuite(f"{name} 0")  # no tags, version 0
     test_suite1 = TestSuite(f"{name} 1", tags={name, f"{name} 1"})  # has tags, version 0
     test_suite2 = TestSuite(f"{name} 2", tags={name, f"{name} 2"}, test_cases=[TestCase(name)])  # tags, v1
@@ -175,7 +175,7 @@ def test__edit(test_case_versions: List[TestCase]) -> None:
     assert test_suite.test_cases == [test_case_versions[0]]
     assert all(tc.workflow == test_suite.workflow for tc in test_suite.test_cases)
 
-    test_case = TestCase(f"{__file__}::test__edit test suite test case")
+    test_case = TestCase(with_test_prefix(f"{__file__}::test__edit test suite test case"))
     with test_suite.edit() as editor:
         editor.add(test_case)
     assert test_suite.version == 2

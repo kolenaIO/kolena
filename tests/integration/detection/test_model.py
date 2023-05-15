@@ -35,7 +35,7 @@ from tests.integration.helper import fake_random_locator
 from tests.integration.helper import with_test_prefix
 
 
-def test_init() -> None:
+def test__init() -> None:
     name = with_test_prefix(f"{__file__}::test_init model")
     metadata = dict(a="A", b=1, c=None, d=True, e=[1, "test", None], f=dict(g="test"), h=None)
     model = Model(name, metadata=metadata)
@@ -45,14 +45,14 @@ def test_init() -> None:
     assert model == Model(name)
 
 
-def test_init_changed_metadata() -> None:
+def test__init__changed_metadata() -> None:
     name = with_test_prefix(f"{__file__}::test_init_changed_metadata model")
     metadata = dict(one="two", three="four")
     model = Model(name, metadata=metadata)
     assert model == Model(name, metadata=dict(changed="metadata"))  # changed metadata is ignored
 
 
-def test_create_bad_metadata() -> None:
+def test__create__bad_metadata() -> None:
     with pytest.raises(ValidationError):
         Model(with_test_prefix(f"{__file__}::test_create_bad_metadata model"), "not a dict")  # type: ignore
     with pytest.raises(ValidationError):
@@ -62,7 +62,7 @@ def test_create_bad_metadata() -> None:
         )  # type: ignore
 
 
-def test_load_inferences_with_no_inferences(detection_test_data: TestData) -> None:
+def test__load_inferences__no_inferences(detection_test_data: TestData) -> None:
     model = detection_test_data.models[0]
     test_suite = detection_test_data.test_suites[1]
     test_cases = test_suite.test_cases
@@ -131,9 +131,9 @@ def _test_load_inferences(test_name: str, n_images: int, gts: List[GroundTruth],
     assert fake_inferences == actual_inferences
 
 
-def test_load_inferences_bounding_box() -> None:
+def test__load_inferences__bounding_box() -> None:
     _test_load_inferences(
-        test_name="test_load_inferences_bounding_box",
+        test_name="test__load_inferences__bounding_box",
         n_images=5,
         gts=[
             GTBoundingBox(
@@ -164,9 +164,9 @@ def test_load_inferences_bounding_box() -> None:
     )
 
 
-def test_load_inferences_segmentation_mask() -> None:
+def test__load_inferences__segmentation_mask() -> None:
     _test_load_inferences(
-        test_name="test_load_inferences_segmentation_mask",
+        test_name="test__load_inferences__segmentation_mask",
         n_images=5,
         gts=[
             GTSegmentationMask(

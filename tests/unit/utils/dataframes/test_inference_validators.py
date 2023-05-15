@@ -27,7 +27,7 @@ from kolena._utils.inference_validators import validate_label
         (" \n\r  ", False),
     ],
 )
-def test_validate_label(label: str, is_valid: bool) -> None:
+def test__validate_label(label: str, is_valid: bool) -> None:
     if not is_valid:
         with pytest.raises(ValueError):
             validate_label(label)
@@ -51,7 +51,7 @@ def test_validate_label(label: str, is_valid: bool) -> None:
         (-float("inf"), False),
     ],
 )
-def test_validate_confidence(confidence: float, is_valid: bool) -> None:
+def test__validate_confidence(confidence: float, is_valid: bool) -> None:
     if not is_valid:
         with pytest.raises(ValueError):
             validate_confidence(confidence)
