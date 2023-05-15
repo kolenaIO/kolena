@@ -171,7 +171,7 @@ def match_inferences(
     Matches model inferences with annotated ground truths using the provided configuration.
 
     This matcher does not consider labels, which is appropriate for single class object matching. To match with multiple
-    classes (i.e. heeding ``label`` classifications), use the multiclass matcher :func:`match_inferences_multi_class`.
+    classes (i.e. heeding ``label`` classifications), use the multiclass matcher :func:`match_inferences_multiclass`.
 
     Available modes:
 
@@ -206,9 +206,9 @@ Inf_Multiclass = TypeVar("Inf_Multiclass", bound=Union[ScoredLabeledBoundingBox,
 
 
 @dataclass(frozen=True)
-class MultiClassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
+class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     """
-    The result of :func:`match_inferences_multi_class`, providing lists of matches between ground truth and inference
+    The result of :func:`match_inferences_multiclass`, providing lists of matches between ground truth and inference
     objects, unmatched ground truths, and unmatched inferences. The unmatched ground truths may be matched with an
     inference of a different class when no inference of its own class is suitable, a confused match.
     :class:`MultiClassInferenceMatches` can be used to calculate metrics such as precision and recall per class, after
@@ -230,14 +230,14 @@ class MultiClassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     unmatched_inf: List[Inf_Multiclass]
 
 
-def match_inferences_multi_class(
+def match_inferences_multiclass(
     ground_truths: List[GT_Multiclass],
     inferences: List[Inf_Multiclass],
     *,
     ignored_ground_truths: Optional[List[GT_Multiclass]] = None,
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
-) -> MultiClassInferenceMatches[GT_Multiclass, Inf_Multiclass]:
+) -> MulticlassInferenceMatches[GT_Multiclass, Inf_Multiclass]:
     """
     Matches model inferences with annotated ground truths using the provided configuration.
 
@@ -258,10 +258,10 @@ def match_inferences_multi_class(
         :class:`ScoredLabeledPolygon` inferences.
     :param Optional[List[LabeledGeometry]] ignored_ground_truths: optionally specify a list of
         :class:`LabeledBoundingBox` or :class:`LabeledPolygon` ground truths to ignore. These ignored ground truths any
-        any inferences matched with them are omitted from the returned :class:`MultiClassInferenceMatches`.
+        any inferences matched with them are omitted from the returned :class:`MulticlassInferenceMatches`.
     :param Literal["pascal"] mode: The type of matching methodology to use. See available modes above.
     :param iou_threshold: The IOU threshold cutoff for valid matches.
-    :return: :class:`MultiClassInferenceMatches` containing the matches (true positives), unmatched ground truths (false
+    :return: :class:`MulticlassInferenceMatches` containing the matches (true positives), unmatched ground truths (false
         negatives), and unmatched inferences (false positives).
     """
     matched: List[Tuple[GT_Multiclass, Inf_Multiclass]] = []
@@ -319,7 +319,7 @@ def match_inferences_multi_class(
             confused.append((gt, inf))
             unmatched_gt.remove(gt)
 
-    return MultiClassInferenceMatches(
+    return MulticlassInferenceMatches(
         matched=matched,
         unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
         unmatched_inf=unmatched_inf,

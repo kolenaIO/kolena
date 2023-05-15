@@ -29,7 +29,7 @@ from kolena.workflow.metrics._geometry import GT
 from kolena.workflow.metrics._geometry import Inf
 from kolena.workflow.metrics._geometry import iou
 from kolena.workflow.metrics._geometry import match_inferences
-from kolena.workflow.metrics._geometry import match_inferences_multi_class
+from kolena.workflow.metrics._geometry import match_inferences_multiclass
 
 # Link to Notion describing tests:
 # https://www.notion.so/kolena/Multi-class-OD-bbox-matcher-8c94243ca4574a019b76836db509b6aa
@@ -2462,7 +2462,7 @@ def test_match_inferences_multi_class(
     expected_unmatched_gt: List[GT],
     expected_unmatched_inf: List[Inf],
 ) -> None:
-    matches = match_inferences_multi_class(
+    matches = match_inferences_multiclass(
         ground_truths,
         inferences,
         ignored_ground_truths=ignored_ground_truths,
@@ -2494,7 +2494,7 @@ def test_match_inferences_multi_class_fails(
     inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
 ) -> None:
     with pytest.raises(Exception):
-        match_inferences_multi_class(
+        match_inferences_multiclass(
             ground_truths,
             inferences,
             mode="not pascal",
@@ -2558,7 +2558,7 @@ def test_match_inferences_multi_class_iou(
     expected_unmatched_gt: List[GT],
     expected_unmatched_inf: List[Inf],
 ) -> None:
-    matches = match_inferences_multi_class(
+    matches = match_inferences_multiclass(
         ground_truths,
         inferences,
         mode="pascal",
