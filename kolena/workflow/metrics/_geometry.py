@@ -216,7 +216,7 @@ class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     :class:`MultiClassInferenceMatches` can be used to calculate metrics such as precision and recall per class, after
     applying some confidence threshold on the returned inference objects.
 
-    Objects are of type :class:`BoundingBox`` or :class:`Polygon`, depending on the type of inputs provided to
+    Objects are of type :class:`BoundingBox` or :class:`Polygon`, depending on the type of inputs provided to
     :func:`match_inferences`.
     """
 
