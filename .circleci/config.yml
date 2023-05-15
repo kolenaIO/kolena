@@ -128,9 +128,10 @@ jobs:
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
-    working_directory: examples/<< parameters.subproject >>
+    working_directory: ~/project/examples/<< parameters.subproject >>
     steps:
-      - checkout
+      - checkout:
+          path: ~/project
       - run: |
           poetry config experimental.new-installer false
           poetry config installer.max-workers 10
