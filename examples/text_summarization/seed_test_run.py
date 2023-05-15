@@ -6,11 +6,11 @@ from typing import Dict
 from typing import Tuple
 
 import pandas as pd
-from kolena_contrib.text_summarization.evaluator import evaluate_text_summarization
-from kolena_contrib.text_summarization.workflow import Inference
-from kolena_contrib.text_summarization.workflow import Model
-from kolena_contrib.text_summarization.workflow import TestSample
-from kolena_contrib.text_summarization.workflow import TestSuite
+from .evaluator import evaluate_text_summarization
+from .workflow import Inference
+from .workflow import Model
+from .workflow import TestSample
+from .workflow import TestSuite
 
 import kolena
 from kolena.workflow.test_run import test

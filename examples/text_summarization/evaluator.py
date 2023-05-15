@@ -5,13 +5,13 @@ from typing import Union
 
 import evaluate
 import numpy as np
-from kolena_contrib.text_summarization.workflow import GroundTruth
-from kolena_contrib.text_summarization.workflow import Inference
-from kolena_contrib.text_summarization.workflow import TestCase
-from kolena_contrib.text_summarization.workflow import TestCaseMetric
-from kolena_contrib.text_summarization.workflow import TestSample
-from kolena_contrib.text_summarization.workflow import TestSampleMetric
-from kolena_contrib.text_summarization.workflow import TestSuiteMetric
+from .workflow import GroundTruth
+from .workflow import Inference
+from .workflow import TestCase
+from .workflow import TestCaseMetric
+from .workflow import TestSample
+from .workflow import TestSampleMetric
+from .workflow import TestSuiteMetric
 
 from kolena.workflow import Histogram
 from kolena.workflow import Plot

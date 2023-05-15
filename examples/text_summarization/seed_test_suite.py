@@ -5,11 +5,11 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
-from kolena_contrib.text_summarization.utils import get_readable
-from kolena_contrib.text_summarization.workflow import GroundTruth
-from kolena_contrib.text_summarization.workflow import TestCase
-from kolena_contrib.text_summarization.workflow import TestSample
-from kolena_contrib.text_summarization.workflow import TestSuite
+from .utils import get_readable
+from .workflow import GroundTruth
+from .workflow import TestCase
+from .workflow import TestSample
+from .workflow import TestSuite
 from tqdm import tqdm
 
 import kolena
