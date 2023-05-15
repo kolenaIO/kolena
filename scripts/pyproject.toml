@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "kolena"
+version = "0.999.0"
+description = "Client for Kolena's machine learning (ML) testing and debugging platform."
+authors = ["Kolena Engineering <eng@kolena.io>"]
+homepage = "https://kolena.io"
+documentation = "https://docs.kolena.io"
+readme = "README.md"
+license = "Apache-2.0"
+keywords = ["Kolena", "ML", "testing"]
+classifiers = [  # license, versions set automatically during build
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed"
+]
+packages = [
+    { include = "kolena_contrib" }
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.11"
+s3fs = "^2022.7.1"
+kolena-client = ">=0.64,<1"
+scikit-learn = "^1.1.2"
+numba = "^0.56.0"
+opencv-python-headless = "^4.6.0"
+evaluate = "^0.4.0"
+bert-score = "^0.3.13"
+absl-py = "^1.4.0"
+nltk = "^3.8.1"
+rouge-score = "^0.1.2"
+sacrebleu = "^2.3.1"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.20.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
