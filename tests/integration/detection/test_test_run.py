@@ -207,7 +207,7 @@ def test__add_inferences__validation__invalid_confidence(
 
 
 @pytest.mark.depends(on=["test__load_images"])
-def test_add_inferences__validation__ignored_sample() -> None:
+def test__add_inferences__validation__ignored_sample() -> None:
     test_name = with_test_prefix(f"{__file__}::test_add_inferences__validation__ignored_sample")
     model = Model(f"{test_name} model")
     images = [
