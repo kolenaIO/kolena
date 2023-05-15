@@ -136,7 +136,7 @@ jobs:
           poetry config installer.max-workers 10
           poetry install --no-ansi
       - run:
-          name: Run << parameters.subproject >> (Python << parameters.pytest-group >>) integration tests
+          name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
