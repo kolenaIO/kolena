@@ -5,14 +5,14 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from tqdm import tqdm
+
+import kolena
 from .utils import get_readable
 from .workflow import GroundTruth
 from .workflow import TestCase
 from .workflow import TestSample
 from .workflow import TestSuite
-from tqdm import tqdm
-
-import kolena
 
 kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
