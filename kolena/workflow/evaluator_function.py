@@ -102,7 +102,7 @@ UnconfiguredEvaluatorFunction = Callable[
 #: the inferences for all test samples in a test suite and a :class:`kolena.workflow.TestCases` as input, and computes
 #: the corresponding test-sample-level, test-case-level, and test-suite-level metrics (and optionally plots) as output.
 #:
-#: .. code-block: python
+#: .. code-block:: python
 #:
 #:     def evaluate(
 #:         test_samples: List[TestSample],
@@ -110,7 +110,22 @@ UnconfiguredEvaluatorFunction = Callable[
 #:         inferences: List[Inference],
 #:         test_cases: TestCases,
 #:     ) -> EvaluationResults:
-#:         ...
+#:         """
+#:         Example signature without any configuration, relying on `compute_test_sample_metrics` and
+#:         `compute_aggregate_metrics` utility functions.
+#:         """
+#:
+#:         # compute sample-level metrics for each sample
+#:         test_sample_metrics = [compute_test_sample_metrics(*s) for s in zip(test_samples, ground_truths, inferences)]
+#:
+#:         # compute aggregate metrics across all test cases using `test_cases.iter(...)`
+#:         all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
+#:         for test_case, sample in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
+#:             test_case_metrics = compute_aggregate_metrics(*sample)
+#:             all_test_case_metrics.append((test_case, test_case_metrics))
+#:
+#:         # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
+#:         return EvaluationResults(metrics_test_sample=test_sample_metrics, metrics_test_case=all_test_case_metrics)
 #:
 #: The control flow is in general more streamlined than with :class:`kolena.workflow.Evaluator`, but requires a couple
 #: of assumptions to hold:
