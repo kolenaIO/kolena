@@ -5,6 +5,7 @@ from typing import Union
 
 import evaluate
 import numpy as np
+
 from .workflow import GroundTruth
 from .workflow import Inference
 from .workflow import TestCase
@@ -12,7 +13,6 @@ from .workflow import TestCaseMetric
 from .workflow import TestSample
 from .workflow import TestSampleMetric
 from .workflow import TestSuiteMetric
-
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow.evaluator import AxisConfig
@@ -20,7 +20,6 @@ from kolena.workflow.evaluator import Curve
 from kolena.workflow.evaluator import CurvePlot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
-
 
 bertscore = evaluate.load("bertscore")
 bleu = evaluate.load("sacrebleu")

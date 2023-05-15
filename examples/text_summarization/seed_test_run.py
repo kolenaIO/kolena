@@ -6,13 +6,13 @@ from typing import Dict
 from typing import Tuple
 
 import pandas as pd
+
+import kolena
 from .evaluator import evaluate_text_summarization
 from .workflow import Inference
 from .workflow import Model
 from .workflow import TestSample
 from .workflow import TestSuite
-
-import kolena
 from kolena.workflow.test_run import test
 
 WORKFLOW = "Text Summarization"
