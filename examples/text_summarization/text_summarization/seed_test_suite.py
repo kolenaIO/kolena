@@ -178,6 +178,18 @@ def seed_test_suites(
     return None
 
 
+def run(args: Namespace) -> None:
+    complete_tc = seed_complete_test_case(args)
+
+    test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
+        f"{DATASET} :: text length": seed_test_suite_by_text,
+        f"{DATASET} :: moderation score": seed_test_suite_by_moderation,
+        f"{DATASET} :: text X ground truth length": seed_test_suite_by_text_x_gt,
+        f"{DATASET} :: news category": seed_test_suite_by_category,
+    }
+    seed_test_suites(test_suite_names, complete_tc)
+
+
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
@@ -188,15 +200,7 @@ def main() -> None:
     )
 
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    complete_tc = seed_complete_test_case(ap.parse_args())
-
-    test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{DATASET} :: text length": seed_test_suite_by_text,
-        f"{DATASET} :: moderation score": seed_test_suite_by_moderation,
-        f"{DATASET} :: text X ground truth length": seed_test_suite_by_text_x_gt,
-        f"{DATASET} :: news category": seed_test_suite_by_category,
-    }
-    seed_test_suites(test_suite_names, complete_tc)
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":
