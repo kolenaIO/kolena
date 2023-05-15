@@ -175,7 +175,7 @@ def test__edit(test_case_versions: List[TestCase]) -> None:
     assert test_suite.test_cases == [test_case_versions[0]]
     assert all(tc.workflow == test_suite.workflow for tc in test_suite.test_cases)
 
-    test_case = TestCase(f"{__file__}::test__edit test suite test case")
+    test_case = TestCase(with_test_prefix(f"{__file__}::test__edit test suite test case"))
     with test_suite.edit() as editor:
         editor.add(test_case)
     assert test_suite.version == 2
