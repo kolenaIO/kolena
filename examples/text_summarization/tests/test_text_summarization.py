@@ -1,4 +1,12 @@
-def test__import() -> None:
-    import text_summarization
+import pytest
+from text_summarization.seed_test_run import main as seed_test_run_main
+from text_summarization.seed_test_suite import main as seed_test_suite_main
 
-    print(dir(text_summarization))
+
+def test__seed_test_suite() -> None:
+    seed_test_suite_main()
+
+
+@pytest.mark.depends(on=["test__seed_test_suite"])
+def test__seed_test_run() -> None:
+    seed_test_run_main()

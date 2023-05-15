@@ -137,6 +137,10 @@ jobs:
           poetry config installer.max-workers 10
           poetry install --no-ansi
       - run:
+          name: Run pre-commit checks
+          command: |
+            poetry run pre-commit run -a
+      - run:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
