@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 import numpy as np
@@ -69,9 +70,15 @@ def roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], Lis
     return fpr, tpr
 
 
-def get_histogram_range(scores: List[float]) -> Tuple[float, float, int]:  # min, max, num_buckets
-    bin_range_options = np.linspace(0, 1, 51)
+def get_histogram_range(scores: List[float]) -> Optional[Tuple[float, float, int]]:  # min, max, num_buckets
     min_score, max_score = min(scores), max(scores)
+    if min_score < 0.0 or max_score > 1.0:
+        log.warn(
+            f"scores out of range for confidence histograms: expecting [0, 1], got [{min_score:.3f}, {max_score:.3f}]",
+        )
+        return None
+
+    bin_range_options = np.linspace(0, 1, 51)
     min_range, max_range, bucket_fenceposts = 0, 1, 0
     for option in bin_range_options:
         if min_score >= option > min_range:

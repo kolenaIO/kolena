@@ -121,15 +121,16 @@ def _as_confidence_histogram(
     )
 
 
-def _compute_test_case_plots(
-    test_case_name: str,
-    labels: List[str],
-    ground_truths: List[GroundTruth],
-    inferences: List[Inference],
+def _compute_confidence_histograms(
     metrics: List[TestSampleMetrics],
-    metrics_by_label: Dict[str, AggregatedMetrics],
-    confidence_range: Tuple[float, float, int],
-) -> List[Plot]:
+    confidence_range: Optional[Tuple[float, float, int]],
+) -> Optional[List[Histogram]]:
+    if confidence_range is None:
+        log.warn(
+            "unsupported confidence range for confidence histograms - skipping plotting",
+        )
+        return None
+
     confidence_all = [mts.classification.confidence for mts in metrics if mts.classification is not None]
     confidence_correct = [
         mts.classification.confidence for mts in metrics if mts.classification is not None and mts.is_correct
@@ -138,21 +139,34 @@ def _compute_test_case_plots(
         mts.classification.confidence for mts in metrics if mts.classification is not None and not mts.is_correct
     ]
 
+    plots = [
+        _as_confidence_histogram("Confidence Distribution (All)", confidence_all, confidence_range),
+        _as_confidence_histogram("Confidence Distribution (Correct)", confidence_correct, confidence_range),
+        _as_confidence_histogram("Confidence Distribution (Incorrect)", confidence_incorrect, confidence_range),
+    ]
+    return plots
+
+
+def _compute_test_case_plots(
+    test_case_name: str,
+    labels: List[str],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    metrics: List[TestSampleMetrics],
+    metrics_by_label: Dict[str, AggregatedMetrics],
+    confidence_range: Optional[Tuple[float, float, int]],
+) -> List[Plot]:
     gt_labels = {gt.classification.label for gt in ground_truths}
-    class_metric_plots = [
+    plots = [
         _as_class_metric_plot(field.name, metrics_by_label, labels)
         for field in dataclasses.fields(AggregatedMetrics)
         if len(gt_labels) > 2
         or field.name not in ["Precision", "Recall"]  # Omit single-class TC from precision and recall plots
     ]
 
-    plots = [
-        *class_metric_plots,
-        _as_confidence_histogram("Confidence Distribution (All)", confidence_all, confidence_range),
-        _as_confidence_histogram("Confidence Distribution (Correct)", confidence_correct, confidence_range),
-        _as_confidence_histogram("Confidence Distribution (Incorrect)", confidence_incorrect, confidence_range),
-    ]
-
+    confidence_histograms = _compute_confidence_histograms(metrics, confidence_range)
+    if confidence_histograms:
+        plots.extend(confidence_histograms)
     roc_curve_plot = _compute_test_case_ovr_roc_curve(labels, ground_truths, inferences)
     if roc_curve_plot:
         plots.append(roc_curve_plot)
