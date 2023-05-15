@@ -96,7 +96,7 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
 
 
 GT = TypeVar("GT", bound=Union[BoundingBox, Polygon])
-Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon])
+Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon])
 
 
 @dataclass(frozen=True)
