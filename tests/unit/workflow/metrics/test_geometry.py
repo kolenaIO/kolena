@@ -18,6 +18,7 @@ from typing import Union
 
 import pytest
 
+from kolena.errors import InputValidationError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledPolygon
@@ -681,7 +682,7 @@ def test__match_inferences(
 
 
 def test__match_inferences__invalid_mode() -> None:
-    with pytest.raises(ValueError):
+    with pytest.raises(InputValidationError):
         match_inferences(
             [BoundingBox(top_left=(100, 100), bottom_right=(110, 110))],
             [ScoredBoundingBox(score=0.5, top_left=(99, 99), bottom_right=(112, 112))],
@@ -2456,7 +2457,7 @@ def test__match_inferences_multiclass(
 
 
 def test__match_inferences_multiclass__invalid_mode() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(InputValidationError):
         match_inferences_multiclass(
             [LabeledBoundingBox(label="cow", top_left=(100, 100), bottom_right=(110, 110))],
             [ScoredLabeledBoundingBox(score=0.5, label="cow", top_left=(99, 99), bottom_right=(112, 112))],

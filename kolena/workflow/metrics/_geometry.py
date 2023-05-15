@@ -25,6 +25,8 @@ from typing import Union
 from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
+from kolena.errors import InputValidationError
+
 try:
     from typing import Literal
 except ImportError:
@@ -198,7 +200,7 @@ def match_inferences(
             iou_threshold=iou_threshold,
         )
 
-    raise ValueError(f"Mode: '{mode}' is not a valid mode.")
+    raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
 
 
 GT_Multiclass = TypeVar("GT_Multiclass", bound=Union[LabeledBoundingBox, LabeledPolygon])
@@ -275,7 +277,7 @@ def match_inferences_multiclass(
     if mode == "pascal":
         matching_function = _match_inferences_single_class_pascal_voc
     else:
-        raise ValueError(f"Mode: '{mode}' is not a valid mode.")
+        raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
 
     # collect all unique labels, store gts and infs of the same label together
     for gt in ground_truths:
