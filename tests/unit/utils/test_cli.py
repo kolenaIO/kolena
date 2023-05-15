@@ -23,15 +23,15 @@ from kolena._utils.cli import base_command
 TEST_API_TOKEN = "XXXX"
 
 
-def test_b():
-    runner = CliRunner()
-    result = runner.invoke(base_command, ["--help"])
-    assert result.exit_code == 0
-
-
 def mock_initialize(tok: str):
     if tok != TEST_API_TOKEN:
         raise RuntimeError("bad token")
+
+
+def test__cli():
+    runner = CliRunner()
+    result = runner.invoke(base_command, ["--help"])
+    assert result.exit_code == 0
 
 
 @pytest.mark.parametrize(
@@ -52,14 +52,14 @@ def mock_initialize(tok: str):
         (["repository", "create"], "Missing option"),
     ],
 )
-def test__cli_bad_input(args: List[str], errmsg: str) -> None:
+def test__cli__bad_input(args: List[str], errmsg: str) -> None:
     runner = CliRunner()
     result = runner.invoke(base_command, args)
     assert result.exception
     assert errmsg in result.output
 
 
-def test__cli_evaluator_common_options() -> None:
+def test__cli__evaluator__common_options() -> None:
     workflow = "my workflow"
     args = [
         "evaluator",
@@ -110,7 +110,7 @@ def test__cli_evaluator_common_options() -> None:
             assert not result.exception
 
 
-def test__cli_repository() -> None:
+def test__cli__repository() -> None:
     api_token = TEST_API_TOKEN
     args = [
         "repository",
