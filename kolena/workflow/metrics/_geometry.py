@@ -184,20 +184,26 @@ def match_inferences(
     iou_threshold: float = 0.5,
 ) -> InferenceMatches[GT, Inf]:
     """
-    Matches lists of inferences and ground truths using the provided configuration. This matcher does not consider
-    labels, which is appropriate for single class object matching. For matchings with multiple classes, use the
-    multiclass matcher.
+    Matches model inferences with annotated ground truths using the provided configuration.
 
-    PASCAL VOC - For every inference by order of highest confidence, the ground truth of highest IOU is its match.
-    Multiple inferences are able to match with the same ignored ground truth.
-    See the `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+    This matcher does not consider labels, which is appropriate for single class object matching. To match with multiple
+    classes (i.e. heeding ``label`` classifications), use the multiclass matcher :meth:`match_inferences_multi_class`.
 
-    :param ground_truths: A list of BoundingBox or a Polygon ground truths.
-    :param inferences: A list of scored BoundingBox or a Polygon inferences.
-    :param ignored_ground_truths: A list of BoundingBox or a Polygon ground truths to ignore.
-    :param mode: The type of matching methodology to use: ``pascal``, more to come...
-    :param iou_threshold: The IOU threshold cutoff for valid matchings.
-    :return: the matches, unmatched ground truths, and unmatched inferences.
+    Available modes:
+
+    - ``pascal`` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IOU is
+      its match. Multiple inferences are able to match with the same ignored ground truth. See the
+      `PASCAL VOC paper <https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf>`_ for more information.
+
+    :param List[Geometry] ground_truths: A list of :class:`BoundingBox` or :class:`Polygon` ground truths.
+    :param List[ScoredGeometry] inferences: A list of :class:`ScoredBoundingBox` or :class:`ScoredPolygon` inferences.
+    :param Optional[List[Geometry]] ignored_ground_truths: optionally specify a list of :class:`BoundingBox` or
+        :class:`Polygon` ground truths to ignore. These ignored ground truths and any inferences matched with them are
+        omitted from the returned :class:`InferenceMatches`.
+    :param Literal["pascal"] mode: The type of matching methodology to use. Currently limited to ``pascal``.
+    :param iou_threshold: The IOU (intersection over union, see :meth:`iou`) threshold for valid matches.
+    :return: :class:`InferenceMatches` containing the matches, unmatched ground truths, and unmatched
+        inferences.
     """
 
     if mode == "pascal":
