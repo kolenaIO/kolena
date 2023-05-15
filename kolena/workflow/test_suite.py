@@ -224,7 +224,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         cls._validate_workflow()
         request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
-        res = krequests.put(endpoint_path=API.Path.LOAD_ALL, data=json.dumps(dataclasses.asdict(request)))
+        res = krequests.put(endpoint_path=API.Path.LOAD_ALL.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
         objs = [cls._create_from_data(test_suite) for test_suite in data.test_suites]

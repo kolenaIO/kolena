@@ -146,6 +146,11 @@ class TestSuite:
         version: Optional[int] = None
 
     @dataclass(frozen=True)
+    class LoadAllRequest:
+        workflow: str
+        tags: Optional[List[str]] = None
+
+    @dataclass(frozen=True)
     class EntityData:
         id: int
         name: str
@@ -154,6 +159,10 @@ class TestSuite:
         test_cases: List[TestCase.EntityData]
         workflow: str
         tags: List[str]
+
+    @dataclass(frozen=True)
+    class LoadAllResponse:
+        test_suites: List["TestSuite.EntityData"]
 
     @dataclass(frozen=True)
     class EditRequest:
@@ -167,6 +176,9 @@ class TestSuite:
     @dataclass(frozen=True)
     class DeleteRequest:
         test_suite_id: int
+
+
+TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()
 
 
 class TestRun:
