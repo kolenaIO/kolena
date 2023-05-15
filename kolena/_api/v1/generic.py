@@ -47,6 +47,7 @@ class TestSuite:
     class Path(str, Enum):
         CREATE = "/generic/test-suite/create"
         LOAD = "/generic/test-suite/load"
+        LOAD_ALL = "/generic/test-suite/load-all"
         EDIT = "/generic/test-suite/edit"
         DELETE = "/generic/test-suite/delete"
         INIT_LOAD_TEST_SAMPLES = "/generic/test-suite/load-test-samples"
