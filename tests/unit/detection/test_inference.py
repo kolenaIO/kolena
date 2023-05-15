@@ -20,7 +20,7 @@ from kolena.detection.inference import ClassificationLabel
 from kolena.detection.inference import SegmentationMask
 
 
-def test_inference__classification_label() -> None:
+def test__inference__classification_label() -> None:
     test_label = "test-label"
     confidence = random()
     inf = ClassificationLabel(test_label, confidence)
@@ -28,7 +28,7 @@ def test_inference__classification_label() -> None:
     assert inf.confidence == confidence
 
 
-def test_inference__bounding_box() -> None:
+def test__inference__bounding_box() -> None:
     test_label = "test-label"
     confidence = random()
     test_point1 = (0.1234, 100.213)
@@ -40,7 +40,7 @@ def test_inference__bounding_box() -> None:
     assert inf.bottom_right == test_point2
 
 
-def test_inference__segmentation_mask() -> None:
+def test__inference__segmentation_mask() -> None:
     test_label = "test-label"
     confidence = random()
     test_point1 = (0.1234, 100.213)

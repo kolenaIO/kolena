@@ -29,7 +29,7 @@ from kolena._utils.geometry import validate_polygon
         ([(0, 0), (0.5, 0.5), (1, 0), (1, 1)], True),  # co-linear points
     ],
 )
-def test_validate_polygon(points: List[Tuple[float, float]], is_valid: bool) -> None:
+def test__validate_polygon(points: List[Tuple[float, float]], is_valid: bool) -> None:
     if not is_valid:
         with pytest.raises(ValueError):
             validate_polygon(points)

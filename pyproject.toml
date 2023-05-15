@@ -73,5 +73,5 @@ build-backend = "poetry.core.masonry.api"
 norecursedirs = "kolena"
 # explicitly disable test classes such that e.g. TestRun is not interpreted as a test
 python_classes = []
-# do not collect functions named just 'test'
-python_functions = ["test_*"]
+# only collect functions starting with 'test__'
+python_functions = ["test__*"]

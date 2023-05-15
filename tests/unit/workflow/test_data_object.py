@@ -22,7 +22,7 @@ from kolena.workflow._datatypes import DataObject
 
 # extensions must be frozen
 @pytest.mark.skipif(sys.version_info < (3, 8), reason="Constraint not enforced on Python < 3.8")
-def test_frozen() -> None:
+def test__data_object__frozen() -> None:
     with pytest.raises(TypeError):
 
         @dataclasses.dataclass
@@ -37,7 +37,7 @@ def test_frozen() -> None:
 
 
 # can use either stdlib dataclasses or pydantic dataclasses interchangeably
-def test_dataclasses_or_pydantic() -> None:
+def test__data_object__dataclasses_or_pydantic() -> None:
     @dataclasses.dataclass(frozen=True)
     class DataclassesTester(DataObject):
         ...
@@ -51,7 +51,7 @@ def test_dataclasses_or_pydantic() -> None:
     PydanticTester()
 
 
-def test_dataclasses_serialize_order() -> None:
+def test__data_object__serialize_order() -> None:
     @dataclasses.dataclass(frozen=True)
     class DataclassesTester(DataObject):
         b: float
