@@ -73,7 +73,9 @@ def roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], Lis
 def get_histogram_range(scores: List[float]) -> Optional[Tuple[float, float, int]]:  # min, max, num_buckets
     min_score, max_score = min(scores), max(scores)
     if min_score < 0.0 or max_score > 1.0:
-        log.warn("Scores out of range for confidence histograms: expecting (0, 1)")
+        log.warn(
+            f"scores out of range for confidence histograms: expecting [0, 1], got [{min_score:.3f}, {max_score:.3f}]",
+        )
         return None
 
     bin_range_options = np.linspace(0, 1, 51)

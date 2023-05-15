@@ -127,8 +127,7 @@ def _compute_confidence_histograms(
 ) -> Optional[List[Histogram]]:
     if confidence_range is None:
         log.warn(
-            "Unsupported confidence range for confidence histograms — expecting (0, 1). "
-            "Consider applying softmax to the prediction output and re-run the test.",
+            "unsupported confidence range for confidence histograms - skipping plotting",
         )
         return None
 
