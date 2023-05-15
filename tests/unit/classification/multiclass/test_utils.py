@@ -39,7 +39,8 @@ def test__roc_curve():
         ([0.0, 0.79, 0.78], (0.0, 0.8, 40)),
         ([0.45, 0.29, 0.355555], (0.28, 0.46, 9)),
         ([1.02, 4.2, 30.0], None),
-        ([0.3, 4.2, 30.0], None),
+        ([-10.0, 0.0, 0.8], None),
+        ([-0.3, 4.2, 30.0], None),
     ],
 )
 def test__get_histogram_range(scores: List[float], expected_range: Optional[Tuple[float, float, int]]):
