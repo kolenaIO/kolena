@@ -12,6 +12,7 @@ from .workflow import TestCase
 from .workflow import TestSample
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
+from kolena.workflow import EvaluationResults
 from kolena.workflow import Evaluator
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import MetricsTestCase as BaseMetricsTestCase
@@ -31,6 +32,10 @@ class MetricsTestCase(BaseMetricsTestCase):
     mae: Optional[float] = None  # mean absolute error
     rmse: Optional[float] = None  # root mean squared error
     failure_rate_err_gt_5: Optional[float] = None
+
+
+def evaluate_age_estimation() -> EvaluationResults:
+    ...
 
 
 class AgeEstimationEvaluator(Evaluator):

@@ -102,6 +102,16 @@ UnconfiguredEvaluatorFunction = Callable[
 #: the inferences for all test samples in a test suite and a :class:`kolena.workflow.TestCases` as input, and computes
 #: the corresponding test-sample-level, test-case-level, and test-suite-level metrics (and optionally plots) as output.
 #:
+#: .. code-block: python
+#:
+#:     def evaluate(
+#:         test_samples: List[TestSample],
+#:         ground_truths: List[GroundTruth],
+#:         inferences: List[Inference],
+#:         test_cases: TestCases,
+#:     ) -> EvaluationResults:
+#:         ...
+#:
 #: The control flow is in general more streamlined than with :class:`kolena.workflow.Evaluator`, but requires a couple
 #: of assumptions to hold:
 #:
