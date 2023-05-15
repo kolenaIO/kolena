@@ -118,6 +118,30 @@ jobs:
             - codecov/upload:
                 file: coverage.xml
 
+  example-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      subproject:
+        type: string
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    working_directory: examples/<< parameters.subproject >>
+    steps:
+      - checkout
+      - run: |
+          poetry config experimental.new-installer false
+          poetry config installer.max-workers 10
+          poetry install --no-ansi
+      - run:
+          name: Run << parameters.subproject >> (Python << parameters.pytest-group >>) integration tests
+          command: |
+            export KOLENA_TOKEN=${KOLENA_TOKEN}
+            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+            poetry run pytest -vv tests
+
 workflows:
   ci:
     jobs:
@@ -139,3 +163,8 @@ workflows:
               pytest-group: [ "detection", "classification", "fr", "generic", "misc" ]
           requires:
             - ci-base-<< matrix.python-version >>
+      - example-test:
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              subproject: [ "text_summarization" ]

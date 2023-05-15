@@ -1,53 +1,13 @@
 [tool.poetry]
-name = "kolena"
-version = "0.999.0"
-description = "Client for Kolena's machine learning (ML) testing and debugging platform."
+name = "text_summarization"
+version = "0.1.0"
+description = "Example Kolena integration for text summarization"
 authors = ["Kolena Engineering <eng@kolena.io>"]
-homepage = "https://kolena.io"
-documentation = "https://docs.kolena.io"
 license = "Apache-2.0"
-keywords = ["Kolena", "ML", "testing"]
-classifiers = [  # license, versions set automatically during build
-    "Development Status :: 4 - Beta",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "Natural Language :: English",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-    "Topic :: Scientific/Engineering :: Visualization",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: Software Development :: Quality Assurance",
-    "Topic :: Software Development :: Testing",
-    "Typing :: Typed"
-]
-packages = [
-    { include = "kolena" }
-]
 
 [tool.poetry.dependencies]
-python = ">=3.7.1,<3.12"
-numpy = [
-    { version = ">=1.19", python = ">=3.7,<3.11" },
-    { version = ">=1.23", python = ">=3.11" },
-]
-pandas = [
-    { version = ">=1.1,<1.6", python = ">=3.7,<3.11" },
-    { version = ">=1.5,<1.6", python = ">=3.11" },
-]
-pandera = ">=0.9.0"
-pydantic = ">=1.8"
-dacite = ">=1.6"
-requests = ">=2.20,<2.30" # TODO: revert upper bound when urllib3 situation sorts out: https://github.com/psf/requests/issues/6432
-requests-toolbelt = "*"
-importlib-metadata = { version = "<5.0", python = "<3.8" }
-tqdm = ">=4,<5"
-Pillow = "^9.1.1"
-retrying = "^1.3.3"
-Shapely = "^1.8.5"
-deprecation = "^2.1.0"
-termcolor = "^1.1.0"
-pyarrow = ">=8"
-typing-extensions = { version = "^4.5.0", python = "< 3.8" }
-click = "^8.1.3"
+python = ">=3.8,<3.11"
+kolena = { path = "../..", develop = true }
 s3fs = "^2022.7.1"
 scikit-learn = "^1.1.2"
 numba = "^0.56.0"
@@ -60,27 +20,8 @@ rouge-score = "^0.1.2"
 sacrebleu = "^2.3.1"
 
 [tool.poetry.group.dev.dependencies]
-pre-commit = "^2.17"
-Sphinx = "^4.2.0"
-myst-parser = "^0.17"
-pydata-sphinx-theme = "^0.12"
-sphinx-autodoc-typehints = "^1.16.0"
-black = { version = "^22.1.0", allow-prereleases = true }
 pytest = "^7"
-pytest-cov = "^4.0.0"
-pytest-depends = "^1.0.1"
-
-[tool.poetry.scripts]
-kolena = 'kolena._utils.cli:run'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.pytest.ini_options]
-# do not scan 'kolena' for tests, as there are many functions/classes that look like tests
-norecursedirs = "kolena"
-# explicitly disable test classes such that e.g. TestRun is not interpreted as a test
-python_classes = []
-# do not collect functions named just 'test'
-python_functions = ["test_*"]
