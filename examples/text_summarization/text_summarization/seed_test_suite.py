@@ -14,8 +14,6 @@ from .workflow import TestCase
 from .workflow import TestSample
 from .workflow import TestSuite
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-
 DATASET = "CNN-DailyMail"
 
 
@@ -189,6 +187,7 @@ def main() -> None:
         help="CSV file specifying dataset. See default CSV for details",
     )
 
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     complete_tc = seed_complete_test_case(ap.parse_args())
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
