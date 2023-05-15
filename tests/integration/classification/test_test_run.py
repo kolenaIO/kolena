@@ -94,7 +94,7 @@ def test_models() -> List[InferenceModel]:
     def infer_cat(_: TestImage) -> List[Tuple[str, float]]:
         return [("cat", 0.69)]
 
-    name = f"{__file__}::test_model fixture test model"
+    name = with_test_prefix("{__file__}::test_model fixture test model")
     model_dog_0 = InferenceModel(
         name,
         infer=infer_dog_0,
