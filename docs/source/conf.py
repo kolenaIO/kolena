@@ -79,12 +79,7 @@ html_sidebars = {
     "**": ["sidebar-nav-bs.html"],
 }
 html_theme_options = dict(
-    favicons=[
-        dict(
-            rel="icon",
-            href="favicon.png",
-        ),
-    ],
+    favicons=[dict(rel="icon", href="favicon.png")],
     logo=dict(
         link="index.html",
         image_light="wordmark-purple.svg",
