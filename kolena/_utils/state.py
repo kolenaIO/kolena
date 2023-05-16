@@ -142,7 +142,7 @@ def get_token(
     base_url: Optional[str] = None,
     proxies: Optional[Dict[str, str]] = None,
 ) -> API.ValidateResponse:
-    base_url = base_url or get_client_base_url()
+    base_url = base_url or get_client_state().base_url
     request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
     r = requests.put(
         get_endpoint_with_baseurl(base_url, "token/login"),

@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import concurrent.futures
+import dataclasses
 import hashlib
+import json
 import time
 from typing import Any
 from typing import Iterator
@@ -20,11 +22,15 @@ from typing import Optional
 from unittest.mock import patch
 
 import pytest
+from requests import Response
 
 import kolena
 from kolena._api.v1.token import ValidateResponse
 from kolena._utils.state import _client_state
+from kolena._utils.state import API_BASE_URL
+from kolena._utils.state import API_BASE_URL_ENV_VAR
 from kolena._utils.state import get_client_state
+from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
 from kolena.errors import UninitializedError
 
@@ -73,6 +79,22 @@ def test__initialize__deprecated_positional(clean_client_state: None) -> None:
         kolena.initialize("random entity", "def")
         assert _client_state.api_token == "def"
         assert _client_state.jwt_token is not None
+
+
+def test__initialize__updated_environ(clean_client_state: None) -> None:
+    base_url = "https://internal-api.kolena.io"
+    mock_response = Response()
+    mock_response.status_code = 200
+    mock_response._content = str.encode(json.dumps(dataclasses.asdict(FIXED_TOKEN_RESPONSE)))
+    with patch.dict("os.environ", {API_BASE_URL_ENV_VAR: base_url}, clear=True):
+        with patch("requests.put", return_value=mock_response) as patched:
+            kolena.initialize("random entity", "def")
+            client_state = get_client_state()
+            assert client_state.api_token == "def"
+            assert client_state.base_url == API_BASE_URL
+
+        patched.assert_called_once()
+        assert patched.call_args.args[0] == get_endpoint_with_baseurl(API_BASE_URL, "token/login")
 
 
 def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
