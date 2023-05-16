@@ -126,9 +126,9 @@ jobs:
       subproject:
         type: string
     docker:
-      - image: cimg/python:<< parameters.subproject.python-version >>
-    resource_class: << parameters.subproject.resource-class >>
-    working_directory: ~/project/examples/<< parameters.subproject.directory >>
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: << parameters.resource-class >>
+    working_directory: ~/project/examples/<< parameters.subproject >>
     steps:
       - checkout:
           path: ~/project
@@ -141,7 +141,7 @@ jobs:
           command: |
             poetry run pre-commit run -a
       - run:
-          name: Run << parameters.subproject.directory >> (Python << parameters.subproject.python-version >>) integration tests
+          name: Run << parameters.directory >> (Python << parameters.python-version >>) integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
@@ -171,7 +171,7 @@ workflows:
       - example-test:
           matrix:
             parameters:
-              subproject:
-                - directory: text_summarization
-                  resource-class: medium
-                  python-version: "3.9"
+              # TODO: not sure how to pair subproject to resource class without declaring as matrix and adding excludes
+              subproject: [ "text_summarization" ]
+              resource-class: [ "medium" ]
+              python-version: [ "3.9" ]
