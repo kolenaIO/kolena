@@ -13,7 +13,8 @@ scikit-learn = "^1.1.2"
 numba = "^0.56.0"
 opencv-python-headless = "^4.6.0"
 # Transient dependency of `bert-score` -- pin to CPU-only to unbreak CI. This can be safely removed on GPU systems
-torch = { version = "^2.0.1+cpu", source = "torchcpu" }
+# Further reading: https://github.com/python-poetry/poetry/issues/6409#issuecomment-1310655479
+torch = { version = "^2.0.1+cpu", source = "torch+cpu" }
 evaluate = "^0.4.0"
 bert-score = "^0.3.13"
 absl-py = "^1.4.0"
@@ -27,7 +28,7 @@ pytest = "^7"
 pytest-depends = "^1.0.1"
 
 [[tool.poetry.source]]
-name = "torchcpu"
+name = "torch+cpu"
 url = "https://download.pytorch.org/whl/cpu"
 default = false
 secondary = true
