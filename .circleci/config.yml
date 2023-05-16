@@ -106,7 +106,7 @@ jobs:
                 tests/integration
             else
               TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py | circleci tests split)
-              # poetry run pytest -vv --durations=0 --cov=kolena --cov-branch $TESTFILES
+              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch $TESTFILES
             fi
       - when:
           # Generate coverage only from one python version
