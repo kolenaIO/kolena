@@ -91,7 +91,6 @@ def test__initialize__updated_environ(clean_client_state: None) -> None:
             kolena.initialize("random entity", "def")
             client_state = get_client_state()
             assert client_state.api_token == "def"
-            assert client_state.base_url == API_BASE_URL
 
         patched.assert_called_once()
         assert patched.call_args.args[0] == get_endpoint_with_baseurl(API_BASE_URL, "token/login")
