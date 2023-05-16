@@ -30,12 +30,12 @@ jobs:
           aws-region: us-west-2
 
       - name: Install Poetry
-        run: pip install 'poetry>=1.3'
+        run: pip install poetry==1.2.2
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
 
-      - name: Update kolena package version to PEP 440-compliant production release tag
+      - name: Update package version to PEP 440-compliant production release tag
         run: poetry version $(git describe --tags --abbrev=0)
 
       - name: Install dependencies
@@ -47,7 +47,7 @@ jobs:
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
 
-      - name: Build client documentation and push to S3
+      - name: Build 'kolena' documentation and push to S3
         run: |
           ./render.sh
           VERSION=$(poetry run python3 -c "import kolena; print(kolena.__version__)")
@@ -63,18 +63,18 @@ jobs:
           aws s3 sync ./build "$BUCKET_PATH"
         working-directory: ./docs
 
-      - name: Push kolena dist to Test PyPI
+      - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
 
-      - name: Push kolena dist to PyPI
+      - name: Push 'kolena' dist to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
-      - name: Create GitHub release with kolena build as artifact
+      - name: Create GitHub release with 'kolena' build as artifact
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
           repo_token: ${{ secrets.RELEASE_TOKEN }}
@@ -96,26 +96,26 @@ jobs:
           poetry install
           poetry build --format=sdist
 
-      - name: Install twine for package distribution on CodeArtifact
+      - name: Install twine for package distribution on CodeArtifact for backward compatibility
         run: pip install twine
 
-      - name: Push kolena-client dist to Test PyPI
+      - name: Push 'kolena-client' dist to trunk CodeArtifact for backward compatibility
+        run: |
+          aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
+
+      - name: Push 'kolena-client' dist to production CodeArtifact for backward compatibility
+        run: |
+          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
+
+      - name: Push 'kolena-client' dist to Test PyPI for backward compatibility
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
 
-      - name: Push kolena-client dist to PyPI
+      - name: Push 'kolena-client' dist to PyPI for backward compatibility
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
-
-      - name: Push kolena-client dist to trunk CodeArtifact for backward compatibility
-        run: |
-          aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
-          twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
-
-      - name: Push kolena-client dist to production CodeArtifact for backward compatibility
-        run: |
-          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
-          twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
