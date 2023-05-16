@@ -14,8 +14,6 @@ from .workflow import TestCase
 from .workflow import TestSample
 from .workflow import TestSuite
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-
 DATASET = "CNN-DailyMail"
 
 
@@ -180,16 +178,8 @@ def seed_test_suites(
     return None
 
 
-def main() -> None:
-    ap = ArgumentParser()
-    ap.add_argument(
-        "--dataset_csv",
-        type=str,
-        default="s3://kolena-public-datasets/CNN_DailyNews/metadata/CNN_DailyMail_metadata.csv",
-        help="CSV file specifying dataset. See default CSV for details",
-    )
-
-    complete_tc = seed_complete_test_case(ap.parse_args())
+def run(args: Namespace) -> None:
+    complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
         f"{DATASET} :: text length": seed_test_suite_by_text,
@@ -198,6 +188,19 @@ def main() -> None:
         f"{DATASET} :: news category": seed_test_suite_by_category,
     }
     seed_test_suites(test_suite_names, complete_tc)
+
+
+def main() -> None:
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset_csv",
+        type=str,
+        default="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata.csv",
+        help="CSV file specifying dataset. See default CSV for details",
+    )
+
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":

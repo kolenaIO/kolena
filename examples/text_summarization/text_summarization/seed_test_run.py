@@ -125,10 +125,10 @@ def seed_test_run(
     test(model, test_suite, evaluate_text_summarization, reset=True)
 
 
-def seed_test(args: Namespace) -> None:
+def run(args: Namespace) -> None:
     mod = MODEL_MAP[args.model_name]
     print("loading inference CSV")
-    s3_path = f"s3://kolena-public-datasets/CNN_DailyNews/results/{mod[0]}/results.csv"
+    s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}/results.csv"
     csv_to_use = s3_path if args.local_csv == "none" else args.local_csv
     columns_of_interest = [
         "article_id",
@@ -161,7 +161,7 @@ def main() -> None:
     ap.add_argument("--local_csv", type=str, default="none", help="A specific csv to use.", required=False)
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
-    seed_test(ap.parse_args())
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":
