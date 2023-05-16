@@ -125,6 +125,8 @@ jobs:
         default: "3.9"
       subproject:
         type: string
+      resource-class:
+        type: string
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: << parameters.resource-class >>
