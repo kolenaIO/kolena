@@ -104,16 +104,16 @@ jobs:
           aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
           twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
 
-      - name: Push 'kolena-client' dist to production CodeArtifact for backward compatibility
-        run: |
-          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
-          twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
-
       - name: Push 'kolena-client' dist to Test PyPI for backward compatibility
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
+
+      - name: Push 'kolena-client' dist to production CodeArtifact for backward compatibility
+        run: |
+          aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
 
       - name: Push 'kolena-client' dist to PyPI for backward compatibility
         uses: pypa/gh-action-pypi-publish@release/v1
