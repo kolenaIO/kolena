@@ -16,7 +16,7 @@ def with_init() -> Iterator[None]:
 
 
 def test__seed_test_suite() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN_DailyNews/metadata/CNN_DailyMail_metadata_100.csv")
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata_100.csv")
     seed_test_suite_main(args)
 
 

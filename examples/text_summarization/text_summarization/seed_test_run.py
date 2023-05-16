@@ -128,7 +128,7 @@ def seed_test_run(
 def run(args: Namespace) -> None:
     mod = MODEL_MAP[args.model_name]
     print("loading inference CSV")
-    s3_path = f"s3://kolena-public-datasets/CNN_DailyNews/results/{mod[0]}/results.csv"
+    s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}/results.csv"
     csv_to_use = s3_path if args.local_csv == "none" else args.local_csv
     columns_of_interest = [
         "article_id",

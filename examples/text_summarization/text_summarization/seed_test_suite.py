@@ -195,7 +195,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default="s3://kolena-public-datasets/CNN_DailyNews/metadata/CNN_DailyMail_metadata.csv",
+        default="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
 
