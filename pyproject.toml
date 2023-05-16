@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kolena"
-version = "0.999.1"
+version = "0.999.0"
 description = "Client for Kolena's machine learning (ML) testing and debugging platform."
 authors = ["Kolena Engineering <eng@kolena.io>"]
 homepage = "https://kolena.io"
