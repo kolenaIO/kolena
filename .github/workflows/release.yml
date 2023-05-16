@@ -6,8 +6,8 @@ on:
       - "*"
 
 jobs:
-  build:
-    name: Build and publish kolena Python package and documentation
+  release:
+    name: Build and publish release of kolena Python package and documentation
     env:
       ASSET_BUCKET: kolena-client-assets
     runs-on: ubuntu-latest
