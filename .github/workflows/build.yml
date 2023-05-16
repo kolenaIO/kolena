@@ -54,17 +54,21 @@ jobs:
         run: |
           # update first instance of 'kolena' to 'kolena-client' in pyproject.toml, kolena/__init__.py (package name)
           sed -i '0,/kolena/{s/kolena/kolena-client/}' pyproject.toml kolena/__init__.py
+
           poetry build --format=sdist
+
+          # change it back to switch back to poetry env for 'kolena'
+          sed -i '0,/kolena/{s/kolena-client/kolena/}' pyproject.toml kolena/__init__.py
 
       - name: Build client documentation and push to S3
         run: |
           ./render.sh
           VERSION=$(poetry run python3 -c "import kolena; print(kolena.__version__)")
 
-          # BUCKET_PATH="s3://$ASSET_BUCKET/docs/$VERSION"
-          # echo "pushing documentation to '$BUCKET_PATH'..."
-          # aws s3 rm --recursive "$BUCKET_PATH"
-          # aws s3 sync ./build "$BUCKET_PATH"
+          BUCKET_PATH="s3://$ASSET_BUCKET/docs/$VERSION"
+          echo "pushing documentation to '$BUCKET_PATH'..."
+          aws s3 rm --recursive "$BUCKET_PATH"
+          aws s3 sync ./build "$BUCKET_PATH"
 
           # BUCKET_PATH="s3://$ASSET_BUCKET/docs/latest"
           # echo "pushing documentation to '$BUCKET_PATH'..."
@@ -72,11 +76,11 @@ jobs:
           # aws s3 sync ./build "$BUCKET_PATH"
         working-directory: ./docs
 
-      # - name: Push kolena, kolena-client dists to Test PyPI
-      #   uses: pypa/gh-action-pypi-publish@release/v1
-      #   with:
-      #     password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-      #     repository-url: https://test.pypi.org/legacy/
+      - name: Push kolena, kolena-client dists to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
 
       # - name: Push kolena, kolena-client dists to PyPI
       #   uses: pypa/gh-action-pypi-publish@release/v1
@@ -84,12 +88,12 @@ jobs:
       #     password: ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Install twine for package distribution on CodeArtifact
-        run: pip3 install twine
+        run: pip install twine
 
       - name: Push kolena-client dist to trunk CodeArtifact for backwards compatibility
         run: |
           aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
-          # twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
         working-directory: ${{ env.working-directory }}
 
       - name: Push kolena-client dist to production CodeArtifact for backwards compatibility
@@ -103,4 +107,4 @@ jobs:
       #     repo_token: ${{ secrets.RELEASE_TOKEN }}
       #     prerelease: false
       #     files: |
-      #       ./dist/*.tar.gz
+      #       ./dist/kolena-*.tar.gz
