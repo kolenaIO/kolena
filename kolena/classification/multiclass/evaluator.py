@@ -129,12 +129,12 @@ def _compute_confidence_histograms(
     test_case_name: str,
     metrics: List[TestSampleMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
-) -> Optional[List[Histogram]]:
+) -> List[Histogram]:
     if confidence_range is None:
         log.warn(
             f"skipping confidence histograms for {test_case_name}: unsupported confidence range",
         )
-        return None
+        return []
 
     confidence_all = [mts.classification.confidence for mts in metrics if mts.classification is not None]
     confidence_correct = [
