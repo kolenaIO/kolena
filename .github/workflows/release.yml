@@ -2,8 +2,6 @@ name: Release
 
 on:
   push:
-    branches:
-      - gh/release-0.69.0
     tags:
       - "*"
 
@@ -113,6 +111,7 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
       - name: Push 'kolena-client' dist to production CodeArtifact for backward compatibility
         run: |
@@ -123,3 +122,4 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
