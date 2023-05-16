@@ -176,4 +176,4 @@ workflows:
               # TODO: not sure how to pair subproject to resource class without declaring as matrix and adding excludes
               subproject: [ text_summarization ]
               resource-class: [ large ]
-              python-version: [ 3.9 ]
+              python-version: [ "3.9" ]
