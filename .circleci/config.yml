@@ -141,7 +141,7 @@ jobs:
           command: |
             poetry run pre-commit run -a
       - run:
-          name: Run << parameters.directory >> (Python << parameters.python-version >>) integration tests
+          name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
