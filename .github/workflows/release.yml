@@ -68,19 +68,19 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
       - name: Push 'kolena' dist to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
 
       - name: Create GitHub release with 'kolena' build as artifact
         uses: marvinpinto/action-automatic-releases@v1.2.1
         with:
-          repo_token: ${{ secrets.RELEASE_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           prerelease: false
-          files: |
-            ./dist/*.tar.gz
 
       #
       # backcompat: build and publish 'kolena-client' package
@@ -109,6 +109,7 @@ jobs:
         with:
           password: ${{ secrets.TEST_PYPI_API_TOKEN }}
           repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
 
       - name: Push 'kolena-client' dist to production CodeArtifact for backward compatibility
         run: |
@@ -119,3 +120,4 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+          skip-existing: true
