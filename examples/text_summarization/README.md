@@ -1,6 +1,6 @@
 # Example Integration: Text Summarization
 
-This example models the Text Summarization with GPT models in Kolena.
+This example models the Text Summarization problem with GPT models in Kolena.
 
 ## Setup
 
@@ -24,8 +24,8 @@ poetry run pre-commit install
 
 There are two scripts to perform the following operations:
 
-1. [seed_test_suite.py](seed_test_suite.py) creates test suites and test cases
-2. [seed_test_run.py](seed_test_run.py) creates model inferences against the test suites
+1. [seed_test_suite.py](text_summarization/seed_test_suite.py) creates test suites and test cases
+2. [seed_test_run.py](text_summarization/seed_test_run.py) creates model inferences against the test suites
 
 #### Usage
 
