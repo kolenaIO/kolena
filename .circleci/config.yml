@@ -105,7 +105,8 @@ jobs:
                 --ignore=tests/integration/fr \
                 tests/integration
             else
-              TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py | circleci tests split)
+              TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py |
+                circleci tests split --split-by=timings --timings-type=filename)
               poetry run pytest -vv --durations=0 --cov=kolena --cov-branch $TESTFILES
             fi
       - when:
@@ -119,6 +120,8 @@ jobs:
                   poetry run coverage xml --data-file .coverage
             - codecov/upload:
                 file: coverage.xml
+            - store_test_results:
+                path: coverage.xml
 
   example-test:
     parameters:
