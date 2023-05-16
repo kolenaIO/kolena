@@ -57,10 +57,10 @@ jobs:
           aws s3 rm --recursive "$BUCKET_PATH"
           aws s3 sync ./build "$BUCKET_PATH"
 
-          # BUCKET_PATH="s3://$ASSET_BUCKET/docs/latest"
-          # echo "pushing documentation to '$BUCKET_PATH'..."
-          # aws s3 rm --recursive "$BUCKET_PATH"
-          # aws s3 sync ./build "$BUCKET_PATH"
+          BUCKET_PATH="s3://$ASSET_BUCKET/docs/latest"
+          echo "pushing documentation to '$BUCKET_PATH'..."
+          aws s3 rm --recursive "$BUCKET_PATH"
+          aws s3 sync ./build "$BUCKET_PATH"
         working-directory: ./docs
 
       - name: Push kolena dist to Test PyPI
@@ -110,12 +110,12 @@ jobs:
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
 
-      - name: Push kolena-client dist to trunk CodeArtifact for backwards compatibility
+      - name: Push kolena-client dist to trunk CodeArtifact for backward compatibility
         run: |
           aws codeartifact login --tool twine --domain trunk --domain-owner 328803196297 --repository kolena-client
           twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
 
-      - name: Push kolena-client dist to production CodeArtifact for backwards compatibility
+      - name: Push kolena-client dist to production CodeArtifact for backward compatibility
         run: |
           aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
           # twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
