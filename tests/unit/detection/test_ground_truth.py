@@ -18,7 +18,7 @@ from kolena.detection.ground_truth import ClassificationLabel
 from kolena.detection.ground_truth import SegmentationMask
 
 
-def test_ground_truth__classification_label() -> None:
+def test__ground_truth__classification_label() -> None:
     test_label = "test-label"
     gt = ClassificationLabel(test_label)
     assert gt.label == test_label
@@ -26,7 +26,7 @@ def test_ground_truth__classification_label() -> None:
     assert gt._to_dict() == dict(data_type="CLASSIFICATION_LABEL", data_object=dict(label=test_label, difficult=False))
 
 
-def test_ground_truth__bounding_box() -> None:
+def test__ground_truth__bounding_box() -> None:
     test_label = "test-label"
     test_point1 = (0.1234, 100.213)
     test_point2 = (1.1234, 101.213)
@@ -41,7 +41,7 @@ def test_ground_truth__bounding_box() -> None:
     )
 
 
-def test_ground_truth__segmentation_mask() -> None:
+def test__ground_truth__segmentation_mask() -> None:
     test_label = "test-label"
     test_points = [(0.1234, 100.213), (1.1234, 101.213), (2.1234, 110.213)]
 

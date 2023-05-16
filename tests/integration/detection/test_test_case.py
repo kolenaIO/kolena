@@ -320,7 +320,7 @@ def test__edit__updated(test_dataset: List[TestImage]) -> None:
     assert updated_label in [gt.label for gt in loaded_images_after[0].ground_truths]
 
 
-def test_update_dataset() -> None:
+def test__update_dataset() -> None:
     dataset = with_test_prefix("test")
     locator = fake_random_locator()
     name_prefix = with_test_prefix(f"{__file__}::test_update_dataset")
@@ -345,7 +345,7 @@ def test_update_dataset() -> None:
     assert test_case2_images[0].dataset == "new"
 
 
-def test_update_metadata() -> None:
+def test__update_metadata() -> None:
     bbox = kolena.detection.metadata.BoundingBox(top_left=(0, 1), bottom_right=(2, 3))
     asset = Asset(locator=fake_random_locator())
     metadata = dict(a="a", b=True, c=3, d=asset, e=bbox)

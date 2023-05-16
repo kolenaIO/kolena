@@ -21,7 +21,7 @@ from kolena.fr import Model
 
 
 @typing.no_type_check
-def test_create_model() -> None:
+def test__model__create() -> None:
     with pytest.raises(DirectInstantiationError):
         kolena.fr.Model(id=0, name="name", metadata={})
 

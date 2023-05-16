@@ -109,7 +109,7 @@ def test__init__with_samples_reset(test_samples: List[TestCaseRecord]) -> None:
     assert_list_and_df_values_equal(samples, test_case.load_data())
 
 
-def test_create() -> None:
+def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test_create test case")
     description = "A long\ndescription, with\tpunctuation $and all."
     test_case = TestCase.create(name, description=description)
@@ -118,7 +118,7 @@ def test_create() -> None:
     assert test_case.data.description == description
 
 
-def test_load() -> None:
+def test__load() -> None:
     name = with_test_prefix(f"{__file__}::test_load test case")
     description = "123"
     TestCase.create(name, description=description)
@@ -131,26 +131,26 @@ def test_load() -> None:
     assert test_case.data.pair_count_imposter == 0
 
 
-def test_load_does_not_exist() -> None:
+def test__load__does_not_exist() -> None:
     with pytest.raises(NotFoundError):
         TestCase.load("test_load_does_not_exist test case")
 
 
-def test_load_data_empty() -> None:
+def test__load_data__empty() -> None:
     name = with_test_prefix(f"{__file__}::test_load_data_empty test case")
     test_case = TestCase.create(name)
     df = test_case.load_data()
     assert len(df) == 0
 
 
-def test_iter_data_empty() -> None:
+def test__iter_data__empty() -> None:
     name = with_test_prefix(f"{__file__}::test_iter_data_empty test case")
     test_case = TestCase.create(name)
     for _ in test_case.iter_data():
         pytest.fail("expected no data to iterate over")
 
 
-def test_load_data(fr_test_data: TestData, fr_test_cases: List[TestCase]) -> None:
+def test__load_data(fr_test_data: TestData, fr_test_cases: List[TestCase]) -> None:
     test_case = fr_test_cases[0]
     image_pairs = fr_test_data.image_pairs
     expected = [
@@ -162,7 +162,7 @@ def test_load_data(fr_test_data: TestData, fr_test_cases: List[TestCase]) -> Non
     assert_list_and_df_values_equal(expected, test_case.load_data())
 
 
-def test_iter_data(fr_test_data: TestData, fr_test_cases: List[TestCase]) -> None:
+def test__iter_data(fr_test_data: TestData, fr_test_cases: List[TestCase]) -> None:
     test_case = fr_test_cases[0]
     image_pairs = fr_test_data.image_pairs
     expected = [
@@ -178,7 +178,7 @@ def test_iter_data(fr_test_data: TestData, fr_test_cases: List[TestCase]) -> Non
     assert_list_and_df_values_equal(expected, df_test_case_loaded)
 
 
-def test_edit(fr_test_data: TestData, with_augmented_images: None) -> None:
+def test__edit(fr_test_data: TestData, with_augmented_images: None) -> None:
     name = with_test_prefix(f"{__file__}::test_edit test case")
     test_case = TestCase.create(name)
     assert test_case.data.version == 0
@@ -229,7 +229,7 @@ def test_edit(fr_test_data: TestData, with_augmented_images: None) -> None:
     assert len(test_case.load_data()) == 0
 
 
-def test_edit_no_op() -> None:
+def test__edit__no_op() -> None:
     name = with_test_prefix(f"{__file__}::test_edit_no_op test case")
     description = f"{name} (description)"
     test_case = TestCase.create(name, description)
@@ -254,7 +254,7 @@ def test_edit_no_op() -> None:
     assert test_case.data.pair_count_imposter == 0
 
 
-def test_edit_empty(fr_images_df: pd.DataFrame) -> None:
+def test__edit__empty(fr_images_df: pd.DataFrame) -> None:
     name = with_test_prefix(f"{__file__}::test_edit_empty test case")
     test_case = TestCase.create(name)
     sample = fr_images_df.iloc[0]["locator"], fr_images_df.iloc[1]["locator"], True

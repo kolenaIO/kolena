@@ -2,11 +2,8 @@ name: Build
 
 on:
   push:
-    branches:
-      - does-not-exist
-    # TODO: uncomment once repository tags are set up properly
-    # tags:
-    #   - "*"
+    tags:
+      - "*"
 
 jobs:
   build:

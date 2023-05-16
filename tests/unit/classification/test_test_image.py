@@ -15,7 +15,7 @@ import kolena.classification.metadata
 from kolena.classification import TestImage
 
 
-def test_image__serde() -> None:
+def test__test_image__serde() -> None:
     original = TestImage(
         locator="s3://test-bucket/path/to/file.png",
         dataset="test-dataset",
