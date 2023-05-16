@@ -22,16 +22,14 @@ poetry run pre-commit install
 
 ## Running the Text Summarization Workflow
 
+Data lives under the bucket `s3://kolena-public-datasets`.
+
+Make sure there is a set `KOLENA_TOKEN` environment variable. See [initialization instructions](https://docs.kolena.io/testing-with-kolena/using-kolena-client#initialization) for details.
+
 There are two scripts to perform the following operations:
 
 1. [seed_test_suite.py](text_summarization/seed_test_suite.py) creates test suites and test cases
 2. [seed_test_run.py](text_summarization/seed_test_run.py) creates model inferences against the test suites
-
-#### Usage
-
-Data lives under the bucket `s3://kolena-public-datasets`.
-
-Make sure there is a set `KOLENA_TOKEN` environment variable. See [initialization instructions](https://docs.kolena.io/testing-with-kolena/using-kolena-client#initialization) for details.
 
 Command line args are defined within each script to specify what model to use and what test suite to seed/evaluate, but a plain end to end run would look like this:
 
