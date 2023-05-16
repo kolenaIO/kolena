@@ -22,4 +22,5 @@ def test__seed_test_suite() -> None:
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
 def test__seed_test_run() -> None:
-    seed_test_run_main(Namespace(model_name="ada", test_suite="none", local_csv="none"))
+    args = Namespace(model_name="ada", test_suite="CNN-DailyMail :: text length", local_csv="none")
+    seed_test_run_main(args)
