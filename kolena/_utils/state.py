@@ -102,11 +102,11 @@ class _ClientState:
         self.telemetry = False
 
 
-def get_client_base_url() -> str:
+def _get_api_base_url() -> str:
     return os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
 
 
-_client_state = _ClientState(base_url=get_client_base_url())
+_client_state = _ClientState(base_url=_get_api_base_url())
 
 
 def get_client_state() -> _ClientState:
@@ -160,7 +160,7 @@ def get_token(
 
 @contextlib.contextmanager
 def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[_ClientState]:
-    base_url = base_url or get_client_base_url()
+    base_url = base_url or _get_api_base_url()
     init_response = get_token(api_token, base_url)
     client_state = _ClientState(
         base_url=base_url,
