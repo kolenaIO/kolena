@@ -117,11 +117,11 @@ jobs:
             - run:
                 name: Coverage
                 command: |
-                  poetry run coverage xml --data-file .coverage
+                  poetry run coverage xml --data-file .coverage -o test-results/coverage.xml
             - codecov/upload:
-                file: coverage.xml
+                file: test-results/coverage.xml
             - store_test_results:
-                path: coverage.xml
+                path: test-results
 
   example-test:
     parameters:
