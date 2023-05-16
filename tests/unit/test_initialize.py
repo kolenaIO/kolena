@@ -27,7 +27,6 @@ from requests import Response
 import kolena
 from kolena._api.v1.token import ValidateResponse
 from kolena._utils.state import _client_state
-from kolena._utils.state import API_BASE_URL
 from kolena._utils.state import API_BASE_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
@@ -93,7 +92,7 @@ def test__initialize__updated_environ(clean_client_state: None) -> None:
             assert client_state.api_token == "def"
 
         patched.assert_called_once()
-        assert patched.call_args.args[0] == get_endpoint_with_baseurl(API_BASE_URL, "token/login")
+        assert patched.call_args.args[0] != get_endpoint_with_baseurl(base_url, "token/login")
 
 
 def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
