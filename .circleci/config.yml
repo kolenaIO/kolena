@@ -101,7 +101,6 @@ jobs:
               circleci tests split --split-by=timings --timings-type=filename)
             poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
                 $TESTFILES
-            fi
       - when:
           # Generate coverage only from one python version
           condition:
