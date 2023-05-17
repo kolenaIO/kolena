@@ -50,13 +50,12 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    seed_test_run(args.model_name, args.test_suite_names)
+    seed_test_run(args.model, args.test_suites)
     return 0
 
 
 if __name__ == "__main__":
-    ap = ArgumentParser("kolena_contrib.age_estimation")
-    ap.add_argument("model_name", help="Name of model in directory to test")
-    ap.add_argument("test_suite_names", nargs="+", help="Name of test suite(s) to test.")
-
+    ap = ArgumentParser()
+    ap.add_argument("model", help="Name of model in directory to test")
+    ap.add_argument("test_suites", nargs="+", help="Name(s) of test suite(s) to test.")
     sys.exit(main(ap.parse_args()))

@@ -27,11 +27,11 @@ This project defines two scripts that perform the following operations:
 1. [`seed_test_suite.py`](text_summarization/seed_test_suite.py) creates the following test suites:
 
     - `CNN-DailyMail :: moderation score`, stratified by `very low`, `low`, `medium`, and `high`
-       [moderation scores](https://platform.openai.com/docs/guides/moderation/overview)
+        [moderation scores](https://platform.openai.com/docs/guides/moderation/overview)
     - `CNN-DailyMail :: news category`, stratified by `business`, `entertainment`, `politics`, `tech`, `sport`, and `other`
     - `CNN-DailyMail :: text length`, stratified by `short`, `medium`, and `long` text
     - `CNN-DailyMail :: text X ground truth length`, stratified by the cross product of `short`, `medium`, and `long`
-       text lengths and ground truth lengths
+        text lengths and ground truth lengths
 
 2. [`seed_test_run.py`](text_summarization/seed_test_run.py) tests the following models on the above test suites: `ada`,
   `babbage`, `curie`, `davinci`, `turbo`
