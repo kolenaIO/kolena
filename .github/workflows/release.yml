@@ -111,7 +111,7 @@ jobs:
       - name: "[backcompat] Push 'kolena-client' dist to production CodeArtifact"
         run: |
           aws codeartifact login --tool twine --domain production --domain-owner 328803196297 --repository kolena-client
-          twine upload --skip-existing --repository codeartifact ./dist/kolena_cilent*
+          twine upload --skip-existing --repository codeartifact ./dist/kolena_client*
 
       - name: "[backcompat] Push 'kolena-client' dist to PyPI"
         uses: pypa/gh-action-pypi-publish@release/v1
