@@ -2,9 +2,6 @@ name: Release
 
 on:
   push:
-    # TODO: remove me
-    branches:
-      - gh/permissions
     tags:
       - "*"
 
@@ -17,17 +14,6 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-
-      # TODO: remove me
-      - name: Create GitHub release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
-        with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          prerelease: false
-          automatic_release_tag: latest
-
-      - name: Fail
-        run: exit 1
 
       - uses: actions/setup-python@v4
         with:
