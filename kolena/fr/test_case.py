@@ -349,4 +349,4 @@ class TestCase(ABC, Frozen, WithTelemetry):
             endpoint_path=API.Path.INIT_LOAD_DATA.value,
             df_class=TestCaseDataFrame,
         )
-        log.success(f"loaded image pairs in test case '{self.name}'")
+        log.info(f"loaded image pairs in test case '{self.name}'")

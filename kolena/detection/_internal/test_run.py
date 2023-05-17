@@ -164,9 +164,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
             self._inferences[image_id] = context_image_inferences
 
         if self._n_inferences >= BatchSize.UPLOAD_RESULTS.value:
-            log.info(f"uploading batch of '{self._n_inferences}' inference results")
             self._upload_chunk()
-            log.success(f"uploaded batch of '{self._n_inferences}' inference results")
 
     @validate_arguments(config=ValidatorConfig)
     def iter_images(self) -> Iterator[_TestImageClass]:
@@ -194,7 +192,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         except StopIteration:
             # no more images
             return []
-        log.success("loaded batch of images for test run")
+        log.info("loaded batch of images for test run")
         return [self._image_from_load_image_record(record) for record in df_image_batch.itertuples()]
 
     @validate_arguments(config=ValidatorConfig)
@@ -220,7 +218,8 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         if self._n_inferences == 0:
             # Bail if this happens to being run by fencepost immediately after being run by add_inference
             return
-        log.info("streaming inference upload for test run")
+
+        log.info(f"uploading {self._n_inferences} inferences for test run")
         if self._upload_uuid is None:
             init_response = init_upload()
             self._upload_uuid = init_response.uuid
@@ -235,7 +234,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         upload_data_frame_chunk(df_chunk_serializable, load_uuid=self._upload_uuid)
         self._n_inferences = 0
         self._inferences = OrderedDict()
-        log.success("streamed inference upload for test run")
+        log.success(f"uploaded {self._n_inferences} inferences for test run")
 
     def _finalize_upload(self) -> None:
         if self._upload_uuid is None:
@@ -292,7 +291,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         if self._custom_metrics_callback is None:
             return
 
-        log.info("submitting custom metrics for test run")
+        log.info("computing and uploading custom metrics for test run")
         custom_metrics = self._compute_custom_metrics()
         request = API.UpdateCustomMetricsRequest(model_id=self._model._id, metrics=custom_metrics)
         res = krequests.put(
@@ -300,4 +299,4 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)
-        log.success("submitted custom metrics for test run")
+        log.success("computed and uploaded custom metrics for test run")

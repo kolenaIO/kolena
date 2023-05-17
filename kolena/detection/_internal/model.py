@@ -149,7 +149,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
             endpoint_path=API.Path.INIT_LOAD_INFERENCES.value,
             df_class=self._LoadInferencesDataFrameClass,
         )
-        log.success(f"loaded inferences from model '{self.name}' on {test_object_display_name}")
+        log.info(f"loaded inferences from model '{self.name}' on {test_object_display_name}")
 
     @validate_arguments(config=ValidatorConfig)
     def load_inferences_by_test_case(
@@ -181,7 +181,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
             endpoint_path=API.Path.INIT_LOAD_INFERENCES_BY_TEST_CASE.value,
             df_class=self._LoadInferencesDataFrameClass,
         )
-        log.success(f"loaded inferences from model '{self.name}' on test suite '{test_suite.name}'")
+        log.info(f"loaded inferences from model '{self.name}' on test suite '{test_suite.name}'")
 
     @abstractmethod
     def _inferences_from_record(self, record: Any) -> Tuple[_TestImageClass, Optional[List[_InferenceClass]]]:

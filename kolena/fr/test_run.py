@@ -143,7 +143,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
                     partial_response = from_dict(data_class=LoadAPI.InitDownloadPartialResponse, data=json.loads(line))
                     load_uuid = partial_response.uuid
                     dfs.append(_BatchedLoader.load_path(partial_response.path, ImageDataFrame))
-                log.success("loaded remaining images for test run")
+                log.info("loaded remaining images for test run")
                 return _BatchedLoader.concat(dfs, ImageDataFrame)
             finally:
                 _BatchedLoader.complete_load(load_uuid)
@@ -249,7 +249,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
 
                 df_embedding = _BatchedLoader.concat(dfs_embedding, EmbeddingDataFrame)
                 df_pair = _BatchedLoader.concat(dfs_pair, PairDataFrame)
-                log.success("loaded batch of image pairs for test run")
+                log.info("loaded batch of image pairs for test run")
                 return df_embedding, df_pair
             finally:
                 for uuid in [load_uuid_embedding, load_uuid_pair]:

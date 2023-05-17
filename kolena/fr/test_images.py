@@ -231,7 +231,7 @@ class TestImages(Uninstantiable[None]):
             endpoint_path=API.Path.INIT_LOAD_REQUEST.value,
             df_class=TestImageDataFrame,
         )
-        log.success(f"loaded test images{from_extra}")
+        log.info(f"loaded test images{from_extra}")
 
     @staticmethod
     def _data_source_display_name(

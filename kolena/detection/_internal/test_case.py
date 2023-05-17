@@ -179,7 +179,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         ):
             for record in df.itertuples():
                 yield self._TestImageClass._from_record(record)
-        log.success(f"loaded test images for test case '{self.name}'")
+        log.info(f"loaded test images for test case '{self.name}'")
 
     @classmethod
     def create(
