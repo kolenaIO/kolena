@@ -86,19 +86,23 @@ def _as_class_metric_plot(
     metric_name: str,
     metrics_by_label: Dict[str, AggregatedMetrics],
     labels: List[str],
-) -> BarPlot:
+) -> Optional[BarPlot]:
     if metric_name == "Recall":
         title = f"{metric_name} (TPR) vs. Class"
     else:
         title = f"{metric_name} vs. Class"
 
-    return BarPlot(
-        title=title,
-        x_label="Class",
-        y_label=metric_name,
-        labels=labels,
-        values=[getattr(metrics_by_label[label], metric_name) for label in labels],
-    )
+    values = [getattr(metrics_by_label[label], metric_name) for label in labels]
+    valid_pairs = [(label, value) for label, value in zip(labels, values) if value != 0.0]
+    if len(valid_pairs) > 0:
+        return BarPlot(
+            title=title,
+            x_label="Class",
+            y_label=metric_name,
+            labels=[label for label, _ in valid_pairs],
+            values=[value for _, value in valid_pairs],
+        )
+    return None
 
 
 def _as_confidence_histogram(
@@ -122,14 +126,15 @@ def _as_confidence_histogram(
 
 
 def _compute_confidence_histograms(
+    test_case_name: str,
     metrics: List[TestSampleMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
-) -> Optional[List[Histogram]]:
+) -> List[Histogram]:
     if confidence_range is None:
         log.warn(
-            "unsupported confidence range for confidence histograms - skipping plotting",
+            f"skipping confidence histograms for {test_case_name}: unsupported confidence range",
         )
-        return None
+        return []
 
     confidence_all = [mts.classification.confidence for mts in metrics if mts.classification is not None]
     confidence_correct = [
@@ -164,15 +169,11 @@ def _compute_test_case_plots(
         or field.name not in ["Precision", "Recall"]  # Omit single-class TC from precision and recall plots
     ]
 
-    confidence_histograms = _compute_confidence_histograms(metrics, confidence_range)
-    if confidence_histograms:
-        plots.extend(confidence_histograms)
-    roc_curve_plot = _compute_test_case_ovr_roc_curve(labels, ground_truths, inferences)
-    if roc_curve_plot:
-        plots.append(roc_curve_plot)
-    confusion_matrix = _compute_test_case_confusion_matrix(test_case_name, ground_truths, metrics)
-    if confusion_matrix:
-        plots.append(confusion_matrix)
+    plots.extend(_compute_confidence_histograms(test_case_name, metrics, confidence_range))
+    plots.append(_compute_test_case_ovr_roc_curve(test_case_name, labels, ground_truths, inferences))
+    plots.append(_compute_test_case_confusion_matrix(test_case_name, ground_truths, metrics))
+    plots = list(filter(lambda plot: plot is not None, plots))
+
     return plots
 
 
@@ -198,10 +199,6 @@ def _compute_test_case_confusion_matrix(
         return None
 
     labels: Set[str] = {*gt_labels, *pred_labels}
-    if len(labels) > 10:
-        log.warn(f"skipping confusion matrix for {test_case_name}: too many labels")
-        return None
-
     contains_none = none_label in labels
     sortable_labels = [label for label in labels if label != none_label]
     ordered_labels = sorted(sortable_labels) if not contains_none else [*sorted(sortable_labels), none_label]
@@ -212,6 +209,7 @@ def _compute_test_case_confusion_matrix(
 
 
 def _compute_test_case_ovr_roc_curve(
+    test_case_name: str,
     labels: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
@@ -225,6 +223,10 @@ def _compute_test_case_ovr_roc_curve(
             curves.append(Curve(x=fpr_values, y=tpr_values, label=label))
 
     if len(curves) > 0:
+        if len(curves) > 10:
+            log.warn(f"skipping one-vs-rest ROC curve for {test_case_name}: too many labels")
+            return None
+
         return CurvePlot(
             title="Receiver Operating Characteristic (One-vs-Rest)",
             x_label="False Positive Rate (FPR)",

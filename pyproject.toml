@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "kolena"
-version = "0.999.0"
+version = "0.999.0"  # version is automatically set to latest git tag during release process
 description = "Client for Kolena's machine learning (ML) testing and debugging platform."
 authors = ["Kolena Engineering <eng@kolena.io>"]
 homepage = "https://kolena.io"
@@ -8,7 +8,7 @@ documentation = "https://docs.kolena.io"
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["Kolena", "ML", "testing"]
-classifiers = [  # license, versions set automatically during build
+classifiers = [  # classifiers for license, versions set automatically during Poetry build
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",

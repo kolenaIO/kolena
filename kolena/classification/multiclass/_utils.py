@@ -55,13 +55,13 @@ def roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], Lis
 
     # Map cumulative sums to tpr and fpr
     if fps[-1] <= 0:
-        log.warn("No negative samples in y_true, false positive value should be meaningless")
+        # No negative samples in y_true, false positive value should be meaningless
         fpr = []
     else:
         fpr = fps / fps[-1]
         fpr = fpr.tolist()
     if tps[-1] <= 0:
-        log.warn("No positive samples in y_true, true positive value should be meaningless")
+        # No positive samples in y_true, true positive value should be meaningless
         tpr = []
     else:
         tpr = tps / tps[-1]

@@ -219,7 +219,8 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         Load the latest version of all non-archived test suites with this workflow.
 
         :param tags: optionally specify a set of tags to apply as a filter. The loaded test suites will include only
-            test suites with tags matching each of these specified tags, i.e. ``test_suite.tags.intersection == tags``.
+            test suites with tags matching each of these specified tags, i.e.
+            ``test_suite.tags.intersection(tags) == tags``.
         :return: the latest version of all non-archived test suites, with matching tags when specified.
         """
         cls._validate_workflow()
@@ -315,7 +316,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             name=self.name,
             description=editor._description,
             test_case_ids=[tc._id for tc in editor._test_cases],
-            tags=editor.tags,
+            tags=list(editor.tags),
         )
         res = krequests.post(endpoint_path=API.Path.EDIT, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
