@@ -29,7 +29,7 @@ This project defines two scripts that perform the following operations:
     - `gender :: labeled-faces-in-the-wild [age estimation]`, stratified by estimated gender
     - `race :: labeled-faces-in-the-wild [age estimation]`, stratified by estimated demographic group
 
-2. [`seed_test_run.py`](age_estimation/seed_test_run.py) tests the `ssrnet` models on the above test suites
+2. [`seed_test_run.py`](age_estimation/seed_test_run.py) tests a specified model, e.g. `ssrnet`, on the above test suites
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
