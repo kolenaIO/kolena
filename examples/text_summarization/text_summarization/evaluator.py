@@ -39,7 +39,7 @@ bleu = evaluate.load("sacrebleu")
 rouge = evaluate.load("rouge")
 
 
-def compute_test_sample_metrics(ts: TestSample, gt: GroundTruth, inf: Inference) -> TestSampleMetric:
+def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
     if not inf.is_failure:
         bertscore_results = bertscore.compute(
             predictions=[inf.summary],
@@ -189,13 +189,11 @@ def evaluate_text_summarization(
     inferences: List[Inference],
     test_cases: TestCases,
 ) -> EvaluationResults:
-    print("computing test sample metric...")
-    test_sample_metrics: List[TestSampleMetric] = [
-        compute_test_sample_metrics(ts, gt, inf) for ts, gt, inf in zip(test_samples, ground_truths, inferences)
-    ]
+    print("computing test sample metrics...")
+    test_sample_metrics = [compute_test_sample_metrics(gt, inf) for gt, inf in zip(ground_truths, inferences)]
 
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
-    all_test_case_plots: List[Tuple[TestCase, Plot]] = []
+    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, tc_test_samples, tc_gts, tc_infs, tc_ts_metrics in test_cases.iter(
         test_samples,
         ground_truths,

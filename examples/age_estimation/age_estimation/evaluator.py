@@ -23,9 +23,8 @@ from .workflow import GroundTruth
 from .workflow import Inference
 from .workflow import TestCase
 from .workflow import TestSample
-from kolena.workflow import Curve
-from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
+from kolena.workflow import Histogram
 from kolena.workflow import MetricsTestCase as BaseMetricsTestCase
 from kolena.workflow import MetricsTestSample as BaseMetricsTestSample
 from kolena.workflow import Plot
@@ -73,17 +72,14 @@ def compute_test_case_plots(
     ground_truths: List[GroundTruth],
     test_sample_metrics: List[MetricsTestSample],
 ) -> List[Plot]:
-    plots = []
     data = [mts.error for mts in test_sample_metrics if mts.error is not None]
-    y, x = np.histogram(data, bins=100, range=(0, 10))
-    y = y / len(data)
-    plots.append(
-        CurvePlot(
-            title="Distribution of Absolute Error",
-            x_label="Absolute Error",
-            y_label="Density",
-            curves=[Curve(label="AE", x=x[1:].tolist(), y=y.tolist())],
-        ),
+    hist, bins = np.histogram(data, bins=100, range=(0, 10))
+    histogram_absolute_error = Histogram(
+        title="Distribution of Absolute Error",
+        x_label="Absolute Error",
+        y_label="Density",
+        buckets=list(bins),
+        frequency=list(hist),
     )
 
     mae_data = defaultdict(list)
@@ -94,15 +90,15 @@ def compute_test_case_plots(
     sorted_data = dict(sorted(mae_data.items()))
     x = list(sorted_data.keys())
     y = [sum(sorted_data[age]) / float(len(sorted_data[age])) for age in x]
-    plots.append(
-        CurvePlot(
-            title="Distribution of Mean Absolute Error Across Target Age",
-            x_label="Target Age",
-            y_label="Mean Absolute Error",
-            curves=[Curve(label="MAE", x=x, y=y)],
-        ),
+    histogram_target_age = Histogram(
+        title="Distribution of Mean Absolute Error Across Target Age",
+        x_label="Target Age",
+        y_label="Mean Absolute Error",
+        buckets=x,
+        frequency=y,
     )
-    return plots
+
+    return [histogram_absolute_error, histogram_target_age]
 
 
 def evaluate_age_estimation(
