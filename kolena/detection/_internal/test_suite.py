@@ -289,7 +289,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             log.info("no op: nothing edited")
             return
 
-        log.info(f"edited test suite '{self.name}' (v{self.version})")
+        log.info(f"editing test suite '{self.name}' (v{self.version})")
         request = CoreAPI.TestSuite.EditRequest(
             test_suite_id=self._id,
             current_version=self.version,
