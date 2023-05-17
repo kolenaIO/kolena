@@ -113,9 +113,9 @@ def evaluate_age_estimation(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, MetricsTestCase]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    for test_case, *_, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
+    for test_case, _, gt, _, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
         all_test_case_metrics.append((test_case, compute_test_case_metrics(tsm)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(tsm)))
+        all_test_case_plots.append((test_case, compute_test_case_plots(gt, tsm)))
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
