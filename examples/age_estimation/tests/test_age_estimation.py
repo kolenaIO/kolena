@@ -24,5 +24,5 @@ def test__seed_test_suite() -> None:
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
 def test__seed_test_run() -> None:
-    args = Namespace(model_name="ssrnet", test_suite_names=["age :: labeled-faces-in-the-wild [age estimation]"])
+    args = Namespace(model="ssrnet", test_suites=["age :: labeled-faces-in-the-wild [age estimation]"])
     seed_test_run_main(args)

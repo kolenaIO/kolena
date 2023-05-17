@@ -36,12 +36,12 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 age_estimation/seed_test_run.py --help
-usage: kolena_contrib.age_estimation [-h] model_name test_suite_names [test_suite_names ...]
+usage: seed_test_run.py [-h] model test_suites [test_suites ...]
 
 positional arguments:
-  model_name        Name of model in directory to test
-  test_suite_names  Name of test suite(s) to test.
+  model        Name of model in directory to test
+  test_suites  Name(s) of test suite(s) to test.
 
 optional arguments:
-  -h, --help        show this help message and exit
+  -h, --help   show this help message and exit
 ```
