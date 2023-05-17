@@ -49,10 +49,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
 
 def main(args: Namespace) -> int:
-    env_token = "KOLENA_TOKEN"
-    print(f"initializing with environment variables ${env_token}")
-    kolena.initialize(os.environ[env_token], verbose=True)
-
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     seed_test_run(args.model_name, args.test_suite_names)
     return 0
 

@@ -23,6 +23,8 @@ from age_estimation.workflow import Inference
 from age_estimation.workflow import TestCase
 from age_estimation.workflow import TestSample
 
+from kolena.workflow import Curve
+from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Histogram
 from kolena.workflow import MetricsTestCase as BaseMetricsTestCase
@@ -77,7 +79,7 @@ def compute_test_case_plots(
     histogram_absolute_error = Histogram(
         title="Distribution of Absolute Error",
         x_label="Absolute Error",
-        y_label="Density",
+        y_label="Count",
         buckets=list(bins),
         frequency=list(hist),
     )
@@ -90,15 +92,14 @@ def compute_test_case_plots(
     sorted_data = dict(sorted(mae_data.items()))
     x = list(sorted_data.keys())
     y = [sum(sorted_data[age]) / float(len(sorted_data[age])) for age in x]
-    histogram_target_age = Histogram(
-        title="Distribution of Mean Absolute Error Across Target Age",
+    curve_target_age = CurvePlot(
+        title="Mean Absolute Error vs. Target Age",
         x_label="Target Age",
         y_label="Mean Absolute Error",
-        buckets=x,
-        frequency=y,
+        curves=[Curve(x=x, y=y)],
     )
 
-    return [histogram_absolute_error, histogram_target_age]
+    return [histogram_absolute_error, curve_target_age]
 
 
 def evaluate_age_estimation(
