@@ -131,9 +131,9 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
+        log.info(f"created test case '{name}'")
         if images is not None:
             obj._hydrate(images)
-        log.info(f"created test case '{name}'")
         return obj
 
     @classmethod
