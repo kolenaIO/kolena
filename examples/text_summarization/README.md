@@ -41,14 +41,16 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 text_summarization/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--model {ada,babbage,curie,davinci,turbo}] [--test-suite TEST_SUITE] [--local-csv LOCAL_CSV]
+usage: seed_test_run.py [-h] [--test-suite TEST_SUITE] [--local-csv LOCAL_CSV] {ada,babbage,curie,davinci,turbo}
+
+positional arguments:
+  {ada,babbage,curie,davinci,turbo}
+                        The name of the model to test.
 
 optional arguments:
   -h, --help            show this help message and exit
-  --model {ada,babbage,curie,davinci,turbo}
-                        The name of the model to test.
   --test-suite TEST_SUITE
-                        A specific test suite to run. Use all available test suites when unspecified.
+                        Optionally specify a test suite to test. Test against all available test suites when unspecified.
   --local-csv LOCAL_CSV
-                        Optionally specify a CSV to use. Defaults to CSVs stored in S3 when absent.
+                        Optionally specify a local results CSV to use. Defaults to CSVs stored in S3 when absent.
 ```

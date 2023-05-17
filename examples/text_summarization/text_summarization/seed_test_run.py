@@ -139,7 +139,7 @@ def seed_test_run(
 
 
 def run(args: Namespace) -> None:
-    mod = MODEL_MAP[args.model_name]
+    mod = MODEL_MAP[args.model]
     print("loading inference CSV")
     s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}/results.csv"
     csv_to_use = s3_path if args.local_csv is None else args.local_csv
@@ -169,18 +169,16 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--model", type=str, choices=sorted(MODEL_MAP.keys()), help="The name of the model to test.")
+    ap.add_argument("model", type=str, choices=sorted(MODEL_MAP.keys()), help="The name of the model to test.")
     ap.add_argument(
         "--test-suite",
         type=str,
-        help="A specific test suite to run. Use all available test suites when unspecified.",
-        required=False,
+        help="Optionally specify a test suite to test. Test against all available test suites when unspecified.",
     )
     ap.add_argument(
         "--local-csv",
         type=str,
-        help="Optionally specify a CSV to use. Defaults to CSVs stored in S3 when absent.",
-        required=False,
+        help="Optionally specify a local results CSV to use. Defaults to CSVs stored in S3 when absent.",
     )
 
     args = ap.parse_args()
