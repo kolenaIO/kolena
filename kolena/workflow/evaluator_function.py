@@ -119,7 +119,7 @@ UnconfiguredEvaluatorFunction = Callable[
 #:         test_sample_metrics = [compute_test_sample_metrics(*s) for s in zip(test_samples, ground_truths, inferences)]
 #:
 #:         # compute aggregate metrics across all test cases using `test_cases.iter(...)`
-#:         all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
+#:         all_test_case_metrics: List[Tuple[TestCase, MetricsTestCase]] = []
 #:         for test_case, sample in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
 #:             test_case_metrics = compute_aggregate_metrics(*sample)
 #:             all_test_case_metrics.append((test_case, test_case_metrics))
