@@ -142,7 +142,7 @@ def run(args: Namespace) -> None:
     mod = MODEL_MAP[args.model_name]
     print("loading inference CSV")
     s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}/results.csv"
-    csv_to_use = s3_path if args.local_csv == "none" else args.local_csv
+    csv_to_use = s3_path if args.local_csv is None else args.local_csv
     columns_of_interest = [
         "article_id",
         "prediction",
@@ -155,7 +155,7 @@ def run(args: Namespace) -> None:
     ]
     df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest)
 
-    if args.test_suite == "none":
+    if args.test_suite is None:
         print("loading test suite")
         test_suites = [TestSuite.load(name) for name in TEST_SUITE_NAMES]
         for test_suite in test_suites:
@@ -169,12 +169,23 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--model_name", type=str, help="One of 'ada', 'babbage', 'curie', 'davinci', or 'turbo'.")
-    ap.add_argument("--test_suite", type=str, default="none", help="A specific test suite to run.", required=False)
-    ap.add_argument("--local_csv", type=str, default="none", help="A specific csv to use.", required=False)
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    ap.add_argument("--model", type=str, choices=sorted(MODEL_MAP.keys()), help="The name of the model to test.")
+    ap.add_argument(
+        "--test-suite",
+        type=str,
+        help="A specific test suite to run. Use all available test suites when unspecified.",
+        required=False,
+    )
+    ap.add_argument(
+        "--local-csv",
+        type=str,
+        help="Optionally specify a CSV to use. Defaults to CSVs stored in S3 when absent.",
+        required=False,
+    )
 
-    run(ap.parse_args())
+    args = ap.parse_args()
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    run(args)
 
 
 if __name__ == "__main__":

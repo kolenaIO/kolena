@@ -212,8 +212,9 @@ def main() -> None:
         help="CSV file specifying dataset. See default CSV for details",
     )
 
+    args = ap.parse_args()
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    run(ap.parse_args())
+    run(args)
 
 
 if __name__ == "__main__":
