@@ -1,12 +1,26 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import os
 
 import pandas as pd
-from kolena_contrib.age_estimation.workflow import GroundTruth
-from kolena_contrib.age_estimation.workflow import TestCase
-from kolena_contrib.age_estimation.workflow import TestSample
-from kolena_contrib.age_estimation.workflow import TestSuite
 
 import kolena
+from .workflow import GroundTruth
+from .workflow import TestCase
+from .workflow import TestSample
+from .workflow import TestSuite
+
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
@@ -20,14 +34,16 @@ df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv")
 
 test_samples_and_ground_truths = [
     (
-        TestSample(  # type: ignore
-            locator=record.locator,
-            name=record.person,
-            race=record.race,
-            gender=record.gender,
-            age=record.age,
-            image_width=record.width,
-            image_height=record.height,
+        TestSample(
+            metadata=dict(
+                locator=record.locator,
+                name=record.person,
+                race=record.race,
+                gender=record.gender,
+                age=record.age,
+                image_width=record.width,
+                image_height=record.height,
+            ),
         ),
         GroundTruth(  # type: ignore
             age=record.age,

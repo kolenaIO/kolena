@@ -6,8 +6,8 @@ authors = ["Kolena Engineering <eng@kolena.io>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
-kolena = { path = "../..", develop = true }  # TODO: use PyPI-installed official package version
+python = ">=3.8,<3.12"
+kolena = ">=0.69.0,<1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"
