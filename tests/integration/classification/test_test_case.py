@@ -21,7 +21,7 @@ from kolena.classification import TestImage
 from kolena.detection import TestCase as DetectionTestCase
 from kolena.errors import NotFoundError
 from kolena.errors import WorkflowMismatchError
-from tests.integration.detection.helper import assert_test_images_equal
+from tests.integration.classification.helper import assert_test_images_equal
 from tests.integration.helper import fake_random_locator
 from tests.integration.helper import with_test_prefix
 
