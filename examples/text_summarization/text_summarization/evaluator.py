@@ -18,14 +18,14 @@ from typing import Union
 
 import evaluate
 import numpy as np
+from text_summarization.workflow import GroundTruth
+from text_summarization.workflow import Inference
+from text_summarization.workflow import TestCase
+from text_summarization.workflow import TestCaseMetric
+from text_summarization.workflow import TestSample
+from text_summarization.workflow import TestSampleMetric
+from text_summarization.workflow import TestSuiteMetric
 
-from .workflow import GroundTruth
-from .workflow import Inference
-from .workflow import TestCase
-from .workflow import TestCaseMetric
-from .workflow import TestSample
-from .workflow import TestSampleMetric
-from .workflow import TestSuiteMetric
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow.evaluator import AxisConfig

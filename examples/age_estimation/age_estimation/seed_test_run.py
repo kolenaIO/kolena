@@ -18,29 +18,21 @@ from argparse import Namespace
 from typing import List
 
 import pandas as pd
+from age_estimation.evaluator import AgeEstimationEvaluator
+from age_estimation.workflow import Inference
+from age_estimation.workflow import Model
+from age_estimation.workflow import TestSample
+from age_estimation.workflow import TestSuite
 
 import kolena
-from .evaluator import AgeEstimationEvaluator
-from .workflow import Inference
-from .workflow import Model
-from .workflow import TestSample
-from .workflow import TestSuite
 from kolena.workflow import test
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
-LOCAL_DIR = "/data/open-source/lfw"
-
-
-def local_path_as_locator(local_path: str) -> str:
-    relative_path = local_path.split(LOCAL_DIR)[1].strip("/")
-    return f"s3://{BUCKET}/{DATASET}/{relative_path}"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/{model_name}.csv")
-    if LOCAL_DIR in df_results.iloc[0]["image_path"]:
-        df_results["image_path"] = df_results["image_path"].apply(lambda x: local_path_as_locator(x))
 
     def infer(test_sample: TestSample) -> Inference:
         age = df_results[df_results["image_path"] == test_sample.locator]["age"].values[0]

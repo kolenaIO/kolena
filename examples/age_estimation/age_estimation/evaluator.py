@@ -18,11 +18,11 @@ from typing import Optional
 from typing import Tuple
 
 import numpy as np
+from age_estimation.workflow import GroundTruth
+from age_estimation.workflow import Inference
+from age_estimation.workflow import TestCase
+from age_estimation.workflow import TestSample
 
-from .workflow import GroundTruth
-from .workflow import Inference
-from .workflow import TestCase
-from .workflow import TestSample
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Histogram
 from kolena.workflow import MetricsTestCase as BaseMetricsTestCase

@@ -19,13 +19,13 @@ from typing import Dict
 from typing import Tuple
 
 import pandas as pd
+from text_summarization.evaluator import evaluate_text_summarization
+from text_summarization.workflow import Inference
+from text_summarization.workflow import Model
+from text_summarization.workflow import TestSample
+from text_summarization.workflow import TestSuite
 
 import kolena
-from .evaluator import evaluate_text_summarization
-from .workflow import Inference
-from .workflow import Model
-from .workflow import TestSample
-from .workflow import TestSuite
 from kolena.workflow.test_run import test
 
 WORKFLOW = "Text Summarization"

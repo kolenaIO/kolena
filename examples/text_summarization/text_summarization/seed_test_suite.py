@@ -18,14 +18,14 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from text_summarization.utils import get_readable
+from text_summarization.workflow import GroundTruth
+from text_summarization.workflow import TestCase
+from text_summarization.workflow import TestSample
+from text_summarization.workflow import TestSuite
 from tqdm import tqdm
 
 import kolena
-from .utils import get_readable
-from .workflow import GroundTruth
-from .workflow import TestCase
-from .workflow import TestSample
-from .workflow import TestSuite
 
 DATASET = "CNN-DailyMail"
 

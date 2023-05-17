@@ -14,17 +14,16 @@
 import os
 
 import pandas as pd
+from age_estimation.workflow import GroundTruth
+from age_estimation.workflow import TestCase
+from age_estimation.workflow import TestSample
+from age_estimation.workflow import TestSuite
 
 import kolena
-from .workflow import GroundTruth
-from .workflow import TestCase
-from .workflow import TestSample
-from .workflow import TestSuite
 
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
-LOCAL_DIR = "/data/open-source/lfw"
 
 env_token = "KOLENA_TOKEN"
 print(f"initializing with environment variables ${env_token}")
@@ -32,24 +31,16 @@ kolena.initialize(os.environ[env_token], verbose=True)
 
 df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv")
 
+non_metadata_fields = {"locator", "age"}
 test_samples_and_ground_truths = [
     (
         TestSample(
-            metadata=dict(
-                locator=record.locator,
-                name=record.person,
-                race=record.race,
-                gender=record.gender,
-                age=record.age,
-                image_width=record.width,
-                image_height=record.height,
-            ),
+            locator=record.locator,
+            metadata={f: getattr(record, f) for f in set(record._fields) - non_metadata_fields},
         ),
-        GroundTruth(  # type: ignore
-            age=record.age,
-        ),
+        GroundTruth(age=record.age),
     )
-    for record in df_metadata.itertuples()
+    for record in df_metadata.itertuples(index=False)
 ]
 
 # Basic Test Cases
@@ -106,7 +97,7 @@ test_cases_by_gender = [
     TestCase(
         f"gender :: {gender} :: {DATASET} [age estimation]",
         description=f"All images in {DATASET} dataset with gender {gender}",
-        test_samples=[(ts, gt) for ts, gt in test_samples_and_ground_truths if ts.gender == gender],
+        test_samples=[(ts, gt) for ts, gt in test_samples_and_ground_truths if ts.metadata["gender"] == gender],
         reset=True,
     )
     for gender in ["man", "woman"]
@@ -123,7 +114,7 @@ test_cases_by_race = [
     TestCase(
         f"race :: {race} :: {DATASET} [age estimation]",
         description=f"All images in {DATASET} dataset with race {race}",
-        test_samples=[(ts, gt) for ts, gt in test_samples_and_ground_truths if ts.race == race],
+        test_samples=[(ts, gt) for ts, gt in test_samples_and_ground_truths if ts.metadata["race"] == race],
         reset=True,
     )
     for race in races
