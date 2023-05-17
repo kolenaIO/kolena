@@ -73,7 +73,7 @@ jobs:
             - codecov/upload:
                 file: coverage.xml
 
-  integration-test:
+  integration-test-parallel:
     parameters:
       python-version:
         type: string
@@ -97,6 +97,48 @@ jobs:
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             TEST_GROUP="<< parameters.pytest-group >>"
+            TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py |
+              circleci tests split --split-by=timings --timings-type=filename)
+            poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
+                $TESTFILES
+            fi
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Coverage
+                command: |
+                  poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
+            - store_test_results:
+                path: test-results
+
+  integration-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      pytest-group:
+        type: string
+        default: "generic"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Run << parameters.pytest-group >> integration tests
+          command: |
+            export KOLENA_TOKEN=${KOLENA_TOKEN}
+            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+            TEST_GROUP="<< parameters.pytest-group >>"
             if [ "$TEST_GROUP" = "misc" ]; then
               poetry run pytest -vv --durations=0 --cov=kolena --cov-branch \
                 --ignore=tests/integration/classification \
@@ -105,10 +147,8 @@ jobs:
                 --ignore=tests/integration/fr \
                 tests/integration
             else
-              TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py |
-                circleci tests split --split-by=timings --timings-type=filename)
               poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
-                $TESTFILES
+                tests/integration/$TEST_GROUP
             fi
       - when:
           # Generate coverage only from one python version
@@ -163,23 +203,30 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-#      - unit-test:
-#          matrix:
-#            parameters:
-#              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-#          requires:
-#            - ci-base-<< matrix.python-version >>
+      - unit-test:
+          matrix:
+            parameters:
+              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+          requires:
+            - ci-base-<< matrix.python-version >>
+      - integration-test-parallel:
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              pytest-group: [ detection, fr, generic ]
+          requires:
+            - ci-base-<< matrix.python-version >>
       - integration-test:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ detection ]
+              pytest-group: [ classification, misc ]
           requires:
             - ci-base-<< matrix.python-version >>
-#      - example-test:
-#          matrix:
-#            parameters:
-#              # TODO: not sure how to pair subproject to resource class without declaring as matrix and adding excludes
-#              subproject: [ text_summarization ]
-#              resource-class: [ large ]
-#              python-version: [ "3.9" ]
+      - example-test:
+          matrix:
+            parameters:
+              # TODO: not sure how to pair subproject to resource class without declaring as matrix and adding excludes
+              subproject: [ text_summarization ]
+              resource-class: [ large ]
+              python-version: [ "3.9" ]
