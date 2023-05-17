@@ -65,7 +65,7 @@ def main() -> int:
         )
 
     test_suite = TestSuite(
-        f"complete {DATASET} [age estimation]",
+        f"age :: {DATASET} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_age],
         reset=True,
     )
