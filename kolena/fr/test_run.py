@@ -79,7 +79,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
         if reset:
             log.warn("overwriting existing inferences from this model (reset=True)")
         else:
-            log.info("reset flag is disabled. update existing inferences by enabling the reset flag")
+            log.info("not overwriting any existing inferences from this model (reset=False)")
 
         request = API.CreateOrRetrieveRequest(model_id=model.data.id, test_suite_ids=[test_suite._id], reset=reset)
         res = krequests.post(

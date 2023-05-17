@@ -54,6 +54,7 @@ from kolena.detection._internal.model import SampleInferences
 from kolena.errors import CustomMetricsException
 from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
+from kolena.errors import WorkflowMismatchError
 
 _ImageDataFrame = Union[pa.typing.DataFrame, LoadableDataFrame]
 InferenceType = TypeVar("InferenceType")
@@ -83,14 +84,14 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         reset: bool = False,
     ):
         if model._workflow != test_suite._workflow:
-            raise ValueError(
+            raise WorkflowMismatchError(
                 f"mismatching test suite workflow for model of type '{model._workflow}': '{test_suite._workflow}'",
             )
 
         if reset:
             log.warn("overwriting existing inferences from this model (reset=True)")
         else:
-            log.info("reset flag is disabled. update existing inferences by enabling the reset flag")
+            log.info("not overwriting any existing inferences from this model (reset=False)")
 
         request = API.CreateOrRetrieveRequest(
             model_id=model._id,
