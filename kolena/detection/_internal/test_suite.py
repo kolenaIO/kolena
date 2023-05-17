@@ -116,7 +116,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.TestSuite.EntityData, data=res.json())
         obj = cls._create_from_data(data)
-        log.info(f"created test suite '{name}' ({get_test_suite_url(obj._id)})")
+        log.info(f"created test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         if test_cases is not None:
             obj._hydrate(test_cases)
         return obj
@@ -182,7 +182,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         """
         data = cls._load_by_name(name, version)
         obj = cls._create_from_data(data)
-        log.info(f"loaded test suite '{name}' ({get_test_suite_url(obj._id)})")
+        log.info(f"loaded test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         return obj
 
     class Editor:
@@ -236,7 +236,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             """
             name = test_case.name
             if name not in self._test_cases.keys():
-                raise KeyError(f"test case '{name}' not in suite")
+                raise KeyError(f"test case '{name}' not in test suite")
             self._test_cases.pop(name)
 
         @deprecated(details="use :meth:`add` instead", deprecated_in="0.56.0")
@@ -289,7 +289,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             log.info("no op: nothing edited")
             return
 
-        log.info(f"edited test suite '{self.name}'")
+        log.info(f"edited test suite '{self.name}' (v{self.version})")
         request = CoreAPI.TestSuite.EditRequest(
             test_suite_id=self._id,
             current_version=self.version,
@@ -301,7 +301,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         res = krequests.post(endpoint_path=API.Path.EDIT.value, data=data)
         krequests.raise_for_status(res)
         test_suite_data = from_dict(data_class=CoreAPI.TestSuite.EntityData, data=res.json())
-        log.success(f"edited test suite '{self.name}' ({get_test_suite_url(test_suite_data.id)})")
+        log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(test_suite_data.id)})")
         with self._unfrozen():
             self.version = test_suite_data.version
             self.description = test_suite_data.description

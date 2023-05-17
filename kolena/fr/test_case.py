@@ -129,7 +129,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
         obj = cls._create_from_data(data)
-        log.info(f"created test case '{name}'")
+        log.info(f"created test case '{name}' (v{obj.version})")
         if test_samples is not None:
             obj._hydrate(test_samples)
         return obj
@@ -165,7 +165,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
-        log.info(f"loaded test case '{name}'")
+        log.info(f"loaded test case '{name}' (v{data.version})")
         return cls._create_from_data(data)
 
     def load_data(self) -> TestCaseDataFrame:
@@ -312,7 +312,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         if not editor._edited():
             return
 
-        log.info(f"editing test case '{self.name}'")
+        log.info(f"editing test case '{self.name}' (v{self.version})")
         init_response = init_upload()
         df = pd.DataFrame(editor._samples.values(), columns=TEST_CASE_COLUMNS)
         df_validated = validate_df_schema(df, TestCaseDataFrameSchema)
@@ -332,7 +332,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(complete_res)
         test_case_data = from_dict(data_class=API.EntityData, data=complete_res.json())
         self._populate_from_other(self._create_from_data(test_case_data))
-        log.success(f"edited test case '{self.name}'")
+        log.success(f"edited test case '{self.name}' (v{self.version})")
 
     @validate_arguments
     def iter_data(self, batch_size: int = 10_000_000) -> Iterator[TestCaseDataFrame]:
@@ -342,11 +342,11 @@ class TestCase(ABC, Frozen, WithTelemetry):
         :param batch_size: optionally specify maximum number of rows to be returned in a single DataFrame. By default,
             limits row count to 10_000_000.
         """
-        log.info(f"loading image pairs in test case '{self.name}'")
+        log.info(f"loading image pairs in test case '{self.name}' (v{self.version})")
         init_request = API.InitLoadDataRequest(batch_size=batch_size, test_case_id=self._id)
         yield from _BatchedLoader.iter_data(
             init_request=init_request,
             endpoint_path=API.Path.INIT_LOAD_DATA.value,
             df_class=TestCaseDataFrame,
         )
-        log.info(f"loaded image pairs in test case '{self.name}'")
+        log.info(f"loaded image pairs in test case '{self.name}' (v{self.version})")
