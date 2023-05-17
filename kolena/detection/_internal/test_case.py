@@ -131,9 +131,9 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
+        log.info(f"created test case '{name}' (v{obj.version})")
         if images is not None:
             obj._hydrate(images)
-        log.info(f"created test case '{name}'")
         return obj
 
     @classmethod
@@ -143,8 +143,9 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        log.info(f"loaded test case '{name}'")
-        return from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        obj = from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        log.info(f"loaded test case '{name}' (v{obj.version})")
+        return obj
 
     @validate_arguments(config=ValidatorConfig)
     def _hydrate(self, images: List[_TestImageClass], description: Optional[str] = None) -> None:
@@ -170,7 +171,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     @validate_arguments(config=ValidatorConfig)
     def iter_images(self) -> Iterator[_TestImageClass]:
         """Iterate through all images with their associated ground truths in this test case."""
-        log.info(f"loading test images for test case '{self.name}'")
+        log.info(f"loading test images for test case '{self.name}' (v{self.version})")
         init_request = CoreAPI.InitLoadContentsRequest(batch_size=BatchSize.LOAD_SAMPLES.value, test_case_id=self._id)
         for df in _BatchedLoader.iter_data(
             init_request=init_request,
@@ -179,7 +180,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         ):
             for record in df.itertuples():
                 yield self._TestImageClass._from_record(record)
-        log.success(f"loaded test images for test case '{self.name}'")
+        log.info(f"loaded test images for test case '{self.name}' (v{self.version})")
 
     @classmethod
     def create(
@@ -306,7 +307,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         if not editor._edited:
             return
 
-        log.info(f"editing test case '{self.name}'")
+        log.info(f"editing test case '{self.name}' (v{self.version})")
         init_response = init_upload()
         df = self._to_data_frame(list(editor._images.values()))
         df_serialized = df.as_serializable()
@@ -326,4 +327,4 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(complete_res)
         test_case_data = from_dict(data_class=CoreAPI.EntityData, data=complete_res.json())
         self._populate_from_other(self._create_from_data(test_case_data))
-        log.success(f"edited test case '{self.name}'")
+        log.success(f"edited test case '{self.name}' (v{self.version})")

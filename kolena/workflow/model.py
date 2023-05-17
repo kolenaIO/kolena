@@ -169,7 +169,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
                 ground_truth = self.workflow.ground_truth_type._from_dict(record.ground_truth)
                 inference = self.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference
-        log.success(f"loaded inferences from model '{self.name}' on test case '{test_case.name}'")
+        log.info(f"loaded inferences from model '{self.name}' on test case '{test_case.name}'")
 
     @classmethod
     def _from_data_with_infer(

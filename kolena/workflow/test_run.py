@@ -123,7 +123,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if reset:
             log.warn("overwriting existing inferences from this model (reset=True)")
         else:
-            log.info("reset flag is disabled. update existing inferences by enabling the reset flag")
+            log.info("not overwriting any existing inferences from this model (reset=False)")
 
         self.model = model
         self.test_suite = test_suite
@@ -220,7 +220,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 ground_truth = self.test_suite.workflow.ground_truth_type._from_dict(record.ground_truth)
                 inference = self.test_suite.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference
-        log.success(f"loaded inferences from model '{self.model.name}' on test suite '{self.test_suite.name}'")
+        log.info(f"loaded inferences from model '{self.model.name}' on test suite '{self.test_suite.name}'")
 
     @validate_arguments(config=ValidatorConfig)
     def upload_inferences(self, inferences: List[Tuple[TestSample, Inference]]) -> None:
