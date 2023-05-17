@@ -107,7 +107,8 @@ jobs:
             else
               TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py |
                 circleci tests split --split-by=timings --timings-type=filename)
-              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch $TESTFILES
+              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
+                $TESTFILES
             fi
       - when:
           # Generate coverage only from one python version
@@ -117,9 +118,9 @@ jobs:
             - run:
                 name: Coverage
                 command: |
-                  poetry run coverage xml --data-file .coverage -o test-results/coverage.xml
+                  poetry run coverage xml --data-file .coverage
             - codecov/upload:
-                file: test-results/coverage.xml
+                file: coverage.xml
             - store_test_results:
                 path: test-results
 
