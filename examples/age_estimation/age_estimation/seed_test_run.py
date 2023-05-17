@@ -18,7 +18,7 @@ from argparse import Namespace
 from typing import List
 
 import pandas as pd
-from age_estimation.evaluator import AgeEstimationEvaluator
+from age_estimation.evaluator import evaluate_age_estimation
 from age_estimation.workflow import Inference
 from age_estimation.workflow import Model
 from age_estimation.workflow import TestSample
@@ -38,9 +38,6 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         age = df_results[df_results["image_path"] == test_sample.locator]["age"].values[0]
         return Inference(age=age if age != -1 else None)
 
-    evaluator = AgeEstimationEvaluator()
-    print(f"Evaluator: {evaluator}")
-
     model = Model(f"{model_name} [age estimation]", infer=infer)
     print(f"Model: {model}")
 
@@ -48,7 +45,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
 
-        test(model, test_suite, evaluator)
+        test(model, test_suite, evaluate_age_estimation)
 
 
 def main(args: Namespace) -> int:
