@@ -232,5 +232,7 @@ workflows:
             exclude:
               - subproject: text_summarization
                 resource-class: small
+                python-version: "3.9"
               - subproject: age_estimation
                 resource-class: large
+                python-version: "3.9"
