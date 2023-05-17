@@ -182,7 +182,7 @@ def evaluate_text_summarization(
     ]
 
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
-    all_test_case_plots: List[Tuple[TestCase, Plot]] = []
+    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, tc_test_samples, tc_gts, tc_infs, tc_ts_metrics in test_cases.iter(
         test_samples,
         ground_truths,

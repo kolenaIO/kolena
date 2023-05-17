@@ -161,9 +161,9 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
+        log.info(f"created test case '{name}' (v{obj.version})")
         if test_samples is not None:
             obj._hydrate(test_samples)
-        log.info(f"created test case '{name}' (v{obj.version})")
         return obj
 
     @classmethod
@@ -204,7 +204,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_sample = test_sample_type._from_dict({**record.test_sample, "metadata": metadata_field})
                 ground_truth = ground_truth_type._from_dict(record.ground_truth)
                 yield test_sample, ground_truth
-        log.success(f"loaded test samples in test case '{self.name}' (v{self.version})")
+        log.info(f"loaded test samples in test case '{self.name}' (v{self.version})")
 
     class Editor:
         @dataclass(frozen=True)

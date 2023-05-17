@@ -150,7 +150,7 @@ class Model(Uninstantiable["Model.Data"]):
             endpoint_path=API.Path.INIT_LOAD_PAIR_RESULTS.value,
             df_class=LoadedPairResultDataFrame,
         )
-        log.success(f"loaded pair results from model '{self.data.name}' on {test_object_display_name}")
+        log.info(f"loaded pair results from model '{self.data.name}' on {test_object_display_name}")
 
 
 class InferenceModel(Model):
