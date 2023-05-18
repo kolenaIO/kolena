@@ -28,7 +28,7 @@ repos:
     rev: v1.5.1
     hooks:
     -   id: insert-license
-        files: ^(kolena|tests)/.*\.py$
+        files: ^(kolena|tests|examples)/.*\.py$
         args: [--license-filepath, "LICENSE_HEADER"]
 -   repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
