@@ -28,12 +28,12 @@ def with_init() -> Iterator[None]:
         yield
 
 
-def test__seed_test_suite() -> None:
+def test__seed_test_suite__smoke() -> None:
     args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/metadata.tiny1.csv")
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
-def test__seed_test_run() -> None:
+def test__seed_test_run__smoke() -> None:
     args = Namespace(model="ada", test_suite="CNN-DailyMail :: text length", local_csv=None)
     seed_test_run_main(args)

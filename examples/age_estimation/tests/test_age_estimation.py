@@ -18,12 +18,12 @@ from age_estimation.seed_test_run import main as seed_test_run_main
 from age_estimation.seed_test_suite import main as seed_test_suite_main
 
 
-def test__seed_test_suite() -> None:
+def test__seed_test_suite__smoke() -> None:
     args = Namespace(dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.tiny5.csv")
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
-def test__seed_test_run() -> None:
+def test__seed_test_run__smoke() -> None:
     args = Namespace(model="ssrnet", test_suites=["age :: labeled-faces-in-the-wild [age estimation]"])
     seed_test_run_main(args)
