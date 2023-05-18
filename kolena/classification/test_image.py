@@ -102,3 +102,12 @@ class TestImage(BaseTestImage):
             ground_truths=[ClassificationLabel(label) for label in self.labels],
             metadata=self.metadata,
         )
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, type(self)):
+            return False
+        self_dict = self.__dict__.copy()
+        self_dict["labels"] = sorted(self_dict["labels"])
+        other_dict = other.__dict__.copy()
+        other_dict["labels"] = sorted(other_dict["labels"])
+        return self_dict == other_dict
