@@ -21,6 +21,7 @@ from kolena.classification import TestImage
 from kolena.detection import TestCase as DetectionTestCase
 from kolena.errors import NotFoundError
 from kolena.errors import WorkflowMismatchError
+from tests.integration.detection.helper import assert_test_images_equal
 from tests.integration.helper import fake_random_locator
 from tests.integration.helper import with_test_prefix
 
@@ -50,8 +51,8 @@ def test__create__with_images(test_dataset: List[TestImage]) -> None:
     images = test_dataset
     test_case = TestCase.create(name, description, images)
     assert test_case.version == 1
-    assert images == test_case.load_images()
     assert test_case._workflow == WorkflowType.CLASSIFICATION
+    assert_test_images_equal(test_case.load_images(), images)
 
 
 def test__load() -> None:

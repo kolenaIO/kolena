@@ -171,7 +171,7 @@ class _TestCases(TestCases):
         config_description = (
             f" {_configuration_description(self._wip_configuration)}" if self._wip_configuration else ""
         )
-        message = f"computed metrics for test case {test_case.name}{config_description}"
+        message = f"Computed metrics for test case '{test_case.name}' (v{test_case.version}){config_description}"
         progress = self._n_test_cases_processed / self._n_test_cases_and_configurations
 
         log.info(message)

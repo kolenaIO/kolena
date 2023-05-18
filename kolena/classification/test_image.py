@@ -102,3 +102,10 @@ class TestImage(BaseTestImage):
             ground_truths=[ClassificationLabel(label) for label in self.labels],
             metadata=self.metadata,
         )
+
+    # TODO: remove implementation in favor of Frozen.__eq__ once label ordering is ensured upstream
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, type(self)) and {**self.__dict__, "labels": sorted(self.labels)} == {
+            **other.__dict__,
+            "labels": sorted(other.labels),
+        }
