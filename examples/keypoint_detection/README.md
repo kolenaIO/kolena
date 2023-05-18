@@ -1,6 +1,6 @@
 # Example Integration: Keypoint Detection
 
-This example integration uses the [300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/) dataset for a quick run through of keypoint detection testing on Kolena.
+This example integration uses the [300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/) dataset for a quick run through of keypoint detection testing on Kolena. It closely follows the [quickstart guide](https://docs.kolena.io/quickstart/quickstart-building-a-workflow) documentation for building a workflow.
 
 ## Setup
 
