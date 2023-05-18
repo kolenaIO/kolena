@@ -11,14 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 import random
 from typing import List
 from typing import Tuple
 
 from kolena.detection import ground_truth
 from kolena.detection import inference
-from kolena.detection import TestImage
+from kolena.detection._internal import BaseTestImage
 
 fake_labels = [
     "car",
@@ -85,19 +84,9 @@ def fake_inference_segmentation_mask() -> inference.SegmentationMask:
     return inference.SegmentationMask(fake_label(), fake_confidence(), fake_points(random.randint(3, 15)))
 
 
-def assert_test_image_equal(a: TestImage, b: TestImage) -> None:
-    assert a.locator == b.locator
-    assert a.dataset == b.dataset
-    assert a.metadata == b.metadata
-    assert sorted(a.ground_truths, key=lambda x: json.dumps(x._to_dict(), sort_keys=True)) == sorted(
-        b.ground_truths,
-        key=lambda x: json.dumps(x._to_dict(), sort_keys=True),
-    )
-
-
-def assert_test_images_equal(actual: List[TestImage], expected: List[TestImage]) -> None:
+def assert_test_images_equal(actual: List[BaseTestImage], expected: List[BaseTestImage]) -> None:
     assert len(actual) == len(expected)
     actual = sorted(actual, key=lambda x: x.locator)
     expected = sorted(expected, key=lambda x: x.locator)
     for a, b in zip(actual, expected):
-        assert_test_image_equal(a, b)
+        assert a == b

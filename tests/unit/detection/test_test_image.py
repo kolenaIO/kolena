@@ -26,19 +26,21 @@ from kolena.detection.ground_truth import SegmentationMask
 from kolena.detection.metadata import Asset
 from kolena.errors import InputValidationError
 
+TEST_LOCATOR = "s3://test-bucket/path/to/image.png"
+BBOX_A = BoundingBox("a", (1, 2), (3, 4))
+BBOX_B = BoundingBox("b", (3, 4), (5, 6))
+SEG_MASK_A = SegmentationMask("a", [(1, 2), (3, 4), (5, 6)])
+SEG_MASK_B = SegmentationMask("b", [(2, 2), (3, 3), (4, 4)])
+
 
 def test__test_image__filter() -> None:
-    gt_a = [
-        ClassificationLabel("a"),
-        BoundingBox("a", (1, 2), (3, 4)),
-        SegmentationMask("a", [(1, 2), (3, 4), (5, 6)]),
-    ]
+    gt_a = [ClassificationLabel("a"), BBOX_A, SEG_MASK_A]
     gt_other = [
         ClassificationLabel(str(uuid.uuid4())),
         BoundingBox(str(uuid.uuid4()), (1, 2), (3, 4)),
         SegmentationMask(str(uuid.uuid4()), [(1, 2), (3, 4), (5, 6)]),
     ]
-    image = TestImage("s3://fake/locator.png", ground_truths=gt_a + gt_other)
+    image = TestImage(TEST_LOCATOR, ground_truths=gt_a + gt_other)
     image_filtered = image.filter(lambda gt: gt.label == "a")
     assert image_filtered == TestImage(image.locator, ground_truths=gt_a)
 
@@ -47,7 +49,7 @@ def test__test_image__filter() -> None:
 
 
 def test__test_image__metadata_types() -> None:
-    image = TestImage("s3://fake/locator.png", metadata={"str": "string", "float": 3.14, "int": 99, "bool": True})
+    image = TestImage(TEST_LOCATOR, metadata={"str": "string", "float": 3.14, "int": 99, "bool": True})
     metadata = image.metadata
     assert isinstance(metadata.get("str"), str)
     assert isinstance(metadata.get("float"), float)
@@ -57,13 +59,13 @@ def test__test_image__metadata_types() -> None:
 
 def test__test_image__filter__preserves_metadata() -> None:
     metadata = dict(example_bool=True, example_int=1, example_float=2.3, example_asset=Asset("s3://fake/asset.png"))
-    image = TestImage("s3://fake/locator.png", ground_truths=[ClassificationLabel("test")], metadata=metadata)
+    image = TestImage(TEST_LOCATOR, ground_truths=[ClassificationLabel("test")], metadata=metadata)
     assert image.filter(lambda gt: gt.label == "fake") == TestImage(image.locator, metadata=image.metadata)
 
 
 def test__test_image__serde() -> None:
     original = TestImage(
-        locator="s3://test-bucket/path/to/file.png",
+        locator=TEST_LOCATOR,
         dataset="test-dataset",
         ground_truths=[
             ClassificationLabel(str(uuid.uuid4())),
@@ -98,23 +100,12 @@ def test__test_image__serde() -> None:
 )
 def test__test_image__invalid_metadata_types(metadata: Dict[str, Any]) -> None:
     with pytest.raises(ValidationError):
-        TestImage(
-            locator="s3://test-bucket/path/to/file.png",
-            dataset="test-dataset",
-            ground_truths=[],
-            metadata=metadata,
-        )
+        TestImage(locator=TEST_LOCATOR, dataset="test-dataset", ground_truths=[], metadata=metadata)
 
 
 def test__test_image__nan_metadata() -> None:
     df = kolena.detection.test_case.TestCase._to_data_frame(
-        [
-            TestImage(
-                locator="s3://test-bucket/path/to/file.png",
-                ground_truths=[],
-                metadata={"nan": float("nan")},
-            ),
-        ],
+        [TestImage(locator=TEST_LOCATOR, ground_truths=[], metadata={"nan": float("nan")})],
     )
     assert len(df) == 1
 
@@ -132,11 +123,69 @@ def test__test_image__nan_metadata() -> None:
 def test__test_image__infinite_metadata(metadata: Dict[str, Any]) -> None:
     with pytest.raises(InputValidationError):
         kolena.detection.test_case.TestCase._to_data_frame(
-            [
-                TestImage(
-                    locator="s3://test-bucket/path/to/file.png",
-                    ground_truths=[],
-                    metadata=metadata,
-                ),
-            ],
+            [TestImage(locator=TEST_LOCATOR, ground_truths=[], metadata=metadata)],
         )
+
+
+@pytest.mark.parametrize(
+    "a,b,expected",
+    [
+        (TestImage(locator=TEST_LOCATOR), TestImage(locator=TEST_LOCATOR), True),
+        (TestImage(locator=TEST_LOCATOR), TestImage(locator="s3://test-bucket/another/image.jpg"), False),
+        (TestImage(locator=TEST_LOCATOR, dataset="test"), TestImage(locator=TEST_LOCATOR, dataset="test"), True),
+        (TestImage(locator=TEST_LOCATOR, dataset="test"), TestImage(locator=TEST_LOCATOR, dataset="different"), False),
+        (
+            TestImage(locator=TEST_LOCATOR, ground_truths=[]),
+            TestImage(locator=TEST_LOCATOR, ground_truths=[]),
+            True,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_B, SEG_MASK_A, SEG_MASK_B]),
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_B, SEG_MASK_A, SEG_MASK_B]),
+            True,
+        ),
+        (
+            # TODO: remove once ground truth ordering is ensured upstream
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_B, SEG_MASK_A, SEG_MASK_B]),
+            TestImage(locator=TEST_LOCATOR, ground_truths=[SEG_MASK_A, BBOX_A, SEG_MASK_B, BBOX_B]),
+            True,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_B]),
+            TestImage(locator=TEST_LOCATOR, ground_truths=[]),
+            False,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_B]),
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_A]),
+            False,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_A]),
+            TestImage(locator=TEST_LOCATOR, ground_truths=[BBOX_A, BBOX_A]),
+            True,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, metadata=dict(a=1, b=True, c="c")),
+            TestImage(locator=TEST_LOCATOR, metadata=dict(a=1, b=True, c="c")),
+            True,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, metadata=dict(a=1, b=True, c="c")),
+            TestImage(locator=TEST_LOCATOR, metadata=dict(b=True, c="c", a=1)),
+            True,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, metadata=dict(a=1, b=True, c="c")),
+            TestImage(locator=TEST_LOCATOR, metadata=dict(b=True, c="c")),
+            False,
+        ),
+        (
+            TestImage(locator=TEST_LOCATOR, metadata=dict(a=1, b=True, c="c")),
+            TestImage(locator=TEST_LOCATOR),
+            False,
+        ),
+    ],
+)
+def test__test_image__equality(a: TestImage, b: TestImage, expected: bool) -> None:
+    assert (a == b) is expected

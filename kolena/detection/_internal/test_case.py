@@ -216,6 +216,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         Interface to edit a test case. Create with :meth:`TestCase.edit`.
         """
 
+        _TestImageClass: Type[BaseTestImage] = BaseTestImage
         _images: Dict[str, BaseTestImage]
         _reset: bool
         _description: str
@@ -241,7 +242,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
             self._edited = True
 
         @validate_arguments(config=ValidatorConfig)
-        def add(self, image: BaseTestImage) -> None:
+        def add(self, image: _TestImageClass) -> None:
             """
             Add a test image to the test case, targeting the ``ground_truths`` held by the image.
             When the test image already exists in the test case, its ground truth
@@ -258,7 +259,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
             self._edited = True
 
         @validate_arguments(config=ValidatorConfig)
-        def remove(self, image: BaseTestImage) -> None:
+        def remove(self, image: _TestImageClass) -> None:
             """
             Remove the image from the test case.
 
@@ -296,6 +297,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         :param reset: clear any and all test samples currently in the test case.
         """
         editor = self.Editor(self.description, reset)
+        editor._TestImageClass = self._TestImageClass
         if not reset:
             for image in self.iter_images():
                 editor.add(image)
