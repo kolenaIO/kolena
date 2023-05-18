@@ -57,7 +57,7 @@ def test__test_image__serde() -> None:
         ),
         (
             TestImage(locator=TEST_LOCATOR, labels=["a", "b", "c"]),
-            TestImage(locator=TEST_LOCATOR, labels=["c", "a", "b"]),
+            TestImage(locator=TEST_LOCATOR, labels=["c", "a", "b"]),  # TODO: remove when label ordering is ensured
             True,
         ),
         (

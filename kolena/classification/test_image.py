@@ -103,11 +103,10 @@ class TestImage(BaseTestImage):
             metadata=self.metadata,
         )
 
-    def __eq__(self, other) -> bool:
-        if not isinstance(other, type(self)):
-            return False
-        self_dict = self.__dict__.copy()
-        self_dict["labels"] = sorted(self_dict["labels"])
-        other_dict = other.__dict__.copy()
-        other_dict["labels"] = sorted(other_dict["labels"])
-        return self_dict == other_dict
+    # TODO: remove when label ordering is ensured upstream -- Frozen.__eq__ is sufficient when ordering of self.labels
+    #  is consistent
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, type(self)) and {**self.__dict__, "labels": sorted(self.labels)} == {
+            **other.__dict__,
+            "labels": sorted(other.labels),
+        }
