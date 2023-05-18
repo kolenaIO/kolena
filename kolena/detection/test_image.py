@@ -83,13 +83,14 @@ class TestImage(BaseTestImage):
 
     # TODO: remove implementation in favor of Frozen.__eq__ once ground_truth ordering is ensured upstream
     def __eq__(self, other: Any) -> bool:
-        def sort_ground_truths(ground_truths: List[GroundTruth]) -> List[GroundTruth]:
-            return sorted(ground_truths, key=lambda gt: json.dumps(gt._to_dict(), sort_keys=True))
-
         return isinstance(other, type(self)) and {
             **self.__dict__,
-            "ground_truths": sort_ground_truths(self.ground_truths),
-        } == {**other.__dict__, "ground_truths": sort_ground_truths(other.ground_truths)}
+            "ground_truths": self._sort_ground_truths(self.ground_truths),
+        } == {**other.__dict__, "ground_truths": self._sort_ground_truths(other.ground_truths)}
+
+    @staticmethod
+    def _sort_ground_truths(ground_truths: List[GroundTruth]) -> List[GroundTruth]:
+        return sorted(ground_truths, key=lambda gt: json.dumps(gt._to_dict(), sort_keys=True))
 
 
 @deprecated(details="use :class:`kolena.detection.TestCase.load_images`", deprecated_in="0.26.0")

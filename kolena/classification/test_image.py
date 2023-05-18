@@ -103,8 +103,7 @@ class TestImage(BaseTestImage):
             metadata=self.metadata,
         )
 
-    # TODO: remove when label ordering is ensured upstream -- Frozen.__eq__ is sufficient when ordering of self.labels
-    #  is consistent
+    # TODO: remove implementation in favor of Frozen.__eq__ once label ordering is ensured upstream
     def __eq__(self, other: Any) -> bool:
         return isinstance(other, type(self)) and {**self.__dict__, "labels": sorted(self.labels)} == {
             **other.__dict__,
