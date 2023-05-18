@@ -16,11 +16,11 @@ def with_init() -> Iterator[None]:
 
 
 def test__seed_test_suite() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata_100.csv")
+    args = Namespace(test_suite="300-W :: complete")
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
 def test__seed_test_run() -> None:
-    args = Namespace(model_name="ada", test_suite="CNN-DailyMail :: text length", local_csv="none")
+    args = Namespace(model_name="Point Randomizer", test_suite="300-W :: complete")
     seed_test_run_main(args)
