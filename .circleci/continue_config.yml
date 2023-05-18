@@ -1,0 +1,235 @@
+version: 2.1
+
+orbs:
+  codecov: codecov/codecov@3.2.4
+
+parameters:
+  classification:
+    type: boolean
+    default: false
+  detection:
+    type: boolean
+    default: false
+  fr:
+    type: boolean
+    default: false
+  generic:
+    type: boolean
+    default: false
+  misc:
+    type: boolean
+    default: false
+  all:
+    type: boolean
+    default: false
+  example:
+    type: boolean
+    default: false
+
+jobs:
+  ci-base:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: &ci-base-cache ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+      - run: |
+          poetry config experimental.new-installer false
+          poetry config installer.max-workers 10
+          poetry install --no-ansi
+      - save_cache:
+          key: *ci-base-cache
+          paths:
+            - /home/circleci/project/.poetry/virtualenvs
+            - poetry.lock
+
+  unit-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+      - run: poetry run python3 -c 'import kolena'
+      # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
+      - when:
+          condition:
+            not:
+              or:
+                - equal: [ "3.10", << parameters.python-version >> ]
+                - equal: [ "3.11", << parameters.python-version >> ]
+          steps:
+            - run: poetry run pre-commit run -a
+      - run:
+          name: Run unit tests
+          command: |
+            poetry run pytest -vv --cov=kolena --cov-branch tests/unit
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Coverage
+                command: |
+                  poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
+                flags: integration
+
+  integration-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      pytest-group:
+        type: string
+        default: "generic"
+      enabled:
+        type: boolean
+        default: false
+      parallelism:
+        type: integer
+        default: 1
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    parallelism: << parameters.parallelism >>
+    steps:
+      - when:
+          condition:
+            not: << parameters.enabled >>
+          steps:
+            - run:
+                name: skip job
+                command: circleci-agent step halt
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Run << parameters.pytest-group >> integration tests
+          command: |
+            export KOLENA_TOKEN=${KOLENA_TOKEN}
+            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+            TEST_GROUP="<< parameters.pytest-group >>"
+            if [ "$TEST_GROUP" = "misc" ]; then
+              TESTFILES=$(circleci tests glob tests/integration/test_*.py |
+                circleci tests split --split-by=timings --timings-type=filename)
+            else
+              TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                circleci tests split --split-by=timings --timings-type=filename)
+            fi
+            poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
+              $TESTFILES
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Coverage
+                command: |
+                  poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
+            - store_test_results:
+                path: test-results
+
+  example-test:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      subproject:
+        type: string
+      resource-class:
+        type: string
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: << parameters.resource-class >>
+    working_directory: ~/project/examples/<< parameters.subproject >>
+    steps:
+      - checkout:
+          path: ~/project
+      - run: |
+          poetry config experimental.new-installer false
+          poetry config installer.max-workers 10
+          poetry install --no-ansi
+      - run:
+          name: Run pre-commit checks
+          command: |
+            poetry run pre-commit run -a
+      - run:
+          name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
+          command: |
+            export KOLENA_TOKEN=${KOLENA_TOKEN}
+            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+            poetry run pytest -vv tests
+
+workflows:
+  ci:
+    jobs:
+      - ci-base:
+          name: ci-base-<< matrix.python-version >>
+          matrix:
+            parameters:
+              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+      - unit-test:
+          matrix:
+            parameters:
+              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+          requires:
+            - ci-base-<< matrix.python-version >>
+      - integration-test:
+          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              pytest-group: [ detection, fr, classification, generic ]
+          enabled: true
+          parallelism: 4
+          requires:
+            - ci-base-<< matrix.python-version >>
+      - integration-test:
+          name: integration-test-misc-<< matrix.python-version >>
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+          pytest-group: misc
+          enabled: << pipeline.parameters.all >>
+          parallelism: 1
+          requires:
+            - ci-base-<< matrix.python-version >>
+  example:
+    when:
+      or: [ << pipeline.parameters.generic >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
+    jobs:
+      - example-test:
+          matrix:
+            parameters:
+              subproject: [ text_summarization ]
+              resource-class: [ large ]
+              python-version: [ "3.9" ]
+      - example-test:
+          matrix:
+            parameters:
+              subproject: [ keypoint_detection, age_estimation ]
+              resource-class: [ small ]
+              python-version: [ "3.9" ]

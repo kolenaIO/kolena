@@ -1,236 +1,71 @@
 version: 2.1
 
+setup: true
+
 orbs:
-  codecov: codecov/codecov@3.2.4
+  continuation: circleci/continuation@0.3.1
+  path-filtering: circleci/path-filtering@0.1.1
 
 parameters:
-  python-version:
-    type: string
-    default: "3.9"
+  manual:
+    type: boolean
+    default: false
 
 jobs:
-  ci-base:
-    parameters:
-      python-version:
-        type: string
-        default: "3.9"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
+  setup:
+    executor: path-filtering/default
     resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
     steps:
       - checkout
-      - restore_cache:
-          key: &ci-base-cache ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
-      - run: |
-          poetry config experimental.new-installer false
-          poetry config installer.max-workers 10
-          poetry install --no-ansi
-      - save_cache:
-          key: *ci-base-cache
-          paths:
-            - /home/circleci/project/.poetry/virtualenvs
-            - poetry.lock
-
-  unit-test:
-    parameters:
-      python-version:
-        type: string
-        default: "3.9"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
-    steps:
-      - checkout
-      - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
-      - run: poetry run python3 -c 'import kolena'
-      # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
-      - when:
-          condition:
-            not:
-              or:
-                - equal: [ "3.10", << parameters.python-version >> ]
-                - equal: [ "3.11", << parameters.python-version >> ]
-          steps:
-            - run: poetry run pre-commit run -a
       - run:
-          name: Run unit tests
-          command: |
-            poetry run pytest -vv --cov=kolena --cov-branch tests/unit
-      - when:
-          # Generate coverage only from one python version
-          condition:
-            equal: [ "3.9", << parameters.python-version >> ]
-          steps:
-            - run:
-                name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-
-  integration-test-parallel:
-    parameters:
-      python-version:
-        type: string
-        default: "3.9"
-      pytest-group:
-        type: string
-        default: "generic"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
-    parallelism: 4
-    steps:
-      - checkout
-      - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          name: Set base-revision
+          command: echo "export BASE_REVISION=$(git merge-base trunk << pipeline.git.revision >>)" >> $BASH_ENV
+      - path-filtering/set-parameters:
+          base-revision: ${BASE_REVISION}
+          mapping: |
+            kolena/classification/.* classification true
+            tests/integration/classification/.* classification true
+            kolena/detection/.* detection true
+            tests/integration/detection/.* detection true
+            kolena/fr/.* fr true
+            tests/integration/fr/.* fr true
+            kolena/workflow/.* generic true
+            tests/integration/generic/.* generic true
+            kolena/_(api|utils)/.* all true
+            kolena/[^/]*.py all true
+            tests/integration/[^/]*.py all true
+            .circleci/* all true
+            examples/.*.py example true
       - run:
-          name: Run << parameters.pytest-group >> integration tests
-          command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            TEST_GROUP="<< parameters.pytest-group >>"
-            TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/*.py |
-              circleci tests split --split-by=timings --timings-type=filename)
-            poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
-                $TESTFILES
-      - when:
-          # Generate coverage only from one python version
-          condition:
-            equal: [ "3.9", << parameters.python-version >> ]
-          steps:
-            - run:
-                name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-            - store_test_results:
-                path: test-results
-
-  integration-test:
-    parameters:
-      python-version:
-        type: string
-        default: "3.9"
-      pytest-group:
-        type: string
-        default: "generic"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
-    steps:
-      - checkout
-      - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          name: Print parameters
+          command: cat /tmp/pipeline-parameters.json
       - run:
-          name: Run << parameters.pytest-group >> integration tests
+          name: Generate config
           command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            TEST_GROUP="<< parameters.pytest-group >>"
-            if [ "$TEST_GROUP" = "misc" ]; then
-              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch \
-                --ignore=tests/integration/classification \
-                --ignore=tests/integration/detection \
-                --ignore=tests/integration/generic \
-                --ignore=tests/integration/fr \
-                tests/integration
-            else
-              poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
-                tests/integration/$TEST_GROUP
-            fi
-      - when:
-          # Generate coverage only from one python version
-          condition:
-            equal: [ "3.9", << parameters.python-version >> ]
-          steps:
-            - run:
-                name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-            - store_test_results:
-                path: test-results
-
-  example-test:
-    parameters:
-      python-version:
-        type: string
-        default: "3.9"
-      subproject:
-        type: string
-      resource-class:
-        type: string
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: << parameters.resource-class >>
-    working_directory: ~/project/examples/<< parameters.subproject >>
-    steps:
-      - checkout:
-          path: ~/project
-      - run: |
-          poetry config experimental.new-installer false
-          poetry config installer.max-workers 10
-          poetry install --no-ansi
+            export INT_MATRIX=$(jq -c 'if (.all) then (["detection", "fr", "classification", "generic"])
+              else (to_entries | map(select((.value) and (.key | contains("example") | not)) | .key)) end' \
+              /tmp/pipeline-parameters.json)
+            yq '(.workflows.ci.jobs[] | select(."integration-test".matrix.parameters."pytest-group")
+              ."integration-test".matrix.parameters."pytest-group")=env(INT_MATRIX)' \
+              .circleci/continue_config.yml > .circleci/generated_config.yml
       - run:
-          name: Run pre-commit checks
-          command: |
-            poetry run pre-commit run -a
-      - run:
-          name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
-          command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            poetry run pytest -vv tests
+          name: Print generated config
+          command: cat .circleci/generated_config.yml
+      - continuation/continue:
+          configuration_path: .circleci/generated_config.yml
+          parameters: /tmp/pipeline-parameters.json
 
 workflows:
-  ci:
+  setup:
+    when:
+      not:
+        equal: [ "trunk", << pipeline.git.branch >> ]
     jobs:
-      - ci-base:
-          name: ci-base-<< matrix.python-version >>
-          matrix:
-            parameters:
-              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-      - unit-test:
-          matrix:
-            parameters:
-              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-          requires:
-            - ci-base-<< matrix.python-version >>
-      - integration-test-parallel:
-          matrix:
-            parameters:
-              python-version: [ "3.9" ]
-              pytest-group: [ detection, fr, generic ]
-          requires:
-            - ci-base-<< matrix.python-version >>
-      - integration-test:
-          matrix:
-            parameters:
-              python-version: [ "3.9" ]
-              pytest-group: [ classification, misc ]
-          requires:
-            - ci-base-<< matrix.python-version >>
-      - example-test:
-          matrix:
-            parameters:
-              subproject: [ text_summarization ]
-              resource-class: [ large ]
-              python-version: [ "3.9" ]
-      - example-test:
-          matrix:
-            parameters:
-              subproject: [ keypoint_detection, age_estimation ]
-              resource-class: [ small ]
-              python-version: [ "3.9" ]
+      - setup
+  manual:
+    when:
+      equal: [ "trunk", << pipeline.git.branch >> ]
+    jobs:
+      - continuation/continue:
+          configuration_path: .circleci/continue_config.yml
+          parameters: '{"all": true}'
