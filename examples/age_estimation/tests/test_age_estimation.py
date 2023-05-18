@@ -19,7 +19,8 @@ from age_estimation.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite() -> None:
-    seed_test_suite_main()
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.tiny5.csv")
+    seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])

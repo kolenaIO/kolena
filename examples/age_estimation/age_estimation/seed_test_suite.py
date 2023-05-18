@@ -13,6 +13,8 @@
 # limitations under the License.
 import os
 import sys
+from argparse import ArgumentParser
+from argparse import Namespace
 
 import pandas as pd
 from age_estimation.workflow import GroundTruth
@@ -26,10 +28,10 @@ BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
 
 
-def main() -> int:
+def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
-    df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv")
+    df_metadata = pd.read_csv(args.dataset_csv)
 
     non_metadata_fields = {"locator", "age"}
     test_samples_and_ground_truths = [
@@ -53,16 +55,15 @@ def main() -> int:
 
     # Metadata Test Cases
     age_bins = [(18, 25), (25, 35), (35, 55), (55, 75)]
-    test_cases_by_age = []
-    for age_min, age_max in age_bins:
-        test_cases_by_age.append(
-            TestCase(
-                f"age :: ({age_min}, {age_max}] :: {DATASET} [age estimation]",
-                description=f"Images in {DATASET} with age between {age_min} (exclusive) and {age_max} (inclusive)",
-                test_samples=[(ts, gt) for ts, gt in test_samples_and_ground_truths if age_min < gt.age <= age_max],
-                reset=True,
-            ),
+    test_cases_by_age = [
+        TestCase(
+            f"age :: ({age_min}, {age_max}] :: {DATASET} [age estimation]",
+            description=f"Images in {DATASET} with age between {age_min} (exclusive) and {age_max} (inclusive)",
+            test_samples=[(ts, gt) for ts, gt in test_samples_and_ground_truths if age_min < gt.age <= age_max],
+            reset=True,
         )
+        for age_min, age_max in age_bins
+    ]
 
     test_suite = TestSuite(
         f"age :: {DATASET} [age estimation]",
@@ -108,4 +109,10 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    ap = ArgumentParser()
+    ap.add_argument(
+        "dataset_csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
+        help="CSV file specifying dataset. See default CSV for details",
+    )
+    sys.exit(main(ap.parse_args()))
