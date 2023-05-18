@@ -191,7 +191,8 @@ def seed_test_suites(
     return None
 
 
-def run(args: Namespace) -> None:
+def main(args: Namespace) -> None:
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
@@ -203,7 +204,7 @@ def run(args: Namespace) -> None:
     seed_test_suites(test_suite_names, complete_tc)
 
 
-def main() -> None:
+if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--dataset_csv",
@@ -212,10 +213,4 @@ def main() -> None:
         help="CSV file specifying dataset. See default CSV for details",
     )
 
-    args = ap.parse_args()
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    run(args)
-
-
-if __name__ == "__main__":
-    main()
+    main(ap.parse_args())

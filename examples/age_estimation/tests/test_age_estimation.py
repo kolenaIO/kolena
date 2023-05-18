@@ -23,7 +23,7 @@ def test__seed_test_suite__smoke() -> None:
     seed_test_suite_main(args)
 
 
-@pytest.mark.depends(on=["test__seed_test_suite"])
+@pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 def test__seed_test_run__smoke() -> None:
     args = Namespace(model="ssrnet", test_suites=["age :: labeled-faces-in-the-wild [age estimation]"])
     seed_test_run_main(args)
