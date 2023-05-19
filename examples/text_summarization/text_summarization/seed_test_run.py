@@ -1,3 +1,16 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import os
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -6,13 +19,13 @@ from typing import Dict
 from typing import Tuple
 
 import pandas as pd
+from text_summarization.evaluator import evaluate_text_summarization
+from text_summarization.workflow import Inference
+from text_summarization.workflow import Model
+from text_summarization.workflow import TestSample
+from text_summarization.workflow import TestSuite
 
 import kolena
-from .evaluator import evaluate_text_summarization
-from .workflow import Inference
-from .workflow import Model
-from .workflow import TestSample
-from .workflow import TestSuite
 from kolena.workflow.test_run import test
 
 WORKFLOW = "Text Summarization"
@@ -125,11 +138,13 @@ def seed_test_run(
     test(model, test_suite, evaluate_text_summarization, reset=True)
 
 
-def run(args: Namespace) -> None:
-    mod = MODEL_MAP[args.model_name]
+def main(args: Namespace) -> None:
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+
+    mod = MODEL_MAP[args.model]
     print("loading inference CSV")
     s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}/results.csv"
-    csv_to_use = s3_path if args.local_csv == "none" else args.local_csv
+    csv_to_use = s3_path if args.local_csv is None else args.local_csv
     columns_of_interest = [
         "article_id",
         "prediction",
@@ -142,7 +157,7 @@ def run(args: Namespace) -> None:
     ]
     df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest)
 
-    if args.test_suite == "none":
+    if args.test_suite is None:
         print("loading test suite")
         test_suites = [TestSuite.load(name) for name in TEST_SUITE_NAMES]
         for test_suite in test_suites:
@@ -154,15 +169,17 @@ def run(args: Namespace) -> None:
         seed_test_run(mod, test_suite, df_results)
 
 
-def main() -> None:
-    ap = ArgumentParser()
-    ap.add_argument("--model_name", type=str, help="One of 'ada', 'babbage', 'curie', 'davinci', or 'turbo'.")
-    ap.add_argument("--test_suite", type=str, default="none", help="A specific test suite to run.", required=False)
-    ap.add_argument("--local_csv", type=str, default="none", help="A specific csv to use.", required=False)
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-
-    run(ap.parse_args())
-
-
 if __name__ == "__main__":
-    main()
+    ap = ArgumentParser()
+    ap.add_argument("model", type=str, choices=sorted(MODEL_MAP.keys()), help="The name of the model to test.")
+    ap.add_argument(
+        "--test-suite",
+        type=str,
+        help="Optionally specify a test suite to test. Test against all available test suites when unspecified.",
+    )
+    ap.add_argument(
+        "--local-csv",
+        type=str,
+        help="Optionally specify a local results CSV to use. Defaults to CSVs stored in S3 when absent.",
+    )
+    main(ap.parse_args())
