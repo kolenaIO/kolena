@@ -163,7 +163,7 @@ jobs:
             - store_test_results:
                 path: test-results
 
-  example-test-large: &example-test-large
+  example-test:
     parameters:
       python-version:
         type: string
@@ -194,9 +194,6 @@ jobs:
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             poetry run pytest -vv tests
 
-  example-test-small:
-    <<: *example-test-large
-
 workflows:
   ci:
     jobs:
@@ -225,13 +222,13 @@ workflows:
               pytest-group: [ classification, misc ]
           requires:
             - ci-base-<< matrix.python-version >>
-      - example-test-large:
+      - example-test:
           matrix:
             parameters:
               subproject: [ text_summarization ]
               resource-class: [ large ]
               python-version: [ "3.9" ]
-      - example-test-small:
+      - example-test:
           matrix:
             parameters:
               subproject: [ keypoint_detection, age_estimation ]
