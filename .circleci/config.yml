@@ -163,7 +163,7 @@ jobs:
             - store_test_results:
                 path: test-results
 
-  example-test:
+  example-test-large: &example-test-large
     parameters:
       python-version:
         type: string
@@ -193,6 +193,9 @@ jobs:
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             poetry run pytest -vv tests
+
+  example-test-small:
+    <<: *example-test-large
 
 workflows:
   ci:
