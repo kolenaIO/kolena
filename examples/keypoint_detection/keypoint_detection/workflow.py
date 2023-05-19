@@ -20,17 +20,16 @@ class TestSample(Image):
 
 @dataclass(frozen=True)
 class GroundTruth(GT):
-    keypoints: Keypoints
+    face: Keypoints
 
-    # In order to compute normalized error, some normalization factor describing
+    # In order to compute norm error, some normalization factor describing
     # the size of the face in the image is required.
     normalization_factor: float
 
 
 @dataclass(frozen=True)
 class Inference(Inf):
-    keypoints: Keypoints
-    confidence: float
+    face: Keypoints
 
 
 # use these TestCase, TestSuite, and Model definitions to create and run tests
@@ -44,28 +43,57 @@ wf, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    normalized_mean_error: float
-
-    # If the normalized mean error is above some configured threshold, this test
-    # sample is considered an "alignment failure".
-    alignment_failure: bool
+    match_type: str  # one of "failure_to_detect", "failure_to_align", "success"
+    # if match_type is "failure_to_detect", metrics below are None
+    Δ_left_ear: Optional[float] = None
+    Δ_right_ear: Optional[float] = None
+    Δ_nose: Optional[float] = None
+    Δ_left_mouth: Optional[float] = None
+    Δ_right_mouth: Optional[float] = None
+    normalization_factor: Optional[float] = None
+    norm_Δ_left_ear: Optional[float] = None
+    norm_Δ_right_ear: Optional[float] = None
+    norm_Δ_nose: Optional[float] = None
+    norm_Δ_left_mouth: Optional[float] = None
+    norm_Δ_right_mouth: Optional[float] = None
+    mse: Optional[float] = None
+    nmse: Optional[float] = None
 
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    mean_nme: float
-    alignment_failure_rate: float
+    avg_Δ_left_ear: float
+    avg_Δ_right_ear: float
+    avg_Δ_nose: float
+    avg_Δ_left_mouth: float
+    avg_Δ_right_mouth: float
+    avg_norm_Δ_left_ear: float
+    avg_norm_Δ_right_ear: float
+    avg_norm_Δ_nose: float
+    avg_norm_Δ_left_mouth: float
+    avg_norm_Δ_right_mouth: float
+    n_fail_to_align: int
+    n_fail_to_detect: int
+    n_fail_total: int
+    total_average_MSE: float
+    total_average_NMSE: float
+    total_detection_failure_rate: float
+    total_alignment_failure_rate: float
+    total_failure_rate: float
 
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
-    variance_mean_nme: float
+    variance_average_MSE: float
+    variance_average_NMSE: float
+    variance_detection_failure_rate: float
     variance_alignment_failure_rate: float
+    variance_failure_rate: float
 
 
 @dataclass(frozen=True)
-class NmeThreshold(EvaluatorConfiguration):
-    # threshold for NME (Normalized Mean Error) above which an image is considered an "alignment failure"
+class NmseThreshold(EvaluatorConfiguration):
+    # threshold for NMSE (norm mean square error) above which an image is considered an "alignment failure"
     threshold: float
 
     def display_name(self):

@@ -22,15 +22,15 @@ def run(args: Namespace) -> None:
     test_samples = [TestSample(locator) for locator in df["locator"]]
     ground_truths = [
         GroundTruth(
-            keypoints=Keypoints(points=json.loads(record.points)),
+            face=Keypoints(points=json.loads(record.points)),
             normalization_factor=record.normalization_factor,
         )
         for record in df.itertuples()
     ]
     ts_with_gt = list(zip(test_samples, ground_truths))
-    complete_test_case = TestCase(args.test_suite + " test case", test_samples=ts_with_gt)
+    complete_test_case = TestCase(args.test_suite + " test case", test_samples=ts_with_gt, reset=True)
 
-    TestSuite(args.test_suite, test_cases=[complete_test_case])
+    TestSuite(args.test_suite, test_cases=[complete_test_case], reset=True)
 
 
 def main() -> None:

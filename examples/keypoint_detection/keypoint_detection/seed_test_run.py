@@ -2,12 +2,11 @@ import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from random import randint
-from random import random
 
 from keypoint_detection.evaluator import KeypointsEvaluator
 from keypoint_detection.workflow import Inference
 from keypoint_detection.workflow import Model
-from keypoint_detection.workflow import NmeThreshold
+from keypoint_detection.workflow import NmseThreshold
 from keypoint_detection.workflow import TestSample
 from keypoint_detection.workflow import TestSuite
 
@@ -23,7 +22,7 @@ def infer(test_sample: TestSample) -> Inference:
     """
 
     # Generate the dummy inference for the demo purpose.
-    return Inference(Keypoints([(randint(100, 400), randint(100, 400)) for _ in range(5)]), random())
+    return Inference(face=Keypoints([(randint(100, 400), randint(100, 400)) for _ in range(5)]))
 
 
 def run(args: Namespace) -> None:
@@ -32,12 +31,12 @@ def run(args: Namespace) -> None:
     test_suite = TestSuite(args.test_suite)
     evaluator = KeypointsEvaluator(
         configurations=[
-            NmeThreshold(0.01),
-            NmeThreshold(0.05),
-            NmeThreshold(0.1),
+            NmseThreshold(0.01),
+            NmseThreshold(0.05),
+            NmseThreshold(0.1),
         ],
     )
-    test(model, test_suite, evaluator)
+    test(model, test_suite, evaluator, reset=True)
 
 
 def main() -> None:
