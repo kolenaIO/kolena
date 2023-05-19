@@ -34,7 +34,7 @@ jobs:
             kolena/_(api|utils)/.* all true
             kolena/[^/]*.py all true
             tests/integration/[^/]*.py all true
-            .circleci/* all true
+            .circleci/.* all true
             examples/.*.py example true
       - run:
           name: Print parameters
