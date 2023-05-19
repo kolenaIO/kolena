@@ -226,6 +226,13 @@ workflows:
           matrix:
             parameters:
               # TODO: not sure how to pair subproject to resource class without declaring as matrix and adding excludes
-              subproject: [ text_summarization ]
-              resource-class: [ large ]
+              subproject: [ keypoint_detection, text_summarization ]
+              resource-class: [ small, large ]
               python-version: [ "3.9" ]
+            exclude:
+              - subproject: keypoint_detection
+                resource-class: small
+                python-version: "3.9"
+              - subproject: text_summarization
+                resource-class: large
+                python-version: "3.9"
