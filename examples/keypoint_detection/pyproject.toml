@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "keypoint_detection"
+version = "0.1.0"
+description = "Example Kolena integration for keypoint detection"
+authors = ["Kolena Engineering <eng@kolena.io>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+kolena = ">=0.69.0,<1"
+s3fs = "^2023.5.0"
+fsspec = "^2023.5.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.17"
+pytest = "^7"
+pytest-depends = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
