@@ -22,11 +22,11 @@ from kolena.classification.multiclass import MulticlassClassificationEvaluator
 from kolena.classification.multiclass import TestSuite
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import EvaluatorConfiguration
-from kolena.workflow.test_run import test as generic_test
-from kolena.workflow.test_run import TestRun as GenericTestRun
+from kolena.workflow.test_run import test as base_test
+from kolena.workflow.test_run import TestRun as BaseTestRun
 
 
-class TestRun(GenericTestRun):
+class TestRun(BaseTestRun):
     """
     Convenience alias for :class:`kolena.workflow.test_run.TestRun`, configured for the
     `kolena.classification.multiclass` workflow and evaluator.
@@ -83,7 +83,7 @@ def test(
     """
     if configurations is None:
         configurations = [ThresholdConfiguration()]
-    generic_test(
+    base_test(
         model=model,
         test_suite=test_suite,
         evaluator=MulticlassClassificationEvaluator,
