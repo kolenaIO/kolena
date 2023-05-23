@@ -18,13 +18,13 @@ from typing import Tuple
 import numpy as np
 
 from kolena._utils import log
-from kolena.classification.multiclass import InferenceLabel
+from kolena.workflow.annotation import ScoredClassificationLabel
 
 
-def get_label_confidence(label: str, inference_labels: List[InferenceLabel]) -> float:
+def get_label_confidence(label: str, inference_labels: List[ScoredClassificationLabel]) -> float:
     for inf_label in inference_labels:
         if inf_label.label == label:
-            return inf_label.confidence
+            return inf_label.score
     return 0
 
 

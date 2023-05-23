@@ -15,13 +15,13 @@ import random
 
 from kolena.classification.multiclass import GroundTruth
 from kolena.classification.multiclass import Inference
-from kolena.classification.multiclass import InferenceLabel
 from kolena.classification.multiclass import Model
 from kolena.classification.multiclass import test
 from kolena.classification.multiclass import TestCase
 from kolena.classification.multiclass import TestSample
 from kolena.classification.multiclass import TestSuite
 from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import ScoredClassificationLabel
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
@@ -36,7 +36,7 @@ def test__multiclass_classification__smoke() -> None:
     def infer(_: TestSample) -> Inference:
         score = random.random()
         inferences = [("example", 1 - score), ("another", score / 2), ("third", score / 2)]
-        return Inference(inferences=[InferenceLabel(label=label, confidence=conf) for label, conf in inferences])
+        return Inference(inferences=[ScoredClassificationLabel(label=label, score=conf) for label, conf in inferences])
 
     model = Model(f"{name} model", infer=infer)
     test(model, test_suite)  # TODO: add detailed unit tests for MulticlassClassificationEvaluator

@@ -27,6 +27,7 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import ScoredClassificationLabel
 
 
 @dataclass(frozen=True)
@@ -40,13 +41,8 @@ class GroundTruth(BaseGroundTruth):
 
 
 @dataclass(frozen=True)
-class InferenceLabel(ClassificationLabel):
-    confidence: float
-
-
-@dataclass(frozen=True)
 class Inference(BaseInference):
-    inferences: List[InferenceLabel]
+    inferences: List[ScoredClassificationLabel]
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow("Multiclass Classification", TestSample, GroundTruth, Inference)
@@ -54,7 +50,7 @@ _workflow, TestCase, TestSuite, Model = define_workflow("Multiclass Classificati
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    classification: Optional[InferenceLabel]
+    classification: Optional[ScoredClassificationLabel]
     margin: Optional[float]
     is_correct: bool
 
