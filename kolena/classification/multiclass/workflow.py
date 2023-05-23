@@ -13,7 +13,9 @@
 # limitations under the License.
 from typing import List
 from typing import Optional
+from typing import Union
 
+from deprecation import deprecated
 from pydantic import Field
 from pydantic.dataclasses import dataclass
 
@@ -41,8 +43,26 @@ class GroundTruth(BaseGroundTruth):
 
 
 @dataclass(frozen=True)
+class InferenceLabel(ClassificationLabel):
+    """
+    :class:`InferenceLabel` is deprecated and preserved for compatibility only. Please use
+    :class:`ScoredClassificationLabel` instead.
+    """
+
+    confidence: float
+
+    @deprecated(details="use :class:`kolena.workflow.annotation.ScoredClassificationLabel`", deprecated_in="0.70.0")
+    def __post_init__(self) -> None:
+        ...
+
+    @property
+    def score(self) -> float:
+        return self.confidence
+
+
+@dataclass(frozen=True)
 class Inference(BaseInference):
-    inferences: List[ScoredClassificationLabel]
+    inferences: List[Union[ScoredClassificationLabel, InferenceLabel]]
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow("Multiclass Classification", TestSample, GroundTruth, Inference)
@@ -50,7 +70,7 @@ _workflow, TestCase, TestSuite, Model = define_workflow("Multiclass Classificati
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    classification: Optional[ScoredClassificationLabel]
+    classification: Optional[Union[ScoredClassificationLabel, InferenceLabel]]
     margin: Optional[float]
     is_correct: bool
 

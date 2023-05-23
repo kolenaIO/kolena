@@ -145,9 +145,9 @@ def _compute_confidence_histograms(
     ]
 
     plots = [
-        _as_confidence_histogram("Confidence Distribution (All)", confidence_all, confidence_range),
-        _as_confidence_histogram("Confidence Distribution (Correct)", confidence_correct, confidence_range),
-        _as_confidence_histogram("Confidence Distribution (Incorrect)", confidence_incorrect, confidence_range),
+        _as_confidence_histogram("Score Distribution (All)", confidence_all, confidence_range),
+        _as_confidence_histogram("Score Distribution (Correct)", confidence_correct, confidence_range),
+        _as_confidence_histogram("Score Distribution (Incorrect)", confidence_incorrect, confidence_range),
     ]
     return plots
 
