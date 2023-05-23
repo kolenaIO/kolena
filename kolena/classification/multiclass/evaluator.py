@@ -21,6 +21,7 @@ from typing import Optional
 from typing import Set
 from typing import Tuple
 from typing import Type
+from typing import Union
 
 import numpy as np
 
@@ -31,6 +32,7 @@ from kolena.classification.multiclass._utils import roc_curve
 from kolena.classification.multiclass.workflow import AggregatedMetrics
 from kolena.classification.multiclass.workflow import GroundTruth
 from kolena.classification.multiclass.workflow import Inference
+from kolena.classification.multiclass.workflow import InferenceLabel
 from kolena.classification.multiclass.workflow import TestCase
 from kolena.classification.multiclass.workflow import TestCaseMetrics
 from kolena.classification.multiclass.workflow import TestSample
@@ -68,7 +70,7 @@ def _compute_test_sample_metric(
     predicted_label, confidence_score = match.label, match.score
     margin: Optional[float] = None
     if len(sorted_indices) > 1:
-        second_closest: ScoredClassificationLabel = inference.inferences[sorted_indices[-2]]
+        second_closest: Union[ScoredClassificationLabel, InferenceLabel] = inference.inferences[sorted_indices[-2]]
         margin = confidence_score - second_closest.score
 
     if threshold_configuration.threshold is not None and confidence_score < threshold_configuration.threshold:
