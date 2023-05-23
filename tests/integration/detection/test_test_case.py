@@ -28,13 +28,13 @@ from kolena.detection.metadata import Asset
 from kolena.errors import NameConflictError
 from kolena.errors import NotFoundError
 from kolena.errors import WorkflowMismatchError
-from kolena.workflow.annotation import BoundingBox as GenericBoundingBox
+from kolena.workflow.annotation import BoundingBox as WorkflowBoundingBox
 from tests.integration.detection.helper import assert_test_images_equal
-from tests.integration.generic.dummy import DummyGroundTruth
-from tests.integration.generic.dummy import DummyTestSample
-from tests.integration.generic.dummy import TestCase as GenericTestCase
 from tests.integration.helper import fake_random_locator
 from tests.integration.helper import with_test_prefix
+from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyTestSample
+from tests.integration.workflow.dummy import TestCase as WorkflowTestCase
 
 
 @pytest.fixture
@@ -436,20 +436,15 @@ def test__create__with_locator_collision() -> None:
     test_case_name = with_test_prefix(f"{__file__} test__create__with_locator_collision test case")
     locator = fake_random_locator()
 
-    generic_sample = DummyTestSample(  # type: ignore
+    dummy_sample = DummyTestSample(
         locator=locator,
         value=0,
-        bbox=GenericBoundingBox(top_left=(0, 0), bottom_right=(0, 0)),
+        bbox=WorkflowBoundingBox(top_left=(0, 0), bottom_right=(0, 0)),
     )
-    generic_ground_truth = DummyGroundTruth(label="dummy", value=0)
-    GenericTestCase(
-        with_test_prefix(f"{__file__}::{test_case_name} generic"),
-        test_samples=[
-            (
-                generic_sample,
-                generic_ground_truth,
-            ),
-        ],
+    dummy_ground_truth = DummyGroundTruth(label="dummy", value=0)
+    WorkflowTestCase(
+        with_test_prefix(f"{__file__}::{test_case_name} dummy"),
+        test_samples=[(dummy_sample, dummy_ground_truth)],
     )
     test_case = TestCase(test_case_name, images=[TestImage(locator)])
     images = test_case.load_images()

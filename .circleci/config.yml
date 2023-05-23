@@ -24,8 +24,8 @@ jobs:
             tests/integration/detection/.* detection true
             kolena/fr/.* fr true
             tests/integration/fr/.* fr true
-            kolena/workflow/.* generic true
-            tests/integration/generic/.* generic true
+            kolena/workflow/.* workflow true
+            tests/integration/workflow/.* workflow true
             kolena/_(api|utils)/.* all true
             kolena/[^/]*.py all true
             tests/integration/[^/]*.py all true
@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Generate config
           command: |
-            export INT_MATRIX=$(jq -c 'if (.all) then (["detection", "fr", "classification", "generic"])
+            export INT_MATRIX=$(jq -c 'if (.all) then (["detection", "fr", "classification", "workflow"])
               else (to_entries | map(select((.value) and (.key | contains("example") | not)) | .key)) end' \
               /tmp/pipeline-parameters.json)
             yq '(.workflows.ci.jobs[] | select(."integration-test".matrix.parameters."pytest-group")

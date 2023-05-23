@@ -48,7 +48,7 @@ class EvaluatorRoleConfig:
 @dataclass(frozen=True)
 class RemoteEvaluator:
     """
-    Remote evaluator for generic workflows.
+    Remote evaluator for workflows built with ``kolena.workflow``.
     """
 
     #: The name of the workflow

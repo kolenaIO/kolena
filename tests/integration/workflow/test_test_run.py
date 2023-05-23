@@ -35,16 +35,16 @@ from kolena.workflow import test
 from kolena.workflow import TestCase
 from kolena.workflow import TestRun
 from kolena.workflow import TestSample
-from tests.integration.generic.conftest import dummy_evaluator_function
-from tests.integration.generic.conftest import dummy_evaluator_function_with_config
-from tests.integration.generic.conftest import DummyConfiguration
-from tests.integration.generic.conftest import DummyEvaluator
-from tests.integration.generic.conftest import DummyTestSample
-from tests.integration.generic.conftest import Model
-from tests.integration.generic.conftest import TestSuite
-from tests.integration.generic.dummy import DummyInference
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
+from tests.integration.workflow.conftest import dummy_evaluator_function
+from tests.integration.workflow.conftest import dummy_evaluator_function_with_config
+from tests.integration.workflow.conftest import DummyConfiguration
+from tests.integration.workflow.conftest import DummyEvaluator
+from tests.integration.workflow.conftest import DummyTestSample
+from tests.integration.workflow.conftest import Model
+from tests.integration.workflow.conftest import TestSuite
+from tests.integration.workflow.dummy import DummyInference
 
 
 def test__init(

@@ -18,16 +18,16 @@ import pytest
 from kolena.detection import Model as DetectionModel
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import TestRun
-from tests.integration.generic.conftest import dummy_inference
-from tests.integration.generic.conftest import DummyConfiguration
-from tests.integration.generic.conftest import DummyEvaluator
-from tests.integration.generic.dummy import DUMMY_WORKFLOW
-from tests.integration.generic.dummy import DummyGroundTruth
-from tests.integration.generic.dummy import DummyTestSample
-from tests.integration.generic.dummy import Model
-from tests.integration.generic.dummy import TestSuite
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
+from tests.integration.workflow.conftest import dummy_inference
+from tests.integration.workflow.conftest import DummyConfiguration
+from tests.integration.workflow.conftest import DummyEvaluator
+from tests.integration.workflow.dummy import DUMMY_WORKFLOW
+from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyTestSample
+from tests.integration.workflow.dummy import Model
+from tests.integration.workflow.dummy import TestSuite
 
 META_DATA = {"a": "b"}
 

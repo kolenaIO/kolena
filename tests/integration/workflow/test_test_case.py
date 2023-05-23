@@ -17,12 +17,12 @@ import pytest
 
 from kolena.detection import TestCase as DetectionTestCase
 from kolena.errors import WorkflowMismatchError
-from tests.integration.generic.dummy import DUMMY_WORKFLOW
-from tests.integration.generic.dummy import DummyGroundTruth
-from tests.integration.generic.dummy import DummyTestSample
-from tests.integration.generic.dummy import TestCase
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
+from tests.integration.workflow.dummy import DUMMY_WORKFLOW
+from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyTestSample
+from tests.integration.workflow.dummy import TestCase
 
 
 def assert_test_case(test_case: TestCase, name: str, version: int) -> None:

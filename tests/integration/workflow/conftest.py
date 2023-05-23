@@ -31,14 +31,14 @@ from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.evaluator import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
-from tests.integration.generic.dummy import DummyGroundTruth
-from tests.integration.generic.dummy import DummyInference
-from tests.integration.generic.dummy import DummyTestSample
-from tests.integration.generic.dummy import Model
-from tests.integration.generic.dummy import TestCase
-from tests.integration.generic.dummy import TestSuite
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
+from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyInference
+from tests.integration.workflow.dummy import DummyTestSample
+from tests.integration.workflow.dummy import Model
+from tests.integration.workflow.dummy import TestCase
+from tests.integration.workflow.dummy import TestSuite
 
 N_DUMMY = 10
 

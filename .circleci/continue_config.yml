@@ -13,7 +13,7 @@ parameters:
   fr:
     type: boolean
     default: false
-  generic:
+  workflow:
     type: boolean
     default: false
   misc:
@@ -99,7 +99,7 @@ jobs:
         default: "3.9"
       pytest-group:
         type: string
-        default: "generic"
+        default: workflow
       enabled:
         type: boolean
         default: false
@@ -202,7 +202,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ detection, fr, classification, generic ]
+              pytest-group: [ detection, fr, classification, workflow ]
           enabled: true
           parallelism: 4
           requires:
@@ -219,7 +219,7 @@ workflows:
             - ci-base-<< matrix.python-version >>
   example:
     when:
-      or: [ << pipeline.parameters.generic >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
+      or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
     jobs:
       - example-test:
           matrix:

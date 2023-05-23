@@ -81,13 +81,13 @@ def test__get_platform_url(client_state: _ClientState, expected: str) -> None:
         ),
         (
             _ClientState(tenant="test-tenant"),
-            "example-generic-workflow",
-            "https://app.kolena.io/test-tenant/results?modelIds=1&testSuiteId=2&workflow=example-generic-workflow",
+            "example-workflow",
+            "https://app.kolena.io/test-tenant/results?modelIds=1&testSuiteId=2&workflow=example-workflow",
         ),
         (
             _ClientState(tenant="test-tenant"),
-            "Example Generic Workflow",
-            "https://app.kolena.io/test-tenant/results?modelIds=1&testSuiteId=2&workflow=Example+Generic+Workflow",
+            "Example Workflow",
+            "https://app.kolena.io/test-tenant/results?modelIds=1&testSuiteId=2&workflow=Example+Workflow",
         ),
     ],
 )
