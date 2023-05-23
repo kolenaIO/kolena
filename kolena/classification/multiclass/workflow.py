@@ -69,7 +69,7 @@ class AggregatedMetrics:
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    n_label: int
+    n_labels: int
     n_correct: int
     n_incorrect: int
     accuracy: float

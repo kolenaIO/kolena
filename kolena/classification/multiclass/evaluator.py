@@ -292,7 +292,7 @@ def _compute_test_case_metrics(
         macro_metrics_by_name[metric_name] = sum(metrics) / len(metrics)
 
     return TestCaseMetrics(
-        n_label=len(labels),
+        n_labels=len(labels),
         n_correct=n_correct,
         n_incorrect=n_incorrect,
         accuracy=accuracy,
