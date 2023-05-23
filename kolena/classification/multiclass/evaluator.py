@@ -21,6 +21,7 @@ from typing import Optional
 from typing import Set
 from typing import Tuple
 from typing import Type
+from typing import Union
 
 import numpy as np
 
@@ -46,6 +47,7 @@ from kolena.workflow import EvaluationResults
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
+from kolena.workflow.annotation import ScoredClassificationLabel
 
 Result = Tuple[TestSample, GroundTruth, Inference]
 
@@ -63,13 +65,13 @@ def _compute_test_sample_metric(
     if len(inference.inferences) == 0:
         return empty_metrics
 
-    sorted_indices = np.argsort([label.confidence for label in inference.inferences])
+    sorted_indices = np.argsort([label.score for label in inference.inferences])
     match = inference.inferences[sorted_indices[-1]]
-    predicted_label, confidence_score = match.label, match.confidence
+    predicted_label, confidence_score = match.label, match.score
     margin: Optional[float] = None
     if len(sorted_indices) > 1:
-        second_closest: InferenceLabel = inference.inferences[sorted_indices[-2]]
-        margin = confidence_score - second_closest.confidence
+        second_closest: Union[ScoredClassificationLabel, InferenceLabel] = inference.inferences[sorted_indices[-2]]
+        margin = confidence_score - second_closest.score
 
     if threshold_configuration.threshold is not None and confidence_score < threshold_configuration.threshold:
         return empty_metrics
@@ -136,18 +138,18 @@ def _compute_confidence_histograms(
         )
         return []
 
-    confidence_all = [mts.classification.confidence for mts in metrics if mts.classification is not None]
+    confidence_all = [mts.classification.score for mts in metrics if mts.classification is not None]
     confidence_correct = [
-        mts.classification.confidence for mts in metrics if mts.classification is not None and mts.is_correct
+        mts.classification.score for mts in metrics if mts.classification is not None and mts.is_correct
     ]
     confidence_incorrect = [
-        mts.classification.confidence for mts in metrics if mts.classification is not None and not mts.is_correct
+        mts.classification.score for mts in metrics if mts.classification is not None and not mts.is_correct
     ]
 
     plots = [
-        _as_confidence_histogram("Confidence Distribution (All)", confidence_all, confidence_range),
-        _as_confidence_histogram("Confidence Distribution (Correct)", confidence_correct, confidence_range),
-        _as_confidence_histogram("Confidence Distribution (Incorrect)", confidence_incorrect, confidence_range),
+        _as_confidence_histogram("Score Distribution (All)", confidence_all, confidence_range),
+        _as_confidence_histogram("Score Distribution (Correct)", confidence_correct, confidence_range),
+        _as_confidence_histogram("Score Distribution (Incorrect)", confidence_incorrect, confidence_range),
     ]
     return plots
 
@@ -162,7 +164,7 @@ def _compute_test_case_plots(
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Plot]:
     gt_labels = {gt.classification.label for gt in ground_truths}
-    plots = [
+    plots: List[Plot] = [
         _as_class_metric_plot(field.name, metrics_by_label, labels)
         for field in dataclasses.fields(AggregatedMetrics)
         if len(gt_labels) > 2
@@ -362,7 +364,7 @@ def MulticlassClassificationEvaluator(
         for ts, gt, inf in zip(test_samples, ground_truths, inferences)
     ]
     test_sample_metrics: List[TestSampleMetrics] = [mts for _, mts in metrics_test_sample]
-    confidence_scores = [mts.classification.confidence for mts in test_sample_metrics if mts.classification is not None]
+    confidence_scores = [mts.classification.score for mts in test_sample_metrics if mts.classification is not None]
     confidence_range = get_histogram_range(confidence_scores)
 
     metrics_test_case: List[Tuple[TestCase, TestCaseMetrics]] = []

@@ -247,16 +247,30 @@ class ClassificationLabel(Annotation):
         return _AnnotationType.CLASSIFICATON_LABEL
 
 
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredClassificationLabel(ClassificationLabel):
+    """Classification label with accompanying score."""
+
+    score: float
+
+
 _ANNOTATION_TYPES = [
     BoundingBox,
     LabeledBoundingBox,
+    ScoredBoundingBox,
+    ScoredLabeledBoundingBox,
     Polygon,
     LabeledPolygon,
+    ScoredPolygon,
+    ScoredLabeledPolygon,
     Keypoints,
     Polyline,
     BoundingBox3D,
     LabeledBoundingBox3D,
+    ScoredBoundingBox3D,
+    ScoredLabeledBoundingBox3D,
     SegmentationMask,
     BitmapMask,
     ClassificationLabel,
+    ScoredClassificationLabel,
 ]
