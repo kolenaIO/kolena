@@ -80,7 +80,7 @@ jobs:
         default: "3.9"
       pytest-group:
         type: string
-        default: "generic"
+        default: "workflow"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -122,7 +122,7 @@ jobs:
         default: "3.9"
       pytest-group:
         type: string
-        default: "generic"
+        default: "workflow"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -142,7 +142,7 @@ jobs:
               poetry run pytest -vv --durations=0 --cov=kolena --cov-branch \
                 --ignore=tests/integration/classification \
                 --ignore=tests/integration/detection \
-                --ignore=tests/integration/generic \
+                --ignore=tests/integration/workflow \
                 --ignore=tests/integration/fr \
                 tests/integration
             else
@@ -212,7 +212,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ detection, fr, generic ]
+              pytest-group: [ detection, fr, workflow ]
           requires:
             - ci-base-<< matrix.python-version >>
       - integration-test:
