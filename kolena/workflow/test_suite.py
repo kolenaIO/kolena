@@ -189,9 +189,9 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
         obj = cls._create_from_data(data)
+        log.info(f"created test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         if test_cases is not None:
             obj._hydrate(test_cases)
-        log.info(f"created test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         return obj
 
     @classmethod

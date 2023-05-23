@@ -102,6 +102,32 @@ UnconfiguredEvaluatorFunction = Callable[
 #: the inferences for all test samples in a test suite and a :class:`kolena.workflow.TestCases` as input, and computes
 #: the corresponding test-sample-level, test-case-level, and test-suite-level metrics (and optionally plots) as output.
 #:
+#: Example implementation, relying on ``compute_per_sample`` and ``compute_aggregate`` functions implemented elsewhere:
+#:
+#: .. code-block:: python
+#:
+#:     def evaluate(
+#:         test_samples: List[TestSample],
+#:         ground_truths: List[GroundTruth],
+#:         inferences: List[Inference],
+#:         test_cases: TestCases,
+#:     ) -> EvaluationResults:
+#:         # compute per-sample metrics for each test sample
+#:         per_sample_metrics = [compute_per_sample(gt, inf) for gt, inf in zip(ground_truths, inferences)]
+#:
+#:         # compute aggregate metrics across all test cases using `test_cases.iter(...)`
+#:         aggregate_metrics: List[Tuple[TestCase, MetricsTestCase]] = []
+#:         for test_case, *s in test_cases.iter(test_samples, ground_truths, inferences, per_sample_metrics):
+#:             # subset of `test_samples`/`ground_truths`/`inferences`/`test_sample_metrics` in given test case
+#:             tc_test_samples, tc_ground_truths, tc_inferences, tc_per_sample_metrics = s
+#:             aggregate_metrics.append((test_case, compute_aggregate(tc_per_sample_metrics)))
+#:
+#:         # if desired, compute and add `plots_test_case` and `metrics_test_suite`
+#:         return EvaluationResults(
+#:             metrics_test_sample=list(zip(test_samples, per_sample_metrics)),
+#:             metrics_test_case=aggregate_metrics,
+#:         )
+#:
 #: The control flow is in general more streamlined than with :class:`kolena.workflow.Evaluator`, but requires a couple
 #: of assumptions to hold:
 #:
@@ -171,7 +197,7 @@ class _TestCases(TestCases):
         config_description = (
             f" {_configuration_description(self._wip_configuration)}" if self._wip_configuration else ""
         )
-        message = f"Computed metrics for test case {test_case.name}{config_description}"
+        message = f"Computed metrics for test case '{test_case.name}' (v{test_case.version}){config_description}"
         progress = self._n_test_cases_processed / self._n_test_cases_and_configurations
 
         log.info(message)

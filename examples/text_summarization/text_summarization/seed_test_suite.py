@@ -1,3 +1,16 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 import os
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -5,14 +18,14 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from text_summarization.utils import get_readable
+from text_summarization.workflow import GroundTruth
+from text_summarization.workflow import TestCase
+from text_summarization.workflow import TestSample
+from text_summarization.workflow import TestSuite
 from tqdm import tqdm
 
 import kolena
-from .utils import get_readable
-from .workflow import GroundTruth
-from .workflow import TestCase
-from .workflow import TestSample
-from .workflow import TestSuite
 
 DATASET = "CNN-DailyMail"
 
@@ -178,7 +191,8 @@ def seed_test_suites(
     return None
 
 
-def run(args: Namespace) -> None:
+def main(args: Namespace) -> None:
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
@@ -190,7 +204,7 @@ def run(args: Namespace) -> None:
     seed_test_suites(test_suite_names, complete_tc)
 
 
-def main() -> None:
+if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--dataset_csv",
@@ -199,9 +213,4 @@ def main() -> None:
         help="CSV file specifying dataset. See default CSV for details",
     )
 
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    run(ap.parse_args())
-
-
-if __name__ == "__main__":
-    main()
+    main(ap.parse_args())

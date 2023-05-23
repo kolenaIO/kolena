@@ -128,8 +128,8 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         data = from_dict(data_class=API.EntityData, data=res.json())
         obj = cls._create_from_data(data)
+        log.info(f"created test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         obj._hydrate(baseline_test_cases, non_baseline_test_cases)
-        log.info(f"created test suite '{name}' ({get_test_suite_url(obj._id)})")
         return obj
 
     @classmethod
@@ -164,7 +164,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         obj = cls._create_from_data(from_dict(data_class=API.EntityData, data=res.json()))
-        log.info(f"loaded test suite '{name}' ({get_test_suite_url(obj._id)})")
+        log.info(f"loaded test suite '{name}' (v{obj.version}) ({get_test_suite_url(obj._id)})")
         return obj
 
     def _populate_from_other(self, other: "TestSuite") -> None:
@@ -280,7 +280,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
             elif name in self._non_baseline_test_cases.keys():
                 self._non_baseline_test_cases.pop(name)
             else:
-                raise KeyError(f"test case '{name}' not in suite")
+                raise KeyError(f"test case '{name}' not in test suite")
             self._edited = True
 
         @deprecated(details="use :meth:`add` instead", deprecated_in="0.57.0")
@@ -327,7 +327,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         if not editor._edited:
             return
 
-        log.info(f"editing test suite '{self.name}'")
+        log.info(f"editing test suite '{self.name}' (v{self.version})")
         request = API.EditRequest(
             test_suite_id=self._id,
             current_version=self.version,
@@ -340,4 +340,4 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         krequests.raise_for_status(res)
         test_suite_data = from_dict(data_class=API.EntityData, data=res.json())
         self._populate_from_other(self._create_from_data(test_suite_data))
-        log.success(f"edited test suite '{self.name}' ({get_test_suite_url(self._id)})")
+        log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(self._id)})")

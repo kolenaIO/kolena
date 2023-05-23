@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -79,6 +80,17 @@ class TestImage(BaseTestImage):
     @classmethod
     def _to_record(cls, image: "TestImage") -> Tuple[str, Optional[str], List[Dict[str, Any]], Dict[str, Any]]:
         return (image.locator, image.dataset, [gt._to_dict() for gt in image.ground_truths], _to_dict(image.metadata))
+
+    # TODO: remove implementation in favor of Frozen.__eq__ once ground_truth ordering is ensured upstream
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, type(self)) and {
+            **self.__dict__,
+            "ground_truths": self._sort_ground_truths(self.ground_truths),
+        } == {**other.__dict__, "ground_truths": self._sort_ground_truths(other.ground_truths)}
+
+    @staticmethod
+    def _sort_ground_truths(ground_truths: List[GroundTruth]) -> List[GroundTruth]:
+        return sorted(ground_truths, key=lambda gt: json.dumps(gt._to_dict(), sort_keys=True))
 
 
 @deprecated(details="use :class:`kolena.detection.TestCase.load_images`", deprecated_in="0.26.0")

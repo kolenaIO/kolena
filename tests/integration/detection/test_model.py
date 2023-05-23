@@ -87,9 +87,9 @@ def test__load_inferences__no_inferences(detection_test_data: TestData) -> None:
     # test-cases[0] has sample (sample_0, sample_1, sample_2, sample_4), gt (gt_0, None, gt_2, None,)
     # test-cases[1] has sample (sample_2, sample_2, sample_3), gt (gt_1, gt_2, gt_4,)
     # test sample #3 across test suite, should have different ground_truths
-    sample, _ = inferences[test_case_id_0][2]
+    sample, _ = sorted(inferences[test_case_id_0], key=lambda x: x[0].locator)[2]
     assert len(sample.ground_truths) == 1
-    sample, _ = inferences[test_case_id_1][0]
+    sample, _ = sorted(inferences[test_case_id_1], key=lambda x: x[0].locator)[0]
     assert len(sample.ground_truths) == 2
 
     # extra check for behavior consistency
