@@ -9,3 +9,9 @@ coverage:
 
 github_checks:
   annotations: false
+
+flags:
+  integration:
+    paths:
+      - ".*"
+    carryforward: true
