@@ -456,6 +456,9 @@ def _validate_histogram_data(buckets: NumberSeries, frequency: NumberSeries) -> 
             f"series 'buckets' (length: {len(buckets)})",
         )
 
+    if len(frequency) == 0:
+        raise ValueError("Zero-length series 'frequency' provided")
+
     for i in range(len(buckets) - 1):
         if buckets[i] >= buckets[i + 1]:
             raise ValueError(f"Invalid bucket at index ({i}, {i + 1}): ({buckets[i]}, {buckets[i + 1]})")

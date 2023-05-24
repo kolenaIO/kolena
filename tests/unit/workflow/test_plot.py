@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import Any
 from typing import List
+from typing import Optional
 from typing import Union
 
 import pytest
@@ -24,6 +25,7 @@ from kolena.workflow.evaluator import AxisConfig
 from kolena.workflow.evaluator import BarPlot
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Histogram
+from kolena.workflow.evaluator import HistogramDistribution
 from kolena.workflow.evaluator import NullableNumberSeries
 
 
@@ -146,17 +148,24 @@ def test__histogram__validate() -> None:
 
 
 @pytest.mark.parametrize(
-    "buckets,frequency",
+    "buckets,frequency,distributions",
     [
-        ([1], [1, 2, 3]),
-        ([1, 2, 3], [1]),
-        ([1, 2], [[90]]),
-        (["a", "b"], [90]),
-        ([2, 4, 3.9], [2, 3]),
-        ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2]),
+        ([], [], None),
+        ([1], [], None),
+        ([1], [1, 2, 3], None),
+        ([1, 2, 3], [1], None),
+        ([1, 2], [[90]], None),
+        (["a", "b"], [90], None),
+        ([2, 4, 3.9], [2, 3], None),
+        ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2], None),
+        ([0, 1, 2], [0, 1], [HistogramDistribution(buckets=[0, 1], frequency=[1], label="a")]),
     ],
 )
-def test__histogram__validate__invalid(buckets: List[Any], frequency: List[Any]) -> None:
+def test__histogram__validate__invalid(
+    buckets: List[Any],
+    frequency: List[Any],
+    distributions: Optional[List[HistogramDistribution]],
+) -> None:
     # different length
     with pytest.raises(ValueError):
         Histogram(
@@ -165,7 +174,26 @@ def test__histogram__validate__invalid(buckets: List[Any], frequency: List[Any])
             y_label="y",
             buckets=buckets,
             frequency=frequency,
+            distributions=distributions,
         )
+
+
+@pytest.mark.parametrize(
+    "buckets,frequency",
+    [
+        ([], []),
+        ([1], []),
+        ([1], [1, 2, 3]),
+        ([1, 2, 3], [1]),
+        ([1, 2], [[90]]),
+        (["a", "b"], [90]),
+        ([2, 4, 3.9], [2, 3]),
+        ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2]),
+    ],
+)
+def test__histogram_distribution__validate__invalid(buckets: List[Any], frequency: List[Any]) -> None:
+    with pytest.raises(ValueError):
+        HistogramDistribution(label="a", buckets=buckets, frequency=frequency)
 
 
 def test__histogram__serialize() -> None:
@@ -182,6 +210,7 @@ def test__histogram__serialize() -> None:
         "y_label": "y",
         "buckets": [-3, -2, -1, 0, 1, 2, 3],
         "frequency": [0, 1, 2, 1, 4.4, 0.2],
+        "distributions": [],
         "x_config": None,
         "y_config": {"type": "log"},
         "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
