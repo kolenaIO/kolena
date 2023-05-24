@@ -103,7 +103,7 @@ class _ClientState:
 
 
 def _get_api_base_url() -> str:
-    return os.environ.get(API_URL_ENV_VAR, API_URL)
+    return os.environ.get(API_URL_ENV_VAR) or API_URL
 
 
 _client_state = _ClientState(base_url=_get_api_base_url())
