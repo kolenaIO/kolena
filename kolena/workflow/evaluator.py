@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 from abc import ABCMeta
 from abc import abstractmethod
 from typing import Any
@@ -157,6 +158,21 @@ class CurvePlot(Plot):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
+class HistogramDistribution(DataObject):
+    """A single distribution on a :class:`Histogram`."""
+
+    buckets: NumberSeries
+    frequency: NumberSeries
+
+    #: Label applied to this distribution, e.g. the specific class within a given test case that this distribution
+    #: corresponds to.
+    label: Optional[str] = None
+
+    def __post_init_post_parse__(self) -> None:
+        _validate_histogram_data(self.buckets, self.frequency)
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
 class Histogram(Plot):
     """
     A plot visualizing a histogram per test case.
@@ -169,30 +185,29 @@ class Histogram(Plot):
     y_label: str
 
     #: A Histogram requires intervals to bucket the data.
-    #: For n buckets, n+1 consecutive bounds must be specified in increasing order.
-    buckets: NumberSeries
+    #: For ``n`` buckets, ``n+1`` consecutive bounds must be specified in increasing order.
+    buckets: NumberSeries = dataclasses.field(default_factory=list)
 
-    #: For n buckets, there are n frequencies that define each bucket's height.
-    #: The nth frequency corresponds to the nth bucket.
-    frequency: NumberSeries
+    #: For ``n`` buckets, there are ``n`` frequencies that define each bucket's height.
+    #: The ``n``th frequency corresponds to the ``n``th bucket.
+    frequency: NumberSeries = dataclasses.field(default_factory=list)
+
+    #: Specify multiple distributions for a given test case. When only one distribution is desired, ``buckets`` and
+    #: ``frequency`` can be used directly.
+    distributions: List[HistogramDistribution] = dataclasses.field(default_factory=list)
 
     #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
     y_config: Optional[AxisConfig] = None
 
     def __post_init_post_parse__(self) -> None:
-        if len(self.frequency) + 1 != len(self.buckets):
-            long_err_msg = (
-                f"Series 'frequency' (length: {len(self.frequency)}) "
-                f"and 'buckets' (length: {len(self.buckets)}) should be 1 apart"
-            )
-            raise ValueError(long_err_msg)
-
-        for i in range(len(self.buckets) - 1):
-            if self.buckets[i] >= self.buckets[i + 1]:
+        if len(self.buckets) > 0 or len(self.frequency) > 0:
+            if len(self.distributions) > 0:
                 raise ValueError(
-                    f"At index {i}, {i + 1}, series 'buckets' is ({self.buckets[i]}, {self.buckets[i + 1]})",
+                    "Invalid inputs: both 'buckets'/'frequency' and 'distribution' provided. "
+                    "To specify multiple distributions, use only the 'distributions' field.",
                 )
+            _validate_histogram_data(self.buckets, self.frequency)
 
     @staticmethod
     def _data_type() -> _PlotType:
@@ -432,3 +447,15 @@ def _maybe_display_name(configuration: Optional[EvaluatorConfiguration]) -> Opti
 def _configuration_description(configuration: Optional[EvaluatorConfiguration]) -> str:
     display_name = _maybe_display_name(configuration)
     return f"(configuration: {display_name})" if display_name is not None else ""
+
+
+def _validate_histogram_data(buckets: NumberSeries, frequency: NumberSeries) -> None:
+    if len(frequency) + 1 != len(buckets):
+        raise ValueError(
+            f"Series 'frequency' (length: {len(frequency)}) should be 1 shorter than "
+            f"series 'buckets' (length: {len(buckets)})",
+        )
+
+    for i in range(len(buckets) - 1):
+        if buckets[i] >= buckets[i + 1]:
+            raise ValueError(f"Invalid bucket at index ({i}, {i + 1}): ({buckets[i]}, {buckets[i + 1]})")
