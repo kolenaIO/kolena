@@ -172,7 +172,7 @@ def _compute_test_case_plots(
     ]
 
     plots.extend(_compute_confidence_histograms(test_case_name, metrics, confidence_range))
-    plots.append(_compute_test_case_ovr_roc_curve(test_case_name, labels, ground_truths, inferences))
+    plots.append(_compute_test_case_ovr_roc_curve(test_case_name, gt_labels, ground_truths, inferences))
     plots.append(_compute_test_case_confusion_matrix(test_case_name, ground_truths, metrics))
     plots = list(filter(lambda plot: plot is not None, plots))
 
@@ -216,6 +216,10 @@ def _compute_test_case_ovr_roc_curve(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Optional[Plot]:
+    if len(labels) > 10:
+        log.warn(f"skipping one-vs-rest ROC curve for {test_case_name}: too many labels")
+        return None
+
     curves = []
     for label in labels:
         y_true = [1 if gt.classification.label == label else 0 for gt in ground_truths]
@@ -225,10 +229,6 @@ def _compute_test_case_ovr_roc_curve(
             curves.append(Curve(x=fpr_values, y=tpr_values, label=label))
 
     if len(curves) > 0:
-        if len(curves) > 10:
-            log.warn(f"skipping one-vs-rest ROC curve for {test_case_name}: too many labels")
-            return None
-
         return CurvePlot(
             title="Receiver Operating Characteristic (One-vs-Rest)",
             x_label="False Positive Rate (FPR)",
@@ -294,6 +294,7 @@ def _compute_test_case_metrics(
         macro_metrics_by_name[metric_name] = sum(metrics) / len(metrics)
 
     return TestCaseMetrics(
+        n_labels=len(labels),
         n_correct=n_correct,
         n_incorrect=n_incorrect,
         accuracy=accuracy,
