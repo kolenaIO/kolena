@@ -31,7 +31,6 @@ from kolena._utils.state import _client_state
 from kolena._utils.state import _get_api_base_url
 from kolena._utils.state import API_URL
 from kolena._utils.state import API_URL_ENV_VAR
-from kolena._utils.state import CLIENT_BASE_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
@@ -89,8 +88,6 @@ def test__initialize__deprecated_positional(clean_client_state: None) -> None:
     [
         ({}, API_URL),
         ({API_URL_ENV_VAR: "foobar"}, "foobar"),
-        ({CLIENT_BASE_URL_ENV_VAR: "foobar"}, "foobar"),
-        ({API_URL_ENV_VAR: "foo", CLIENT_BASE_URL_ENV_VAR: "bar"}, "foo"),
         ({API_URL_ENV_VAR: ""}, API_URL),
         ({"KOLENA_MODEL": "my model"}, API_URL),
     ],

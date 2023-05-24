@@ -35,7 +35,6 @@ from kolena.errors import UninitializedError
 
 API_VERSION = "v1"
 API_URL = "https://api.kolena.io"
-CLIENT_BASE_URL_ENV_VAR = "KOLENA_CLIENT_BASE_URL"
 API_URL_ENV_VAR = "KOLENA_API_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
 
@@ -104,7 +103,7 @@ class _ClientState:
 
 
 def _get_api_base_url() -> str:
-    return os.environ.get(API_URL_ENV_VAR) or os.environ.get(CLIENT_BASE_URL_ENV_VAR) or API_URL
+    return os.environ.get(API_URL_ENV_VAR, API_URL)
 
 
 _client_state = _ClientState(base_url=_get_api_base_url())
