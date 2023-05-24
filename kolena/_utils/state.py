@@ -34,15 +34,16 @@ from kolena.errors import UnauthenticatedError
 from kolena.errors import UninitializedError
 
 API_VERSION = "v1"
-API_BASE_URL = "https://api.kolena.io"
-API_BASE_URL_ENV_VAR = "KOLENA_CLIENT_BASE_URL"
+API_URL = "https://api.kolena.io"
+CLIENT_BASE_URL_ENV_VAR = "KOLENA_CLIENT_BASE_URL"
+API_URL_ENV_VAR = "KOLENA_API_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
 
 
 class _ClientState:
     def __init__(
         self,
-        base_url: Optional[str] = API_BASE_URL,
+        base_url: Optional[str] = API_URL,
         api_token: Optional[str] = None,
         jwt_token: Optional[str] = None,
         tenant: Optional[str] = None,
@@ -103,7 +104,7 @@ class _ClientState:
 
 
 def _get_api_base_url() -> str:
-    return os.environ.get(API_BASE_URL_ENV_VAR, API_BASE_URL)
+    return os.environ.get(API_URL_ENV_VAR) or os.environ.get(CLIENT_BASE_URL_ENV_VAR) or API_URL
 
 
 _client_state = _ClientState(base_url=_get_api_base_url())
