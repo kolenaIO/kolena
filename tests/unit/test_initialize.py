@@ -17,6 +17,7 @@ import hashlib
 import json
 import time
 from typing import Any
+from typing import Dict
 from typing import Iterator
 from typing import Optional
 from unittest.mock import patch
@@ -27,7 +28,9 @@ from requests import Response
 import kolena
 from kolena._api.v1.token import ValidateResponse
 from kolena._utils.state import _client_state
-from kolena._utils.state import API_BASE_URL_ENV_VAR
+from kolena._utils.state import _get_api_base_url
+from kolena._utils.state import API_URL
+from kolena._utils.state import API_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
@@ -80,12 +83,26 @@ def test__initialize__deprecated_positional(clean_client_state: None) -> None:
         assert _client_state.jwt_token is not None
 
 
+@pytest.mark.parametrize(
+    "env,expected",
+    [
+        ({}, API_URL),
+        ({API_URL_ENV_VAR: "foobar"}, "foobar"),
+        ({API_URL_ENV_VAR: ""}, API_URL),
+        ({"KOLENA_MODEL": "my model"}, API_URL),
+    ],
+)
+def test__initialize__api_url_environ(env: Dict[str, str], expected: str) -> None:
+    with patch.dict("os.environ", env, clear=True):
+        assert _get_api_base_url() == expected
+
+
 def test__initialize__updated_environ(clean_client_state: None) -> None:
     base_url = "https://internal-api.kolena.io"
     mock_response = Response()
     mock_response.status_code = 200
     mock_response._content = str.encode(json.dumps(dataclasses.asdict(FIXED_TOKEN_RESPONSE)))
-    with patch.dict("os.environ", {API_BASE_URL_ENV_VAR: base_url}, clear=True):
+    with patch.dict("os.environ", {API_URL_ENV_VAR: base_url}, clear=True):
         with patch("requests.put", return_value=mock_response) as patched:
             kolena.initialize("random entity", "def")
             client_state = get_client_state()
