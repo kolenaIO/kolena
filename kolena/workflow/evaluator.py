@@ -165,8 +165,8 @@ class HistogramDistribution(DataObject):
     frequency: NumberSeries
 
     #: Label applied to this distribution, e.g. the specific class within a given test case that this distribution
-    #: corresponds to.
-    label: Optional[str] = None
+    #: represents.
+    label: str
 
     def __post_init_post_parse__(self) -> None:
         _validate_histogram_data(self.buckets, self.frequency)

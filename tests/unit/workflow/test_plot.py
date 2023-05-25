@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
@@ -196,25 +197,56 @@ def test__histogram_distribution__validate__invalid(buckets: List[Any], frequenc
         HistogramDistribution(label="a", buckets=buckets, frequency=frequency)
 
 
-def test__histogram__serialize() -> None:
-    assert Histogram(
-        title="test",
-        x_label="x",
-        y_label="y",
-        buckets=[-3, -2, -1, 0, 1, 2, 3],
-        frequency=[0, 1, 2, 1, 4.4, 0.2],
-        y_config=AxisConfig(type="log"),
-    )._to_dict() == {
-        "title": "test",
-        "x_label": "x",
-        "y_label": "y",
-        "buckets": [-3, -2, -1, 0, 1, 2, 3],
-        "frequency": [0, 1, 2, 1, 4.4, 0.2],
-        "distributions": [],
-        "x_config": None,
-        "y_config": {"type": "log"},
-        "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
-    }
+@pytest.mark.parametrize(
+    "histogram,serialized",
+    [
+        (
+            Histogram(
+                title="test",
+                x_label="x",
+                y_label="y",
+                buckets=[-3, -2, -1, 0, 1, 2, 3],
+                frequency=[0, 1, 2, 1, 4.4, 0.2],
+                y_config=AxisConfig(type="log"),
+            ),
+            {
+                "title": "test",
+                "x_label": "x",
+                "y_label": "y",
+                "buckets": [-3, -2, -1, 0, 1, 2, 3],
+                "frequency": [0, 1, 2, 1, 4.4, 0.2],
+                "distributions": [],
+                "x_config": None,
+                "y_config": {"type": "log"},
+                "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
+            },
+        ),
+        (
+            Histogram(
+                title="test",
+                x_label="x",
+                y_label="y",
+                distributions=[
+                    HistogramDistribution(label="a", buckets=[1, 2, 3], frequency=[1, 2]),
+                ],
+                y_config=AxisConfig(type="log"),
+            ),
+            {
+                "title": "test",
+                "x_label": "x",
+                "y_label": "y",
+                "buckets": [],
+                "frequency": [],
+                "distributions": [{"label": "a", "buckets": [1, 2, 3], "frequency": [1, 2]}],
+                "x_config": None,
+                "y_config": {"type": "log"},
+                "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
+            },
+        ),
+    ],
+)
+def test__histogram__serialize(histogram: Histogram, serialized: Dict[str, Any]) -> None:
+    assert histogram._to_dict() == serialized
 
 
 @pytest.mark.parametrize(
