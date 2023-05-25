@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
 from abc import ABCMeta
 from abc import abstractmethod
 from typing import Any
@@ -184,17 +183,20 @@ class Histogram(Plot):
     x_label: str
     y_label: str
 
-    #: A Histogram requires intervals to bucket the data.
-    #: For ``n`` buckets, ``n+1`` consecutive bounds must be specified in increasing order.
-    buckets: NumberSeries = dataclasses.field(default_factory=list)
+    #: A Histogram requires intervals to bucket the data. For ``n`` buckets, ``n+1`` consecutive bounds must be
+    #: specified in increasing order.
+    buckets: NumberSeries
 
-    #: For ``n`` buckets, there are ``n`` frequencies that define each bucket's height.
-    #: The ``n``th frequency corresponds to the ``n``th bucket.
-    frequency: NumberSeries = dataclasses.field(default_factory=list)
+    #: For ``n`` buckets, there are ``n`` frequencies corresponding to the height of each bucket. The ``n``th frequency
+    #: corresponds to the ``n``th bucket with bounds (``n``, ``n+1``) in ``buckets``.
+    #:
+    #: To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
+    #: e.g. to the distribution for a given class within a test case, with name specified in ``labels``.
+    frequency: Union[NumberSeries, Sequence[NumberSeries]]
 
-    #: Specify multiple distributions for a given test case. When only one distribution is desired, ``buckets`` and
-    #: ``frequency`` can be used directly.
-    distributions: List[HistogramDistribution] = dataclasses.field(default_factory=list)
+    #: Optionally specify a list of labels corresponding to the different series in ``frequency`` when multiple series
+    #: are specified.
+    labels: Optional[List[str]] = None
 
     #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
