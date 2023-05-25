@@ -173,8 +173,8 @@ class Histogram(Plot):
     #: specified in increasing order.
     buckets: NumberSeries
 
-    #: For ``n`` buckets, there are ``n`` frequencies corresponding to the height of each bucket. The ``n``th frequency
-    #: corresponds to the ``n``th bucket with bounds (``n``, ``n+1``) in ``buckets``.
+    #: For ``n`` buckets, there are ``n`` frequencies corresponding to the height of each bucket. The frequency at index
+    #: ``i`` corresponds to the bucket with bounds (``i``, ``i+1``) in ``buckets``.
     #:
     #: To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
     #: e.g. to the distribution for a given class within a test case, with name specified in ``labels``.
