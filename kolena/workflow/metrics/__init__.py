@@ -15,8 +15,10 @@ from ._geometry import InferenceMatches
 from ._geometry import iou
 from ._geometry import match_inferences
 from ._geometry import match_inferences_multiclass
+from ._plots import compute_test_case_confusion_matrix
 
 __all__ = [
+    "compute_test_case_confusion_matrix",
     "InferenceMatches",
     "iou",
     "match_inferences",
