@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Any
-from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Union
 
 import pytest
@@ -26,8 +26,8 @@ from kolena.workflow.evaluator import AxisConfig
 from kolena.workflow.evaluator import BarPlot
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Histogram
-from kolena.workflow.evaluator import HistogramDistribution
 from kolena.workflow.evaluator import NullableNumberSeries
+from kolena.workflow.evaluator import NumberSeries
 
 
 def test__curve_plot__validate() -> None:
@@ -136,117 +136,69 @@ def test__confusion_matrix__serialize() -> None:
     # assert ConfusionMatrix._from_dict(confusion_matrix._to_dict()) == confusion_matrix
 
 
-def test__histogram__validate() -> None:
-    Histogram(title="mini", x_label="x", y_label="y", buckets=[1.0, 1.1], frequency=[4.2])
-
-    Histogram(
-        title="test",
-        x_label="x",
-        y_label="y",
-        buckets=[-3, -2, -1, 0, 1, 2, 3],
-        frequency=[0, 1, 2, 1, 4.4, 0.2],
-    )
+@pytest.mark.parametrize(
+    "buckets,frequency,labels",
+    [
+        ([1.0, 1.1], [4.2], None),
+        ([-3, -2, -1, 0, 1, 2, 3], [0, 1, 2, 1, 4.4, 0.2], None),
+        ([1, 2, 3], [[2, 3], [4, 5], [6, 7]], ["a", "b", "c"]),
+        ([1, 2, 3], [[2, 3]], ["a"]),
+    ],
+)
+def test__histogram__validate(
+    buckets: NumberSeries,
+    frequency: Union[NumberSeries, Sequence[NumberSeries]],
+    labels: Optional[List[str]],
+) -> None:
+    Histogram(title="test", x_label="x", y_label="y", buckets=buckets, frequency=frequency, labels=labels)
 
 
 @pytest.mark.parametrize(
-    "buckets,frequency,distributions",
+    "buckets,frequency,labels",
     [
         ([], [], None),
         ([1], [], None),
         ([1], [1, 2, 3], None),
         ([1, 2, 3], [1], None),
-        ([1, 2], [[90]], None),
         (["a", "b"], [90], None),
         ([2, 4, 3.9], [2, 3], None),
         ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2], None),
-        ([0, 1, 2], [0, 1], [HistogramDistribution(buckets=[0, 1], frequency=[1], label="a")]),
+        ([1, 2], [[90]], None),  # labels are required
+        ([1, 2, 3], [[1, 2], [3, 4]], ["a"]),
+        ([1, 2, 3], [[1, 2], [3, 4]], ["a", "b", "c"]),
+        ([1, 2, 3], [[1, 2], [3]], ["a", "b"]),  # jagged
+        ([1, 2, 3], [[1, 2], [3, 4, 5]], ["a", "b"]),  # jagged
     ],
 )
 def test__histogram__validate__invalid(
-    buckets: List[Any],
-    frequency: List[Any],
-    distributions: Optional[List[HistogramDistribution]],
+    buckets: NumberSeries,
+    frequency: Union[NumberSeries, Sequence[NumberSeries]],
+    labels: Optional[List[str]],
 ) -> None:
-    # different length
     with pytest.raises(ValueError):
-        Histogram(
-            title="test",
-            x_label="x",
-            y_label="y",
-            buckets=buckets,
-            frequency=frequency,
-            distributions=distributions,
-        )
+        Histogram(title="test", x_label="x", y_label="y", buckets=buckets, frequency=frequency, labels=labels)
 
 
-@pytest.mark.parametrize(
-    "buckets,frequency",
-    [
-        ([], []),
-        ([1], []),
-        ([1], [1, 2, 3]),
-        ([1, 2, 3], [1]),
-        ([1, 2], [[90]]),
-        (["a", "b"], [90]),
-        ([2, 4, 3.9], [2, 3]),
-        ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2]),
-    ],
-)
-def test__histogram_distribution__validate__invalid(buckets: List[Any], frequency: List[Any]) -> None:
-    with pytest.raises(ValueError):
-        HistogramDistribution(label="a", buckets=buckets, frequency=frequency)
-
-
-@pytest.mark.parametrize(
-    "histogram,serialized",
-    [
-        (
-            Histogram(
-                title="test",
-                x_label="x",
-                y_label="y",
-                buckets=[-3, -2, -1, 0, 1, 2, 3],
-                frequency=[0, 1, 2, 1, 4.4, 0.2],
-                y_config=AxisConfig(type="log"),
-            ),
-            {
-                "title": "test",
-                "x_label": "x",
-                "y_label": "y",
-                "buckets": [-3, -2, -1, 0, 1, 2, 3],
-                "frequency": [0, 1, 2, 1, 4.4, 0.2],
-                "distributions": [],
-                "x_config": None,
-                "y_config": {"type": "log"},
-                "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
-            },
-        ),
-        (
-            Histogram(
-                title="test",
-                x_label="x",
-                y_label="y",
-                distributions=[
-                    HistogramDistribution(label="a", buckets=[1, 2, 3], frequency=[1, 2]),
-                ],
-                y_config=AxisConfig(type="log"),
-            ),
-            {
-                "title": "test",
-                "x_label": "x",
-                "y_label": "y",
-                "buckets": [],
-                "frequency": [],
-                "distributions": [{"label": "a", "buckets": [1, 2, 3], "frequency": [1, 2]}],
-                "x_config": None,
-                "y_config": {"type": "log"},
-                "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
-            },
-        ),
-    ],
-)
-def test__histogram__serialize(histogram: Histogram, serialized: Dict[str, Any]) -> None:
-    assert histogram._to_dict() == serialized
+def test__histogram__serialize() -> None:
+    assert Histogram(
+        title="test",
+        x_label="x",
+        y_label="y",
+        buckets=[-3, -2, -1, 0, 1, 2, 3],
+        frequency=[[0, 1, 2, 1, 4.4, 0.2], [0, 1, 2, 3, 4, 5]],
+        labels=["a", "b"],
+        y_config=AxisConfig(type="log"),
+    )._to_dict() == {
+        "title": "test",
+        "x_label": "x",
+        "y_label": "y",
+        "buckets": [-3, -2, -1, 0, 1, 2, 3],
+        "frequency": [[0, 1, 2, 1, 4.4, 0.2], [0, 1, 2, 3, 4, 5]],
+        "labels": ["a", "b"],
+        "x_config": None,
+        "y_config": {"type": "log"},
+        "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
+    }
 
 
 @pytest.mark.parametrize(

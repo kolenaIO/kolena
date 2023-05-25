@@ -35,7 +35,6 @@ from .evaluator import Plot
 from .evaluator import Curve
 from .evaluator import CurvePlot
 from .evaluator import ConfusionMatrix
-from .evaluator import HistogramDistribution
 from .evaluator import Histogram
 from .evaluator import BarPlot
 from .evaluator import MetricsTestCase
@@ -73,7 +72,6 @@ __all__ = [
     "Curve",
     "CurvePlot",
     "ConfusionMatrix",
-    "HistogramDistribution",
     "Histogram",
     "BarPlot",
     "MetricsTestCase",
