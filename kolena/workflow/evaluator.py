@@ -160,9 +160,10 @@ class CurvePlot(Plot):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Histogram(Plot):
     """
-    A plot visualizing a histogram per test case.
+    A plot visualizing distribution of one or more continuous values, e.g. distribution of an error metric across all
+    samples within a test case.
 
-    Histograms allow for easy visualizations of data distributions.
+    For visualization of discrete values, see :class:`BarPlot`.
     """
 
     title: str
