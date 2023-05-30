@@ -13,6 +13,8 @@
 # limitations under the License.
 from typing import Any
 from typing import List
+from typing import Optional
+from typing import Sequence
 from typing import Union
 
 import pytest
@@ -25,6 +27,7 @@ from kolena.workflow.evaluator import BarPlot
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Histogram
 from kolena.workflow.evaluator import NullableNumberSeries
+from kolena.workflow.evaluator import NumberSeries
 
 
 def test__curve_plot__validate() -> None:
@@ -133,39 +136,47 @@ def test__confusion_matrix__serialize() -> None:
     # assert ConfusionMatrix._from_dict(confusion_matrix._to_dict()) == confusion_matrix
 
 
-def test__histogram__validate() -> None:
-    Histogram(title="mini", x_label="x", y_label="y", buckets=[1.0, 1.1], frequency=[4.2])
-
-    Histogram(
-        title="test",
-        x_label="x",
-        y_label="y",
-        buckets=[-3, -2, -1, 0, 1, 2, 3],
-        frequency=[0, 1, 2, 1, 4.4, 0.2],
-    )
+@pytest.mark.parametrize(
+    "buckets,frequency,labels",
+    [
+        ([1.0, 1.1], [4.2], None),
+        ([-3, -2, -1, 0, 1, 2, 3], [0, 1, 2, 1, 4.4, 0.2], None),
+        ([1, 2, 3], [[2, 3], [4, 5], [6, 7]], ["a", "b", "c"]),
+        ([1, 2, 3], [[2, 3]], ["a"]),
+    ],
+)
+def test__histogram__validate(
+    buckets: NumberSeries,
+    frequency: Union[NumberSeries, Sequence[NumberSeries]],
+    labels: Optional[List[str]],
+) -> None:
+    Histogram(title="test", x_label="x", y_label="y", buckets=buckets, frequency=frequency, labels=labels)
 
 
 @pytest.mark.parametrize(
-    "buckets,frequency",
+    "buckets,frequency,labels",
     [
-        ([1], [1, 2, 3]),
-        ([1, 2, 3], [1]),
-        ([1, 2], [[90]]),
-        (["a", "b"], [90]),
-        ([2, 4, 3.9], [2, 3]),
-        ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2]),
+        ([], [], None),
+        ([1], [], None),
+        ([1], [1, 2, 3], None),
+        ([1, 2, 3], [1], None),
+        (["a", "b"], [90], None),
+        ([2, 4, 3.9], [2, 3], None),
+        ([-3, -2, -1, 0, 1, 2, -3], [0, 1, 2, 1, 4.4, 0.2], None),
+        ([1, 2], [[90]], None),  # labels are required
+        ([1, 2, 3], [[1, 2], [3, 4]], ["a"]),
+        ([1, 2, 3], [[1, 2], [3, 4]], ["a", "b", "c"]),
+        ([1, 2, 3], [[1, 2], [3]], ["a", "b"]),  # jagged
+        ([1, 2, 3], [[1, 2], [3, 4, 5]], ["a", "b"]),  # jagged
     ],
 )
-def test__histogram__validate__invalid(buckets: List[Any], frequency: List[Any]) -> None:
-    # different length
+def test__histogram__validate__invalid(
+    buckets: NumberSeries,
+    frequency: Union[NumberSeries, Sequence[NumberSeries]],
+    labels: Optional[List[str]],
+) -> None:
     with pytest.raises(ValueError):
-        Histogram(
-            title="test",
-            x_label="x",
-            y_label="y",
-            buckets=buckets,
-            frequency=frequency,
-        )
+        Histogram(title="test", x_label="x", y_label="y", buckets=buckets, frequency=frequency, labels=labels)
 
 
 def test__histogram__serialize() -> None:
@@ -174,14 +185,16 @@ def test__histogram__serialize() -> None:
         x_label="x",
         y_label="y",
         buckets=[-3, -2, -1, 0, 1, 2, 3],
-        frequency=[0, 1, 2, 1, 4.4, 0.2],
+        frequency=[[0, 1, 2, 1, 4.4, 0.2], [0, 1, 2, 3, 4, 5]],
+        labels=["a", "b"],
         y_config=AxisConfig(type="log"),
     )._to_dict() == {
         "title": "test",
         "x_label": "x",
         "y_label": "y",
         "buckets": [-3, -2, -1, 0, 1, 2, 3],
-        "frequency": [0, 1, 2, 1, 4.4, 0.2],
+        "frequency": [[0, 1, 2, 1, 4.4, 0.2], [0, 1, 2, 3, 4, 5]],
+        "labels": ["a", "b"],
         "x_config": None,
         "y_config": {"type": "log"},
         "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",

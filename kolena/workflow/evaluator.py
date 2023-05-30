@@ -21,6 +21,7 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
+import numpy as np
 from pydantic import validate_arguments
 from pydantic.dataclasses import dataclass
 from pydantic.typing import Literal
@@ -159,40 +160,52 @@ class CurvePlot(Plot):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Histogram(Plot):
     """
-    A plot visualizing a histogram per test case.
+    A plot visualizing distribution of one or more continuous values, e.g. distribution of an error metric across all
+    samples within a test case.
 
-    Histograms allow for easy visualizations of data distributions.
+    For visualization of discrete values, see :class:`BarPlot`.
     """
 
     title: str
     x_label: str
     y_label: str
 
-    #: A Histogram requires intervals to bucket the data.
-    #: For n buckets, n+1 consecutive bounds must be specified in increasing order.
+    #: A Histogram requires intervals to bucket the data. For ``n`` buckets, ``n+1`` consecutive bounds must be
+    #: specified in increasing order.
     buckets: NumberSeries
 
-    #: For n buckets, there are n frequencies that define each bucket's height.
-    #: The nth frequency corresponds to the nth bucket.
-    frequency: NumberSeries
+    #: For ``n`` buckets, there are ``n`` frequencies corresponding to the height of each bucket. The frequency at index
+    #: ``i`` corresponds to the bucket with bounds (``i``, ``i+1``) in ``buckets``.
+    #:
+    #: To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
+    #: e.g. to the distribution for a given class within a test case, with name specified in ``labels``.
+    frequency: Union[NumberSeries, Sequence[NumberSeries]]
+
+    #: Specify a list of labels corresponding to the different ``frequency`` series when multiple series are provided.
+    #: Can be omitted when a single ``frequency`` series is provided.
+    labels: Optional[List[str]] = None
 
     #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
     y_config: Optional[AxisConfig] = None
 
     def __post_init_post_parse__(self) -> None:
-        if len(self.frequency) + 1 != len(self.buckets):
-            long_err_msg = (
-                f"Series 'frequency' (length: {len(self.frequency)}) "
-                f"and 'buckets' (length: {len(self.buckets)}) should be 1 apart"
-            )
-            raise ValueError(long_err_msg)
+        n_buckets = len(self.buckets)
+        if n_buckets < 2:
+            raise ValueError(f"Minimum 2 entries required in 'buckets' series (length: {n_buckets})")
+        buckets_arr = np.array(self.buckets)
+        if not np.all(buckets_arr[1:] > buckets_arr[:-1]):  # validate strictly increasing
+            raise ValueError("Invalid 'buckets' series: series must be strictly increasing")
 
-        for i in range(len(self.buckets) - 1):
-            if self.buckets[i] >= self.buckets[i + 1]:
-                raise ValueError(
-                    f"At index {i}, {i + 1}, series 'buckets' is ({self.buckets[i]}, {self.buckets[i + 1]})",
-                )
+        frequency_arr = np.array(self.frequency)
+        actual_frequency_shape = np.shape(frequency_arr)
+        if len(actual_frequency_shape) > 1 and self.labels is None:
+            raise ValueError("'labels' are required when multiple 'frequency' series are provided")
+
+        n_labels = len(self.labels or [])
+        expected_frequency_shape = (n_labels, n_buckets - 1) if n_labels > 0 else (n_buckets - 1,)
+        if actual_frequency_shape != expected_frequency_shape:
+            raise ValueError(f"Invalid 'frequency' shape {actual_frequency_shape}: expected {expected_frequency_shape}")
 
     @staticmethod
     def _data_type() -> _PlotType:
