@@ -42,7 +42,7 @@ def assert_workflows_match(workflow_expected: str, workflow_provided: str) -> No
 def validate_data_object_type(
     data_object_type: Type[DataObject],
     supported_field_types: Optional[List[Type]] = None,
-    allow_lists: bool = True,
+    supported_list_types: Optional[List[Type]] = None,
 ) -> None:
     if not issubclass(data_object_type, DataObject):
         raise ValueError(f"'{data_object_type.__name__}' must extend {DataObject.__name__}")
@@ -53,33 +53,37 @@ def validate_data_object_type(
     if fields is None:
         fields = {field.name: field.type for field in dataclasses.fields(data_object_type)}
     for field_name, field_type in fields.items():
-        validate_field(field_name, field_type, supported_field_types=supported_field_types, allow_lists=allow_lists)
+        validate_field(
+            field_name,
+            field_type,
+            supported_field_types=supported_field_types,
+            supported_list_types=supported_list_types,
+        )
 
 
 def validate_scalar_data_object_type(data_object_type: Type[DataObject]) -> None:
-    validate_data_object_type(data_object_type, supported_field_types=_SCALAR_TYPES, allow_lists=False)
+    validate_data_object_type(data_object_type, supported_field_types=_SCALAR_TYPES, supported_list_types=[])
 
 
 def validate_field(
     field_name: str,
     field_type: Type,
     supported_field_types: Optional[List[Type]] = None,
-    allow_lists: bool = True,
+    supported_list_types: Optional[List[Type]] = None,
 ) -> None:
     if field_name == DATA_TYPE_FIELD:
         raise ValueError(f"Unsupported field name: '{DATA_TYPE_FIELD}' is reserved")
 
     supported_field_types = supported_field_types or _SUPPORTED_FIELD_TYPES
+    supported_list_types = supported_field_types if supported_list_types is None else supported_list_types
     supported_bases = ", ".join(t.__name__ for t in supported_field_types)
 
     origin = get_origin(field_type)
     if origin is list:
-        if not allow_lists:
-            raise ValueError(f"Unsupported type for field: field '{field_name}', type '{field_type}'")
-        validate_list(field_name, field_type, supported_field_types)
+        validate_list(field_name, field_type, supported_list_types)
 
     elif origin is Union:
-        validate_union(field_name, field_type, supported_field_types, allow_lists)
+        validate_union(field_name, field_type, supported_field_types, supported_list_types)
 
     elif origin is not None or field_type == typing.Any:
         raise ValueError(f"Unsupported field type: field '{field_name}', type '{field_type}'")
@@ -102,16 +106,19 @@ def validate_list(field_name: str, field_type: List, supported_field_types: List
         )
 
 
-def validate_union(field_name: str, field_type: Union, supported_field_types: List[Type], allow_lists: bool) -> None:
+def validate_union(
+    field_name: str,
+    field_type: Union,
+    supported_field_types: List[Type],
+    supported_list_types: List[Type],
+) -> None:
     args = get_args(field_type)
     type_name = "Optional" if type(None) in args and len(args) == 2 else "Union"
     for arg in args:
         err = f"Unsupported field type: field '{field_name}', unsupported {type_name} type '{arg}'"
         arg_origin = get_origin(arg)
         if arg_origin is list or arg_origin is List:
-            if not allow_lists:
-                raise ValueError(err)
-            validate_list(field_name, arg, supported_field_types)
+            validate_list(field_name, arg, supported_list_types)
             continue
         if arg_origin is not None or arg == typing.Any:  # e.g. Optional, Dict
             raise ValueError(err)

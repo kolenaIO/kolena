@@ -71,7 +71,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
     .. code-block:: python
 
         @dataclass(frozen=True)
-        class PerClassMetrics(DataObject):
+        class PerClassMetrics(MetricsTestCase):
             Precision: float
             Recall: float
             F1: float
@@ -430,8 +430,8 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
     validate_data_object_type(
         metrics_test_case_type,
-        supported_field_types=[_SCALAR_TYPES, List[DataObject]],
-        allow_lists=False,
+        supported_field_types=_SCALAR_TYPES,
+        supported_list_types=[MetricsTestCase],
     )
 
 
