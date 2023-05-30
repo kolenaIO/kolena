@@ -32,6 +32,7 @@ from kolena.workflow import Inference
 from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
+from kolena.workflow._datatypes import _SCALAR_TYPES
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
@@ -63,6 +64,26 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 
     Test-case-level metrics are aggregate metrics like Precision, Recall, and F1 score. Any and all aggregate metrics
     that fit a workflow should be defined here.
+
+    ``MetricsTestCase`` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
+    contains multiple classes. Example usage:
+
+    .. code-block:: python
+
+        @dataclass(frozen=True)
+        class PerClassMetrics(DataObject):
+            Precision: float
+            Recall: float
+            F1: float
+            AP: float
+
+        @dataclass(frozen=True)
+        class TestCaseMetrics(MetricsTestCase):
+            macro_Precision: float
+            macro_Recall: float
+            macro_F1: float
+            mAP: float
+            PerClass: List[PerClassMetrics]
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -407,7 +428,11 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    validate_scalar_data_object_type(metrics_test_case_type)
+    validate_data_object_type(
+        metrics_test_case_type,
+        supported_field_types=[_SCALAR_TYPES, List[DataObject]],
+        allow_lists=False,
+    )
 
 
 def _validate_metrics_test_suite_type(metrics_test_suite_type: Type[DataObject]) -> None:

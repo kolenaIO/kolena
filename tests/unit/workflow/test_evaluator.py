@@ -150,6 +150,8 @@ def test__validate__metrics_test_case_and_test_suite__invalid(base: Type[DataObj
         class ListTester(base):
             a: List[float]
 
+
+def test__validate__metrics_test_suite__invalid_nested() -> None:
     @dataclasses.dataclass(frozen=True)
     class Nested(DataObject):
         a: int
@@ -157,5 +159,54 @@ def test__validate__metrics_test_case_and_test_suite__invalid(base: Type[DataObj
     with pytest.raises(ValueError):
 
         @dataclasses.dataclass(frozen=True)
-        class NestedTester(base):
+        class NestedTester(MetricsTestSuite):
             a: Nested
+
+
+def test__validate__metrics_test_case__valid_nested() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Nested(DataObject):
+        a: int
+        b: str
+        c: float
+        d: Optional[str]
+        e: Union[int, str, float]
+
+    @dataclasses.dataclass(frozen=True)
+    class NestedTester(MetricsTestCase):
+        a: int
+        b: float
+        c: List[Nested]
+        d: List[Nested]
+
+
+def test__validate__metrics_test_case__invalid_nested() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Nested(DataObject):  # only List[DataObject] is allowed
+        a: int
+
+    @dataclasses.dataclass(frozen=True)
+    class StructuredTester(DataObject):
+        a: BoundingBox
+        b: Polyline
+
+    @dataclasses.dataclass(frozen=True)
+    class DictTester(DataObject):
+        a: Dict[str, Any]
+
+    @dataclasses.dataclass(frozen=True)
+    class ListTester(DataObject):
+        a: List[float]
+
+    for NestedType in [StructuredTester, DictTester, ListTester]:
+        with pytest.raises(ValueError):
+
+            @dataclasses.dataclass(frozen=True)
+            class NestedTester(MetricsTestCase):
+                a: NestedType
+
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class Nested2DListTester(MetricsTestCase):
+            a: List[List[NestedType]]  # only single List[DataObject] is allowed

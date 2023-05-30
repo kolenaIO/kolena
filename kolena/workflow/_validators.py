@@ -39,7 +39,11 @@ def assert_workflows_match(workflow_expected: str, workflow_provided: str) -> No
         )
 
 
-def validate_data_object_type(data_object_type: Type[DataObject]) -> None:
+def validate_data_object_type(
+    data_object_type: Type[DataObject],
+    supported_field_types: Optional[List[Type]] = None,
+    allow_lists: bool = True,
+) -> None:
     if not issubclass(data_object_type, DataObject):
         raise ValueError(f"'{data_object_type.__name__}' must extend {DataObject.__name__}")
 
@@ -49,18 +53,11 @@ def validate_data_object_type(data_object_type: Type[DataObject]) -> None:
     if fields is None:
         fields = {field.name: field.type for field in dataclasses.fields(data_object_type)}
     for field_name, field_type in fields.items():
-        validate_field(field_name, field_type)
+        validate_field(field_name, field_type, supported_field_types=supported_field_types, allow_lists=allow_lists)
 
 
 def validate_scalar_data_object_type(data_object_type: Type[DataObject]) -> None:
-    if not issubclass(data_object_type, DataObject):
-        raise ValueError(f"'{data_object_type.__name__}' must extend {DataObject.__name__}")
-
-    fields = getattr(data_object_type, "__annotations__", None)
-    if fields is None:
-        fields = {field.name: field.type for field in dataclasses.fields(data_object_type)}
-    for field_name, field_type in fields.items():
-        validate_field(field_name, field_type, supported_field_types=_SCALAR_TYPES, allow_lists=False)
+    validate_data_object_type(data_object_type, supported_field_types=_SCALAR_TYPES, allow_lists=False)
 
 
 def validate_field(
