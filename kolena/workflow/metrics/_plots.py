@@ -64,7 +64,7 @@ def _compute_threshold_curves(
     recalls: List[float] = []
     f1s: List[float] = []
     for threshold in thresholds:
-        y_pred = [1 if score > threshold or val == 0 else 0 for score, val in zip(y_score, y_true)]
+        y_pred = [1 if score > threshold else 0 for score in y_score]
         precision, recall, f1, _ = precision_recall_fscore_support(
             y_true,
             y_pred,
