@@ -15,8 +15,10 @@ from ._geometry import InferenceMatches
 from ._geometry import iou
 from ._geometry import match_inferences
 from ._geometry import match_inferences_multiclass
+from ._plots import compute_f1_threshold_pr_curve_plots
 
 __all__ = [
+    "compute_f1_threshold_pr_curve_plots",
     "InferenceMatches",
     "iou",
     "match_inferences",
