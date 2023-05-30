@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import defaultdict
+from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
@@ -31,7 +32,7 @@ LIMIT = 10
 
 def _compute_sklearn_arrays(
     all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
-) -> Tuple[List[int], List[int], defaultdict[str, Tuple[List[int], List[int]]]]:
+) -> Tuple[List[int], List[int], Dict[str, Tuple[List[int], List[int]]]]:
     arrays_by_label: defaultdict[str, Tuple[List[int], List[int]]] = defaultdict(lambda: ([], []))
     y_true: List[int] = []
     y_score: List[int] = []
@@ -51,7 +52,7 @@ def _compute_sklearn_arrays(
             arrays_by_label[bbox_inf.label][1].append(bbox_inf.score)
             y_true.append(0)
             y_score.append(bbox_inf.score)
-    return y_true, y_score, arrays_by_label
+    return y_true, y_score, dict(arrays_by_label)
 
 
 def _compute_threshold_curves(
@@ -64,7 +65,7 @@ def _compute_threshold_curves(
     recalls: List[float] = []
     f1s: List[float] = []
     for threshold in thresholds:
-        y_pred = [1 if score > threshold or val == 0 else 0 for score, val in zip(y_score, y_true)]
+        y_pred = [1 if score > threshold else 0 for score in y_score]
         precision, recall, f1, _ = precision_recall_fscore_support(
             y_true,
             y_pred,
