@@ -22,7 +22,7 @@ from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.evaluator import Curve
 from kolena.workflow.evaluator import CurvePlot
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
-from kolena.workflow.metrics._plots import compute_f1_threshold_pr_curve_plots
+from kolena.workflow.metrics._plots import compute_object_detection_test_case_plots
 
 TOLERANCE = 1e-8
 
@@ -36,9 +36,7 @@ def assert_curve_equal(c1: Curve, c2: Curve) -> None:
         if k == "label":
             assert v1 == v2
         else:
-            for val1, val2 in zip(v1, v2):
-                assert val1 == pytest.approx(val2, TOLERANCE)
-            # assert all(val1 == pytest.approx(val2, TOLERANCE) for val1, val2 in zip(v1, v2))
+            assert all(val1 == pytest.approx(val2, TOLERANCE) for val1, val2 in zip(v1, v2))
 
 
 def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
@@ -881,7 +879,7 @@ def test__curve__plots__basic(
 ) -> None:
     f1: CurvePlot
     pr: CurvePlot
-    f1, pr = compute_f1_threshold_pr_curve_plots(all_matches=matchings, test_case_name=test_name)
+    f1, pr = compute_object_detection_test_case_plots(all_matches=matchings, test_case_name=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)
 
@@ -1496,6 +1494,6 @@ def test__curve__plots__advanced(
 ) -> None:
     f1: CurvePlot
     pr: CurvePlot
-    f1, pr = compute_f1_threshold_pr_curve_plots(all_matches=matchings, test_case_name=test_name)
+    f1, pr = compute_object_detection_test_case_plots(all_matches=matchings, test_case_name=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)

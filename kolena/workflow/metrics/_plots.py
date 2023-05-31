@@ -22,12 +22,8 @@ from sklearn.metrics import precision_recall_fscore_support
 
 from kolena.workflow.evaluator import Curve
 from kolena.workflow.evaluator import CurvePlot
-from kolena.workflow.evaluator import Plot
 from kolena.workflow.metrics._geometry import InferenceMatches
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
-
-# TODO: remove LIMITs when front end has ability to update plots with selected classes
-LIMIT = 10
 
 
 def _compute_sklearn_arrays(
@@ -78,10 +74,18 @@ def _compute_threshold_curves(
     return Curve(x=thresholds, y=f1s, label=label), Curve(x=recalls, y=precisions, label=label)
 
 
-def compute_f1_threshold_pr_curve_plots(
+def compute_object_detection_test_case_plots(
     all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     test_case_name: str,
-) -> List[Plot]:
+) -> List[CurvePlot]:
+    """
+    Creates a PR (precision and recall) and F1-threshold (confidence threshold) curve for the multiclass object
+    detection workflow. For `n` labels, each plot has `n+1` curves. One for the test case, and one per label.
+
+    :param all_matches: a list of multiclass or single class matching results.
+    :param test_case_name: the name of the test case.
+    :return: Two :class:`CurvePlot`s for the PR curves and F1-threshold curves for the test case and each label.
+    """
     f1_curves: List[Curve] = []
     pr_curves: List[Curve] = []
 
@@ -90,7 +94,7 @@ def compute_f1_threshold_pr_curve_plots(
     f1_curves.append(f1_curve)
     pr_curves.append(pr_curve)
 
-    classes = sorted(arrays_by_label.keys())[:LIMIT]
+    classes = sorted(arrays_by_label.keys())
     for label in classes:
         y_true, y_score = arrays_by_label[label]
         if len(y_true) > 0:
