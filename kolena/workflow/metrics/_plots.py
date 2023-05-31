@@ -79,7 +79,7 @@ def compute_object_detection_test_case_plots(
     test_case_name: str,
 ) -> List[CurvePlot]:
     """
-    Creates a PR (precision and recall) and F1-threshold (confidence threshold) curve for the multiclass object
+    Creates a PR (precision and recall) curve and F1-threshold (confidence threshold) curve for the multiclass object
     detection workflow. For `n` labels, each plot has `n+1` curves. One for the test case, and one per label.
 
     :param all_matches: a list of multiclass or single class matching results.
