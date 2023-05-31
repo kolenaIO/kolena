@@ -513,7 +513,7 @@ def test__confusion__matrix(
     ordered_labels: List[str],
     matrix: List[List[int]],
 ) -> None:
-    conf_mat = compute_test_case_confusion_matrix(all_matches=matchings, test_case_name=test_name, plot_title=test_name)
+    conf_mat = compute_test_case_confusion_matrix(all_matches=matchings, plot_title=test_name)
     assert conf_mat == ConfusionMatrix(title=test_name, labels=ordered_labels, matrix=matrix)
 
 
@@ -570,5 +570,5 @@ def test__confusion__matrix__fails(
     test_name: str,
     matchings: MulticlassInferenceMatches,
 ) -> None:
-    conf_mat = compute_test_case_confusion_matrix(all_matches=matchings, test_case_name=test_name, plot_title=test_name)
+    conf_mat = compute_test_case_confusion_matrix(all_matches=matchings, plot_title=test_name)
     assert conf_mat is None

@@ -17,16 +17,15 @@ from typing import List
 from typing import Optional
 from typing import Set
 
+from kolena._utils import log
 from kolena.workflow.evaluator import ConfusionMatrix
-from kolena.workflow.evaluator import Plot
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
 
 
 def compute_test_case_confusion_matrix(
     all_matches: List[MulticlassInferenceMatches],
-    test_case_name: str,
-    plot_title: str,
-) -> Optional[Plot]:
+    plot_title: str = "Confusion Matrix",
+) -> Optional[ConfusionMatrix]:
     labels: Set[str] = set()
 
     confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
@@ -47,12 +46,12 @@ def compute_test_case_confusion_matrix(
         labels.update(inf.label for inf in match.unmatched_inf)
 
     if len(labels) < 2:
-        print(f"skipping confusion matrix for {test_case_name}: single label test case")
+        log.info(f"skipping confusion matrix for a single label: {labels}")
         return None
 
     # TODO: Remove limits when labels of plots can be changed by the user
     if len(labels) > 10:
-        print(f"skipping confusion matrix for {test_case_name}: too many labels")
+        log.info(f"skipping confusion matrix for too many labels: {labels}")
         return None
 
     ordered_labels = sorted(labels)
