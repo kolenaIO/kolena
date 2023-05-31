@@ -74,6 +74,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 
         @dataclass(frozen=True)
         class PerClassMetrics(MetricsTestCase):
+            Class: str
             Precision: float
             Recall: float
             F1: float
