@@ -25,8 +25,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
-scikit-learn = "^1.2.2"
+python = ">=3.7,<3.12"
+scikit-learn = [
+    { version = ">=1.0.0,<1.0.3", python = ">=3.7,<3.8" },
+    { version = ">=1.2.0", python = ">=3.8" },
+]
 numpy = [
     { version = ">=1.19", python = ">=3.7,<3.11" },
     { version = ">=1.23", python = ">=3.11" },
