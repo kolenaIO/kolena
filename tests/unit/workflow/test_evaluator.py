@@ -173,11 +173,17 @@ def test__validate__metrics_test_case__valid_nested() -> None:
         e: Union[int, str, float]
 
     @dataclasses.dataclass(frozen=True)
+    class Nested2(MetricsTestCase):
+        a: int
+
+    @dataclasses.dataclass(frozen=True)
     class NestedTester(MetricsTestCase):
         a: int
         b: float
         c: List[Nested]
-        d: List[Nested]
+        d: Optional[List[Nested]]
+        e: Union[List[Nested], List[Nested2]]
+        f: List[Union[Nested, Nested2]]
 
 
 def test__validate__metrics_test_case__invalid_nested() -> None:
@@ -196,3 +202,13 @@ def test__validate__metrics_test_case__invalid_nested() -> None:
         @dataclasses.dataclass(frozen=True)
         class Nested2DListTester(MetricsTestCase):
             a: List[List[Nested]]  # only single List[MetricsTestCase] is allowed
+
+    @dataclasses.dataclass(frozen=True)
+    class NestedNested(MetricsTestCase):
+        a: List[Nested]
+
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class Nested2DTester(MetricsTestCase):
+            a: List[NestedNested]  # only one layer of nesting allowed

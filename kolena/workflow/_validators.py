@@ -39,6 +39,15 @@ def assert_workflows_match(workflow_expected: str, workflow_provided: str) -> No
         )
 
 
+def get_data_object_field_types(data_object_type: Type[DataObject]) -> Dict[str, Any]:
+    # note that we use obj.__annotations__ instead of dataclasses.fields(obj) as the latter is not yet populated by the
+    # time __init_subclass__ is called, blocking usage of this validator in __init_subclass__
+    fields = getattr(data_object_type, "__annotations__", None)
+    if fields is None:
+        fields = {field.name: field.type for field in dataclasses.fields(data_object_type)}
+    return fields
+
+
 def validate_data_object_type(
     data_object_type: Type[DataObject],
     supported_field_types: Optional[List[Type]] = None,
@@ -47,12 +56,7 @@ def validate_data_object_type(
     if not issubclass(data_object_type, DataObject):
         raise ValueError(f"'{data_object_type.__name__}' must extend {DataObject.__name__}")
 
-    # note that we use obj.__annotations__ instead of dataclasses.fields(obj) as the latter is not yet populated by the
-    # time __init_subclass__ is called, blocking usage of this validator in __init_subclass__
-    fields = getattr(data_object_type, "__annotations__", None)
-    if fields is None:
-        fields = {field.name: field.type for field in dataclasses.fields(data_object_type)}
-    for field_name, field_type in fields.items():
+    for field_name, field_type in get_data_object_field_types(data_object_type).items():
         validate_field(
             field_name,
             field_type,
@@ -61,8 +65,15 @@ def validate_data_object_type(
         )
 
 
-def validate_scalar_data_object_type(data_object_type: Type[DataObject]) -> None:
-    validate_data_object_type(data_object_type, supported_field_types=_SCALAR_TYPES, supported_list_types=[])
+def validate_scalar_data_object_type(
+    data_object_type: Type[DataObject],
+    supported_list_types: Optional[List[Type]] = None,
+) -> None:
+    validate_data_object_type(
+        data_object_type,
+        supported_field_types=_SCALAR_TYPES,
+        supported_list_types=supported_list_types or [],  # default to supporting no list types
+    )
 
 
 def validate_field(
@@ -82,7 +93,7 @@ def validate_field(
     if origin is list:
         validate_list(field_name, field_type, supported_list_types)
 
-    elif origin is Union:
+    elif origin is Union:  # NOTE: get_origin(Optional[T]) == Union
         validate_union(field_name, field_type, supported_field_types, supported_list_types)
 
     elif origin is not None or field_type == typing.Any:
@@ -95,11 +106,11 @@ def validate_field(
         )
 
 
-def validate_list(field_name: str, field_type: List, supported_field_types: List[Type]) -> None:
+def validate_list(field_name: str, field_type: Type, supported_field_types: List[Type]) -> None:
     (arg,) = get_args(field_type)
     arg_origin = get_origin(arg)
     if arg_origin is Union:
-        validate_union(field_name, arg, supported_field_types, True)
+        validate_union(field_name, arg, supported_field_types, supported_field_types)
     elif arg_origin is not None or not issubclass(arg, tuple(supported_field_types)):
         raise ValueError(
             f"Unsupported field type: field '{field_name}', unsupported List type '{arg}'",

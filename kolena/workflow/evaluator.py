@@ -26,16 +26,18 @@ from pydantic.dataclasses import dataclass
 from pydantic.typing import Literal
 
 from kolena._api.v1.generic import TestRun as API
+from kolena._utils.datatypes import get_args
+from kolena._utils.datatypes import get_origin
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
 from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
-from kolena.workflow._datatypes import _SCALAR_TYPES
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
+from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
 
@@ -428,11 +430,21 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    validate_data_object_type(
-        metrics_test_case_type,
-        supported_field_types=_SCALAR_TYPES,
-        supported_list_types=[MetricsTestCase],
-    )
+    validate_scalar_data_object_type(metrics_test_case_type, supported_list_types=[MetricsTestCase])
+
+    # validate that there is only one level of nesting
+    for field_name, field_type in get_data_object_field_types(metrics_test_case_type).items():
+        origin = get_origin(field_type)
+        if origin is not list:  # only need to check lists, as MetricsTestCase is only allowed in lists
+            continue
+        # expand e.g. List[Union[MetricsA, MetricsB]] into [MetricsA, MetricsB]
+        list_args = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
+        for arg_type in list_args:
+            if issubclass(arg_type, MetricsTestCase):
+                try:
+                    validate_scalar_data_object_type(arg_type)
+                except ValueError:
+                    raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
 
 
 def _validate_metrics_test_suite_type(metrics_test_suite_type: Type[DataObject]) -> None:

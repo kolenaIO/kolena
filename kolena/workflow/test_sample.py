@@ -29,6 +29,7 @@ from pydantic.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
+from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import safe_issubclass
 from kolena.workflow._validators import validate_field
 from kolena.workflow._validators import validate_metadata_dict
@@ -242,10 +243,10 @@ def _validate_test_sample_type(test_sample_type: Type[TestSample], recurse: bool
 
     # TODO: this is structurally identical to implementation in validate_ground_truth_type and
     #  validate_metrics_test_sample_type -- share?
-    fields_by_name = copy.copy(getattr(test_sample_type, "__annotations__", {}))
+    fields_by_name = copy.copy(get_data_object_field_types(test_sample_type))
     is_composite = issubclass(test_sample_type, Composite)
     for field_name, field_value in fields_by_name.items():
-        if field_name == "metadata":
+        if field_name == _METADATA_KEY:
             validate_metadata_dict(field_value)
         # check composite test sample, keeping recurse to restrict 1-level composition for now
         elif is_composite and safe_issubclass(field_value, TestSample):
@@ -258,8 +259,8 @@ def _validate_test_sample_type(test_sample_type: Type[TestSample], recurse: bool
 
 def _get_composite_fields(test_sample_type: Type[TestSample]) -> List[str]:
     composite_fields = []
-    for k, v in getattr(test_sample_type, "__annotations__", {}).items():
-        if k != "metadata":
+    for k, v in get_data_object_field_types(test_sample_type).items():
+        if k != _METADATA_KEY:
             if safe_issubclass(v, TestSample):
                 composite_fields.append(k)
 
