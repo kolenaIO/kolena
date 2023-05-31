@@ -21,7 +21,7 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
-from kolena.workflow.metrics._plots import compute_test_case_confusion_matrix
+from kolena.workflow.metrics._plots import compute_object_detection_test_case_confusion_matrix
 
 
 @pytest.mark.parametrize(
@@ -513,7 +513,7 @@ def test__confusion__matrix(
     ordered_labels: List[str],
     matrix: List[List[int]],
 ) -> None:
-    conf_mat = compute_test_case_confusion_matrix(all_matches=matchings, plot_title=test_name)
+    conf_mat = compute_object_detection_test_case_confusion_matrix(all_matches=matchings, plot_title=test_name)
     assert conf_mat == ConfusionMatrix(title=test_name, labels=ordered_labels, matrix=matrix)
 
 
@@ -537,38 +537,11 @@ def test__confusion__matrix(
                 ),
             ],
         ),
-        (
-            "12 classes invalid",
-            [
-                MulticlassInferenceMatches(
-                    matched=[
-                        (LabeledBoundingBox((3, 3), (4, 4), "a"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                        (LabeledBoundingBox((6, 6), (7, 7), "a"), ScoredLabeledBoundingBox((6, 6), (7, 7), "a", 0)),
-                    ],
-                    unmatched_gt=[
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), None),
-                    ],
-                    unmatched_inf=[
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "2", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "3", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "4", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "5", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "6", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "7", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "8", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "9", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "10", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "11", 0),
-                        ScoredLabeledBoundingBox((8, 8), (9, 9), "12", 0),
-                    ],
-                ),
-            ],
-        ),
     ],
 )
 def test__confusion__matrix__fails(
     test_name: str,
     matchings: MulticlassInferenceMatches,
 ) -> None:
-    conf_mat = compute_test_case_confusion_matrix(all_matches=matchings, plot_title=test_name)
+    conf_mat = compute_object_detection_test_case_confusion_matrix(all_matches=matchings, plot_title=test_name)
     assert conf_mat is None

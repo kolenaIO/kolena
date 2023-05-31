@@ -22,10 +22,17 @@ from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
 
 
-def compute_test_case_confusion_matrix(
+def compute_object_detection_test_case_confusion_matrix(
     all_matches: List[MulticlassInferenceMatches],
     plot_title: str = "Confusion Matrix",
 ) -> Optional[ConfusionMatrix]:
+    """
+    Creates a confusion matrix for the multiclass object detection workflow.
+
+    :param all_matches: a list of multiclass matching results.
+    :param plot_title: the title for the :class:`ConfusionMatrix`.
+    :return: :class:`ConfusionMatrix` with all actual and predicted labels, if there is more than one label.
+    """
     labels: Set[str] = set()
 
     confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
@@ -47,11 +54,6 @@ def compute_test_case_confusion_matrix(
 
     if len(labels) < 2:
         log.info(f"skipping confusion matrix for a single label: {labels}")
-        return None
-
-    # TODO: Remove limits when labels of plots can be changed by the user
-    if len(labels) > 10:
-        log.info(f"skipping confusion matrix for too many labels: {labels}")
         return None
 
     ordered_labels = sorted(labels)
