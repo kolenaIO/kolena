@@ -75,7 +75,7 @@ def _compute_threshold_curves(
 
 
 def compute_object_detection_test_case_plots(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: List[MulticlassInferenceMatches],
     test_case_name: str,
 ) -> List[CurvePlot]:
     """
