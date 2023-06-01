@@ -505,6 +505,26 @@ from kolena.workflow.metrics._plots import compute_object_detection_test_case_co
                 [0, 0, 1, 0],
             ],
         ),
+        (
+            "extra unmatched inf",
+            [
+                MulticlassInferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
+                    ],
+                    unmatched_gt=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), None),
+                    ],
+                    unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0)],
+                ),
+            ],
+            ["a", "b", "c"],
+            [
+                [1, 0, 0],
+                [0, 0, 0],
+                [0, 0, 0],
+            ],
+        ),
     ],
 )
 def test__confusion__matrix(
