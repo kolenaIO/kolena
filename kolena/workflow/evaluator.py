@@ -38,6 +38,7 @@ from kolena.workflow._datatypes import DataObject
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._validators import get_data_object_field_types
+from kolena.workflow._validators import safe_issubclass
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
 
@@ -439,13 +440,13 @@ def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -
         if origin is not list:  # only need to check lists, as MetricsTestCase is only allowed in lists
             continue
         # expand e.g. List[Union[MetricsA, MetricsB]] into [MetricsA, MetricsB]
-        list_args = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
-        for arg_type in list_args:
-            if issubclass(arg_type, MetricsTestCase):
-                try:
-                    validate_scalar_data_object_type(arg_type)
-                except ValueError:
-                    raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
+        list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
+        metrics_arg_types = [arg_type for arg_type in list_arg_types if safe_issubclass(arg_type, MetricsTestCase)]
+        for arg_type in metrics_arg_types:
+            try:
+                validate_scalar_data_object_type(arg_type)
+            except ValueError:
+                raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
 
 
 def _validate_metrics_test_suite_type(metrics_test_suite_type: Type[DataObject]) -> None:
