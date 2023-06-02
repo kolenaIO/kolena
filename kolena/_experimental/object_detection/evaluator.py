@@ -259,7 +259,7 @@ def compute_test_case_metrics_and_plots(
 
     return (
         TestCaseMetrics(
-            # PerClass=per_class_metrics,
+            PerClass=per_class_metrics,
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
             TP=tp_count,
