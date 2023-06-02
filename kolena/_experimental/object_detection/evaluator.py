@@ -16,7 +16,6 @@ from collections import defaultdict
 from dataclasses import make_dataclass
 from typing import Dict
 from typing import List
-from typing import Optional
 from typing import Set
 from typing import Tuple
 
@@ -39,11 +38,10 @@ from kolena._experimental.object_detection.workflow import TestSampleMetrics
 from kolena._experimental.object_detection.workflow import TestSuiteMetrics
 from kolena._experimental.object_detection.workflow import ThresholdConfiguration
 from kolena._experimental.object_detection.workflow import ThresholdStrategy
-from kolena.workflow import ConfusionMatrix
-from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
+from kolena.workflow.evaluator import Curve
 from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
 
@@ -125,6 +123,11 @@ def compute_image_metrics(
         has_Confused=len(confused) > 0,
         max_confidence_above_t=max(scores) if len(scores) > 0 else None,
         min_confidence_above_t=min(scores) if len(scores) > 0 else None,
+        match_matched_gt=[gt for gt, _ in bbox_matches.matched],
+        match_matched_inf=[inf for _, inf in bbox_matches.matched],
+        match_unmatched_inf=[inf for inf in bbox_matches.unmatched_inf],
+        match_unmatched_gt=[gt for gt, _ in bbox_matches.unmatched_gt],
+        match_confused_inf=[inf for _, inf in bbox_matches.unmatched_gt],
         **{threshold_key(label): value for label, value in thresholds.items()},
     )
 
@@ -132,9 +135,7 @@ def compute_image_metrics(
 def compute_test_sample_metrics(
     results: List[Tuple[TestSample, GroundTruth, Inference]],
     configuration: ThresholdConfiguration,
-) -> List[Tuple[TestSample, TestSampleMetrics, MulticlassInferenceMatches]]:
-    assert configuration is not None, "must specify configuration"
-
+) -> List[Tuple[TestSample, TestSampleMetrics]]:
     all_bbox_matches = [
         match_inferences_multiclass(
             gt.bboxes,
@@ -148,7 +149,7 @@ def compute_test_sample_metrics(
     compute_f1_optimal_thresholds(all_bbox_matches, configuration)
     thresholds = get_confidence_thresholds(configuration)
     return [
-        (ts, compute_image_metrics(bbox_matches, thresholds), bbox_matches)
+        (ts, compute_image_metrics(bbox_matches, thresholds))
         for ts, _, _, bbox_matches in zip(results, all_bbox_matches)
     ]
 
@@ -163,6 +164,7 @@ def compute_aggregate_label_metrics(
     tpr_counter = 0
     fpr_counter = 0
 
+    # filter the matching to only consider one class
     for match in tc_matchings:
         has_tp = False
         has_fp = False
@@ -224,14 +226,25 @@ def compute_aggregate_label_metrics(
 
 
 def compute_test_case_metrics_and_plots(
-    tc_matchings: List[MulticlassInferenceMatches],
     tc_metrics: List[TestSampleMetrics],
     labels: List[str],
-) -> Tuple[List[TestCaseMetrics], List[CurvePlot], Optional[ConfusionMatrix]]:
+) -> Tuple[List[TestCaseMetrics], List[Plot]]:
+    tc_matchings = [
+        MulticlassInferenceMatches(
+            matched=[(gt, inf) for gt, inf in zip(tsm.match_matched_gt, tsm.match_matched_inf)],
+            unmatched_gt=[(gt, inf) for gt, inf in zip(tsm.match_unmatched_gt, tsm.match_confused_inf)],
+            unmatched_inf=tsm.match_unmatched_inf,
+        )
+        for tsm in tc_metrics
+    ]
     per_class_metrics: List[ClassMetricsPerTestCase] = []
-    per_class_f1_pr_plots = compute_pr_f1_plots(tc_matchings)
+    plots: List[Plot] = compute_pr_f1_plots(tc_matchings, "baseline")
+    baseline_pr_plot: Curve = next((curve for curve in plots[1].curves if curve.label == "baseline"), None)
     confusion_matrix = compute_confusion_matrix_plot(tc_matchings)
+    if confusion_matrix is not None:
+        plots.append(confusion_matrix)
 
+    # compute nested metrics per class
     for label in labels:
         metrics_per_class = compute_aggregate_label_metrics(tc_matchings, label)
         per_class_metrics.append(metrics_per_class)
@@ -242,14 +255,7 @@ def compute_test_case_metrics_and_plots(
 
     precision = tp_count / (tp_count + fp_count) if (tp_count + fp_count) > 0 else 0
     recall = tp_count / (tp_count + fn_count) if (tp_count + fn_count) > 0 else 0
-
-    precisions_per_test_sample = [
-        im.count_TP / (im.count_TP + im.count_FP) if (im.count_TP + im.count_FP) > 0 else 0 for im in tc_metrics
-    ]
-    recalls_per_test_sample = [
-        im.count_TP / (im.count_TP + im.count_FN) if (im.count_TP + im.count_FN) > 0 else 0 for im in tc_metrics
-    ]
-    average_precision = compute_ap(precisions_per_test_sample, recalls_per_test_sample)
+    average_precision = compute_ap(baseline_pr_plot.y, baseline_pr_plot.x)
 
     return (
         TestCaseMetrics(
@@ -266,8 +272,7 @@ def compute_test_case_metrics_and_plots(
             F1=2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0,
             AP=average_precision,
         ),
-        per_class_f1_pr_plots,
-        confusion_matrix,
+        plots,
     )
 
 
@@ -277,8 +282,6 @@ def compute_aggregate_metrics(
     inferences: List[Inference],
     test_cases: TestCases,
     test_sample_metrics: List[TestSampleMetrics],
-    test_sample_matchings: Dict[str, MulticlassInferenceMatches],
-    configuration: ThresholdConfiguration,
     labels: List[str],
 ) -> Tuple[List[Tuple[TestCase, TestCaseMetrics]], List[Tuple[TestCase, List[Plot]]]]:
     metrics_test_case: List[Tuple[TestCase, TestCaseMetrics]] = []
@@ -291,25 +294,21 @@ def compute_aggregate_metrics(
         test_sample_metrics,
     ):
         locators_by_test_case[tc.name] = [ts.locator for ts in tc_samples]
-        sample_matchings = [test_sample_matchings[ts.locator] for ts in tc_samples]
-        test_case_metrics, test_case_plots, conf_matrix = compute_test_case_metrics_and_plots(
-            sample_matchings,
+        test_case_metrics, test_case_plots = compute_test_case_metrics_and_plots(
             tc_metrics,
-            configuration,
             labels,
         )
         metrics_test_case.append((tc, test_case_metrics))
-        test_case_plots.append(conf_matrix)
         plots_test_case.append((tc, test_case_plots))
 
     return metrics_test_case, plots_test_case
 
 
-def compute_test_suite_metrics(all_test_case_metrics: List[TestCaseMetrics]) -> TestSuiteMetrics:
+def compute_test_suite_metrics(all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]]) -> TestSuiteMetrics:
     return TestSuiteMetrics(
         n_images=len({locator for tc, _ in all_test_case_metrics for locator in locators_by_test_case[tc.name]}),
-        mean_AP=0,
-        variance_AP=0,
+        mean_AP=np.average([tcm.AP for _, tcm in all_test_case_metrics]),
+        variance_AP=np.var([tcm.AP for _, tcm in all_test_case_metrics]),
     )
 
 
@@ -330,15 +329,9 @@ def MulticlassDetectionEvaluator(
     labels = sorted(labels_set)
 
     results = list(zip(test_samples, ground_truths, inferences))
-    metrics_test_sample_with_matchings = compute_test_sample_metrics(results, configuration)
+    metrics_test_sample = compute_test_sample_metrics(results, configuration)
 
-    metrics_test_sample: List[Tuple[TestSample, TestSampleMetrics]] = [
-        (ts, mts) for ts, mts, _ in metrics_test_sample_with_matchings
-    ]
-    test_sample_matchings: Dict[str, MulticlassInferenceMatches] = {
-        ts.locator: match for ts, _, match in metrics_test_sample_with_matchings
-    }
-    test_sample_metrics: List[TestSampleMetrics] = [mts for _, mts, _ in metrics_test_sample_with_matchings]
+    test_sample_metrics: List[TestSampleMetrics] = [mts for _, mts, _ in metrics_test_sample]
 
     metrics_test_case, plots_test_case = compute_aggregate_metrics(
         test_samples,
@@ -346,7 +339,6 @@ def MulticlassDetectionEvaluator(
         inferences,
         test_cases,
         test_sample_metrics,
-        test_sample_matchings,
         configuration,
         labels,
     )

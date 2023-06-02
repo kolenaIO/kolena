@@ -87,7 +87,7 @@ def _compute_threshold_curves(
 
 def compute_pr_f1_plots(
     all_matches: List[MulticlassInferenceMatches],
-    curve_label: str = "filler for now",
+    curve_label: str = "baseline",
 ) -> List[CurvePlot]:
     """
     Creates a PR (precision and recall) curve and F1-threshold (confidence threshold) curve for the multiclass object
