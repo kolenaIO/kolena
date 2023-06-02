@@ -67,7 +67,6 @@ def get_confidence_thresholds(configuration: ThresholdConfiguration) -> Dict[str
     raise RuntimeError(f"unrecognized threshold strategy: {configuration.threshold_strategy}")
 
 
-# TODO: replace
 def compute_f1_optimal_thresholds(
     all_bbox_matches: List[MulticlassInferenceMatches],
     configuration: ThresholdConfiguration,

@@ -87,21 +87,21 @@ def _compute_threshold_curves(
 
 def compute_pr_f1_plots(
     all_matches: List[MulticlassInferenceMatches],
-    plot_title: str = "pr f1 plots",
+    curve_label: str = "filler for now",
 ) -> List[CurvePlot]:
     """
     Creates a PR (precision and recall) curve and F1-threshold (confidence threshold) curve for the multiclass object
     detection workflow. For `n` labels, each plot has `n+1` curves. One for the test case, and one per label.
 
     :param all_matches: a list of multiclass or single class matching results.
-    :param test_case_name: the name of the test case.
+    :param curve_label: the label of the main curve.
     :return: Two :class:`CurvePlot`s for the PR curves and F1-threshold curves for the test case and each label.
     """
     f1_curves: List[Curve] = []
     pr_curves: List[Curve] = []
 
     y_true, y_score, y_true_by_label, y_score_by_label = _compute_sklearn_arrays(all_matches)
-    f1_curve, pr_curve = _compute_threshold_curves(np.array(y_true), np.array(y_score), plot_title)
+    f1_curve, pr_curve = _compute_threshold_curves(np.array(y_true), np.array(y_score), curve_label)
     f1_curves.append(f1_curve)
     pr_curves.append(pr_curve)
 
