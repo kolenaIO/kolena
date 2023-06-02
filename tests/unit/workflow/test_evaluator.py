@@ -164,15 +164,16 @@ def test__validate__metrics_test_suite__invalid_nested() -> None:
             a: Nested
 
 
-def test__validate__metrics_test_case__valid_nested() -> None:
-    @dataclasses.dataclass(frozen=True)
-    class Nested(MetricsTestCase):
-        a: int
-        b: str
-        c: float
-        d: Optional[str]
-        e: Union[int, str, float]
+@dataclasses.dataclass(frozen=True)
+class Nested(MetricsTestCase):
+    a: int
+    b: str
+    c: float
+    d: Optional[str]
+    e: Union[int, str, float]
 
+
+def test__validate__metrics_test_case__valid_nested() -> None:
     @dataclasses.dataclass(frozen=True)
     class Nested2(MetricsTestCase):
         a: int
@@ -188,10 +189,6 @@ def test__validate__metrics_test_case__valid_nested() -> None:
 
 
 def test__validate__metrics_test_case__invalid_nested__single() -> None:
-    @dataclasses.dataclass(frozen=True)
-    class Nested(MetricsTestCase):
-        a: int
-
     with pytest.raises(ValueError):
 
         @dataclasses.dataclass(frozen=True)
@@ -201,7 +198,7 @@ def test__validate__metrics_test_case__invalid_nested__single() -> None:
 
 def test__validate__metrics_test_case__invalid_nested__data_object() -> None:
     @dataclasses.dataclass(frozen=True)
-    class Nested(DataObject):
+    class Nested(DataObject):  # note base class
         a: int
 
     with pytest.raises(ValueError):
@@ -211,11 +208,15 @@ def test__validate__metrics_test_case__invalid_nested__data_object() -> None:
             a: List[Nested]  # only List[MetricsTestCase] is allowed
 
 
-def test__validate__metrics_test_case__invalid_nested__list_list() -> None:
-    @pydantic.dataclasses.dataclass(frozen=True)
-    class Nested(MetricsTestCase):
-        a: int
+def test__validate__metrics_test_case__invalid_nested__optional() -> None:
+    with pytest.raises(ValueError):
 
+        @pydantic.dataclasses.dataclass(frozen=True)
+        class Nested2DListTester(MetricsTestCase):
+            a: Optional[Nested]  # only single List[MetricsTestCase] is allowed
+
+
+def test__validate__metrics_test_case__invalid_nested__list_list() -> None:
     with pytest.raises(ValueError):
 
         @pydantic.dataclasses.dataclass(frozen=True)
@@ -223,11 +224,15 @@ def test__validate__metrics_test_case__invalid_nested__list_list() -> None:
             a: List[List[Nested]]  # only single List[MetricsTestCase] is allowed
 
 
-def test__validate__metrics_test_case__invalid_nested__doubly_nested() -> None:
-    @pydantic.dataclasses.dataclass(frozen=True)
-    class Nested(MetricsTestCase):
-        a: int
+def test__validate__metrics_test_case__invalid_nested__list_optional() -> None:
+    with pytest.raises(ValueError):
 
+        @pydantic.dataclasses.dataclass(frozen=True)
+        class Nested2DListTester(MetricsTestCase):
+            a: List[Optional[Nested]]
+
+
+def test__validate__metrics_test_case__invalid_nested__doubly_nested() -> None:
     @dataclasses.dataclass(frozen=True)
     class NestedNested(MetricsTestCase):
         a: List[Nested]

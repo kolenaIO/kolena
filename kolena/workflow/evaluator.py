@@ -38,7 +38,6 @@ from kolena.workflow._datatypes import DataObject
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._validators import get_data_object_field_types
-from kolena.workflow._validators import safe_issubclass
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
 
@@ -441,8 +440,9 @@ def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -
             continue
         # expand e.g. List[Union[MetricsA, MetricsB]] into [MetricsA, MetricsB]
         list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
-        metrics_arg_types = [arg_type for arg_type in list_arg_types if safe_issubclass(arg_type, MetricsTestCase)]
-        for arg_type in metrics_arg_types:
+        for arg_type in list_arg_types:
+            if arg_type is None:
+                raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
             try:
                 validate_scalar_data_object_type(arg_type)
             except ValueError:
