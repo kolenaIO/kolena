@@ -19,6 +19,7 @@ from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import Composite
 from kolena.workflow import TestSample
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import safe_issubclass
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_field
@@ -75,7 +76,7 @@ def _validate_ground_truth_type(
     is_composite = issubclass(test_sample_type, Composite)
     composite_fields = _get_composite_fields(test_sample_type) if is_composite else []
 
-    for field_name, field_value in getattr(ground_truth_type, "__annotations__", {}).items():
+    for field_name, field_value in get_data_object_field_types(ground_truth_type).items():
         if field_name in composite_fields and safe_issubclass(field_value, DataObject):
             validate_data_object_type(field_value)
         else:
