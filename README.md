@@ -25,8 +25,14 @@ platform.
 
 ## Setup
 
-[Poetry](https://python-poetry.org/) is used for packaging and Python dependency management.
+Client builds can be installed directly from PyPI using any Python package manager such as pip:
 
+```zsh
+pip install kolena
+```
+<details>
+<summary>Installing with <a href="https://python-poetry.org/">Poetry</a></summary>
+<br>
 Install project dependencies by running
 
 ```zsh
@@ -37,6 +43,9 @@ Extra dependencies such as [Scikit-learn](https://scikit-learn.org/stable/) can 
 ```zsh
 poetry install --all-extras
 ```
+</details>
+
+For more information, see the [installation documentation](https://docs.kolena.io/testing-with-kolena/using-kolena-client#installation).
 
 ## Documentation
 
