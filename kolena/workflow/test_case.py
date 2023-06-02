@@ -44,6 +44,7 @@ from kolena.workflow import TestSample
 from kolena.workflow._datatypes import TestCaseEditorDataFrame
 from kolena.workflow._datatypes import TestSampleDataFrame
 from kolena.workflow._validators import assert_workflows_match
+from kolena.workflow.test_sample import _METADATA_KEY
 from kolena.workflow.workflow import Workflow
 
 
@@ -201,7 +202,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             has_metadata = "test_sample_metadata" in df.columns
             for record in df.itertuples():
                 metadata_field = record.test_sample_metadata if has_metadata else {}
-                test_sample = test_sample_type._from_dict({**record.test_sample, "metadata": metadata_field})
+                test_sample = test_sample_type._from_dict({**record.test_sample, _METADATA_KEY: metadata_field})
                 ground_truth = ground_truth_type._from_dict(record.ground_truth)
                 yield test_sample, ground_truth
         log.info(f"loaded test samples in test case '{self.name}' (v{self.version})")

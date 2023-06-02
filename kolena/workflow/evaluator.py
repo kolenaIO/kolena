@@ -27,6 +27,8 @@ from pydantic.dataclasses import dataclass
 from pydantic.typing import Literal
 
 from kolena._api.v1.generic import TestRun as API
+from kolena._utils.datatypes import get_args
+from kolena._utils.datatypes import get_origin
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
@@ -36,6 +38,7 @@ from kolena.workflow import TestSuite
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
+from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
 
@@ -64,6 +67,27 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 
     Test-case-level metrics are aggregate metrics like Precision, Recall, and F1 score. Any and all aggregate metrics
     that fit a workflow should be defined here.
+
+    ``MetricsTestCase`` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
+    contains multiple classes. Example usage:
+
+    .. code-block:: python
+
+        @dataclass(frozen=True)
+        class PerClassMetrics(MetricsTestCase):
+            Class: str
+            Precision: float
+            Recall: float
+            F1: float
+            AP: float
+
+        @dataclass(frozen=True)
+        class TestCaseMetrics(MetricsTestCase):
+            macro_Precision: float
+            macro_Recall: float
+            macro_F1: float
+            mAP: float
+            PerClass: List[PerClassMetrics]
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -420,7 +444,22 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    validate_scalar_data_object_type(metrics_test_case_type)
+    validate_scalar_data_object_type(metrics_test_case_type, supported_list_types=[MetricsTestCase])
+
+    # validate that there is only one level of nesting
+    for field_name, field_type in get_data_object_field_types(metrics_test_case_type).items():
+        origin = get_origin(field_type)
+        if origin is not list:  # only need to check lists, as MetricsTestCase is only allowed in lists
+            continue
+        # expand e.g. List[Union[MetricsA, MetricsB]] into [MetricsA, MetricsB]
+        list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
+        for arg_type in list_arg_types:
+            if arg_type is None:
+                raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
+            try:
+                validate_scalar_data_object_type(arg_type)
+            except ValueError:
+                raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
 
 
 def _validate_metrics_test_suite_type(metrics_test_suite_type: Type[DataObject]) -> None:
