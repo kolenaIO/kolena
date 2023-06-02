@@ -881,7 +881,7 @@ def test__curve__plots__basic(
 ) -> None:
     f1: CurvePlot
     pr: CurvePlot
-    f1, pr = compute_pr_f1_plots(all_matches=matchings, plot_title=test_name)
+    f1, pr = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)
 
@@ -1496,7 +1496,7 @@ def test__curve__plots__advanced(
 ) -> None:
     f1: CurvePlot
     pr: CurvePlot
-    f1, pr = compute_pr_f1_plots(all_matches=matchings, plot_title=test_name)
+    f1, pr = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)
 
