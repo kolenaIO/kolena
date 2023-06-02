@@ -23,6 +23,21 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
 platform.
 
+## Setup
+
+[Poetry](https://python-poetry.org/) is used for packaging and Python dependency management.
+
+Install project dependencies by running
+
+```zsh
+poetry update && poetry install
+```
+
+Extra dependencies such as [Scikit-learn](https://scikit-learn.org/stable/) can be included by running
+```zsh
+poetry install --all-extras
+```
+
 ## Documentation
 
 Visit [docs.kolena.io](https://docs.kolena.io/) for tutorial and usage documentation and the
