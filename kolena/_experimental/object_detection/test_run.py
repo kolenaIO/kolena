@@ -16,11 +16,11 @@ from typing import Optional
 
 from pydantic import validate_arguments
 
+from kolena._experimental.object_detection.evaluator import MulticlassDetectionEvaluator
+from kolena._experimental.object_detection.workflow import Model
+from kolena._experimental.object_detection.workflow import TestSuite
+from kolena._experimental.object_detection.workflow import ThresholdConfiguration
 from kolena._utils.validators import ValidatorConfig
-from kolena.classification.multiclass import Model
-from kolena.classification.multiclass import MulticlassClassificationEvaluator
-from kolena.classification.multiclass import TestSuite
-from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow.test_run import test as base_test
 from kolena.workflow.test_run import TestRun as BaseTestRun
@@ -29,12 +29,12 @@ from kolena.workflow.test_run import TestRun as BaseTestRun
 class TestRun(BaseTestRun):
     """
     Convenience alias for :class:`kolena.workflow.test_run.TestRun`, configured for the
-    `kolena.classification.multiclass` workflow and evaluator.
+    `kolena.detection.multiclass` workflow and evaluator.
 
-    Interface to run tests for a :class:`kolena.classification.multiclass.Model` on a set of
-    :class:`kolena.classification.multiclass.TestSuite` suites.
+    Interface to run tests for a :class:`kolena.detection.multiclass.Model` on a set of
+    :class:`kolena.detection.multiclass.TestSuite` suites.
 
-    For a streamlined interface, see :meth:`kolena.classification.multiclass.test`.
+    For a streamlined interface, see :meth:`kolena.detection.multiclass.test`.
 
     :param model: the model being tested.
     :param test_suite: the test suite on which to test the model.
@@ -54,7 +54,7 @@ class TestRun(BaseTestRun):
         super().__init__(
             model=model,
             test_suite=test_suite,
-            evaluator=MulticlassClassificationEvaluator,
+            evaluator=MulticlassDetectionEvaluator,
             configurations=configurations,
             reset=reset,
         )
@@ -68,11 +68,11 @@ def test(
     reset: bool = False,
 ) -> None:
     """
-    Convenience alias for :meth:`kolena.workflow.test_run.test` configured for the `kolena.classification.multiclass`
+    Convenience alias for :meth:`kolena.workflow.test_run.test` configured for the `kolena.detection.multiclass`
     workflow and evaluator.
 
-    Tests the provided :class:`kolena.classification.multiclass.Model`` on the provided
-    :class:`kolena.classification.multiclass.TestSuite` suite. Any tests already in progress for this model on this
+    Tests the provided :class:`kolena.detection.multiclass.Model`` on the provided
+    :class:`kolena.detection.multiclass.TestSuite` suite. Any tests already in progress for this model on this
     test suite is resumed.
 
     :param model: the model being tested, implementing the ``infer`` method.
@@ -86,7 +86,7 @@ def test(
     base_test(
         model=model,
         test_suite=test_suite,
-        evaluator=MulticlassClassificationEvaluator,
+        evaluator=MulticlassDetectionEvaluator,
         configurations=configurations,
         reset=reset,
     )

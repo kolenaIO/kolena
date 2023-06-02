@@ -95,7 +95,7 @@ class ClassMetricsPerTestCase(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    PerClass: List[ClassMetricsPerTestCase]
+    # PerClass: List[ClassMetricsPerTestCase]
     Objects: int
     Inferences: int
     TP: int
