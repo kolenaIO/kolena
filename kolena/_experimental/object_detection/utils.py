@@ -16,9 +16,10 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+
 from kolena._utils import log
 from kolena.workflow.evaluator import ConfusionMatrix
-from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def compute_confusion_matrix_plot(

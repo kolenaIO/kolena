@@ -21,7 +21,7 @@ from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.evaluator import ConfusionMatrix
-from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 @pytest.mark.parametrize(
