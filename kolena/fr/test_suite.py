@@ -120,7 +120,8 @@ class TestSuite(ABC, Frozen, WithTelemetry):
 
         :param name: the name of the new test suite to create.
         :param description: optional free-form description of the test suite to create.
-        :param test_cases: optionally specify a set of test cases to populate the test suite.
+        :param baseline_test_cases: optionally specify a list of test cases to use as baseline for the test suite.
+        :param non_baseline_test_cases: optionally specify a list of test cases to populate the test suite.
         :return: the newly created test suite.
         """
         request = API.CreateRequest(name=name, description=description or "")

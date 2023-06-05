@@ -7,7 +7,8 @@ strict: true
 theme:
   name: material
   custom_dir: docs/theme
-  font: Inter
+  font:
+    text: Inter
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default  # TODO: custom kolena-light theme
@@ -46,9 +47,25 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          options: {}
+          options:
+            docstring_style: sphinx
             # show_signature_annotations: true
-  - social
+  - social  # render social media cards for copy+paste
+
+copyright: Copyright &copy; 2021-2023 Kolena
+extra:
+  generator: false  # TODO: this removes the theme info from footer -- we should sponsor project
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/kolenaIO/kolena
+      name: Kolena on GitHub
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/kolena-ai
+      name: Kolena on LinkedIn
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/kolenaIO
+      name: Kolena on Twitter
+
 
 nav:
   - Getting Started:
