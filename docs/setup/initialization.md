@@ -1,0 +1,3 @@
+# Initialization
+
+::: kolena.initialize

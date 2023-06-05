@@ -9,32 +9,49 @@ theme:
   custom_dir: docs/theme
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: default
-      primary: pink
-      accent: pink
+      # scheme: kolena-light
+      schema: default
+      primary: custom
       toggle:
-        icon: material/lightbulb-outline
+        icon: material/toggle-switch
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
+      # scheme: kolena-dark
       scheme: slate
-      primary: pink
-      accent: pink
+      primary: custom
       toggle:
-        icon: material/lightbulb
+        icon: material/toggle-switch-off-outline
         name: "Switch to light mode"
   features:
     # - content.tabs.link
     # - navigation.tabs
+    - navigation.footer
+    - content.action.edit
     - announce.dismiss
-  logo: 'wordmark-white.svg'
-  favicon: 'favicon.png'
+  logo: wordmark-white.svg
+  favicon: favicon.png
 
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
 edit_uri: edit/trunk/docs/
 
+markdown_extensions:
+  - admonition  # callouts
+
+watch:
+  - kolena
+
 extra_css:
   - css/theme.css
 
 plugins:
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_signature_annotations: true
+
+nav:
+  - Getting Started:
+    - Installation: setup/installation.md
+    - Initialization: setup/initialization.md
