@@ -36,20 +36,33 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/python:<< parameters.python-version >>-{{ parameters.extras }}
+      - image: cimg/python:<< parameters.python-version >>-<< parameters.extras >>
     resource_class: small
     environment:
       POETRY_CACHE_DIR: /home/circleci/project/.poetry
     steps:
       - checkout
       - restore_cache:
-          key: &ci-base-cache ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}-{{ parameters.extras }}
-      - run:
-          name: Install Dependencies
-          command: |
-            poetry config experimental.new-installer false
-            poetry config installer.max-workers 10
-            poetry install --no-ansi{{ if parameters.extras }} --all-extras{{ endif }}
+          key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - when:
+          condition:
+            not: << parameters.extras >>
+          steps:
+            - run:
+                name: Install Dependencies
+                command: |
+                  poetry config experimental.new-installer false
+                  poetry config installer.max-workers 10
+                  poetry install --no-ansi
+      - when:
+          condition: << parameters.extras >>
+          steps:
+            - run:
+                name: Install Dependencies
+                command: |
+                  poetry config experimental.new-installer false
+                  poetry config installer.max-workers 10
+                  poetry install --all-extras --no-ansi
       - save_cache:
           key: *ci-base-cache
           paths:
@@ -66,14 +79,14 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/python:<< parameters.python-version >>-{{ parameters.extras }}
+      - image: cimg/python:<< parameters.python-version >>-<< parameters.extras >>
     resource_class: small
     environment:
       POETRY_CACHE_DIR: /home/circleci/project/.poetry
     steps:
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}-{{ parameters.extras }}
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run: poetry run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
@@ -84,16 +97,21 @@ jobs:
                 - equal: [ "3.11", << parameters.python-version >> ]
           steps:
             - run: poetry run pre-commit run -a
-      - run:
-          name: Run unit tests
-          when: << parameters.extras >> == false
-          command: |
-            poetry run pytest -vv --cov=kolena --cov-branch tests/unit
-      - run:
-          name: Run unit tests
-          when: << parameters.extras >> == true
-          command: |
-            poetry run pytest -vv --cov=kolena --cov-branch tests/unit_extras
+      - when:
+          condition:
+            not: << parameters.extras >>
+          steps:
+            - run:
+                name: Run unit tests
+                command: |
+                  poetry run pytest -vv --cov=kolena --cov-branch tests/unit
+      - when:
+          condition: << parameters.extras >>
+          steps:
+            - run:
+                name: Run unit tests
+                command: |
+                  poetry run pytest -vv --cov=kolena --cov-branch tests/unit_extras
       - when:
           # Generate coverage only from one python version
           condition:
