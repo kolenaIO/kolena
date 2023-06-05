@@ -20,9 +20,10 @@ from .workflow import TestCase
 from .workflow import TestSuite
 from .workflow import Model
 from .workflow import ThresholdConfiguration
-from .evaluator import MulticlassDetectionEvaluator
-from .test_run import TestRun
-from .test_run import test
+from .evaluator import ObjectDetectionEvaluator
+
+# from .test_run import TestRun
+# from .test_run import test
 
 __all__ = [
     "TestSample",
@@ -32,7 +33,7 @@ __all__ = [
     "TestSuite",
     "Model",
     "ThresholdConfiguration",
-    "MulticlassDetectionEvaluator",
-    "TestRun",
-    "test",
+    "ObjectDetectionEvaluator",
+    # "TestRun",
+    # "test",
 ]

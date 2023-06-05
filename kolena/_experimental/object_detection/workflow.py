@@ -48,7 +48,7 @@ class Inference(BaseInference):
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow(
-    "Multiclass Bounding Box Object Detection",
+    "Object Detection",
     TestSample,
     GroundTruth,
     Inference,
@@ -70,7 +70,6 @@ class TestSampleMetrics(MetricsTestSample):
     has_TP: bool
     has_FP: bool
     has_FN: bool
-    has_TN: bool
     has_Confused: bool
 
     match_matched_gt: List[LabeledBoundingBox]

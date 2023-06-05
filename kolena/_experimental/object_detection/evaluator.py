@@ -77,9 +77,9 @@ def compute_f1_optimal_thresholds(
 
     optimal_thresholds: Dict[str, float] = {}
 
-    _, _, arrays_by_label = _compute_sklearn_arrays(all_bbox_matches)
-    for label in sorted(arrays_by_label.keys()):
-        y_true, y_score = arrays_by_label[label]
+    _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays(all_bbox_matches)
+    for label in sorted(y_true_by_label.keys()):
+        y_true, y_score = np.array(y_true_by_label[label]), np.array(y_score_by_label[label])
         precision, recall, thresholds = precision_recall_curve(y_true, y_score)
         if thresholds[0] < 0:
             precision = precision[1:]
@@ -87,6 +87,7 @@ def compute_f1_optimal_thresholds(
             thresholds = thresholds[1:]
         if len(thresholds) == 0:
             optimal_thresholds[label] = -1
+            continue
         f1_scores = 2 * precision * recall / (precision + recall)
         max_f1_index = np.argmax(f1_scores)
         optimal_thresholds[label] = thresholds[max_f1_index]
@@ -149,8 +150,8 @@ def compute_test_sample_metrics(
     compute_f1_optimal_thresholds(all_bbox_matches, configuration)
     thresholds = get_confidence_thresholds(configuration)
     return [
-        (ts, compute_image_metrics(bbox_matches, thresholds))
-        for ts, _, _, bbox_matches in zip(results, all_bbox_matches)
+        (tsgtinf[0], compute_image_metrics(bbox_matches, thresholds))
+        for tsgtinf, bbox_matches in zip(results, all_bbox_matches)
     ]
 
 
@@ -194,6 +195,7 @@ def compute_aggregate_label_metrics(
         MulticlassInferenceMatches(matched=m_matched, unmatched_gt=m_unmatched_gt, unmatched_inf=m_unmatched_inf),
     ]
     y_true, y_score, _, _ = _compute_sklearn_arrays(all_bbox_matches)
+    y_true, y_score = np.array(y_true), np.array(y_score)
     thresholds = list(np.linspace(min(abs(y_score)), max(y_score), min(401, len(y_score))))[:-1]
     precisions: List[float] = []
     recalls: List[float] = []
@@ -231,9 +233,11 @@ def compute_test_case_metrics_and_plots(
 ) -> Tuple[List[TestCaseMetrics], List[Plot]]:
     tc_matchings = [
         MulticlassInferenceMatches(
-            matched=[(gt, inf) for gt, inf in zip(tsm.match_matched_gt, tsm.match_matched_inf)],
-            unmatched_gt=[(gt, inf) for gt, inf in zip(tsm.match_unmatched_gt, tsm.match_confused_inf)],
-            unmatched_inf=tsm.match_unmatched_inf,
+            matched=[(gt, inf) for gt, inf in zip(tsm.match_matched_gt, tsm.match_matched_inf) if gt.label in labels],
+            unmatched_gt=[
+                (gt, inf) for gt, inf in zip(tsm.match_unmatched_gt, tsm.match_confused_inf) if gt.label in labels
+            ],
+            unmatched_inf=[inf for inf in tsm.match_unmatched_inf if inf.label in labels],
         )
         for tsm in tc_metrics
     ]
@@ -282,7 +286,6 @@ def compute_aggregate_metrics(
     inferences: List[Inference],
     test_cases: TestCases,
     test_sample_metrics: List[TestSampleMetrics],
-    labels: List[str],
 ) -> Tuple[List[Tuple[TestCase, TestCaseMetrics]], List[Tuple[TestCase, List[Plot]]]]:
     metrics_test_case: List[Tuple[TestCase, TestCaseMetrics]] = []
     plots_test_case: List[Tuple[TestCase, List[Plot]]] = []
@@ -293,6 +296,14 @@ def compute_aggregate_metrics(
         inferences,
         test_sample_metrics,
     ):
+        labels_set: Set[str] = set()
+        for gt in tc_gts:
+            for box in gt.bboxes:
+                labels_set.add(box.label)
+        for inf in tc_infs:
+            for box in inf.bboxes:
+                labels_set.add(box.label)
+        labels = sorted(labels_set)
         locators_by_test_case[tc.name] = [ts.locator for ts in tc_samples]
         test_case_metrics, test_case_plots = compute_test_case_metrics_and_plots(
             tc_metrics,
@@ -312,26 +323,17 @@ def compute_test_suite_metrics(all_test_case_metrics: List[Tuple[TestCase, TestC
     )
 
 
-def MulticlassDetectionEvaluator(
+def ObjectDetectionEvaluator(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
     configuration: ThresholdConfiguration = dataclasses.field(default_factory=ThresholdConfiguration),
 ) -> EvaluationResults:
-    labels_set: Set[str] = set()
-    for gt in ground_truths:
-        for box in gt.bboxes:
-            labels_set.add(box.label)
-    for inf in inferences:
-        for box in inf.bboxes:
-            labels_set.add(box.label)
-    labels = sorted(labels_set)
-
     results = list(zip(test_samples, ground_truths, inferences))
     metrics_test_sample = compute_test_sample_metrics(results, configuration)
 
-    test_sample_metrics: List[TestSampleMetrics] = [mts for _, mts, _ in metrics_test_sample]
+    test_sample_metrics: List[TestSampleMetrics] = [mts for _, mts in metrics_test_sample]
 
     metrics_test_case, plots_test_case = compute_aggregate_metrics(
         test_samples,
@@ -339,8 +341,6 @@ def MulticlassDetectionEvaluator(
         inferences,
         test_cases,
         test_sample_metrics,
-        configuration,
-        labels,
     )
 
     metrics_test_suite = compute_test_suite_metrics(metrics_test_case)
