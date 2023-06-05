@@ -88,15 +88,15 @@ jobs:
       - restore_cache:
         key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
-        condition:
-          equal: [ "no-extras", << parameters.extras >> ]
-        steps:
-          - run: poetry run python3 -c 'import kolena'
+          condition:
+            equal: [ "no-extras", << parameters.extras >> ]
+          steps:
+            - run: poetry run python3 -c 'import kolena'
       - when:
-        condition:
-          equal: [ "extras", << parameters.extras >> ]
-        steps:
-          - run: poetry run python3 -c 'import kolena; import kolena._extras.metrics'
+          condition:
+            equal: [ "extras", << parameters.extras >> ]
+          steps:
+            - run: poetry run python3 -c 'import kolena; import kolena._extras.metrics'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
           condition:
