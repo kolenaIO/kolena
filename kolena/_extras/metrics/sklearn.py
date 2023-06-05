@@ -13,5 +13,7 @@
 # limitations under the License.
 try:
     import sklearn.metrics as sklearn_metrics
+
+    sklearn_metrics.__version__
 except ImportError:
     raise ImportError("Package 'scikit-learn' not found; install 'metrics' extras with `pip install 'kolena[metrics]'`")
