@@ -11,22 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import numpy as np
 import pytest
 
+
 @pytest.mark.parametrize(
-    "y_true, y_pred, precision, recall",
+    "y_true, y_pred",
     [
         (
-            np.array(['cat', 'dog', 'pig', 'cat', 'dog', 'pig']),
-            np.array(['cat', 'pig', 'dog', 'cat', 'cat', 'dog']),
-            2/9,
-            1/3,
+            np.array(["cat", "dog", "pig", "cat", "dog", "pig"]),
+            np.array(["cat", "pig", "dog", "cat", "cat", "dog"]),
         ),
     ],
 )
-def test__extras__sklearn__pr(y_true: np.ndarray, y_pred: np.ndarray, precision: float, recall: float) -> None:
+def test__extras__sklearn__pr(y_true: np.ndarray, y_pred: np.ndarray) -> None:
     with pytest.raises(ImportError):
         from kolena._extras.metrics import sklearn_metrics
-        sklearn_metrics.precision_recall_fscore_support(y_true, y_pred, average='macro')
+
+        sklearn_metrics.precision_recall_fscore_support(y_true, y_pred, average="macro")
