@@ -48,8 +48,8 @@ def initialize(
             logging events are emitted as Python standard library ``logging`` events from the ``"kolena"`` logger as
             well as to stdout/stderr directly
         proxies: optionally configure client to run with ``http`` or ``https`` proxies. The ``proxies`` parameter
-            is passed through to the ``requests`` package and can be
-            `configured accordingly <https://requests.readthedocs.io/en/latest/user/advanced/#proxies>`_
+            is passed through to the `requests` package and can be
+            [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
 
     Raises:
         InvalidTokenError: the provided ``api_token`` is not valid

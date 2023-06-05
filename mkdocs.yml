@@ -7,24 +7,22 @@ strict: true
 theme:
   name: material
   custom_dir: docs/theme
+  font: Inter
   palette:
     - media: "(prefers-color-scheme: light)"
-      # scheme: kolena-light
-      schema: default
-      primary: custom
+      scheme: default  # TODO: custom kolena-light theme
       toggle:
         icon: material/toggle-switch
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
-      # scheme: kolena-dark
-      scheme: slate
-      primary: custom
+      scheme: slate  # TODO: custom kolena-dark theme
       toggle:
         icon: material/toggle-switch-off-outline
         name: "Switch to light mode"
   features:
     # - content.tabs.link
     # - navigation.tabs
+    # - navigation.path  # breadcrumbs
     - navigation.footer
     - content.action.edit
     - announce.dismiss
@@ -48,8 +46,9 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          options:
-            show_signature_annotations: true
+          options: {}
+            # show_signature_annotations: true
+  - social
 
 nav:
   - Getting Started:
