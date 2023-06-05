@@ -11,13 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# TODO: moving to /tests 
-
-import numpy as np
-from kolena._extras.metrics import sklearn_metrics
-
-y_true = np.array(['cat', 'dog', 'pig', 'cat', 'dog', 'pig'])
-y_pred = np.array(['cat', 'pig', 'dog', 'cat', 'cat', 'dog'])
-print(sklearn_metrics.precision_recall_fscore_support(y_true, y_pred, average='macro'))
-# (0.2222222222222222, 0.3333333333333333, 0.26666666666666666, None)
