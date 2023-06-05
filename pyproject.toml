@@ -58,6 +58,8 @@ pytest = "^7"
 pytest-cov = "^4.0.0"
 pytest-depends = "^1.0.1"
 mkdocs = "^1.4.3"
+mkdocs-material = "^9.1.15"
+mkdocstrings = {extras = ["python"], version = "^0.22.0"}
 
 [tool.poetry.scripts]
 kolena = 'kolena._utils.cli:run'

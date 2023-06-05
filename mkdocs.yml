@@ -1,0 +1,40 @@
+site_name: Kolena
+site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
+site_url: https://docs.kolena.io
+strict: true
+
+
+theme:
+  name: material
+  custom_dir: docs/theme
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/lightbulb-outline
+        name: "Switch to dark mode"
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: pink
+      accent: pink
+      toggle:
+        icon: material/lightbulb
+        name: "Switch to light mode"
+  features:
+    # - content.tabs.link
+    # - navigation.tabs
+    - announce.dismiss
+  logo: 'wordmark-white.svg'
+  favicon: 'favicon.png'
+
+repo_name: kolenaIO/kolena
+repo_url: https://github.com/kolenaIO/kolena
+edit_uri: edit/trunk/docs/
+
+extra_css:
+  - css/theme.css
+
+plugins:
+  - mkdocstrings
