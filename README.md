@@ -30,6 +30,12 @@ Client builds can be installed directly from PyPI using any Python package manag
 ```zsh
 pip install kolena
 ```
+
+Advanced use cases (eg. metrics computation) may require extra dependencies which can be installed by running:
+```zsh
+pip install `kolena[metrics]`
+```
+
 <details>
 <summary>Installing with <a href="https://python-poetry.org/">Poetry</a></summary>
 <br>
