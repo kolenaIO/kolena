@@ -36,7 +36,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/python:<< parameters.python-version >>-<< parameters.extras >>
+      - image: cimg/python:<< parameters.python-version >>
     resource_class: small
     environment:
       POETRY_CACHE_DIR: /home/circleci/project/.poetry
@@ -79,7 +79,7 @@ jobs:
         type: boolean
         default: false
     docker:
-      - image: cimg/python:<< parameters.python-version >>-<< parameters.extras >>
+      - image: cimg/python:<< parameters.python-version >>
     resource_class: small
     environment:
       POETRY_CACHE_DIR: /home/circleci/project/.poetry
