@@ -33,8 +33,8 @@ jobs:
         type: string
         default: "3.9"
       extras:
-        type: boolean
-        default: false
+        type: string
+        default: "no-extras"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -46,7 +46,7 @@ jobs:
           key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
-            not: << parameters.extras >>
+              - equal: [ "no-extras", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -55,7 +55,8 @@ jobs:
                   poetry config installer.max-workers 10
                   poetry install --no-ansi
       - when:
-          condition: << parameters.extras >>
+          condition:
+              - equal: [ "extras", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -76,8 +77,8 @@ jobs:
         type: string
         default: "3.9"
       extras:
-        type: boolean
-        default: false
+        type: string
+        default: "no-extras"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -99,14 +100,15 @@ jobs:
             - run: poetry run pre-commit run -a
       - when:
           condition:
-            not: << parameters.extras >>
+              - equal: [ "no-extras", << parameters.extras >> ]
           steps:
             - run:
                 name: Run unit tests
                 command: |
                   poetry run pytest -vv --cov=kolena --cov-branch tests/unit
       - when:
-          condition: << parameters.extras >>
+          condition:
+              - equal: [ "extras", << parameters.extras >> ]
           steps:
             - run:
                 name: Run unit tests
@@ -228,7 +230,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: [true, false]
+              extras: ["no-extras", "extras"]
           requires:
             - ci-base-<< matrix.python-version >>
       - integration-test:
