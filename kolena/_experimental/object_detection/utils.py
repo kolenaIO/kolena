@@ -23,8 +23,7 @@ from sklearn.metrics import precision_recall_fscore_support
 
 from kolena.workflow.evaluator import Curve
 from kolena.workflow.evaluator import CurvePlot
-from kolena.workflow.metrics._geometry import InferenceMatches
-from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def threshold_key(label: str) -> str:
@@ -33,7 +32,7 @@ def threshold_key(label: str) -> str:
 
 
 def _compute_sklearn_arrays(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: List[MulticlassInferenceMatches],
 ) -> Tuple[List[int], List[int], Dict[str, List[int]], Dict[str, List[int]]]:
     y_true_by_label: defaultdict[str, List[int]] = defaultdict(lambda: [])
     y_score_by_label: defaultdict[str, List[int]] = defaultdict(lambda: [])
