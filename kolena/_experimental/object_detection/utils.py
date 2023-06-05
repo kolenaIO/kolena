@@ -34,7 +34,6 @@ def compute_confusion_matrix_plot(
     :return: :class:`ConfusionMatrix` with all actual and predicted labels, if there is more than one label.
     """
     labels: Set[str] = set()
-    inf_labels: Set[str] = set()
 
     confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for match in all_matches:
@@ -49,16 +48,14 @@ def compute_confusion_matrix_plot(
             if inf is not None:
                 predicted_label = inf.label
                 confusion_matrix[actual_label][predicted_label] += 1
-                inf_labels.add(predicted_label)
-
-        inf_labels.update(inf.label for inf in match.unmatched_inf)
+                labels.add(predicted_label)
 
     if len(labels) < 2:
         log.info(f"skipping confusion matrix for a single label: {labels}")
         return None
 
-    ordered_labels = sorted(labels | inf_labels)
+    ordered_labels = sorted(labels)
     matrix = []
-    for actual_label in sorted(labels):
+    for actual_label in ordered_labels:
         matrix.append([confusion_matrix[actual_label][predicted_label] for predicted_label in ordered_labels])
     return ConfusionMatrix(title=plot_title, labels=ordered_labels, matrix=matrix)

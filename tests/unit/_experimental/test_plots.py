@@ -46,67 +46,6 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
             ],
         ),
         (
-            "zeros with unmatched inferences",
-            [
-                MulticlassInferenceMatches(
-                    matched=[],
-                    unmatched_gt=[],
-                    unmatched_inf=[
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
-                        ScoredLabeledBoundingBox((3, 3), (4, 4), "b", 0),
-                    ],
-                ),
-            ],
-            ["a", "b"],
-            [
-                [0, 0],
-                [0, 0],
-            ],
-        ),
-        (
-            "zeros with unmatched gt and unmatched inf",
-            [
-                MulticlassInferenceMatches(
-                    matched=[],
-                    unmatched_gt=[
-                        (LabeledBoundingBox((3, 3), (4, 4), "b"), None),
-                    ],
-                    unmatched_inf=[
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
-                    ],
-                ),
-            ],
-            ["a", "b"],
-            [
-                [0, 0],
-                [0, 0],
-            ],
-        ),
-        (
-            "zeros with two matchings",
-            [
-                MulticlassInferenceMatches(
-                    matched=[],
-                    unmatched_gt=[
-                        (LabeledBoundingBox((3, 3), (4, 4), "b"), None),
-                    ],
-                    unmatched_inf=[],
-                ),
-                MulticlassInferenceMatches(
-                    matched=[],
-                    unmatched_gt=[],
-                    unmatched_inf=[
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
-                    ],
-                ),
-            ],
-            ["a", "b"],
-            [
-                [0, 0],
-                [0, 0],
-            ],
-        ),
-        (
             "zeros, but one match for label a",
             [
                 MulticlassInferenceMatches(
@@ -518,11 +457,10 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                     unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0)],
                 ),
             ],
-            ["a", "b", "c"],
+            ["a", "b"],
             [
-                [1, 0, 0],
-                [0, 0, 0],
-                [0, 0, 0],
+                [1, 0],
+                [0, 0],
             ],
         ),
     ],
@@ -534,6 +472,7 @@ def test__confusion__matrix(
     matrix: List[List[int]],
 ) -> None:
     conf_mat = compute_confusion_matrix_plot(all_matches=matchings, plot_title=test_name)
+    print(conf_mat)
     assert conf_mat == ConfusionMatrix(title=test_name, labels=ordered_labels, matrix=matrix)
 
 
@@ -553,6 +492,52 @@ def test__confusion__matrix(
                     ],
                     unmatched_inf=[
                         ScoredLabeledBoundingBox((8, 8), (9, 9), "a", 0),
+                    ],
+                ),
+            ],
+        ),
+        (
+            "zeros with unmatched inferences",
+            [
+                MulticlassInferenceMatches(
+                    matched=[],
+                    unmatched_gt=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "b", 0),
+                    ],
+                ),
+            ],
+        ),
+        (
+            "zeros with unmatched gt and unmatched inf",
+            [
+                MulticlassInferenceMatches(
+                    matched=[],
+                    unmatched_gt=[
+                        (LabeledBoundingBox((3, 3), (4, 4), "b"), None),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
+                    ],
+                ),
+            ],
+        ),
+        (
+            "zeros with two matchings",
+            [
+                MulticlassInferenceMatches(
+                    matched=[],
+                    unmatched_gt=[
+                        (LabeledBoundingBox((3, 3), (4, 4), "b"), None),
+                    ],
+                    unmatched_inf=[],
+                ),
+                MulticlassInferenceMatches(
+                    matched=[],
+                    unmatched_gt=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
                     ],
                 ),
             ],
