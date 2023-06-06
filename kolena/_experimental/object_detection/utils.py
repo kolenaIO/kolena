@@ -16,9 +16,10 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+
 from kolena._utils import log
 from kolena.workflow.evaluator import ConfusionMatrix
-from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def compute_confusion_matrix_plot(
@@ -48,8 +49,6 @@ def compute_confusion_matrix_plot(
                 predicted_label = inf.label
                 confusion_matrix[actual_label][predicted_label] += 1
                 labels.add(predicted_label)
-
-        labels.update(inf.label for inf in match.unmatched_inf)
 
     if len(labels) < 2:
         log.info(f"skipping confusion matrix for a single label: {labels}")
