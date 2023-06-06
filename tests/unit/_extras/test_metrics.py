@@ -15,11 +15,14 @@ import numpy as np
 import pytest
 
 
-def test__extras__metrics__fail() -> None:
+def test__extras__metrics__import__error() -> None:
     with pytest.raises(ImportError):
-        from kolena._extras.metrics import sklearn_metrics  # noqa: F401
+        from kolena._extras.metrics import sklearn_metrics
+
+        sklearn_metrics.precision_recall_fscore_support(np.array(["a", "b"]), np.array(["a", "c"]), average="macro")
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "y_true, y_pred, precision, recall",
     [
@@ -31,8 +34,12 @@ def test__extras__metrics__fail() -> None:
         ),
     ],
 )
-@pytest.mark.metrics
-def test__extras__sklearn__pr(y_true: np.ndarray, y_pred: np.ndarray, precision: float, recall: float) -> None:
+def test__extras__metrics__import__check(
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
+    precision: float,
+    recall: float,
+) -> None:
     from kolena._extras.metrics import sklearn_metrics
 
     prec, rec, _, _ = sklearn_metrics.precision_recall_fscore_support(y_true, y_pred, average="macro")
