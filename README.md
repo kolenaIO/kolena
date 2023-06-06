@@ -33,7 +33,7 @@ pip install kolena
 
 Advanced use cases (eg. metrics computation) may require extra dependencies which can be installed by running:
 ```zsh
-pip install `kolena[metrics]`
+pip install kolena[metrics]
 ```
 
 <details>

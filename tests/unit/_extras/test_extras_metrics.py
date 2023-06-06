@@ -15,17 +15,26 @@ import numpy as np
 import pytest
 
 
+def test__extras__metrics__fail() -> None:
+    with pytest.raises(ImportError):
+        from kolena._extras.metrics import sklearn_metrics  # noqa: F401
+
+
 @pytest.mark.parametrize(
-    "y_true, y_pred",
+    "y_true, y_pred, precision, recall",
     [
         (
             np.array(["cat", "dog", "pig", "cat", "dog", "pig"]),
             np.array(["cat", "pig", "dog", "cat", "cat", "dog"]),
+            2 / 9,
+            1 / 3,
         ),
     ],
 )
-def test__extras__sklearn__pr(y_true: np.ndarray, y_pred: np.ndarray) -> None:
-    with pytest.raises(ImportError):
-        from kolena._extras.metrics import sklearn_metrics
+@pytest.mark.metrics
+def test__extras__sklearn__pr(y_true: np.ndarray, y_pred: np.ndarray, precision: float, recall: float) -> None:
+    from kolena._extras.metrics import sklearn_metrics
 
-        sklearn_metrics.precision_recall_fscore_support(y_true, y_pred, average="macro")
+    prec, rec, _, _ = sklearn_metrics.precision_recall_fscore_support(y_true, y_pred, average="macro")
+    assert precision == pytest.approx(prec, abs=1e-5)
+    assert recall == pytest.approx(rec, abs=1e-5)
