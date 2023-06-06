@@ -15,7 +15,6 @@ from typing import List
 
 import pytest
 
-from kolena._experimental.object_detection.utils import compute_pr_f1_plots
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
@@ -782,8 +781,8 @@ def test__curve__plots__basic(
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
 ) -> None:
-    f1: CurvePlot
-    pr: CurvePlot
+    from kolena._experimental.object_detection.utils import compute_pr_f1_plots
+
     f1, pr = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)
@@ -1221,6 +1220,8 @@ def test__curve__plots__advanced(
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
 ) -> None:
+    from kolena._experimental.object_detection.utils import compute_pr_f1_plots
+
     f1: CurvePlot
     pr: CurvePlot
     f1, pr = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name)

@@ -94,7 +94,7 @@ def compute_pr_f1_plots(
     f1_curves: List[Curve] = []
     pr_curves: List[Curve] = []
 
-    y_true, y_score, y_true_by_label, y_score_by_label = _compute_sklearn_arrays(all_matches)
+    y_true, y_score, _, _ = _compute_sklearn_arrays(all_matches)
     f1_curve, pr_curve = _compute_threshold_curves(np.array(y_true), np.array(y_score), curve_label)
     f1_curves.append(f1_curve)
     pr_curves.append(pr_curve)
