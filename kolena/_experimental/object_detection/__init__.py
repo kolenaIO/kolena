@@ -22,9 +22,6 @@ from .workflow import Model
 from .workflow import ThresholdConfiguration
 from .evaluator import ObjectDetectionEvaluator
 
-# from .test_run import TestRun
-# from .test_run import test
-
 __all__ = [
     "TestSample",
     "GroundTruth",
@@ -34,6 +31,4 @@ __all__ = [
     "Model",
     "ThresholdConfiguration",
     "ObjectDetectionEvaluator",
-    # "TestRun",
-    # "test",
 ]
