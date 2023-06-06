@@ -91,9 +91,7 @@ extra:
 
 nav:
   - Home: index.md
-  - Getting Started:
-    - Installation: setup/installation.md
-    - Initialization: setup/initialization.md
+  - Getting Started: []
   - Using Kolena: []
   - Advanced Usage: []
   - API Reference:
@@ -117,12 +115,6 @@ nav:
       - Built-in Workflows:
         - <code>kolena.classification</code>: reference/built-in/classification.md
         - <code>kolena.detection</code>: reference/built-in/detection.md
-        - <code>kolena.fr</code>:
-          - <code>Model</code>: reference/built-in/fr/model.md
-          - <code>TestImages</code>: reference/built-in/fr/test_images.md
-          - <code>TestCase</code>: reference/built-in/fr/test_case.md
-          - <code>TestSuite</code>: reference/built-in/fr/test_suite.md
-          - <code>TestRun</code>: reference/built-in/fr/test_run.md
-          - <code>datatypes</code>: reference/built-in/fr/datatypes.md
+        - <code>kolena.fr</code>: reference/built-in/fr.md
   - Metrics Guide: []
   - Help: []
