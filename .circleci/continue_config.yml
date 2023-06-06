@@ -32,6 +32,9 @@ jobs:
       python-version:
         type: string
         default: "3.9"
+      extras:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -40,11 +43,27 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &ci-base-cache ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
-      - run: |
-          poetry config experimental.new-installer false
-          poetry config installer.max-workers 10
-          poetry install --no-ansi
+          key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - when:
+          condition:
+            equal: [ "", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Install Dependencies
+                command: |
+                  poetry config experimental.new-installer false
+                  poetry config installer.max-workers 10
+                  poetry install --no-ansi
+      - when:
+          condition:
+            equal: [ "metrics", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Install Dependencies
+                command: |
+                  poetry config experimental.new-installer false
+                  poetry config installer.max-workers 10
+                  poetry install --all-extras --no-ansi
       - save_cache:
           key: *ci-base-cache
           paths:
@@ -56,6 +75,9 @@ jobs:
       python-version:
         type: string
         default: "3.9"
+      extras:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -64,7 +86,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run: poetry run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
@@ -75,10 +97,22 @@ jobs:
                 - equal: [ "3.11", << parameters.python-version >> ]
           steps:
             - run: poetry run pre-commit run -a
-      - run:
-          name: Run unit tests
-          command: |
-            poetry run pytest -vv --cov=kolena --cov-branch tests/unit
+      - when:
+          condition:
+            equal: [ "", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Run unit tests
+                command: |
+                  poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
+      - when:
+          condition:
+            equal: [ "metrics", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Run metrics unit tests
+                command: |
+                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           # Generate coverage only from one python version
           condition:
@@ -106,6 +140,9 @@ jobs:
       parallelism:
         type: integer
         default: 1
+      extras:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -122,7 +159,7 @@ jobs:
                 command: circleci-agent step halt
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
           name: Run << parameters.pytest-group >> integration tests
           command: |
@@ -187,36 +224,41 @@ workflows:
   ci:
     jobs:
       - ci-base:
-          name: ci-base-<< matrix.python-version >>
+          name: ci-base-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+              extras: ["", "metrics"]
       - unit-test:
+          name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+              extras: ["", "metrics"]
           requires:
-            - ci-base-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>
+          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
+              extras: [""]
           enabled: true
           parallelism: 4
           requires:
-            - ci-base-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-misc-<< matrix.python-version >>
+          name: integration-test-misc-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
+              extras: [""]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1
           requires:
-            - ci-base-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
   example:
     when:
       or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
