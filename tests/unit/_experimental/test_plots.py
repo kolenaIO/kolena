@@ -50,6 +50,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
         assert_curve_equal(c1, c2)
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, matchings, f1_curve, pr_curve",
     [
@@ -788,6 +789,7 @@ def test__curve__plots__basic(
     assert_curveplot_equal(pr, pr_curve)
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, matchings, f1_curve, pr_curve",
     [
