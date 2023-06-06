@@ -104,7 +104,7 @@ jobs:
             - run:
                 name: Run unit tests
                 command: |
-                  poetry run pytest -vv --cov=kolena --cov-branch tests/unit --mark "not metrics"
+                  poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
@@ -112,7 +112,7 @@ jobs:
             - run:
                 name: Run metrics unit tests
                 command: |
-                  poetry run pytest -vv --cov=kolena --cov-branch tests/unit --mark "metrics"
+                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           # Generate coverage only from one python version
           condition:
@@ -243,7 +243,7 @@ workflows:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
-              extras: ["", "metrics"]
+              extras: [""]
           enabled: true
           parallelism: 4
           requires:
@@ -253,7 +253,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: ["", "metrics"]
+              extras: [""]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1
