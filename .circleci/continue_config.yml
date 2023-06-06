@@ -234,7 +234,6 @@ workflows:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
       - unit-test:
-          name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
