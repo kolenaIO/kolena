@@ -3,10 +3,11 @@ site_description: Python client for Kolena's machine learning (ML) testing and d
 site_url: https://docs.kolena.io
 strict: true
 
-
 theme:
   name: material
-  custom_dir: docs/theme
+  logo: assets/images/wordmark-white.svg
+  favicon: assets/images/favicon.png
+  custom_dir: docs/overrides
   font:
     text: Inter
   palette:
@@ -27,8 +28,11 @@ theme:
     - navigation.footer
     - content.action.edit
     - announce.dismiss
-  logo: wordmark-white.svg
-  favicon: favicon.png
+    # - navigation.instant  # SPA-style navigation, doesn't play nicely with banner
+    - navigation.tabs
+    - navigation.sections
+    - toc.follow
+    # - navigation.top
 
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
@@ -49,11 +53,16 @@ plugins:
         python:
           options:
             docstring_style: sphinx
+            merge_init_into_class: true
+            members_order: source  # sort members in the order they are defined
             # show_signature_annotations: true
   - social  # render social media cards for copy+paste
+  - search:
+      lang: en
 
 copyright: Copyright &copy; 2021-2023 Kolena
 extra:
+  homepage: https://kolena.io
   generator: false  # TODO: this removes the theme info from footer -- we should sponsor project
   social:
     - icon: fontawesome/brands/github
@@ -66,8 +75,20 @@ extra:
       link: https://twitter.com/kolenaIO
       name: Kolena on Twitter
 
-
 nav:
+  - Home: []
   - Getting Started:
     - Installation: setup/installation.md
     - Initialization: setup/initialization.md
+  - Using Kolena: []
+  - Advanced Usage: []
+  - API Reference:
+    - <code>kolena.initialize</code>: reference/initialize.md
+    - <code>kolena.errors</code>: reference/errors.md
+    - Building a Workflow:
+      - <code>kolena.workflow</code>: reference/workflow.md
+    - Built-in Workflows:
+      - <code>kolena.classification</code>: reference/classification.md
+      - <code>kolena.detection</code>: reference/detection.md
+      - <code>kolena.fr</code>: reference/fr.md
+  - Help: []

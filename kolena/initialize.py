@@ -39,18 +39,18 @@ def initialize(
     A session has a global scope and remains active until interpreter shutdown.
 
     !!! note
-        As of version 0.29.0: the entity param is no longer needed; ``initialize(entity, token)`` is
-        **deprecated** and replaced by ``initialize(token)``.
+        As of version 0.29.0: the entity param is no longer needed; `initialize(entity, token)` is
+        **deprecated** and replaced by `initialize(token)`.
 
-    :param api_token: provided API token. This token is a secret and should be treated with caution
-    :param verbose: optionally configure client to run in verbose mode, providing more information about execution. All
-        logging events are emitted as Python standard library ``logging`` events from the ``"kolena"`` logger as well as
-        to stdout/stderr directly
-    :param proxies: optionally configure client to run with ``http`` or ``https`` proxies. The ``proxies`` parameter
-        is passed through to the ``requests`` package and can be
-        `configured accordingly <https://requests.readthedocs.io/en/latest/user/advanced/#proxies>`_
-    :raises InvalidTokenError: the provided ``api_token`` is not valid
-    :raises InputValidationError: the provided combination or number of args is not valid
+    :param api_token: Provided API token. This token is a secret and should be treated with caution.
+    :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
+        logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
+        to stdout/stderr directly.
+    :param proxies: Optionally configure client to run with `http` or `https` proxies. The `proxies` parameter
+        is passed through to the `requests` package and can be
+        [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
+    :raises InvalidTokenError: The provided `api_token` is not valid.
+    :raises InputValidationError: The provided combination or number of args is not valid.
     """
     used_deprecated_signature = False
 
