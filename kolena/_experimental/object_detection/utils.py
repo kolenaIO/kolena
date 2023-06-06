@@ -16,7 +16,6 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Tuple
-from typing import Union
 
 import numpy as np
 from sklearn.metrics import precision_recall_fscore_support
@@ -100,13 +99,14 @@ def compute_pr_f1_plots(
     f1_curves.append(f1_curve)
     pr_curves.append(pr_curve)
 
-    classes = sorted(y_true_by_label.keys())
-    for label in classes:
-        y_true, y_score = y_true_by_label[label], y_score_by_label[label]
-        if len(y_true) > 0:
-            f1_curve, pr_curve = _compute_threshold_curves(np.array(y_true), np.array(y_score), label)
-            f1_curves.append(f1_curve)
-            pr_curves.append(pr_curve)
+    # TODO: Uncomment when per class metrics are desired
+    # classes = sorted(y_true_by_label.keys())
+    # for label in classes:
+    #     y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+    #     if len(y_true) > 0:
+    #         f1_curve, pr_curve = _compute_threshold_curves(np.array(y_true), np.array(y_score), label)
+    #         f1_curves.append(f1_curve)
+    #         pr_curves.append(pr_curve)
 
     threshold_f1 = CurvePlot(
         title="F1-Score vs. Confidence Threshold",
