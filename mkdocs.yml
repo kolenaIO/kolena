@@ -100,11 +100,12 @@ nav:
     - <code>kolena.errors</code>: reference/errors.md
     - <code>kolena.workflow</code>:
       # - Module Index: reference/workflow/index.md
-      - <code>test_sample</code>: reference/workflow/test_sample.md
-      - <code>ground_truth</code>: reference/workflow/ground_truth.md
-      - <code>inference</code>: reference/workflow/inference.md
-      - <code>annotation</code>: reference/workflow/annotation.md
-      - <code>asset</code>: reference/workflow/asset.md
+      - "Data Objects (Test Sample, Ground Truth, Inference)":
+        - <code>test_sample</code>: reference/workflow/test_sample.md
+        - <code>ground_truth</code>: reference/workflow/ground_truth.md
+        - <code>inference</code>: reference/workflow/inference.md
+        - Annotations: reference/workflow/annotation.md
+        - Assets: reference/workflow/asset.md
       - <code>define_workflow</code>: reference/workflow/define_workflow.md
       - <code>TestCase</code>: reference/workflow/test_case.md
       - <code>TestSuite</code>: reference/workflow/test_suite.md

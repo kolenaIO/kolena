@@ -13,8 +13,10 @@
 
 __pycache__/
 .ipynb_checkpoints/
-dist/
 .mypy_cache/
 .cache/
+
+dist/
+site
 
 poetry.lock

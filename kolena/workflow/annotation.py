@@ -11,6 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Annotations are visualized in the Kolena web platform as overlays on top of [`TestSample`][kolena.workflow.TestSample]
+objects.
+
+For example, when viewing images in the Studio, any annotations (such as lists of
+[`BoundingBox`][kolena.workflow.annotation.BoundingBox] objects) present in the
+[`TestSample`][kolena.workflow.TestSample], [`GroundTruth`][kolena.workflow.GroundTruth],
+[`Inference`][kolena.workflow.Inference], or [`MetricsTestSample`][kolena.workflow.MetricsTestSample] objects are
+rendered on top of the image.
+"""
 from abc import ABCMeta
 from typing import Dict
 from typing import List
@@ -31,7 +41,7 @@ class _AnnotationType(DataType):
     BOUNDING_BOX_3D = "BOUNDING_BOX_3D"
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
-    CLASSIFICATON_LABEL = "LABEL"
+    CLASSIFICATION_LABEL = "LABEL"
 
     @staticmethod
     def _data_category() -> str:
@@ -40,13 +50,7 @@ class _AnnotationType(DataType):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
-    """
-    Where applicable, annotations are visualized in the web platform.
-
-    For example, when viewing images, any annotations present in a [`TestSample`][kolena.workflow.TestSample],
-    [`GroundTruth`][kolena.workflow.GroundTruth], [`Inference`][kolena.workflow.Inference], or
-    [`MetricsTestSample`][kolena.workflow.MetricsTestSample] are rendered on top of the image.
-    """
+    """The base class for all annotation types."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -54,7 +58,10 @@ class BoundingBox(Annotation):
     """Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices."""
 
     top_left: Tuple[float, float]
+    """The top left vertex (in `(x, y)` image coordinates) of this bounding box."""
+
     bottom_right: Tuple[float, float]
+    """The bottom right vertex (in `(x, y)` image coordinates) of this bounding box."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -69,6 +76,7 @@ class LabeledBoundingBox(BoundingBox):
     """
 
     label: str
+    """The label (e.g. model classification) associated with this bounding box."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -79,6 +87,7 @@ class ScoredBoundingBox(BoundingBox):
     """
 
     score: float
+    """The score (e.g. model confidence) associated with this bounding box."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -89,7 +98,10 @@ class ScoredLabeledBoundingBox(BoundingBox):
     """
 
     label: str
+    """The label (e.g. model classification) associated with this bounding box."""
+
     score: float
+    """The score (e.g. model confidence) associated with this bounding box."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -97,6 +109,7 @@ class Polygon(Annotation):
     """Arbitrary polygon specified by three or more pixel coordinates."""
 
     points: List[Tuple[float, float]]
+    """The sequence of `(x, y)` points comprising the boundary of this polygon."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -112,6 +125,7 @@ class LabeledPolygon(Polygon):
     """Arbitrary polygon specified by three or more pixel coordinates and a string label."""
 
     label: str
+    """The label (e.g. model classification) associated with this polygon."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -121,6 +135,7 @@ class ScoredPolygon(Polygon):
     """
 
     score: float
+    """The score (e.g. model confidence) associated with this polygon."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -130,7 +145,10 @@ class ScoredLabeledPolygon(Polygon):
     """
 
     label: str
+    """The label (e.g. model classification) associated with this polygon."""
+
     score: float
+    """The score (e.g. model confidence) associated with this polygon."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -138,6 +156,7 @@ class Keypoints(Annotation):
     """Array of any number of keypoints specified in pixel coordinates."""
 
     points: List[Tuple[float, float]]
+    """The sequence of discrete `(x, y)` points comprising this keypoints annotation."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -149,6 +168,7 @@ class Polyline(Annotation):
     """Polyline with any number of vertices specified in pixel coordinates."""
 
     points: List[Tuple[float, float]]
+    """The sequence of connected `(x, y)` points comprising this polyline."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -160,18 +180,18 @@ class BoundingBox3D(Annotation):
     """
     Three-dimensional cuboid bounding box in a right-handed coordinate system.
 
-    Specified by (x, y, z) coordinates for the `center` of the cuboid, (x, y, z) `dimensions`, and a `rotation`
-    parameter specifying the degrees of rotation about each axis (x, y, z) ranging [-π, π].
+    Specified by `(x, y, z)` coordinates for the `center` of the cuboid, `(x, y, z)` `dimensions`, and a `rotation`
+    parameter specifying the degrees of rotation about each axis `(x, y, z)` ranging `[-π, π]`.
     """
 
-    #: (x, y, z) coordinates specifying the center of the bounding box.
     center: Tuple[float, float, float]
+    """`(x, y, z)` coordinates specifying the center of the bounding box."""
 
-    #: (x, y, z) measurements specifying the dimensions of the bounding box.
     dimensions: Tuple[float, float, float]
+    """`(x, y, z)` measurements specifying the dimensions of the bounding box."""
 
-    #: Rotations in degrees about each (x, y, z) axis.
     rotations: Tuple[float, float, float]
+    """Rotations in degrees about each `(x, y, z)` axis."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -183,6 +203,7 @@ class LabeledBoundingBox3D(BoundingBox3D):
     """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional string label."""
 
     label: str
+    """The label associated with this 3D bounding box."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -190,6 +211,7 @@ class ScoredBoundingBox3D(BoundingBox3D):
     """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional float score."""
 
     score: float
+    """The score associated with this 3D bounding box."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -197,7 +219,10 @@ class ScoredLabeledBoundingBox3D(BoundingBox3D):
     """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional string label and float score."""
 
     label: str
+    """The label associated with this 3D bounding box."""
+
     score: float
+    """The score associated with this 3D bounding box."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -213,11 +238,11 @@ class SegmentationMask(Annotation):
     other pixel value will be transparent.
     """
 
-    #: Mapping of unique label IDs (pixel values) to unique label values.
     labels: Dict[int, str]
+    """Mapping of unique label IDs (pixel values) to unique label values."""
 
-    #: URL of the image (segmentation mask).
     locator: str
+    """URL of the segmentation mask image."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -228,8 +253,8 @@ class SegmentationMask(Annotation):
 class BitmapMask(Annotation):
     """Arbitrary bitmap mask. The `locator` is the URL to the image file representing the mask."""
 
-    #: URL of the bitmap data.
     locator: str
+    """URL of the bitmap data."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -241,10 +266,11 @@ class ClassificationLabel(Annotation):
     """Label of classification."""
 
     label: str
+    """String label for this classification."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
-        return _AnnotationType.CLASSIFICATON_LABEL
+        return _AnnotationType.CLASSIFICATION_LABEL
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -252,6 +278,7 @@ class ScoredClassificationLabel(ClassificationLabel):
     """Classification label with accompanying score."""
 
     score: float
+    """Score associated with this label."""
 
 
 _ANNOTATION_TYPES = [

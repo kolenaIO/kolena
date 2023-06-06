@@ -11,6 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Test samples are the inputs to your models when testing.
+
+For example, for a model that processes specific regions within a larger image, its test sample may be defined:
+
+```python
+from dataclasses import dataclass
+
+from kolena.workflow import Image
+from kolena.workflow.annotation import BoundingBox
+
+@dataclass(frozen=True)
+class ImageWithRegion(Image):
+    region: BoundingBox
+
+test_sample = ImageWithRegion(
+    locator="s3://my-bucket/path/to-large-image.png",
+    region=BoundingBox(top_left=(0, 0), bottom_right=(100, 100)),
+)
+```
+"""
 import copy
 from abc import ABCMeta
 from typing import Any
@@ -35,9 +56,6 @@ from kolena.workflow._validators import validate_field
 from kolena.workflow._validators import validate_metadata_dict
 from kolena.workflow.asset import ImageAsset
 
-#: Type of the `metadata` field that can be included on [`TestSample`][kolena.workflow.TestSample] definitions. String
-#: (`str`) keys and scalar values (`int`, `float`, `str`, `bool`, `None`) as well as scalar list values are
-#: permitted.
 Metadata = Dict[
     str,
     Union[
@@ -68,6 +86,9 @@ Metadata = Dict[
         ],
     ],
 ]
+"""Type of the `metadata` field that can be included on [`TestSample`][kolena.workflow.TestSample] definitions. String
+(`str`) keys and scalar values (`int`, `float`, `str`, `bool`, `None`) as well as scalar list values are permitted."""
+
 _METADATA_KEY = "metadata"
 
 

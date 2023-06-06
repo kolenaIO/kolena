@@ -152,10 +152,10 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Create a new test case with the provided name.
 
-        :param name: the name of the new test case to create.
-        :param description: optional free-form description of the test case to create.
-        :param test_samples: optionally specify a set of test samples and ground truths to populate the test case.
-        :return: the newly created test case.
+        :param name: The name of the new test case to create.
+        :param description: Optional free-form description of the test case to create.
+        :param test_samples: Optionally specify a set of test samples and ground truths to populate the test case.
+        :return: The newly created test case.
         """
         cls._validate_test_samples(test_samples)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
@@ -173,10 +173,10 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Load an existing test case with the provided name.
 
-        :param name: the name of the test case to load.
-        :param version: optionally specify a particular version of the test case to load. Defaults to the latest version
+        :param name: The name of the test case to load.
+        :param version: Optionally specify a particular version of the test case to load. Defaults to the latest version
             when unset.
-        :return: the loaded test case.
+        :return: The loaded test case.
         """
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
@@ -238,8 +238,8 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             Add a test sample to the test case. When the test sample already exists in the test case, its ground truth
             is overwritten with the ground truth provided here.
 
-            :param test_sample: the test sample to add.
-            :param ground_truth: the ground truth for the test sample.
+            :param test_sample: The test sample to add.
+            :param ground_truth: The ground truth for the test sample.
             """
             self._edits.append(self._Edit(test_sample, ground_truth=ground_truth))
 
@@ -248,7 +248,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             """
             Remove a test sample from the test case. Does nothing if the test sample is not in the test case.
 
-            :param test_sample: the test sample to remove.
+            :param test_sample: The test sample to remove.
             """
             self._edits.append(self._Edit(test_sample, remove=True))
 
