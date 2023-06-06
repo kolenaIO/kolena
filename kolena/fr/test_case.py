@@ -51,26 +51,30 @@ class TestCase(ABC, Frozen, WithTelemetry):
     The test case is the base unit of results computation in the Kolena platform. Metrics are computed by test case.
     """
 
-    #: The unique name of this test case. Cannot be changed after creation.
     name: str
+    """The unique name of this test case. Cannot be changed after creation."""
 
-    #: The version of this test case. A test case's version is automatically incremented whenever it is edited via
-    #: :meth:`TestCase.edit`.
     version: int
+    """
+    The version of this test case. A test case's version is automatically incremented whenever it is edited via
+    [`TestCase.edit`][kolena.fr.TestCase.edit].
+    """
 
-    #: Free-form, human-readable description of this test case. Can be edited at any time via :meth:`TestCase.edit`.
     description: str
+    """
+    Free-form, human-readable description of this test case. Can be edited at any time via
+    [`TestCase.edit`][kolena.fr.TestCase.edit].
+    """
 
-    #: The count of images attached to this test case
     image_count: int
+    """The number of images included in this test case."""
 
-    #: The count of genuine image pairs attached to this test case
     pair_count_genuine: int
+    """The number of genuine image pairs included in this test case."""
 
-    #: The count of imposter image pairs attached to this test case
     pair_count_imposter: int
+    """The number of imposter image pairs included in this test case."""
 
-    #: Deprecated, use :class:`kolena._api.v1.fr.TestCase.EntityData` instead
     Data = API.EntityData
 
     _id: int
@@ -102,6 +106,12 @@ class TestCase(ABC, Frozen, WithTelemetry):
     @property
     @deprecated(details="use values on :class:`kolena.fr.TestCase` directly", deprecated_in="0.57.0")
     def data(self) -> API.EntityData:
+        """
+        !!! warning "Deprecated: since `0.57.0`"
+            Access this data via instance attributes, e.g. `self.image_count`, directly.
+
+        The data associated with this test case.
+        """
         return self._data
 
     @data.setter
@@ -119,10 +129,10 @@ class TestCase(ABC, Frozen, WithTelemetry):
         """
         Create a new test case with the provided name.
 
-        :param name: the name of the new test case to create.
-        :param description: optional free-form description of the test case to create.
-        :param test_samples: optionally specify a set of test samples to populate the test case.
-        :return: the newly created test case.
+        :param name: The name of the new test case to create.
+        :param description: Optional free-form description of the test case to create.
+        :param test_samples: Optionally specify a set of test samples to populate the test case.
+        :return: The newly created test case.
         """
         request = API.CreateRequest(name=name, description=description or "")
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
@@ -139,10 +149,10 @@ class TestCase(ABC, Frozen, WithTelemetry):
         """
         Load an existing test case with the provided name.
 
-        :param name: the name of the test case to load.
-        :param version: optionally specify a particular version of the test case to load. Defaults to the latest version
+        :param name: The name of the test case to load.
+        :param version: Optionally specify a particular version of the test case to load. Defaults to the latest version
             when unset.
-        :return: the loaded test case.
+        :return: The loaded test case.
         """
         return cls._load_by_name(name, version)
 
@@ -150,9 +160,12 @@ class TestCase(ABC, Frozen, WithTelemetry):
     @deprecated(details="use :meth:`load` instead", deprecated_in="0.57.0")
     def load_by_name(cls, name: str, version: Optional[int] = None) -> "TestCase":
         """
+        !!! warning "Deprecated: since `0.57.0`"
+            Use [`TestCase.load`][kolena.fr.TestCase.load] instead.
+
         Load an existing test case with the provided name.
 
-        :param name: the name of the test case to load
+        :param name: The name of the test case to load.
         :param version: optionally specify the target version of the test case to load. When absent, the highest version
             of the test case with the provided name is returned
         :return: the loaded test case
@@ -170,9 +183,9 @@ class TestCase(ABC, Frozen, WithTelemetry):
 
     def load_data(self) -> TestCaseDataFrame:
         """
-        Load all pairs data for a test case.
+        Load all image pairs for a test case.
 
-        :return: a DataFrame containing all pairs defined in this test case
+        :return: DataFrame containing all pairs defined in this test case.
         """
         return _BatchedLoader.concat(self.iter_data(), TestCaseDataFrame)
 
@@ -229,7 +242,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
             """
             Update the description of this test case.
 
-            :param description: the new test case description
+            :param description: The new test case description.
             """
             self._description = description
 
@@ -238,13 +251,12 @@ class TestCase(ABC, Frozen, WithTelemetry):
             """
             Add the provided image pair to the test case.
 
-            Note that if the image pair with ``locator_a`` and ``locator_b`` is already defined within the platform,
-            the value for ``is_same`` must match the value already defined.
+            Note that if the image pair with `locator_a` and `locator_b` is already defined within the platform,
+            the value for `is_same` must match the value already defined.
 
-            :param locator_a: the left locator for the image pair
-            :param locator_b: the right locator for the image pair
-            :param is_same: whether or not these images should be considered a true pair or an imposter pair
-            :raises ValueError: the image pair already exists in the test case
+            :param locator_a: The left locator for the image pair.
+            :param locator_b: The right locator for the image pair.
+            :param is_same: Whether to treat this image pair as a a genuine pair (`True`) or an imposter pair (`False`).
             """
             key = self._key(locator_a, locator_b)
             val = (locator_a, locator_b, is_same)
@@ -258,9 +270,9 @@ class TestCase(ABC, Frozen, WithTelemetry):
             """
             Remove the provided pair from the test case.
 
-            :param locator_a: the left locator for the image pair
-            :param locator_b: the right locator for the image pair
-            :raises KeyError: if the provided locator pair is not in the test case
+            :param locator_a: The left locator for the image pair.
+            :param locator_b: The right locator for the image pair.
+            :raises KeyError: If the provided locator pair is not in the test case.
             """
             key = self._key(locator_a, locator_b)
             if key not in self._samples.keys():
@@ -282,16 +294,16 @@ class TestCase(ABC, Frozen, WithTelemetry):
         """
         Edit this test case in a context:
 
-        .. code-block:: python
-
-            with test_case.edit() as editor:
-                # perform as many editing actions as desired
-                editor.add(...)
-                editor.remove(...)
+        ```python
+        with test_case.edit() as editor:
+            # perform as many editing actions as desired
+            editor.add(...)
+            editor.remove(...)
+        ```
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: clear any and all test samples currently in the test case.
+        :param reset: Clear any and all test samples currently in the test case.
         """
         editor = self.Editor(self.description, reset)
 
@@ -339,8 +351,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         """
         Iterator of DataFrames describing all pairs data for a test case.
 
-        :param batch_size: optionally specify maximum number of rows to be returned in a single DataFrame. By default,
-            limits row count to 10_000_000.
+        :param batch_size: Optionally specify maximum number of rows to be returned in a single DataFrame.
         """
         log.info(f"loading image pairs in test case '{self.name}' (v{self.version})")
         init_request = API.InitLoadDataRequest(batch_size=batch_size, test_case_id=self._id)

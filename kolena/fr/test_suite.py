@@ -41,32 +41,36 @@ class TestSuite(ABC, Frozen, WithTelemetry):
     A test suite groups together one or more test cases.
     """
 
-    #: The unique name of this test suite. Cannot be changed after creation.
     name: str
+    """The unique name of this test suite."""
 
-    #: The version of this test suite. A test suite's version is automatically incremented whenever it is edited via
-    #: :meth:`TestSuite.edit`.
     version: int
+    """
+    The version of this test suite. A test suite's version is automatically incremented whenever it is edited via
+    [`TestSuite.edit`][kolena.fr.TestSuite.edit].
+    """
 
-    #: Free-form, human-readable description of this test suite. Can be edited at any time via :meth:`TestSuite.edit`.
     description: str
+    """
+    Free-form, human-readable description of this test suite. Can be edited at any time via
+    [`TestSuite.edit`][kolena.fr.TestSuite.edit].
+    """
 
-    #: The baseline :class:`kolena.fr.TestCase` objects belonging to this test suite
     baseline_test_cases: List[TestCase]
+    """The baseline [`TestCase`][kolena.fr.TestCase] object(s) for this test suite."""
 
-    #: The non-baseline :class:`kolena.fr.TestCase` objects belonging to this test suite
     non_baseline_test_cases: List[TestCase]
+    """The non-baseline [`TestCase`][kolena.fr.TestCase] object(s) for this test suite."""
 
-    #: The count of images attached to the baseline test cases
     baseline_image_count: int
+    """The number of images attached to the baseline test case(s)."""
 
-    #: The count of genuine pair attached to the baseline test cases
     baseline_pair_count_genuine: int
+    """The number of genuine pairs attached to the baseline test case(s)."""
 
-    #: The count of imposter pair attached to the baseline test cases
     baseline_pair_count_imposter: int
+    """The count of imposter pairs attached to the baseline test case(s)."""
 
-    #: Deprecated, use :class:`kolena._api.v1.fr.TestSuite.EntityData` instead
     Data = API.EntityData
 
     _id: int
@@ -100,6 +104,12 @@ class TestSuite(ABC, Frozen, WithTelemetry):
     @property
     @deprecated(details="use values on :class:`kolena.fr.TestSuite` directly", deprecated_in="0.57.0")
     def data(self) -> API.EntityData:
+        """
+        !!! warning "Deprecated: since `0.57.0`"
+            Access this data via instance attributes, e.g. `self.baseline_test_cases`, directly.
+
+        The data associated with this test suite.
+        """
         return self._data
 
     @data.setter
@@ -118,11 +128,11 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         """
         Create a new test suite with the provided name.
 
-        :param name: the name of the new test suite to create.
-        :param description: optional free-form description of the test suite to create.
-        :param baseline_test_cases: optionally specify a list of test cases to use as baseline for the test suite.
-        :param non_baseline_test_cases: optionally specify a list of test cases to populate the test suite.
-        :return: the newly created test suite.
+        :param name: The name of the new test suite to create.
+        :param description: Optional free-form description of the test suite to create.
+        :param baseline_test_cases: Optionally specify a list of test cases to use as baseline for the test suite.
+        :param non_baseline_test_cases: Optionally specify a list of test cases to populate the test suite.
+        :return: The newly created test suite.
         """
         request = API.CreateRequest(name=name, description=description or "")
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
@@ -151,11 +161,11 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         """
         Retrieve the existing test suite with the provided name.
 
-        :param name: name of the test suite to retrieve.
-        :param version: optionally specify the version of the named test suite to retrieve. When absent the latest
+        :param name: Name of the test suite to retrieve.
+        :param version: Optionally specify the version of the named test suite to retrieve. When absent the latest
             version of the test suite is returned.
-        :return: the retrieved test suite.
-        :raises NotFoundError: if the test suite with the provided name doesn't exist.
+        :return: The retrieved test suite.
+        :raises NotFoundError: If the test suite with the provided name doesn't exist.
         """
         return cls.load(name, version)
 
@@ -239,7 +249,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
             """
             Update the description of the test suite.
 
-            :param description: the new description of the test suite
+            :param description: The new description of the test suite.
             """
             self._description = description
             self._edited = True
@@ -248,11 +258,11 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         def add(self, test_case: TestCase, is_baseline: Optional[bool] = None) -> None:
             """
             Add a test case to this test suite. If a different version of the test case already exists in this test
-            suite, it is replaced and its baseline status will be propagated when is_baseline is unset.
+            suite, it is replaced and its baseline status will be propagated when `is_baseline` is unset.
 
-            :param test_case: the test case to add to the test suite.
-            :param is_baseline: specify that this test case is a part of the "baseline," i.e. if the samples in this
-                test case should contribute to the computation of thresholds within this test suite
+            :param test_case: The test case to add to the test suite.
+            :param is_baseline: Specify that this test case is a part of the "baseline," i.e. if the samples in this
+                test case should contribute to the computation of thresholds within this test suite.
             """
             name = test_case.name
             # clean up any previous versions and propagates its baseline status
@@ -270,10 +280,10 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         @validate_arguments(config=ValidatorConfig)
         def remove(self, test_case: TestCase) -> None:
             """
-            Remove the provided :class:`kolena.fr.TestCase` from the test suite. Any version of this test case in the
-            suite will be removed; the version does not need to match exactly.
+            Remove the provided [`TestCase`][kolena.fr.TestCase] from the test suite. Any version of this test case in
+            the suite will be removed; the version does not need to match exactly.
 
-            :param test_case: the test case to be removed
+            :param test_case: The test case to remove.
             """
             name = test_case.name
             if name in self._baseline_test_cases.keys():
@@ -288,12 +298,12 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         @validate_arguments(config=ValidatorConfig)
         def merge(self, test_case: TestCase, is_baseline: Optional[bool] = None) -> None:
             """
-            Add the :class:`kolena.fr.TestCase` to the suite. If a test case by this name already exists in the suite,
-            replace the previous version of that test case with the newly provided version.
+            Add the [`TestCase`][kolena.fr.TestCase] to the suite. If a test case by this name already exists in the
+            suite, replace the previous version of that test case with the newly provided version.
 
-            :param test_case: the test case to be merged into the test suite
-            :param is_baseline: optionally specify whether or not this test case should be considered as a part of the
-                baseline for this test suite. When not specified, the previous value for ``is_baseline`` for this test
+            :param test_case: The test case to be merged into the test suite.
+            :param is_baseline: Optionally specify whether or not this test case should be considered as a part of the
+                baseline for this test suite. When not specified, the previous value for `is_baseline` for this test
                 case in this test suite is propagated forward. Defaults to false if the test case does not already exist
                 in this suite.
             """

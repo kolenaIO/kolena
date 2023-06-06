@@ -57,14 +57,14 @@ from kolena.fr.datatypes import PairResultDataFrameSchema
 
 class TestRun(ABC, Frozen, WithTelemetry):
     """
-    Interface to run tests for a :class:`kolena.fr.Model` on a set of
-    :class:`kolena.fr.TestSuite` suites. Any in-progress tests for this model on these suites are resumed.
+    Interface to test a [`Model`][kolena.fr.Model] on a [`TestSuite`][kolena.fr.TestSuite]. Any in-progress tests for
+    this model on this test suite is resumed.
 
-    For a streamlined interface, see :meth:`kolena.fr.test`.
+    For a streamlined interface, see [`test`][kolena.fr.test].
 
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    :param reset: overwrites existing inferences if set.
+    :param model: The model being tested.
+    :param test_suite: The test suite on which to test the model.
+    :param reset: Overwrites existing inferences if set.
     """
 
     _id: int
@@ -100,13 +100,16 @@ class TestRun(ABC, Frozen, WithTelemetry):
     @deprecated(details="use initializer :class:`kolena.fr.TestRun` directly", deprecated_in="0.58.0")
     def create_or_retrieve(cls, model: Model, test_suite: TestSuite, reset: bool = False) -> "TestRun":
         """
-        Create a new test run for the provided :class:`kolena.fr.Model` on the provided :class:`kolena.fr.TestSuite`.
-        If a test run for this model on this suite already exists, it is returned.
+        !!! warning "Deprecated: since `0.57.0`"
+            Use the [`TestRun`][kolena.fr.TestRun] constructor instead.
 
-        :param model: the model being tested.
-        :param test_suite: the test suite on which to test the model.
-        :param reset: overwrites existing inferences if set.
-        :return: the created or retrieved test run.
+        Create a new test run for the provided [`Model`][kolena.fr.Model] on the provided
+        [`TestSuite`][kolena.fr.TestSuite]. If a test run for this model on this suite already exists, it is returned.
+
+        :param model: The model being tested.
+        :param test_suite: The test suite on which to test the model.
+        :param reset: Overwrites existing inferences if set.
+        :return: The created or retrieved test run.
         """
         return TestRun(model, test_suite, reset=reset)
 
@@ -116,10 +119,10 @@ class TestRun(ABC, Frozen, WithTelemetry):
         Load a DataFrame containing records for each of the images in the configured test suite that does not yet have
         results from the configured model.
 
-        :param batch_size: optionally specify the maximum number of image records to return. Defaults to ``10_000_000``.
+        :param batch_size: Optionally specify the maximum number of image records to return.
         :return: DataFrame containing records for each of the images that must be processed.
-        :raises InputValidationError: if the requested ``batch_size`` failed validation.
-        :raises RemoteError: if images could not be loaded for any reason.
+        :raises InputValidationError: The requested `batch_size` failed validation.
+        :raises RemoteError: Images could not be loaded for any reason.
         """
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
@@ -152,18 +155,18 @@ class TestRun(ABC, Frozen, WithTelemetry):
         """
         Upload inference results for a batch of images.
 
-        All columns except for ``image_id`` and ``embedding`` are optional. An empty ``embedding`` cell in a record
-        indicates a failure to enroll. The ``failure_reason`` column can optionally be specified for failures to enroll.
+        All columns except for `image_id` and `embedding` are optional. An empty `embedding` cell in a record
+        indicates a failure to enroll. The `failure_reason` column can optionally be specified for failures to enroll.
 
         To provide more than one embedding extracted from a given image, include multiple records with the same
-        ``image_id`` in ``df_image_result`` (one for each embedding extracted). Records for a given ``image_id`` must
-        be submitted in the same ``df_image_result`` DataFrame, and **not** across multiple calls to
-        ``upload_image_results``.
+        `image_id` in `df_image_result` (one for each embedding extracted). Records for a given `image_id` must
+        be submitted in the same `df_image_result` DataFrame, and **not** across multiple calls to
+        `upload_image_results`.
 
         :param df_image_result: DataFrame of any size containing records describing inference results for an image.
-        :return: number of records successfully uploaded.
-        :raises TypeValidationError: if the DataFrame failed type validation.
-        :raises RemoteError: if the DataFrame was unable to be successfully ingested for any reason.
+        :return: Number of records successfully uploaded.
+        :raises TypeValidationError: The DataFrame failed type validation.
+        :raises RemoteError: The DataFrame was unable to be successfully ingested for any reason.
         """
         log.info("uploading inference results for test run")
         init_response = init_upload()
@@ -205,16 +208,16 @@ class TestRun(ABC, Frozen, WithTelemetry):
         Load DataFrames containing computed embeddings and records for each of the image pairs in the configured test
         suite that have not yet had similarity scores computed.
 
-        This method should not be called until all images in the :class:`TestRun` have been processed.
+        This method should not be called until all images in the [`TestRun`][kolena.fr.TestRun] have been processed.
 
-        :param batch_size: optionally specify the maximum number of image pair records to return. Defaults to
-            ``10_000_000``.
-        :return: two DataFrames, one containing embeddings computed in the previous step (``df_embedding``) and one
-            containing records for each of the image pairs that must be computed (``df_pair``). See documentation on
-            :class:`kolena.fr.datatypes.EmbeddingDataFrameSchema` for expected format when multiple embeddings were
-            uploaded from a single image in :meth:`kolena.fr.TestRun.upload_image_results`.
-        :raises InputValidationError: if the requested ``batch_size`` failed validation.
-        :raises RemoteError: if pairs could not be loaded for any reason.
+        :param batch_size: Optionally specify the maximum number of image pair records to return.
+        :return: Two DataFrames, one containing embeddings computed in the previous step (`df_embedding`) and one
+            containing records for each of the image pairs that must be computed (`df_pair`). See documentation on
+            [`EmbeddingDataFrameSchema][kolena.fr.datatypes.EmbeddingDataFrameSchema] for expected format when multiple
+            embeddings were uploaded from a single image in
+            [`TestRun.upload_image_results][kolena.fr.TestRun.upload_image_results].
+        :raises InputValidationError: The requested `batch_size` failed validation.
+        :raises RemoteError: Pairs could not be loaded for any reason.
         """
         if batch_size <= 0:
             raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
@@ -261,22 +264,22 @@ class TestRun(ABC, Frozen, WithTelemetry):
 
         This method should not be called until all images in the TestRun have been processed.
 
-        All columns except for ``image_pair_id`` and ``similarity`` are optional. An empty ``similarity`` cell in a
+        All columns except for `image_pair_id` and `similarity` are optional. An empty `similarity` cell in a
         record indicates a pair failure (i.e. one or more of the images in the pair failed to enroll).
 
         For image pairs containing images with more than one embedding, a single record may be provided with the highest
-        similarity score, or ``M x N`` records may be provided for each embeddings combination in the pair, when there
-        are ``M`` embeddings from ``image_a`` and ``N`` embeddings from ``image_b``.
+        similarity score, or `M x N` records may be provided for each embeddings combination in the pair, when there
+        are `M` embeddings from `image_a` and `N` embeddings from `image_b`.
 
-        When providing multiple records for a given image pair, use the ``embedding_a_index`` and ``embedding_b_index``
+        When providing multiple records for a given image pair, use the `embedding_a_index` and `embedding_b_index`
         columns to indicate which embeddings were used to compute a given similarity score. Records for a given image
-        pair must be submitted in the same ``df_pair_result`` DataFrame, and **not** across multiple calls to
-        ``upload_pair_results``.
+        pair must be submitted in the same `df_pair_result` DataFrame, and **not** across multiple calls to
+        `upload_pair_results`.
 
         :param df_pair_result: DataFrame containing records describing the similarity score of a pair of images.
-        :return: number of records successfully uploaded.
-        :raises TypeValidationError: if the DataFrame failed type validation.
-        :raises RemoteError: if the DataFrame was unable to be successfully ingested for any reason.
+        :return: Number of records successfully uploaded.
+        :raises TypeValidationError: The DataFrame failed type validation.
+        :raises RemoteError: The DataFrame was unable to be successfully ingested for any reason.
         """
         log.info("uploading pair results for test run")
         init_response = init_upload()
@@ -299,12 +302,12 @@ class TestRun(ABC, Frozen, WithTelemetry):
 @validate_arguments(config=ValidatorConfig)
 def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> None:
     """
-    Test the provided :class:`kolena.fr.InferenceModel` on one or more provided :class:`kolena.fr.TestSuite` suites. Any
-    tests already in progress for this model on these suites are resumed.
+    Test the provided [`InferenceModel`][kolena.fr.InferenceModel] on the provided [`TestSuite`][kolena.fr.TestSuite].
+    Any tests already in progress for this model on these suites are resumed.
 
-    :param model: the model being tested, implementing both ``extract`` and ``compare`` methods.
-    :param test_suite: the test suite on which to test the model.
-    :param reset: overwrites existing inferences if set.
+    :param model: The model being tested, implementing both `extract` and `compare` methods.
+    :param test_suite: The test suite on which to test the model.
+    :param reset: Overwrites existing inferences if set.
     """
     test_run = TestRun(model, test_suite, reset=reset)
 

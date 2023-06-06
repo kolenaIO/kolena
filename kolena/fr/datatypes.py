@@ -139,35 +139,41 @@ def _from_json(value: Optional[str]) -> Optional[Any]:
 
 
 class TestImageDataFrameSchema(pa.SchemaModel):
-    # internal ID corresponding to this image
     image_id: Series[pa.typing.Int64] = pa.Field(coerce=True)
+    """Internal ID corresponding to this image."""
 
-    # external locator pointing to image in bucket
     locator: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
+    """External locator pointing to image in bucket."""
 
-    # specify source dataset, e.g. "CIFAR-10"
     data_source: Series[pa.typing.String] = pa.Field(coerce=True, nullable=True)
+    """Specify source dataset, e.g. "CIFAR-10"."""
 
-    # -1 used to specify "unspecified"
     width: Series[pa.typing.Int64] = pa.Field(coerce=True, _validate_optional_dimension=())
+    """Width of the image, in pixels. The value `-1` is used to specify "unspecified"."""
+
     height: Series[pa.typing.Int64] = pa.Field(coerce=True, _validate_optional_dimension=())
+    """Height of the image, in pixels. The value `-1` is used to specify "unspecified"."""
 
-    # specify that this image is an augmented version of another (registered) image
     original_locator: Series[pa.typing.String] = pa.Field(coerce=True, nullable=True, _validate_locator=())
+    """Specify that this image is an augmented version of another (registered) image."""
 
-    # free-form specification describing the augmentation applied to the image, e.g. {"rotate": 90}
-    # should not be specified unless original_locator is present
     augmentation_spec: Series[JSONObject] = pa.Field(coerce=True, nullable=True, _validate_json_object=())
+    """
+    Free-form specification describing the augmentation applied to the image, e.g. `{"rotate": 90}`. Should not be
+    specified unless original_locator is present.
+    """
 
-    # ground truth bounding box -- if absent, no ground truth will be available for display
     bounding_box: Series[BoundingBox] = pa.Field(coerce=True, nullable=True, _validate_bounding_box=())
+    """Ground truth bounding box. If absent, no ground truth will be available for display."""
 
-    # ground truth landmarks -- if absent, no ground truth will be available for display
     landmarks: Series[Landmarks] = pa.Field(coerce=True, nullable=True, _validate_landmarks=())
+    """Ground truth landmarks. If absent, no ground truth will be available for display."""
 
-    # specify a set of tags to apply to this object in the form {category: value}
-    # note that this format intentionally restricts tags to a single value per category
     tags: Series[JSONObject] = pa.Field(coerce=True, _validate_tags=())
+    """
+    Specify a set of tags to apply to this object in the form `{category: value}`. Note that this format
+    intentionally restricts tags to a single value per category.
+    """
 
 
 TestImageRecord = Tuple[
@@ -210,40 +216,50 @@ class ImageDataFrameSchema(pa.SchemaModel):
 
 
 class ImageResultDataFrameSchema(pa.SchemaModel):
-    #: [**Required**] The ID of the image corresponding to this record.
     image_id: Series[pa.typing.Int64] = pa.Field(coerce=True)
+    """[**Required**] The ID of the image corresponding to this record."""
 
-    #: [Optional] A bounding box around the face detected in this image.
     bounding_box: Optional[Series[BoundingBox]] = pa.Field(coerce=True, nullable=True, _validate_bounding_box=())
+    """[Optional] A bounding box around the face detected in this image."""
 
-    #: [Optional] RGB image (``np.ndarray`` with cells of type ``np.uint8``) corresponding to the input to the
-    #: "landmarks" model in the face recognition pipeline.
     landmarks_input_image: Optional[Series[RGBImage]] = pa.Field(coerce=True, nullable=True, _validate_rgb_image=())
+    """
+    [Optional] RGB image (`np.ndarray` with cells of type `np.uint8`) corresponding to the input to the "landmarks"
+    model in the face recognition pipeline.
+    """
 
-    #: [Optional] A 10-element array with ``(x, y)`` coordinates corresponding to the left eye, right eye, nose tip,
-    #: left mouth corner, right mouth corner of the detected face.
     landmarks: Optional[Series[Landmarks]] = pa.Field(coerce=True, nullable=True, _validate_landmarks=())
+    """
+    [Optional] A 10-element array with `(x, y)` coordinates corresponding to the left eye, right eye, nose tip, left
+    mouth corner, right mouth corner of the detected face.
+    """
 
-    #: [Optional] RGB image (``np.ndarray`` with cells of type ``np.uint8``) corresponding to the input to the "quality"
-    #: model in the face recognition pipeline.
     quality_input_image: Optional[Series[RGBImage]] = pa.Field(coerce=True, nullable=True, _validate_rgb_image=())
+    """
+    [Optional] RGB image (`np.ndarray` with cells of type `np.uint8`) corresponding to the input to the "quality" model
+    in the face recognition pipeline.
+    """
 
-    #: [Optional] Score produced by the "quality" model in the face recognition pipeline.
     quality: Optional[Series[pa.typing.Float64]] = pa.Field(coerce=True, nullable=True)
+    """[Optional] Score produced by the "quality" model in the face recognition pipeline."""
 
-    #: [Optional] Score produced by the "acceptability" model in the face recognition pipeline.
     acceptability: Optional[Series[pa.typing.Float64]] = pa.Field(coerce=True, nullable=True)
+    """[Optional] Score produced by the "acceptability" model in the face recognition pipeline."""
 
-    #: [Optional] RGB image (``np.ndarray`` with cells of type ``np.uint8``) corresponding to the input to the facial
-    #: embeddings extraction model in the face recognition pipeline.
     fr_input_image: Optional[Series[RGBImage]] = pa.Field(coerce=True, nullable=True, _validate_rgb_image=())
+    """
+    [Optional] RGB image (`np.ndarray` with cells of type `np.uint8`) corresponding to the input to the facial
+    embeddings extraction model in the face recognition pipeline.
+    """
 
-    #: [Optional] Embedding vector (``np.ndarray``) extracted representing the face detected in the image. An empty cell
-    #: (no array is provided) indicates a failure to enroll for the image, i.e. no face detected.
     embedding: Series[EmbeddingVector] = pa.Field(coerce=True, nullable=True, _validate_embedding_vector=())
+    """
+    [Optional] Embedding vector (`np.ndarray`) extracted representing the face detected in the image. An empty cell
+    (no array is provided) indicates a failure to enroll for the image, i.e. no face detected.
+    """
 
-    #: [Optional] The reason why the image was a failure to enroll.
     failure_reason: Optional[Series[pa.typing.String]] = pa.Field(coerce=True, nullable=True)
+    """[Optional] The reason why the image was a failure to enroll."""
 
 
 class _ResultStageFrameSchema(pa.SchemaModel):
@@ -269,14 +285,16 @@ class _ImageChipsDataFrameSchema(pa.SchemaModel):
 class EmbeddingDataFrameSchema(pa.SchemaModel):
     image_id: Series[pa.typing.Int64] = pa.Field(coerce=True)
 
-    #: The extracted embedding(s) corresponding to the ``image_id``. A missing embedding indicates a failure to enroll
-    #: for the image.
-    #:
-    #: For images with only one extracted embedding, the ``embedding`` is a one-dimensional ``np.ndarray`` with length
-    #: matching the length of the extracted embedding. When multiple embeddings were extracted from a single image, the
-    #: first dimension represents the index of the extracted embedding. For example, for an image with 3 extracted
-    #: embeddings and embeddings of length 256, the ``embedding`` is an array of shape (3, 256).
     embedding: Series[EmbeddingVector] = pa.Field(nullable=True, coerce=True, _validate_embedding_vector=())
+    """
+    The extracted embedding(s) corresponding to the `image_id`. A missing embedding indicates a failure to enroll
+    for the image.
+
+    For images with only one extracted embedding, the `embedding` is a one-dimensional `np.ndarray` with length
+    matching the length of the extracted embedding. When multiple embeddings were extracted from a single image, the
+    first dimension represents the index of the extracted embedding. For example, for an image with 3 extracted
+    embeddings and embeddings of length 256, the `embedding` is an array of shape (3, 256).
+    """
 
 
 class PairDataFrameSchema(pa.SchemaModel):
@@ -286,20 +304,26 @@ class PairDataFrameSchema(pa.SchemaModel):
 
 
 class PairResultDataFrameSchema(pa.SchemaModel):
-    #: [**Required**] The ID of the image corresponding to this record.
     image_pair_id: Series[pa.typing.Int64] = pa.Field(coerce=True)
+    """[**Required**] The ID of the image corresponding to this record."""
 
-    #: [Optional] The similarity score computed between the two embeddings in this image pair. Should be left empty when
-    #: either image in the pair is a failure to enroll.
     similarity: Series[pa.typing.Float64] = pa.Field(nullable=True, coerce=True)
+    """
+    [Optional] The similarity score computed between the two embeddings in this image pair. Should be left empty when
+    either image in the pair is a failure to enroll.
+    """
 
-    #: [Optional] Index of the embedding in ``image_a`` corresponding to this similarity score. Required when multiple
-    #: embeddings are extracted per image and multiple similarity scores are computed per image pair.
     embedding_a_index: Optional[Series[pa.typing.Int64]] = pa.Field(nullable=True, coerce=True)
+    """
+    [Optional] Index of the embedding in `image_a` corresponding to this similarity score. Required when multiple
+    embeddings are extracted per image and multiple similarity scores are computed per image pair.
+    """
 
-    #: [Optional] Index of the embedding in ``image_b`` corresponding to this similarity score. Required when multiple
-    #: embeddings are extracted per image and multiple similarity scores are computed per image pair.
     embedding_b_index: Optional[Series[pa.typing.Int64]] = pa.Field(nullable=True, coerce=True)
+    """
+    [Optional] Index of the embedding in `image_b` corresponding to this similarity score. Required when multiple
+    embeddings are extracted per image and multiple similarity scores are computed per image pair.
+    """
 
 
 class LoadedPairResultDataFrameSchema(TestCaseDataFrameSchema, PairResultDataFrameSchema):  # note inheritance
