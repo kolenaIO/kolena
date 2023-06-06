@@ -65,13 +65,13 @@ class TestCases(metaclass=ABCMeta):
         """
         Matches test sample metrics to the corresponding test cases that they belong to.
 
-        :param test_samples: all unique test samples within the test run, sequenced in the same order as the other
+        :param test_samples: All unique test samples within the test run, sequenced in the same order as the other
             parameters.
-        :param ground_truths: ground truths corresponding to ``test_samples``, sequenced in the same order.
-        :param inferences: inferences corresponding to ``test_samples``, sequenced in the same order.
-        :param metrics_test_sample: test-sample-level metrics corresponding to ``test_samples``, sequenced in the
+        :param ground_truths: Ground truths corresponding to `test_samples`, sequenced in the same order.
+        :param inferences: Inferences corresponding to `test_samples`, sequenced in the same order.
+        :param metrics_test_sample: Test-sample-level metrics corresponding to `test_samples`, sequenced in the
             same order.
-        :return: an iterator that groups each test case in the test run to the lists of member test samples, inferences,
+        :return: Iterator that groups each test case in the test run to the lists of member test samples, inferences,
             and test-sample-level metrics.
         """
         raise NotImplementedError
@@ -81,7 +81,7 @@ class TestCases(metaclass=ABCMeta):
 class EvaluationResults:
     """
     A bundle of metrics computed for a test run grouped at the test-sample-level, test-case-level, and test-suite-level.
-    Optionally includes :class:`kolena.workflow.Plot`s at the test-case-level.
+    Optionally includes [`Plot`s][kolena.workflow.Plot] at the test-case-level.
     """
 
     metrics_test_sample: List[Tuple[BaseTestSample, BaseMetricsTestSample]]

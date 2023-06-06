@@ -1,0 +1,1 @@
+::: kolena.workflow.asset

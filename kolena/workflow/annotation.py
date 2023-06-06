@@ -43,9 +43,9 @@ class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """
     Where applicable, annotations are visualized in the web platform.
 
-    For example, when viewing images, any annotations present in a :class:`kolena.workflow.TestSample`,
-    :class:`kolena.workflow.GroundTruth`, :class:`kolena.workflow.Inference`, or
-    :class:`kolena.workflow.MetricsTestSample` are rendered on top of the image.
+    For example, when viewing images, any annotations present in a [`TestSample`][kolena.workflow.TestSample],
+    [`GroundTruth`][kolena.workflow.GroundTruth], [`Inference`][kolena.workflow.Inference], or
+    [`MetricsTestSample`][kolena.workflow.MetricsTestSample] are rendered on top of the image.
     """
 
 
@@ -160,8 +160,8 @@ class BoundingBox3D(Annotation):
     """
     Three-dimensional cuboid bounding box in a right-handed coordinate system.
 
-    Specified by (x, y, z) coordinates for the ``center`` of the cuboid, (x, y, z) ``dimensions``, and a ``rotation``
-    parameter specifying the degrees of rotation about each axis (x, y, z) ranging [-pi, pi].
+    Specified by (x, y, z) coordinates for the `center` of the cuboid, (x, y, z) `dimensions`, and a `rotation`
+    parameter specifying the degrees of rotation about each axis (x, y, z) ranging [-π, π].
     """
 
     #: (x, y, z) coordinates specifying the center of the bounding box.
@@ -180,21 +180,21 @@ class BoundingBox3D(Annotation):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class LabeledBoundingBox3D(BoundingBox3D):
-    """:class:`BoundingBox3D` with an additional string label."""
+    """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional string label."""
 
     label: str
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class ScoredBoundingBox3D(BoundingBox3D):
-    """:class:`BoundingBox3D` with an additional float score."""
+    """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional float score."""
 
     score: float
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class ScoredLabeledBoundingBox3D(BoundingBox3D):
-    """:class:`BoundingBox3D` with an additional string label and float score."""
+    """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional string label and float score."""
 
     label: str
     score: float
@@ -203,13 +203,13 @@ class ScoredLabeledBoundingBox3D(BoundingBox3D):
 @dataclass(frozen=True, config=ValidatorConfig)
 class SegmentationMask(Annotation):
     """
-    Raster segmentation mask. The ``locator`` is the URL to the image file representing the segmentation mask.
+    Raster segmentation mask. The `locator` is the URL to the image file representing the segmentation mask.
 
     The segmentation mask must be rendered as a single-channel, 8-bit-depth (grayscale) image. For the best results,
     use a lossless file format such as PNG. Each pixel's value is the numerical ID of its class label, as specified in
-    the ``labels`` map. Any pixel value not present in the ``labels`` map is rendered as part of the background.
+    the `labels` map. Any pixel value not present in the `labels` map is rendered as part of the background.
 
-    For example, ``labels = {255: "object"}`` will highlight all pixels with the value of 255 as ``"object"``. Every
+    For example, `labels = {255: "object"}` will highlight all pixels with the value of 255 as `"object"`. Every
     other pixel value will be transparent.
     """
 
@@ -226,7 +226,7 @@ class SegmentationMask(Annotation):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class BitmapMask(Annotation):
-    """Arbitrary bitmap mask. The ``locator`` is the URL to the image file representing the mask."""
+    """Arbitrary bitmap mask. The `locator` is the URL to the image file representing the mask."""
 
     #: URL of the bitmap data.
     locator: str

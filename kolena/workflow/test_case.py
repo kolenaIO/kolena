@@ -51,20 +51,21 @@ from kolena.workflow.workflow import Workflow
 class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
     """A test case holds a set of images to compute aggregate performance metrics against."""
 
-    #: The :class:`kolena.workflow.Workflow` of this test case.
     workflow: Workflow
+    """The [`Workflow`][kolena.workflow.Workflow] of this test case."""
+
+    name: str
+    """The unique name of this test case. Cannot be changed after creation."""
+
+    version: int
+    """The version of this test case. A test case's version is automatically incremented whenever it is edited via
+    [`TestCase.edit`][kolena.workflow.TestCase.edit]."""
+
+    description: str
+    """Free-form, human-readable description of this test case. Can be edited at any time via
+    [`TestCase.edit`][kolena.workflow.TestCase.edit]."""
 
     _id: int
-
-    #: The unique name of this test case. Cannot be changed after creation.
-    name: str
-
-    #: The version of this test case. A test case's version is automatically incremented whenever it is edited via
-    #: :meth:`TestCase.edit`.
-    version: int
-
-    #: Free-form, human-readable description of this test case. Can be edited at any time via :meth:`TestCase.edit`.
-    description: str
 
     @telemetry
     def __init_subclass__(cls) -> None:
@@ -274,16 +275,16 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Edit this test case in a context:
 
-        .. code-block:: python
-
-            with test_case.edit() as editor:
-                # perform as many editing actions as desired
-                editor.add(...)
-                editor.remove(...)
+        ```python
+        with test_case.edit() as editor:
+            # perform as many editing actions as desired
+            editor.add(...)
+            editor.remove(...)
+        ```
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: clear any and all test samples currently in the test case.
+        :param reset: Clear any and all test samples currently in the test case.
         """
         editor = self.Editor(self.description, reset)
 

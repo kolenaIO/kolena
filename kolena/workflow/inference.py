@@ -31,38 +31,37 @@ class Inference(DataObject):
     """
     The inference produced by a model.
 
-    Typically the structure of this object closely mirrors the structure of the :class:`kolena.workflow.GroundTruth` for
-    a workflow, but this is not a requirement.
+    Typically the structure of this object closely mirrors the structure of the
+    [`GroundTruth`][kolena.workflow.GroundTruth] for a workflow, but this is not a requirement.
 
-    During evaluation, the :class:`kolena.workflow.TestSample` objects, ground truth objects, and these inference
-    objects are provided to the :class:`kolena.workflow.Evaluator` implementation to compute metrics.
+    During evaluation, the [`TestSample`][kolena.workflow.TestSample] objects, ground truth objects, and these inference
+    objects are provided to the [`Evaluator`][kolena.workflow.Evaluator] implementation to compute metrics.
 
-    This object may contain any combination of scalars (e.g. ``str``, ``float``),
-    :class:`kolena.workflow.annotation.Annotation` objects, or lists of these objects.
+    This object may contain any combination of scalars (e.g. `str`, `float`),
+    [`Annotation`][kolena.workflow.annotation.Annotation] objects, or lists of these objects.
 
-    A model processing a :class:`kolean.workflow.Composite` object can produce an inference result for each of its
+    A model processing a [`Composite`][kolena.workflow.Composite] object can produce an inference result for each of its
     element. To associate an inference result to each test sample element, one can put the attributes and/or annotations
-    inside an :class:`kolena.workflow.DataObject` and use the same name as that in :class:`kolena.workflow.Composite`.
+    inside an [`DataObject`][kolena.workflow.DataObject] and use the same name as that in
+    [`Composite`][kolena.workflow.Composite].
 
-    Continue with the example given in :class:`kolena.workflow.Composite`, which takes an image pair as a
+    Continue with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
     test sample, one can design inference as:
 
-    .. code-block:: python
+    ```python
+    class FacePairSample(kolena.workflow.Composite):
+        source: Image
+        target: Image
 
-        class FacePairSample(kolena.workflow.Composite):
-            source: Image
-            target: Image
+    class FaceRegion(DataObject):
+        bounding_box: BoundingBox
+        keypoints: Keypoints
 
-
-        class FaceRegion(DataObject):
-            bounding_box: BoundingBox
-            keypoints: Keypoints
-
-
-        class FacePair(Inference):
-            source: FaceRegion
-            target: FaceRegion
-            similarity: float
+    class FacePair(Inference):
+        source: FaceRegion
+        target: FaceRegion
+        similarity: float
+    ```
 
     This way, it is clear which bounding boxes and keypoints are associated to which image in the test sample.
     """

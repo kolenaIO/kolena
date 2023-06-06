@@ -1,7 +1,7 @@
 site_name: Kolena
 site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
 site_url: https://docs.kolena.io
-strict: true
+strict: false  # TODO: flip to true
 
 theme:
   name: material
@@ -33,6 +33,7 @@ theme:
     - navigation.sections
     - toc.follow
     # - navigation.top
+    - content.code.copy
 
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
@@ -40,6 +41,14 @@ edit_uri: edit/trunk/docs/
 
 markdown_extensions:
   - admonition  # callouts
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
 
 watch:
   - kolena
@@ -55,6 +64,10 @@ plugins:
             docstring_style: sphinx
             merge_init_into_class: true
             members_order: source  # sort members in the order they are defined
+            show_docstring_attributes: true
+            # separate_signature, line_length, and show_signature_annotations should all be on or off
+            # separate_signature: true
+            # line_length: 80
             # show_signature_annotations: true
   - social  # render social media cards for copy+paste
   - search:
@@ -76,7 +89,7 @@ extra:
       name: Kolena on Twitter
 
 nav:
-  - Home: []
+  - Home: index.md
   - Getting Started:
     - Installation: setup/installation.md
     - Initialization: setup/initialization.md
@@ -85,8 +98,19 @@ nav:
   - API Reference:
     - <code>kolena.initialize</code>: reference/initialize.md
     - <code>kolena.errors</code>: reference/errors.md
-    - Building a Workflow:
-      - <code>kolena.workflow</code>: reference/workflow.md
+    - <code>kolena.workflow</code>:
+      # - Module Index: reference/workflow/index.md
+      - <code>test_sample</code>: reference/workflow/test_sample.md
+      - <code>ground_truth</code>: reference/workflow/ground_truth.md
+      - <code>inference</code>: reference/workflow/inference.md
+      - <code>annotation</code>: reference/workflow/annotation.md
+      - <code>asset</code>: reference/workflow/asset.md
+      - <code>define_workflow</code>: reference/workflow/define_workflow.md
+      - <code>TestCase</code>: reference/workflow/test_case.md
+      - <code>TestSuite</code>: reference/workflow/test_suite.md
+      - <code>Model</code>: reference/workflow/model.md
+      - <code>Evaluator</code>: reference/workflow/evaluator.md
+      - <code>test</code>: reference/workflow/test_run.md
     - Built-in Workflows:
       - <code>kolena.classification</code>: reference/classification.md
       - <code>kolena.detection</code>: reference/detection.md

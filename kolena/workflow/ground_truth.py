@@ -31,38 +31,36 @@ class GroundTruth(DataObject):
     """
     The ground truth against which a model is evaluated.
 
-    A test case contains one or more :class:`kolena.workflow.TestSample` objects each paired with a ground truth object.
-    During evaluation, these test samples, ground truths, and your model's inferences are provided to the
-    :class:`kolena.workflow.Evaluator` implementation.
+    A test case contains one or more [`TestSample`][kolena.workflow.TestSample] objects each paired with a ground truth
+    object. During evaluation, these test samples, ground truths, and your model's inferences are provided to the
+    [`Evaluator`][kolena.workflow.Evaluator] implementation.
 
-    This object may contain any combination of scalars (e.g. ``str``, ``float``),
-    :class:`kolena.workflow.annotation.Annotation` objects, or lists of these objects.
+    This object may contain any combination of scalars (e.g. `str`, `float`),
+    [`Annotation`][kolena.workflow.annotation.Annotation] objects, or lists of these objects.
 
-    For :class:`kolena.workflow.Composite`, each object can contain multiple basic test sample elements.
-    To associate a set of attributes and/or annotations as the ground truth to a target test sample element,
-    one can use :class:`kolena.workflow.DataObject` and use the same name as in :class:`kolena.workflow.Composite`.
+    For [`Composite`][kolena.workflow.Composite], each object can contain multiple basic test sample elements. To
+    associate a set of attributes and/or annotations as the ground truth to a target test sample element, one can use
+    [`DataObject`][kolena.workflow.DataObject] and use the same name as in [`Composite`][kolena.workflow.Composite].
 
-    Continue with the example given in :class:`kolena.workflow.Composite`, which takes an image pair as a
+    Continue with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
     test sample, one can design ground truth as:
 
-    .. code-block:: python
+    ```python
+    class FacePairSample(kolena.workflow.Composite):
+        source: Image
+        target: Image
 
-        class FacePairSample(kolena.workflow.Composite):
-            source: Image
-            target: Image
+    class FaceRegion(DataObject):
+        bounding_box: BoundingBox
+        keypoints: Keypoints
 
+    class FacePair(GroundTruth):
+        source: FaceRegion
+        target: FaceRegion
+        is_same_person: bool
+    ```
 
-        class FaceRegion(DataObject):
-            bounding_box: BoundingBox
-            keypoints: Keypoints
-
-
-        class FacePair(GroundTruth):
-            source: FaceRegion
-            target: FaceRegion
-            is_same_person: bool
-
-    making it clear which bounding boxes and keypoints are associated to which image in the test sample.
+    This way, it is clear which bounding boxes and keypoints are associated to which image in the test sample.
     """
 
 

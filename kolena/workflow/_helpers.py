@@ -37,20 +37,22 @@ def define_workflow(
     """
     Define a new workflow, specifying its test sample, ground truth, and inference types.
 
-    Provided as a convenience method to create the :class:`TestCase`, :class:`TestSuite`, and :class:`Model` objects
-    for a new workflow. These objects can also be defined manually by subclassing them and binding the ``workflow``
+    Provided as a convenience method to create the [`TestCase`][kolena.workflow.TestCase],
+    [`TestSuite`][kolena.workflow.TestSuite], and [`Model`][kolena.workflow.Model] objects
+    for a new workflow. These objects can also be defined manually by subclassing them and binding the `workflow`
     class variable:
 
-    .. code-block:: python
+    ```python
+    from kolena.workflow import TestCase
+    from my_code import my_workflow
 
-        from kolena.workflow import TestCase
-        from my_code import my_workflow
+    class MyTestCase(TestCase):
+        workflow = my_workflow
+    ```
 
-        class MyTestCase(TestCase):
-            workflow = my_workflow
-
-    :return: the :class:`Workflow` object for this workflow along with the :class:`TestCase`, :class:`TestSuite`,
-        and :class:`Model` objects to use when creating and running tests for this workflow.
+    :return: the [`Workflow`][kolena.workflow.Workflow] object for this workflow along with the
+        [`TestCase`][kolena.workflow.TestCase], [`TestSuite`][kolena.workflow.TestSuite],
+        and [`Model`][kolena.workflow.Model] objects to use when creating and running tests for this workflow.
     """
     workflow = Workflow(
         name=name,

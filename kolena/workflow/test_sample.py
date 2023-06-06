@@ -35,8 +35,8 @@ from kolena.workflow._validators import validate_field
 from kolena.workflow._validators import validate_metadata_dict
 from kolena.workflow.asset import ImageAsset
 
-#: Type of the ``metadata`` field that can be included on :class:`kolena.workflow.TestSample` definitions. String
-#: (``str``) keys and scalar values (``int``, ``float``, ``str``, ``bool``, ``None``) as well as scalar list values are
+#: Type of the `metadata` field that can be included on [`TestSample`][kolena.workflow.TestSample] definitions. String
+#: (`str`) keys and scalar values (`int`, `float`, `str`, `bool`, `None`) as well as scalar list values are
 #: permitted.
 Metadata = Dict[
     str,
@@ -92,15 +92,15 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     Test samples can be customized as necessary for a workflow by extending this class or one of the built-in test
     sample types.
 
-    Extensions to the ``TestSample`` class may define a ``metadata`` field of type
-    :data:`kolena.workflow.test_sample.Metadata` containing a dictionary of scalar properties associated with the test
-    sample, intended for use when sorting or filtering test samples.
+    Extensions to the `TestSample` class may define a `metadata` field of type
+    [`Metadata`][kolena.workflow.test_sample.Metadata] containing a dictionary of scalar properties associated with the
+    test sample, intended for use when sorting or filtering test samples.
 
-    Kolena handles the ``metadata`` field differently from other test sample fields. Updates to the ``metadata`` object
-    for a given test sample are merged with previously uploaded metadata. As such, ``metadata`` for a given test sample
+    Kolena handles the `metadata` field differently from other test sample fields. Updates to the `metadata` object
+    for a given test sample are merged with previously uploaded metadata. As such, `metadata` for a given test sample
     within a test case is **not** immutable, and should **not** be relied on when an implementation of
-    :class:`kolena.workflow.Model` computes inferences, or when an implementation of :class:`kolena.workflow.Evaluator`
-    evaluates metrics.
+    [`Model`][kolena.workflow.Model] computes inferences, or when an implementation of
+    [`Evaluator`][kolena.workflow.Evaluator] evaluates metrics.
     """
 
     @staticmethod
@@ -120,19 +120,19 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Composite(TestSample):
     """
-    A test sample composed of multiple basic :class:`TestSample` elements.
+    A test sample composed of multiple basic [`TestSample`][kolena.workflow.TestSample] elements.
 
     An example application would be each test sample is a pair of face images, and the goal is to predict whether the
     two images are of the same person. For this use-case the test sample can be defined as:
 
-    .. code-block:: python
+    ```python
+    class FacePairSample(Composite):
+        source: Image
+        target: Image
+    ```
 
-        class FacePairSample(Composite):
-            source: Image
-            target: Image
-
-    To facilitate visualization for this kind of use cases, see usage of :class:`kolena.workflow.GroundTruth` and
-    :class:`kolena.workflow.Inference`.
+    To facilitate visualization for this kind of use cases, see usage of [`GroundTruth`][kolena.workflow.GroundTruth]
+    and [`Inference`][kolena.workflow.Inference].
     """
 
     @classmethod

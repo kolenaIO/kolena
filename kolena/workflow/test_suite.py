@@ -52,28 +52,28 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     A test suite groups together one or more test cases.
     """
 
-    _test_case_type: Type[TestCase]
-
-    #: The :class:`kolena.workflow.Workflow` of this test suite.
     workflow: Workflow
+    """The [`Workflow`][kolena.workflow.Workflow] of this test suite."""
+
+    name: str
+    """The unique name of this test suite."""
+
+    version: int
+    """The version of this test suite. A test suite's version is automatically incremented whenever it is edited via
+    [`TestSuite.edit`][kolena.workflow.TestSuite.edit]."""
+
+    description: str
+    """Free-form, human-readable description of this test suite. Can be edited at any time via
+    [`TestSuite.edit`][kolena.workflow.TestSuite.edit]."""
+
+    test_cases: List[TestCase]
+    """The [`TestCase`][kolena.workflow.TestCase] objects belonging to this test suite."""
+
+    tags: Set[str]
+    """The tags associated with this test suite."""
 
     _id: int
-
-    #: The unique name of this test suite. Cannot be changed after creation.
-    name: str
-
-    #: The version of this test suite. A test suite's version is automatically incremented whenever it is edited via
-    #: :meth:`TestSuite.edit`.
-    version: int
-
-    #: Free-form, human-readable description of this test suite. Can be edited at any time via :meth:`TestSuite.edit`.
-    description: str
-
-    #: The :class:`kolena.workflow.TestCase` objects belonging to this test suite.
-    test_cases: List[TestCase]
-
-    #: The tags associated with this test suite.
-    tags: Set[str]
+    _test_case_type: Type[TestCase]
 
     @telemetry
     def __init_subclass__(cls) -> None:

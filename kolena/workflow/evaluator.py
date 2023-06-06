@@ -46,7 +46,7 @@ from kolena.workflow._validators import validate_scalar_data_object_type
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestSample(DataObject, metaclass=ABCMeta):
     """
-    Test-sample-level metrics produced by an :class:`Evaluator`.
+    Test-sample-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
@@ -61,33 +61,33 @@ class MetricsTestSample(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestCase(DataObject, metaclass=ABCMeta):
     """
-    Test-case-level metrics produced by an :class:`Evaluator`.
+    Test-case-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
     Test-case-level metrics are aggregate metrics like Precision, Recall, and F1 score. Any and all aggregate metrics
     that fit a workflow should be defined here.
 
-    ``MetricsTestCase`` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
+    `MetricsTestCase` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
     contains multiple classes. Example usage:
 
-    .. code-block:: python
+    ```python
+    @dataclass(frozen=True)
+    class PerClassMetrics(MetricsTestCase):
+        Class: str
+        Precision: float
+        Recall: float
+        F1: float
+        AP: float
 
-        @dataclass(frozen=True)
-        class PerClassMetrics(MetricsTestCase):
-            Class: str
-            Precision: float
-            Recall: float
-            F1: float
-            AP: float
-
-        @dataclass(frozen=True)
-        class TestCaseMetrics(MetricsTestCase):
-            macro_Precision: float
-            macro_Recall: float
-            macro_F1: float
-            mAP: float
-            PerClass: List[PerClassMetrics]
+    @dataclass(frozen=True)
+    class TestCaseMetrics(MetricsTestCase):
+        macro_Precision: float
+        macro_Recall: float
+        macro_F1: float
+        mAP: float
+        PerClass: List[PerClassMetrics]
+    ```
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -97,7 +97,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestSuite(DataObject, metaclass=ABCMeta):
     """
-    Test-suite-level metrics produced by an :class:`Evaluator`.
+    Test-suite-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
@@ -126,7 +126,7 @@ class _PlotType(DataType):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class AxisConfig(DataObject):
-    """Configuration for the format of a given axis on a Plot"""
+    """Configuration for the format of a given axis on a plot."""
 
     #: Type of axis to display. Supported options are `linear` and `log`.
     type: Literal["linear", "log"]
@@ -139,7 +139,7 @@ class Plot(TypedDataObject[_PlotType], metaclass=ABCMeta):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Curve(DataObject):
-    """A single series on a :class:`CurvePlot`."""
+    """A single series on a [`CurvePlot`][kolena.workflow.CurvePlot]."""
 
     x: NumberSeries
     y: NumberSeries
@@ -187,7 +187,7 @@ class Histogram(Plot):
     A plot visualizing distribution of one or more continuous values, e.g. distribution of an error metric across all
     samples within a test case.
 
-    For visualization of discrete values, see :class:`BarPlot`.
+    For visualization of discrete values, see [`BarPlot`][kolena.workflow.BarPlot].
     """
 
     title: str
@@ -198,15 +198,15 @@ class Histogram(Plot):
     #: specified in increasing order.
     buckets: NumberSeries
 
-    #: For ``n`` buckets, there are ``n`` frequencies corresponding to the height of each bucket. The frequency at index
-    #: ``i`` corresponds to the bucket with bounds (``i``, ``i+1``) in ``buckets``.
+    #: For `n` buckets, there are `n` frequencies corresponding to the height of each bucket. The frequency at index
+    #: `i` corresponds to the bucket with bounds (`i`, `i+1`) in `buckets`.
     #:
     #: To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
-    #: e.g. to the distribution for a given class within a test case, with name specified in ``labels``.
+    #: e.g. to the distribution for a given class within a test case, with name specified in `labels`.
     frequency: Union[NumberSeries, Sequence[NumberSeries]]
 
-    #: Specify a list of labels corresponding to the different ``frequency`` series when multiple series are provided.
-    #: Can be omitted when a single ``frequency`` series is provided.
+    #: Specify a list of labels corresponding to the different `frequency` series when multiple series are provided.
+    #: Can be omitted when a single `frequency` series is provided.
     labels: Optional[List[str]] = None
 
     #: Custom format options to allow for control over the display of the plot axes.
@@ -242,19 +242,19 @@ class BarPlot(Plot):
 
     title: str
 
-    #: Axis label for the axis along which the bars are laid out (``labels``).
+    #: Axis label for the axis along which the bars are laid out (`labels`).
     x_label: str
 
-    #: Axis label for the axis corresponding to bar height (``values``).
+    #: Axis label for the axis corresponding to bar height (`values`).
     y_label: str
 
-    #: Labels for each bar with corresponding height specified in ``values``.
+    #: Labels for each bar with corresponding height specified in `values`.
     labels: Sequence[Union[str, int, float]]
 
-    #: Values for each bar with corresponding label specified in ``labels``.
+    #: Values for each bar with corresponding label specified in `labels`.
     values: NullableNumberSeries
 
-    #: Custom format options to allow for control over the display of the numerical plot axis (``values``).
+    #: Custom format options to allow for control over the display of the numerical plot axis (`values`).
     config: Optional[AxisConfig] = None
 
     def __post_init_post_parse__(self) -> None:
@@ -275,26 +275,26 @@ class ConfusionMatrix(Plot):
     """
     A confusion matrix. Example:
 
-    .. code-block:: python
-
-        ConfusionMatrix(
-            title="Cat and Dog Confusion",
-            labels=["Cat", "Dog"],
-            matrix=[[90, 10], [5, 95]],
-        )
+    ```python
+    ConfusionMatrix(
+        title="Cat and Dog Confusion",
+        labels=["Cat", "Dog"],
+        matrix=[[90, 10], [5, 95]],
+    )
+    ```
 
     Yields a confusion matrix of the form:
 
-    .. code-block:: none
+    ```
+                Predicted
 
-                    Predicted
-
-                    Cat   Dog
-                   +----+----+
-               Cat | 90 | 10 |
-        Actual     +----+----+
-               Dog |  5 | 95 |
-                   +----+----+
+                Cat   Dog
+               +----+----+
+           Cat | 90 | 10 |
+    Actual     +----+----+
+           Dog |  5 | 95 |
+               +----+----+
+    ```
     """
 
     title: str
@@ -321,7 +321,7 @@ class ConfusionMatrix(Plot):
 @dataclass(frozen=True, config=ValidatorConfig)
 class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
     """
-    Configuration for an :class:`Evaluator`.
+    Configuration for an [`Evaluator`][kolena.workflow.Evaluator].
 
     Example evaluator configurations may specify:
 
@@ -337,13 +337,13 @@ class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
 
 class Evaluator(metaclass=ABCMeta):
     """
-    An :class:`kolena.workflow.Evaluator` transforms inferences into metrics.
+    An `Evaluator` transforms inferences into metrics.
 
-    Metrics are computed at the individual test sample level (:class:`kolena.workflow.MetricsTestSample`), in aggregate
-    at the test case level (:class:`kolena.workflow.MetricsTestCase`), and across populations at the test suite level
-    (:class:`kolena.workflow.MetricsTestSuite`).
+    Metrics are computed at the individual test sample level ([`MetricsTestSample`][kolena.workflow.MetricsTestSample]),
+    in aggregate at the test case level ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]), and across populations
+    at the test suite level ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]).
 
-    Test-case-level plots (:class:`kolena.workflow.Plot`) may also be computed.
+    Test-case-level plots ([`Plot`][kolena.workflow.Plot]) may also be computed.
     """
 
     configurations: List[EvaluatorConfiguration]

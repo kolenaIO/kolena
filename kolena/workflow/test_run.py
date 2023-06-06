@@ -77,7 +77,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     :param model: the model being tested.
     :param test_suite: the test suite on which to test the model.
-    :param Union[Evaluator, BasicEvaluatorFunction, None] evaluator: an optional evaluator implementation.
+    :param evaluator: an optional evaluator implementation.
         Requires a previously configured server-side evaluator to default to if omitted.
         (Please see :class:`kolena.workflow.BasicEvaluatorFunction` for type definition.)
     :param configurations: a list of configurations to use when running the evaluator.
@@ -496,7 +496,7 @@ def test(
 
     :param model: the model being tested, implementing the ``infer`` method.
     :param test_suite: the test suite on which to test the model.
-    :param Union[Evaluator, BasicEvaluatorFunction, None] evaluator: an optional evaluator implementation.
+    :param evaluator: an optional evaluator implementation.
         Requires a previously configured server-side evaluator to default to if omitted.
         (Please see :class:`kolena.workflow.BasicEvaluatorFunction` for type definition.)
     :param configurations: a list of configurations to use when running the evaluator.
