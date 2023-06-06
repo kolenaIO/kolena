@@ -69,7 +69,6 @@ jobs:
           paths:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
-
   unit-test:
     parameters:
       python-version:
@@ -235,12 +234,13 @@ workflows:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
       - unit-test:
+          name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
               extras: ["no-extras", "extras"]
           requires:
-            - ci-base-<< matrix.python-version >>-<< parameters.extras >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
           name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>
           matrix:
