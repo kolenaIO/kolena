@@ -26,9 +26,8 @@ class FixedGlobalThreshold(TestConfig):
     label classes within the test run.
     """
 
-    # The threshold used as the default when visualizing results in the Kolena UI.
-    # Must be between 0 and 1.
     fixed_threshold: float
+    """The threshold used as the default when visualizing results in Kolena. Must be between 0 and 1."""
 
     def __init__(self, fixed_threshold: float):
         if fixed_threshold < 0 or fixed_threshold > 1:

@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-The output from a [`Model`][kolena.workflow.Model]. In other words, a model is a deterministic transformation from
-[`TestSample`][kolena.workflow.TestSample] to `Inference`.
+The output from a [`Model`][kolena.workflow.Model]. In other words, a model is a deterministic transformation from a
+[`TestSample`][kolena.workflow.TestSample] to an `Inference`.
 """
 from typing import Type
 
@@ -44,16 +44,19 @@ class Inference(DataObject):
     This object may contain any combination of scalars (e.g. `str`, `float`),
     [`Annotation`][kolena.workflow.annotation.Annotation] objects, or lists of these objects.
 
-    A model processing a [`Composite`][kolena.workflow.Composite] object can produce an inference result for each of its
-    element. To associate an inference result to each test sample element, one can put the attributes and/or annotations
-    inside an [`DataObject`][kolena.workflow.DataObject] and use the same name as that in
-    [`Composite`][kolena.workflow.Composite].
+    A model processing a [`Composite`][kolena.workflow.Composite] test sample can produce an inference result for each
+    of its elements. To associate an inference result to each test sample element, put the attributes and/or annotations
+    inside a `DataObject` and use the same attribute name as that used in the [`Composite`][kolena.workflow.Composite]
+    test sample.
 
-    Continue with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
-    test sample, one can design inference as:
+    Continuing with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
+    test sample, a composite inference object can be declared:
 
     ```python
-    class FacePairSample(kolena.workflow.Composite):
+    from kolena.workflow import Composite, DataObject, Inference, Image
+    from kolena.workflow.annotation import BoundingBox, Keypoints
+
+    class FacePairSample(Composite):
         source: Image
         target: Image
 

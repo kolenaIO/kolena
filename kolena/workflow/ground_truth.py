@@ -46,14 +46,18 @@ class GroundTruth(DataObject):
     [`Annotation`][kolena.workflow.annotation.Annotation] objects, or lists of these objects.
 
     For [`Composite`][kolena.workflow.Composite], each object can contain multiple basic test sample elements. To
-    associate a set of attributes and/or annotations as the ground truth to a target test sample element, one can use
-    [`DataObject`][kolena.workflow.DataObject] and use the same name as in [`Composite`][kolena.workflow.Composite].
+    associate a set of attributes and/or annotations as the ground truth to a target test sample element, declare
+    annotations by extending `DataObject` and use the same attribute name as used in the
+    [`Composite`][kolena.workflow.Composite] test sample.
 
     Continue with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
     test sample, one can design ground truth as:
 
     ```python
-    class FacePairSample(kolena.workflow.Composite):
+    from kolena.workflow import Composite, DataObject, GroundTruth, Image
+    from kolena.workflow.annotation import BoundingBox, Keypoints
+
+    class FacePairSample(Composite):
         source: Image
         target: Image
 

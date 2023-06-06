@@ -4,3 +4,5 @@
     handler: python
     options:
       separate_signature: true
+
+::: kolena.workflow.Workflow
