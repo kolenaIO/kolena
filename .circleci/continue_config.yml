@@ -222,18 +222,19 @@ workflows:
   ci:
     jobs:
       - ci-base:
-          name: ci-base-<< matrix.python-version >>
+          name: ci-base-<< matrix.python-version >><< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["", "-metrics"]
       - unit-test:
+          name: unit-test-<< matrix.python-version >><< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["", "-metrics"]
           requires:
-            - ci-base-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >><< matrix.extras >>
       - integration-test:
           name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>
           matrix:
