@@ -103,11 +103,11 @@ UnconfiguredEvaluatorFunction = Callable[
 ]
 BasicEvaluatorFunction = Union[ConfiguredEvaluatorFunction, UnconfiguredEvaluatorFunction]
 """
-``kolena.workflow.BasicEvaluatorFunction`` introduces a function based evaluator implementation that takes
-the inferences for all test samples in a test suite and a :class:`kolena.workflow.TestCases` as input, and computes
+`BasicEvaluatorFunction` provides a function-based evaluator interface that takes
+the inferences for all test samples in a test suite and a [`TestCases`][kolena.workflow.TestCases] as input and computes
 the corresponding test-sample-level, test-case-level, and test-suite-level metrics (and optionally plots) as output.
 
-Example implementation, relying on ``compute_per_sample`` and ``compute_aggregate`` functions implemented elsewhere:
+Example implementation, relying on `compute_per_sample` and `compute_aggregate` functions implemented elsewhere:
 
 ```python
 def evaluate(
@@ -115,6 +115,7 @@ def evaluate(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
+    # configuration: EvaluatorConfiguration,  # uncomment when configuration is used
 ) -> EvaluationResults:
     # compute per-sample metrics for each test sample
     per_sample_metrics = [compute_per_sample(gt, inf) for gt, inf in zip(ground_truths, inferences)]
@@ -133,8 +134,8 @@ def evaluate(
     )
 ```
 
-The control flow is in general more streamlined than with :class:`kolena.workflow.Evaluator`, but requires a couple
-of assumptions to hold:
+The control flow is in general more streamlined than with [`Evaluator`][kolena.workflow.Evaluator], but requires a
+couple of assumptions to hold:
 
 - Test-sample-level metrics do not vary by test case
 - Ground truths corresponding to a given test sample do not vary by test case
@@ -147,14 +148,14 @@ This `BasicEvaluatorFunction` is provided to the test run at runtime, and is exp
     corresponding to and sequenced in the same order as `test_samples`.
 :param List[Inference] inferences: A list of [`Inference`][kolena.workflow.Inference] values corresponding
     to and sequenced in the same order as `test_samples`.
-:param TestCases test_cases: An instance of [`TestCases][kolena.workflow.TestCases], used to provide iteration
+:param TestCases test_cases: An instance of [`TestCases`][kolena.workflow.TestCases], used to provide iteration
     groupings for evaluating test-case-level metrics.
-:param EvaluatorConfiguration evaluator_configuration: The [configuration][kolena.workflow.EvaluatorConfiguration] to
-    use when performing the evaluation. This parameter may be omitted in the function definition if running with no
-    configuration.
-:rtype: kolena.workflow.EvaluationResults
-:return: An object tracking the test-sample-level, test-case-level and test-suite-level metrics and plots for the
-    input collection of test samples.
+:param EvaluatorConfiguration evaluator_configuration: The
+    [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration] to use when performing the evaluation. This
+    parameter may be omitted in the function definition for implementations that do not use any configuration object.
+:rtype: EvaluationResults
+:return: An [`EvaluationResults`][kolena.workflow.EvaluationResults] object tracking the test-sample-level,
+    test-case-level and test-suite-level metrics and plots for the input collection of test samples.
 """
 
 

@@ -22,33 +22,40 @@ from kolena.detection._internal import BaseTestSuite
 
 class TestSuite(BaseTestSuite):
     """
-    A test suite is a grouping of :class:`kolena.classification.TestCase` tests.
+    A test suite is a grouping of [`TestCase`][kolena.classification.TestCase] objects.
 
-    Testing on test suites is performed via :mod:`kolena.classification.test`. Metrics are computed across all samples
-    in a test suite and also for each individual test case within the suite.
+    Testing on test suites is performed via [`test`][kolena.classification.test]. Metrics are computed across all
+    samples in a test suite and also for each individual test case within the suite.
 
-    :param name: the name of the test suite. If a test suite by this name already exists, that test suite is loaded
-    :param version: optionally specify the version of the test suite to load. Ignored when the a suite by the
-        provided name does not already exist
-    :param description: optionally specify a description for the new test suite. Ignored when a test suite with the
-        provided name already exists
-    :param test_cases: optionally provide a list of :class:`kolena.classification.TestCase` tests used to seed a new
-        test suite. Ignored when a test suite with the provided name already exists
+    :param name: The name of the test suite. If a test suite by this name already exists, that test suite is loaded.
+    :param version: Optionally specify the version of the test suite to load. Ignored when the a suite by the
+        provided name does not already exist.
+    :param description: Optionally specify a description for the new test suite. Ignored when a test suite with the
+        provided name already exists.
+    :param test_cases: Optionally provide a list of [`TestCase`][kolena.classification.TestCase] tests used to seed a
+        new test suite. Ignored when a test suite with the provided name already exists.
     """
 
-    #: Unique name of the test suite.
     name: str
+    """Unique name of the test suite."""
 
-    #: The version of the test suite. Version is automatically incremented whenever the test suite is modified via
-    #: :meth:`TestSuite.edit`.
     version: int
+    """
+    The version of the test suite. Version is automatically incremented whenever the test suite is modified via
+    [`TestSuite.edit`][kolena.classification.TestSuite.edit].
+    """
 
-    #: Free-form description of this test suite. May be edited at any time via :meth:`TestSuite.edit`.
     description: str
+    """
+    Free-form description of this test suite. May be edited at any time via
+    [`TestSuite.edit`][kolena.classification.TestSuite.edit].
+    """
 
-    #: The :class:`kolena.classification.TestCase` tests in this test suite. May be edited at any time via
-    #: :meth:`TestSuite.edit`.
     test_cases: List[TestCase]
+    """
+    The [`TestCase`][kolena.classification.TestCase] objects in this test suite. May be edited at any time via
+    [`TestSuite.edit`][kolena.classification.TestSuite.edit].
+    """
 
     _id: int
     _workflow: WorkflowType = WorkflowType.CLASSIFICATION

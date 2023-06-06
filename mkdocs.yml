@@ -65,6 +65,7 @@ plugins:
             merge_init_into_class: true
             members_order: source  # sort members in the order they are defined
             show_docstring_attributes: true
+            # docstring_section_style: spacy  # TODO: switch on? better for long types
             # separate_signature, line_length, and show_signature_annotations should all be on or off
             # separate_signature: true
             # line_length: 80
@@ -119,4 +120,5 @@ nav:
         - <code>kolena.classification</code>: reference/builtin/classification.md
         - <code>kolena.detection</code>: reference/builtin/detection.md
         - <code>kolena.fr</code>: reference/builtin/fr.md
+  - Metrics Guide: []
   - Help: []

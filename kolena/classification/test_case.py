@@ -33,13 +33,13 @@ class TestCase(BaseTestCase):
     across a large population. Alternatively, a test case may have only one or a handful of images for laser-focus on a
     specific scenario.
 
-    :param name: the name of the test case. If a test case by this name already exists, that test case is loaded
-    :param version: optionally specify the version of the test case to load. Ignored when a test case by the
-        provided name does not already exist
-    :param description: optionally specify a description for the new test case. Ignored when a test case with the
-        provided name already exists
-    :param images: optionally provide a list of :class:`kolena.classification.TestImage` images used to seed a new test
-        case. Ignored when a test case with the provided name already exists
+    :param name: The name of the test case. If a test case by this name already exists, that test case is loaded.
+    :param version: Optionally specify the version of the test case to load. Ignored when a test case by the
+        provided name does not already exist.
+    :param description: Optionally specify a description for the new test case. Ignored when a test case with the
+        provided name already exists.
+    :param images: Optionally provide a list of [TestImage][kolena.classification.TestImage] images used to seed a new
+        test case. Ignored when a test case with the provided name already exists.
     """
 
     _TestImageClass = TestImage

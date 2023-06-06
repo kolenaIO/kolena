@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+The output from a [`Model`][kolena.workflow.Model]. In other words, a model is a deterministic transformation from
+[`TestSample`][kolena.workflow.TestSample] to `Inference`.
+"""
 from typing import Type
 
 from pydantic.dataclasses import dataclass

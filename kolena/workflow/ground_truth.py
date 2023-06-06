@@ -11,6 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+The ground truth associated with a [`TestSample`][kolena.workflow.TestSample]. Typically, a ground truth will represent
+the expected output of a model when given a test sample and will be manually annotated by a human.
+
+A [`TestCase`][kolena.workflow.TestCase] holds a list of test samples (model inputs) paired with ground truths
+(expected outputs).
+"""
 from typing import Type
 
 from pydantic.dataclasses import dataclass

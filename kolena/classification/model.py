@@ -36,12 +36,14 @@ class Model(BaseModel):
     The descriptor for a classification model in the Kolena platform.
     """
 
-    #: Unique name of the model, potentially containing information about the architecture, training dataset,
-    #: configuration, framework, commit hash, etc.
     name: str
+    """
+    Unique name of the model, potentially containing information about the architecture, training dataset,
+    configuration, framework, commit hash, etc.
+    """
 
-    #: Unstructured metadata associated with the model.
     metadata: Dict[str, Any]
+    """Unstructured metadata associated with the model."""
 
     _TestImageClass = TestImage
     _TestCaseClass = TestCase
@@ -68,13 +70,15 @@ class Model(BaseModel):
 
 class InferenceModel(Model):
     """
-    A :class:`kolena.classification.Model` with a special :meth:`kolena.classification.InferenceModel.infer` member
-    performing inference on a provided :class:`kolena.classification.TestImage`.
+    A [`Model`][kolena.classification.Model] with a special [`infer][kolena.classification.InferenceModel.infer] member
+    performing inference on a provided [`TestImage`][kolena.classification.TestImage].
     """
 
-    #: A function transforming an input :class:`kolena.classification.TestImage` to zero or more ``(label, confidence)``
-    #: tuples representing model predictions.
     infer: Callable[[TestImage], Optional[List[Tuple[str, float]]]]
+    """
+    A function transforming an input [`TestImage`][kolena.classification.TestImage] to zero or more
+    `(label, confidence)` tuples representing model predictions.
+    """
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(

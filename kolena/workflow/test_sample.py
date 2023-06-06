@@ -26,8 +26,8 @@ from kolena.workflow.annotation import BoundingBox
 class ImageWithRegion(Image):
     region: BoundingBox
 
-test_sample = ImageWithRegion(
-    locator="s3://my-bucket/path/to-large-image.png",
+example = ImageWithRegion(
+    locator="s3://my-bucket/example-image.png",  # field from Image base class
     region=BoundingBox(top_left=(0, 0), bottom_right=(100, 100)),
 )
 ```
