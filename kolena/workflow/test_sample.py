@@ -184,8 +184,8 @@ class ImageText(Composite):
 class BaseVideo(TestSample):
     """A video clip located in a cloud bucket or served at a URL."""
 
-    #: URL (e.g. S3, HTTPS) of the video file
     locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
@@ -196,14 +196,14 @@ class BaseVideo(TestSample):
 class Video(BaseVideo):
     """A video clip located in a cloud bucket or served at a URL."""
 
-    #: Optionally provide asset locator for custom video thumbnail
     thumbnail: Optional[ImageAsset] = None
+    """Optionally provide asset locator for custom video thumbnail."""
 
-    #: Optionally specify start time of video snippet, in seconds
     start: Optional[float] = None
+    """Optionally specify start time of video snippet, in seconds."""
 
-    #: Optionally specify end time of video snippet, in seconds
     end: Optional[float] = None
+    """Optionally specify end time of video snippet, in seconds."""
 
     def __post_init__(self) -> None:
         if self.start is not None and self.end is not None and self.start > self.end:
@@ -216,8 +216,8 @@ class Video(BaseVideo):
 class Document(TestSample):
     """A remotely linked document, e.g. PDF or TXT file."""
 
-    #: URL (e.g. S3, HTTPS) of the document
     locator: str
+    """URL (e.g. S3, HTTPS) of the document."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:

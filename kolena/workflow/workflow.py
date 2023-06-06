@@ -90,22 +90,20 @@ class RemoteEvaluator:
 
 @dataclass(frozen=True)
 class Workflow:
-    """
-    The definition of a workflow and its associated types.
-    """
+    """The definition of a workflow and its associated types."""
 
-    #: The name of the workflow. Should be unique, meaningful, and human-readable.
     name: str
+    """The name of the workflow. Should be unique, meaningful, and human-readable."""
 
-    #: The :class:`kolena.workflow.TestSample` type for the workflow, using one of the builtin test sample types
-    #: (e.g. :class:`kolena.workflow.Image`) and extending as necessary with additional fields.
     test_sample_type: Type[TestSample]
+    """The [`TestSample`][kolena.workflow.TestSample] type for the workflow, using one of the builtin test sample types
+    (e.g. [`Image`][kolena.workflow.Image]) and extending as necessary with additional fields."""
 
-    #: The custom :class:`kolena.workflow.GroundTruth` type for the workflow.
     ground_truth_type: Type[GroundTruth]
+    """The custom [`GroundTruth`][kolena.workflow.GroundTruth] type for the workflow."""
 
-    #: The custom :class:`kolena.workflow.Inference` type for the workflow.
     inference_type: Type[Inference]
+    """The custom [`Inference`][kolena.workflow.Inference] type for the workflow."""
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "name", self.name.strip())
@@ -129,7 +127,7 @@ class Workflow:
         """
         This is a convenience method to register evaluator for the workflow.
 
-        Please see :py:func:`register_evaluator` for details.
+        Please see :func:`register_evaluator` for details.
         """
         return register_evaluator(
             workflow=self.name,
@@ -144,7 +142,7 @@ class Workflow:
         """
         Get the docker image registered for the evaluator
 
-        Please see :py:func:`get_evaluator` for details.
+        Please see :func:`get_evaluator` for details.
         """
 
         return get_evaluator(self.name, evaluator_name, include_secret)

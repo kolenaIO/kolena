@@ -111,8 +111,11 @@ nav:
       - <code>Model</code>: reference/workflow/model.md
       - <code>Evaluator</code>: reference/workflow/evaluator.md
       - <code>test</code>: reference/workflow/test_run.md
-    - Built-in Workflows:
-      - <code>kolena.classification</code>: reference/classification.md
-      - <code>kolena.detection</code>: reference/detection.md
-      - <code>kolena.fr</code>: reference/fr.md
+      # TODO: remove extras?
+      - Extras: reference/workflow/extras.md
+    - Legacy:
+      - Built-in Workflows:
+        - <code>kolena.classification</code>: reference/builtin/classification.md
+        - <code>kolena.detection</code>: reference/builtin/detection.md
+        - <code>kolena.fr</code>: reference/builtin/fr.md
   - Help: []

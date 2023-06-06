@@ -491,15 +491,15 @@ def test(
     reset: bool = False,
 ) -> None:
     """
-    Test a :class:`kolena.workflow.Model` on a :class:`kolena.workflow.TestSuite` using a specific
-    :class:`kolena.workflow.Evaluator` or :class:`kolena.workflow.StreamlinedEvaluator` implementation.
+    Test a [`Model`][kolena.workflow.Model] on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
+    [`Evaluator`][kolena.workflow.Evaluator] implementation.
 
-    :param model: the model being tested, implementing the ``infer`` method.
-    :param test_suite: the test suite on which to test the model.
-    :param evaluator: an optional evaluator implementation.
+    :param model: The model being tested, implementing the `infer` method.
+    :param test_suite: The test suite on which to test the model.
+    :param evaluator: An optional evaluator implementation.
         Requires a previously configured server-side evaluator to default to if omitted.
-        (Please see :class:`kolena.workflow.BasicEvaluatorFunction` for type definition.)
-    :param configurations: a list of configurations to use when running the evaluator.
-    :param reset: overwrites existing inferences if set.
+        (Please see [`BasicEvaluatorFunction`][kolena.workflow.BasicEvaluatorFunction] for type definition.)
+    :param configurations: A list of configurations to use when running the evaluator.
+    :param reset: Overwrites existing inferences if set.
     """
     TestRun(model, test_suite, evaluator, configurations, reset).run()
