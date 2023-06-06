@@ -56,7 +56,7 @@ jobs:
                   poetry install --no-ansi
       - when:
           condition:
-            equal: [ "extras", << parameters.extras >> ]
+            equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -108,7 +108,7 @@ jobs:
                   poetry run pytest -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
-            equal: [ "extras", << parameters.extras >> ]
+            equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run unit tests
@@ -226,11 +226,12 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+              extras: ["", "metrics"]
       - unit-test:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "extras"]
+              extras: ["", "metrics"]
           requires:
             - ci-base-<< matrix.python-version >>
       - integration-test:
