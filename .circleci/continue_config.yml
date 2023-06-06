@@ -140,6 +140,9 @@ jobs:
       parallelism:
         type: integer
         default: 1
+      extras:
+        type: string
+        default: ""
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -156,7 +159,7 @@ jobs:
                 command: circleci-agent step halt
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-{{ checksum "pyproject.toml" }}
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
           name: Run << parameters.pytest-group >> integration tests
           command: |
