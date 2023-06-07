@@ -217,7 +217,7 @@ class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     applying some confidence threshold on the returned inference objects.
 
     Objects are of type :class:`BoundingBox` or :class:`Polygon`, depending on the type of inputs provided to
-    :func:`match_inferences`.
+    :func:`match_inferences_multiclass`.
     """
 
     #: Pairs of matched ground truth and inference objects above the IOU threshold. Considered as true positive
