@@ -233,9 +233,9 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
         )
         df_chunk_serializable = df_chunk.as_serializable()
         upload_data_frame_chunk(df_chunk_serializable, load_uuid=self._upload_uuid)
+        log.success(f"uploaded {self._n_inferences} inferences for test run")
         self._n_inferences = 0
         self._inferences = OrderedDict()
-        log.success(f"uploaded {self._n_inferences} inferences for test run")
 
     def _finalize_upload(self) -> None:
         if self._upload_uuid is None:
