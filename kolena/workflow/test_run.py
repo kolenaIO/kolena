@@ -483,6 +483,12 @@ def test(
     Test a [`Model`][kolena.workflow.Model] on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
     [`Evaluator`][kolena.workflow.Evaluator] implementation.
 
+    ```python
+    from kolena.workflow import test
+
+    test(model, test_suite, evaluator, reset=True)
+    ```
+
     :param model: The model being tested, implementing the `infer` method.
     :param test_suite: The test suite on which to test the model.
     :param evaluator: An optional evaluator implementation.

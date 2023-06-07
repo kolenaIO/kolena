@@ -118,12 +118,12 @@ extra:
   homepage: https://kolena.io
   generator: false  # TODO: this removes the theme info from footer -- we should sponsor project
   social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/kolenaIO/kolena
-      name: Kolena on GitHub
-    - icon: fontawesome/brands/linkedin
-      link: https://www.linkedin.com/company/kolena-ai
-      name: Kolena on LinkedIn
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/kolenaIO
       name: Kolena on Twitter
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/company/kolena-ai
+      name: Kolena on LinkedIn
+    - icon: fontawesome/brands/github
+      link: https://github.com/kolenaIO/kolena
+      name: Kolena on GitHub

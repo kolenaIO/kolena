@@ -36,6 +36,13 @@ def initialize(
     """
     Initialize a client session.
 
+    ```python
+    import os
+    import kolena
+
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    ```
+
     A session has a global scope and remains active until interpreter shutdown.
 
     !!! note

@@ -38,6 +38,10 @@ def define_workflow(
     Define a new workflow, specifying its test sample, ground truth, and inference types.
 
     ```python
+    from kolena.workflow import define_workflow
+
+    from my_code import MyTestSample, MyGroundTruth, MyInference
+
     _, TestCase, TestSuite, Model = define_workflow(
         "My Workflow",
         MyTestSample,   # extends e.g. kolena.workflow.Image (or uses directly)
@@ -53,6 +57,7 @@ def define_workflow(
 
     ```python
     from kolena.workflow import TestCase
+
     from my_code import my_workflow
 
     class MyTestCase(TestCase):
