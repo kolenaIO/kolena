@@ -29,6 +29,8 @@ nav:
           - <code>Model</code>: reference/workflow/model.md
           - <code>Evaluator</code>: reference/workflow/evaluator.md
           - <code>test</code>: reference/workflow/test_run.md
+          - Utilities:
+              - <code>metrics</code>: reference/workflow/metrics.md
       - Legacy:
           - Built-in Workflows:
               - <code>kolena.classification</code>: reference/built-in/classification.md
@@ -107,7 +109,8 @@ plugins:
             show_docstring_attributes: true
             show_root_toc_entry: false
             # show_root_heading: true  # shows e.g. kolena.workflow.annotation
-            docstring_section_style: spacy
+            # TODO: 'spacy' utilizes space better when types are long, but is overall less scannable -- worth it?
+            # docstring_section_style: spacy
 
             # require sponsorship:
             # show_symbol_type_heading: true
