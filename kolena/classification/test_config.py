@@ -17,7 +17,12 @@ from kolena.errors import InputValidationError
 
 
 class TestConfig(_TestConfig):
-    ...
+    """
+    Base class for a testing configuration.
+
+    See concrete implementations [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold] and
+    [`AccuracyOptimal`][kolena.classification.AccuracyOptimal] for details.
+    """
 
 
 class FixedGlobalThreshold(TestConfig):

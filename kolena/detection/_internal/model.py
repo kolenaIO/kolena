@@ -54,15 +54,7 @@ SampleInferences = Tuple[TestImageType, Optional[List[InferenceType]]]
 
 
 class BaseModel(ABC, Frozen, WithTelemetry):
-    """
-    The descriptor for your model within the Kolena platform.
-    """
-
-    #: Unique name of the model within the platform. If the provided model name has already been registered, that model
-    #: and its metadata are loaded upon instantiation.
     name: str
-
-    #: Unstructured metadata associated with the model.
     metadata: Dict[str, Any]
 
     _id: int

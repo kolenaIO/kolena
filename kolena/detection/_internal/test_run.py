@@ -62,13 +62,6 @@ CustomMetricsCallback = Callable[[List[SampleInferences]], CustomMetrics]
 
 
 class BaseTestRun(ABC, Frozen, WithTelemetry):
-    """
-    Base interface to run tests
-
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    """
-
     _TestImageClass: Type[BaseTestImage] = BaseTestImage
     _InferenceClass: Type[InferenceType] = InferenceType
     _ImageResultDataFrameClass: Type[_ImageDataFrame] = _ImageDataFrame
@@ -137,10 +130,10 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
     @validate_arguments(config=ValidatorConfig)
     def add_inferences(self, image: _TestImageClass, inferences: Optional[List[_InferenceClass]]) -> None:
         """
-        Adds inferences for a test image to the test run results.
+        Add inferences for a test image to the test run results.
 
-        :param image: the image that inferences are evaluated on
-        :param inferences: list of inferences corresponding to the image
+        :param image: The image that inferences are evaluated on.
+        :param inferences: List of inferences corresponding to the image.
         """
         self._assert_active()
 
@@ -169,9 +162,7 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
 
     @validate_arguments(config=ValidatorConfig)
     def iter_images(self) -> Iterator[_TestImageClass]:
-        """
-        Returns an iterator of all remaining images that need inferences evaluated.
-        """
+        """Returns an iterator of all remaining images that need inferences evaluated."""
         self._assert_active()
         for df_image_batch in self._iter_image_batch():
             for record in df_image_batch.itertuples():
@@ -180,11 +171,10 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
     @validate_arguments(config=ValidatorConfig)
     def load_images(self, batch_size: int = BatchSize.LOAD_SAMPLES.value) -> List[_TestImageClass]:
         """
-        Returns a list of images that still need inferences evaluated, bounded in count
-        by batch_size. Note that image ground truths will be excluded from the returned
-        batch of images.
+        Returns a list of images that still need inferences evaluated, bounded in count by `batch_size`. Note that image
+        ground truths will be excluded from the returned batch of images.
 
-        :param batch_size: the maximum number of images to retrieve
+        :param batch_size: The maximum number of images to retrieve.
         """
         self._assert_active()
         log.info("loading batch of images for test run")

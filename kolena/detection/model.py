@@ -31,7 +31,7 @@ from kolena.detection.inference import SegmentationMask
 
 class Model(BaseModel):
     """
-    The descriptor for your model within the Kolena platform.
+    The descriptor for an object detection model within Kolena.
     """
 
     name: str
@@ -64,6 +64,8 @@ class Model(BaseModel):
 class InferenceModel(Model):
     """
     Extension of [`Model`][kolena.detection.Model] with an `infer` method to perform inference.
+
+    See documentation parent [`Model`][kolena.detection.Model] for details.
     """
 
     infer: Callable[[TestImage], Optional[List[Inference]]]

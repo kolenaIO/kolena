@@ -40,6 +40,15 @@ class TestImage(BaseTestImage):
     Test image comprising a single image locator.
     """
 
+    locator: str
+    """Bucket locator for the provided test sample, e.g. `gs://my-bucket/path/to/image.png`."""
+
+    dataset: str
+    """Dataset this test image belongs to. Empty when unspecified."""
+
+    metadata: Dict[str, MetadataElement]
+    """Metadata associated with this test image. Surfaced during test runs."""
+
     ground_truths: List[GroundTruth]
     """List of [`GroundTruth`][kolena.detection.ground_truth.GroundTruth] annotations associated with this image."""
 

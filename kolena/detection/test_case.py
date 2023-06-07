@@ -33,8 +33,7 @@ class TestCase(BaseTestCase):
     :param description: Optionally specify a description for a newly created test case. For existing test cases, this
         description can be edited via [`TestCase.edit`][kolena.detection.TestCase.edit].
     :param images: Optionally provide a list of images and associated ground truths to populate a new test case. For
-        existing test cases, images can be edited via [`TestCase.edit`][kolena.detection.TestCase.edit]. Images must be
-        registered ahead of time with [`register_dataset`][kolena.detection.register_dataset].
+        existing test cases, images can be edited via [`TestCase.edit`][kolena.detection.TestCase.edit].
     """
 
     _TestImageClass = TestImage

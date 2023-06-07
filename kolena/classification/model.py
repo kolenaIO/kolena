@@ -33,7 +33,7 @@ from kolena.detection.inference import ClassificationLabel
 
 class Model(BaseModel):
     """
-    The descriptor for a classification model in the Kolena platform.
+    The descriptor for a classification model in Kolena.
     """
 
     name: str
