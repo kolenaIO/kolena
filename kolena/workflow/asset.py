@@ -15,6 +15,15 @@
 Assets are additional files linked to the [`TestSample`][kolena.workflow.TestSample],
 [`GroundTruth`][kolena.workflow.GroundTruth], or [`Inference`][kolena.workflow.Inference] objects for your workflow.
 Assets can be visualized in the Kolena Studio when exploring your test cases or model results.
+
+The following asset types are available:
+
+- [`ImageAsset`][kolena.workflow.asset.ImageAsset]
+- [`PlainTextAsset`][kolena.workflow.asset.PlainTextAsset]
+- [`BinaryAsset`][kolena.workflow.asset.BinaryAsset]
+- [`PointCloudAsset`][kolena.workflow.asset.PointCloudAsset]
+- [`VideoAsset`][kolena.workflow.asset.VideoAsset]
+
 """
 from abc import ABCMeta
 from typing import Optional

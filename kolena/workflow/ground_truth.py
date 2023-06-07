@@ -15,6 +15,20 @@
 The ground truth associated with a [`TestSample`][kolena.workflow.TestSample]. Typically, a ground truth will represent
 the expected output of a model when given a test sample and will be manually annotated by a human.
 
+```python
+from dataclasses import dataclass
+from typing import List
+
+from kolena.workflow import GroundTruth
+from kolena.workflow.annotation import Polyline, SegmentationMask
+
+@dataclass(frozen=True)
+class AvGroundTruth(GroundTruth):
+    road_area: SegmentationMask
+    lane_boundaries: List[Polyline]
+    visibility_score: int
+```
+
 A [`TestCase`][kolena.workflow.TestCase] holds a list of test samples (model inputs) paired with ground truths
 (expected outputs).
 """

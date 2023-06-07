@@ -62,6 +62,11 @@ CustomMetricsCallback = Callable[[List[SampleInferences]], CustomMetrics]
 
 
 class BaseTestRun(ABC, Frozen, WithTelemetry):
+    """
+    The base class for [`kolena.classification.TestRun`][kolena.classification.TestRun] and
+    [`kolena.detection.TestRun`][kolena.detection.TestRun].
+    """
+
     _TestImageClass: Type[BaseTestImage] = BaseTestImage
     _InferenceClass: Type[InferenceType] = InferenceType
     _ImageResultDataFrameClass: Type[_ImageDataFrame] = _ImageDataFrame

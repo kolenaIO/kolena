@@ -14,6 +14,19 @@
 """
 The output from a [`Model`][kolena.workflow.Model]. In other words, a model is a deterministic transformation from a
 [`TestSample`][kolena.workflow.TestSample] to an `Inference`.
+
+```python
+from dataclasses import dataclass
+from typing import Optional
+
+from kolena.workflow import Inference
+from kolena.workflow.annotation import Keypoints
+
+@dataclass(frozen=True)
+class PoseEstimate(Inference):
+    skeleton: Optional[Keypoints] = None  # leave empty if nothing is detected
+    confidence: Optional[float] = None
+```
 """
 from typing import Type
 

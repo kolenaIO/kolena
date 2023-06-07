@@ -15,6 +15,17 @@
 Annotations are visualized in the Kolena web platform as overlays on top of [`TestSample`][kolena.workflow.TestSample]
 objects.
 
+The following annotation types are available:
+
+- [`BoundingBox`][kolena.workflow.annotation.BoundingBox]
+- [`Polygon`][kolena.workflow.annotation.Polygon]
+- [`Polyline`][kolena.workflow.annotation.Polyline]
+- [`Keypoints`][kolena.workflow.annotation.Keypoints]
+- [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D]
+- [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask]
+- [`BitmapMask`][kolena.workflow.annotation.BitmapMask]
+- [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]
+
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.workflow.annotation.BoundingBox] objects) present in the
 [`TestSample`][kolena.workflow.TestSample], [`GroundTruth`][kolena.workflow.GroundTruth],

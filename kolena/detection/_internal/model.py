@@ -54,8 +54,19 @@ SampleInferences = Tuple[TestImageType, Optional[List[InferenceType]]]
 
 
 class BaseModel(ABC, Frozen, WithTelemetry):
+    """
+    The base class for [`kolena.classification.Model`][kolena.classification.Model] and
+    [`kolena.detection.Model`][kolena.detection.Model].
+    """
+
     name: str
+    """
+    Unique name of the model, potentially containing information about the architecture, training dataset,
+    configuration, framework, commit hash, etc.
+    """
+
     metadata: Dict[str, Any]
+    """Unstructured metadata associated with the model."""
 
     _id: int
     _workflow: WorkflowType
@@ -108,6 +119,8 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     ) -> List[Tuple[_TestImageClass, Optional[List[_InferenceClass]]]]:
         """
         Retrieve the uploaded inferences with identical ground truth labels for each image in a test case or test suite.
+
+        :return: List of all images and inferences from this model on the provided `test_object`.
         """
         return list(self.iter_inferences(test_object))
 
@@ -118,6 +131,8 @@ class BaseModel(ABC, Frozen, WithTelemetry):
     ) -> Iterator[Tuple[_TestImageClass, Optional[List[_InferenceClass]]]]:
         """
         Iterate the uploaded inferences with identical ground truth labels for each image in a test case or test suite.
+
+        :return: Iterator over all images and inferences from this model on the provided `test_object`.
         """
         for df_batch in self._iter_inference_batch_for_reference(test_object):
             yield from (self._inferences_from_record(record) for record in df_batch.itertuples())
