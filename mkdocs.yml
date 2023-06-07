@@ -16,8 +16,7 @@ nav:
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.workflow</code>:
-          # - Module Index: reference/workflow/index.md
-          - "Data Objects (Test Sample, Ground Truth, Inference)":
+          - "Test Sample, Ground Truth, and Inference types":
               - <code>test_sample</code>: reference/workflow/test_sample.md
               - <code>ground_truth</code>: reference/workflow/ground_truth.md
               - <code>inference</code>: reference/workflow/inference.md

@@ -50,21 +50,22 @@ class GroundTruth(DataObject):
     annotations by extending `DataObject` and use the same attribute name as used in the
     [`Composite`][kolena.workflow.Composite] test sample.
 
-    Continue with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
-    test sample, one can design ground truth as:
+    Continue with the example given in [`Composite`][kolena.workflow.Composite], where the `FacePairSample` test sample
+    type is defined using a pair of images under the `source` and `target` members, we can design a corresponding ground
+    truth type with image-level annotations defined in the `FaceRegion` object:
 
     ```python
-    from kolena.workflow import Composite, DataObject, GroundTruth, Image
+    from dataclasses import dataclass
+
+    from kolena.workflow import DataObject, GroundTruth
     from kolena.workflow.annotation import BoundingBox, Keypoints
 
-    class FacePairSample(Composite):
-        source: Image
-        target: Image
-
+    @dataclass(frozen=True)
     class FaceRegion(DataObject):
         bounding_box: BoundingBox
         keypoints: Keypoints
 
+    @dataclass(frozen=True)
     class FacePair(GroundTruth):
         source: FaceRegion
         target: FaceRegion

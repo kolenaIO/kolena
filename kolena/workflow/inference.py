@@ -49,21 +49,22 @@ class Inference(DataObject):
     inside a `DataObject` and use the same attribute name as that used in the [`Composite`][kolena.workflow.Composite]
     test sample.
 
-    Continuing with the example given in [`Composite`][kolena.workflow.Composite], which takes an image pair as a
-    test sample, a composite inference object can be declared:
+    Continue with the example given in [`Composite`][kolena.workflow.Composite], where the `FacePairSample` test sample
+    type is defined using a pair of images under the `source` and `target` members, we can design a corresponding
+    inference type with image-level annotations defined in the `FaceRegion` object:
 
     ```python
-    from kolena.workflow import Composite, DataObject, Inference, Image
+    from dataclasses import dataclass
+
+    from kolena.workflow import DataObject, Inference
     from kolena.workflow.annotation import BoundingBox, Keypoints
 
-    class FacePairSample(Composite):
-        source: Image
-        target: Image
-
+    @dataclass(frozen=True)
     class FaceRegion(DataObject):
         bounding_box: BoundingBox
         keypoints: Keypoints
 
+    @dataclass(frozen=True)
     class FacePair(Inference):
         source: FaceRegion
         target: FaceRegion

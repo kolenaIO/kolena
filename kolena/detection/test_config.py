@@ -17,23 +17,25 @@ from kolena.errors import InputValidationError
 
 
 class TestConfig(_TestConfig):
-    pass
+    ...
 
 
 class FixedGlobalThreshold(TestConfig):
     """
-    Test configuration that sets the default display threshold in the Kolena UI to be a fixed global threshold for all
-    label classes within the test run.
+    Test configuration that sets the default display threshold in Kolena to be a fixed global threshold for all label
+    classes within the test run.
     """
 
-    # The threshold used as the default for all label classes when visualizing results in the Kolena UI.
-    # Must be between 0 and 1.
     fixed_threshold: float
+    """
+    The threshold used as the default for all label classes when visualizing results in Kolena. Must be between 0 and 1.
+    """
 
-    # The minimum intersection over union score between an inference and a ground truth for it to qualify as a potential
-    # match.
-    # Must be between 0 and 1.
     iou_threshold: float
+    """
+    The minimum intersection over union score between an inference and a ground truth for it to qualify as a potential
+    match. Must be between 0 and 1.
+    """
 
     def __init__(self, fixed_threshold: float, iou_threshold: float = 0.5):
         if iou_threshold < 0 or iou_threshold > 1:
@@ -54,16 +56,17 @@ class FixedGlobalThreshold(TestConfig):
 
 class F1Optimal(TestConfig):
     """
-    Test configuration that sets the default display threshold in the Kolena UI to be dynamically set to the threshold
-    that corresponds to the highest F1 score for the test suite within the test run.
+    Test configuration that sets the default display threshold in Kolena to be dynamically set to the threshold that
+    corresponds to the highest F1 score for the test suite within the test run.
 
     This threshold is evaluated and set per label for test suites with multiple label classes.
     """
 
-    # The minimum intersection over union score between an inference and a ground truth for it to qualify as a potential
-    # match.
-    # Must be between 0 and 1.
     iou_threshold: float
+    """
+    The minimum intersection over union score between an inference and a ground truth for it to qualify as a potential
+    match. Must be between 0 and 1.
+    """
 
     def __init__(self, iou_threshold: float = 0.5):
         if iou_threshold < 0 or iou_threshold > 1:

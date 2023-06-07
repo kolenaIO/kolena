@@ -44,7 +44,7 @@ class TestRun(BaseTestRun):
 
     :param model: The model being tested.
     :param test_suite: The test suite on which to test the model.
-    :param test_config: Optionally specify a `TestConfig`, e.g.
+    :param test_config: Optionally specify a configuration, e.g.
         [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold], to customize the metrics evaluation logic
         for this test run. Defaults to [`AccuracyOptimal`][kolena.classification.test_config.AccuracyOptimal] if
         unspecified.
@@ -112,8 +112,8 @@ def test(
     :param model: The model being tested, complete with an
         [`InferenceModel.infer`][kolena.classification.InferenceModel.infer] function to perform inference.
     :param test_suite: The test suite on which to test the model.
-    :param test_config: Optionally specify a `TestConfig` (e.g.
-        [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold]) to customize the metrics evaluation logic
+    :param test_config: Optionally specify a configuration, e.g.
+        [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold], to customize the metrics evaluation logic
         for this test run. Defaults to [`AccuracyOptimal`][kolena.classification.test_config.AccuracyOptimal] if
         unspecified.
     :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test case.

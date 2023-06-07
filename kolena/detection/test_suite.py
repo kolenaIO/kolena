@@ -24,27 +24,32 @@ class TestSuite(BaseTestSuite):
     """
     A test suite groups together one or more test cases.
 
-    :param name: name of the test suite to create or load
-    :param version: optionally specify the version of the test suite to load. When absent, the latest version is loaded.
-        Ignored when creating new test suites
-    :param description: optionally specify a description for a newly created test suite. For existing test suites, this
-        description can be edited via :meth:`TestSuite.edit`
-    :param test_cases: optionally specify a list of test cases to populate a new test suite. For existing test suites,
-        test cases can be edited via :meth:`TestSuite.edit`
+    :param name: Name of the test suite to create or load.
+    :param version: Optionally specify the version of the test suite to load. When absent, the latest version is loaded.
+        Ignored when creating new test suites.
+    :param description: Optionally specify a description for a newly created test suite. For existing test suites, this
+        description can be edited via [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+    :param test_cases: Optionally specify a list of test cases to populate a new test suite. For existing test suites,
+        test cases can be edited via [`TestSuite.edit`][kolena.detection.TestSuite.edit].
     """
 
-    #: Unique name for this test suite. Cannot be changed after creation.
     name: str
+    """Unique name for this test suite."""
 
-    #: The version of the test suite. Each time the suite is edited with :meth:`kolena.detection.TestSuite.edit` the
-    #: version is automatically incremented.
     version: int
+    """
+    The version of the test suite. This version is automatically incremented each time the suite is edited with
+    [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+    """
 
-    #: Free-form, human-readable description of the test suite. Can be edited at any time via :meth:`TestSuite.edit`.
     description: str
+    """
+    Free-form, human-readable description of the test suite. Can be edited at any time via
+    [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+    """
 
-    #: The test cases within the suite.
     test_cases: List[TestCase]
+    """The test cases within this test suite."""
 
     _id: int
     _workflow: WorkflowType = WorkflowType.DETECTION
