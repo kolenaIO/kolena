@@ -592,7 +592,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         ),
                         (
                             LabeledBoundingBox(top_left=(10.0, 10.0), bottom_right=(22.0, 22.0), label="cow"),
-                            ScoredLabeledBoundingBox((10.0, 10.0), (20.0, 20.0), "cow", 0.9),
+                            ScoredLabeledBoundingBox((10.0, 10.0), (20.0, 20.0), "cow", 0.75),
                         ),
                     ],
                     unmatched_gt=[
@@ -604,7 +604,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             ScoredLabeledPolygon(
                                 points=[(1, 1), (1, 20), (20, 20), (20, 1)],
                                 label="dog",
-                                score=0.9,
+                                score=0.8,
                             ),
                         ),
                     ],
@@ -614,17 +614,17 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                     matched=[
                         (
                             LabeledBoundingBox(top_left=(10.0, 10.0), bottom_right=(22.0, 22.0), label="cow"),
-                            ScoredLabeledBoundingBox((10.0, 10.0), (20.0, 20.0), "cow", 0.9),
+                            ScoredLabeledBoundingBox((10.0, 10.0), (20.0, 20.0), "cow", 0.77),
                         ),
                     ],
                     unmatched_gt=[
                         (
                             LabeledBoundingBox(top_left=(10, 10), bottom_right=(22, 22), label="fish"),
-                            ScoredLabeledBoundingBox((10, 10), (20, 20), "dog", 0.9),
+                            ScoredLabeledBoundingBox((10, 10), (20, 20), "dog", 0.5),
                         ),
                     ],
                     unmatched_inf=[
-                        ScoredLabeledBoundingBox((10.0, 10.0), (22.0, 22.0), "cat", 0.5),
+                        ScoredLabeledBoundingBox((10.0, 10.0), (22.0, 22.0), "cat", 0.3),
                     ],
                 ),
                 MulticlassInferenceMatches(
@@ -637,7 +637,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             ScoredLabeledPolygon(
                                 points=[(10.0, 10.0), (10.0, 20.0), (20.0, 20.0), (20.0, 10.0)],
                                 label="cow",
-                                score=0.9,
+                                score=0.4,
                             ),
                         ),
                     ],
@@ -660,7 +660,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             ScoredLabeledPolygon(
                                 points=[(10.0, 10.0), (10.0, 20.0), (20.0, 20.0), (20.0, 10.0)],
                                 label="cat",
-                                score=0.9,
+                                score=0.2,
                             ),
                         ),
                     ],
@@ -669,7 +669,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         ScoredLabeledPolygon(
                             points=[(10.0, 10.0), (10.0, 22.0), (22.0, 22.0), (22.0, 10.0)],
                             label="dog",
-                            score=0.5,
+                            score=0.1,
                         ),
                     ],
                 ),
@@ -703,7 +703,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         ScoredLabeledPolygon(
                             points=[(1, 1), (1, 2), (2, 2), (2, 1)],
                             label="dog",
-                            score=0.5,
+                            score=0.99,
                         ),
                     ],
                 ),
@@ -715,32 +715,26 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 curves=[
                     Curve(
                         x=[
+                            0.0,
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4,
                             0.5,
-                            0.5333333333333333,
-                            0.5666666666666667,
-                            0.6,
-                            0.6333333333333333,
-                            0.6666666666666666,
-                            0.7,
-                            0.7333333333333334,
-                            0.7666666666666666,
-                            0.8,
-                            0.8333333333333333,
-                            0.8666666666666667,
+                            0.75,
+                            0.77,
+                            0.9,
                         ],
                         y=[
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
-                            0.7142857142857143,
+                            0.5555555555555556,
+                            0.5882352941176471,
+                            0.5,
+                            0.5333333333333333,
+                            0.42857142857142855,
+                            0.46153846153846156,
+                            0.3333333333333333,
+                            0.1818181818181818,
+                            0.0,
                         ],
                         label="large",
                     ),
@@ -757,18 +751,25 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         x=[
                             0.5555555555555556,
                             0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
-                            0.5555555555555556,
+                            0.4444444444444444,
+                            0.4444444444444444,
+                            0.3333333333333333,
+                            0.3333333333333333,
+                            0.2222222222222222,
+                            0.1111111111111111,
+                            0.0,
                         ],
-                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        y=[
+                            0.5555555555555556,
+                            0.625,
+                            0.5714285714285714,
+                            0.6666666666666666,
+                            0.6,
+                            0.75,
+                            0.6666666666666666,
+                            0.5,
+                            0.0,
+                        ],
                         label="large",
                     ),
                 ],
@@ -946,6 +947,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 curves=[
                     Curve(
                         x=[
+                            0.0,
                             0.01,
                             0.1,
                             0.2,
@@ -958,6 +960,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.9,
                         ],
                         y=[
+                            0.7352941176470589,
                             0.6769230769230768,
                             0.6779661016949152,
                             0.6315789473684209,
@@ -982,6 +985,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 curves=[
                     Curve(
                         x=[
+                            0.7142857142857143,
                             0.6285714285714286,
                             0.5714285714285714,
                             0.5142857142857142,
@@ -994,6 +998,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.08571428571428572,
                         ],
                         y=[
+                            0.7575757575757576,
                             0.7333333333333333,
                             0.8333333333333334,
                             0.8181818181818182,
@@ -1024,9 +1029,372 @@ def test__curve__plots(
 
     f1: CurvePlot
     pr: CurvePlot
-    f1, pr = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name)
+    pr, f1 = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "plot, test_name, matchings, f1_curve, pr_curve",
+    [
+        (
+            "all",
+            "tps and fps and fns all plots",
+            [
+                MulticlassInferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.01)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.6)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.5)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.4)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.01)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.6)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.01)),
+                    ],
+                    unmatched_gt=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                    ],
+                ),
+            ],
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[
+                            0.0,
+                            0.01,
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4,
+                            0.5,
+                            0.6,
+                            0.7,
+                            0.8,
+                            0.9,
+                        ],
+                        y=[
+                            0.7352941176470589,
+                            0.6769230769230768,
+                            0.6779661016949152,
+                            0.6315789473684209,
+                            0.5555555555555555,
+                            0.5283018867924528,
+                            0.5,
+                            0.44,
+                            0.37499999999999994,
+                            0.2926829268292683,
+                            0.15789473684210528,
+                        ],
+                        label="tps and fps and fns all plots",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[
+                            0.7142857142857143,
+                            0.6285714285714286,
+                            0.5714285714285714,
+                            0.5142857142857142,
+                            0.42857142857142855,
+                            0.4,
+                            0.37142857142857144,
+                            0.3142857142857143,
+                            0.2571428571428571,
+                            0.17142857142857143,
+                            0.08571428571428572,
+                        ],
+                        y=[
+                            0.7575757575757576,
+                            0.7333333333333333,
+                            0.8333333333333334,
+                            0.8181818181818182,
+                            0.7894736842105263,
+                            0.7777777777777778,
+                            0.7647058823529411,
+                            0.7333333333333333,
+                            0.6923076923076923,
+                            1.0,
+                            1.0,
+                        ],
+                        label="tps and fps and fns all plots",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+    ],
+)
+def test__curve__plots__all(
+    plot: str,
+    test_name: str,
+    matchings: List[MulticlassInferenceMatches],
+    f1_curve: CurvePlot,
+    pr_curve: CurvePlot,
+) -> None:
+    from kolena._experimental.object_detection.utils import compute_pr_f1_plots
+
+    f1: CurvePlot
+    pr: CurvePlot
+    pr, f1 = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name, plot=plot)
+    assert_curveplot_equal(f1, f1_curve)
+    assert_curveplot_equal(pr, pr_curve)
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "plot, test_name, matchings, curveplot",
+    [
+        (
+            "pr",
+            "tps and fps and fns pr plot",
+            [
+                MulticlassInferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.01)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.6)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.5)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.4)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.01)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.6)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.01)),
+                    ],
+                    unmatched_gt=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                    ],
+                ),
+            ],
+            CurvePlot(
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[
+                            0.7142857142857143,
+                            0.6285714285714286,
+                            0.5714285714285714,
+                            0.5142857142857142,
+                            0.42857142857142855,
+                            0.4,
+                            0.37142857142857144,
+                            0.3142857142857143,
+                            0.2571428571428571,
+                            0.17142857142857143,
+                            0.08571428571428572,
+                        ],
+                        y=[
+                            0.7575757575757576,
+                            0.7333333333333333,
+                            0.8333333333333334,
+                            0.8181818181818182,
+                            0.7894736842105263,
+                            0.7777777777777778,
+                            0.7647058823529411,
+                            0.7333333333333333,
+                            0.6923076923076923,
+                            1.0,
+                            1.0,
+                        ],
+                        label="tps and fps and fns pr plot",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "f1",
+            "tps and fps and fns f1 plot",
+            [
+                MulticlassInferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.01)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.6)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.5)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.4)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.01)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.6)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.01)),
+                    ],
+                    unmatched_gt=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                    ],
+                ),
+            ],
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[
+                            0.0,
+                            0.01,
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.4,
+                            0.5,
+                            0.6,
+                            0.7,
+                            0.8,
+                            0.9,
+                        ],
+                        y=[
+                            0.7352941176470589,
+                            0.6769230769230768,
+                            0.6779661016949152,
+                            0.6315789473684209,
+                            0.5555555555555555,
+                            0.5283018867924528,
+                            0.5,
+                            0.44,
+                            0.37499999999999994,
+                            0.2926829268292683,
+                            0.15789473684210528,
+                        ],
+                        label="tps and fps and fns f1 plot",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+    ],
+)
+def test__curve__plots__one(
+    plot: str,
+    test_name: str,
+    matchings: List[MulticlassInferenceMatches],
+    curveplot: CurvePlot,
+) -> None:
+    from kolena._experimental.object_detection.utils import compute_pr_f1_plots
+
+    plots = compute_pr_f1_plots(all_matches=matchings, curve_label=test_name, plot=plot)
+    assert_curveplot_equal(plots[0], curveplot)
 
 
 @pytest.mark.parametrize(

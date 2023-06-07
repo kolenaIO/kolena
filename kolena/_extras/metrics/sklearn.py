@@ -15,4 +15,4 @@ try:
     import sklearn.metrics as sklearn_metrics  # noqa: F401
 
 except ImportError:
-    raise ImportError("Package 'scikit-learn' not found; install 'metrics' extras with `pip install kolena[metrics]`")
+    raise ImportError("Package 'scikit-learn' not found; install 'metrics' extra with `pip install kolena[metrics]`")
