@@ -228,7 +228,7 @@ class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
 
     Objects are of type [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox] or
     [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon], depending on the type of inputs provided to
-    [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass".
+    [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass].
     """
 
     matched: List[Tuple[GT_Multiclass, Inf_Multiclass]]
