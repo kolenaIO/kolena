@@ -21,8 +21,8 @@ from typing import Tuple
 from typing import Union
 
 import numpy as np
-from sklearn.metrics import precision_recall_fscore_support
 
+from kolena._extras.metrics import sklearn_metrics
 from kolena._utils import log
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Curve
@@ -73,7 +73,7 @@ def _compute_threshold_curves(
     f1s: List[float] = []
     for threshold in thresholds:
         y_pred = [1 if score > threshold else 0 for score in y_score]
-        precision, recall, f1, _ = precision_recall_fscore_support(
+        precision, recall, f1, _ = sklearn_metrics.precision_recall_fscore_support(
             y_true,
             y_pred,
             average="binary",
