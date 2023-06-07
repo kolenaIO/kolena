@@ -107,7 +107,7 @@ class TestImage(BaseTestImage):
 def load_images(dataset: Optional[str] = None) -> List[TestImage]:
     """
     !!! warning "Deprecated: since `0.26.0`"
-        Please use [`TestCase.load_images`][kolena.detection.TestCase.load_images] instead.
+        Please use [`TestCase.load_images`][kolena.detection._internal.test_case.BaseTestCase.load_images] instead.
 
     Load a list of [`TestImage`][kolena.detection.TestImage] samples registered in Kolena.
 
@@ -122,7 +122,7 @@ def load_images(dataset: Optional[str] = None) -> List[TestImage]:
 def iter_images(dataset: Optional[str] = None) -> Iterator[TestImage]:
     """
     !!! warning "Deprecated: since `0.26.0`"
-        Please use [`TestCase.iter_images`][kolena.detection.TestCase.iter_images] instead.
+        Please use [`TestCase.iter_images`][kolena.detection._internal.test_case.BaseTestCase.iter_images] instead.
 
     Return iterator over [`TestImage`][kolena.detection.TestImage] samples registered in Kolena. Images are lazily
     loaded in chunks to facilitate working with large datasets that are cumbersome to hold in memory.

@@ -21,7 +21,7 @@ class TestConfig(_TestConfig):
     Base class for a testing configuration.
 
     See concrete implementations [`FixedGlobalThreshold`][kolena.detection.FixedGlobalThreshold] and
-    [`F1Optimal`][kolena.detection.config.F1Optimal] for details.
+    [`F1Optimal`][kolena.detection.F1Optimal] for details.
     """
 
 

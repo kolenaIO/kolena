@@ -28,9 +28,9 @@ class TestSuite(BaseTestSuite):
     :param version: Optionally specify the version of the test suite to load. When absent, the latest version is loaded.
         Ignored when creating new test suites.
     :param description: Optionally specify a description for a newly created test suite. For existing test suites, this
-        description can be edited via [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+        description can be edited via [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     :param test_cases: Optionally specify a list of test cases to populate a new test suite. For existing test suites,
-        test cases can be edited via [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+        test cases can be edited via [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     name: str
@@ -39,13 +39,13 @@ class TestSuite(BaseTestSuite):
     version: int
     """
     The version of the test suite. This version is automatically incremented each time the suite is edited with
-    [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+    [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     description: str
     """
     Free-form, human-readable description of the test suite. Can be edited at any time via
-    [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+    [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     test_cases: List[TestCase]

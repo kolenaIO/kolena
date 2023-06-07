@@ -42,19 +42,19 @@ class TestSuite(BaseTestSuite):
     version: int
     """
     The version of the test suite. Version is automatically incremented whenever the test suite is modified via
-    [`TestSuite.edit`][kolena.classification.TestSuite.edit].
+    [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     description: str
     """
     Free-form description of this test suite. May be edited at any time via
-    [`TestSuite.edit`][kolena.classification.TestSuite.edit].
+    [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     test_cases: List[TestCase]
     """
     The [`TestCase`][kolena.classification.TestCase] objects in this test suite. May be edited at any time via
-    [`TestSuite.edit`][kolena.classification.TestSuite.edit].
+    [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     _id: int

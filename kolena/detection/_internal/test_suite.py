@@ -49,9 +49,9 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
     :param version: Optionally specify the version of the test suite to load. When absent, the latest version is loaded.
         Ignored when creating new test suites.
     :param description: Optionally specify a description for a newly created test suite. For existing test suites, this
-        description can be edited via :meth:`TestSuite.edit`
+        description can be edited via [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     :param test_cases: optionally specify a list of test cases to populate a new test suite. For existing test suites,
-        test cases can be edited via :meth:`TestSuite.edit`
+        test cases can be edited via [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     _id: int
@@ -187,7 +187,8 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
 
     class Editor:
         """
-        Interface to edit a test suite. Create with [`TestSuite.edit`][kolena.detection.TestSuite.edit].
+        Interface to edit a test suite. Create with
+        [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
         """
 
         _test_cases: List[BaseTestCase]
