@@ -51,7 +51,6 @@ jobs:
             - run:
                 name: Install Dependencies
                 command: |
-                  poetry config experimental.new-installer false
                   poetry config installer.max-workers 10
                   poetry install --no-ansi
       - when:
@@ -61,7 +60,6 @@ jobs:
             - run:
                 name: Install Dependencies
                 command: |
-                  poetry config experimental.new-installer false
                   poetry config installer.max-workers 10
                   poetry install --all-extras --no-ansi
       - save_cache:
@@ -206,7 +204,6 @@ jobs:
       - checkout:
           path: ~/project
       - run: |
-          poetry config experimental.new-installer false
           poetry config installer.max-workers 10
           poetry install --no-ansi
       - run:
