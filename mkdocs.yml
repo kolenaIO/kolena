@@ -8,20 +8,16 @@ copyright: Copyright &copy; 2021-2023 Kolena
 edit_uri: edit/trunk/docs/
 
 nav:
-  - Home: index.md
-  - Getting Started: []
-  - Using Kolena: []
+  - Testing with Kolena:
+      - Home: index.md
   - Advanced Usage: []
   - API Reference:
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.workflow</code>:
-          - "Test Sample, Ground Truth, and Inference types":
-              - <code>test_sample</code>: reference/workflow/test_sample.md
-              - <code>ground_truth</code>: reference/workflow/ground_truth.md
-              - <code>inference</code>: reference/workflow/inference.md
-              - Annotations: reference/workflow/annotation.md
-              - Assets: reference/workflow/asset.md
+          - <code>TestSample</code>: reference/workflow/test_sample.md
+          - <code>GroundTruth</code>: reference/workflow/ground_truth.md
+          - <code>Inference</code>: reference/workflow/inference.md
           - <code>define_workflow</code>: reference/workflow/define_workflow.md
           - <code>TestCase</code>: reference/workflow/test_case.md
           - <code>TestSuite</code>: reference/workflow/test_suite.md
@@ -29,6 +25,8 @@ nav:
           - <code>Evaluator</code>: reference/workflow/evaluator.md
           - <code>test</code>: reference/workflow/test_run.md
           - Utilities:
+              - Annotations: reference/workflow/annotation.md
+              - Assets: reference/workflow/asset.md
               - <code>metrics</code>: reference/workflow/metrics.md
       - Legacy:
           - Built-in Workflows:
@@ -61,17 +59,17 @@ theme:
     - announce.dismiss
     - content.action.edit
     - content.code.copy
-    # - content.tabs.link
-    # - navigation.instant  # SPA-style navigation, doesn't play nicely with banner
-    # - navigation.tabs
-    # - navigation.path  # breadcrumbs
+    - content.tabs.link
+    - navigation.instant
     - navigation.footer
     - navigation.sections
     - navigation.tabs
-    # - navigation.top
     - search.highlight
     - search.suggest
     - toc.follow
+
+    # require sponsorship
+    # - navigation.path  # breadcrumbs
 
 markdown_extensions:
   - admonition  # callouts
@@ -95,6 +93,9 @@ extra_css:
   - css/mkdocstrings.css
 
 plugins:
+  - social  # render social media cards for copy+paste
+  - search:
+      lang: en
   - mkdocstrings:
       handlers:
         python:
@@ -104,25 +105,15 @@ plugins:
             docstring_style: sphinx
             merge_init_into_class: true
             members_order: source  # sort members in the order they are defined
-            # group_by_category: false  # useful, but appears to break imports
             show_docstring_attributes: true
             show_root_toc_entry: false
-            # show_root_heading: true  # shows e.g. kolena.workflow.annotation
+
             # TODO: 'spacy' utilizes space better when types are long, but is overall less scannable -- worth it?
             # docstring_section_style: spacy
 
             # require sponsorship:
             # show_symbol_type_heading: true
             # show_symbol_type_toc: true
-
-            # separate_signature, line_length, and show_signature_annotations should all be on or off
-            # separate_signature: true
-            # line_length: 80
-            # show_signature_annotations: true
-
-  - social  # render social media cards for copy+paste
-  - search:
-      lang: en
 
 extra:
   homepage: https://kolena.io
