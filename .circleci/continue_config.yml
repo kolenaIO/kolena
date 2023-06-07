@@ -206,7 +206,6 @@ jobs:
       - checkout:
           path: ~/project
       - run: |
-          poetry config experimental.new-installer false
           poetry config installer.max-workers 10
           poetry install --no-ansi
       - run:
