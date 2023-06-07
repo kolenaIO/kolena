@@ -1397,6 +1397,7 @@ def test__curve__plots__one(
     assert_curveplot_equal(plots[0], curveplot)
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, matchings, ordered_labels, matrix",
     [
@@ -1845,10 +1846,10 @@ def test__confusion__matrix(
     matrix: List[List[int]],
 ) -> None:
     conf_mat = compute_confusion_matrix_plot(all_matches=matchings, plot_title=test_name)
-    print(conf_mat)
     assert conf_mat == ConfusionMatrix(title=test_name, labels=ordered_labels, matrix=matrix)
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, matchings",
     [
