@@ -44,20 +44,10 @@ jobs:
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
 
-      - name: Build 'kolena' documentation and push to S3
+      - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
-          ./render.sh
-          VERSION=$(poetry run python3 -c "import kolena; print(kolena.__version__)")
-
-          BUCKET_PATH="s3://$ASSET_BUCKET/docs/$VERSION"
-          echo "pushing documentation to '$BUCKET_PATH'..."
-          aws s3 rm --recursive "$BUCKET_PATH"
-          aws s3 sync ./build "$BUCKET_PATH"
-
-          BUCKET_PATH="s3://$ASSET_BUCKET/docs/latest"
-          echo "pushing documentation to '$BUCKET_PATH'..."
-          aws s3 rm --recursive "$BUCKET_PATH"
-          aws s3 sync ./build "$BUCKET_PATH"
+          poetry run mkdocs build
+          poetry run mkdocs gh-deploy
         working-directory: ./docs
 
       - name: Push 'kolena' dist to Test PyPI
