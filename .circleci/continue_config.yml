@@ -46,7 +46,7 @@ jobs:
           key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
-            equal: [ "", << parameters.extras >> ]
+            equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -225,13 +225,13 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["none", "metrics"]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["none", "metrics"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
