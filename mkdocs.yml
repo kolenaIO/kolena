@@ -106,7 +106,7 @@ plugins:
             show_docstring_attributes: true
             show_root_toc_entry: false
             # show_root_heading: true  # shows e.g. kolena.workflow.annotation
-            # docstring_section_style: spacy  # TODO: switch on? better for long types
+            docstring_section_style: spacy
 
             # require sponsorship:
             # show_symbol_type_heading: true

@@ -63,9 +63,9 @@ def define_workflow(
     :param test_sample_type: The type of the [`TestSample`][kolena.workflow.TestSample] for this workflow.
     :param ground_truth_type: The type of the [`GroundTruth`][kolena.workflow.GroundTruth] for this workflow.
     :param inference_type: The type of the [`Inference`][kolena.workflow.Inference] for this workflow.
-    :return: The [`Workflow`][kolena.workflow.Workflow] object for this workflow along with the
-        [`TestCase`][kolena.workflow.TestCase], [`TestSuite`][kolena.workflow.TestSuite],
-        and [`Model`][kolena.workflow.Model] objects to use when creating and running tests for this workflow.
+    :return: The `Workflow` object for this workflow along with the [`TestCase`][kolena.workflow.TestCase],
+        [`TestSuite`][kolena.workflow.TestSuite], and [`Model`][kolena.workflow.Model] objects to use when creating and
+        running tests for this workflow.
     """
     workflow = Workflow(
         name=name,

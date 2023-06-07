@@ -128,8 +128,8 @@ class _PlotType(DataType):
 class AxisConfig(DataObject):
     """Configuration for the format of a given axis on a plot."""
 
-    #: Type of axis to display. Supported options are `linear` and `log`.
     type: Literal["linear", "log"]
+    """Type of axis to display. Supported options are `linear` and `log`."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -142,11 +142,16 @@ class Curve(DataObject):
     """A single series on a [`CurvePlot`][kolena.workflow.CurvePlot]."""
 
     x: NumberSeries
-    y: NumberSeries
+    """The `x` coordinates of this curve. Length must match the provided `y` coordinates."""
 
-    #: Optionally specify an additional label (in addition to the associated test case) to apply to this curve, for use
-    #: when e.g. there are multiple curves generated per test case.
+    y: NumberSeries
+    """The `y` coordinates of this curve. Length must match the provided `x` coordinates."""
+
     label: Optional[str] = None
+    """
+    Optionally specify an additional label (in addition to the associated test case) to apply to this curve, for use
+    when e.g. there are multiple curves generated per test case.
+    """
 
     def __post_init_post_parse__(self) -> None:
         if len(self.x) != len(self.y):
@@ -165,16 +170,31 @@ class CurvePlot(Plot):
     """
 
     title: str
+    """The title for the plot."""
+
     x_label: str
+    """The label describing the plot's `x` axis."""
+
     y_label: str
+    """The label describing the plot's `y` axis."""
 
-    #: A test case may generate zero or more curves on a given plot. However, under most circumstances, a single curve
-    #: per test case is desirable.
     curves: List[Curve]
+    """
+    A test case may generate zero or more curves on a given plot. However, under most circumstances, a single curve
+    per test case is desirable.
+    """
 
-    #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `x` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
+
     y_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `y` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
 
     @staticmethod
     def _data_type() -> _PlotType:
@@ -191,27 +211,46 @@ class Histogram(Plot):
     """
 
     title: str
+    """The title for the plot."""
+
     x_label: str
+    """The label describing the plot's `x` axis."""
+
     y_label: str
+    """The label describing the plot's `y` axis."""
 
-    #: A Histogram requires intervals to bucket the data. For ``n`` buckets, ``n+1`` consecutive bounds must be
-    #: specified in increasing order.
     buckets: NumberSeries
+    """
+    A Histogram requires intervals to bucket the data. For `n` buckets, `n+1` consecutive bounds must be specified in
+    increasing order.
+    """
 
-    #: For `n` buckets, there are `n` frequencies corresponding to the height of each bucket. The frequency at index
-    #: `i` corresponds to the bucket with bounds (`i`, `i+1`) in `buckets`.
-    #:
-    #: To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
-    #: e.g. to the distribution for a given class within a test case, with name specified in `labels`.
     frequency: Union[NumberSeries, Sequence[NumberSeries]]
+    """
+    For `n` buckets, there are `n` frequencies corresponding to the height of each bucket. The frequency at index `i`
+    corresponds to the bucket with bounds (`i`, `i+1`) in `buckets`.
 
-    #: Specify a list of labels corresponding to the different `frequency` series when multiple series are provided.
-    #: Can be omitted when a single `frequency` series is provided.
+    To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
+    e.g. to the distribution for a given class within a test case, with name specified in `labels`.
+
+    Specify a list of labels corresponding to the different `frequency` series when multiple series are provided.
+    Can be omitted when a single `frequency` series is provided.
+    """
+
     labels: Optional[List[str]] = None
+    """Specify the label corresponding to a given distribution when multiple are specified in `frequency`."""
 
-    #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `x` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
+
     y_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `y` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
 
     def __post_init_post_parse__(self) -> None:
         n_buckets = len(self.buckets)
@@ -241,21 +280,22 @@ class BarPlot(Plot):
     """A plot visualizing a set of bars per test case."""
 
     title: str
+    """The plot title."""
 
-    #: Axis label for the axis along which the bars are laid out (`labels`).
     x_label: str
+    """Axis label for the axis along which the bars are laid out (`labels`)."""
 
-    #: Axis label for the axis corresponding to bar height (`values`).
     y_label: str
+    """Axis label for the axis corresponding to bar height (`values`)."""
 
-    #: Labels for each bar with corresponding height specified in `values`.
     labels: Sequence[Union[str, int, float]]
+    """Labels for each bar with corresponding height specified in `values`."""
 
-    #: Values for each bar with corresponding label specified in `labels`.
     values: NullableNumberSeries
+    """Values for each bar with corresponding label specified in `labels`."""
 
-    #: Custom format options to allow for control over the display of the numerical plot axis (`values`).
     config: Optional[AxisConfig] = None
+    """Custom format options to allow for control over the display of the numerical plot axis (`values`)."""
 
     def __post_init_post_parse__(self) -> None:
         n_labels, n_values = len(self.labels), len(self.values)
@@ -298,10 +338,19 @@ class ConfusionMatrix(Plot):
     """
 
     title: str
+    """The plot title."""
+
     labels: List[str]
+    """The labels corresponding to each entry in the square `matrix`."""
+
     matrix: Sequence[NullableNumberSeries]
+    """A square matrix, typically representing the number of matches between class `i` and class `j`."""
+
     x_label: str = "Predicted"
+    """The label for the `x` axis of the confusion matrix."""
+
     y_label: str = "Actual"
+    """The label for the `y` axis of the confusion matrix."""
 
     def __post_init_post_parse__(self) -> None:
         n_labels = len(self.labels)

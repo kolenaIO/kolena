@@ -88,9 +88,22 @@ class EvaluationResults:
     """
 
     metrics_test_sample: List[Tuple[BaseTestSample, BaseMetricsTestSample]]
+    """
+    Sample-level metrics, extending [`MetricsTestSample`][kolena.workflow.MetricsTestSample], for every provided test
+    sample.
+    """
+
     metrics_test_case: List[Tuple[TestCase, MetricsTestCase]]
+    """
+    Aggregate metrics, extending [`MetricsTestCase`][kolena.workflow.MetricsTestCase], computed across each test case
+    yielded from [`TestCases.iter`][kolena.workflow.TestCases.iter].
+    """
+
     plots_test_case: List[Tuple[TestCase, List[Plot]]] = field(default_factory=list)
+    """Optional test-case-level plots."""
+
     metrics_test_suite: Optional[MetricsTestSuite] = None
+    """Optional test-suite-level metrics, extending [`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]."""
 
 
 ConfiguredEvaluatorFunction = Callable[

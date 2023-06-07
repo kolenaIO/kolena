@@ -47,7 +47,7 @@ from .evaluator_function import TestCases
 from .evaluator_function import EvaluationResults
 from .test_run import TestRun
 from .test_run import test
-from ._helpers import define_workflow
+from .define_workflow import define_workflow
 
 __all__ = [
     "DataObject",
