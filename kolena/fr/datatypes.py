@@ -284,6 +284,7 @@ class _ImageChipsDataFrameSchema(pa.SchemaModel):
 
 class EmbeddingDataFrameSchema(pa.SchemaModel):
     image_id: Series[pa.typing.Int64] = pa.Field(coerce=True)
+    """The provided ID of the image."""
 
     embedding: Series[EmbeddingVector] = pa.Field(nullable=True, coerce=True, _validate_embedding_vector=())
     """

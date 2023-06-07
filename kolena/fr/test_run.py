@@ -213,9 +213,9 @@ class TestRun(ABC, Frozen, WithTelemetry):
         :param batch_size: Optionally specify the maximum number of image pair records to return.
         :return: Two DataFrames, one containing embeddings computed in the previous step (`df_embedding`) and one
             containing records for each of the image pairs that must be computed (`df_pair`). See documentation on
-            [`EmbeddingDataFrameSchema][kolena.fr.datatypes.EmbeddingDataFrameSchema] for expected format when multiple
+            [`EmbeddingDataFrameSchema`][kolena.fr.datatypes.EmbeddingDataFrameSchema] for expected format when multiple
             embeddings were uploaded from a single image in
-            [`TestRun.upload_image_results][kolena.fr.TestRun.upload_image_results].
+            [`TestRun.upload_image_results`][kolena.fr.TestRun.upload_image_results].
         :raises InputValidationError: The requested `batch_size` failed validation.
         :raises RemoteError: Pairs could not be loaded for any reason.
         """

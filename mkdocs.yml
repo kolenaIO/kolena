@@ -2,6 +2,40 @@ site_name: Kolena
 site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
 site_url: https://docs.kolena.io
 strict: false  # TODO: flip to true
+repo_name: kolenaIO/kolena
+repo_url: https://github.com/kolenaIO/kolena
+copyright: Copyright &copy; 2021-2023 Kolena
+edit_uri: edit/trunk/docs/
+
+nav:
+  - Home: index.md
+  - Getting Started: []
+  - Using Kolena: []
+  - Advanced Usage: []
+  - API Reference:
+      - <code>kolena.initialize</code>: reference/initialize.md
+      - <code>kolena.errors</code>: reference/errors.md
+      - <code>kolena.workflow</code>:
+          # - Module Index: reference/workflow/index.md
+          - "Data Objects (Test Sample, Ground Truth, Inference)":
+              - <code>test_sample</code>: reference/workflow/test_sample.md
+              - <code>ground_truth</code>: reference/workflow/ground_truth.md
+              - <code>inference</code>: reference/workflow/inference.md
+              - Annotations: reference/workflow/annotation.md
+              - Assets: reference/workflow/asset.md
+          - <code>define_workflow</code>: reference/workflow/define_workflow.md
+          - <code>TestCase</code>: reference/workflow/test_case.md
+          - <code>TestSuite</code>: reference/workflow/test_suite.md
+          - <code>Model</code>: reference/workflow/model.md
+          - <code>Evaluator</code>: reference/workflow/evaluator.md
+          - <code>test</code>: reference/workflow/test_run.md
+      - Legacy:
+          - Built-in Workflows:
+              - <code>kolena.classification</code>: reference/built-in/classification.md
+              - <code>kolena.detection</code>: reference/built-in/detection.md
+              - <code>kolena.fr</code>: reference/built-in/fr.md
+  - Metrics Guide: []
+  - Help: []
 
 theme:
   name: material
@@ -22,59 +56,71 @@ theme:
         icon: material/toggle-switch-off-outline
         name: "Switch to light mode"
   features:
+    - announce.dismiss
+    - content.action.edit
+    - content.code.copy
     # - content.tabs.link
+    # - navigation.instant  # SPA-style navigation, doesn't play nicely with banner
     # - navigation.tabs
     # - navigation.path  # breadcrumbs
     - navigation.footer
-    - content.action.edit
-    - announce.dismiss
-    # - navigation.instant  # SPA-style navigation, doesn't play nicely with banner
-    - navigation.tabs
     - navigation.sections
-    - toc.follow
+    - navigation.tabs
     # - navigation.top
-    - content.code.copy
-
-repo_name: kolenaIO/kolena
-repo_url: https://github.com/kolenaIO/kolena
-edit_uri: edit/trunk/docs/
+    - search.highlight
+    - search.suggest
+    - toc.follow
 
 markdown_extensions:
   - admonition  # callouts
+  - footnotes
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.snippets:
+      check_paths: true
   - pymdownx.superfences
-
+  - toc:
+      permalink: "¤"
 
 watch:
   - kolena
 
 extra_css:
   - css/theme.css
+  - css/mkdocstrings.css
 
 plugins:
   - mkdocstrings:
       handlers:
         python:
+          import:
+            - https://docs.python.org/3/objects.inv
           options:
             docstring_style: sphinx
             merge_init_into_class: true
             members_order: source  # sort members in the order they are defined
+            # group_by_category: false  # useful, but appears to break imports
             show_docstring_attributes: true
+            show_root_toc_entry: false
+            # show_root_heading: true  # shows e.g. kolena.workflow.annotation
             # docstring_section_style: spacy  # TODO: switch on? better for long types
+
+            # require sponsorship:
+            # show_symbol_type_heading: true
+            # show_symbol_type_toc: true
+
             # separate_signature, line_length, and show_signature_annotations should all be on or off
             # separate_signature: true
             # line_length: 80
             # show_signature_annotations: true
+
   - social  # render social media cards for copy+paste
   - search:
       lang: en
 
-copyright: Copyright &copy; 2021-2023 Kolena
 extra:
   homepage: https://kolena.io
   generator: false  # TODO: this removes the theme info from footer -- we should sponsor project
@@ -88,33 +134,3 @@ extra:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/kolenaIO
       name: Kolena on Twitter
-
-nav:
-  - Home: index.md
-  - Getting Started: []
-  - Using Kolena: []
-  - Advanced Usage: []
-  - API Reference:
-    - <code>kolena.initialize</code>: reference/initialize.md
-    - <code>kolena.errors</code>: reference/errors.md
-    - <code>kolena.workflow</code>:
-      # - Module Index: reference/workflow/index.md
-      - "Data Objects (Test Sample, Ground Truth, Inference)":
-        - <code>test_sample</code>: reference/workflow/test_sample.md
-        - <code>ground_truth</code>: reference/workflow/ground_truth.md
-        - <code>inference</code>: reference/workflow/inference.md
-        - Annotations: reference/workflow/annotation.md
-        - Assets: reference/workflow/asset.md
-      - <code>define_workflow</code>: reference/workflow/define_workflow.md
-      - <code>TestCase</code>: reference/workflow/test_case.md
-      - <code>TestSuite</code>: reference/workflow/test_suite.md
-      - <code>Model</code>: reference/workflow/model.md
-      - <code>Evaluator</code>: reference/workflow/evaluator.md
-      - <code>test</code>: reference/workflow/test_run.md
-    - Legacy:
-      - Built-in Workflows:
-        - <code>kolena.classification</code>: reference/built-in/classification.md
-        - <code>kolena.detection</code>: reference/built-in/detection.md
-        - <code>kolena.fr</code>: reference/built-in/fr.md
-  - Metrics Guide: []
-  - Help: []
