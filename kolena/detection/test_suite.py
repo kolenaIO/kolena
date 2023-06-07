@@ -24,6 +24,9 @@ class TestSuite(BaseTestSuite):
     """
     A test suite groups together one or more test cases.
 
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.test_suite.BaseTestSuite].
+
     :param name: Name of the test suite to create or load.
     :param version: Optionally specify the version of the test suite to load. When absent, the latest version is loaded.
         Ignored when creating new test suites.

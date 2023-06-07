@@ -33,6 +33,9 @@ class TestCase(BaseTestCase):
     across a large population. Alternatively, a test case may have only one or a handful of images for laser-focus on a
     specific scenario.
 
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.test_case.BaseTestCase].
+
     :param name: The name of the test case. If a test case by this name already exists, that test case is loaded.
     :param version: Optionally specify the version of the test case to load. Ignored when a test case by the
         provided name does not already exist.

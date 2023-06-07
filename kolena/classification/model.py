@@ -34,6 +34,9 @@ from kolena.detection.inference import ClassificationLabel
 class Model(BaseModel):
     """
     The descriptor for a classification model in Kolena.
+
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.model.BaseModel].
     """
 
     name: str

@@ -27,6 +27,9 @@ class TestSuite(BaseTestSuite):
     Testing on test suites is performed via [`test`][kolena.classification.test]. Metrics are computed across all
     samples in a test suite and also for each individual test case within the suite.
 
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.test_suite.BaseTestSuite].
+
     :param name: The name of the test suite. If a test suite by this name already exists, that test suite is loaded.
     :param version: Optionally specify the version of the test suite to load. Ignored when the a suite by the
         provided name does not already exist.

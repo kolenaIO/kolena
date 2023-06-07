@@ -32,6 +32,9 @@ from kolena.detection.inference import SegmentationMask
 class Model(BaseModel):
     """
     The descriptor for an object detection model within Kolena.
+
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.model.BaseModel].
     """
 
     name: str

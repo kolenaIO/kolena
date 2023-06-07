@@ -84,9 +84,8 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
-  # TODO: nice to have, but often causes overflow that doesn't look great
-  # - toc:
-  #     permalink: "¤"
+  - toc:
+      permalink: "¤"
 
 watch:
   - kolena

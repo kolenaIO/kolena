@@ -276,6 +276,8 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         Changes are committed to Kolena when the context is exited.
 
         :param reset: Clear any and all test cases currently in the test suite.
+        :return: Context-managed [`TestSuite.Editor`][kolena.detection._internal.test_suite.BaseTestSuite.Editor]
+            instance exposing editing functionality for this test suite.
         """
         editor = BaseTestSuite.Editor(self.test_cases, self.description, reset)
         editor._workflow = self._workflow  # set outside of init such that parameter does not leak into documentation

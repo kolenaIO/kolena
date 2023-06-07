@@ -27,6 +27,9 @@ class TestCase(BaseTestCase):
     """
     A test case holds a set of images to compute performance metrics against.
 
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.test_case.BaseTestCase].
+
     :param name: Name of the test case to create or load.
     :param version: Optionally specify the version of the test case to load. When absent, the latest version is loaded.
         Ignored when creating new test cases.
