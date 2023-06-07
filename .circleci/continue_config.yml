@@ -245,7 +245,7 @@ workflows:
           requires:
             - ci-base-<< matrix.python-version >>
       - integration-test:
-          name: integration-test-misc-<< matrix.python-version >>-<< matrix.extras >>
+          name: integration-test-misc-<< matrix.python-version >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
