@@ -43,7 +43,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &ci-base-cache ci-cache-<< parameters.python-version >><< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
             equal: [ "", << parameters.extras >> ]
@@ -55,7 +55,7 @@ jobs:
                   poetry install --no-ansi
       - when:
           condition:
-            equal: [ "-metrics", << parameters.extras >> ]
+            equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -84,7 +84,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >><< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run: poetry run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
@@ -105,7 +105,7 @@ jobs:
                   poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
-            equal: [ "-metrics", << parameters.extras >> ]
+            equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run metrics unit tests
@@ -157,7 +157,7 @@ jobs:
                 command: circleci-agent step halt
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >><< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
           name: Run << parameters.pytest-group >> integration tests
           command: |
@@ -221,39 +221,41 @@ workflows:
   ci:
     jobs:
       - ci-base:
-          name: ci-base-<< matrix.python-version >><< matrix.extras >>
+          name: ci-base-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "-metrics"]
+              extras: ["", "metrics"]
       - unit-test:
-          name: unit-test-<< matrix.python-version >><< matrix.extras >>
+          name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "-metrics"]
+              extras: ["", "metrics"]
           requires:
-            - ci-base-<< matrix.python-version >><< matrix.extras >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>
+          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
+              extras: [""]
           enabled: true
           parallelism: 4
           requires:
-            - ci-base-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-misc-<< matrix.python-version >>
+          name: integration-test-misc-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
+              extras: [""]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1
           requires:
-            - ci-base-<< matrix.python-version >>
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
   example:
     when:
       or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
