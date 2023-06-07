@@ -1,4 +1,4 @@
-site_name: Kolena
+site_name: Testing with Kolena
 site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
 site_url: https://docs.kolena.io
 strict: true
@@ -10,7 +10,7 @@ edit_uri: edit/trunk/docs/
 nav:
   - Testing with Kolena:
       - Home: index.md
-  - Advanced Usage: []
+  - Advanced Usage: advanced-usage.md
   - API Reference:
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
@@ -34,14 +34,13 @@ nav:
               - <code>kolena.detection</code>: reference/built-in/detection.md
               - <code>kolena.fr</code>: reference/built-in/fr.md
               - Base Definitions: reference/built-in/base.md
-  - Metrics Guide: []
-  - Help: []
+  - Metrics Guide: metrics-guide.md
+  - FAQ: faq.md
 
 theme:
   name: material
-  logo: assets/images/wordmark-white.svg
+  logo: assets/images/logo-white.svg
   favicon: assets/images/favicon.png
-  custom_dir: docs/overrides
   font:
     text: Inter
   palette:

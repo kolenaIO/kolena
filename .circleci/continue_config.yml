@@ -96,6 +96,17 @@ jobs:
           steps:
             - run: poetry run pre-commit run -a
       - when:
+          # Ensure docs build only from one Python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Build documentation
+                command: |
+                  sudo apt-get update
+                  sudo apt-get install -y libcairo2-dev  # system-level build dependency
+                  poetry run mkdocs build
+      - when:
           condition:
             equal: [ "", << parameters.extras >> ]
           steps:
@@ -111,17 +122,6 @@ jobs:
                 name: Run metrics unit tests
                 command: |
                   poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
-      - when:
-          # Ensure docs build only from one Python version
-          condition:
-            equal: [ "3.9", << parameters.python-version >> ]
-          steps:
-            - run:
-                name: Build documentation
-                command: |
-                  sudo apt-get update
-                  sudo apt-get install -y libcairo2-dev  # system-level build dependency
-                  poetry run mkdocs build
       - when:
           # Generate coverage only from one Python version
           condition:
