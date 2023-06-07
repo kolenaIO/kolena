@@ -72,12 +72,6 @@ class TestSampleMetrics(MetricsTestSample):
     has_FN: bool
     has_Confused: bool
 
-    match_matched_gt: List[LabeledBoundingBox]
-    match_matched_inf: List[ScoredLabeledBoundingBox]
-    match_unmatched_inf: List[ScoredLabeledBoundingBox]
-    match_unmatched_gt: List[LabeledBoundingBox]
-    match_confused_inf: List[Optional[ScoredLabeledBoundingBox]]
-
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
 
@@ -90,6 +84,7 @@ class ClassMetricsPerTestCase(MetricsTestCase):
     TP: int
     FN: int
     FP: int
+    Confused: int
     TPR: float
     FPR: float
     Precision: float
@@ -100,12 +95,14 @@ class ClassMetricsPerTestCase(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
+    # TODO: PerClass - nested metrics by class
     # PerClass: List[ClassMetricsPerTestCase]
     Objects: int
     Inferences: int
     TP: int
     FN: int
     FP: int
+    Confused: int
     TPR: float
     FPR: float
     Precision: float
