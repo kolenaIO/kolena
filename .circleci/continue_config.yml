@@ -112,7 +112,15 @@ jobs:
                 command: |
                   poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
-          # Generate coverage only from one python version
+          # Ensure docs build only from one Python version
+          condition:
+            equal: [ "3.9", << parameters.python-version >> ]
+          steps:
+            - run:
+                name: Build documentation
+                command: poetry run mkdocs build
+      - when:
+          # Generate coverage only from one Python version
           condition:
             equal: [ "3.9", << parameters.python-version >> ]
           steps:
