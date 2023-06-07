@@ -48,7 +48,6 @@ jobs:
         run: |
           poetry run mkdocs build
           poetry run mkdocs gh-deploy
-        working-directory: ./docs
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
