@@ -157,7 +157,7 @@ jobs:
                 command: circleci-agent step halt
       - checkout
       - restore_cache:
-          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: ci-cache-<< parameters.python-version >><< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
           name: Run << parameters.pytest-group >> integration tests
           command: |
@@ -221,41 +221,39 @@ workflows:
   ci:
     jobs:
       - ci-base:
-          name: ci-base-<< matrix.python-version >>-<< matrix.extras >>
+          name: ci-base-<< matrix.python-version >><< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["", "-metrics"]
       - unit-test:
-          name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
+          name: unit-test-<< matrix.python-version >><< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["", "-metrics"]
           requires:
-            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+            - ci-base-<< matrix.python-version >><< matrix.extras >>
       - integration-test:
-          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
+          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
-              extras: [""]
           enabled: true
           parallelism: 4
           requires:
-            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+            - ci-base-<< matrix.python-version >>
       - integration-test:
           name: integration-test-misc-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: [""]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1
           requires:
-            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+            - ci-base-<< matrix.python-version >>
   example:
     when:
       or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
