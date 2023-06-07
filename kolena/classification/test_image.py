@@ -57,7 +57,7 @@ class TestImage(BaseTestImage):
     - [`Asset`][kolena.classification.metadata.Asset] objects containing locators pointing to images, e.g.
         ``gs://my-bucket/my-dataset/example-1channel.png``, are displayed
 
-    See [`kolena.classification.metadata`][kolena.classification.metadata] documentation for more details.
+    See the [metadata documentation][kolena.classification.metadata.Annotation] for more details.
     """
 
     @validate_arguments(config=ValidatorConfig)

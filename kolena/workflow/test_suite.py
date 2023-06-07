@@ -53,7 +53,10 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     """
 
     workflow: Workflow
-    """The [`Workflow`][kolena.workflow.Workflow] of this test suite."""
+    """
+    The workflow of this test suite. Automatically populated when constructing via test suite type returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
 
     name: str
     """The unique name of this test suite."""

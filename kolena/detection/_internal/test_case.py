@@ -61,15 +61,19 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     _TestImageClass: Type[BaseTestImage] = BaseTestImage
     _TestImageDataFrameClass: Type[DFType] = DFType
 
-    #: The unique name of this test case. Cannot be changed after creation.
     name: str
+    """The unique name of this test case."""
 
-    #: The version of this test case. A test case's version is automatically incremented whenever it is edited via
-    #: :meth:`TestCase.edit`.
     version: int
+    """
+    The version of this test case. A test case's version is automatically incremented whenever it is edited via
+    [`TestCase.edit`][kolena.detection._internal.TestCase.edit].
+    """
 
-    #: Free-form, human-readable description of this test case. Can be edited at any time via :meth:`TestCase.edit`.
     description: str
+    """Free-form, human-readable description of this test case. Can be edited at any time via
+    [`TestCase.edit`][kolena.detection._internal.TestCase.edit].
+    """
 
     _id: int
     _workflow: WorkflowType

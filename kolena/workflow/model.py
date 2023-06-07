@@ -54,7 +54,10 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
     """The descriptor of a model tested on Kolena."""
 
     workflow: Workflow
-    """The [`Workflow`][kolena.workflow.Workflow] of this model."""
+    """
+    The workflow of this model. Automatically populated when constructing via the model type returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
 
     name: str
     """Unique name of the model."""

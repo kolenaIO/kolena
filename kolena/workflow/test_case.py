@@ -52,7 +52,10 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
     """A test case holds a set of images to compute aggregate performance metrics against."""
 
     workflow: Workflow
-    """The [`Workflow`][kolena.workflow.Workflow] of this test case."""
+    """
+    The workflow of this test case. Automatically populated when constructing via test case type returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
 
     name: str
     """The unique name of this test case. Cannot be changed after creation."""

@@ -110,7 +110,10 @@ class MetricsTestSuite(DataObject, metaclass=ABCMeta):
 
 
 NumberSeries = Sequence[Union[float, int]]
+"""A sequence of numeric values."""
+
 NullableNumberSeries = Sequence[Union[float, int, None]]
+"""A sequence of numeric values or `None`."""
 
 
 class _PlotType(DataType):
