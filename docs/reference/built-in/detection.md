@@ -12,15 +12,23 @@
 - [`kolena.detection.Model`][kolena.detection.Model]: create models for testing
 
 ::: kolena.detection
+    options:
+      members_order: alphabetical
 
-## Ground Truth
+## `kolena.detection.ground_truth`
 
 ::: kolena.detection.ground_truth
+    options:
+      members_order: alphabetical
 
-## Inference
+## `kolena.detection.inference`
 
 ::: kolena.detection.inference
+    options:
+      members_order: alphabetical
 
-## Metadata
+## `kolena.detection.metadata`
 
 ::: kolena.detection.metadata
+    options:
+      members_order: alphabetical

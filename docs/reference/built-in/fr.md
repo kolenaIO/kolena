@@ -9,9 +9,15 @@
 - [`kolena.fr.TestRun`][kolena.fr.TestRun]: test models on test suites
 - [`kolena.fr.Model`][kolena.fr.Model]: create models for testing
 
-::: kolena.fr.test_images
-::: kolena.fr.test_case
-::: kolena.fr.test_suite
-::: kolena.fr.test_run
 ::: kolena.fr.model
+    options:
+      members_order: alphabetical
+
+::: kolena.fr.test_case
+::: kolena.fr.test_images
+::: kolena.fr.test_run
+::: kolena.fr.test_suite
+
+## `kolena.fr.datatypes`
+
 ::: kolena.fr.datatypes

@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Schema declarations for the [Pandas DataFrames](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html) used
+in `kolena.fr`.
+"""
 import json
 from typing import Any
 from typing import cast

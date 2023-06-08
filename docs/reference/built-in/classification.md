@@ -12,7 +12,11 @@
 - [`kolena.classification.Model`][kolena.classification.Model]: create models for testing
 
 ::: kolena.classification
+    options:
+      members_order: alphabetical
 
-## Metadata
+## `kolena.classification.metadata`
 
 ::: kolena.classification.metadata
+    options:
+      members_order: alphabetical
