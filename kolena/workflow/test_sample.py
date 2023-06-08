@@ -177,6 +177,7 @@ class Image(TestSample):
     """An image located in a cloud bucket or served at a URL."""
 
     locator: str
+    """The URL of this image, using e.g. `s3`, `gs`, or `https` scheme (`s3://my-bucket/path/to/image.png`)."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
@@ -185,17 +186,21 @@ class Image(TestSample):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class ImagePair(Composite):
-    """Two images."""
+    """Two [`Image`s][kolena.workflow.Image] paired together."""
 
     a: Image
+    """The left [`Image`][kolena.workflow.Image] in the image pair."""
+
     b: Image
+    """The right [`Image`][kolena.workflow.Image] in the image pair."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Text(TestSample):
-    """A text snippet."""
+    """An inline text snippet."""
 
     text: str
+    """The text snippet."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
@@ -207,7 +212,10 @@ class ImageText(Composite):
     """An image paired with a text snippet."""
 
     image: Image
+    """The [`Image`][kolena.workflow.Image] in this image-text pair."""
+
     text: Text
+    """The text snippet in this image-text pair."""
 
 
 # NOTE: declare BaseVideo as separate class for extension -- default fields in main Video class prevent extension with
