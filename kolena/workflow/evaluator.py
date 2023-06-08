@@ -384,6 +384,10 @@ class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
 
     @abstractmethod
     def display_name(self) -> str:
+        """
+        The name to display for this configuration in Kolena. Must be implemented when extending
+        [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
+        """
         raise NotImplementedError
 
 
@@ -396,9 +400,14 @@ class Evaluator(metaclass=ABCMeta):
     at the test suite level ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]).
 
     Test-case-level plots ([`Plot`][kolena.workflow.Plot]) may also be computed.
+
+    :param configurations: The configurations at which to perform evaluation. Instance methods such as
+        [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics] are called once per test
+        case per configuration.
     """
 
     configurations: List[EvaluatorConfiguration]
+    """The configurations with which to perform evaluation, provided on instantiation."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
@@ -409,6 +418,7 @@ class Evaluator(metaclass=ABCMeta):
             raise ValueError("all configurations must have distinct display names")
 
     def display_name(self) -> str:
+        """The name to display for this evaluator in Kolena. Defaults to the name of this class."""
         return type(self).__name__
 
     @abstractmethod

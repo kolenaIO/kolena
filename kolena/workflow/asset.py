@@ -81,6 +81,7 @@ class BinaryAsset(Asset):
     """A binary file in a cloud bucket."""
 
     locator: str
+    """The location of this text file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-binary-asset.bin`."""
 
     @staticmethod
     def _data_type() -> _AssetType:
@@ -119,6 +120,9 @@ class BaseVideoAsset(Asset):
 @dataclass(frozen=True, config=ValidatorConfig)
 class VideoAsset(BaseVideoAsset):
     """A video clip located in a cloud bucket or served at a URL."""
+
+    locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
 
     thumbnail: Optional[ImageAsset] = None
     """Optionally provide asset locator for custom video thumbnail image."""
