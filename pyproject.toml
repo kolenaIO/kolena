@@ -64,7 +64,9 @@ pytest = "^7"
 pytest-cov = "^4.0.0"
 pytest-depends = "^1.0.1"
 mkdocs = "^1.4.3"
-mkdocs-material = "^9.1.15"
+# TODO: fallback on base package from PyPI if this cannot be accessed?
+# mkdocs-material = "^9.1.15"
+mkdocs-material = { git = "git@github.com:kolenaIO/mkdocs-material-insiders.git", branch = "master" }
 mkdocstrings = {extras = ["python"], version = "^0.22.0"}
 cairosvg = "^2.7.0"
 

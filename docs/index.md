@@ -1,3 +1,7 @@
+---
+icon: octicons/beaker-24
+---
+
 <p align="center">
   <img src="https://app.kolena.io/api/developer/docs/html/_static/wordmark-purple.svg" width="400" alt="Kolena" />
 </p>
