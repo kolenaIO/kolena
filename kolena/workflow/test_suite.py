@@ -336,6 +336,12 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(self._id)})")
 
     def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
+        """
+        Load test samples for all test cases within this test suite.
+
+        :return: A list of [`TestCase`s][kolena.workflow.TestCase], each paired with the list of
+            [`TestSample`s][kolena.workflow.TestSample] it contains.
+        """
         test_case_id_to_samples: Dict[int, List[TestSample]] = defaultdict(list)
         for df_batch in _BatchedLoader.iter_data(
             init_request=API.LoadTestSamplesRequest(

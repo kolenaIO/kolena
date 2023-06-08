@@ -195,11 +195,21 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         return cls._create_from_data(data)
 
     def load_test_samples(self) -> List[Tuple[TestSample, GroundTruth]]:
-        """Load all test samples and ground truths in this test case."""
+        """
+        Load all [`TestSample`s][kolena.workflow.TestSample] and [`GroundTruth`s][kolena.workflow.GroundTruth] contained
+        in this test case.
+
+        :return: A list of each test sample, paired with its ground truth, in this test case.
+        """
         return list(self.iter_test_samples())
 
     def iter_test_samples(self) -> Iterator[Tuple[TestSample, GroundTruth]]:
-        """Iterate through all test samples and ground truths in this test case."""
+        """
+        Iterate through all [`TestSample`s][kolena.workflow.TestSample] and
+        [`GroundTruth`s][kolena.workflow.GroundTruth] contained in this test case.
+
+        :return: An iterator yielding each test sample, paired with its ground truth, in this test case.
+        """
         log.info(f"loading test samples in test case '{self.name}' (v{self.version})")
         test_sample_type = self.workflow.test_sample_type
         ground_truth_type = self.workflow.ground_truth_type

@@ -106,9 +106,7 @@ plugins:
             members_order: source  # sort members in the order they are defined
             show_docstring_attributes: true
             show_root_toc_entry: false
-
-            # TODO: 'spacy' utilizes space better when types are long, but is overall less scannable -- worth it?
-            # docstring_section_style: spacy
+            show_source: false
 
             # require sponsorship:
             # show_symbol_type_heading: true
