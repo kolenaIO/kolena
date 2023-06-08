@@ -56,8 +56,8 @@ class Asset(Frozen, Serializable):
     In the web platform, certain assets such as PNG and JPG images are viewable when visualizing results in the gallery.
     """
 
-    #: Location of this asset in shared bucket, e.g. ``s3://my-bucket/path/to/image.png``.
     locator: str
+    """Location of this asset in shared bucket, e.g. `s3://my-bucket/path/to/image.png`."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, locator: str):
@@ -88,11 +88,11 @@ def _to_dict(metadata: Dict[str, MetadataElement]) -> Dict[str, Any]:
 class BoundingBox(Annotation):
     """An annotation comprising a bounding box around an object in an image."""
 
-    #: Point in (x, y) pixel coordinates representing the top left corner of the bounding box.
     top_left: Tuple[float, float]
+    """Point in `(x, y)` pixel coordinates representing the top left corner of the bounding box."""
 
-    #: Point in (x, y) pixel coordinates representing the bottom right corner of the bounding box.
     bottom_right: Tuple[float, float]
+    """Point in `(x, y)` pixel coordinates representing the bottom right corner of the bounding box."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, top_left: Tuple[float, float], bottom_right: Tuple[float, float]):
@@ -112,8 +112,8 @@ class Landmarks(Annotation):
     landmarks used for pose estimation.
     """
 
-    #: Any number of (x, y) points in pixel coordinates representing a set of landmarks.
     points: List[Tuple[float, float]]
+    """Any number of `(x, y)` points in pixel coordinates representing a set of landmarks."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, points: List[Tuple[float, float]]):

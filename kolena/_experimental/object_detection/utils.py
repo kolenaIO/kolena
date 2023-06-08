@@ -139,11 +139,12 @@ def compute_confusion_matrix_plot(
     plot_title: str = "Confusion Matrix",
 ) -> Optional[ConfusionMatrix]:
     """
-    Creates a confusion matrix for the multiclass object detection workflow.
+    Creates a [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix] for the multiclass object detection workflow.
 
     :param all_matches: A list of multiclass matching results.
-    :param plot_title: The title for the :class:`ConfusionMatrix`.
-    :return: :class:`ConfusionMatrix` with all actual and predicted labels, if there is more than one label.
+    :param plot_title: The title for the [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix].
+    :return: [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix] with all actual and predicted labels, if there is more
+        than one label in the provided `all_matches`.
     """
     labels: Set[str] = set()
 

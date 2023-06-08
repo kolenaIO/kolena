@@ -31,15 +31,8 @@ TestImageType = TypeVar("TestImageType")
 
 
 class BaseTestImage(ABC, Frozen):
-    """Base class for all TestImage classes"""
-
-    #: Bucket locator for the provided test sample, e.g. ``gs://my-bucket/path/to/image.png``.
     locator: str
-
-    #: Dataset this test image belongs to. Empty when unspecified.
     dataset: str
-
-    #: Metadata associated with this test image. Surfaced during test runs.
     metadata: Dict[str, MetadataElement]
 
     @validate_arguments(config=ValidatorConfig)

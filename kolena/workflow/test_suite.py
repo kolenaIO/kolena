@@ -49,31 +49,42 @@ from kolena.workflow.workflow import Workflow
 
 class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     """
-    A test suite groups together one or more test cases.
+    A test suite groups together one or more [test cases][kolena.workflow.TestCase]. Typically a test suite represents a
+    benchmark test dataset, with test cases representing different meaningful subsets, or slices, or this benchmark.
+
+    Rather than importing this class directly, use the `TestSuite` type definition returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
     """
 
-    _test_case_type: Type[TestCase]
-
-    #: The :class:`kolena.workflow.Workflow` of this test suite.
     workflow: Workflow
+    """
+    The workflow of this test suite. Automatically populated when constructing via test suite type returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
+
+    name: str
+    """The unique name of this test suite."""
+
+    version: int
+    """
+    The version of this test suite. A test suite's version is automatically incremented whenever it is edited via
+    [`TestSuite.edit`][kolena.workflow.TestSuite.edit].
+    """
+
+    description: str
+    """
+    Free-form, human-readable description of this test suite. Can be edited at any time via
+    [`TestSuite.edit`][kolena.workflow.TestSuite.edit].
+    """
+
+    test_cases: List[TestCase]
+    """The [`TestCase`][kolena.workflow.TestCase] objects belonging to this test suite."""
+
+    tags: Set[str]
+    """The tags associated with this test suite."""
 
     _id: int
-
-    #: The unique name of this test suite. Cannot be changed after creation.
-    name: str
-
-    #: The version of this test suite. A test suite's version is automatically incremented whenever it is edited via
-    #: :meth:`TestSuite.edit`.
-    version: int
-
-    #: Free-form, human-readable description of this test suite. Can be edited at any time via :meth:`TestSuite.edit`.
-    description: str
-
-    #: The :class:`kolena.workflow.TestCase` objects belonging to this test suite.
-    test_cases: List[TestCase]
-
-    #: The tags associated with this test suite.
-    tags: Set[str]
+    _test_case_type: Type[TestCase]
 
     @telemetry
     def __init_subclass__(cls) -> None:
@@ -176,11 +187,11 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Create a new test suite with the provided name.
 
-        :param name: the name of the new test suite to create.
-        :param description: optional free-form description of the test suite to create.
-        :param test_cases: optionally specify a list of test cases to populate the test suite.
-        :param tags: optionally specify a set of tags to attach to the test suite.
-        :return: the newly created test suite.
+        :param name: The name of the new test suite to create.
+        :param description: Optional free-form description of the test suite to create.
+        :param test_cases: Optionally specify a list of test cases to populate the test suite.
+        :param tags: Optionally specify a set of tags to attach to the test suite.
+        :return: The newly created test suite.
         """
         cls._validate_workflow()
         cls._validate_test_cases(test_cases)
@@ -199,10 +210,10 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Load an existing test suite with the provided name.
 
-        :param name: the name of the test suite to load.
-        :param version: optionally specify a particular version of the test suite to load. Defaults to the latest
+        :param name: The name of the test suite to load.
+        :param version: Optionally specify a particular version of the test suite to load. Defaults to the latest
             version when unset.
-        :return: the loaded test suite.
+        :return: The loaded test suite.
         """
         cls._validate_workflow()
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
@@ -218,10 +229,10 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Load the latest version of all non-archived test suites with this workflow.
 
-        :param tags: optionally specify a set of tags to apply as a filter. The loaded test suites will include only
+        :param tags: Optionally specify a set of tags to apply as a filter. The loaded test suites will include only
             test suites with tags matching each of these specified tags, i.e.
-            ``test_suite.tags.intersection(tags) == tags``.
-        :return: the latest version of all non-archived test suites, with matching tags when specified.
+            `test_suite.tags.intersection(tags) == tags`.
+        :return: The latest version of all non-archived test suites, with matching tags when specified.
         """
         cls._validate_workflow()
         request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
@@ -266,7 +277,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             Add a test case to this test suite. If a different version of the test case already exists in this test
             suite, it is replaced.
 
-            :param test_case: the test case to add to the test suite.
+            :param test_case: The test case to add to the test suite.
             """
             self._test_cases = [*(tc for tc in self._test_cases if tc.name != test_case.name), test_case]
 
@@ -275,7 +286,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             """
             Remove a test case from this test suite. Does nothing if the test case is not in the test suite.
 
-            :param test_case: the test case to remove.
+            :param test_case: The test case to remove.
             """
             self._test_cases = [tc for tc in self._test_cases if tc.name != test_case.name]
 
@@ -291,16 +302,16 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Edit this test suite in a context:
 
-        .. code-block:: python
-
-            with test_suite.edit() as editor:
-                # perform as many editing actions as desired
-                editor.add(...)
-                editor.remove(...)
+        ```python
+        with test_suite.edit() as editor:
+            # perform as many editing actions as desired
+            editor.add(...)
+            editor.remove(...)
+        ```
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: clear any and all test cases currently in the test suite.
+        :param reset: Clear any and all test cases currently in the test suite.
         """
         editor = self.Editor(self.test_cases, self.description, self.tags, reset)
 
@@ -325,6 +336,12 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(self._id)})")
 
     def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
+        """
+        Load test samples for all test cases within this test suite.
+
+        :return: A list of [`TestCase`s][kolena.workflow.TestCase], each paired with the list of
+            [`TestSample`s][kolena.workflow.TestSample] it contains.
+        """
         test_case_id_to_samples: Dict[int, List[TestSample]] = defaultdict(list)
         for df_batch in _BatchedLoader.iter_data(
             init_request=API.LoadTestSamplesRequest(
