@@ -17,6 +17,7 @@ from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import Union
 
 try:
     from typing import Literal
@@ -30,25 +31,26 @@ from kolena._utils import log
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Curve
 from kolena.workflow.evaluator import CurvePlot
+from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def _compute_sklearn_arrays(
-    all_matches: List[MulticlassInferenceMatches],
-) -> Tuple[List[int], List[int]]:
+    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+) -> Tuple[np.ndarray, np.ndarray]:
     y_true: List[int] = []
-    y_score: List[int] = []
+    y_score: List[float] = []
     for image_bbox_matches in all_matches:
         for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
             y_true.append(1)
             y_score.append(bbox_inf.score)
         for _ in image_bbox_matches.unmatched_gt:  # FN
             y_true.append(1)
-            y_score.append(0)
+            y_score.append(-1)
         for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
             y_true.append(0)
             y_score.append(bbox_inf.score)
-    return y_true, y_score
+    return np.array(y_true), np.array(y_score)
 
 
 def _compute_threshold_curves(
@@ -57,17 +59,15 @@ def _compute_threshold_curves(
     label: str,
 ) -> List[Curve]:
     if len(y_score) >= 501:
-        thresholds = list(np.linspace(min(abs(y_score)), max(y_score), 501))[:-1]
+        thresholds = list(np.linspace(min(abs(y_score)), max(y_score), 501))
     else:
-        thresholds = np.unique(y_score)  # sorts
-        thresholds = thresholds[thresholds >= 0.0]
-        thresholds = thresholds.tolist()[:-1]
+        thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
 
     precisions: List[float] = []
     recalls: List[float] = []
     f1s: List[float] = []
     for threshold in thresholds:
-        y_pred = [1 if score > threshold else 0 for score in y_score]
+        y_pred = [1 if score >= threshold else 0 for score in y_score]
         precision, recall, f1, _ = sklearn_metrics.precision_recall_fscore_support(
             y_true,
             y_pred,
@@ -83,7 +83,7 @@ def _compute_threshold_curves(
 
 
 def compute_pr_f1_plots(
-    all_matches: List[MulticlassInferenceMatches],
+    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     curve_label: str = "baseline",
     plot: Literal["pr", "f1", "all"] = "all",
 ) -> List[CurvePlot]:
@@ -95,11 +95,8 @@ def compute_pr_f1_plots(
     :param plot: The specified plot type to return (`pr`, `f1`, or `all`). All plots returned by default.
     :return: :class:`CurvePlot`s for the PR curve and/or F1-threshold curve respectively.
     """
-    (
-        y_true,
-        y_score,
-    ) = _compute_sklearn_arrays(all_matches)
-    curves = _compute_threshold_curves(np.array(y_true), np.array(y_score), curve_label)
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    curves = _compute_threshold_curves(y_true, y_score, curve_label)
     pr_curves = [curves[0]]
     f1_curves = [curves[1]]
 

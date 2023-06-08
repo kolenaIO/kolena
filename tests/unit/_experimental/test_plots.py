@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import List
+from typing import Union
 
 import pytest
 
@@ -23,6 +24,7 @@ from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.evaluator import ConfusionMatrix
 from kolena.workflow.evaluator import Curve
 from kolena.workflow.evaluator import CurvePlot
+from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
@@ -148,7 +150,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="zeros, but one match for label a"),
+                    Curve(x=[0.0], y=[0.5], label="zeros, but one match for label a"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -158,7 +160,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="zeros, but one match for label a"),
+                    Curve(x=[1 / 3], y=[1.0], label="zeros, but one match for label a"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -183,7 +185,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="zeros, but one match for label b"),
+                    Curve(x=[0.0], y=[0.5], label="zeros, but one match for label b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -193,7 +195,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="zeros, but one match for label b"),
+                    Curve(x=[1 / 3], y=[1.0], label="zeros, but one match for label b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -208,7 +210,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((1, 1), (2, 2), "b"), None),
                         (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0)],
                 ),
             ],
             CurvePlot(
@@ -216,7 +218,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[1.0], y=[0.0], label="zeros, but b is confused with a"),
+                    Curve(x=[0.0], y=[0.0], label="zeros, but b is confused with a"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -241,7 +243,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((1, 1), (2, 2), "a"), None),
                         (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)],
                 ),
             ],
             CurvePlot(
@@ -249,7 +251,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[1.0], y=[0.0], label="zeros, but a is confused with b"),
+                    Curve(x=[0.0], y=[0.0], label="zeros, but a is confused with b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -285,7 +287,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="no confusion, one TP per label"),
+                    Curve(x=[0.0], y=[2 / 3], label="no confusion, one TP per label"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -295,7 +297,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="no confusion, one TP per label"),
+                    Curve(x=[1 / 2], y=[1.0], label="no confusion, one TP per label"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -310,7 +312,10 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             CurvePlot(
@@ -318,7 +323,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[1.0], y=[0.0], label="only confusion"),
+                    Curve(x=[0.0], y=[0.0], label="only confusion"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -345,7 +350,10 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             CurvePlot(
@@ -353,7 +361,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion, one TP for a"),
+                    Curve(x=[0.0], y=[1 / 3], label="only confusion, one TP for a"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -363,7 +371,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion, one TP for a"),
+                    Curve(x=[1 / 3], y=[1 / 3], label="only confusion, one TP for a"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -380,7 +388,10 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             CurvePlot(
@@ -388,7 +399,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion, one TP for b"),
+                    Curve(x=[0.0], y=[1 / 3], label="only confusion, one TP for b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -398,7 +409,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion, one TP for b"),
+                    Curve(x=[1 / 3], y=[1 / 3], label="only confusion, one TP for b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -416,7 +427,10 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             CurvePlot(
@@ -424,7 +438,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="ones"),
+                    Curve(x=[0.0], y=[0.5], label="ones"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -434,7 +448,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="ones"),
+                    Curve(x=[0.5], y=[0.5], label="ones"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -457,7 +471,10 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             CurvePlot(
@@ -465,7 +482,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="ones, with two matchings, TPs"),
+                    Curve(x=[0.0], y=[0.5], label="ones, with two matchings, TPs"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -475,7 +492,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="ones, with two matchings, TPs"),
+                    Curve(x=[0.5], y=[0.5], label="ones, with two matchings, TPs"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -491,7 +508,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                     unmatched_gt=[
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)],
                 ),
                 MulticlassInferenceMatches(
                     matched=[
@@ -500,7 +517,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                     unmatched_gt=[
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)],
                 ),
             ],
             CurvePlot(
@@ -508,7 +525,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="ones, with two matchings, mixed"),
+                    Curve(x=[0.0], y=[0.5], label="ones, with two matchings, mixed"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -518,7 +535,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0], label="ones, with two matchings, mixed"),
+                    Curve(x=[0.5], y=[0.5], label="ones, with two matchings, mixed"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -558,8 +575,8 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                        y=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                        x=[0.0],
+                        y=[2 / 3],
                         label="two single class matchings",
                     ),
                 ],
@@ -572,9 +589,66 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                        y=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                        x=[2 / 3],
+                        y=[2 / 3],
                         label="two single class matchings",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "two single class matchings as IMs",
+            [
+                InferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((3, 3), (4, 4), "a"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
+                        (LabeledBoundingBox((6, 6), (7, 7), "a"), ScoredLabeledBoundingBox((6, 6), (7, 7), "a", 0)),
+                    ],
+                    unmatched_gt=[
+                        LabeledBoundingBox((1, 1), (2, 2), "a"),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((8, 8), (9, 9), "a", 0),
+                    ],
+                ),
+                InferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((1, 1), (4, 4), "b"), ScoredLabeledBoundingBox((1, 1), (4, 4), "b", 0)),
+                        (LabeledBoundingBox((2, 2), (7, 7), "b"), ScoredLabeledBoundingBox((2, 2), (7, 7), "b", 0)),
+                    ],
+                    unmatched_gt=[
+                        LabeledBoundingBox((1, 1), (2, 2), "b"),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((8, 8), (9, 9), "b", 0),
+                    ],
+                ),
+            ],
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.0],
+                        y=[2 / 3],
+                        label="two single class matchings as IMs",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[2 / 3],
+                        y=[2 / 3],
+                        label="two single class matchings as IMs",
                     ),
                 ],
                 x_config=None,
@@ -608,7 +682,13 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             ),
                         ),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledPolygon(
+                            points=[(1, 1), (1, 20), (20, 20), (20, 1)],
+                            label="dog",
+                            score=0.8,
+                        ),
+                    ],
                 ),
                 MulticlassInferenceMatches(
                     matched=[
@@ -625,6 +705,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                     ],
                     unmatched_inf=[
                         ScoredLabeledBoundingBox((10.0, 10.0), (22.0, 22.0), "cat", 0.3),
+                        ScoredLabeledBoundingBox((10, 10), (20, 20), "dog", 0.5),
                     ],
                 ),
                 MulticlassInferenceMatches(
@@ -697,6 +778,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                                 label="dog",
                                 score=0.9,
                             ),
+                            ScoredLabeledPolygon(
+                                points=[(10, 10), (10, 20), (20, 20), (20, 10)],
+                                label="cat",
+                                score=0.9,
+                            ),
                         ),
                     ],
                     unmatched_inf=[
@@ -715,7 +801,6 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 curves=[
                     Curve(
                         x=[
-                            0.0,
                             0.1,
                             0.2,
                             0.3,
@@ -723,16 +808,19 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.5,
                             0.75,
                             0.77,
+                            0.8,
                             0.9,
+                            0.99,
                         ],
                         y=[
-                            0.5555555555555556,
-                            0.5882352941176471,
                             0.5,
-                            0.5333333333333333,
+                            0.5263157894736842,
+                            0.4444444444444444,
+                            0.47058823529411764,
+                            0.375,
                             0.42857142857142855,
-                            0.46153846153846156,
-                            0.3333333333333333,
+                            0.30769230769230765,
+                            0.16666666666666666,
                             0.1818181818181818,
                             0.0,
                         ],
@@ -757,16 +845,18 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.3333333333333333,
                             0.2222222222222222,
                             0.1111111111111111,
+                            0.1111111111111111,
                             0.0,
                         ],
                         y=[
-                            0.5555555555555556,
-                            0.625,
-                            0.5714285714285714,
-                            0.6666666666666666,
+                            0.45454545454545453,
+                            0.5,
+                            0.4444444444444444,
+                            0.5,
+                            0.42857142857142855,
                             0.6,
-                            0.75,
-                            0.6666666666666666,
+                            0.5,
+                            0.3333333333333333,
                             0.5,
                             0.0,
                         ],
@@ -829,8 +919,10 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.7,
                             0.8,
                             0.9,
+                            0.99,
                         ],
                         y=[
+                            1.0,
                             0.9361702127659575,
                             0.888888888888889,
                             0.8372093023255813,
@@ -855,6 +947,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 curves=[
                     Curve(
                         x=[
+                            1.0,
                             0.88,
                             0.8,
                             0.72,
@@ -867,6 +960,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.12,
                         ],
                         y=[
+                            1.0,
                             1.0,
                             1.0,
                             1.0,
@@ -937,6 +1031,12 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
                     ],
                 ),
             ],
@@ -947,7 +1047,6 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 curves=[
                     Curve(
                         x=[
-                            0.0,
                             0.01,
                             0.1,
                             0.2,
@@ -958,17 +1057,18 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.7,
                             0.8,
                             0.9,
+                            0.99,
                         ],
                         y=[
-                            0.7352941176470589,
-                            0.6769230769230768,
-                            0.6779661016949152,
-                            0.6315789473684209,
-                            0.5555555555555555,
-                            0.5283018867924528,
-                            0.5,
-                            0.44,
-                            0.37499999999999994,
+                            0.6756756756756757,
+                            0.619718309859155,
+                            0.6451612903225806,
+                            0.6101694915254237,
+                            0.5357142857142858,
+                            0.509090909090909,
+                            0.4814814814814815,
+                            0.4230769230769231,
+                            0.36734693877551017,
                             0.2926829268292683,
                             0.15789473684210528,
                         ],
@@ -998,15 +1098,15 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                             0.08571428571428572,
                         ],
                         y=[
-                            0.7575757575757576,
-                            0.7333333333333333,
-                            0.8333333333333334,
-                            0.8181818181818182,
-                            0.7894736842105263,
-                            0.7777777777777778,
-                            0.7647058823529411,
-                            0.7333333333333333,
-                            0.6923076923076923,
+                            0.6410256410256411,
+                            0.6111111111111112,
+                            0.7407407407407407,
+                            0.75,
+                            0.7142857142857143,
+                            0.7,
+                            0.6842105263157895,
+                            0.6470588235294118,
+                            0.6428571428571429,
                             1.0,
                             1.0,
                         ],
@@ -1021,7 +1121,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
 )
 def test__curve__plots(
     test_name: str,
-    matchings: List[MulticlassInferenceMatches],
+    matchings: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
 ) -> None:
@@ -1091,6 +1191,12 @@ def test__curve__plots(
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
                     ],
                 ),
             ],
@@ -1101,7 +1207,6 @@ def test__curve__plots(
                 curves=[
                     Curve(
                         x=[
-                            0.0,
                             0.01,
                             0.1,
                             0.2,
@@ -1112,17 +1217,18 @@ def test__curve__plots(
                             0.7,
                             0.8,
                             0.9,
+                            0.99,
                         ],
                         y=[
-                            0.7352941176470589,
-                            0.6769230769230768,
-                            0.6779661016949152,
-                            0.6315789473684209,
-                            0.5555555555555555,
-                            0.5283018867924528,
-                            0.5,
-                            0.44,
-                            0.37499999999999994,
+                            0.6756756756756757,
+                            0.619718309859155,
+                            0.6451612903225806,
+                            0.6101694915254237,
+                            0.5357142857142858,
+                            0.509090909090909,
+                            0.4814814814814815,
+                            0.4230769230769231,
+                            0.36734693877551017,
                             0.2926829268292683,
                             0.15789473684210528,
                         ],
@@ -1152,15 +1258,15 @@ def test__curve__plots(
                             0.08571428571428572,
                         ],
                         y=[
-                            0.7575757575757576,
-                            0.7333333333333333,
-                            0.8333333333333334,
-                            0.8181818181818182,
-                            0.7894736842105263,
-                            0.7777777777777778,
-                            0.7647058823529411,
-                            0.7333333333333333,
-                            0.6923076923076923,
+                            0.6410256410256411,
+                            0.6111111111111112,
+                            0.7407407407407407,
+                            0.75,
+                            0.7142857142857143,
+                            0.7,
+                            0.6842105263157895,
+                            0.6470588235294118,
+                            0.6428571428571429,
                             1.0,
                             1.0,
                         ],
@@ -1176,7 +1282,7 @@ def test__curve__plots(
 def test__curve__plots__all(
     plot: str,
     test_name: str,
-    matchings: List[MulticlassInferenceMatches],
+    matchings: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
 ) -> None:
@@ -1246,6 +1352,12 @@ def test__curve__plots__all(
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
                     ],
                 ),
             ],
@@ -1269,15 +1381,15 @@ def test__curve__plots__all(
                             0.08571428571428572,
                         ],
                         y=[
-                            0.7575757575757576,
-                            0.7333333333333333,
-                            0.8333333333333334,
-                            0.8181818181818182,
-                            0.7894736842105263,
-                            0.7777777777777778,
-                            0.7647058823529411,
-                            0.7333333333333333,
-                            0.6923076923076923,
+                            0.6410256410256411,
+                            0.6111111111111112,
+                            0.7407407407407407,
+                            0.75,
+                            0.7142857142857143,
+                            0.7,
+                            0.6842105263157895,
+                            0.6470588235294118,
+                            0.6428571428571429,
                             1.0,
                             1.0,
                         ],
@@ -1341,6 +1453,12 @@ def test__curve__plots__all(
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
                     ],
                 ),
             ],
@@ -1351,7 +1469,6 @@ def test__curve__plots__all(
                 curves=[
                     Curve(
                         x=[
-                            0.0,
                             0.01,
                             0.1,
                             0.2,
@@ -1362,21 +1479,79 @@ def test__curve__plots__all(
                             0.7,
                             0.8,
                             0.9,
+                            0.99,
                         ],
                         y=[
-                            0.7352941176470589,
-                            0.6769230769230768,
-                            0.6779661016949152,
-                            0.6315789473684209,
-                            0.5555555555555555,
-                            0.5283018867924528,
-                            0.5,
-                            0.44,
-                            0.37499999999999994,
+                            0.6756756756756757,
+                            0.619718309859155,
+                            0.6451612903225806,
+                            0.6101694915254237,
+                            0.5357142857142858,
+                            0.509090909090909,
+                            0.4814814814814815,
+                            0.4230769230769231,
+                            0.36734693877551017,
                             0.2926829268292683,
                             0.15789473684210528,
                         ],
                         label="tps and fps and fns f1 plot",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "f1",
+            "tps and fps and fns f1 plot as IMs",
+            [
+                InferenceMatches(
+                    matched=[
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.99)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.2)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.1)),
+                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.01)),
+                    ],
+                    unmatched_gt=[
+                        LabeledBoundingBox((1, 1), (2, 2), "a"),
+                        LabeledBoundingBox((1, 1), (2, 2), "a"),
+                    ],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
+                    ],
+                ),
+            ],
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[
+                            0.01,
+                            0.1,
+                            0.2,
+                            0.3,
+                            0.8,
+                            0.9,
+                            0.99,
+                        ],
+                        y=[
+                            0.7000000000000001,
+                            0.631578947368421,
+                            0.5555555555555556,
+                            0.47058823529411764,
+                            0.375,
+                            0.3636363636363636,
+                            0.19999999999999998,
+                        ],
+                        label="tps and fps and fns f1 plot as IMs",
                     ),
                 ],
                 x_config=None,
@@ -1388,7 +1563,7 @@ def test__curve__plots__all(
 def test__curve__plots__one(
     plot: str,
     test_name: str,
-    matchings: List[MulticlassInferenceMatches],
+    matchings: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     curveplot: CurvePlot,
 ) -> None:
     from kolena._experimental.object_detection.utils import compute_pr_f1_plots
@@ -1468,7 +1643,9 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((1, 1), (2, 2), "b"), None),
                         (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1486,7 +1663,9 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((1, 1), (2, 2), "a"), None),
                         (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1525,7 +1704,10 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1545,7 +1727,10 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1565,7 +1750,10 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1586,7 +1774,10 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1612,7 +1803,10 @@ def test__curve__plots__one(
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
+                        ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                    ],
                 ),
             ],
             ["a", "b"],
@@ -1631,7 +1825,7 @@ def test__curve__plots__one(
                     unmatched_gt=[
                         (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)],
                 ),
                 MulticlassInferenceMatches(
                     matched=[
@@ -1640,7 +1834,7 @@ def test__curve__plots__one(
                     unmatched_gt=[
                         (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)],
                 ),
             ],
             ["a", "b"],
@@ -1710,7 +1904,13 @@ def test__curve__plots__one(
                             ),
                         ),
                     ],
-                    unmatched_inf=[],
+                    unmatched_inf=[
+                        ScoredLabeledPolygon(
+                            points=[(1, 1), (1, 20), (20, 20), (20, 1)],
+                            label="dog",
+                            score=0.9,
+                        ),
+                    ],
                 ),
                 MulticlassInferenceMatches(
                     matched=[
@@ -1727,6 +1927,7 @@ def test__curve__plots__one(
                     ],
                     unmatched_inf=[
                         ScoredLabeledBoundingBox((10.0, 10.0), (22.0, 22.0), "cat", 0.5),
+                        ScoredLabeledBoundingBox((10, 10), (20, 20), "dog", 0.9),
                     ],
                 ),
                 MulticlassInferenceMatches(
@@ -1806,6 +2007,16 @@ def test__curve__plots__one(
                             points=[(1, 1), (1, 2), (2, 2), (2, 1)],
                             label="dog",
                             score=0.5,
+                        ),
+                        ScoredLabeledPolygon(
+                            points=[(1, 1), (1, 2), (2, 2), (2, 1)],
+                            label="dog",
+                            score=0.9,
+                        ),
+                        ScoredLabeledPolygon(
+                            points=[(10, 10), (10, 20), (20, 20), (20, 10)],
+                            label="cat",
+                            score=0.9,
                         ),
                     ],
                 ),
@@ -1920,7 +2131,7 @@ def test__confusion__matrix(
 )
 def test__confusion__matrix__fails(
     test_name: str,
-    matchings: MulticlassInferenceMatches,
+    matchings: List[MulticlassInferenceMatches],
 ) -> None:
     conf_mat = compute_confusion_matrix_plot(all_matches=matchings, plot_title=test_name)
     assert conf_mat is None
