@@ -86,8 +86,19 @@ Metadata = Dict[
         ],
     ],
 ]
-"""Type of the `metadata` field that can be included on [`TestSample`][kolena.workflow.TestSample] definitions. String
-(`str`) keys and scalar values (`int`, `float`, `str`, `bool`, `None`) as well as scalar list values are permitted."""
+"""
+Type of the `metadata` field that can be included on [`TestSample`][kolena.workflow.TestSample] definitions. String
+(`str`) keys and scalar values (`int`, `float`, `str`, `bool`, `None`) as well as scalar list values are permitted.
+
+```python
+from dataclasses import dataclass, field
+from kolena.workflow import Image, Metadata
+
+@dataclass(frozen=True)
+class ImageWithMetadata(Image):
+    metadata: Metadata = field(default_factory=dict)
+```
+"""
 
 _METADATA_KEY = "metadata"
 

@@ -13,7 +13,7 @@
 # limitations under the License.
 """
 The output from a [`Model`][kolena.workflow.Model]. In other words, a model is a deterministic transformation from a
-[`TestSample`][kolena.workflow.TestSample] to an `Inference`.
+[`TestSample`][kolena.workflow.TestSample] to an [`Inference`][kolena.workflow.Inference].
 
 ```python
 from dataclasses import dataclass

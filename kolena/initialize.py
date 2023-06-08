@@ -46,8 +46,8 @@ def initialize(
     A session has a global scope and remains active until interpreter shutdown.
 
     !!! note
-        As of version 0.29.0: the entity param is no longer needed; `initialize(entity, token)` is
-        **deprecated** and replaced by `initialize(token)`.
+        As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
+        has been deprecated and replaced by `initialize(api_token)`.
 
     :param api_token: Provided API token. This token is a secret and should be treated with caution.
     :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All

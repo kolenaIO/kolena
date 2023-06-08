@@ -49,7 +49,13 @@ from kolena.workflow.workflow import Workflow
 
 
 class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
-    """A test case holds a set of images to compute aggregate performance metrics against."""
+    """
+    A test case holds a list of [test samples][kolena.workflow.TestSample] paired with
+    [ground truths][kolena.workflow.GroundTruth] representing a testing dataset or a slice of a testing dataset.
+
+    Rather than importing this class directly, use the `TestCase` type definition returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
 
     workflow: Workflow
     """

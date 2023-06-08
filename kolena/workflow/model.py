@@ -51,7 +51,13 @@ TestSample = TypeVar("TestSample", bound=BaseTestSample)
 
 
 class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
-    """The descriptor of a model tested on Kolena."""
+    """
+    The descriptor of a model tested on Kolena. A model is a deterministic transformation from
+    [`TestSample`][kolena.workflow.TestSample] inputs to [`Inference`][kolena.workflow.Inference] outputs.
+
+    Rather than importing this class directly, use the `Model` type definition returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
 
     workflow: Workflow
     """

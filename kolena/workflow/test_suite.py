@@ -49,7 +49,11 @@ from kolena.workflow.workflow import Workflow
 
 class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     """
-    A test suite groups together one or more test cases.
+    A test suite groups together one or more [test cases][kolena.workflow.TestCase]. Typically a test suite represents a
+    benchmark test dataset, with test cases representing different meaningful subsets, or slices, or this benchmark.
+
+    Rather than importing this class directly, use the `TestSuite` type definition returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
     """
 
     workflow: Workflow

@@ -11,6 +11,7 @@ nav:
   - Testing with Kolena:
       - Home: index.md
   - Advanced Usage: advanced-usage.md
+  - Metrics Guide: metrics-guide.md
   - API Reference:
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
@@ -34,7 +35,6 @@ nav:
               - <code>kolena.detection</code>: reference/built-in/detection.md
               - <code>kolena.fr</code>: reference/built-in/fr.md
               - Base Definitions: reference/built-in/base.md
-  - Metrics Guide: metrics-guide.md
   - FAQ: faq.md
 
 theme:
