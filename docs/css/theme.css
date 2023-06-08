@@ -1,11 +1,37 @@
-/* TODO: set all theme colors (https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/stylesheets/main/_colors.scss) */
+/* applied on top of the 'default' (light) color scheme */
 [data-md-color-scheme="kolena-light"] {
   --md-primary-fg-color: #6434c1;
-  --md-default-bg-color: #ffffff;
+  --md-primary-fg-color--dark: #452485;
+  --md-primary-fg-color--light: #835dcd;
 }
 
 /* TODO: set all theme colors (https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/stylesheets/main/_colors.scss) */
 [data-md-color-scheme="kolena-dark"] {
   --md-primary-fg-color: #452485;
   --md-default-bg-color: #1e1f22;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-hue: 260;
+}
+
+/*
+ * Branded header styles
+ */
+
+.md-header {
+  background-image: url(/assets/images/background.svg);
+  background-size: cover;
+}
+
+.md-tabs {
+  background-image: url(/assets/images/background.svg);
+  background-size: cover;
+  background-position-y: -48px; /* exact height of .md-header on medium-width viewports */
+}
+
+@media screen and (min-width: 1600px) {
+  .md-tabs {
+    background-position-y: -52.8px; /* exact height of .md-header on wide viewports */
+  }
 }
