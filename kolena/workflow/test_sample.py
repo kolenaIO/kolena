@@ -236,6 +236,9 @@ class BaseVideo(TestSample):
 class Video(BaseVideo):
     """A video clip located in a cloud bucket or served at a URL."""
 
+    locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
+
     thumbnail: Optional[ImageAsset] = None
     """Optionally provide asset locator for custom video thumbnail."""
 
