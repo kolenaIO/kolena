@@ -97,7 +97,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
         self._freeze()
 
     @classmethod
-    @deprecated(details="use initializer :class:`kolena.fr.TestRun` directly", deprecated_in="0.58.0")
+    @deprecated(details="use `TestRun.__init__` directly", deprecated_in="0.58.0")
     def create_or_retrieve(cls, model: Model, test_suite: TestSuite, reset: bool = False) -> "TestRun":
         """
         !!! warning "Deprecated: since `0.57.0`"

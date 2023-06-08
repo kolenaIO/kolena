@@ -125,9 +125,9 @@ class Workflow:
         aws_assume_role: Optional[str] = None,
     ) -> RemoteEvaluator:
         """
-        This is a convenience method to register evaluator for the workflow.
+        Convenience method to register evaluator for the workflow.
 
-        Please see :func:`register_evaluator` for details.
+        See [`register_evaluator`][kolena.workflow.workflow.register_evaluator] for details.
         """
         return register_evaluator(
             workflow=self.name,
@@ -140,9 +140,9 @@ class Workflow:
     @kolena_initialized
     def get_evaluator(self, evaluator_name: str, include_secret: bool = False) -> RemoteEvaluator:
         """
-        Get the docker image registered for the evaluator
+        Get the docker image registered for the evaluator.
 
-        Please see :func:`get_evaluator` for details.
+        See [`get_evaluator`][kolena.workflow.workflow.get_evaluator] for details.
         """
 
         return get_evaluator(self.name, evaluator_name, include_secret)

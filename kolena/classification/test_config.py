@@ -18,7 +18,7 @@ from kolena.errors import InputValidationError
 
 class TestConfig(_TestConfig):
     """
-    Base class for a testing configuration.
+    Base class for testing configurations.
 
     See concrete implementations [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold] and
     [`AccuracyOptimal`][kolena.classification.AccuracyOptimal] for details.
@@ -27,8 +27,8 @@ class TestConfig(_TestConfig):
 
 class FixedGlobalThreshold(TestConfig):
     """
-    Test configuration that sets the default display threshold in the Kolena UI to be a fixed global threshold for all
-    label classes within the test run.
+    Test configuration that sets the default display threshold in Kolena to a fixed global threshold for all labels
+    within the test suite.
     """
 
     fixed_threshold: float
@@ -49,10 +49,10 @@ class FixedGlobalThreshold(TestConfig):
 
 class AccuracyOptimal(TestConfig):
     """
-    Test configuration that sets the default display threshold in the Kolena UI to be dynamically set to the threshold
-    that corresponds to the highest accuracy score for the test suite within the test run.
+    Test configuration that sets the default display threshold in Kolena to the threshold that corresponds to the
+    highest accuracy score across all images within the test suite being tested.
 
-    This threshold is evaluated and set per label for test suites with multiple label classes.
+    This threshold is evaluated and set per label for test suites with multiple labels.
     """
 
     def __init__(self) -> None:

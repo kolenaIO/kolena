@@ -102,7 +102,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         self._freeze()
 
     @property
-    @deprecated(details="use values on :class:`kolena.fr.TestSuite` directly", deprecated_in="0.57.0")
+    @deprecated(details="use `TestSuite` instance attributes", deprecated_in="0.57.0")
     def data(self) -> API.EntityData:
         """
         !!! warning "Deprecated: since `0.57.0`"
@@ -113,7 +113,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         return self._data
 
     @data.setter
-    @deprecated(details="use values on :class:`kolena.fr.TestSuite` directly", deprecated_in="0.57.0")
+    @deprecated(details="use `TestSuite` instance attributes", deprecated_in="0.57.0")
     def data(self, new_data: API.EntityData) -> None:
         self._data = new_data
 
@@ -156,7 +156,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         return cls._load_by_name(name, version)
 
     @classmethod
-    @deprecated(details="use :meth:`load` instead", deprecated_in="0.57.0")
+    @deprecated(details="use `TestSuite.load`", deprecated_in="0.57.0")
     def load_by_name(cls, name: str, version: Optional[int] = None) -> "TestSuite":
         """
         Retrieve the existing test suite with the provided name.
@@ -224,9 +224,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
                     editor.add(test_case, False)
 
     class Editor:
-        """
-        Interface to edit a test suite. Create with :meth:`TestSuite.edit`.
-        """
+        """Interface to edit a test suite. Create with [`TestSuite.edit`][kolena.fr.TestSuite.edit]."""
 
         _edited: bool
         _reset: bool
@@ -294,7 +292,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
                 raise KeyError(f"test case '{name}' not in test suite")
             self._edited = True
 
-        @deprecated(details="use :meth:`add` instead", deprecated_in="0.57.0")
+        @deprecated(details="use `TestSuite.Editor.add`", deprecated_in="0.57.0")
         @validate_arguments(config=ValidatorConfig)
         def merge(self, test_case: TestCase, is_baseline: Optional[bool] = None) -> None:
             """

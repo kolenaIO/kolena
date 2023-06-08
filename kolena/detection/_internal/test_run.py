@@ -58,7 +58,9 @@ from kolena.errors import WorkflowMismatchError
 
 _ImageDataFrame = Union[pa.typing.DataFrame, LoadableDataFrame]
 InferenceType = TypeVar("InferenceType")
+
 CustomMetricsCallback = Callable[[List[SampleInferences]], CustomMetrics]
+"""Signature for a custom metrics computation function."""
 
 
 class BaseTestRun(ABC, Frozen, WithTelemetry):

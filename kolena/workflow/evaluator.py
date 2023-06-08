@@ -419,14 +419,16 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> List[Tuple[TestSample, MetricsTestSample]]:
         """
-        Compute metrics for every test sample in a test case.
+        Compute metrics for every test sample in a test case, i.e. one
+        [`MetricsTestSample`][kolena.workflow.MetricsTestSample] object for each of the provided test samples.
 
         Must be implemented.
 
-        :param test_case: the test case to which the provided test samples and ground truths belong.
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: test-sample-level metrics for each provided test sample.
+        :param test_case: The [`TestCase`][kolena.workflow.TestCase] to which the provided test samples and ground
+            truths belong.
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: [`TestSample`][kolena.workflow.TestSample]-level metrics for each provided test sample.
         """
         raise NotImplementedError
 
@@ -439,16 +441,17 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> MetricsTestCase:
         """
-        Compute aggregate metrics across a test case.
+        Compute aggregate metrics ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]) across a test case.
 
         Must be implemented.
 
-        :param test_case: the test case in question.
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param metrics: the test-sample-level metrics computed by :meth:`Evaluator.compute_test_sample_metrics`.
-            Provided in the same order as ``inferences``.
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: test-case-level metrics for the provided test case.
+        :param test_case: The test case in question.
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param metrics: The [`TestSample`][kolena.workflow.TestSample]-level metrics computed by
+            [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics], provided
+            in the same order as `inferences`.
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: [`TestCase`][kolena.workflow.TestCase]-level metrics for the provided test case.
         """
         raise NotImplementedError
 
@@ -463,12 +466,13 @@ class Evaluator(metaclass=ABCMeta):
         """
         Optionally compute any number of plots to visualize the results for a test case.
 
-        :param test_case: the test case in question
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param metrics: the test-sample-level metrics computed by :meth:`Evaluator.compute_test_sample_metrics`.
-            Provided in the same order as ``inferences``.
+        :param test_case: The test case in question
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param metrics: The [`TestSample`][kolena.workflow.TestSample]-level metrics computed by
+            [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics], provided
+            in the same order as `inferences`.
         :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: zero or more plots for this test case at this configuration.
+        :return: Zero or more plots for this test case at this configuration.
         """
         return None  # not required
 
@@ -480,12 +484,14 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> Optional[MetricsTestSuite]:
         """
-        Optionally compute test-suite-level metrics.
+        Optionally compute [`TestSuite`][kolena.workflow.TestSuite]-level metrics
+        ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]) across the provided `test_suite`.
 
-        :param test_suite: the test suite in question
-        :param metrics: the test-case-level metrics computed by :meth:`Evaluator.compute_test_case_metrics`
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: the test-suite-level metrics for this test suite
+        :param test_suite: The test suite in question.
+        :param metrics: The [`TestCase`][kolena.workflow.TestCase]-level metrics computed by
+            [`compute_test_case_metrics`][kolena.workflow.Evaluator.compute_test_case_metrics].
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: The [`TestSuite`][kolena.workflow.TestSuite]-level metrics for this test suite.
         """
         return None  # not required
 

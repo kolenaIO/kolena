@@ -240,7 +240,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
                 raise KeyError(f"test case '{name}' not in test suite")
             self._test_cases.pop(name)
 
-        @deprecated(details="use :meth:`add` instead", deprecated_in="0.56.0")
+        @deprecated(details="use `TestSuite.Editor.add`", deprecated_in="0.56.0")
         @validate_arguments(config=ValidatorConfig)
         def merge(self, test_case: BaseTestCase) -> None:
             """

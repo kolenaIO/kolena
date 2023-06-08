@@ -239,7 +239,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
     def evaluate(self) -> None:
         """
         Perform evaluation by computing metrics for individual test samples, in aggregate across test cases, and across
-        the complete test suite at each :class:`kolena.workflow.EvaluatorConfiguration`.
+        the complete test suite at each [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
         """
         if self.evaluator is None:
             log.info("commencing server side metrics evaluation")

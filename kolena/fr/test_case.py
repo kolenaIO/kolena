@@ -46,7 +46,7 @@ from kolena.fr.datatypes import TestCaseRecord
 
 class TestCase(ABC, Frozen, WithTelemetry):
     """
-    A group of test samples that can be added to a :class:`kolena.fr.TestSuite`.
+    A group of image pairs that can be added to a [`TestSuite`][kolena.fr.TestSuite].
 
     The test case is the base unit of results computation in the Kolena platform. Metrics are computed by test case.
     """
@@ -104,7 +104,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         self._freeze()
 
     @property
-    @deprecated(details="use values on :class:`kolena.fr.TestCase` directly", deprecated_in="0.57.0")
+    @deprecated(details="use `TestCase` instance attributes", deprecated_in="0.57.0")
     def data(self) -> API.EntityData:
         """
         !!! warning "Deprecated: since `0.57.0`"
@@ -115,7 +115,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         return self._data
 
     @data.setter
-    @deprecated(details="use values on :class:`kolena.fr.TestCase` directly", deprecated_in="0.57.0")
+    @deprecated(details="use `TestCase` instance attributes", deprecated_in="0.57.0")
     def data(self, new_data: API.EntityData) -> None:
         self._data = new_data
 
@@ -157,7 +157,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         return cls._load_by_name(name, version)
 
     @classmethod
-    @deprecated(details="use :meth:`load` instead", deprecated_in="0.57.0")
+    @deprecated(details="use `TestCase.load`", deprecated_in="0.57.0")
     def load_by_name(cls, name: str, version: Optional[int] = None) -> "TestCase":
         """
         !!! warning "Deprecated: since `0.57.0`"

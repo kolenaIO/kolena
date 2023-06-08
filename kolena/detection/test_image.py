@@ -102,7 +102,7 @@ class TestImage(BaseTestImage):
         return sorted(ground_truths, key=lambda gt: json.dumps(gt._to_dict(), sort_keys=True))
 
 
-@deprecated(details="use :class:`kolena.detection.TestCase.load_images`", deprecated_in="0.26.0")
+@deprecated(details="use `TestCase.load_images`", deprecated_in="0.26.0")
 @validate_arguments(config=ValidatorConfig)
 def load_images(dataset: Optional[str] = None) -> List[TestImage]:
     """
@@ -117,7 +117,7 @@ def load_images(dataset: Optional[str] = None) -> List[TestImage]:
     return list(iter_images(dataset))
 
 
-@deprecated(details="use :class:`kolena.detection.TestCase.iter_images`", deprecated_in="0.26.0")
+@deprecated(details="use `TestCase.iter_images`", deprecated_in="0.26.0")
 @validate_arguments(config=ValidatorConfig)
 def iter_images(dataset: Optional[str] = None) -> Iterator[TestImage]:
     """

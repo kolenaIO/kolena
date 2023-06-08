@@ -207,7 +207,8 @@ class TestImages(Uninstantiable[None]):
 
         :param data_source: Optionally specify the single data source to be retrieved, e.g. `"my-data-source"`.
             Alternatively, provide a [`TestSuite`][kolena.fr.TestSuite] or [`TestCase`][kolena.fr.TestCase] as source.
-            If no argument is provided, all images registered using :meth:`TestImages.register` are returned.
+            If no argument is provided, all images registered using
+            [`TestImages.register`][kolena.fr.TestImages.register] are returned.
         :param include_augmented: Optionally specify that augmented images should be returned. By default, only
             original images are returned. Ignored when test case or test suite is provided as `data_source`.
         :param batch_size: Optionally specify maximum number of rows to be returned in a single DataFrame.
