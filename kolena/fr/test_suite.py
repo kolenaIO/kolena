@@ -159,6 +159,9 @@ class TestSuite(ABC, Frozen, WithTelemetry):
     @deprecated(details="use `TestSuite.load`", deprecated_in="0.57.0")
     def load_by_name(cls, name: str, version: Optional[int] = None) -> "TestSuite":
         """
+        !!! warning "Deprecated: since `0.57.0`"
+            Use [`TestSuite.load`][kolena.fr.TestSuite.load] instead.
+
         Retrieve the existing test suite with the provided name.
 
         :param name: Name of the test suite to retrieve.
@@ -296,6 +299,9 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         @validate_arguments(config=ValidatorConfig)
         def merge(self, test_case: TestCase, is_baseline: Optional[bool] = None) -> None:
             """
+            !!! warning "Deprecated: since `0.57.0`"
+                Replaced by idempotent behavior in [`TestSuite.Editor.add`][kolena.fr.TestSuite.Editor.add].
+
             Add the [`TestCase`][kolena.fr.TestCase] to the suite. If a test case by this name already exists in the
             suite, replace the previous version of that test case with the newly provided version.
 
@@ -321,6 +327,11 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         """
         Context-managed way to perform many modification options on a test suite and commit the results when the context
         is exited, resulting in a single version bump.
+
+        ```python
+        with TestSuite.load("my-test-suite").edit() as editor:
+            editor.add(TestCase.load("my-test-case"))
+        ```
         """
         editor = TestSuite.Editor(self.description, reset)
         if not reset:

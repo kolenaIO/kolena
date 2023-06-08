@@ -244,6 +244,10 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         @validate_arguments(config=ValidatorConfig)
         def merge(self, test_case: BaseTestCase) -> None:
             """
+            !!! warning "Deprecated: since `0.56.0`"
+                Replaced by idempotent behavior in
+                [`TestSuite.Editor.add`][kolena.detection._internal.test_suite.BaseTestSuite.Editor.add].
+
             Add the provided [`TestCase`][kolena.detection.TestCase] to the test suite, replacing any previous version
             of the test case that may be present in the suite.
 

@@ -30,9 +30,7 @@ from kolena.detection.ground_truth import GroundTruth
 
 
 class TestImage(BaseTestImage):
-    """
-    An image with associated ground truth labels for testing.
-    """
+    """An image with associated ground truth labels for testing."""
 
     locator: str
     """Pointer to the bucket location of this image, e.g. `gs://my-bucket/my-dataset/example.png`."""
