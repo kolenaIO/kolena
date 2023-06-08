@@ -36,6 +36,9 @@ def initialize(
     """
     Initialize a client session.
 
+    Retrieve an API token from [app.kolena.io/organization/developer](https://app.kolena.io/redirect/developer) and
+    populate the `KOLENA_TOKEN` environment variable before initializing:
+
     ```python
     import os
     import kolena

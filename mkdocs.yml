@@ -124,6 +124,8 @@ extra:
     - icon: fontawesome/brands/linkedin
       link: https://www.linkedin.com/company/kolena-ai
       name: Kolena on LinkedIn
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/kolena
     - icon: fontawesome/brands/github
       link: https://github.com/kolenaIO/kolena
       name: Kolena on GitHub
