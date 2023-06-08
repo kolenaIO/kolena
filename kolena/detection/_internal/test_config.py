@@ -22,13 +22,6 @@ from kolena._utils.serializable import Serializable
 
 
 class TestConfig(Frozen, Serializable, metaclass=ABCMeta):
-    """
-    Base class for a testing configuration.
-
-    See concrete implementations :class:`kolena.detection.config.FixedThreshold`,
-    :class:`kolena.detection.config.F1Optimal` for details.
-    """
-
     @abstractmethod
     def __init__(self) -> None:
         ...

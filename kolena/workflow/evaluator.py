@@ -46,7 +46,7 @@ from kolena.workflow._validators import validate_scalar_data_object_type
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestSample(DataObject, metaclass=ABCMeta):
     """
-    Test-sample-level metrics produced by an :class:`Evaluator`.
+    Test-sample-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
@@ -61,33 +61,33 @@ class MetricsTestSample(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestCase(DataObject, metaclass=ABCMeta):
     """
-    Test-case-level metrics produced by an :class:`Evaluator`.
+    Test-case-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
     Test-case-level metrics are aggregate metrics like Precision, Recall, and F1 score. Any and all aggregate metrics
     that fit a workflow should be defined here.
 
-    ``MetricsTestCase`` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
+    `MetricsTestCase` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
     contains multiple classes. Example usage:
 
-    .. code-block:: python
+    ```python
+    @dataclass(frozen=True)
+    class PerClassMetrics(MetricsTestCase):
+        Class: str
+        Precision: float
+        Recall: float
+        F1: float
+        AP: float
 
-        @dataclass(frozen=True)
-        class PerClassMetrics(MetricsTestCase):
-            Class: str
-            Precision: float
-            Recall: float
-            F1: float
-            AP: float
-
-        @dataclass(frozen=True)
-        class TestCaseMetrics(MetricsTestCase):
-            macro_Precision: float
-            macro_Recall: float
-            macro_F1: float
-            mAP: float
-            PerClass: List[PerClassMetrics]
+    @dataclass(frozen=True)
+    class TestCaseMetrics(MetricsTestCase):
+        macro_Precision: float
+        macro_Recall: float
+        macro_F1: float
+        mAP: float
+        PerClass: List[PerClassMetrics]
+    ```
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -97,7 +97,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestSuite(DataObject, metaclass=ABCMeta):
     """
-    Test-suite-level metrics produced by an :class:`Evaluator`.
+    Test-suite-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
@@ -110,7 +110,10 @@ class MetricsTestSuite(DataObject, metaclass=ABCMeta):
 
 
 NumberSeries = Sequence[Union[float, int]]
+"""A sequence of numeric values."""
+
 NullableNumberSeries = Sequence[Union[float, int, None]]
+"""A sequence of numeric values or `None`."""
 
 
 class _PlotType(DataType):
@@ -126,10 +129,10 @@ class _PlotType(DataType):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class AxisConfig(DataObject):
-    """Configuration for the format of a given axis on a Plot"""
+    """Configuration for the format of a given axis on a plot."""
 
-    #: Type of axis to display. Supported options are `linear` and `log`.
     type: Literal["linear", "log"]
+    """Type of axis to display. Supported options are `linear` and `log`."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -139,14 +142,19 @@ class Plot(TypedDataObject[_PlotType], metaclass=ABCMeta):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Curve(DataObject):
-    """A single series on a :class:`CurvePlot`."""
+    """A single series on a [`CurvePlot`][kolena.workflow.CurvePlot]."""
 
     x: NumberSeries
-    y: NumberSeries
+    """The `x` coordinates of this curve. Length must match the provided `y` coordinates."""
 
-    #: Optionally specify an additional label (in addition to the associated test case) to apply to this curve, for use
-    #: when e.g. there are multiple curves generated per test case.
+    y: NumberSeries
+    """The `y` coordinates of this curve. Length must match the provided `x` coordinates."""
+
     label: Optional[str] = None
+    """
+    Optionally specify an additional label (in addition to the associated test case) to apply to this curve, for use
+    when e.g. there are multiple curves generated per test case.
+    """
 
     def __post_init_post_parse__(self) -> None:
         if len(self.x) != len(self.y):
@@ -165,16 +173,31 @@ class CurvePlot(Plot):
     """
 
     title: str
+    """The title for the plot."""
+
     x_label: str
+    """The label describing the plot's `x` axis."""
+
     y_label: str
+    """The label describing the plot's `y` axis."""
 
-    #: A test case may generate zero or more curves on a given plot. However, under most circumstances, a single curve
-    #: per test case is desirable.
     curves: List[Curve]
+    """
+    A test case may generate zero or more curves on a given plot. However, under most circumstances, a single curve
+    per test case is desirable.
+    """
 
-    #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `x` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
+
     y_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `y` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
 
     @staticmethod
     def _data_type() -> _PlotType:
@@ -187,31 +210,50 @@ class Histogram(Plot):
     A plot visualizing distribution of one or more continuous values, e.g. distribution of an error metric across all
     samples within a test case.
 
-    For visualization of discrete values, see :class:`BarPlot`.
+    For visualization of discrete values, see [`BarPlot`][kolena.workflow.BarPlot].
     """
 
     title: str
+    """The title for the plot."""
+
     x_label: str
+    """The label describing the plot's `x` axis."""
+
     y_label: str
+    """The label describing the plot's `y` axis."""
 
-    #: A Histogram requires intervals to bucket the data. For ``n`` buckets, ``n+1`` consecutive bounds must be
-    #: specified in increasing order.
     buckets: NumberSeries
+    """
+    A Histogram requires intervals to bucket the data. For `n` buckets, `n+1` consecutive bounds must be specified in
+    increasing order.
+    """
 
-    #: For ``n`` buckets, there are ``n`` frequencies corresponding to the height of each bucket. The frequency at index
-    #: ``i`` corresponds to the bucket with bounds (``i``, ``i+1``) in ``buckets``.
-    #:
-    #: To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
-    #: e.g. to the distribution for a given class within a test case, with name specified in ``labels``.
     frequency: Union[NumberSeries, Sequence[NumberSeries]]
+    """
+    For `n` buckets, there are `n` frequencies corresponding to the height of each bucket. The frequency at index `i`
+    corresponds to the bucket with bounds (`i`, `i+1`) in `buckets`.
 
-    #: Specify a list of labels corresponding to the different ``frequency`` series when multiple series are provided.
-    #: Can be omitted when a single ``frequency`` series is provided.
+    To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
+    e.g. to the distribution for a given class within a test case, with name specified in `labels`.
+
+    Specify a list of labels corresponding to the different `frequency` series when multiple series are provided.
+    Can be omitted when a single `frequency` series is provided.
+    """
+
     labels: Optional[List[str]] = None
+    """Specify the label corresponding to a given distribution when multiple are specified in `frequency`."""
 
-    #: Custom format options to allow for control over the display of the plot axes.
     x_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `x` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
+
     y_config: Optional[AxisConfig] = None
+    """
+    Custom options to allow for control over the display of the plot `y` axis. See
+    [`AxisConfig`][kolena.workflow.AxisConfig] for details.
+    """
 
     def __post_init_post_parse__(self) -> None:
         n_buckets = len(self.buckets)
@@ -241,21 +283,22 @@ class BarPlot(Plot):
     """A plot visualizing a set of bars per test case."""
 
     title: str
+    """The plot title."""
 
-    #: Axis label for the axis along which the bars are laid out (``labels``).
     x_label: str
+    """Axis label for the axis along which the bars are laid out (`labels`)."""
 
-    #: Axis label for the axis corresponding to bar height (``values``).
     y_label: str
+    """Axis label for the axis corresponding to bar height (`values`)."""
 
-    #: Labels for each bar with corresponding height specified in ``values``.
     labels: Sequence[Union[str, int, float]]
+    """Labels for each bar with corresponding height specified in `values`."""
 
-    #: Values for each bar with corresponding label specified in ``labels``.
     values: NullableNumberSeries
+    """Values for each bar with corresponding label specified in `labels`."""
 
-    #: Custom format options to allow for control over the display of the numerical plot axis (``values``).
     config: Optional[AxisConfig] = None
+    """Custom format options to allow for control over the display of the numerical plot axis (`values`)."""
 
     def __post_init_post_parse__(self) -> None:
         n_labels, n_values = len(self.labels), len(self.values)
@@ -275,33 +318,42 @@ class ConfusionMatrix(Plot):
     """
     A confusion matrix. Example:
 
-    .. code-block:: python
-
-        ConfusionMatrix(
-            title="Cat and Dog Confusion",
-            labels=["Cat", "Dog"],
-            matrix=[[90, 10], [5, 95]],
-        )
+    ```python
+    ConfusionMatrix(
+        title="Cat and Dog Confusion",
+        labels=["Cat", "Dog"],
+        matrix=[[90, 10], [5, 95]],
+    )
+    ```
 
     Yields a confusion matrix of the form:
 
-    .. code-block:: none
+    ```
+                Predicted
 
-                    Predicted
-
-                    Cat   Dog
-                   +----+----+
-               Cat | 90 | 10 |
-        Actual     +----+----+
-               Dog |  5 | 95 |
-                   +----+----+
+                Cat   Dog
+               +----+----+
+           Cat | 90 | 10 |
+    Actual     +----+----+
+           Dog |  5 | 95 |
+               +----+----+
+    ```
     """
 
     title: str
+    """The plot title."""
+
     labels: List[str]
+    """The labels corresponding to each entry in the square `matrix`."""
+
     matrix: Sequence[NullableNumberSeries]
+    """A square matrix, typically representing the number of matches between class `i` and class `j`."""
+
     x_label: str = "Predicted"
+    """The label for the `x` axis of the confusion matrix."""
+
     y_label: str = "Actual"
+    """The label for the `y` axis of the confusion matrix."""
 
     def __post_init_post_parse__(self) -> None:
         n_labels = len(self.labels)
@@ -321,7 +373,7 @@ class ConfusionMatrix(Plot):
 @dataclass(frozen=True, config=ValidatorConfig)
 class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
     """
-    Configuration for an :class:`Evaluator`.
+    Configuration for an [`Evaluator`][kolena.workflow.Evaluator].
 
     Example evaluator configurations may specify:
 
@@ -332,21 +384,30 @@ class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
 
     @abstractmethod
     def display_name(self) -> str:
+        """
+        The name to display for this configuration in Kolena. Must be implemented when extending
+        [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
+        """
         raise NotImplementedError
 
 
 class Evaluator(metaclass=ABCMeta):
     """
-    An :class:`kolena.workflow.Evaluator` transforms inferences into metrics.
+    An `Evaluator` transforms inferences into metrics.
 
-    Metrics are computed at the individual test sample level (:class:`kolena.workflow.MetricsTestSample`), in aggregate
-    at the test case level (:class:`kolena.workflow.MetricsTestCase`), and across populations at the test suite level
-    (:class:`kolena.workflow.MetricsTestSuite`).
+    Metrics are computed at the individual test sample level ([`MetricsTestSample`][kolena.workflow.MetricsTestSample]),
+    in aggregate at the test case level ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]), and across populations
+    at the test suite level ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]).
 
-    Test-case-level plots (:class:`kolena.workflow.Plot`) may also be computed.
+    Test-case-level plots ([`Plot`][kolena.workflow.Plot]) may also be computed.
+
+    :param configurations: The configurations at which to perform evaluation. Instance methods such as
+        [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics] are called once per test
+        case per configuration.
     """
 
     configurations: List[EvaluatorConfiguration]
+    """The configurations with which to perform evaluation, provided on instantiation."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
@@ -357,6 +418,7 @@ class Evaluator(metaclass=ABCMeta):
             raise ValueError("all configurations must have distinct display names")
 
     def display_name(self) -> str:
+        """The name to display for this evaluator in Kolena. Defaults to the name of this class."""
         return type(self).__name__
 
     @abstractmethod
@@ -367,14 +429,16 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> List[Tuple[TestSample, MetricsTestSample]]:
         """
-        Compute metrics for every test sample in a test case.
+        Compute metrics for every test sample in a test case, i.e. one
+        [`MetricsTestSample`][kolena.workflow.MetricsTestSample] object for each of the provided test samples.
 
         Must be implemented.
 
-        :param test_case: the test case to which the provided test samples and ground truths belong.
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: test-sample-level metrics for each provided test sample.
+        :param test_case: The [`TestCase`][kolena.workflow.TestCase] to which the provided test samples and ground
+            truths belong.
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: [`TestSample`][kolena.workflow.TestSample]-level metrics for each provided test sample.
         """
         raise NotImplementedError
 
@@ -387,16 +451,17 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> MetricsTestCase:
         """
-        Compute aggregate metrics across a test case.
+        Compute aggregate metrics ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]) across a test case.
 
         Must be implemented.
 
-        :param test_case: the test case in question.
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param metrics: the test-sample-level metrics computed by :meth:`Evaluator.compute_test_sample_metrics`.
-            Provided in the same order as ``inferences``.
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: test-case-level metrics for the provided test case.
+        :param test_case: The test case in question.
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param metrics: The [`TestSample`][kolena.workflow.TestSample]-level metrics computed by
+            [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics], provided
+            in the same order as `inferences`.
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: [`TestCase`][kolena.workflow.TestCase]-level metrics for the provided test case.
         """
         raise NotImplementedError
 
@@ -411,12 +476,13 @@ class Evaluator(metaclass=ABCMeta):
         """
         Optionally compute any number of plots to visualize the results for a test case.
 
-        :param test_case: the test case in question
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param metrics: the test-sample-level metrics computed by :meth:`Evaluator.compute_test_sample_metrics`.
-            Provided in the same order as ``inferences``.
+        :param test_case: The test case in question
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param metrics: The [`TestSample`][kolena.workflow.TestSample]-level metrics computed by
+            [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics], provided
+            in the same order as `inferences`.
         :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: zero or more plots for this test case at this configuration.
+        :return: Zero or more plots for this test case at this configuration.
         """
         return None  # not required
 
@@ -428,12 +494,14 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> Optional[MetricsTestSuite]:
         """
-        Optionally compute test-suite-level metrics.
+        Optionally compute [`TestSuite`][kolena.workflow.TestSuite]-level metrics
+        ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]) across the provided `test_suite`.
 
-        :param test_suite: the test suite in question
-        :param metrics: the test-case-level metrics computed by :meth:`Evaluator.compute_test_case_metrics`
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: the test-suite-level metrics for this test suite
+        :param test_suite: The test suite in question.
+        :param metrics: The [`TestCase`][kolena.workflow.TestCase]-level metrics computed by
+            [`compute_test_case_metrics`][kolena.workflow.Evaluator.compute_test_case_metrics].
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: The [`TestSuite`][kolena.workflow.TestSuite]-level metrics for this test suite.
         """
         return None  # not required
 

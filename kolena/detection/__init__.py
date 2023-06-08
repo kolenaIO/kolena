@@ -17,6 +17,8 @@ from kolena._api.v1.detection import CustomMetrics
 from .ground_truth import GroundTruth
 from .inference import Inference
 from .test_config import TestConfig
+from .test_config import FixedGlobalThreshold
+from .test_config import F1Optimal
 from .test_image import TestImage
 from .test_image import iter_images
 from .test_image import load_images
@@ -32,6 +34,8 @@ __all__ = [
     "GroundTruth",
     "Inference",
     "TestConfig",
+    "FixedGlobalThreshold",
+    "F1Optimal",
     "TestImage",
     "iter_images",
     "load_images",

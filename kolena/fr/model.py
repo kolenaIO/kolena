@@ -41,8 +41,6 @@ class Model(Uninstantiable["Model.Data"]):
 
     @dataclass(frozen=True, config=ValidatorConfig)
     class Data:
-        """The data stored for your model in the platform."""
-
         id: int
         name: str
         metadata: Dict[str, Any]
@@ -52,10 +50,10 @@ class Model(Uninstantiable["Model.Data"]):
         """
         Create a new model with the provided name and metadata.
 
-        :param name: unique name of the new model to create
-        :param metadata: unstructured metadata to associate with the model
-        :return: the created model
-        :raises ValueError: if a model by the provided name already exists
+        :param name: Unique name of the new model to create.
+        :param metadata: Unstructured metadata to associate with the model.
+        :return: The newly created model.
+        :raises ValueError: A model by the provided name already exists.
         """
         request = API.CreateRequest(name=name, metadata=metadata)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
@@ -69,9 +67,9 @@ class Model(Uninstantiable["Model.Data"]):
         """
         Retrieve the existing model with the provided name.
 
-        :param name: name of the model to retrieve
-        :return: the retrieved model
-        :raises KeyError: if no model with the provided name exists
+        :param name: Name of the model to retrieve.
+        :return: The retrieved model.
+        :raises KeyError: If no model with the provided name exists.
         """
         request = API.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
@@ -106,18 +104,19 @@ class Model(Uninstantiable["Model.Data"]):
 
         The returned DataFrame has the following relevant fields:
 
-        - ``locator_a``: the locator pointing to the left image in the pair
-        - ``locator_b``: the locator pointing to the right image in the pair
-        - ``is_same``: boolean indicating if the two images depict the same person or a different person
-        - ``image_a_fte``: boolean indicating that the left image failed to enroll (FTE)
-        - ``image_b_fte``: boolean indicating that the right image failed to enroll (FTE)
-        - ``similarity``: float similarity score between the left and right images. ``NaN`` if either image failed to
+        - `locator_a`: the locator pointing to the left image in the pair
+        - `locator_b`: the locator pointing to the right image in the pair
+        - `is_same`: boolean indicating if the two images depict the same person or a different person
+        - `image_a_fte`: boolean indicating that the left image failed to enroll (FTE)
+        - `image_b_fte`: boolean indicating that the right image failed to enroll (FTE)
+        - `similarity`: float similarity score between the left and right images. `NaN` if either image failed to
           enroll. When multiple similarity scores were provided for a given image pair, only the highest similarity
           score is returned
 
-        :param test_object: the :class:`kolena.fr.TestSuite` or :class:`kolena.fr.TestCase` to load pair results from
-        :raises ValueError: if an invalid test object was provided
-        :raises RemoteError: if the pair results could not be loaded for any reason
+        :param test_object: The [`TestSuite`][kolena.fr.TestSuite] or [`TestCase`][kolena.fr.TestCase] to load pair
+            results from.
+        :raises ValueError: An invalid test object was provided.
+        :raises RemoteError: The pair results could not be loaded for any reason.
         """
         return _BatchedLoader.concat(self.iter_pair_results(test_object), LoadedPairResultDataFrame)
 
@@ -131,13 +130,13 @@ class Model(Uninstantiable["Model.Data"]):
         suite, grouped in batches. If this model has not been run on the provided test object, a zero-length response
         is returned. Partial results are returned when testing on the requested test case or test suite is incomplete.
 
-        See :meth:`load_pair_results` for details on the returned DataFrame.
+        See [`Model.load_pair_results`][kolena.fr.Model.load_pair_results] for details on the returned DataFrame.
 
-        :param test_object: the :class:`kolena.fr.TestSuite` or :class:`kolena.fr.TestCase` to load pair results from
-        :param batch_size: optionally specify maximum number of rows to be returned in a single DataFrame. By default,
-            limits row count to 10_000_000.
-        :raises ValueError: if an invalid test object was provided
-        :raises RemoteError: if the pair results could not be loaded for any reason
+        :param test_object: The [`TestSuite`][kolena.fr.TestSuite] or [`TestCase`][kolena.fr.TestCase] to load pair
+            results from.
+        :param batch_size: Optionally specify maximum number of rows to be returned in a single DataFrame.
+        :raises ValueError: An invalid test object was provided.
+        :raises RemoteError: The pair results could not be loaded for any reason.
         """
         display_type = "test case" if isinstance(test_object, (TestCase, TestCase.Data)) else "test suite"
         display_name = test_object.data.name if isinstance(test_object, (TestCase, TestSuite)) else test_object.name
@@ -155,10 +154,10 @@ class Model(Uninstantiable["Model.Data"]):
 
 class InferenceModel(Model):
     """
-    A :class:`kolena.fr.Model` capable of running tests via :meth:`kolena.fr.test`.
+    A [`Model`][kolena.fr.Model] capable of running tests via [`test`][kolena.fr.test].
 
     Currently supports extracting a single embedding per image. To extract multiple embeddings per image, see
-    :meth:`kolena.fr.TestRun`.
+    [`TestRun`][kolena.fr.TestRun].
     """
 
     extract: Callable[[str], Optional[np.ndarray]]
@@ -172,6 +171,16 @@ class InferenceModel(Model):
         compare: Callable[[np.ndarray, np.ndarray], float],
         metadata: Dict[str, Any],
     ) -> "InferenceModel":
+        """
+        Create a new model with the provided name and metadata.
+
+        :param name: Unique name of the new model to create.
+        :param extract: A function implementing embeddings extraction for this model.
+        :param compare: A function implementing embeddings similarity comparison for this model.
+        :param metadata: Unstructured metadata to associate with the model.
+        :return: The newly created model.
+        :raises ValueError: A model by the provided name already exists.
+        """
         base_model = super().create(name, metadata)
         return cls._from_base(base_model, extract, compare)
 
@@ -182,6 +191,14 @@ class InferenceModel(Model):
         extract: Callable[[str], Optional[np.ndarray]],
         compare: Callable[[np.ndarray, np.ndarray], float],
     ) -> "InferenceModel":
+        """
+        Load an existing model.
+
+        :param name: The name of the model to load.
+        :param extract: A function implementing embeddings extraction for this model.
+        :param compare: A function implementing embeddings similarity comparison for this model.
+        :return: The loaded model.
+        """
         base_model = super().load_by_name(name)
         return cls._from_base(base_model, extract, compare)
 

@@ -18,9 +18,10 @@ from ._geometry import match_inferences_multiclass
 from ._geometry import MulticlassInferenceMatches
 
 __all__ = [
-    "InferenceMatches",
     "iou",
+    "InferenceMatches",
     "match_inferences",
+    "MulticlassInferenceMatches",
     "match_inferences_multiclass",
     "MulticlassInferenceMatches",
 ]

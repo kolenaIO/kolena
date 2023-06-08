@@ -46,6 +46,8 @@ T = TypeVar("T", bound="DataObject")
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class DataObject(metaclass=ABCMeta):
+    """The base for various objects in `kolena.workflow`."""
+
     def _to_dict(self) -> Dict[str, Any]:
         def serialize_value(value: Any) -> Any:
             if isinstance(value, (bool, str, int, float)) or value is None:

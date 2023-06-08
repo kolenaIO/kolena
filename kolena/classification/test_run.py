@@ -37,20 +37,21 @@ from kolena.detection.inference import ClassificationLabel
 
 class TestRun(BaseTestRun):
     """
-    Interface to run tests for a :class:`kolena.classification.Model` on a set of
-    :class:`kolena.classification.TestSuite` suites. Any in-progress tests for this model on these suites are resumed.
+    Interface to run tests for a [`Model`][kolena.classification.Model] on a
+    [`TestSuite`][kolena.classification.TestSuite]. Any in-progress tests for this model on these suites are resumed.
 
-    For a streamlined interface, see :meth:`kolena.classification.test`.
+    For a streamlined interface, see [`test`][kolena.classification.test].
 
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    :param test_config: Optionally specify a :class:`kolena.classification.TestConfig` to customize the metrics
-                           evaluation logic for this test run.
-                           Defaults to :class:`kolena.classification.test_config.AccuracyOptimal` if unspecified.
+    :param model: The model being tested.
+    :param test_suite: The test suite on which to test the model.
+    :param test_config: Optionally specify a configuration, e.g.
+        [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold], to customize the metrics evaluation logic
+        for this test run. Defaults to [`AccuracyOptimal`][kolena.classification.test_config.AccuracyOptimal] if
+        unspecified.
     :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test-case.
-                                        The callback would be passed inferences of images in each testcase and should
-                                        return a dictionary with metric name as key and metric value as value.
-    :param reset: overwrites existing inferences if set.
+        The callback would be passed inferences of images in each testcase and should return a dictionary with metric
+        name as key and metric value as value.
+    :param reset: Overwrites existing inferences if set.
     """
 
     _TestImageClass = TestImage
@@ -104,20 +105,21 @@ def test(
     reset: bool = False,
 ) -> None:
     """
-    Test the provided :class:`kolena.classification.InferenceModel`` on one or more provided
-    :class:`kolena.detection.TestSuite` suites. Any tests already in progress for this model on these suites are
+    Test the provided [`InferenceModel`][kolena.classification.InferenceModel] on a
+    [`TestSuite`][kolena.classification.TestSuite]. Any tests already in progress for this model on these suites are
     resumed.
 
-    :param model: the model being tested, complete with :meth:`kolena.classification.InferenceModel.infer` function
-        to perform inference.
-    :param test_suite: the test suite on which to test the model.
-    :param test_config: Optionally specify a :class:`kolena.classification.TestConfig` to customize the metrics
-                           evaluation logic for this test run.
-                           Defaults to :class:`kolena.classification.test_config.AccuracyOptimal` if unspecified.
-    :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test-case.
-                                        The callback would be passed inferences of images in each testcase and should
-                                        return a dictionary with metric name as key and metric value as value.
-    :param reset: overwrites existing inferences if set.
+    :param model: The model being tested, complete with an
+        [`InferenceModel.infer`][kolena.classification.InferenceModel.infer] function to perform inference.
+    :param test_suite: The test suite on which to test the model.
+    :param test_config: Optionally specify a configuration, e.g.
+        [`FixedGlobalThreshold`][kolena.classification.FixedGlobalThreshold], to customize the metrics evaluation logic
+        for this test run. Defaults to [`AccuracyOptimal`][kolena.classification.test_config.AccuracyOptimal] if
+        unspecified.
+    :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test case.
+        The callback would be passed inferences of images in each testcase and should return a dictionary with metric
+        name as key and metric value as value.
+    :param reset: Overwrites existing inferences if set.
     """
     with TestRun(
         model,

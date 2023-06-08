@@ -72,14 +72,15 @@ from kolena.workflow.evaluator_function import EvaluationResults
 
 class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
     """
-    A :class:`kolena.workflow.Model` tested on a :class:`kolena.workflow.TestSuite` using a specific
-    :class:`kolena.workflow.Evaluator` implementation.
+    A [`Model`][kolena.workflow.Model] tested on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
+    [`Evaluator`][kolena.workflow.Evaluator] implementation.
 
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    :param Union[Evaluator, BasicEvaluatorFunction, None] evaluator: an optional evaluator implementation.
+    :param model: The model being tested.
+    :param test_suite: The test suite on which to test the model.
+    :param evaluator: An optional evaluator implementation.
         Requires a previously configured server-side evaluator to default to if omitted.
-        (Please see :class:`kolena.workflow.BasicEvaluatorFunction` for type definition.)
+        (Please see [`BasicEvaluatorFunction`][kolena.workflow.evaluator_function.BasicEvaluatorFunction] for type
+        definition.)
     :param configurations: a list of configurations to use when running the evaluator.
     :param reset: overwrites existing inferences if set.
     """
@@ -87,21 +88,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
     _id: int
 
     model: Model
-    """
-    :meta private:
-    """
     test_suite: TestSuite
-    """
-    :meta private:
-    """
     evaluator: Union[Evaluator, BasicEvaluatorFunction, None]
-    """
-    :meta private:
-    """
     configurations: Optional[List[EvaluatorConfiguration]]
-    """
-    :meta private:
-    """
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(
@@ -250,7 +239,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
     def evaluate(self) -> None:
         """
         Perform evaluation by computing metrics for individual test samples, in aggregate across test cases, and across
-        the complete test suite at each :class:`kolena.workflow.EvaluatorConfiguration`.
+        the complete test suite at each [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
         """
         if self.evaluator is None:
             log.info("commencing server side metrics evaluation")
@@ -491,15 +480,22 @@ def test(
     reset: bool = False,
 ) -> None:
     """
-    Test a :class:`kolena.workflow.Model` on a :class:`kolena.workflow.TestSuite` using a specific
-    :class:`kolena.workflow.Evaluator` or :class:`kolena.workflow.StreamlinedEvaluator` implementation.
+    Test a [`Model`][kolena.workflow.Model] on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
+    [`Evaluator`][kolena.workflow.Evaluator] implementation.
 
-    :param model: the model being tested, implementing the ``infer`` method.
-    :param test_suite: the test suite on which to test the model.
-    :param Union[Evaluator, BasicEvaluatorFunction, None] evaluator: an optional evaluator implementation.
+    ```python
+    from kolena.workflow import test
+
+    test(model, test_suite, evaluator, reset=True)
+    ```
+
+    :param model: The model being tested, implementing the `infer` method.
+    :param test_suite: The test suite on which to test the model.
+    :param evaluator: An optional evaluator implementation.
         Requires a previously configured server-side evaluator to default to if omitted.
-        (Please see :class:`kolena.workflow.BasicEvaluatorFunction` for type definition.)
-    :param configurations: a list of configurations to use when running the evaluator.
-    :param reset: overwrites existing inferences if set.
+        (Please see [`BasicEvaluatorFunction`][kolena.workflow.evaluator_function.BasicEvaluatorFunction] for type
+        definition.)
+    :param configurations: A list of configurations to use when running the evaluator.
+    :param reset: Overwrites existing inferences if set.
     """
     TestRun(model, test_suite, evaluator, configurations, reset).run()

@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Reference for various exceptions raised from `kolena`. All custom exceptions extend the base
+[`KolenaError`][kolena.errors.KolenaError].
+"""
 from requests import HTTPError
 
 

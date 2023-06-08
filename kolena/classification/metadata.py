@@ -12,15 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Metadata associated with a :class:`kolena.classification.TestImage`.
+Metadata associated with a [`TestImage`][kolena.classification.TestImage].
 
-.. code-block:: python
+```python
+from kolena.classification import TestImage
+from kolena.classification.metadata import Landmarks, BoundingBox, Asset
 
-    test_image = TestImage("s3://bucket/path/to/image.png", metadata=dict(
-        input_landmarks=Landmarks(*landmarks),
-        input_bounding_box=BoundingBox(*bounding_box),
-        image_grayscale=Asset("s3://bucket/path/to/image_grayscale.png"),
-    ))
+test_image = TestImage("s3://bucket/path/to/image.png", metadata=dict(
+    input_landmarks=Landmarks([(0,0), (10, 10), (20, 20), (30, 30), (40, 40)]),
+    input_bounding_box=BoundingBox((0, 0), (100, 100)),
+    image_grayscale=Asset("s3://bucket/path/to/image_grayscale.png"),
+))
+```
 """
 from kolena.detection._internal.metadata import Annotation
 from kolena.detection._internal.metadata import Asset
