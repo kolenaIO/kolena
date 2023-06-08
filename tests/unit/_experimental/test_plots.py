@@ -16,7 +16,6 @@ from typing import Union
 
 import pytest
 
-from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
@@ -2056,6 +2055,8 @@ def test__confusion__matrix(
     ordered_labels: List[str],
     matrix: List[List[int]],
 ) -> None:
+    from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
+
     conf_mat = compute_confusion_matrix_plot(all_matches=matchings, plot_title=test_name)
     assert conf_mat == ConfusionMatrix(title=test_name, labels=ordered_labels, matrix=matrix)
 
@@ -2133,5 +2134,7 @@ def test__confusion__matrix__fails(
     test_name: str,
     matchings: List[MulticlassInferenceMatches],
 ) -> None:
+    from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
+
     conf_mat = compute_confusion_matrix_plot(all_matches=matchings, plot_title=test_name)
     assert conf_mat is None
