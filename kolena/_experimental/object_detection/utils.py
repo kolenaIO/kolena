@@ -107,9 +107,15 @@ def compute_optimal_f1(
             if len(thresholds) == 0:
                 optimal_thresholds[label] = 0
                 continue
-            f1_scores = 2 * precision * recall / (precision + recall)
+
+            # properly handle zero division
+            denominator = precision + recall
+            f1_scores = np.where(denominator != 0, 2 * precision * recall / denominator, 0)
             max_f1_index = np.argmax(f1_scores)
-            optimal_thresholds[label] = thresholds[max_f1_index]
+            if f1_scores[max_f1_index] == 0:
+                optimal_thresholds[label] = 0
+            else:
+                optimal_thresholds[label] = thresholds[max_f1_index]
         return optimal_thresholds
     else:
         y_true, y_score = _compute_sklearn_arrays(all_bbox_matches)

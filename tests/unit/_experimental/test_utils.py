@@ -371,7 +371,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                     ],
                 ),
             ],
-            {"cat": 0.3, "cow": 0.4, "dog": 0.1, "fish": 0},
+            {"cat": 0.2, "cow": 0.4, "dog": 0, "fish": 0},
         ),
         (
             "only tps",
@@ -556,7 +556,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                     ],
                 ),
             ],
-            {"a": 0.01, "b": 0.3, "c": 0.7, "d": 0.6, "e": 0.01},
+            {"a": 0.01, "b": 0.3, "c": 0.01, "d": 0.6, "e": 0.01},
         ),
     ],
 )

@@ -777,11 +777,6 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                                 label="dog",
                                 score=0.9,
                             ),
-                            ScoredLabeledPolygon(
-                                points=[(10, 10), (10, 20), (20, 20), (20, 10)],
-                                label="cat",
-                                score=0.9,
-                            ),
                         ),
                     ],
                     unmatched_inf=[
