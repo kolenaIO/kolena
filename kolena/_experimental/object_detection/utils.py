@@ -53,6 +53,78 @@ def _compute_sklearn_arrays(
     return np.array(y_true), np.array(y_score)
 
 
+def _compute_sklearn_arrays_by_class(
+    all_matches: List[MulticlassInferenceMatches],
+) -> Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray], Dict[str, np.ndarray]]:
+    y_true: List[int] = []
+    y_score: List[float] = []
+    y_true_by_label: defaultdict[str, List[int]] = defaultdict(lambda: [])
+    y_score_by_label: defaultdict[str, List[float]] = defaultdict(lambda: [])
+    for image_bbox_matches in all_matches:
+        for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
+            y_true.append(1)
+            y_score.append(bbox_inf.score)
+            y_true_by_label[bbox_inf.label].append(1)
+            y_score_by_label[bbox_inf.label].append(bbox_inf.score)
+        for gt_or_pair in image_bbox_matches.unmatched_gt:  # FN
+            gt_label: str = gt_or_pair[0].label if type(gt_or_pair) is tuple else gt_or_pair.label
+            y_true.append(1)
+            y_score.append(-1)
+            y_true_by_label[gt_label].append(1)
+            y_score_by_label[gt_label].append(-1)
+        for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
+            y_true.append(0)
+            y_score.append(bbox_inf.score)
+            y_true_by_label[bbox_inf.label].append(0)
+            y_score_by_label[bbox_inf.label].append(bbox_inf.score)
+
+    y_true_by_label_np: Dict[str, np.ndarray] = {}
+    for key, value in y_true_by_label.items():
+        y_true_by_label_np[key] = np.array(value)
+
+    y_score_by_label_np: Dict[str, np.ndarray] = {}
+    for key, value in y_score_by_label.items():
+        y_score_by_label_np[key] = np.array(value)
+
+    return np.array(y_true), np.array(y_score), y_true_by_label_np, y_score_by_label_np
+
+
+def compute_optimal_f1(
+    all_bbox_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+) -> Union[float, Dict[str, float]]:
+    optimal_thresholds: Dict[str, float] = {}
+    multiclass = type(all_bbox_matches[0]) is MulticlassInferenceMatches
+
+    if multiclass:
+        _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_bbox_matches)
+        for label in sorted(y_true_by_label.keys()):
+            y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+            precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
+            if thresholds[0] < 0:
+                precision = precision[1:]
+                recall = recall[1:]
+                thresholds = thresholds[1:]
+            if len(thresholds) == 0:
+                optimal_thresholds[label] = 0
+                continue
+            f1_scores = 2 * precision * recall / (precision + recall)
+            max_f1_index = np.argmax(f1_scores)
+            optimal_thresholds[label] = thresholds[max_f1_index]
+        return optimal_thresholds
+    else:
+        y_true, y_score = _compute_sklearn_arrays(all_bbox_matches)
+        precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
+        if thresholds[0] < 0:
+            precision = precision[1:]
+            recall = recall[1:]
+            thresholds = thresholds[1:]
+        if len(thresholds) == 0:
+            return defaultdict(lambda: 0.0)
+        f1_scores = 2 * precision * recall / (precision + recall)
+        max_f1_index = np.argmax(f1_scores)
+        return thresholds[max_f1_index]
+
+
 def _compute_threshold_curves(
     y_true: np.ndarray,
     y_score: np.ndarray,
