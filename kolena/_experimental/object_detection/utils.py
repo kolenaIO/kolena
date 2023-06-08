@@ -99,7 +99,18 @@ def compute_optimal_f1(
         _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_bbox_matches)
         for label in sorted(y_true_by_label.keys()):
             y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+
+            # python 3.7.1's sklearn is different
+            if np.all(y_true == 0):
+                optimal_thresholds[label] = 0
+                continue
+
             precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
+
+            # delete last pr of (1,0)
+            precision = precision[:-1]
+            recall = recall[:-1]
+
             if thresholds[0] < 0:
                 precision = precision[1:]
                 recall = recall[1:]
@@ -109,8 +120,8 @@ def compute_optimal_f1(
                 continue
 
             # properly handle zero division
-            denominator = precision + recall
-            f1_scores = np.where(denominator != 0, 2 * precision * recall / denominator, 0)
+            f1_scores = 2 * precision * recall / (precision + recall)
+            f1_scores = np.nan_to_num(f1_scores, nan=0)
             max_f1_index = np.argmax(f1_scores)
             if f1_scores[max_f1_index] == 0:
                 optimal_thresholds[label] = 0
@@ -119,14 +130,27 @@ def compute_optimal_f1(
         return optimal_thresholds
     else:
         y_true, y_score = _compute_sklearn_arrays(all_bbox_matches)
+
+        # python 3.7.1's sklearn is different
+        if np.all(y_true == 0):
+            return 0
+
         precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
+
+        # delete last pr of (1,0)
+        precision = precision[:-1]
+        recall = recall[:-1]
         if thresholds[0] < 0:
             precision = precision[1:]
             recall = recall[1:]
             thresholds = thresholds[1:]
         if len(thresholds) == 0:
             return defaultdict(lambda: 0.0)
+
+        # properly handle zero division
         f1_scores = 2 * precision * recall / (precision + recall)
+        f1_scores = np.nan_to_num(f1_scores, nan=0)
+
         max_f1_index = np.argmax(f1_scores)
         return thresholds[max_f1_index]
 
