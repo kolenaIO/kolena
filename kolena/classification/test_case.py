@@ -41,7 +41,7 @@ class TestCase(BaseTestCase):
         provided name does not already exist.
     :param description: Optionally specify a description for the new test case. Ignored when a test case with the
         provided name already exists.
-    :param images: Optionally provide a list of [TestImage][kolena.classification.TestImage] images used to seed a new
+    :param images: Optionally provide a list of [`TestImage`][kolena.classification.TestImage] images used to seed a new
         test case. Ignored when a test case with the provided name already exists.
     """
 

@@ -73,7 +73,7 @@ class Model(BaseModel):
 
 class InferenceModel(Model):
     """
-    A [`Model`][kolena.classification.Model] with a special [`infer][kolena.classification.InferenceModel.infer] member
+    A [`Model`][kolena.classification.Model] with a special [`infer`][kolena.classification.InferenceModel.infer] member
     performing inference on a provided [`TestImage`][kolena.classification.TestImage].
     """
 
