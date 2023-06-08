@@ -1,3 +1,11 @@
+html {
+  overscroll-behavior: none;
+}
+
+.md-typeset h5 {
+  text-transform: none; /* undo uppercasing of h5 applied by theme */
+}
+
 /*
  * Branded header styles
  */
@@ -58,7 +66,7 @@
     --md-code-fg-color:                hsla(var(--md-hue), 7%, 90%, 1);
     --md-code-bg-color:                hsla(var(--md-hue), 7%, 17%, 1);
 
-    --md-code-hl-color:                hsla(#{hex2hsl($clr-blue-a200)}, 0.15);
+    --md-code-hl-color:                hsla(218, 100%, 63%, 0.15);
     --md-code-hl-number-color:         hsla(6, 74%, 63%, 1);
     --md-code-hl-special-color:        hsla(340, 83%, 66%, 1);
     --md-code-hl-function-color:       hsla(291, 57%, 65%, 1);
@@ -74,9 +82,9 @@
 
     --md-typeset-color:                var(--md-default-fg-color);
 
-    --md-typeset-a-color:              hsla(219, 66%, 64%, 1);
+    --md-typeset-a-color:              hsla(219, 66%, 64%, 1); /* TODO: manually set to indigo -- better color? */
 
-    --md-typeset-mark-color:           hsla(#{hex2hsl($clr-blue-a200)}, 0.3);
+    --md-typeset-mark-color:           hsla(218, 100%, 63%, 0.3);
 
     --md-typeset-kbd-color:            hsla(var(--md-hue), 15%, 94%, 0.12);
     --md-typeset-kbd-accent-color:     hsla(var(--md-hue), 15%, 94%, 0.2);
@@ -92,36 +100,46 @@
     --md-footer-bg-color--dark:        hsla(var(--md-hue), 7%, 8%, 1);
 
     --md-shadow-z1:
-      0 #{px2rem(4px)} #{px2rem(10px)} hsla(0, 0%, 0%, 0.2),
-      0 0              #{px2rem(1px)}  hsla(0, 0%, 0%, 0.1);
+      0 0.25rem 0.625rem hsla(0, 0%, 0%, 0.2),
+      0 0 0.0625rem hsla(0, 0%, 0%, 0.1);
 
     --md-shadow-z2:
-      0 #{px2rem(4px)} #{px2rem(10px)} hsla(0, 0%, 0%, 0.3),
-      0 0              #{px2rem(1px)}  hsla(0, 0%, 0%, 0.25);
+      0 0.25rem 0.625rem hsla(0, 0%, 0%, 0.3),
+      0 0 0.0625rem hsla(0, 0%, 0%, 0.25);
 
     --md-shadow-z3:
-      0 #{px2rem(4px)} #{px2rem(10px)} hsla(0, 0%, 0%, 0.4),
-      0 0              #{px2rem(1px)}  hsla(0, 0%, 0%, 0.35);
+      0  0.25rem 0.625rem hsla(0, 0%, 0%, 0.4),
+      0 0 0.0625rem hsla(0, 0%, 0%, 0.35);
 
-    img[src$="#only-light"],
-    img[src$="#gh-light-mode-only"] {
-      display: none;
-    }
+    /* copied from mkdocstrings styles */
+    --doc-symbol-attribute-fg-color: #ffa657;
+    --doc-symbol-function-fg-color: #d2a8ff;
+    --doc-symbol-class-fg-color: #79c0ff;
+    --doc-symbol-module-fg-color: #baff79;
+    --doc-symbol-attribute-bg-color: #ffa6571a;
+    --doc-symbol-function-bg-color: #d2a8ff1a;
+    --doc-symbol-class-bg-color: #79c0ff1a;
+    --doc-symbol-module-bg-color: #baff791a;
+  }
+
+  [data-md-color-scheme="kolena-dark"] img[src$="#only-light"],
+  [data-md-color-scheme="kolena-dark"] img[src$="#gh-light-mode-only"] {
+    display: none;
   }
 
   /* source theme uses SASS to template this */
-  [data-md-color-scheme="slate"][data-md-color-primary="pink"] { --md-typeset-a-color: hsl(340, 81%, 63%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="purple"] { --md-typeset-a-color: hsl(291, 43%, 63%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="deep-purple"] { --md-typeset-a-color: hsl(262, 63%, 70%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="indigo"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="teal"] { --md-typeset-a-color: hsl(174, 100%, 40%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="green"] { --md-typeset-a-color: hsl(122, 39%, 60%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="deep-orange"] { --md-typeset-a-color: hsl(14, 100%, 73%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="brown"] { --md-typeset-a-color: hsl(16, 45%, 60%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="grey"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="blue-grey"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="white"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
-  [data-md-color-scheme="slate"][data-md-color-primary="black"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="pink"] { --md-typeset-a-color: hsl(340, 81%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="purple"] { --md-typeset-a-color: hsl(291, 43%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="deep-purple"] { --md-typeset-a-color: hsl(262, 63%, 70%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="indigo"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="teal"] { --md-typeset-a-color: hsl(174, 100%, 40%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="green"] { --md-typeset-a-color: hsl(122, 39%, 60%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="deep-orange"] { --md-typeset-a-color: hsl(14, 100%, 73%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="brown"] { --md-typeset-a-color: hsl(16, 45%, 60%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="grey"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="blue-grey"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="white"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
+  [data-md-color-scheme="kolena-dark"][data-md-color-primary="black"] { --md-typeset-a-color: hsl(219, 56%, 63%); }
 
   [data-md-color-switching] *,
   [data-md-color-switching] *::before,
