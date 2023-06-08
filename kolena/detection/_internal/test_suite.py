@@ -45,13 +45,13 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
     """
     A test suite groups together one or more test cases.
 
-    :param name: name of the test suite to create or load
-    :param version: optionally specify the version of the test suite to load. When absent, the latest version is loaded.
-        Ignored when creating new test suites
-    :param description: optionally specify a description for a newly created test suite. For existing test suites, this
-        description can be edited via :meth:`TestSuite.edit`
+    :param name: The name of the test suite to create or load.
+    :param version: Optionally specify the version of the test suite to load. When absent, the latest version is loaded.
+        Ignored when creating new test suites.
+    :param description: Optionally specify a description for a newly created test suite. For existing test suites, this
+        description can be edited via [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     :param test_cases: optionally specify a list of test cases to populate a new test suite. For existing test suites,
-        test cases can be edited via :meth:`TestSuite.edit`
+        test cases can be edited via [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
     """
 
     _id: int
@@ -163,10 +163,10 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         """
         Create a new test suite with the provided name.
 
-        :param name: the name of the new test suite to create.
-        :param description: optional free-form description of the test suite to create.
-        :param test_cases: optionally specify a set of test cases to populate the test suite.
-        :return: the newly created test suite.
+        :param name: The name of the new test suite to create.
+        :param description: Optional free-form description of the test suite to create.
+        :param test_cases: Optionally specify a set of test cases to populate the test suite.
+        :return: The newly created test suite.
         """
         return cls._create(cls._workflow, name, description, test_cases)
 
@@ -175,10 +175,10 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         """
         Load an existing test suite with the provided name.
 
-        :param name: the name of the test suite to load.
-        :param version: optionally specify a particular version of the test suite to load. Defaults to the latest
+        :param name: The name of the test suite to load.
+        :param version: Optionally specify a particular version of the test suite to load. Defaults to the latest
             version when unset.
-        :return: the loaded test suite.
+        :return: The loaded test suite.
         """
         data = cls._load_by_name(name, version)
         obj = cls._create_from_data(data)
@@ -187,7 +187,8 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
 
     class Editor:
         """
-        Interface to edit a test suite. Create with :meth:`TestSuite.edit`.
+        Interface to edit a test suite. Create with
+        [`TestSuite.edit`][kolena.detection._internal.test_suite.BaseTestSuite.edit].
         """
 
         _test_cases: List[BaseTestCase]
@@ -211,17 +212,17 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             """
             Update the description of the test suite.
 
-            :param description: the new description of the test suite
+            :param description: The new description of the test suite.
             """
             self._description = description
 
         @validate_arguments(config=ValidatorConfig)
         def add(self, test_case: BaseTestCase) -> None:
             """
-            Add the provided :class:`kolena.detection.TestCase` to the test suite.
+            Add the provided [`TestCase`][kolena.detection.TestCase] to the test suite.
             If a different version of the test case already exists in this test suite, it is replaced.
 
-            :param test_case: the test case to add to the test suite
+            :param test_case: The test case to add to the test suite.
             """
             self._assert_workflows_match(test_case)
             self._test_cases[test_case.name] = test_case._id
@@ -229,24 +230,28 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         @validate_arguments(config=ValidatorConfig)
         def remove(self, test_case: BaseTestCase) -> None:
             """
-            Remove the provided :class:`kolena.detection.TestCase` from the test suite. Any version of this test
+            Remove the provided [`TestCase`][kolena.detection.TestCase] from the test suite. Any version of this test
             case in this test suite will be removed; the version does not need to match exactly.
 
-            :param test_case: the test case to be removed from the test suite
+            :param test_case: The test case to be removed from the test suite.
             """
             name = test_case.name
             if name not in self._test_cases.keys():
                 raise KeyError(f"test case '{name}' not in test suite")
             self._test_cases.pop(name)
 
-        @deprecated(details="use :meth:`add` instead", deprecated_in="0.56.0")
+        @deprecated(details="use `TestSuite.Editor.add`", deprecated_in="0.56.0")
         @validate_arguments(config=ValidatorConfig)
         def merge(self, test_case: BaseTestCase) -> None:
             """
-            Add the provided :class:`kolena.detection.TestCase` to the test suite, replacing any previous version
+            !!! warning "Deprecated: since `0.56.0`"
+                Replaced by idempotent behavior in
+                [`TestSuite.Editor.add`][kolena.detection._internal.test_suite.BaseTestSuite.Editor.add].
+
+            Add the provided [`TestCase`][kolena.detection.TestCase] to the test suite, replacing any previous version
             of the test case that may be present in the suite.
 
-            :param test_case: the test case to be merged into the test suite
+            :param test_case: The test case to be merged into the test suite.
             """
             self.add(test_case)
 
@@ -265,16 +270,18 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         """
         Edit this test suite in a context:
 
-        .. code-block:: python
+        ```python
+        with test_suite.edit() as editor:
+            # perform as many editing actions as desired
+            editor.add(...)
+            editor.remove(...)
+        ```
 
-            with test_suite.edit() as editor:
-                # perform as many editing actions as desired
-                editor.add(...)
-                editor.remove(...)
+        Changes are committed to Kolena when the context is exited.
 
-        Changes are committed to the Kolena platform when the context is exited.
-
-        :param reset: clear any and all test cases currently in the test suite.
+        :param reset: Clear any and all test cases currently in the test suite.
+        :return: Context-managed [`TestSuite.Editor`][kolena.detection._internal.test_suite.BaseTestSuite.Editor]
+            instance exposing editing functionality for this test suite.
         """
         editor = BaseTestSuite.Editor(self.test_cases, self.description, reset)
         editor._workflow = self._workflow  # set outside of init such that parameter does not leak into documentation

@@ -11,6 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+The ground truth associated with a [`TestSample`][kolena.workflow.TestSample]. Typically, a ground truth will represent
+the expected output of a model when given a test sample and will be manually annotated by a human.
+
+```python
+from dataclasses import dataclass
+from typing import List
+
+from kolena.workflow import GroundTruth
+from kolena.workflow.annotation import Polyline, SegmentationMask
+
+@dataclass(frozen=True)
+class AvGroundTruth(GroundTruth):
+    road_area: SegmentationMask
+    lane_boundaries: List[Polyline]
+    visibility_score: int
+```
+
+A [`TestCase`][kolena.workflow.TestCase] holds a list of test samples (model inputs) paired with ground truths
+(expected outputs).
+"""
 from typing import Type
 
 from pydantic.dataclasses import dataclass
@@ -31,38 +52,41 @@ class GroundTruth(DataObject):
     """
     The ground truth against which a model is evaluated.
 
-    A test case contains one or more :class:`kolena.workflow.TestSample` objects each paired with a ground truth object.
-    During evaluation, these test samples, ground truths, and your model's inferences are provided to the
-    :class:`kolena.workflow.Evaluator` implementation.
+    A test case contains one or more [`TestSample`][kolena.workflow.TestSample] objects each paired with a ground truth
+    object. During evaluation, these test samples, ground truths, and your model's inferences are provided to the
+    [`Evaluator`][kolena.workflow.Evaluator] implementation.
 
-    This object may contain any combination of scalars (e.g. ``str``, ``float``),
-    :class:`kolena.workflow.annotation.Annotation` objects, or lists of these objects.
+    This object may contain any combination of scalars (e.g. `str`, `float`),
+    [`Annotation`][kolena.workflow.annotation.Annotation] objects, or lists of these objects.
 
-    For :class:`kolena.workflow.Composite`, each object can contain multiple basic test sample elements.
-    To associate a set of attributes and/or annotations as the ground truth to a target test sample element,
-    one can use :class:`kolena.workflow.DataObject` and use the same name as in :class:`kolena.workflow.Composite`.
+    For [`Composite`][kolena.workflow.Composite], each object can contain multiple basic test sample elements. To
+    associate a set of attributes and/or annotations as the ground truth to a target test sample element, declare
+    annotations by extending `DataObject` and use the same attribute name as used in the
+    [`Composite`][kolena.workflow.Composite] test sample.
 
-    Continue with the example given in :class:`kolena.workflow.Composite`, which takes an image pair as a
-    test sample, one can design ground truth as:
+    Continue with the example given in [`Composite`][kolena.workflow.Composite], where the `FacePairSample` test sample
+    type is defined using a pair of images under the `source` and `target` members, we can design a corresponding ground
+    truth type with image-level annotations defined in the `FaceRegion` object:
 
-    .. code-block:: python
+    ```python
+    from dataclasses import dataclass
 
-        class FacePairSample(kolena.workflow.Composite):
-            source: Image
-            target: Image
+    from kolena.workflow import DataObject, GroundTruth
+    from kolena.workflow.annotation import BoundingBox, Keypoints
 
+    @dataclass(frozen=True)
+    class FaceRegion(DataObject):
+        bounding_box: BoundingBox
+        keypoints: Keypoints
 
-        class FaceRegion(DataObject):
-            bounding_box: BoundingBox
-            keypoints: Keypoints
+    @dataclass(frozen=True)
+    class FacePair(GroundTruth):
+        source: FaceRegion
+        target: FaceRegion
+        is_same_person: bool
+    ```
 
-
-        class FacePair(GroundTruth):
-            source: FaceRegion
-            target: FaceRegion
-            is_same_person: bool
-
-    making it clear which bounding boxes and keypoints are associated to which image in the test sample.
+    This way, it is clear which bounding boxes and keypoints are associated to which image in the test sample.
     """
 
 

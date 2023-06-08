@@ -28,17 +28,17 @@ from kolena.workflow.test_run import TestRun as BaseTestRun
 
 class TestRun(BaseTestRun):
     """
-    Convenience alias for :class:`kolena.workflow.test_run.TestRun`, configured for the
+    Convenience alias for [`kolena.workflow.TestRun`][kolena.workflow.test_run.TestRun], configured for the
     `kolena.classification.multiclass` workflow and evaluator.
 
-    Interface to run tests for a :class:`kolena.classification.multiclass.Model` on a set of
-    :class:`kolena.classification.multiclass.TestSuite` suites.
+    Interface to run tests for a [`Model`][kolena.classification.multiclass.Model] on a
+    [`TestSuite`][kolena.classification.multiclass.TestSuite].
 
-    For a streamlined interface, see :meth:`kolena.classification.multiclass.test`.
+    For a streamlined interface, see [`test`][kolena.classification.multiclass.test].
 
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    :param reset: overwrites existing inferences if set.
+    :param model: The model being tested.
+    :param test_suite: The test suite on which to test the model.
+    :param reset: Overwrites existing inferences if set.
     """
 
     @validate_arguments(config=ValidatorConfig)
@@ -68,18 +68,18 @@ def test(
     reset: bool = False,
 ) -> None:
     """
-    Convenience alias for :meth:`kolena.workflow.test_run.test` configured for the `kolena.classification.multiclass`
-    workflow and evaluator.
+    Convenience alias for [`test`][kolena.workflow.test] configured for the `kolena.classification.multiclass` workflow
+    and evaluator.
 
-    Tests the provided :class:`kolena.classification.multiclass.Model`` on the provided
-    :class:`kolena.classification.multiclass.TestSuite` suite. Any tests already in progress for this model on this
+    Tests the provided [`Model`][kolena.classification.multiclass.Model] on the provided
+    [`TestSuite`][kolena.classification.multiclass.TestSuite]. Any test already in progress for this model on this
     test suite is resumed.
 
-    :param model: the model being tested, implementing the ``infer`` method.
-    :param test_suite: the test suite on which to test the model.
-    :param configurations: an optional list of configurations to use when running the evaluator. Defaults to selecting
+    :param model: The model being tested, implementing the `infer` method.
+    :param test_suite: The test suite on which to test the model.
+    :param configurations: An optional list of configurations to use when running the evaluator. Defaults to selecting
         the max confidence label (with no thresholding) if unset.
-    :param reset: overwrites existing inferences if set.
+    :param reset: Overwrites existing inferences if set.
     """
     if configurations is None:
         configurations = [ThresholdConfiguration()]

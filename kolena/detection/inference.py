@@ -27,6 +27,13 @@ from kolena.detection._internal import InferenceType
 
 
 class Inference(_Inference):
+    """
+    Base class for model inferences associated with an image.
+
+    See concrete implementations [`BoundingBox`][kolena.detection.inference.BoundingBox], and
+    [`SegmentationMask`][kolena.detection.inference.SegmentationMask] for details.
+    """
+
     @classmethod
     def _from_dict(cls, ground_truth: Dict[str, Any]) -> "Inference":
         data_type = ground_truth["data_type"]
@@ -50,15 +57,9 @@ class Inference(_Inference):
         raise ValueError(f"invalid dictionary provided, unrecognized data type '{data_type}'")
 
 
+# NOTE: intentionally leave undocumented; not a part of the public API
 class ClassificationLabel(Inference):
-    """
-    Inference representing a classification label.
-    """
-
-    #: Predicted classification label.
     label: str
-
-    #: Confidence score associated with this inference.
     confidence: float
 
     @validate_arguments(config=ValidatorConfig)
@@ -79,20 +80,20 @@ class BoundingBox(Inference):
     """
     Inference representing a bounding box.
 
-    Point coordinates should be in (x, y) format, as absolute pixel values.
+    Point coordinates should be in `(x, y)` format, as absolute pixel values.
     """
 
-    #: Label to associate with this bounding box.
     label: str
+    """Label to associate with this bounding box."""
 
-    #: Confidence score associated with this inference.
     confidence: float
+    """Confidence score associated with this inference."""
 
-    #: Point in (x, y) pixel coordinates representing the top left corner of the bounding box.
     top_left: Tuple[float, float]
+    """Point in `(x, y)` pixel coordinates representing the top left corner of the bounding box."""
 
-    #: Point in (x, y) pixel coordinates representing the bottom right corner of the bounding box.
     bottom_right: Tuple[float, float]
+    """Point in `(x, y)` pixel coordinates representing the bottom right corner of the bounding box."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, label: str, confidence: float, top_left: Tuple[float, float], bottom_right: Tuple[float, float]):
@@ -114,20 +115,22 @@ class SegmentationMask(Inference):
     """
     Inference data object representing a segmentation mask.
 
-    Point coordinates should be in (x, y) format, as absolute pixel values.
+    Point coordinates should be in `(x, y)` format, as absolute pixel values.
 
-    :raises ValueError: if fewer than three points are provided
+    :raises ValueError: When fewer than three points are provided.
     """
 
-    #: Label to associate with this segmentation mask.
     label: str
+    """Label to associate with this segmentation mask."""
 
-    #: Confidence score associated with this inference.
     confidence: float
+    """Confidence score associated with this inference."""
 
-    #: Polygon corresponding to the vertices of the segmentation mask. Must have at least three distinct elements, and
-    #: may not cross itself or touch itself at any point.
     points: List[Tuple[float, float]]
+    """
+    Polygon corresponding to the vertices of the segmentation mask. Must have at least three distinct elements, and
+    may not cross itself or touch itself at any point.
+    """
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, label: str, confidence: float, points: List[Tuple[float, float]]):

@@ -11,6 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Test samples are the inputs to your models when testing.
+
+For example, for a model that processes specific regions within a larger image, its test sample may be defined:
+
+```python
+from dataclasses import dataclass
+
+from kolena.workflow import Image
+from kolena.workflow.annotation import BoundingBox
+
+@dataclass(frozen=True)
+class ImageWithRegion(Image):
+    region: BoundingBox
+
+example = ImageWithRegion(
+    locator="s3://my-bucket/example-image.png",  # field from Image base class
+    region=BoundingBox(top_left=(0, 0), bottom_right=(100, 100)),
+)
+```
+"""
 import copy
 from abc import ABCMeta
 from typing import Any
@@ -35,9 +56,6 @@ from kolena.workflow._validators import validate_field
 from kolena.workflow._validators import validate_metadata_dict
 from kolena.workflow.asset import ImageAsset
 
-#: Type of the ``metadata`` field that can be included on :class:`kolena.workflow.TestSample` definitions. String
-#: (``str``) keys and scalar values (``int``, ``float``, ``str``, ``bool``, ``None``) as well as scalar list values are
-#: permitted.
 Metadata = Dict[
     str,
     Union[
@@ -68,6 +86,20 @@ Metadata = Dict[
         ],
     ],
 ]
+"""
+Type of the `metadata` field that can be included on [`TestSample`][kolena.workflow.TestSample] definitions. String
+(`str`) keys and scalar values (`int`, `float`, `str`, `bool`, `None`) as well as scalar list values are permitted.
+
+```python
+from dataclasses import dataclass, field
+from kolena.workflow import Image, Metadata
+
+@dataclass(frozen=True)
+class ImageWithMetadata(Image):
+    metadata: Metadata = field(default_factory=dict)
+```
+"""
+
 _METADATA_KEY = "metadata"
 
 
@@ -92,15 +124,15 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     Test samples can be customized as necessary for a workflow by extending this class or one of the built-in test
     sample types.
 
-    Extensions to the ``TestSample`` class may define a ``metadata`` field of type
-    :data:`kolena.workflow.test_sample.Metadata` containing a dictionary of scalar properties associated with the test
-    sample, intended for use when sorting or filtering test samples.
+    Extensions to the `TestSample` class may define a `metadata` field of type
+    [`Metadata`][kolena.workflow.test_sample.Metadata] containing a dictionary of scalar properties associated with the
+    test sample, intended for use when sorting or filtering test samples.
 
-    Kolena handles the ``metadata`` field differently from other test sample fields. Updates to the ``metadata`` object
-    for a given test sample are merged with previously uploaded metadata. As such, ``metadata`` for a given test sample
+    Kolena handles the `metadata` field differently from other test sample fields. Updates to the `metadata` object
+    for a given test sample are merged with previously uploaded metadata. As such, `metadata` for a given test sample
     within a test case is **not** immutable, and should **not** be relied on when an implementation of
-    :class:`kolena.workflow.Model` computes inferences, or when an implementation of :class:`kolena.workflow.Evaluator`
-    evaluates metrics.
+    [`Model`][kolena.workflow.Model] computes inferences, or when an implementation of
+    [`Evaluator`][kolena.workflow.Evaluator] evaluates metrics.
     """
 
     @staticmethod
@@ -120,19 +152,19 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Composite(TestSample):
     """
-    A test sample composed of multiple basic :class:`TestSample` elements.
+    A test sample composed of multiple basic [`TestSample`][kolena.workflow.TestSample] elements.
 
     An example application would be each test sample is a pair of face images, and the goal is to predict whether the
     two images are of the same person. For this use-case the test sample can be defined as:
 
-    .. code-block:: python
+    ```python
+    class FacePairSample(Composite):
+        source: Image
+        target: Image
+    ```
 
-        class FacePairSample(Composite):
-            source: Image
-            target: Image
-
-    To facilitate visualization for this kind of use cases, see usage of :class:`kolena.workflow.GroundTruth` and
-    :class:`kolena.workflow.Inference`.
+    To facilitate visualization for this kind of use cases, see usage of [`GroundTruth`][kolena.workflow.GroundTruth]
+    and [`Inference`][kolena.workflow.Inference].
     """
 
     @classmethod
@@ -145,6 +177,7 @@ class Image(TestSample):
     """An image located in a cloud bucket or served at a URL."""
 
     locator: str
+    """The URL of this image, using e.g. `s3`, `gs`, or `https` scheme (`s3://my-bucket/path/to/image.png`)."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
@@ -153,17 +186,21 @@ class Image(TestSample):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class ImagePair(Composite):
-    """Two images."""
+    """Two [`Image`s][kolena.workflow.Image] paired together."""
 
     a: Image
+    """The left [`Image`][kolena.workflow.Image] in the image pair."""
+
     b: Image
+    """The right [`Image`][kolena.workflow.Image] in the image pair."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Text(TestSample):
-    """A text snippet."""
+    """An inline text snippet."""
 
     text: str
+    """The text snippet."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
@@ -175,7 +212,10 @@ class ImageText(Composite):
     """An image paired with a text snippet."""
 
     image: Image
+    """The [`Image`][kolena.workflow.Image] in this image-text pair."""
+
     text: Text
+    """The text snippet in this image-text pair."""
 
 
 # NOTE: declare BaseVideo as separate class for extension -- default fields in main Video class prevent extension with
@@ -184,8 +224,8 @@ class ImageText(Composite):
 class BaseVideo(TestSample):
     """A video clip located in a cloud bucket or served at a URL."""
 
-    #: URL (e.g. S3, HTTPS) of the video file
     locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
@@ -196,14 +236,17 @@ class BaseVideo(TestSample):
 class Video(BaseVideo):
     """A video clip located in a cloud bucket or served at a URL."""
 
-    #: Optionally provide asset locator for custom video thumbnail
+    locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
+
     thumbnail: Optional[ImageAsset] = None
+    """Optionally provide asset locator for custom video thumbnail."""
 
-    #: Optionally specify start time of video snippet, in seconds
     start: Optional[float] = None
+    """Optionally specify start time of video snippet, in seconds."""
 
-    #: Optionally specify end time of video snippet, in seconds
     end: Optional[float] = None
+    """Optionally specify end time of video snippet, in seconds."""
 
     def __post_init__(self) -> None:
         if self.start is not None and self.end is not None and self.start > self.end:
@@ -216,8 +259,8 @@ class Video(BaseVideo):
 class Document(TestSample):
     """A remotely linked document, e.g. PDF or TXT file."""
 
-    #: URL (e.g. S3, HTTPS) of the document
     locator: str
+    """URL (e.g. S3, HTTPS) of the document."""
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:

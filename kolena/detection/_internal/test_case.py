@@ -49,27 +49,31 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     """
     A test case holds a set of images to compute performance metrics against.
 
-    :param name: name of the test case to create or load
-    :param version: optionally specify the version of the test case to load. When absent, the latest version is loaded.
-        Ignored when creating new test cases
-    :param description: optionally specify a description for a newly created test case. For existing test cases, this
-        description can be edited via :meth:`kolena.detection.TestCase.edit`
-    :param images: optionally provide a list of images and associated ground truths to populate a new test case. For
-        existing test cases, images can be edited via :meth:`TestCase.edit`.
+    :param name: Name of the test case to create or load.
+    :param version: Optionally specify the version of the test case to load. When absent, the latest version is loaded.
+        Ignored when creating new test cases.
+    :param description: Optionally specify a description for a newly created test case. For existing test cases, this
+        description can be edited via [`TestCase.edit`][kolena.detection._internal.BaseTestCase.edit].
+    :param images: Optionally provide a list of images and associated ground truths to populate a new test case. For
+        existing test cases, images can be edited via [`TestCase.edit`][kolena.detection._internal.BaseTestCase.edit].
     """
 
     _TestImageClass: Type[BaseTestImage] = BaseTestImage
     _TestImageDataFrameClass: Type[DFType] = DFType
 
-    #: The unique name of this test case. Cannot be changed after creation.
     name: str
+    """The unique name of this test case."""
 
-    #: The version of this test case. A test case's version is automatically incremented whenever it is edited via
-    #: :meth:`TestCase.edit`.
     version: int
+    """
+    The version of this test case. A test case's version is automatically incremented whenever it is edited via
+    [`TestCase.edit`][kolena.detection._internal.BaseTestCase.edit].
+    """
 
-    #: Free-form, human-readable description of this test case. Can be edited at any time via :meth:`TestCase.edit`.
     description: str
+    """Free-form, human-readable description of this test case. Can be edited at any time via
+    [`TestCase.edit`][kolena.detection._internal.BaseTestCase.edit].
+    """
 
     _id: int
     _workflow: WorkflowType
@@ -192,10 +196,10 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         """
         Create a new test case with the provided name.
 
-        :param name: the name of the new test case to create.
-        :param description: optional free-form description of the test case to create.
-        :param images: optionally specify a set of images to populate the test case.
-        :return: the newly created test case.
+        :param name: The name of the new test case to create.
+        :param description: Optional free-form description of the test case to create.
+        :param images: Optionally specify a set of images to populate the test case.
+        :return: The newly created test case.
         """
         return cls._create(cls._workflow, name, description, images)
 
@@ -203,17 +207,18 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
     def load(cls, name: str, version: Optional[int] = None) -> "BaseTestCase":
         """
         Load an existing test case with the provided name.
-        :param name: the name of the test case to load.
-        :param version: optionally specify a particular version of the test case to load. Defaults to the latest version
+
+        :param name: The name of the test case to load.
+        :param version: Optionally specify a particular version of the test case to load. Defaults to the latest version
             when unset.
-        :return: the loaded test case.
+        :return: The loaded test case.
         """
         data = cls._load_by_name(name, version)
         return cls._create_from_data(data)
 
     class Editor:
         """
-        Interface to edit a test case. Create with :meth:`TestCase.edit`.
+        Interface to edit a test case. Create with [`TestCase.edit`][kolena.detection._internal.BaseTestCase.edit].
         """
 
         _TestImageClass: Type[BaseTestImage] = BaseTestImage
@@ -234,7 +239,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
             """
             Update the description of this test case.
 
-            :param description: the new test case description
+            :param description: The new test case description.
             """
             if self._description == description:
                 return
@@ -244,13 +249,13 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         @validate_arguments(config=ValidatorConfig)
         def add(self, image: _TestImageClass) -> None:
             """
-            Add a test image to the test case, targeting the ``ground_truths`` held by the image.
-            When the test image already exists in the test case, its ground truth
-            is overwritten.
+            Add a test image to the test case, targeting the `ground_truths` held by the image. When the test image
+            already exists in the test case, its ground truth is overwritten.
 
-            To filter the ground truths associated with a test image, see :meth:`kolena.detection.TestImage.filter`.
+            To filter the ground truths associated with a test image, see
+            [`TestImage.filter`][kolena.detection.TestImage.filter].
 
-            :param image: the test image to add to the test case, holding corresponding ground truths
+            :param image: The test image to add to the test case, holding corresponding ground truths.
             """
             if image == self._images.get(image.locator, None):
                 log.info(f"no op: {image.locator} already in test case")
@@ -263,8 +268,8 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
             """
             Remove the image from the test case.
 
-            :param image: the test image to remove
-            :raises KeyError: if the image is not in the test case
+            :param image: The image to remove.
+            :raises KeyError: The image is not in the test case.
             """
             if image.locator not in self._images.keys():
                 raise KeyError(f"unrecognized image: '{image.locator}' not in test case")
@@ -285,16 +290,16 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         """
         Edit this test case in a context:
 
-        .. code-block:: python
+        ```python
+        with test_case.edit() as editor:
+            # perform as many editing actions as desired
+            editor.add(...)
+            editor.remove(...)
+        ```
 
-            with test_case.edit() as editor:
-                # perform as many editing actions as desired
-                editor.add(...)
-                editor.remove(...)
+        Changes are committed to Kolena when the context is exited.
 
-        Changes are committed to the Kolena platform when the context is exited.
-
-        :param reset: clear any and all test samples currently in the test case.
+        :param reset: Clear any and all test samples currently in the test case.
         """
         editor = self.Editor(self.description, reset)
         editor._TestImageClass = self._TestImageClass

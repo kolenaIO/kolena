@@ -37,20 +37,40 @@ def define_workflow(
     """
     Define a new workflow, specifying its test sample, ground truth, and inference types.
 
-    Provided as a convenience method to create the :class:`TestCase`, :class:`TestSuite`, and :class:`Model` objects
-    for a new workflow. These objects can also be defined manually by subclassing them and binding the ``workflow``
+    ```python
+    from kolena.workflow import define_workflow
+
+    from my_code import MyTestSample, MyGroundTruth, MyInference
+
+    _, TestCase, TestSuite, Model = define_workflow(
+        "My Workflow",
+        MyTestSample,   # extends e.g. kolena.workflow.Image (or uses directly)
+        MyGroundTruth,  # extends kolena.workflow.GroundTruth
+        MyInference,    # extends kolena.workflow.Inference
+    )
+    ```
+
+    `define_workflow` is provided as a convenience method to create the [`TestCase`][kolena.workflow.TestCase],
+    [`TestSuite`][kolena.workflow.TestSuite], and [`Model`][kolena.workflow.Model] objects
+    for a new workflow. These objects can also be defined manually by subclassing them and binding the `workflow`
     class variable:
 
-    .. code-block:: python
+    ```python
+    from kolena.workflow import TestCase
 
-        from kolena.workflow import TestCase
-        from my_code import my_workflow
+    from my_code import my_workflow
 
-        class MyTestCase(TestCase):
-            workflow = my_workflow
+    class MyTestCase(TestCase):
+        workflow = my_workflow
+    ```
 
-    :return: the :class:`Workflow` object for this workflow along with the :class:`TestCase`, :class:`TestSuite`,
-        and :class:`Model` objects to use when creating and running tests for this workflow.
+    :param name: The name of the workflow.
+    :param test_sample_type: The type of the [`TestSample`][kolena.workflow.TestSample] for this workflow.
+    :param ground_truth_type: The type of the [`GroundTruth`][kolena.workflow.GroundTruth] for this workflow.
+    :param inference_type: The type of the [`Inference`][kolena.workflow.Inference] for this workflow.
+    :return: The `Workflow` object for this workflow along with the [`TestCase`][kolena.workflow.TestCase],
+        [`TestSuite`][kolena.workflow.TestSuite], and [`Model`][kolena.workflow.Model] objects to use when creating and
+        running tests for this workflow.
     """
     workflow = Workflow(
         name=name,
