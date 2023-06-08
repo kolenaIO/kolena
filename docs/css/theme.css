@@ -1,0 +1,11 @@
+/* TODO: set all theme colors (https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/stylesheets/main/_colors.scss) */
+[data-md-color-scheme="kolena-light"] {
+  --md-primary-fg-color: #6434c1;
+  --md-default-bg-color: #ffffff;
+}
+
+/* TODO: set all theme colors (https://github.com/squidfunk/mkdocs-material/blob/master/src/assets/stylesheets/main/_colors.scss) */
+[data-md-color-scheme="kolena-dark"] {
+  --md-primary-fg-color: #452485;
+  --md-default-bg-color: #1e1f22;
+}

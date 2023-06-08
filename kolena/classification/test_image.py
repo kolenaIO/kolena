@@ -30,31 +30,33 @@ from kolena.detection.ground_truth import GroundTruth
 
 
 class TestImage(BaseTestImage):
-    """
-    An image with associated ground truth labels for testing.
-    """
+    """An image with associated ground truth labels for testing."""
 
-    #: Pointer to the bucket location of this image, e.g. ``gs://my-bucket/my-dataset/example.png``.
     locator: str
+    """Pointer to the bucket location of this image, e.g. `gs://my-bucket/my-dataset/example.png`."""
 
-    #: The source dataset this image belongs to.
     dataset: str
+    """The source dataset this image belongs to."""
 
-    #: Zero or more ground truth labels for this image. For binary classifiers, an arbitrary string such as ``positive``
-    #: may be used. Not surfaced during testing.
     labels: List[str]
+    """
+    Zero or more ground truth labels for this image. For binary classifiers, an arbitrary string such as `positive`
+    may be used. Not surfaced during testing.
+    """
 
-    #: Arbitrary metadata associated with this image. This metadata is surfaced during testing and may be used as model
-    #: inputs as necessary.
-    #:
-    #: Certain metadata values can be visualized in the web platform when viewing results:
-    #:
-    #: * :class:`kolena.classification.metadata.Annotation` objects are overlaid on the main image
-    #: * :class:`kolena.classification.metadata.Asset` objects containing locators pointing to images, e.g.
-    #:   ``gs://my-bucket/my-dataset/example-1channel.png``, are displayed
-    #:
-    #: See :mod:`kolena.classification.metadata` documentation for more details.
     metadata: Dict[str, MetadataElement]
+    """
+    Arbitrary metadata associated with this image. This metadata is surfaced during testing and may be used as model
+    inputs as necessary.
+
+    Certain metadata values can be visualized in the web platform when viewing results:
+
+    - [`Annotation`][kolena.classification.metadata.Annotation] objects are overlaid on the main image
+    - [`Asset`][kolena.classification.metadata.Asset] objects containing locators pointing to images, e.g.
+        ``gs://my-bucket/my-dataset/example-1channel.png``, are displayed
+
+    See the [metadata documentation][kolena.classification.metadata.Annotation] for more details.
+    """
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(
@@ -72,9 +74,9 @@ class TestImage(BaseTestImage):
         Return a copy of this test image with ground truth labels filtered to only those that match the provided
         predicate.
 
-        :param predicate: function accepting a string label and returning a boolean indicating whether or not to include
-            the ground truth label
-        :return: a new test image with labels filtered by the predicate
+        :param predicate: Function accepting a string label and returning a boolean indicating whether or not to include
+            the ground truth label.
+        :return: A new test image with labels filtered by the predicate.
         """
         return TestImage(**{**self._fields(), "labels": [label for label in self.labels if predicate(label)]})
 

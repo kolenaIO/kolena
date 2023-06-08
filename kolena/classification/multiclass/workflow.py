@@ -42,16 +42,12 @@ class GroundTruth(BaseGroundTruth):
     classification: ClassificationLabel
 
 
+# DEPRECATED: preserved for compatibility only. Please use ScoredClassificationLabel instead
 @dataclass(frozen=True)
 class InferenceLabel(ClassificationLabel):
-    """
-    :class:`InferenceLabel` is deprecated and preserved for compatibility only. Please use
-    :class:`ScoredClassificationLabel` instead.
-    """
-
     confidence: float
 
-    @deprecated(details="use :class:`kolena.workflow.annotation.ScoredClassificationLabel`", deprecated_in="0.70.0")
+    @deprecated(details="use `kolena.workflow.annotation.ScoredClassificationLabel`", deprecated_in="0.70.0")
     def __post_init__(self) -> None:
         ...
 

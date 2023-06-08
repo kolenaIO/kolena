@@ -31,15 +31,20 @@ from kolena.detection.inference import SegmentationMask
 
 class Model(BaseModel):
     """
-    The descriptor for your model within the Kolena platform.
+    The descriptor for an object detection model within Kolena.
+
+    For additional functionality, see the associated
+    [base class documentation][kolena.detection._internal.model.BaseModel].
     """
 
-    #: Unique name of the model within the platform. If the provided model name has already been registered, that model
-    #: and its metadata are loaded upon instantiation.
     name: str
+    """
+    Unique name of the model within the platform. If the provided model name has already been registered, that model
+    and its metadata are loaded upon instantiation.
+    """
 
-    #: Unstructured metadata associated with the model.
     metadata: Dict[str, Any]
+    """Unstructured metadata associated with the model."""
 
     _TestImageClass = TestImage
     _TestCaseClass = TestCase
@@ -61,12 +66,16 @@ class Model(BaseModel):
 
 class InferenceModel(Model):
     """
-    Extension of :class:`kolena.detection.Model` with custom ``infer`` method to perform inference.
+    Extension of [`Model`][kolena.detection.Model] with an `infer` method to perform inference.
+
+    See documentation parent [`Model`][kolena.detection.Model] for details.
     """
 
-    #: Function transforming a :class:`kolena.detection.TestImage` into a list of zero or more
-    #: :class:`kolena.detection.Inference` objects.
     infer: Callable[[TestImage], Optional[List[Inference]]]
+    """
+    Function transforming a [`TestImage`][kolena.detection.TestImage] into a list of zero or more
+    [`Inference`][kolena.detection.Inference] objects.
+    """
 
     def __init__(
         self,

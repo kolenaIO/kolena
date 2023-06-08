@@ -15,6 +15,8 @@
 # noreorder
 from kolena._api.v1.detection import CustomMetrics
 from .test_config import TestConfig
+from .test_config import FixedGlobalThreshold
+from .test_config import AccuracyOptimal
 from .test_image import TestImage
 from .test_case import TestCase
 from .test_suite import TestSuite
@@ -26,6 +28,8 @@ from .test_run import test
 
 __all__ = [
     "TestConfig",
+    "FixedGlobalThreshold",
+    "AccuracyOptimal",
     "TestImage",
     "TestCase",
     "TestSuite",

@@ -26,13 +26,6 @@ class InferenceType(str, Enum):
 
 
 class Inference(Serializable, Frozen, metaclass=ABCMeta):
-    """
-    Base class for an inference associated with an image.
-
-    See concrete implementations :class:`kolena.detection.inference.ClassificationLabel`,
-    :class:`kolena.detection.inference.BoundingBox`, :class:`kolena.detection.inference.SegmentationMask`, for details.
-    """
-
     @abstractmethod
     def __init__(self) -> None:
         ...

@@ -11,6 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Assets are additional files linked to the [`TestSample`][kolena.workflow.TestSample],
+[`GroundTruth`][kolena.workflow.GroundTruth], or [`Inference`][kolena.workflow.Inference] objects for your workflow.
+Assets can be visualized in the Kolena Studio when exploring your test cases or model results.
+
+The following asset types are available:
+
+- [`ImageAsset`][kolena.workflow.asset.ImageAsset]
+- [`PlainTextAsset`][kolena.workflow.asset.PlainTextAsset]
+- [`BinaryAsset`][kolena.workflow.asset.BinaryAsset]
+- [`PointCloudAsset`][kolena.workflow.asset.PointCloudAsset]
+- [`VideoAsset`][kolena.workflow.asset.VideoAsset]
+
+"""
 from abc import ABCMeta
 from typing import Optional
 
@@ -35,7 +49,7 @@ class _AssetType(DataType):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Asset(TypedDataObject[_AssetType], metaclass=ABCMeta):
-    """Assets are hyperlinked objects that can be visualized in the web platform when viewing test samples."""
+    """Base class for all asset types."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -43,6 +57,7 @@ class ImageAsset(Asset):
     """An image in a cloud bucket."""
 
     locator: str
+    """The location of this image in a cloud bucket, e.g. `s3://my-bucket/path/to/my-image-asset.png`."""
 
     @staticmethod
     def _data_type() -> _AssetType:
@@ -54,6 +69,7 @@ class PlainTextAsset(Asset):
     """A plain text file in a cloud bucket."""
 
     locator: str
+    """The location of this text file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-text-asset.txt`."""
 
     @staticmethod
     def _data_type() -> _AssetType:
@@ -65,6 +81,7 @@ class BinaryAsset(Asset):
     """A binary file in a cloud bucket."""
 
     locator: str
+    """The location of this text file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-binary-asset.bin`."""
 
     @staticmethod
     def _data_type() -> _AssetType:
@@ -79,6 +96,7 @@ class PointCloudAsset(Asset):
     """
 
     locator: str
+    """The location of this point cloud in a cloud bucket, e.g. `s3://my-bucket/path/to/my-point-cloud.pcd`."""
 
     @staticmethod
     def _data_type() -> _AssetType:
@@ -91,8 +109,8 @@ class PointCloudAsset(Asset):
 class BaseVideoAsset(Asset):
     """A video clip located in a cloud bucket or served at a URL."""
 
-    #: URL (e.g. S3, HTTPS) of the video file
     locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
 
     @classmethod
     def _data_type(cls) -> _AssetType:
@@ -103,14 +121,17 @@ class BaseVideoAsset(Asset):
 class VideoAsset(BaseVideoAsset):
     """A video clip located in a cloud bucket or served at a URL."""
 
-    #: Optionally provide asset locator for custom video thumbnail
+    locator: str
+    """URL (e.g. S3, HTTPS) of the video file."""
+
     thumbnail: Optional[ImageAsset] = None
+    """Optionally provide asset locator for custom video thumbnail image."""
 
-    #: Optionally specify start time of video snippet, in seconds
     start: Optional[float] = None
+    """Optionally specify start time of video snippet, in seconds."""
 
-    #: Optionally specify end time of video snippet, in seconds
     end: Optional[float] = None
+    """Optionally specify end time of video snippet, in seconds."""
 
     def __post_init__(self) -> None:
         if self.start is not None and self.end is not None and self.start > self.end:

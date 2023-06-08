@@ -40,8 +40,17 @@ class TestImage(BaseTestImage):
     Test image comprising a single image locator.
     """
 
-    #: List of :class:`kolena.detection.GroundTruth` labels associated with this image
+    locator: str
+    """Bucket locator for the provided test sample, e.g. `gs://my-bucket/path/to/image.png`."""
+
+    dataset: str
+    """Dataset this test image belongs to. Empty when unspecified."""
+
+    metadata: Dict[str, MetadataElement]
+    """Metadata associated with this test image. Surfaced during test runs."""
+
     ground_truths: List[GroundTruth]
+    """List of [`GroundTruth`][kolena.detection.ground_truth.GroundTruth] annotations associated with this image."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(
@@ -58,9 +67,9 @@ class TestImage(BaseTestImage):
         """
         Return a copy of this test image with ground truths filtered to only those that match the provided predicate.
 
-        :param predicate: function accepting a :class:`kolena.detection.GroundTruth` and returning a boolean indicating
-            whether or not to include the ground truth
-        :return: a new test image with ground truths filtered by the predicate
+        :param predicate: Function accepting a [`GroundTruth`][kolena.detection.ground_truth.GroundTruth] and returning
+            a boolean indicating whether or not to include the ground truth.
+        :return: A new test image with ground truths filtered by the predicate.
         """
         return TestImage(**{**self._fields(), "ground_truths": [gt for gt in self.ground_truths if predicate(gt)]})
 
@@ -93,27 +102,33 @@ class TestImage(BaseTestImage):
         return sorted(ground_truths, key=lambda gt: json.dumps(gt._to_dict(), sort_keys=True))
 
 
-@deprecated(details="use :class:`kolena.detection.TestCase.load_images`", deprecated_in="0.26.0")
+@deprecated(details="use `TestCase.load_images`", deprecated_in="0.26.0")
 @validate_arguments(config=ValidatorConfig)
 def load_images(dataset: Optional[str] = None) -> List[TestImage]:
     """
-    Load a list of :class:`kolena.detection.TestImage` samples registered in the Kolena platform.
+    !!! warning "Deprecated: since `0.26.0`"
+        Please use [`TestCase.load_images`][kolena.detection._internal.test_case.BaseTestCase.load_images] instead.
 
-    :param dataset: optionally specify the single dataset to be retrieved. By default, images from all
-        datasets are returned
+    Load a list of [`TestImage`][kolena.detection.TestImage] samples registered in Kolena.
+
+    :param dataset: Optionally specify the single dataset to be retrieved. By default, images from all
+        datasets are returned.
     """
     return list(iter_images(dataset))
 
 
-@deprecated(details="use :class:`kolena.detection.TestCase.iter_images`", deprecated_in="0.26.0")
+@deprecated(details="use `TestCase.iter_images`", deprecated_in="0.26.0")
 @validate_arguments(config=ValidatorConfig)
 def iter_images(dataset: Optional[str] = None) -> Iterator[TestImage]:
     """
-    Return iterator over :class:`kolena.detection.TestImage` samples registered in the Kolena platform. Images are
-    lazily loaded in chunks to facilitate working with large datasets that are cumbersome to hold in memory.
+    !!! warning "Deprecated: since `0.26.0`"
+        Please use [`TestCase.iter_images`][kolena.detection._internal.test_case.BaseTestCase.iter_images] instead.
 
-    :param dataset: optionally specify the single dataset to be retrieved. By default, images from all
-        datasets are returned
+    Return iterator over [`TestImage`][kolena.detection.TestImage] samples registered in Kolena. Images are lazily
+    loaded in chunks to facilitate working with large datasets that are cumbersome to hold in memory.
+
+    :param dataset: Optionally specify the single dataset to be retrieved. By default, images from all
+        datasets are returned.
     """
     init_request = API.InitLoadImagesRequest(dataset=dataset, batch_size=BatchSize.LOAD_RECORDS.value)
     for df in _BatchedLoader.iter_data(

@@ -49,22 +49,32 @@ from kolena.workflow.workflow import Workflow
 
 
 class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
-    """A test case holds a set of images to compute aggregate performance metrics against."""
+    """
+    A test case holds a list of [test samples][kolena.workflow.TestSample] paired with
+    [ground truths][kolena.workflow.GroundTruth] representing a testing dataset or a slice of a testing dataset.
 
-    #: The :class:`kolena.workflow.Workflow` of this test case.
+    Rather than importing this class directly, use the `TestCase` type definition returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
+
     workflow: Workflow
+    """
+    The workflow of this test case. Automatically populated when constructing via test case type returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
+
+    name: str
+    """The unique name of this test case. Cannot be changed after creation."""
+
+    version: int
+    """The version of this test case. A test case's version is automatically incremented whenever it is edited via
+    [`TestCase.edit`][kolena.workflow.TestCase.edit]."""
+
+    description: str
+    """Free-form, human-readable description of this test case. Can be edited at any time via
+    [`TestCase.edit`][kolena.workflow.TestCase.edit]."""
 
     _id: int
-
-    #: The unique name of this test case. Cannot be changed after creation.
-    name: str
-
-    #: The version of this test case. A test case's version is automatically incremented whenever it is edited via
-    #: :meth:`TestCase.edit`.
-    version: int
-
-    #: Free-form, human-readable description of this test case. Can be edited at any time via :meth:`TestCase.edit`.
-    description: str
 
     @telemetry
     def __init_subclass__(cls) -> None:
@@ -151,10 +161,10 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Create a new test case with the provided name.
 
-        :param name: the name of the new test case to create.
-        :param description: optional free-form description of the test case to create.
-        :param test_samples: optionally specify a set of test samples and ground truths to populate the test case.
-        :return: the newly created test case.
+        :param name: The name of the new test case to create.
+        :param description: Optional free-form description of the test case to create.
+        :param test_samples: Optionally specify a set of test samples and ground truths to populate the test case.
+        :return: The newly created test case.
         """
         cls._validate_test_samples(test_samples)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
@@ -172,10 +182,10 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Load an existing test case with the provided name.
 
-        :param name: the name of the test case to load.
-        :param version: optionally specify a particular version of the test case to load. Defaults to the latest version
+        :param name: The name of the test case to load.
+        :param version: Optionally specify a particular version of the test case to load. Defaults to the latest version
             when unset.
-        :return: the loaded test case.
+        :return: The loaded test case.
         """
         request = CoreAPI.LoadByNameRequest(name=name, version=version)
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
@@ -185,11 +195,21 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         return cls._create_from_data(data)
 
     def load_test_samples(self) -> List[Tuple[TestSample, GroundTruth]]:
-        """Load all test samples and ground truths in this test case."""
+        """
+        Load all [`TestSample`s][kolena.workflow.TestSample] and [`GroundTruth`s][kolena.workflow.GroundTruth] contained
+        in this test case.
+
+        :return: A list of each test sample, paired with its ground truth, in this test case.
+        """
         return list(self.iter_test_samples())
 
     def iter_test_samples(self) -> Iterator[Tuple[TestSample, GroundTruth]]:
-        """Iterate through all test samples and ground truths in this test case."""
+        """
+        Iterate through all [`TestSample`s][kolena.workflow.TestSample] and
+        [`GroundTruth`s][kolena.workflow.GroundTruth] contained in this test case.
+
+        :return: An iterator yielding each test sample, paired with its ground truth, in this test case.
+        """
         log.info(f"loading test samples in test case '{self.name}' (v{self.version})")
         test_sample_type = self.workflow.test_sample_type
         ground_truth_type = self.workflow.ground_truth_type
@@ -237,8 +257,8 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             Add a test sample to the test case. When the test sample already exists in the test case, its ground truth
             is overwritten with the ground truth provided here.
 
-            :param test_sample: the test sample to add.
-            :param ground_truth: the ground truth for the test sample.
+            :param test_sample: The test sample to add.
+            :param ground_truth: The ground truth for the test sample.
             """
             self._edits.append(self._Edit(test_sample, ground_truth=ground_truth))
 
@@ -247,7 +267,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             """
             Remove a test sample from the test case. Does nothing if the test sample is not in the test case.
 
-            :param test_sample: the test sample to remove.
+            :param test_sample: The test sample to remove.
             """
             self._edits.append(self._Edit(test_sample, remove=True))
 
@@ -274,16 +294,16 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Edit this test case in a context:
 
-        .. code-block:: python
-
-            with test_case.edit() as editor:
-                # perform as many editing actions as desired
-                editor.add(...)
-                editor.remove(...)
+        ```python
+        with test_case.edit() as editor:
+            # perform as many editing actions as desired
+            editor.add(...)
+            editor.remove(...)
+        ```
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: clear any and all test samples currently in the test case.
+        :param reset: Clear any and all test samples currently in the test case.
         """
         editor = self.Editor(self.description, reset)
 
