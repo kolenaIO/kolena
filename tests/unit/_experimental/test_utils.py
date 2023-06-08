@@ -355,11 +355,6 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                                 label="dog",
                                 score=0.9,
                             ),
-                            ScoredLabeledPolygon(
-                                points=[(10, 10), (10, 20), (20, 20), (20, 10)],
-                                label="cat",
-                                score=0.9,
-                            ),
                         ),
                     ],
                     unmatched_inf=[
@@ -367,6 +362,11 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                             points=[(1, 1), (1, 2), (2, 2), (2, 1)],
                             label="dog",
                             score=0.99,
+                        ),
+                        ScoredLabeledPolygon(
+                            points=[(10, 10), (10, 20), (20, 20), (20, 10)],
+                            label="cat",
+                            score=0.9,
                         ),
                     ],
                 ),
