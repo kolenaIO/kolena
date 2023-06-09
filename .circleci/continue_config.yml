@@ -75,7 +75,7 @@ jobs:
         default: "3.9"
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -272,7 +272,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: [""]
+              extras: ["none"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
