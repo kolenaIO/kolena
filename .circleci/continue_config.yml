@@ -34,7 +34,7 @@ jobs:
         default: "3.9"
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -46,7 +46,7 @@ jobs:
           key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
-            equal: [ "", << parameters.extras >> ]
+            equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -75,7 +75,7 @@ jobs:
         default: "3.9"
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -108,7 +108,7 @@ jobs:
         default: "3.9"
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -130,7 +130,7 @@ jobs:
             - run: poetry run pre-commit run -a
       - when:
           condition:
-            equal: [ "", << parameters.extras >> ]
+            equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Run unit tests
@@ -173,7 +173,7 @@ jobs:
         default: 1
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -258,13 +258,13 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["none", "metrics"]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["none", "metrics"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - docs:
@@ -272,7 +272,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: [""]
+              extras: ["none"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -281,7 +281,7 @@ workflows:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
-              extras: [""]
+              extras: ["none"]
           enabled: true
           parallelism: 4
           requires:
@@ -291,7 +291,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: [""]
+              extras: ["none"]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1
