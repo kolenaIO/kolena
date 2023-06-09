@@ -1122,11 +1122,11 @@ def test__curve__plots(
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
 ) -> None:
-    from kolena._experimental.object_detection.utils import compute_pr_f1_plots
+    from kolena._experimental.object_detection.utils import compute_f1_plot
+    from kolena._experimental.object_detection.utils import compute_pr_plot
 
-    f1: CurvePlot
-    pr: CurvePlot
-    pr, f1 = compute_pr_f1_plots(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     assert_curveplot_equal(f1, f1_curve)
     assert_curveplot_equal(pr, pr_curve)
 
