@@ -1,5 +1,7 @@
 ---
 icon: octicons/package-24
+hide:
+  - toc
 ---
 
 # :octicons-package-24: `kolena.workflow`

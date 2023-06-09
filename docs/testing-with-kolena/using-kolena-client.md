@@ -1,7 +1,7 @@
-# :fontawesome-brands-python: Using `kolena`
+# :fontawesome-brands-python: Installing `kolena`
 
-Testing on Kolena is conducted using the `kolena` Python package. You use the client to create and run tests from
-your infrastructure that can be explored in our web platform.
+Testing on Kolena is conducted using the [`kolena`](https://github.com/kolenaIO/kolena) Python package. You use the
+client to create and run tests from your infrastructure that can be explored in our web platform.
 
 `kolena` is released under the open-source [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 license. The package is [hosted on PyPI](https://pypi.org/project/kolena/) and can be installed using your
@@ -46,12 +46,6 @@ By default, sessions have static scope and persist until the interpreter is exit
 
 Additional logging can be configured by specifying `initialize(..., verbose=True)`. All logging events are emitted as
 Python standard library `logging` events from the `"kolena"` logger as well as to stdout/stderr directly.
-
-<details>
-<summary>blarg</summary>
-
-::: kolena.initialize
-</details>
 
 ## Supported Python Versions
 

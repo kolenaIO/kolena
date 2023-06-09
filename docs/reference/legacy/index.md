@@ -1,5 +1,7 @@
 ---
 icon: octicons/archive-24
+hide:
+  - toc
 ---
 
 # :octicons-archive-24: Legacy Modules
