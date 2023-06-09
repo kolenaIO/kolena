@@ -6,46 +6,39 @@ html {
   text-transform: none; /* undo uppercasing of h5 applied by theme */
 }
 
-/*
- * Branded header styles
- */
-
-.md-header {
-  background-image: url(/assets/images/background.svg);
-  background-size: cover;
-}
-
+/* Branded header styles */
+.md-header,
 .md-tabs {
   background-image: url(/assets/images/background.svg);
   background-size: cover;
+}
+.md-tabs {
   background-position-y: -48px; /* exact height of .md-header on medium-width viewports */
 }
-
 @media screen and (min-width: 1600px) {
   .md-tabs {
     background-position-y: -52.8px; /* exact height of .md-header on wide viewports */
   }
 }
+@media screen and (min-width: 2000px) {
+  .md-tabs {
+    background-position-y: -57.6px; /* exact height of .md-header on ultrawide viewports */
+  }
+}
 
-/*
- * Apply Kolena branding colors on top of 'default' scheme
- */
-
+/* Apply Kolena branding colors on top of 'default' scheme */
 [data-md-color-scheme="default"] {
   --md-primary-fg-color: #6434c1;
   --md-primary-fg-color--dark: #452485;
   --md-primary-fg-color--light: #835dcd;
 }
 
-/*
- * Apply Kolena branding on top of 'slate' (dark) scheme
- */
-
+/* Apply Kolena branding on top of 'slate' (dark) scheme */
 @media screen {
   [data-md-color-scheme="slate"] {
     --md-primary-fg-color: #452485;
     --md-primary-fg-color--dark: #332362;
-    --md-primary-fg-color--light: #835dcd;
+    --md-primary-fg-color--light: #6434c1;
 
     --md-hue: 240;
 
