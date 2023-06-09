@@ -265,6 +265,14 @@ workflows:
               extras: ["", "metrics"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - docs:
+          name: docs-<< matrix.python-version >>
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              extras: [""]
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
           name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
