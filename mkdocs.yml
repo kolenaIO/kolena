@@ -51,13 +51,14 @@ theme:
     text: Inter
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: kolena-light
+      scheme: default
       accent: cyan
       toggle:
         icon: material/lightbulb
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
-      scheme: kolena-dark
+      scheme: slate
+      accent: cyan
       toggle:
         icon: material/lightbulb-outline
         name: "Switch to light mode"
