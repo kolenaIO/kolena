@@ -51,14 +51,16 @@ theme:
     text: Inter
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: default  # TODO: custom kolena-light theme
+      scheme: default
+      accent: cyan
       toggle:
-        icon: material/toggle-switch
+        icon: material/weather-sunny
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
-      scheme: slate  # TODO: custom kolena-dark theme
+      scheme: slate
+      accent: cyan
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: material/weather-night
         name: "Switch to light mode"
   # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
   features:
