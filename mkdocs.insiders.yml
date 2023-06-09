@@ -7,8 +7,23 @@ watch:
 
 theme:
   features:
-    navigation.path:  # breadcrumbs
-    content.tooltips:
+    # copied from mkdocs.yml -- ensure that these are kept in sync
+    - announce.dismiss
+    - content.action.edit
+    - content.code.copy
+    - content.tabs.link
+    - navigation.indexes
+    - navigation.instant
+    - navigation.footer
+    - navigation.sections
+    - navigation.tabs
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+    # insider-only features
+    - navigation.path # breadcrumbs
+    - content.tooltips
 
 plugins:
   typeset:

@@ -60,19 +60,20 @@ theme:
       toggle:
         icon: material/toggle-switch-off-outline
         name: "Switch to light mode"
+  # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
   features:
-    announce.dismiss:
-    content.action.edit:
-    content.code.copy:
-    content.tabs.link:
-    navigation.indexes:
-    navigation.instant:
-    navigation.footer:
-    navigation.sections:
-    navigation.tabs:
-    search.highlight:
-    search.suggest:
-    toc.follow:
+    - announce.dismiss
+    - content.action.edit
+    - content.code.copy
+    - content.tabs.link
+    - navigation.indexes
+    - navigation.instant
+    - navigation.footer
+    - navigation.sections
+    - navigation.tabs
+    - search.highlight
+    - search.suggest
+    - toc.follow
 
 markdown_extensions:
   - admonition  # callouts
