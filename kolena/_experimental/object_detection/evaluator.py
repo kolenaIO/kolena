@@ -11,12 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
 from collections import defaultdict
 from dataclasses import make_dataclass
 from typing import Dict
 from typing import List
-from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -140,7 +138,7 @@ def compute_test_sample_metrics(
     all_bbox_matches = [
         match_inferences_multiclass(
             gt.bboxes,
-            inf.bboxes,
+            [inference for inference in inf.bboxes if inference.score >= configuration.min_confidence_score],
             ignored_ground_truths=gt.ignored_bboxes,
             iou_threshold=configuration.iou_threshold,
         )
@@ -228,20 +226,11 @@ def compute_aggregate_label_metrics(
 
 
 def compute_test_case_metrics_and_plots(
+    tc_matchings: List[MulticlassInferenceMatches],
     tc_metrics: List[TestSampleMetrics],
-    labels: List[str],
+    configuration: ThresholdConfiguration,
 ) -> Tuple[List[TestCaseMetrics], List[Plot]]:
-    tc_matchings = [
-        MulticlassInferenceMatches(
-            matched=[(gt, inf) for gt, inf in zip(tsm.match_matched_gt, tsm.match_matched_inf) if gt.label in labels],
-            unmatched_gt=[
-                (gt, inf) for gt, inf in zip(tsm.match_unmatched_gt, tsm.match_confused_inf) if gt.label in labels
-            ],
-            unmatched_inf=[inf for inf in tsm.match_unmatched_inf if inf.label in labels],
-        )
-        for tsm in tc_metrics
-    ]
-    per_class_metrics: List[ClassMetricsPerTestCase] = []
+    thresholds = get_confidence_thresholds(configuration)
     plots: List[Plot] = compute_pr_f1_plots(tc_matchings, "baseline")
     baseline_pr_plot: Curve = next((curve for curve in plots[1].curves if curve.label == "baseline"), None)
     confusion_matrix = compute_confusion_matrix_plot(tc_matchings)
@@ -249,8 +238,10 @@ def compute_test_case_metrics_and_plots(
         plots.append(confusion_matrix)
 
     # compute nested metrics per class
+    labels: List[str] = confusion_matrix.labels
+    per_class_metrics: List[ClassMetricsPerTestCase] = []
     for label in labels:
-        metrics_per_class = compute_aggregate_label_metrics(tc_matchings, label)
+        metrics_per_class = compute_aggregate_label_metrics(tc_matchings, thresholds, label)
         per_class_metrics.append(metrics_per_class)
 
     tp_count = sum(im.count_TP for im in tc_metrics)
@@ -286,6 +277,7 @@ def compute_aggregate_metrics(
     inferences: List[Inference],
     test_cases: TestCases,
     test_sample_metrics: List[TestSampleMetrics],
+    configuration: ThresholdConfiguration,
 ) -> Tuple[List[Tuple[TestCase, TestCaseMetrics]], List[Tuple[TestCase, List[Plot]]]]:
     metrics_test_case: List[Tuple[TestCase, TestCaseMetrics]] = []
     plots_test_case: List[Tuple[TestCase, List[Plot]]] = []
@@ -296,18 +288,20 @@ def compute_aggregate_metrics(
         inferences,
         test_sample_metrics,
     ):
-        labels_set: Set[str] = set()
-        for gt in tc_gts:
-            for box in gt.bboxes:
-                labels_set.add(box.label)
-        for inf in tc_infs:
-            for box in inf.bboxes:
-                labels_set.add(box.label)
-        labels = sorted(labels_set)
+        all_bbox_matches = [
+            match_inferences_multiclass(
+                gt.bboxes,
+                [inference for inference in inf.bboxes if inference.score >= configuration.min_confidence_score],
+                ignored_ground_truths=gt.ignored_bboxes,
+                iou_threshold=configuration.iou_threshold,
+            )
+            for gt, inf in zip(tc_gts, tc_infs)
+        ]
         locators_by_test_case[tc.name] = [ts.locator for ts in tc_samples]
         test_case_metrics, test_case_plots = compute_test_case_metrics_and_plots(
+            all_bbox_matches,
             tc_metrics,
-            labels,
+            configuration,
         )
         metrics_test_case.append((tc, test_case_metrics))
         plots_test_case.append((tc, test_case_plots))
@@ -328,7 +322,7 @@ def ObjectDetectionEvaluator(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
-    configuration: ThresholdConfiguration = dataclasses.field(default_factory=ThresholdConfiguration),
+    configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
     results = list(zip(test_samples, ground_truths, inferences))
     metrics_test_sample = compute_test_sample_metrics(results, configuration)
