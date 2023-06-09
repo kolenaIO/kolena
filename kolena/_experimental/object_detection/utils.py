@@ -19,6 +19,11 @@ from typing import Set
 from typing import Tuple
 from typing import Union
 
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 import numpy as np
 
 from kolena._extras.metrics.sklearn import sklearn_metrics
@@ -48,11 +53,12 @@ def _compute_sklearn_arrays(
     return np.array(y_true), np.array(y_score)
 
 
-def _compute_threshold_curves(
+def _compute_threshold_curve(
     y_true: np.ndarray,
     y_score: np.ndarray,
-    label: str,
-) -> List[Curve]:
+    curve: Literal["pr", "f1"],
+    curve_label: Optional[str] = None,
+) -> Optional[Curve]:
     if len(y_score) >= 501:
         thresholds = list(np.linspace(min(abs(y_score)), max(y_score), 501))
     else:
@@ -74,13 +80,20 @@ def _compute_threshold_curves(
         recalls.append(recall)
         f1s.append(f1)
 
-    return [Curve(x=recalls, y=precisions, label=label), Curve(x=thresholds, y=f1s, label=label)]
+    # Omit curves with only one point
+    if len(f1s) < 2:
+        return None
+
+    if curve == "f1":
+        return Curve(x=thresholds, y=f1s, label=curve_label)
+    else:
+        return Curve(x=recalls, y=precisions, label=curve_label)
 
 
 def compute_pr_plot(
     all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
-    curve_label: str = "",
-) -> CurvePlot:
+    curve_label: Optional[str] = None,
+) -> Optional[CurvePlot]:
     """
     Creates a PR (precision and recall) plot.
 
@@ -89,20 +102,22 @@ def compute_pr_plot(
     :return: :class:`CurvePlot` for the PR curve.
     """
     y_true, y_score = _compute_sklearn_arrays(all_matches)
-    curves = _compute_threshold_curves(y_true, y_score, curve_label)
-    pr_curves = [curves[0]]
+    curve = _compute_threshold_curve(y_true, y_score, "pr", curve_label)
+
+    if curve is None:
+        return None
 
     return CurvePlot(
         title="Precision vs. Recall",
         x_label="Recall",
         y_label="Precision",
-        curves=pr_curves,
+        curves=[curve],
     )
 
 
 def compute_f1_plot(
     all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
-    curve_label: str = "",
+    curve_label: Optional[str] = None,
 ) -> CurvePlot:
     """
     Creates a F1-threshold (confidence threshold) plot.
@@ -112,14 +127,15 @@ def compute_f1_plot(
     :return: :class:`CurvePlot` for the F1-threshold curve.
     """
     y_true, y_score = _compute_sklearn_arrays(all_matches)
-    curves = _compute_threshold_curves(y_true, y_score, curve_label)
-    f1_curves = [curves[1]]
+    curve = _compute_threshold_curve(y_true, y_score, "f1", curve_label)
+    if curve is None:
+        return None
 
     return CurvePlot(
         title="F1-Score vs. Confidence Threshold",
         x_label="Confidence Threshold",
         y_label="F1-Score",
-        curves=f1_curves,
+        curves=[curve],
     )
 
 

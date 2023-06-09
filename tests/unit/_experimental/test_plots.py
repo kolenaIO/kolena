@@ -87,9 +87,9 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
             matched=[],
             unmatched_gt=[
                 (LabeledBoundingBox((1, 1), (2, 2), "b"), None),
-                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1)),
             ],
-            unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0)],
+            unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1)],
         ),
     ],
     "zeros, but a is confused with b": [
@@ -97,16 +97,16 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
             matched=[],
             unmatched_gt=[
                 (LabeledBoundingBox((1, 1), (2, 2), "a"), None),
-                (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)),
             ],
-            unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)],
+            unmatched_inf=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)],
         ),
     ],
     "no confusion, one TP per label": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "b", 0)),
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "b", 0.5)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.6)),
             ],
             unmatched_gt=[
                 (LabeledBoundingBox((1, 1), (2, 2), "b"), None),
@@ -119,66 +119,66 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
         MulticlassInferenceMatches(
             matched=[],
             unmatched_gt=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.7)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.8)),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
-                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.7),
+                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.8),
             ],
         ),
     ],
     "only confusion, one TP for a": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
             ],
             unmatched_gt=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.8)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.7)),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
-                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.8),
+                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.7),
             ],
         ),
     ],
     "only confusion, one TP for b": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.9)),
             ],
             unmatched_gt=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.8)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.7)),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
-                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.8),
+                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.7),
             ],
         ),
     ],
     "ones": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
-                (LabeledBoundingBox((7, 7), (8, 8), "b"), ScoredLabeledBoundingBox((7, 7), (8, 8), "b", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
+                (LabeledBoundingBox((7, 7), (8, 8), "b"), ScoredLabeledBoundingBox((7, 7), (8, 8), "b", 0.8)),
             ],
             unmatched_gt=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.7)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.6)),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
-                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.7),
+                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.6),
             ],
         ),
     ],
     "ones, with two matchings, TPs": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
-                (LabeledBoundingBox((7, 7), (8, 8), "b"), ScoredLabeledBoundingBox((7, 7), (8, 8), "b", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
+                (LabeledBoundingBox((7, 7), (8, 8), "b"), ScoredLabeledBoundingBox((7, 7), (8, 8), "b", 0.8)),
             ],
             unmatched_gt=[],
             unmatched_inf=[],
@@ -186,84 +186,84 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
         MulticlassInferenceMatches(
             matched=[],
             unmatched_gt=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.7)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.6)),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0),
-                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0),
+                ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.7),
+                ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.6),
             ],
         ),
     ],
     "ones, with two matchings, mixed": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0)),
+                (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
             ],
             unmatched_gt=[
-                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)),
+                (LabeledBoundingBox((5, 5), (6, 6), "a"), ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.8)),
             ],
-            unmatched_inf=[ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0)],
+            unmatched_inf=[ScoredLabeledBoundingBox((5, 5), (6, 6), "b", 0.8)],
         ),
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((7, 7), (8, 8), "b"), ScoredLabeledBoundingBox((7, 7), (8, 8), "b", 0)),
+                (LabeledBoundingBox((7, 7), (8, 8), "b"), ScoredLabeledBoundingBox((7, 7), (8, 8), "b", 0.6)),
             ],
             unmatched_gt=[
-                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "b"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.5)),
             ],
-            unmatched_inf=[ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)],
+            unmatched_inf=[ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.5)],
         ),
     ],
     "two single class matchings": [
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((3, 3), (4, 4), "a"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((6, 6), (7, 7), "a"), ScoredLabeledBoundingBox((6, 6), (7, 7), "a", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "a"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9)),
+                (LabeledBoundingBox((6, 6), (7, 7), "a"), ScoredLabeledBoundingBox((6, 6), (7, 7), "a", 0.8)),
             ],
             unmatched_gt=[
                 (LabeledBoundingBox((1, 1), (2, 2), "a"), None),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((8, 8), (9, 9), "a", 0),
+                ScoredLabeledBoundingBox((8, 8), (9, 9), "a", 0.8),
             ],
         ),
         MulticlassInferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (4, 4), "b"), ScoredLabeledBoundingBox((1, 1), (4, 4), "b", 0)),
-                (LabeledBoundingBox((2, 2), (7, 7), "b"), ScoredLabeledBoundingBox((2, 2), (7, 7), "b", 0)),
+                (LabeledBoundingBox((1, 1), (4, 4), "b"), ScoredLabeledBoundingBox((1, 1), (4, 4), "b", 0.9)),
+                (LabeledBoundingBox((2, 2), (7, 7), "b"), ScoredLabeledBoundingBox((2, 2), (7, 7), "b", 0.8)),
             ],
             unmatched_gt=[
                 (LabeledBoundingBox((1, 1), (2, 2), "b"), None),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((8, 8), (9, 9), "b", 0),
+                ScoredLabeledBoundingBox((8, 8), (9, 9), "b", 0.7),
             ],
         ),
     ],
     "two single class matchings as IMs": [
         InferenceMatches(
             matched=[
-                (LabeledBoundingBox((3, 3), (4, 4), "a"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0)),
-                (LabeledBoundingBox((6, 6), (7, 7), "a"), ScoredLabeledBoundingBox((6, 6), (7, 7), "a", 0)),
+                (LabeledBoundingBox((3, 3), (4, 4), "a"), ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9)),
+                (LabeledBoundingBox((6, 6), (7, 7), "a"), ScoredLabeledBoundingBox((6, 6), (7, 7), "a", 0.8)),
             ],
             unmatched_gt=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((8, 8), (9, 9), "a", 0),
+                ScoredLabeledBoundingBox((8, 8), (9, 9), "a", 0.7),
             ],
         ),
         InferenceMatches(
             matched=[
-                (LabeledBoundingBox((1, 1), (4, 4), "b"), ScoredLabeledBoundingBox((1, 1), (4, 4), "b", 0)),
-                (LabeledBoundingBox((2, 2), (7, 7), "b"), ScoredLabeledBoundingBox((2, 2), (7, 7), "b", 0)),
+                (LabeledBoundingBox((1, 1), (4, 4), "b"), ScoredLabeledBoundingBox((1, 1), (4, 4), "b", 0.7)),
+                (LabeledBoundingBox((2, 2), (7, 7), "b"), ScoredLabeledBoundingBox((2, 2), (7, 7), "b", 0.6)),
             ],
             unmatched_gt=[
                 LabeledBoundingBox((1, 1), (2, 2), "b"),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((8, 8), (9, 9), "b", 0),
+                ScoredLabeledBoundingBox((8, 8), (9, 9), "b", 0.5),
             ],
         ),
     ],
@@ -494,170 +494,39 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
 }
 
 
-def assert_curve_equal(c1: Curve, c2: Curve) -> None:
-    assert type(c1) == type(c2)
-    c1_keys = ["x", "y", "label"]
-    for k in c1_keys:
-        v1 = getattr(c1, k)
-        v2 = getattr(c2, k)
-        if k == "label":
-            assert v1 == v2
-        else:
-            assert all(val1 == pytest.approx(val2, TOLERANCE) for val1, val2 in zip(v1, v2))
-
-
-def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
-    assert c1.title == c2.title
-    assert c1.x_config == c2.x_config
-    assert c1.y_config == c2.y_config
-    assert c1.x_label == c2.x_label
-    assert c1.y_label == c2.y_label
-    assert len(c1.curves) == len(c2.curves)
-    for c1, c2 in zip(c1.curves, c2.curves):
-        assert_curve_equal(c1, c2)
-
-
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, f1_curve, pr_curve",
     [
         (
             "zeros with unmatched gt and unmatched inf",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros with unmatched gt and unmatched inf"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros with unmatched gt and unmatched inf"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
+            None,
+            None,
         ),
         (
             "zeros with two matchings",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros with two matchings"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros with two matchings"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
+            None,
+            None,
         ),
         (
             "zeros, but one match for label a",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.5], label="zeros, but one match for label a"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[
-                    Curve(x=[1 / 3], y=[1.0], label="zeros, but one match for label a"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
+            None,
+            None,
         ),
         (
             "zeros, but one match for label b",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.5], label="zeros, but one match for label b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[
-                    Curve(x=[1 / 3], y=[1.0], label="zeros, but one match for label b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
+            None,
+            None,
         ),
         (
             "zeros, but b is confused with a",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros, but b is confused with a"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros, but b is confused with a"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
+            None,
+            None,
         ),
         (
             "zeros, but a is confused with b",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros, but a is confused with b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="zeros, but a is confused with b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
+            None,
+            None,
         ),
         (
             "no confusion, one TP per label",
@@ -665,9 +534,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 title="F1-Score vs. Confidence Threshold",
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[2 / 3], label="no confusion, one TP per label"),
-                ],
+                curves=[Curve(x=[0.5, 0.6], y=[0.6666666666666666, 0.4], label="no confusion, one TP per label")],
                 x_config=None,
                 y_config=None,
             ),
@@ -675,9 +542,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[1 / 2], y=[1.0], label="no confusion, one TP per label"),
-                ],
+                curves=[Curve(x=[0.5, 0.25], y=[1.0, 1.0], label="no confusion, one TP per label")],
                 x_config=None,
                 y_config=None,
             ),
@@ -688,9 +553,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 title="F1-Score vs. Confidence Threshold",
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="only confusion"),
-                ],
+                curves=[Curve(x=[0.7, 0.8], y=[0.0, 0.0], label="only confusion")],
                 x_config=None,
                 y_config=None,
             ),
@@ -698,9 +561,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.0], y=[0.0], label="only confusion"),
-                ],
+                curves=[Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion")],
                 x_config=None,
                 y_config=None,
             ),
@@ -712,7 +573,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0], y=[1 / 3], label="only confusion, one TP for a"),
+                    Curve(x=[0.7, 0.8, 0.9], y=[0.3333333333333333, 0.4, 0.5], label="only confusion, one TP for a"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -722,7 +583,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[1 / 3], y=[1 / 3], label="only confusion, one TP for a"),
+                    Curve(
+                        x=[0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+                        y=[0.3333333333333333, 0.5, 1.0],
+                        label="only confusion, one TP for a",
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -735,7 +600,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0], y=[1 / 3], label="only confusion, one TP for b"),
+                    Curve(x=[0.7, 0.8, 0.9], y=[0.3333333333333333, 0.4, 0.5], label="only confusion, one TP for b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -745,7 +610,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[1 / 3], y=[1 / 3], label="only confusion, one TP for b"),
+                    Curve(
+                        x=[0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+                        y=[0.3333333333333333, 0.5, 1.0],
+                        label="only confusion, one TP for b",
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -758,7 +627,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0], y=[0.5], label="ones"),
+                    Curve(x=[0.6, 0.7, 0.8, 0.9], y=[0.5, 0.5714285714285715, 0.6666666666666666, 0.4], label="ones"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -767,9 +636,7 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.5], y=[0.5], label="ones"),
-                ],
+                curves=[Curve(x=[0.5, 0.5, 0.5, 0.25], y=[0.5, 0.6666666666666666, 1.0, 1.0], label="ones")],
                 x_config=None,
                 y_config=None,
             ),
@@ -781,7 +648,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0], y=[0.5], label="ones, with two matchings, TPs"),
+                    Curve(
+                        x=[0.6, 0.7, 0.8, 0.9],
+                        y=[0.5, 0.5714285714285715, 0.6666666666666666, 0.4],
+                        label="ones, with two matchings, TPs",
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -791,7 +662,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.5], y=[0.5], label="ones, with two matchings, TPs"),
+                    Curve(
+                        x=[0.5, 0.5, 0.5, 0.25],
+                        y=[0.5, 0.6666666666666666, 1.0, 1.0],
+                        label="ones, with two matchings, TPs",
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -804,7 +679,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.0], y=[0.5], label="ones, with two matchings, mixed"),
+                    Curve(
+                        x=[0.5, 0.6, 0.8, 0.9],
+                        y=[0.5, 0.5714285714285715, 0.3333333333333333, 0.4],
+                        label="ones, with two matchings, mixed",
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -814,7 +693,11 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.5], y=[0.5], label="ones, with two matchings, mixed"),
+                    Curve(
+                        x=[0.5, 0.5, 0.25, 0.25],
+                        y=[0.5, 0.6666666666666666, 0.5, 1.0],
+                        label="ones, with two matchings, mixed",
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -828,8 +711,8 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.0],
-                        y=[2 / 3],
+                        x=[0.7, 0.8, 0.9],
+                        y=[0.6666666666666666, 0.7272727272727272, 0.5],
                         label="two single class matchings",
                     ),
                 ],
@@ -842,8 +725,8 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[2 / 3],
-                        y=[2 / 3],
+                        x=[0.6666666666666666, 0.6666666666666666, 0.3333333333333333],
+                        y=[0.6666666666666666, 0.8, 1.0],
                         label="two single class matchings",
                     ),
                 ],
@@ -859,8 +742,8 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.0],
-                        y=[2 / 3],
+                        x=[0.5, 0.6, 0.7, 0.8, 0.9],
+                        y=[0.6666666666666666, 0.7272727272727272, 0.6, 0.5, 0.2857142857142857],
                         label="two single class matchings as IMs",
                     ),
                 ],
@@ -873,8 +756,8 @@ def assert_curveplot_equal(c1: CurvePlot, c2: CurvePlot):
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[2 / 3],
-                        y=[2 / 3],
+                        x=[0.6666666666666666, 0.6666666666666666, 0.5, 0.3333333333333333, 0.16666666666666666],
+                        y=[0.6666666666666666, 0.8, 0.75, 1.0, 1.0],
                         label="two single class matchings as IMs",
                     ),
                 ],
@@ -1127,8 +1010,8 @@ def test__curve__plots(
 
     f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
-    assert_curveplot_equal(f1, f1_curve)
-    assert_curveplot_equal(pr, pr_curve)
+    assert f1 == f1_curve
+    assert pr == pr_curve
 
 
 @pytest.mark.metrics
