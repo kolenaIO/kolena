@@ -10,8 +10,15 @@ edit_uri: edit/trunk/docs/
 nav:
   - Getting Started:
       - index.md
+      - using-kolena-client.md
+      - Core Concepts:
+          - Workflow
+          - Test Case
+          - Test Suite
+          - Model
   - Advanced Usage:
-      - advanced/index.md
+      - advanced-usage/index.md
+      - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
   - Metrics Guide:
       - metrics-guide/index.md
   - API Reference:
@@ -80,6 +87,7 @@ theme:
 markdown_extensions:
   - admonition  # callouts
   - footnotes
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -122,7 +130,6 @@ plugins:
           show_source: false
 
 extra:
-  homepage: https://kolena.io
   generator: false
   social:
     - icon: fontawesome/brands/twitter
