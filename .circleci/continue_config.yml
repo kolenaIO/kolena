@@ -52,7 +52,7 @@ jobs:
                 name: Install Dependencies
                 command: |
                   poetry config installer.max-workers 10
-                  poetry install --no-ansi
+                  poetry install -vv --no-ansi
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
@@ -61,7 +61,7 @@ jobs:
                 name: Install Dependencies
                 command: |
                   poetry config installer.max-workers 10
-                  poetry install --all-extras --no-ansi
+                  poetry install -vv --all-extras --no-ansi
       - save_cache:
           key: *ci-base-cache
           paths:
@@ -216,7 +216,7 @@ jobs:
           path: ~/project
       - run: |
           poetry config installer.max-workers 10
-          poetry install --no-ansi
+          poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
           command: |
