@@ -1,7 +1,10 @@
 # `kolena.detection`
 
-!!! warning "Legacy Warning: Deprecated Module"
-    The built-in `kolena.detection` module has been deprecated. Consider using `kolena.workflow` instead.
+!!! warning "Legacy Warning"
+
+    The `kolena.detection` module is considered **legacy** and should not be used for new projects.
+
+    Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
 
 ## Quick Links
 
