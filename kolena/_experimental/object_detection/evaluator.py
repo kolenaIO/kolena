@@ -18,8 +18,6 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import precision_recall_fscore_support
 
 from kolena._experimental.object_detection.utils import _compute_sklearn_arrays
 from kolena._experimental.object_detection.utils import compute_ap
@@ -36,6 +34,7 @@ from kolena._experimental.object_detection.workflow import TestSampleMetrics
 from kolena._experimental.object_detection.workflow import TestSuiteMetrics
 from kolena._experimental.object_detection.workflow import ThresholdConfiguration
 from kolena._experimental.object_detection.workflow import ThresholdStrategy
+from kolena._extras.metrics import sklearn_metrics
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
@@ -78,7 +77,7 @@ def compute_f1_optimal_thresholds(
     _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays(all_bbox_matches)
     for label in sorted(y_true_by_label.keys()):
         y_true, y_score = np.array(y_true_by_label[label]), np.array(y_score_by_label[label])
-        precision, recall, thresholds = precision_recall_curve(y_true, y_score)
+        precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
         if thresholds[0] < 0:
             precision = precision[1:]
             recall = recall[1:]
@@ -155,6 +154,7 @@ def compute_test_sample_metrics(
 
 def compute_aggregate_label_metrics(
     tc_matchings: List[MulticlassInferenceMatches],
+    thresholds: Dict[str, float],
     label: str,
 ) -> ClassMetricsPerTestCase:
     m_matched = []
@@ -162,33 +162,33 @@ def compute_aggregate_label_metrics(
     m_unmatched_inf = []
     tpr_counter = 0
     fpr_counter = 0
-
+    confused_count = 0
     # filter the matching to only consider one class
     for match in tc_matchings:
         has_tp = False
         has_fp = False
         for gt, inf in match.matched:
-            if gt.label == label:
+            if gt.label == label and inf.score >= thresholds[inf.label]:
                 m_matched.append((gt, inf))
                 has_tp = True
         for gt, inf in match.unmatched_gt:
             if gt.label == label:
                 m_unmatched_gt.append((gt, inf))
+                if inf is not None and inf.score >= thresholds[inf.label]:
+                    confused_count += 1
         for inf in match.unmatched_inf:
-            if inf.label == label:
+            if inf.label == label and inf.score >= thresholds[inf.label]:
                 m_unmatched_inf.append(inf)
                 has_fp = True
         if has_tp:
             tpr_counter += 1
         if has_fp:
             fpr_counter += 1
-
     tp_count = len(m_matched)
     fp_count = len(m_unmatched_inf)
     fn_count = len(m_unmatched_gt)
     precision = tp_count / (tp_count + fp_count) if (tp_count + fp_count) > 0 else 0
     recall = tp_count / (tp_count + fn_count) if (tp_count + fn_count) > 0 else 0
-
     all_bbox_matches = [
         MulticlassInferenceMatches(matched=m_matched, unmatched_gt=m_unmatched_gt, unmatched_inf=m_unmatched_inf),
     ]
@@ -199,7 +199,7 @@ def compute_aggregate_label_metrics(
     recalls: List[float] = []
     for threshold in thresholds:
         y_pred = [1 if score > threshold else 0 for score in y_score]
-        precision, recall, _, _ = precision_recall_fscore_support(
+        precision, recall, _, _ = sklearn_metrics.precision_recall_fscore_support(
             y_true,
             y_pred,
             average="binary",
@@ -208,7 +208,6 @@ def compute_aggregate_label_metrics(
         precisions.append(precision)
         recalls.append(recall)
     average_precision = compute_ap(precisions, recalls) if len(precisions) > 0 and len(recalls) > 0 else -1
-
     return ClassMetricsPerTestCase(
         Class=label,
         Objects=tp_count + fn_count,
@@ -216,6 +215,7 @@ def compute_aggregate_label_metrics(
         TP=tp_count,
         FN=fn_count,
         FP=fp_count,
+        Confused=confused_count,
         TPR=tpr_counter / len(tc_matchings) if len(tc_matchings) > 0 else 0.0,
         FPR=fpr_counter / len(tc_matchings) if len(tc_matchings) > 0 else 0.0,
         Precision=precision,
