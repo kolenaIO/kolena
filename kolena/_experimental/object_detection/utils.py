@@ -100,23 +100,6 @@ def compute_pr_f1_plots(
     pr_curves = [curves[0]]
     f1_curves = [curves[1]]
 
-    if plot == "pr":
-        pr = CurvePlot(
-            title="Precision vs. Recall",
-            x_label="Recall",
-            y_label="Precision",
-            curves=pr_curves,
-        )
-        return [pr]
-    elif plot == "f1":
-        threshold_f1 = CurvePlot(
-            title="F1-Score vs. Confidence Threshold",
-            x_label="Confidence Threshold",
-            y_label="F1-Score",
-            curves=f1_curves,
-        )
-        return [threshold_f1]
-
     pr = CurvePlot(
         title="Precision vs. Recall",
         x_label="Recall",
@@ -131,6 +114,10 @@ def compute_pr_f1_plots(
         curves=f1_curves,
     )
 
+    if plot == "pr":
+        return [pr]
+    elif plot == "f1":
+        return [threshold_f1]
     return [pr, threshold_f1]
 
 
