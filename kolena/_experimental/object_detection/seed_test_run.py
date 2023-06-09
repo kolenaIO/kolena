@@ -266,5 +266,11 @@ def main() -> None:
     run(ap.parse_args())
 
 
+# poetry run python3
+# kolena/_experimental/object_detection/seed_test_run.py
+# --model_name "yolo_x"
+# --inference_csv "/Users/markchen/Desktop/models/yolo_x/coco-2014-val_prediction.csv"
+# --test_suite "coco-2014-val benchmark [Object Detection] :: supercategory"
+
 if __name__ == "__main__":
     main()

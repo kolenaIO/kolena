@@ -191,5 +191,11 @@ def main() -> None:
     run(ap.parse_args())
 
 
+# poetry run python3
+# kolena/_experimental/object_detection/seed_test_suite.py
+# --annotations "/Users/markchen/Desktop/Kolena/coco-2014-val/instances_val2014.json"
+# --images "/Users/markchen/Desktop/val2014/"
+
+
 if __name__ == "__main__":
     main()
