@@ -1,7 +1,6 @@
 ---
 icon: octicons/beaker-24
 hide:
-  - navigation
   - toc
 ---
 

@@ -10,7 +10,7 @@ edit_uri: edit/trunk/docs/
 nav:
   - Getting Started:
       - index.md
-      - using-kolena-client.md
+      - testing-with-kolena/using-kolena-client.md
   - Advanced Usage:
       - advanced-usage/index.md
       - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md

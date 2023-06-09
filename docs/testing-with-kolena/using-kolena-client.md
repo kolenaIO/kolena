@@ -1,4 +1,4 @@
-# Using Kolena's Python Client
+# :fontawesome-brands-python: Using `kolena`
 
 Testing on Kolena is conducted using the `kolena` Python package. You use the client to create and run tests from
 your infrastructure that can be explored in our web platform.
