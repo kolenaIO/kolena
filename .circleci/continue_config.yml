@@ -93,6 +93,8 @@ jobs:
       - run:
           name: Build documentation without 'insiders' packages
           command: poetry run mkdocs build
+      - add_ssh_keys:  # add github.com SSH key fingerprint to access private repo forks
+          fingerprints: ["15:8b:d4:ac:1f:cd:2f:d3:92:a7:4c:aa:46:81:0b:7d"]
       - run:
           name: Build documentation with 'insiders' packages
           command: |
