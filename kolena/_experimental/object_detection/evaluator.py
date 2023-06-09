@@ -335,6 +335,7 @@ def ObjectDetectionEvaluator(
         inferences,
         test_cases,
         test_sample_metrics,
+        configuration,
     )
 
     metrics_test_suite = compute_test_suite_metrics(metrics_test_case)
