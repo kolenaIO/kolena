@@ -2,4 +2,4 @@
 icon: octicons/book-24
 ---
 
-# API Reference
+# :octicons-book-24: API Reference

@@ -2,7 +2,7 @@
 icon: octicons/archive-24
 ---
 
-# Legacy Modules
+# :octicons-archive-24: Legacy Modules
 
 !!! warning "Legacy Warning"
 
