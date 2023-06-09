@@ -1,5 +1,10 @@
-!!! warning "Legacy Warning: Deprecated Module"
-    The built-in `kolena.fr` module has been deprecated. Consider using `kolena.workflow` instead.
+# `kolena.fr`
+
+!!! warning "Legacy Warning"
+
+    The `kolena.fr` module is considered **legacy** and should not be used for new projects.
+
+    Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
 
 ## Quick Links
 
@@ -18,6 +23,6 @@
 ::: kolena.fr.test_run
 ::: kolena.fr.test_suite
 
-## `kolena.fr.datatypes`
+## Data Types
 
 ::: kolena.fr.datatypes

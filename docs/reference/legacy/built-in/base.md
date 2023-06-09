@@ -1,7 +1,10 @@
 # Base Definitions
 
-!!! warning "Legacy Warning: Deprecated Module"
-    This module has been deprecated. Consider using `kolena.workflow` instead.
+!!! warning "Legacy Warning"
+
+    This module is considered **legacy** and should not be used for new projects.
+
+    Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
 
 Base definitions shared between `kolena.classification` and `kolena.detection`.
 
