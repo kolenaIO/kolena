@@ -68,6 +68,37 @@ jobs:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
 
+  docs:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      extras:
+        type: string
+        default: ""
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Install system-level build dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libcairo2-dev
+      - run:
+          name: Build documentation without 'insiders' packages
+          command: poetry run mkdocs build
+      - run:
+          name: Build documentation with 'insiders' packages
+          command: |
+            ./docs/setup_insiders.sh
+            poetry run mkdocs build --config-file mkdocs.insiders.yml
+
   unit-test:
     parameters:
       python-version:
@@ -95,17 +126,6 @@ jobs:
                 - equal: [ "3.11", << parameters.python-version >> ]
           steps:
             - run: poetry run pre-commit run -a
-      - when:
-          # Ensure docs build only from one Python version
-          condition:
-            equal: [ "3.9", << parameters.python-version >> ]
-          steps:
-            - run:
-                name: Build documentation
-                command: |
-                  sudo apt-get update
-                  sudo apt-get install -y libcairo2-dev  # system-level build dependency
-                  poetry run mkdocs build
       - when:
           condition:
             equal: [ "", << parameters.extras >> ]

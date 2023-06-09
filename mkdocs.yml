@@ -1,7 +1,7 @@
 site_name: Testing with Kolena
 site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
 site_url: https://docs.kolena.io
-strict: false
+strict: true
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
 copyright: Copyright &copy; 2021-2023 Kolena
@@ -106,37 +106,30 @@ extra_css:
   - css/mkdocstrings.css
 
 plugins:
-  - social  # render social media cards for copy+paste
-  - search:
-      lang: en
-  - mkdocstrings:
-      handlers:
-        python:
-          import:
-            - https://docs.python.org/3/objects.inv
-          options:
-            docstring_style: sphinx
-            merge_init_into_class: true
-            members_order: source  # sort members in the order they are defined
-            show_docstring_attributes: true
-            show_root_toc_entry: false
-            show_source: false
+  social:  # render social media cards for copy+paste
+  search:
+    lang: en
+  git-revision-date-localized:
+  mkdocstrings:
+    handlers:
+      python:
+        import:
+          - https://docs.python.org/3/objects.inv
+        options:
+          docstring_style: sphinx
+          merge_init_into_class: true
+          members_order: source  # sort members in the order they are defined
+          show_docstring_attributes: true
+          show_root_toc_entry: false
+          show_source: false
 
-            # requires docs-insiders:
-            show_symbol_type_heading: true
-            show_symbol_type_toc: true
-
-  - git-revision-date-localized
-
-  # requires docs-insiders:
-  - typeset
-  - git-committers:
-      repository: kolenaIO/kolena
-      branch: trunk
+          # requires docs-insiders:
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
 
 extra:
   homepage: https://kolena.io
-  generator: false  # TODO: this removes the theme info from footer -- we should sponsor project
+  generator: false
   social:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/kolenaIO

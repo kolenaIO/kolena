@@ -1,0 +1,7 @@
+INHERIT: mkdocs.yml
+strict: false  # allows for missing pages in git-committers (i.e. new or moved pages)
+plugins:
+  typeset:
+  git-committers:
+    repository: kolenaIO/kolena
+    branch: trunk

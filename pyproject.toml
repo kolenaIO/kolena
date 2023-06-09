@@ -67,21 +67,13 @@ mkdocs = "^1.4.3"
 cairosvg = "^2.7.0"
 mkdocs-git-committers-plugin-2 = "^1.1.2"
 mkdocs-git-revision-date-localized-plugin = "^1.2.0"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
 mkdocs-material = "^9.1.15"
 mkdocstrings = { version = ">0.20,<1", extras = ["python"] }
 
-[tool.poetry.group.docs-insiders]
-optional = true
-
-[tool.poetry.group.docs-insiders.dependencies]
-mkdocs-material = { git = "git@github.com:kolenaIO/mkdocs-material-insiders.git", branch = "master" }
-mkdocstrings = ">0.20,<1"
-mkdocstrings-python = { git = "git@github.com:kolenaIO/mkdocstrings-python.git", branch = "master" }
+# [tool.poetry.group.docs-insiders.dependencies]
+# mkdocs-material = { git = "git@github.com:kolenaIO/mkdocs-material-insiders.git", branch = "master" }
+# mkdocstrings = ">0.20,<1"
+# mkdocstrings-python = { git = "git@github.com:kolenaIO/mkdocstrings-python.git", branch = "master" }
 
 [tool.poetry.scripts]
 kolena = 'kolena._utils.cli:run'
