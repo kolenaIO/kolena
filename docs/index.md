@@ -1,5 +1,8 @@
 ---
 icon: octicons/beaker-24
+hide:
+  - navigation
+  - toc
 ---
 
 [Kolena](https://www.kolena.io) is a comprehensive machine learning model testing platform to surface hidden model

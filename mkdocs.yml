@@ -30,15 +30,15 @@ nav:
           - <code>TestSample</code>: reference/workflow/test_sample.md
           - <code>GroundTruth</code>: reference/workflow/ground_truth.md
           - <code>Inference</code>: reference/workflow/inference.md
-          - <code>define_workflow</code>: reference/workflow/define_workflow.md
+          - <code>Evaluator</code>: reference/workflow/evaluator.md
           - <code>TestCase</code>: reference/workflow/test_case.md
           - <code>TestSuite</code>: reference/workflow/test_suite.md
           - <code>Model</code>: reference/workflow/model.md
-          - <code>Evaluator</code>: reference/workflow/evaluator.md
           - <code>test</code>: reference/workflow/test_run.md
           - Utilities:
               - Annotations: reference/workflow/annotation.md
               - Assets: reference/workflow/asset.md
+              - <code>define_workflow</code>: reference/workflow/define_workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
       - Legacy:
           - reference/legacy/index.md

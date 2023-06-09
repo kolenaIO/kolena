@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # `kolena.fr`
 
 !!! warning "Legacy Warning"
