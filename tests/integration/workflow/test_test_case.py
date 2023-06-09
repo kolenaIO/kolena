@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import List
+from typing import Optional
 
 import pytest
 
@@ -25,10 +26,13 @@ from tests.integration.workflow.dummy import DummyTestSample
 from tests.integration.workflow.dummy import TestCase
 
 
-def assert_test_case(test_case: TestCase, name: str, version: int) -> None:
+def assert_test_case(test_case: TestCase, name: str, version: int, description: Optional[str] = None) -> None:
     assert test_case.workflow == DUMMY_WORKFLOW
     assert test_case.name == name
     assert test_case.version == version
+
+    if description:
+        assert test_case.description == description
 
 
 def test__init(

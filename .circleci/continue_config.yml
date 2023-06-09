@@ -207,7 +207,7 @@ jobs:
               TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                 circleci tests split --split-by=timings --timings-type=filename)
             fi
-            poetry run pytest -vv --durations=0 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
+            poetry run pytest -vv --durations=10 --cov=kolena --cov-branch --junitxml=test-results/result.xml \
               $TESTFILES
       - when:
           # Generate coverage only from one python version
