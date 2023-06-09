@@ -2,29 +2,8 @@
 
 ## Documentation
 
-### Setup
-
 The documentation for `kolena`, hosted at [docs.kolena.io](https://docs.kolena.io/), is built out of this repo using
 [MkDocs](https://www.mkdocs.org/).
-
-Kolena sponsors the [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) and
-[mkdocstrings](https://mkdocstrings.github.io/) projects and uses "insiders" features from these projects. To preserve
-the capability to build documentation both with and without access to these private "insider" repos, this project
-declares the `docs` and `docs-insiders` dependency groups that can be installed independently of one another.
-
-Install the `docs` group to build documentation using publicly available `mkdocs-material` and `mkdocstrings` packages:
-
-```
-poetry update --with docs
-```
-
-Install the `docs-insiders` group to build documentation using private forks of the "insiders" packages:
-
-```
-poetry update --with docs-insiders
-```
-
-### Usage
 
 To run the documentation server locally, run:
 
@@ -37,3 +16,20 @@ To build static documentation:
 ```
 poetry run mkdocs build
 ```
+
+Kolena sponsors the [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) and
+[mkdocstrings](https://mkdocstrings.github.io/) projects and uses "insiders" features from these projects. In order to
+preserve the capability to build documentation without access to these private "insider" repos, the docs dependencies
+declared in [`pyproject.toml`](pyproject.toml) reference the publicly available package sources.
+
+To build the documentation with "insider" features, run the [`setup_insiders.sh`](docs/setup_insiders.sh) script:
+
+```
+./docs/setup_insiders.sh
+```
+
+Note that this script requires an SSH key in your environment with access to the [kolenaIO](https://github.com/kolenaIO)
+organization.
+
+After running `setup_insiders.sh`, add `--config-file mkdocs.insiders.yml` to the `serve` and `build` invocations above
+to build documentation with all "insider" features enabled.

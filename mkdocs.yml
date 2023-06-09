@@ -61,22 +61,18 @@ theme:
         icon: material/toggle-switch-off-outline
         name: "Switch to light mode"
   features:
-    - announce.dismiss
-    - content.action.edit
-    - content.code.copy
-    - content.tabs.link
-    - navigation.indexes
-    - navigation.instant
-    - navigation.footer
-    - navigation.sections
-    - navigation.tabs
-    - search.highlight
-    - search.suggest
-    - toc.follow
-
-    # requires docs-insiders:
-    - navigation.path  # breadcrumbs
-    - content.tooltips
+    announce.dismiss:
+    content.action.edit:
+    content.code.copy:
+    content.tabs.link:
+    navigation.indexes:
+    navigation.instant:
+    navigation.footer:
+    navigation.sections:
+    navigation.tabs:
+    search.highlight:
+    search.suggest:
+    toc.follow:
 
 markdown_extensions:
   - admonition  # callouts
@@ -96,7 +92,6 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
-
 
 watch:
   - kolena
@@ -122,10 +117,6 @@ plugins:
           show_docstring_attributes: true
           show_root_toc_entry: false
           show_source: false
-
-          # requires docs-insiders:
-          show_symbol_type_heading: true
-          show_symbol_type_toc: true
 
 extra:
   homepage: https://kolena.io
