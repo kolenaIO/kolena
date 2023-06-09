@@ -15,19 +15,19 @@
     options:
       members_order: alphabetical
 
-## `kolena.detection.ground_truth`
+## Ground Truth
 
 ::: kolena.detection.ground_truth
     options:
       members_order: alphabetical
 
-## `kolena.detection.inference`
+## Inference
 
 ::: kolena.detection.inference
     options:
       members_order: alphabetical
 
-## `kolena.detection.metadata`
+## Metadata
 
 ::: kolena.detection.metadata
     options:

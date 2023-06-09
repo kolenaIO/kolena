@@ -18,6 +18,6 @@
 ::: kolena.fr.test_run
 ::: kolena.fr.test_suite
 
-## `kolena.fr.datatypes`
+## Data Types
 
 ::: kolena.fr.datatypes

@@ -1,7 +1,7 @@
 site_name: Testing with Kolena
 site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
 site_url: https://docs.kolena.io
-strict: true
+strict: false
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
 copyright: Copyright &copy; 2021-2023 Kolena
@@ -74,7 +74,7 @@ theme:
     - search.suggest
     - toc.follow
 
-    # insiders only:
+    # requires docs-insiders:
     - navigation.path  # breadcrumbs
     - content.tooltips
 
@@ -92,9 +92,9 @@ markdown_extensions:
   - toc:
       permalink: "¤"
   - attr_list
-  - pymdownx.emoji:
-      emoji_index: "!!python/name:materialx.emoji.twemoji"
-      emoji_generator: "!!python/name:materialx.emoji.to_svg"
+  # - pymdownx.emoji:
+  #     emoji_index: !!python/name:materialx.emoji.twemoji
+  #     emoji_generator: !!python/name:materialx.emoji.to_svg
 
 
 watch:
@@ -121,12 +121,17 @@ plugins:
             show_root_toc_entry: false
             show_source: false
 
-            # require sponsorship:
-            # show_symbol_type_heading: true
-            # show_symbol_type_toc: true
+            # requires docs-insiders:
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
 
-  # mkdocs-material insiders only:
+  - git-revision-date-localized
+
+  # requires docs-insiders:
   - typeset
+  - git-committers:
+      repository: kolenaIO/kolena
+      branch: trunk
 
 extra:
   homepage: https://kolena.io

@@ -15,7 +15,7 @@
     options:
       members_order: alphabetical
 
-## `kolena.classification.metadata`
+## Metadata
 
 ::: kolena.classification.metadata
     options:
