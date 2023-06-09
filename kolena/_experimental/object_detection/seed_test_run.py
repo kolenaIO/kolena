@@ -221,11 +221,11 @@ def seed_test_run(
             iou_threshold=0.5,
             min_confidence_score=min_conf_score,
         ),
-        ThresholdConfiguration(
-            threshold_strategy=ThresholdStrategy.FIXED_075,
-            iou_threshold=0.75,
-            min_confidence_score=min_conf_score,
-        ),
+        # ThresholdConfiguration(
+        #     threshold_strategy=ThresholdStrategy.FIXED_075,
+        #     iou_threshold=0.75,
+        #     min_confidence_score=min_conf_score,
+        # ),
     ]
 
     test(model, test_suite, ObjectDetectionEvaluator, evaluator_configurations, reset=True)
