@@ -124,7 +124,7 @@ class TestSuiteMetrics(MetricsTestSuite):
 class ThresholdStrategy(str, Enum):
     F1_OPTIMAL = "F1_OPTIMAL"
     FIXED_05 = "FIXED_05"
-    FIXED_075 = "FIXED_075"
+    # FIXED_075 = "FIXED_075"
 
     def display_name(self) -> str:
         if self is ThresholdStrategy.FIXED_05:
