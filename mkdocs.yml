@@ -54,13 +54,13 @@ theme:
       scheme: default
       accent: cyan
       toggle:
-        icon: material/lightbulb
+        icon: material/weather-sunny
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       accent: cyan
       toggle:
-        icon: material/lightbulb-outline
+        icon: material/weather-night
         name: "Switch to light mode"
   # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
   features:
