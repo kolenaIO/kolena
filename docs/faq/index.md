@@ -73,3 +73,12 @@ If you don't see your question here, please reach out to us on Slack or at
     Kolena is primarily a testing (or "offline evaluation") platform, coming _after_ training and _before_ deployment.
     We believe that increased emphasis on this offline evaluation segment of the model development life cycle can save
     effort upstream in the data collection and training process as well as prevent headaches downstream in deployment.
+
+??? question "How can I report a bug?"
+
+    If you encounter a bug when using the `kolena` Python client or when using [app.kolena.io](https://app.kolena.io),
+    message us on Slack, email your support representative or [contact@kolena.io](mailto:contact@kolena.io), or
+    [open an issue on the `kolena` repository](https://github.com/kolenaIO/kolena/issues) for Python-client-related
+    issues.
+
+    Please include any relevant stacktrace or platform URL when reporting an issue.
