@@ -36,8 +36,9 @@ to build documentation with all "insider" features enabled.
 
 ### Images
 
-Images used in documentation should be stored in [`docs/assets/images`](docs/assets/images) and tracked with
-[Git LFS](https://git-lfs.com/). Ensure LFS is installed in your environment, and when adding images run:
+Images used in documentation are stored in [`docs/assets/images`](docs/assets/images) and tracked with
+[Git LFS](https://git-lfs.com/). To add new images, first ensure ensure LFS is installed in your environment, then run
+the following command when checking in a new image:
 
 ```shell
 git lfs track docs/assets/images/new-image.jpg
