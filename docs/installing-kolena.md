@@ -25,6 +25,14 @@ or [Poetry](https://python-poetry.org/):
     poetry add kolena
     ```
 
+!!! note "Note: Extra `metrics` dependencies"
+    Certain metrics computation functionality requires additional dependencies that can be installed via the `metrics`
+    extra:
+
+    ```shell
+    pip install kolena[metrics]
+    ```
+
 ## Initialization
 
 Once you have `kolena` installed, initialize a session with `kolena.initialize(token)`.

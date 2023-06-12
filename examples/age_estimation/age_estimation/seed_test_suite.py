@@ -112,6 +112,7 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "dataset_csv",
+        nargs="?",
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
