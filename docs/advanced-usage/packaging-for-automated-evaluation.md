@@ -18,7 +18,7 @@ it for metrics computation on the Kolena platform.
 ## Build Evaluator Docker Image
 
 We will use the keypoints detection workflow we've built from
-[Quickstart: Building a Workflow](../quickstart/quickstart-building-a-workflow.md) to illustrate the process. Here
+[Quickstart: Building a Workflow](/testing-with-kolena/quickstart) to illustrate the process. Here
 is the project structure
 
 ```
@@ -39,8 +39,8 @@ is the project structure
 The `keypoints_detection` directory is where our workflow is defined, with evaluator logic in `evaluator.py` and
 workflow data objects in `workflow.py`. The `main.py` will be the entry point where `test` is executed.
 
-From the [quickstart](../quickstart/quickstart-building-a-workflow.md#step-4--running-tests), we know that metrics
-evaluation involves an evaluator, a test suite, and a model, recapped below:
+From the [quickstart](/testing-with-kolena/quickstart#step-4--running-tests), we know that metrics evaluation involves
+an evaluator, a test suite, and a model, recapped below:
 
 ```python
 test(model, test_suite, evaluator)
@@ -196,27 +196,20 @@ In `publish.sh`, we used Kolena client SDK command-line `kolena` to associate th
 
 ## Using Automatic Metrics Evaluation
 
-At this point, we are all set to leverage Kolena platform's automatic metrics evaluation capability. To see it in
-action, let's first use the Kolena web platform to curate a new test case.
+At this point, we are all set to leverage Kolena's automatic metrics evaluation capability. To see it in
+action, let's first use Kolena's Studio to curate a new test case.
 
-Head over to the Studio page on the Kolena web platform.
-In the Studio page, use the "Explore" tab to learn more about the test samples for each test suite and test case.
-We can select multiple test samples of interests and then go to the "Create" tab to create a new test case with
+Head over to [app.kolena.io/~/studio] and use the "Explore" tab to learn more about the test samples from a given test
+case.
+Select multiple test samples of interest and then go to the "Create" tab to create a new test case with the
 "Create Test Case" button. You will notice there's an option to compute metrics on this new test case for applicable
-models. Since we have the evaluator image registered for our workflow `Facial Keypoints`, the Kolena platform will
+models. Since we have the evaluator image registered for our workflow `Facial Keypoints`, Kolena will
 automatically compute metrics for the new case if this option is checked. After the computation completes, metrics of
-the new test case are immediately ready for us to analyze in the test results page.
-
-This is not the only case automatic metrics computation helps us quickly iterate on model performance analysis.
-Check out the tutorial below to learn more about refining tests.
-
-{% content-ref url="../testing-with-kolena/refining-tests.md" %}
-[refining-tests.md](../testing-with-kolena/refining-tests.md)
-{% endcontent-ref %}
+the new test case are immediately ready for us to analyze on the Results page.
 
 ## Conclusion
 
-In this tutorial, we learned how to configure Kolena platform to automatically compute metrics when applicable, and
+In this tutorial, we learned how to configure Kolena to automatically compute metrics when applicable, and
 why it brings values to model testing and analyzing process. We can use these tools to continue improving our test
 cases and our models.
 

@@ -10,7 +10,14 @@ edit_uri: edit/trunk/docs/
 nav:
   - Getting Started:
       - index.md
-      - testing-with-kolena/using-kolena-client.md
+      - quickstart.md
+      - installing-kolena.md
+      - building-a-workflow.md
+      - Core Concepts:
+          - Workflow
+          - Test Case
+          - Test Suite
+          - Model
   - Advanced Usage:
       - advanced-usage/index.md
       - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
@@ -91,6 +98,11 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify  # NOTE: insiders only
+        kwds:
+          case: lower
   - toc:
       permalink: "¤"
   - attr_list

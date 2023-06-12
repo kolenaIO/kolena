@@ -10,17 +10,20 @@ preferred Python package manager.
 ## Installation
 
 The first step to start testing with Kolena is to install `kolena`. Client builds can be installed directly from
-[PyPI](https://pypi.org/project/kolena/) using any Python package manager such as [pip](https://pypi.org/project/pip/):
+[PyPI](https://pypi.org/project/kolena/) using any Python package manager such as [pip](https://pypi.org/project/pip/)
+or [Poetry](https://python-poetry.org/):
 
-```bash
-pip install kolena
-```
+=== "`pip`"
 
-Or [Poetry](https://python-poetry.org/):
+    ```shell
+    pip install kolena
+    ```
 
-```bash
-poetry add kolena
-```
+=== "`poetry`"
+
+    ```shell
+    poetry add kolena
+    ```
 
 ## Initialization
 
@@ -43,9 +46,11 @@ kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 ```
 
 By default, sessions have static scope and persist until the interpreter is exited.
+Additional logging can be configured by specifying `initialize(..., verbose=True)`.
 
-Additional logging can be configured by specifying `initialize(..., verbose=True)`. All logging events are emitted as
-Python standard library `logging` events from the `"kolena"` logger as well as to stdout/stderr directly.
+!!! tip "Tip: `logging`"
+    Integrate `kolena` into your existing logging system by filtering for events from the `"kolena"` logger. All log
+    messages are emitted as both Python standard library [`logging`][logging] events as well as stdout/stderr messages.
 
 ## Supported Python Versions
 
