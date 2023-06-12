@@ -15,9 +15,9 @@ nav:
       - Building a Workflow: building-a-workflow.md
       - Core Concepts:
           - core-concepts/index.md
-          - Workflow: core-concepts/workflow.md
-          - Test Case & Test Suite: core-concepts/test-suite.md
-          - Model: core-concepts/model.md
+          - Workflows: core-concepts/workflow.md
+          - Test Cases & Test Suites: core-concepts/test-suite.md
+          - Models: core-concepts/model.md
   - Advanced Usage:
       - advanced-usage/index.md
       - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
@@ -45,9 +45,9 @@ nav:
       - Legacy:
           - reference/legacy/index.md
           - Built-in Workflows:
-              - <code>kolena.classification</code>: reference/legacy/built-in/classification.md
-              - <code>kolena.detection</code>: reference/legacy/built-in/detection.md
-              - <code>kolena.fr</code>: reference/legacy/built-in/fr.md
+              - <code>classification</code>: reference/legacy/built-in/classification.md
+              - <code>detection</code>: reference/legacy/built-in/detection.md
+              - <code>fr</code>: reference/legacy/built-in/fr.md
               - Base Definitions: reference/legacy/built-in/base.md
   - FAQ:
     - faq/index.md
@@ -127,6 +127,9 @@ plugins:
   search:
     lang: en
   git-revision-date-localized:
+  glightbox:  # image click-to-zoom functionality
+    slide_effect: fade
+    auto_caption: true
   mkdocstrings:
     handlers:
       python:

@@ -1,15 +1,26 @@
 ---
+icon: kolena/detection-16
 search:
   exclude: true
 ---
 
-# `kolena.detection`
+# :kolena-detection-20: `kolena.detection`
 
 !!! warning "Legacy Warning"
 
     The `kolena.detection` module is considered **legacy** and should not be used for new projects.
 
     Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
+
+![Object detection example from the Common Objects in Context (COCO) dataset.](/assets/images/detection-airplane.jpg)
+
+Object detection models attempt to localize and classify objects in an image. Kolena supports single-class and
+multi-class object detection models identifying objects with rectangular (object detection) and arbitrary (instance
+segmentation) geometry.
+
+!!! note
+    **Instance Segmentation** and **Object Detection** are functionally equivalent, differing only in the geometry of the
+    detected object. For brevity, this documentation discusses object detection only.
 
 ## Quick Links
 
