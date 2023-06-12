@@ -7,7 +7,7 @@ build a workflow to test any arbitrary ML problem on Kolena.
 
 ### Getting Started
 
-With the `kolena` Python client [installed](../testing-with-kolena/using-kolena-client.md#installation),
+With the `kolena` Python client [installed](installing-kolena#installation),
 first let's initialize a client session:
 
 ```python
@@ -189,7 +189,12 @@ ts_with_gt = list(zip(test_samples, ground_truths))
 test_case = TestCase(f"{DATASET} :: basic", test_samples=ts_with_gt)
 ```
 
-In this tutorial we created only a single simple test case, but more advanced test cases can be generated in a variety of fast and scalable ways. See [Creating Test Cases](../testing-with-kolena/creating-tests.md#creating-test-cases) for details.
+!!! note "Note: Creating test cases"
+    In this tutorial we created only a single simple test case, but more advanced test cases can be generated in a
+    variety of fast and scalable ways, either programmatically with the `kolena` Python client or visually in the
+    [Studio](https://app.kolena.io/redirect/studio).
+
+<!-- See [Creating Test Cases](../testing-with-kolena/creating-tests.md#creating-test-cases) for details. -->
 
 Now that we have a basic test case for our entire dataset let's create a test suite for it:
 

@@ -24,6 +24,14 @@ The [kolenaIO/kolena](https://github.com/kolenaIO/kolena) repository contains a 
 and run directly:
 
 <div class="grid cards" markdown>
+- [Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
+
+    ![image](assets/images/LFW.jpg)
+
+    ---
+
+    Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
+
 - [Example: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
 
     ![image](assets/images/300-W.jpg)
@@ -32,14 +40,6 @@ and run directly:
 
     Facial Keypoint Detection using the [300 Faces in the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/)
     dataset
-
-- [Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
-
-    ![image](assets/images/LFW.jpg)
-
-    ---
-
-    Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
 
 - [Example: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
 
@@ -68,7 +68,7 @@ poetry update && poetry install
 Now we're up and running and can start [creating test suites](#creating-test-suites) and
 [testing models](#testing-models).
 
-### Creating Test Suites
+## Create Test Suites
 
 Each of the example integrations comes with scripts for two flows:
 
@@ -96,7 +96,7 @@ our newly created test suites.
 In this `age_estimation` example, we've created test suites stratifying the LFW dataset (which is stored as a CSV in
 S3) into test cases by age, estimated race, and estimated gender.
 
-### Testing Models
+## Test a Model
 
 After we've created test suites, the final step is to test models on these test suites. The `age_estimation` example
 provides the `ssrnet` model for this step:

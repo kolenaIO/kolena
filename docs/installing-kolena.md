@@ -1,4 +1,4 @@
-# :fontawesome-brands-python: Installing `kolena`
+# :octicons-code-24: Installing `kolena`
 
 Testing on Kolena is conducted using the [`kolena`](https://github.com/kolenaIO/kolena) Python package. You use the
 client to create and run tests from your infrastructure that can be explored in our web platform.
