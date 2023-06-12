@@ -33,3 +33,12 @@ organization.
 
 After running `setup_insiders.sh`, add `--config-file mkdocs.insiders.yml` to the `serve` and `build` invocations above
 to build documentation with all "insider" features enabled.
+
+### Images
+
+Images used in documentation should be stored in [`docs/assets/images`](docs/assets/images) and tracked with
+[Git LFS](https://git-lfs.com/). Ensure LFS is installed in your environment, and when adding images run:
+
+```shell
+git lfs track docs/assets/images/new-image.jpg
+```
