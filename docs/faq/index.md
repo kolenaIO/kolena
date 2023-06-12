@@ -48,7 +48,7 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? question "I'm new to Kolena — how can I learn more about the platform and how to use it?"
 
-    On each page, there is a button with the :octicons-mortar-board-24: icon next to the page title. Click on this
+    On each page, there is a button with the :kolena-learning-16: icon next to the page title. Click on this
     button to bring up a detailed tutorial explaining the contents of the current page and how it's used.
 
 ??? question "Do I have to upload my datasets to Kolena?"

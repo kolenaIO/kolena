@@ -16,19 +16,19 @@ hide:
 ## Quick Links
 
 <div class="grid cards" markdown>
-- :octicons-tag-24: [`kolena.classification`](built-in/classification)
+- :kolena-classification-20: [`kolena.classification`](built-in/classification)
 
     ---
 
     Binary classification of images
 
-- :octicons-goal-24: [`kolena.detection`](built-in/detection)
+- :kolena-detection-20: [`kolena.detection`](built-in/detection)
 
     ---
 
     Object detection and instance segmentation of images
 
-- :octicons-people-24: [`kolena.fr`](built-in/fr)
+- :kolena-fr-20: [`kolena.fr`](built-in/fr)
 
     ---
 
