@@ -26,6 +26,11 @@ html {
   }
 }
 
+.md-nav__link svg {
+  height: 1em;
+  align-items: center;
+}
+
 /* Apply Kolena branding colors on top of 'default' scheme */
 [data-md-color-scheme="default"] {
   --md-primary-fg-color: #6434c1;

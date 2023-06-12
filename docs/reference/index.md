@@ -1,10 +1,10 @@
 ---
-icon: octicons/book-24
+icon: kolena/manual-16
 hide:
   - toc
 ---
 
-# :octicons-book-24: API Reference
+# :kolena-manual-20: API Reference
 
 This section contains detailed API reference documentation for `kolena`.
 

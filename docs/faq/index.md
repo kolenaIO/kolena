@@ -1,11 +1,11 @@
 ---
-icon: octicons/codescan-checkmark-24
+icon: kolena/help-16
 hide:
   - navigation
   - toc
 ---
 
-# :octicons-codescan-checkmark-24: Frequently Asked Questions
+# :kolena-help-20: Frequently Asked Questions
 
 This page answers common questions about using Kolena to test ML models.
 

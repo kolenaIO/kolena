@@ -1,10 +1,10 @@
 ---
-icon: octicons/rocket-24
+icon: kolena/rocket-16
 hide:
   - toc
 ---
 
-# :octicons-rocket-24: Advanced Usage
+# :kolena-rocket-20: Advanced Usage
 
 <div class="grid cards" markdown>
 - :octicons-container-24: [Packaging for Automated Evaluation](packaging-for-automated-evaluation)

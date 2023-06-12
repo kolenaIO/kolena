@@ -1,10 +1,10 @@
 ---
-icon: octicons/package-24
+icon: kolena/cube-16
 hide:
   - toc
 ---
 
-# :octicons-package-24: `kolena.workflow`
+# :kolena-cube-20: `kolena.workflow`
 
 `kolena.workflow` contains the definitions to build a workflow:
 

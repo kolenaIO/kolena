@@ -1,10 +1,10 @@
 ---
-icon: octicons/archive-24
+icon: kolena/archive-16
 hide:
   - toc
 ---
 
-# :octicons-archive-24: Legacy Modules
+# :kolena-archive-20: Legacy Modules
 
 !!! warning "Legacy Warning"
 

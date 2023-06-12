@@ -1,4 +1,8 @@
-# :octicons-package-24: Building a Workflow
+---
+icon: kolena/cube-16
+---
+
+# :kolena-cube-20: Building a Workflow
 
 In this quickstart tutorial we'll learn how to use the [`kolena.workflow`](reference/workflow) workflow builder
 definitions to test a [Keypoint Detection](https://keras.io/examples/vision/keypoint_detection/) model on the
