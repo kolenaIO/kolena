@@ -12,7 +12,7 @@ search:
 
     Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
 
-!["Dog" classification example from the Dogs vs. Cats dataset.](/assets/images/classification-dog.jpg)
+!["Dog" classification example from the Dogs vs. Cats dataset.](../../../assets/images/classification-dog.jpg)
 
 `kolena.classification` supports the following types of classification models:
 
