@@ -34,7 +34,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install Poetry
-        run: pip install poetry==1.2.2
+        run: pip install poetry==1.5.1
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
