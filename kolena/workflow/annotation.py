@@ -12,8 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-Annotations are visualized in the Kolena web platform as overlays on top of [`TestSample`][kolena.workflow.TestSample]
-objects.
+Annotations are visualized in Kolena as overlays on top of [`TestSample`][kolena.workflow.TestSample] objects.
 
 The following annotation types are available:
 

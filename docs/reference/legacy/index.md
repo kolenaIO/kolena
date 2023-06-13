@@ -1,5 +1,7 @@
 ---
 icon: octicons/archive-24
+hide:
+  - toc
 ---
 
 # :octicons-archive-24: Legacy Modules
@@ -30,5 +32,6 @@ icon: octicons/archive-24
 
     ---
 
-    1:1 face recognition, following the [NIST FRVT 1:1](https://pages.nist.gov/frvt/html/frvt11.html) specification
+    1:1 face recognition, also known as **face verification**, following the
+    [NIST FRVT 1:1](https://pages.nist.gov/frvt/html/frvt11.html) specification
 </div>

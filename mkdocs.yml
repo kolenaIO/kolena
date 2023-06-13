@@ -10,8 +10,12 @@ edit_uri: edit/trunk/docs/
 nav:
   - Getting Started:
       - index.md
+      - quickstart.md
+      - installing-kolena.md
+      - building-a-workflow.md
   - Advanced Usage:
-      - advanced/index.md
+      - advanced-usage/index.md
+      - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
   - Metrics Guide:
       - metrics-guide/index.md
   - API Reference:
@@ -23,15 +27,15 @@ nav:
           - <code>TestSample</code>: reference/workflow/test_sample.md
           - <code>GroundTruth</code>: reference/workflow/ground_truth.md
           - <code>Inference</code>: reference/workflow/inference.md
-          - <code>define_workflow</code>: reference/workflow/define_workflow.md
+          - <code>Evaluator</code>: reference/workflow/evaluator.md
           - <code>TestCase</code>: reference/workflow/test_case.md
           - <code>TestSuite</code>: reference/workflow/test_suite.md
           - <code>Model</code>: reference/workflow/model.md
-          - <code>Evaluator</code>: reference/workflow/evaluator.md
           - <code>test</code>: reference/workflow/test_run.md
           - Utilities:
               - Annotations: reference/workflow/annotation.md
               - Assets: reference/workflow/asset.md
+              - <code>define_workflow</code>: reference/workflow/define_workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
       - Legacy:
           - reference/legacy/index.md
@@ -80,6 +84,7 @@ theme:
 markdown_extensions:
   - admonition  # callouts
   - footnotes
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -88,6 +93,11 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify  # NOTE: insiders only
+        kwds:
+          case: lower
   - toc:
       permalink: "¤"
   - attr_list
@@ -122,7 +132,6 @@ plugins:
           show_source: false
 
 extra:
-  homepage: https://kolena.io
   generator: false
   social:
     - icon: fontawesome/brands/twitter

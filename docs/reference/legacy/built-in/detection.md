@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # `kolena.detection`
 
 !!! warning "Legacy Warning"

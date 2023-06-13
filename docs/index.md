@@ -1,5 +1,7 @@
 ---
 icon: octicons/beaker-24
+hide:
+  - toc
 ---
 
 <p align="center">
