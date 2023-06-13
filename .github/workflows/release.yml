@@ -31,9 +31,9 @@ jobs:
       - name: Install Poetry
         run: pip install poetry==1.2.2
 
-      - name: Add SSH key to clone private repos
-        run: |
-          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
