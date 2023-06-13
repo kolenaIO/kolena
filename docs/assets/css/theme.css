@@ -9,7 +9,7 @@ html {
 /* Branded header styles */
 .md-header,
 .md-tabs {
-  background-image: url(/assets/images/background.svg);
+  background-image: url('../images/background.svg');
   background-size: cover;
 }
 .md-tabs {
