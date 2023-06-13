@@ -17,9 +17,8 @@ it for metrics computation on the Kolena platform.
 
 ## Build Evaluator Docker Image
 
-We will use the keypoints detection workflow we've built from
-[Quickstart: Building a Workflow](/testing-with-kolena/quickstart) to illustrate the process. Here
-is the project structure
+We will use the keypoint detection workflow we've built in the [Building a Workflow](/building-a-workflow) guide
+to illustrate the process. Here is the project structure:
 
 ```
 .
@@ -27,7 +26,7 @@ is the project structure
 │   ├── build.sh
 │   ├── publish.sh
 │   └── Dockerfile
-├── keypoints_detection/
+├── keypoint_detection/
 │   ├── __init__.py
 │   ├── evaluator.py
 │   ├── main.py
@@ -36,19 +35,19 @@ is the project structure
 └── pyproject.toml
 ```
 
-The `keypoints_detection` directory is where our workflow is defined, with evaluator logic in `evaluator.py` and
+The `keypoint_detection` directory is where our workflow is defined, with evaluator logic in `evaluator.py` and
 workflow data objects in `workflow.py`. The `main.py` will be the entry point where `test` is executed.
 
-From the [quickstart](/testing-with-kolena/quickstart#step-4--running-tests), we know that metrics evaluation involves
-an evaluator, a test suite, and a model, recapped below:
+From the [workflow building guide](/building-a-workflow#step-4-running-tests), we know that metrics evaluation
+using [`test`][kolena.workflow.test] involves a `model`, a `test_suite`, an `evaluator`, and optional `configurations`:
 
 ```python
-test(model, test_suite, evaluator)
+test(model, test_suite, evaluator, configurations=configurations)
 ```
 
 When executing `test` locally, the model and test suite can be initiated by user inputs. When Kolena executes `test`
-under automation, this information would have to be obtained through environment variables. Kolena sets up
-following environment variables for evaluator execution:
+under automation, this information would have to be obtained through environment variables.
+Kolena sets up following environment variables for evaluator execution:
 
 - `KOLENA_MODEL_NAME`
 - `KOLENA_TEST_SUITE_NAME`
@@ -57,27 +56,26 @@ following environment variables for evaluator execution:
 
 The main script would therefore be adjusted like code sample below.
 
-```python title="keypoints_detection/main.py"
+```python title="keypoint_detection/main.py"
 import os
 
 import kolena
 from kolena.workflow import test
 
-from .evaluator import KeypointsEvaluator, NmeThreshold
+from .evaluator import evaluate_keypoint_detection, NmeThreshold
 from .workflow import Model, TestSuite
 
 
 def main() -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
-    evaluator = KeypointsEvaluator(configurations=[NmeThreshold(0.05)])
     model = Model(os.environ["KOLENA_MODEL_NAME"])
     test_suite = TestSuite.load(
         os.environ["KOLENA_TEST_SUITE_NAME"],
         os.environ["KOLENA_TEST_SUITE_VERSION"],
     )
 
-    test(model, test_suite, evaluator)
+    test(model, test_suite, evaluate_keypoint_detection, configurations=[NmeThreshold(0.05)])
 
 
 if __name__ == "__main__":
@@ -89,7 +87,7 @@ Now that we have the main script ready, the next step is to package this script 
 ```dockerfile title="docker/Dockerfile"
 FROM python:3.9-slim AS base
 
-WORKDIR /opt/keypoints_detection/
+WORKDIR /opt/keypoint_detection/
 
 FROM base AS builder
 
@@ -99,15 +97,15 @@ ENV POETRY_VIRTUALENVS_IN_PROJECT=true \
 RUN python3 -m pip install poetry
 
 COPY pyproject.toml poetry.lock ./
-COPY keypoints_detection ./keypoints_detection
+COPY keypoint_detection ./keypoint_detection
 RUN poetry install --only main
 
 FROM base
 
-COPY --from=builder /opt/keypoints_detection /opt/keypoints_detection/
-COPY --from=builder /opt/keypoints_detection/.venv .venv/
+COPY --from=builder /opt/keypoint_detection /opt/keypoint_detection/
+COPY --from=builder /opt/keypoint_detection/.venv .venv/
 
-ENTRYPOINT [ "/opt/keypoints_detection/.venv/bin/python", "keypoints_detection/main.py" ]
+ENTRYPOINT [ "/opt/keypoint_detection/.venv/bin/python", "keypoint_detection/main.py" ]
 ```
 
 ```shell title="docker/build.sh"
@@ -115,7 +113,7 @@ ENTRYPOINT [ "/opt/keypoints_detection/.venv/bin/python", "keypoints_detection/m
 
 set -eu
 
-IMAGE_NAME="keypoints_detection_evaluator"
+IMAGE_NAME="keypoint_detection_evaluator"
 IMAGE_VERSION="v1"
 IMAGE_TAG="$IMAGE_NAME:$IMAGE_VERSION"
 
@@ -133,8 +131,8 @@ docker build \
 
 This build process installs the `kolena` package, and as such needs the `KOLENA_TOKEN` environment variable to be
 populated with your Kolena API key.
-Follow the [`kolena` Python client](testing-with-kolena/using-kolena-client#installation) guide to obtain an
-API key if you have not done so.
+Follow the [`kolena` Python client](/installing-kolena#initialization) guide to obtain an API key if you have not
+done so.
 
 ```shell
 export KOLENA_TOKEN="<kolena-api-token>"
@@ -143,7 +141,7 @@ export KOLENA_TOKEN="<kolena-api-token>"
 
 ## Register Evaluator for Workflow
 
-The final step is to publish the Docker image and associate the image with the `Facial Keypoints` workflow.
+The final step is to publish the Docker image and associate the image with the `Keypoint Detection` workflow.
 
 Kolena supports metrics computation using Docker image hosted on any public Docker registry or Kolena's Docker registry.
 In this tutorial, we will publish our image to Kolena's Docker registry. However, the steps should be easy to adapt
@@ -158,13 +156,13 @@ run it. This would push our Docker image to the repository and register it for t
 
 set -eu
 
-IMAGE_NAME="keypoints_detection_evaluator"
+IMAGE_NAME="keypoint_detection_evaluator"
 IMAGE_VERSION="v1"
 IMAGE_TAG="${IMAGE_NAME}:${IMAGE_VERSION}"
 
 DOCKER_REGISTRY="docker.kolena.io"
-WORKFLOW="Facial Keypoints"
-EVALUATOR_NAME="KeypointsEvaluator"
+WORKFLOW="Keypoint Detection"
+EVALUATOR_NAME="evaluate_keypoint_detection"
 ORGANIZATION=<organization>
 
 TARGET_IMAGE_TAG="$DOCKER_REGISTRY/$ORGANIZATION/$IMAGE_TAG"
@@ -192,7 +190,8 @@ poetry run kolena evaluator register \
 ```
 
 In `publish.sh`, we used Kolena client SDK command-line `kolena` to associate the Docker image to evaluator
-`KeypointsEvaluator` of workflow `Facial Keypoints`. You can find out more of its usage with the `--help` option.
+`evaluate_keypoint_detection` of workflow `Keypoint Detection`. You can find out more of its usage with the `--help`
+option.
 
 ## Using Automatic Metrics Evaluation
 
@@ -203,7 +202,7 @@ Head over to [app.kolena.io/~/studio] and use the "Explore" tab to learn more ab
 case.
 Select multiple test samples of interest and then go to the "Create" tab to create a new test case with the
 "Create Test Case" button. You will notice there's an option to compute metrics on this new test case for applicable
-models. Since we have the evaluator image registered for our workflow `Facial Keypoints`, Kolena will
+models. Since we have the evaluator image registered for our workflow `Keypoint Detection`, Kolena will
 automatically compute metrics for the new case if this option is checked. After the computation completes, metrics of
 the new test case are immediately ready for us to analyze on the Results page.
 
@@ -279,9 +278,9 @@ The output of the command would look like:
 
 ```json
 {
-  "workflow": "Face Keypoints",
-  "name": "KeypointsEvaluator",
-  "image": "docker.kolena.io/my-organization/keypoints_detection_evaluator:v1",
+  "workflow": "Keypoint Detection",
+  "name": "evaluate_keypoint_detection",
+  "image": "docker.kolena.io/my-organization/keypoint_detection_evaluator:v1",
   "created": "2023-04-03 16:18:10.703 -0700",
   "secret": null,
   "aws_role_config": {

@@ -25,12 +25,21 @@ or [Poetry](https://python-poetry.org/):
     poetry add kolena
     ```
 
-!!! note "Note: Extra `metrics` dependencies"
-    Certain metrics computation functionality requires additional dependencies that can be installed via the `metrics`
-    extra:
+#### Extra Dependency Groups
+
+Certain metrics computation functionality depends on additional packages like
+[scikit-learn](https://scikit-learn.org/stable/). These extra dependencies can be installed via the `metrics` group:
+
+=== "`pip`"
 
     ```shell
     pip install kolena[metrics]
+    ```
+
+=== "`poetry`"
+
+    ```shell
+    poetry add kolena[metrics]
     ```
 
 ## Initialization

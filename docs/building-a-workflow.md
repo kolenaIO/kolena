@@ -7,7 +7,7 @@ build a workflow to test any arbitrary ML problem on Kolena.
 
 ### Getting Started
 
-With the `kolena` Python client [installed](installing-kolena#installation),
+With the `kolena` Python client [installed](/installing-kolena#installation),
 first let's initialize a client session:
 
 ```python
@@ -239,12 +239,12 @@ from typing import List
 
 from kolena.workflow import EvaluationResults, TestCases
 
-def evaluate_keypoints(
+def evaluate_keypoint_detection(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
-    # configuration: EvaluatorConfiguration,  # uncomment when configuration is used
+    configuration: NmeThreshold,  # uncomment when configuration is used
 ) -> EvaluationResults:
     # compute per-sample metrics for each test sample
     per_sample_metrics = [
