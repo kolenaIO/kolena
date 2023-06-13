@@ -6,8 +6,10 @@ hide:
 
 # :kolena-rocket-20: Advanced Usage
 
+This section contains tutorial documentation for advanced features available in Kolena.
+
 <div class="grid cards" markdown>
-- :octicons-container-24: [Packaging for Automated Evaluation](packaging-for-automated-evaluation)
+- [:octicons-container-24: Packaging for Automated Evaluation](packaging-for-automated-evaluation)
 
     ---
 
