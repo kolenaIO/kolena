@@ -4,8 +4,6 @@ on:
   push:
     tags:
       - "*"
-    branches:
-      - gh/unbreak-docs-build
 
 jobs:
   release:
@@ -28,19 +26,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
-      - name: Install Poetry
-        run: pip install poetry==1.2.2
-
-      - uses: webfactory/ssh-agent@v0.8.0
+      - name: Configure SSH key for docs insiders setup
+        uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Build 'kolena' documentation and push to GitHub Pages
-        run: |
-          ./docs/setup_insiders.sh
-
-      - name: Fail
-        run: exit 1
+      - name: Install Poetry
+        run: pip install poetry==1.2.2
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
