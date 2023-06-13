@@ -12,7 +12,7 @@ search:
 
     Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
 
-![Example Face Recognition (1:1) image pair from the Labeled Faces in the Wild dataset.](/assets/images/face-recognition.jpg)
+![Example Face Recognition (1:1) image pair from the Labeled Faces in the Wild dataset.](../../../assets/images/face-recognition.jpg)
 
 Face Recognition (1:1) workflow is built to test models answering the question: _do these two images depict the same
 person_? The terminology and methodology are adapted from the [NIST FRVT 1:1](https://pages.nist.gov/frvt/html/frvt11.html)

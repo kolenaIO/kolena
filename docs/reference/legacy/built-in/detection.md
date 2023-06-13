@@ -12,7 +12,7 @@ search:
 
     Please see `kolena.workflow` for customizable and extensible definitions to use for all new projects.
 
-![Object detection example from the Common Objects in Context (COCO) dataset.](/assets/images/detection-airplane.jpg)
+![Object detection example from the Common Objects in Context (COCO) dataset.](../../../assets/images/detection-airplane.jpg)
 
 Object detection models attempt to localize and classify objects in an image. Kolena supports single-class and
 multi-class object detection models identifying objects with rectangular (object detection) and arbitrary (instance

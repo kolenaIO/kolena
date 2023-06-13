@@ -43,3 +43,10 @@ have LFS installed in your environment and run the following command:
 ```shell
 git lfs install
 ```
+
+### Links
+
+Use relative paths, e.g. `../path-to-file.md`, to link to other pages within the documentation. Relative links that
+include the `.md` file extension are checked during build, and broken links will cause builds to fail. This verification
+is not provided for absolute or external links. When linking to an index page, reference it explicitly, e.g.
+`path/to/index.md`.

@@ -4,7 +4,9 @@ icon: kolena/flame-16
 
 # :kolena-flame-20: Quickstart
 
-Install Kolena to set up rigorous and repeatable model testing in minutes. In this quickstart guide, we'll use the
+Install Kolena to set up rigorous and repeatable model testing in minutes.
+
+In this quickstart guide, we'll use the
 [`age_estimation`](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) example integration to
 demonstrate the how to curate test data and test models in Kolena.
 
@@ -71,8 +73,8 @@ cd kolena/examples/age_estimation
 poetry update && poetry install
 ```
 
-Now we're up and running and can start [creating test suites](#creating-test-suites) and
-[testing models](#testing-models).
+Now we're up and running and can start [creating test suites](#create-test-suites) and
+[testing models](#test-a-model).
 
 ## Create Test Suites
 

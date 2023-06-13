@@ -17,7 +17,7 @@ it for metrics computation on the Kolena platform.
 
 ## Build Evaluator Docker Image
 
-We will use the keypoint detection workflow we've built in the [Building a Workflow](/building-a-workflow) guide
+We will use the keypoint detection workflow we've built in the [Building a Workflow](../building-a-workflow.md) guide
 to illustrate the process. Here is the project structure:
 
 ```
@@ -38,7 +38,7 @@ to illustrate the process. Here is the project structure:
 The `keypoint_detection` directory is where our workflow is defined, with evaluator logic in `evaluator.py` and
 workflow data objects in `workflow.py`. The `main.py` will be the entry point where `test` is executed.
 
-From the [workflow building guide](/building-a-workflow#step-4-running-tests), we know that metrics evaluation
+From the [workflow building guide](../building-a-workflow.md#step-4-running-tests), we know that metrics evaluation
 using [`test`][kolena.workflow.test] involves a `model`, a `test_suite`, an `evaluator`, and optional `configurations`:
 
 ```python
@@ -131,7 +131,7 @@ docker build \
 
 This build process installs the `kolena` package, and as such needs the `KOLENA_TOKEN` environment variable to be
 populated with your Kolena API key.
-Follow the [`kolena` Python client](/installing-kolena#initialization) guide to obtain an API key if you have not
+Follow the [`kolena` Python client](../installing-kolena.md#initialization) guide to obtain an API key if you have not
 done so.
 
 ```shell

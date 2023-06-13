@@ -7,9 +7,9 @@ hide:
 # :kolena-flag-20: Core Concepts
 
 In this section, we'll get acquainted with the core concepts on Kolena, and learn in-depth about the various features
-offered. For a brief introduction, see the [Quickstart Guide](/quickstart) or the
-[Building a Workflow](/building-a-workflow) tutorial. For code-level API documentation, see the
-[API Reference Documentation](/reference/workflow) for the `kolena` Python client.
+offered. For a brief introduction, see the [Quickstart Guide](../quickstart.md) or the
+[Building a Workflow](../building-a-workflow.md) tutorial. For code-level API documentation, see the
+[API Reference Documentation](../reference/workflow) for the `kolena` Python client.
 
 <div class="grid cards" markdown>
 - [:kolena-workflow-16: Workflow](workflow)
@@ -33,6 +33,6 @@ offered. For a brief introduction, see the [Quickstart Guide](/quickstart) or th
 
     ---
 
-    In Kolena, a model is a deterministic transformation from [test samples](/core-concepts/workflow#test-sample) to
-    [inferences](/core-concepts/workflow#inference).
+    In Kolena, a model is a deterministic transformation from [test samples](workflow.md#test-sample) to
+    [inferences](workflow.md#inference).
 </div>
