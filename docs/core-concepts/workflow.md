@@ -16,12 +16,13 @@ Examples of workflows include:
 - [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos
 </div>
 
-With the [`kolena.workflow`](/reference/workflow) client module, any arbitrary ML problem can be defined as a workflow
-and tested on Kolena.
+With the [`kolena.workflow`](../reference/workflow/index.md) client module, any arbitrary ML problem can be defined as a
+workflow and tested on Kolena.
 
 There are three main components of a workflow:
 
 !!! info inline end
+
     These three types can be thought of as the data model, or the schema, of a workflow.
 
 1. [**Test Sample**](#test-sample): the inputs to a model, e.g. image, video, document
@@ -39,7 +40,7 @@ computer vision models would have a [video][kolena.workflow.Video] test sample t
 [image pairs][kolena.workflow.Composite]. For natural language processing models, the test sample may be a
 [document][kolena.workflow.Document] or [text snippet][kolena.workflow.Text].
 
-When [building a workflow](building-a-workflow), you can [extend](/reference/workflow/test-sample) and
+When [building a workflow](../building-a-workflow.md), you can [extend](../reference/workflow/test-sample.md) and
 [compose][kolena.workflow.Composite] these base test sample types as necessary, or use the base types directly if no
 customization is required.
 
@@ -63,9 +64,9 @@ class MyDocument(Document):
 
 !!! tip "Use `pydantic` dataclasses"
 
-    When building a workflow, object definitions can us [standard library `dataclasses`][dataclasses] or [Pydantic
-    `dataclasses`](https://docs.pydantic.dev/latest/usage/dataclasses/). Pydantic brings helpful runtime type validation
-    and coercion and can be used as a drop-in replacement for standard library `dataclasses`.
+    When building a workflow, object definitions can us [standard library `dataclasses`][dataclasses] or
+    [Pydantic `dataclasses`](https://docs.pydantic.dev/latest/usage/dataclasses/). Pydantic brings helpful runtime type
+    validation and coercion and can be used as a drop-in replacement for standard library `dataclasses`.
 
 ### Composite Test Samples
 

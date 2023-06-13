@@ -6,8 +6,8 @@ icon: kolena/test-suite-16
 
 Test cases and test suites are used to organize test data in Kolena.
 
-A **test case** is a collection of [test samples](/core-concepts/workflow#test-sample) and their associated
-[ground truths](/core-concepts/workflow#ground-truth). Test cases can be thought of as benchmark datasets, or slices of
+A **test case** is a collection of [test samples](workflow.md#test-sample) and their associated
+[ground truths](workflow.md#ground-truth). Test cases can be thought of as benchmark datasets, or slices of
 a benchmark dataset.
 
 A **test suite** is a collection of test cases. Models are tested on test suites.
@@ -16,7 +16,7 @@ A **test suite** is a collection of test cases. Models are tested on test suites
 
 The [`TestCase`][kolena.workflow.TestCase] and [`TestSuite`][kolena.workflow.TestSuite] classes are used to
 programmatically create test cases and test suites. Rather than importing these classes from `kolena.workflow` directly,
-Use the definitions returned from [`define_workflow`](/core-concepts/workflow#defining-a-workflow) bound to the test
+Use the definitions returned from [`define_workflow`](workflow.md#defining-a-workflow) bound to the test
 sample and ground truth types for your workflow:
 
 ```python

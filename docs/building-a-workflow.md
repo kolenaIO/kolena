@@ -4,14 +4,14 @@ icon: kolena/cube-16
 
 # :kolena-cube-20: Building a Workflow
 
-In this quickstart tutorial we'll learn how to use the [`kolena.workflow`](reference/workflow) workflow builder
+In this quickstart tutorial we'll learn how to use the [`kolena.workflow`](reference/workflow/index.md) workflow builder
 definitions to test a [Keypoint Detection](https://keras.io/examples/vision/keypoint_detection/) model on the
 [300-W](https://ibug.doc.ic.ac.uk/resources/300-W/) facial keypoint dataset. This demonstration will show us how we can
 build a workflow to test any arbitrary ML problem on Kolena.
 
 ### Getting Started
 
-With the `kolena` Python client [installed](/installing-kolena#installation),
+With the `kolena` Python client [installed](installing-kolena.md#installation),
 first let's initialize a client session:
 
 ```python
@@ -147,7 +147,7 @@ class TestSampleMetrics(MetricsTestSample):
 #### Test Case Metrics
 
 Test Case metrics are aggregate metrics computed across a population. All of your standard evaluation metrics should
-go here — things like accuracy, precision, recall, or any other aggregate metrics that apply to your problem.
+go here — things like accuracy, precision, recall, or any other aggregate metrics that apply to your problem.
 
 For keypoints, we care about the **mean NME** and **alignment failure rate** across the different test samples in a test
 case:
@@ -196,7 +196,7 @@ test_case = TestCase(f"{DATASET} :: basic", test_samples=ts_with_gt)
 !!! note "Note: Creating test cases"
     In this tutorial we created only a single simple test case, but more advanced test cases can be generated in a
     variety of fast and scalable ways, either programmatically with the `kolena` Python client or visually in the
-    [Studio](https://app.kolena.io/redirect/studio).
+    [:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio).
 
 <!-- See [Creating Test Cases](../testing-with-kolena/creating-tests.md#creating-test-cases) for details. -->
 
@@ -270,8 +270,8 @@ def evaluate_keypoint_detection(
 
 #### Running tests
 
-To test our models, we can define an `infer` function that maps the `TestSample` object we defined above into an
-`Inference`:
+To test our models, we can define an [`infer`][kolena.workflow.Model.infer] function that maps the `TestSample` object
+we defined above into an `Inference`:
 
 ```python
 from random import randint
@@ -311,5 +311,5 @@ detection model as an example. We created new tests, tested our models on Kolena
 evaluation to fit our exact expectations.
 
 This tutorial just scratches the surface of what's possible with Kolena and covered a fraction of the
-`kolena` API — now that we're up and running, we can think about ways to create more detailed tests, improve
+`kolena` API — now that we're up and running, we can think about ways to create more detailed tests, improve
 existing tests, and dive deep into model behaviors.

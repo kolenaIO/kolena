@@ -73,8 +73,8 @@ cd kolena/examples/age_estimation
 poetry update && poetry install
 ```
 
-Now we're up and running and can start [creating test suites](#creating-test-suites) and
-[testing models](#testing-models).
+Now we're up and running and can start [creating test suites](#create-test-suites) and
+[testing models](#test-a-model).
 
 ## Create Test Suites
 

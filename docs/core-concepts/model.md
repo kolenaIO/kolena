@@ -4,8 +4,8 @@ icon: kolena/model-16
 
 # :kolena-model-20: Model
 
-In Kolena, a model is a deterministic transformation from [test samples](/core-concepts/workflow#test-sample) to
-[inferences](/core-concepts/workflow#inference).
+In Kolena, a model is a deterministic transformation from [test samples](workflow.md#test-sample) to
+[inferences](workflow.md#inference).
 
 Kolena only stores metadata associated with your model in its model registry at
 [app.kolena.io/~/models](https://app.kolena.io/redirect/models). Models themselves — their code or their weights — are
@@ -18,7 +18,7 @@ and architecture. It's possible to test any sort of model, from deep learning to
 
 The [`Model`][kolena.workflow.Model] class is used to programmatically create models for testing. Rather than importing
 the class from `kolena.workflow` directly, use the `Model` definition returned from
-[`define_workflow`](/core-concepts/workflow#defining-a-workflow) bound to the test sample and inference types for your
+[`define_workflow`](workflow.md#defining-a-workflow) bound to the test sample and inference types for your
 workflow:
 
 ```python

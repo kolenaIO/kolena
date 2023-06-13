@@ -70,6 +70,7 @@ By default, sessions have static scope and persist until the interpreter is exit
 Additional logging can be configured by specifying `initialize(..., verbose=True)`.
 
 !!! tip "Tip: `logging`"
+
     Integrate `kolena` into your existing logging system by filtering for events from the `"kolena"` logger. All log
     messages are emitted as both Python standard library [`logging`][logging] events as well as stdout/stderr messages.
 
