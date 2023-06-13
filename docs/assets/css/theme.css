@@ -26,12 +26,17 @@ html {
   }
 }
 
-/* Nav icon styling */
+/* Nav styling */
 .md-nav__link {
   align-items: center;
 }
 .md-nav__link svg {
   height: 1em;
+}
+@media screen and (min-width: 76.25em) {
+  .md-nav__item--section {
+    margin: 2em 0;
+  }
 }
 
 /* Apply Kolena branding colors on top of 'default' scheme */

@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Base Definitions
 
 !!! warning "Legacy Warning"

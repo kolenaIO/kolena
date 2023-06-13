@@ -8,6 +8,11 @@ hide:
 
 `kolena.workflow` contains the definitions to build a workflow:
 
+!!! info inline end
+    The [`TestSample`][kolena.workflow.TestSample], [`GroundTruth`][kolena.workflow.GroundTruth], and
+    [`Inference`][kolena.workflow.Inference] can be thought of as the data model, or schema, for a
+    [workflow](/core-concepts/workflow).
+
 1. Design data types, including any [`annotations`](annotation) or [`assets`](asset):
 
     - [`TestSample`][kolena.workflow.TestSample]: model inputs, e.g. images, videos, documents

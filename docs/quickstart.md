@@ -4,7 +4,9 @@ icon: kolena/flame-16
 
 # :kolena-flame-20: Quickstart
 
-Install Kolena to set up rigorous and repeatable model testing in minutes.
+Install Kolena to set up rigorous and repeatable model testing in minutes. In this quickstart guide, we'll use the
+[`age_estimation`](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) example integration to
+demonstrate the how to curate test data and test models in Kolena.
 
 ## Install `kolena`
 
@@ -22,7 +24,7 @@ Install the `kolena` Python package to programmatically interact with Kolena:
     poetry add kolena
     ```
 
-## Clone an Example
+## Clone the Examples
 
 The [kolenaIO/kolena](https://github.com/kolenaIO/kolena) repository contains a number of example integrations to clone
 and run directly:
