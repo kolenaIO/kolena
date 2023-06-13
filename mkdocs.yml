@@ -21,9 +21,6 @@ nav:
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
-  # TODO: uncomment when content lands
-  # - Metrics Guide:
-  #     - Metrics Guide: metrics-guide/index.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
