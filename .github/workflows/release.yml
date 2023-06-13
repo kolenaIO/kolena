@@ -45,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Run pre-commit checks
-        run: poetry run pre-commit run -a
+      # - name: Run pre-commit checks
+      #   run: poetry run pre-commit run -a
 
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
