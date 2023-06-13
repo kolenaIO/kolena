@@ -31,6 +31,10 @@ jobs:
       - name: Install Poetry
         run: pip install poetry==1.2.2
 
+      - name: Add SSH key to clone private repos
+        run: |
+          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+
       - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
           ./docs/setup_insiders.sh
