@@ -1,5 +1,5 @@
 ---
-icon: octicons/beaker-24
+icon: kolena/test-suite-16
 hide:
   - toc
 ---

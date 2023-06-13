@@ -10,9 +10,14 @@ edit_uri: edit/trunk/docs/
 nav:
   - Getting Started:
       - index.md
-      - quickstart.md
-      - installing-kolena.md
-      - building-a-workflow.md
+      - Quickstart: quickstart.md
+      - Installing <code>kolena</code>: installing-kolena.md
+      - Building a Workflow: building-a-workflow.md
+      - Core Concepts:
+          - core-concepts/index.md
+          - Workflow: core-concepts/workflow.md
+          - Test Case & Test Suite: core-concepts/test-suite.md
+          - Model: core-concepts/model.md
   - Advanced Usage:
       - advanced-usage/index.md
       - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
@@ -51,6 +56,7 @@ theme:
   name: material
   logo: assets/images/logo-white.svg
   favicon: assets/images/favicon.png
+  custom_dir: docs/overrides
   font:
     text: Inter
   palette:
@@ -58,13 +64,13 @@ theme:
       scheme: default
       accent: cyan
       toggle:
-        icon: material/weather-sunny
+        icon: kolena/light-mode-20
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       accent: cyan
       toggle:
-        icon: material/weather-night
+        icon: kolena/dark-mode-20
         name: "Switch to light mode"
   # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
   features:
@@ -105,6 +111,9 @@ markdown_extensions:
   - pymdownx.emoji:
       emoji_index: !!python/name:materialx.emoji.twemoji
       emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - docs/overrides/.icons
 
 watch:
   - kolena
@@ -145,3 +154,6 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/kolenaIO/kolena
       name: Kolena on GitHub
+    - icon: kolena/logo
+      link: https://app.kolena.io
+      name: Kolena Platform

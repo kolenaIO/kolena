@@ -1,5 +1,5 @@
 ---
-icon: octicons/container-24
+icon: octicons/container-16
 ---
 
 # :octicons-container-24: Packaging for Automated Evaluation

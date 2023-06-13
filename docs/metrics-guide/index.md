@@ -1,6 +1,6 @@
 ---
-icon: octicons/mortar-board-24
+icon: kolena/learning-16
 status: new
 ---
 
-# Metrics Guide
+# :kolena-learning-20: Metrics Guide
