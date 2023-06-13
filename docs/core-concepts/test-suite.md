@@ -4,12 +4,136 @@ icon: kolena/test-suite-16
 
 # :kolena-test-suite-20: Test Case & Test Suite
 
-## Test Case
+Test cases and test suites are used to organize test data in Kolena.
 
-A test case is a collection of [test samples](#test-sample) and their associated ground truths. Test cases can be
-thought of as benchmark datasets, or smaller slices of a benchmark dataset.
+A **test case** is a collection of [test samples](/core-concepts/workflow#test-sample) and their associated
+[ground truths](/core-concepts/workflow#ground-truth). Test cases can be thought of as benchmark datasets, or slices of
+a benchmark dataset.
 
-### Test Case Best Practices
+A **test suite** is a collection of test cases. Models are tested on test suites.
+
+## Managing Test Cases & Test Suites
+
+The [`TestCase`][kolena.workflow.TestCase] and [`TestSuite`][kolena.workflow.TestSuite] classes are used to
+programmatically create test cases and test suites. Rather than importing these classes from `kolena.workflow` directly,
+Use the definitions returned from [`define_workflow`](/core-concepts/workflow#defining-a-workflow) bound to the test
+sample and ground truth types for your workflow:
+
+```python
+from kolena.workflow import define_workflow
+
+from my_workflow import MyTestSample, MyGroundTruth, MyInference
+
+_, TestCase, TestSuite, _ = define_workflow(
+    "My Workflow",
+    MyTestSample,
+    MyGroundTruth,
+    MyInference,
+)
+```
+
+These classes can then be used to create, load, and edit test cases and test suites:
+
+=== "Test Case"
+
+    Create using [`TestCase.create`][kolena.workflow.TestCase.create]:
+
+    ```python
+    # throws if a test case with name 'example-test-case' already exists
+    test_case = TestCase.create(
+        "example-test-case",
+        # optionally include list of test samples and ground truths to populate the new test case
+        # test_samples=[(ts0, gt0), (ts1, gt1), (ts2, gt2)],
+    )
+    ```
+
+    Load using [`TestCase.load`][kolena.workflow.TestCase.load]:
+
+    ```python
+    # throws if a test case with name 'example-test-case' does not exist
+    test_case = TestCase.load("example-test-case")
+    ```
+
+    Use the [`TestCase`][kolena.workflow.TestCase] constructor for idempotent create/load behavior:
+
+    ```python
+    # loads 'example-test-case' or creates it if it does not already exist
+    test_case = TestCase("example-test-case")
+    ```
+
+    Test cases be edited using the context-managed [`Editor`][kolena.workflow.TestCase.Editor] interface:
+
+    ```python
+    with TestCasf("example-test-case").edit(reset=True) as editor:
+        # perform desired editing actions within context
+        editor.add(ts0, gt0)
+    ```
+
+=== "Test Suite"
+
+    Create using [`TestSuite.create`][kolena.workflow.TestSuite.create]:
+
+    ```python
+    # throws if a test suite with name 'example-test-suite' already exists
+    test_suite = TestSuite.create(
+        "example-test-suite",
+        # optionally include list of test cases to populate the new test suite
+        # test_cases=[test_case0, test_case1, test_case2],
+    )
+    ```
+
+    Load using [`TestSuite.load`][kolena.workflow.TestSuite.load]:
+
+    ```python
+    # throws if a test suite with name 'example-test-suite' does not exist
+    test_suite = TestSuite.load("example-test-suite")
+    ```
+
+    Use the [`TestSuite`][kolena.workflow.TestSuite] constructor for idempotent create/load behavior:
+
+    ```python
+    # loads 'example-test-suite' or creates it if it does not already exist
+    test_suite = TestSuite("example-test-suite")
+    ```
+
+    Test suites be edited using the context-managed [`Editor`][kolena.workflow.TestSuite.Editor] interface:
+
+    ```python
+    with TestSuite("example-test-suite").edit() as editor:
+        editor.add(test_case_a)
+        editor.remove(test_case_b)
+        # perform desired editing actions within context
+    ```
+
+## Versioning
+
+All test data on Kolena is versioned and immutable[^1]. Previous versions of test cases and test suites are always
+available and can be visualized on the web and loaded programmatically by specifying a version.
+
+[^1]: Immutability caveat: test suites, and the test cases they hold, can be deleted on [app.kolena.io/~/testing](https://app.kolena.io/redirect/testing).
+
+```python
+# load a specific version of a test suite
+test_suite_v2 = TestSuite.load("example-name", version=2)
+```
+
+## FAQ & Best Practices
+
+??? question "How should I map my existing benchmark into test cases and test suites?"
+
+    To start, create a test suite containing a single test case for the complete benchmark. This single-test-case test
+    suite represents standard, aggregate evaluation on a benchmark dataset.
+
+    Once this test suite has been created, you can start creating test cases! Use the Studio, the Stratifier, or the
+    Python client to create test cases slicing through (stratifying) this benchmark.
+
+??? question "How many test cases should a test suite include?"
+
+    While test suites can hold anywhere from one to thousands of test cases, the sweet spot for the signal-to-noise
+    ratio is in the dozens or low hundreds of test cases per test suite.
+
+    Note that the relationship between benchmark dataset and test suite doesn't need to be 1:1. Often it can be useful
+    to create different test suites for different stratification strategies applied to the same benchmark.
 
 ??? question "How many samples should be included in a test case?"
 
@@ -40,17 +164,3 @@ thought of as benchmark datasets, or smaller slices of a benchmark dataset.
     As a general rule of thumb, we recommend including **an even balance of positive and negative samples in each test
     case.** This composition minimizes the likelihood of different metrics being heavily skewed in one direction or
     another.
-
-## :kolena-test-suite-20: Test Suite
-
-A test suite is a collection of test cases. Models are tested on on test suites.
-
-### Test Suite Best Practices
-
-!!! question "How do I map my existing benchmark into a test suite?"
-
-    a
-
-??? question "How many test cases should a test suite include?"
-
-    Anywhere from 1 to thousands

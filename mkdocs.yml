@@ -16,7 +16,7 @@ nav:
       - Core Concepts:
           - Core Concepts: core-concepts/index.md
           - Workflow: core-concepts/workflow.md
-          - Test Suite: core-concepts/test-suite.md
+          - Test Case & Test Suite: core-concepts/test-suite.md
           - Model: core-concepts/model.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md

@@ -17,7 +17,7 @@ and architecture. It's possible to test any sort of model, from deep learning to
 ## Creating Models
 
 The [`Model`][kolena.workflow.Model] class is used to programmatically create models for testing. Rather than importing
-the class from `kolena.workflow` directly, typically you would use the `Model` definition returned from
+the class from `kolena.workflow` directly, use the `Model` definition returned from
 [`define_workflow`](/core-concepts/workflow#defining-a-workflow) bound to the test sample and inference types for your
 workflow:
 

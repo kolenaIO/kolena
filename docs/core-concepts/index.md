@@ -25,7 +25,7 @@ offered. For a brief introduction, see the [Quickstart Guide](/quickstart) or th
 
     ---
 
-    Test cases and test suites are WRITEME
+    Test cases and test suites are used to organize test data in Kolena.
 </div>
 
 <div class="grid cards" markdown>
@@ -33,5 +33,6 @@ offered. For a brief introduction, see the [Quickstart Guide](/quickstart) or th
 
     ---
 
-    Models are WRITEME
+    In Kolena, a model is a deterministic transformation from [test samples](/core-concepts/workflow#test-sample) to
+    [inferences](/core-concepts/workflow#inference).
 </div>
