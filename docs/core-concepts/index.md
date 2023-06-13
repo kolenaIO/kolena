@@ -4,40 +4,12 @@ icon: kolena/flag-16
 
 # :kolena-flag-20: Core Concepts
 
-## Workflow
-
-Testing in Kolena is broken down by the type of ML problem you're solving, called a **workflow**. Any ML problem that
-can be tested can be modeled as a workflow in Kolena. Examples include:
-
-<div class="grid cards" markdown>
-- [:kolena-keypoint-detection-20: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection) using images
-- [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization) using articles/documents
-- [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) (regression) using images
-- [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos
-</div>
-
-With the [`kolena.workflow`](/reference/workflow) client module, any arbitrary ML problem can be defined as a workflow
-and tested on Kolena.
+In this section, we'll get acquainted with the core concepts on Kolena, and learn in-depth about the various features
+offered. For a brief introduction, see the [Quickstart Guide](/quickstart) or the
+[Building a Workflow](/building-a-workflow) tutorial. For code-level API documentation, see the
+[API Reference Documentation](/reference/workflow) for the `kolena` Python client.
 
 
-## Test Sample
-
-In Kolena, "test sample" is the general term for the input to a model.
-
-For standard computer vision (CV) models, the test sample is often a single [image][kolena.workflow.Image]. Video-based
-computer vision models would have a [video][kolena.workflow.Video] test sample type, and stereo vision models would use
-[image pairs][kolena.workflow.Composite]. For natural language processing models, the test sample may be a
-[document][kolena.workflow.Document] or [text snippet][kolena.workflow.Text].
-
-When [building a workflow](building-a-workflow), you can [extend](/reference/workflow/test-sample) and
-[compose][kolena.workflow.Composite] these base test sample types as necessary, or use the base types directly if no
-customization is required.
-
-### Metadata
-
-Any additional information associated with a test sample, e.g. details about how it was collected, can be included as
-[metadata][kolena.workflow.Metadata]. We recommend uploading any and all metadata that you have available, as metadata
-can be useful for searching through data in the Studio, interpreting model results, and creating new test cases.
 
 ## Test Case
 

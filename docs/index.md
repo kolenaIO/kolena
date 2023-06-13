@@ -1,5 +1,5 @@
 ---
-icon: kolena/test-suite-16
+icon: kolena/layers-16
 hide:
   - toc
 ---

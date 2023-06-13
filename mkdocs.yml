@@ -12,8 +12,12 @@ nav:
       - Developer Guide: index.md
       - Quickstart: quickstart.md
       - Installing <code>kolena</code>: installing-kolena.md
-      - Core Concepts: core-concepts.md
       - Building a Workflow: building-a-workflow.md
+      - Core Concepts:
+          - Core Concepts: core-concepts/index.md
+          - Workflow: core-concepts/workflow.md
+          - Test Suite: core-concepts/test-suite.md
+          - Model: core-concepts/model.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
