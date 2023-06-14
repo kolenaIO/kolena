@@ -39,6 +39,12 @@ html {
   }
 }
 
+/* Disable interactivity styles on grid cards, which are not interactive */
+.md-typeset .grid.cards>ul>li:hover {
+  border: .05rem solid var(--md-default-fg-color--lightest); /* copy from base grid card styles */
+  box-shadow: unset;
+}
+
 /* Apply Kolena branding colors on top of 'default' scheme */
 [data-md-color-scheme="default"] {
   --md-primary-fg-color: #6434c1;
