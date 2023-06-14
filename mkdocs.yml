@@ -52,7 +52,8 @@ nav:
               - Base Definitions: reference/legacy/built-in/base.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
-  - Sign in: https://app.kolena.io
+  - Sign in:
+    - Sign in: sign-in/index.md
 
 theme:
   name: material
@@ -152,6 +153,9 @@ plugins:
           show_docstring_attributes: true
           show_root_toc_entry: false
           show_source: false
+  redirects:
+    redirect_maps:
+      sign-in/index.md: https://app.kolena.io
 
 extra:
   generator: false
