@@ -52,7 +52,7 @@ nav:
               - Base Definitions: reference/legacy/built-in/base.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
-  - Sign in: https://app.kolena.io
+  - Sign in ↗: https://app.kolena.io
 
 theme:
   name: material
@@ -107,7 +107,7 @@ markdown_extensions:
         kwds:
           case: lower
   - toc:
-      permalink: "¤"
+      permalink: "#"
   - attr_list
   - md_in_html
   - pymdownx.emoji:
@@ -137,9 +137,6 @@ plugins:
   search:
     lang: en
   git-revision-date-localized:
-  glightbox:  # image click-to-zoom functionality
-    slide_effect: fade
-    auto_caption: true
   mkdocstrings:
     handlers:
       python:

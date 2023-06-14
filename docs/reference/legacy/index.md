@@ -1,5 +1,7 @@
 ---
 icon: kolena/archive-16
+search:
+  exclude: true
 hide:
   - toc
 ---

@@ -12,7 +12,7 @@ offered. For a brief introduction, see the [Quickstart Guide](../quickstart.md) 
 [API Reference Documentation](../reference/workflow) for the `kolena` Python client.
 
 <div class="grid cards" markdown>
-- [:kolena-workflow-16: Workflow](workflow)
+- [:kolena-workflow-16: Workflow](workflow.md)
 
     ---
 
@@ -21,7 +21,7 @@ offered. For a brief introduction, see the [Quickstart Guide](../quickstart.md) 
 </div>
 
 <div class="grid cards" markdown>
-- [:kolena-test-suite-16: Test Cases & Test Suites](test-suites)
+- [:kolena-test-suite-16: Test Cases & Test Suites](test-suite.md)
 
     ---
 
@@ -29,7 +29,7 @@ offered. For a brief introduction, see the [Quickstart Guide](../quickstart.md) 
 </div>
 
 <div class="grid cards" markdown>
-- [:kolena-model-16: Test Cases & Test Suites](test-suites)
+- [:kolena-model-16: Models](model.md)
 
     ---
 

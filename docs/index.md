@@ -39,7 +39,7 @@ tests. You interface with it through the web at [app.kolena.io](https://app.kole
 
     Kolena helps you test your ML models more effectively.
 
-    **Jump right in with the [:kolena-flame-16: Quickstart](quickstart.md) guide**.
+    **Jump right in with the [<nobr>:kolena-flame-16: Quickstart</nobr>](quickstart.md) guide**.
 
 Current ML evaluation techniques are falling short. Engineers run inference on arbitrarily split benchmark datasets,
 spend weeks staring at error graphs to evaluate their models, and ultimately produce a global metric that fails to

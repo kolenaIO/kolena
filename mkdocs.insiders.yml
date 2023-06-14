@@ -26,6 +26,9 @@ theme:
     - content.tooltips
 
 plugins:
+  social:
+    cards_layout: custom
+    cards_layout_dir: docs/layouts
   typeset:
   git-committers:
     repository: kolenaIO/kolena
