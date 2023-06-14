@@ -26,6 +26,15 @@ theme:
     - content.tooltips
 
 plugins:
+  social:
+    # cache: false
+    # debug: true
+    cards_layout: custom
+    cards_layout_dir: docs/layouts
+    # cards_layout_options:
+    #   font_family: Inter
+    #   background_color: "#6434c1"
+    #   background_image: docs/assets/images/background.svg  # TODO: not properly applied -- debug
   typeset:
   git-committers:
     repository: kolenaIO/kolena
