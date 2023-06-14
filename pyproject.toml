@@ -85,5 +85,5 @@ python_classes = []
 # only collect functions starting with 'test__'
 python_functions = ["test__*"]
 markers = [
-    "metrics: tests that extra dependencies for metrics",
+    "metrics: tests that require the metrics extra dependency such as sklearn",
 ]

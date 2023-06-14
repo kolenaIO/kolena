@@ -16,10 +16,127 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Tuple
+from typing import Union
 
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
+import numpy as np
+
+from kolena._extras.metrics.sklearn import sklearn_metrics
 from kolena._utils import log
 from kolena.workflow.evaluator import ConfusionMatrix
+from kolena.workflow.evaluator import Curve
+from kolena.workflow.evaluator import CurvePlot
+from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
+
+
+def _compute_sklearn_arrays(
+    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+) -> Tuple[np.ndarray, np.ndarray]:
+    y_true: List[int] = []
+    y_score: List[float] = []
+    for image_bbox_matches in all_matches:
+        for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
+            y_true.append(1)
+            y_score.append(bbox_inf.score)
+        for _ in image_bbox_matches.unmatched_gt:  # FN
+            y_true.append(1)
+            y_score.append(-1)
+        for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
+            y_true.append(0)
+            y_score.append(bbox_inf.score)
+    return np.array(y_true), np.array(y_score)
+
+
+def _compute_threshold_curve(
+    y_true: np.ndarray,
+    y_score: np.ndarray,
+    curve: Literal["pr", "f1"],
+    curve_label: Optional[str] = None,
+) -> Optional[Curve]:
+    if len(y_score) >= 501:
+        thresholds = list(np.linspace(min(abs(y_score)), max(y_score), 501))
+    else:
+        thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
+
+    precisions: List[float] = []
+    recalls: List[float] = []
+    f1s: List[float] = []
+    for threshold in thresholds:
+        y_pred = [1 if score >= threshold else 0 for score in y_score]
+        precision, recall, f1, _ = sklearn_metrics.precision_recall_fscore_support(
+            y_true,
+            y_pred,
+            average="binary",
+            zero_division=0,
+        )
+
+        precisions.append(precision)
+        recalls.append(recall)
+        f1s.append(f1)
+
+    # Omit curves with only one point
+    if len(f1s) < 2:
+        return None
+
+    if curve == "f1":
+        return Curve(x=thresholds, y=f1s, label=curve_label)
+    else:
+        return Curve(x=recalls, y=precisions, label=curve_label)
+
+
+def compute_pr_plot(
+    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    curve_label: Optional[str] = None,
+) -> Optional[CurvePlot]:
+    """
+    Creates a PR (precision and recall) plot.
+
+    :param all_matches: A list of multiclass or singleclass matching results.
+    :param curve_label: The label of the curve.
+    :return: :class:`CurvePlot` for the PR curve.
+    """
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    curve = _compute_threshold_curve(y_true, y_score, "pr", curve_label)
+
+    if curve is None:
+        return None
+
+    return CurvePlot(
+        title="Precision vs. Recall",
+        x_label="Recall",
+        y_label="Precision",
+        curves=[curve],
+    )
+
+
+def compute_f1_plot(
+    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    curve_label: Optional[str] = None,
+) -> CurvePlot:
+    """
+    Creates a F1-threshold (confidence threshold) plot.
+
+    :param all_matches: A list of multiclass or singleclass matching results.
+    :param curve_label: The label of the curve.
+    :return: :class:`CurvePlot` for the F1-threshold curve.
+    """
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    curve = _compute_threshold_curve(y_true, y_score, "f1", curve_label)
+    if curve is None:
+        return None
+
+    return CurvePlot(
+        title="F1-Score vs. Confidence Threshold",
+        x_label="Confidence Threshold",
+        y_label="F1-Score",
+        curves=[curve],
+    )
 
 
 def compute_confusion_matrix_plot(
@@ -27,7 +144,7 @@ def compute_confusion_matrix_plot(
     plot_title: str = "Confusion Matrix",
 ) -> Optional[ConfusionMatrix]:
     """
-    Creates a [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix] for the multiclass object detection workflow.
+    Creates a [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix] for a multiclass workflow.
 
     :param all_matches: A list of multiclass matching results.
     :param plot_title: The title for the [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix].
