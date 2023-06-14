@@ -33,10 +33,21 @@ df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv")
 ```
 
 !!! note "Note: `s3fs` dependency"
-    To load CSVs directly from S3, make sure to install the `s3fs` Python module:`pip3 install s3fs[boto3]` and
+
+    To load CSVs directly from S3, make sure to install the `s3fs` Python module: `pip3 install s3fs[boto3]` and
     [set up AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
 This **`metadata.csv`** file describes a keypoint detection dataset with the following columns:
+
+!!! note inline end "Note: Five-point facial keypoints array"
+
+    For brevity, the 300-W dataset has been pared down to only 5 keypoints: outermost corner of each eye, bottom of
+    nose, and corners of the mouth.
+
+    <figure markdown>
+      ![Example image and five-point facial keypoints array from 300-W.](assets/images/300-W.jpg)
+      <figcaption>Example image and five-point facial keypoints array from 300-W.</figcaption>
+    </figure>
 
 - **`locator`**: location of the image in S3
 - **`normalization_factor`**: normalization factor of the image. This is used to normalize the error by providing a
@@ -47,10 +58,6 @@ This **`metadata.csv`** file describes a keypoint detection dataset with the fol
 Each `locator` is present exactly one time and contains the keypoint ground truth for that image. In this tutorial,
 we're implementing our workflow with support for only a single keypoint instance per image, but we could easily adapt
 our ground truth, inference, and metrics types to accommodate a variable number of keypoint arrays per image.
-
-!!! note
-    For brevity, the 300-W dataset has been pared down to only 5 keypoints: outermost corner of each eye, bottom of nose,
-    and corners of the mouth.
 
 ### Step 1: Defining Data Types
 
