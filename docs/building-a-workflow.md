@@ -4,7 +4,7 @@ icon: kolena/cube-16
 
 # :kolena-cube-20: Building a Workflow
 
-In this quickstart tutorial we'll learn how to use the [`kolena.workflow`](reference/workflow/index.md) workflow builder
+In this tutorial we'll learn how to use the [`kolena.workflow`](reference/workflow/index.md) workflow builder
 definitions to test a [Keypoint Detection](https://keras.io/examples/vision/keypoint_detection/) model on the
 [300-W](https://ibug.doc.ic.ac.uk/resources/300-W/) facial keypoint dataset. This demonstration will show us how we can
 build a workflow to test any arbitrary ML problem on Kolena.
@@ -306,7 +306,7 @@ to analyze and debug our model's performance on this test suite.
 
 ### Conclusion
 
-In this quickstart tutorial we learned how to build a workflow for an arbitrary ML problem, using a facial keypoint
+In this tutorial we learned how to build a workflow for an arbitrary ML problem, using a facial keypoint
 detection model as an example. We created new tests, tested our models on Kolena, and learned how to customize
 evaluation to fit our exact expectations.
 
