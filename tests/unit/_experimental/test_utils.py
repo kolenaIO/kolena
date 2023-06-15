@@ -31,42 +31,42 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
         (
             "no confusion, one TP per label",
             TEST_MATCHING["no confusion, one TP per label"],
-            {"a": 0.6, "b": 0.5},
+            0.5,
         ),
         (
             "only confusion",
             TEST_MATCHING["only confusion"],
-            {"a": 0, "b": 0},
+            0.0,
         ),
         (
             "only confusion, one TP for a",
             TEST_MATCHING["only confusion, one TP for a"],
-            {"a": 0.9, "b": 0},
+            0.9,
         ),
         (
             "only confusion, one TP for b",
             TEST_MATCHING["only confusion, one TP for b"],
-            {"a": 0, "b": 0.9},
+            0.9,
         ),
         (
             "ones",
             TEST_MATCHING["ones"],
-            {"a": 0.9, "b": 0.8},
+            0.8,
         ),
         (
             "ones, with two matchings, TPs",
             TEST_MATCHING["ones, with two matchings, TPs"],
-            {"a": 0.9, "b": 0.8},
+            0.8,
         ),
         (
             "ones, with two matchings, mixed",
             TEST_MATCHING["ones, with two matchings, mixed"],
-            {"a": 0.9, "b": 0.6},
+            0.6,
         ),
         (
             "two single class matchings",
             TEST_MATCHING["two single class matchings"],
-            {"a": 0.8, "b": 0.8},
+            0.8,
         ),
         (
             "two single class matchings as IMs",
@@ -76,12 +76,12 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
         (
             "large",
             TEST_MATCHING["large"],
-            {"cat": 0.2, "cow": 0.4, "dog": 0, "fish": 0},
+            0.2,
         ),
         (
             "only tps",
             TEST_MATCHING["only tps"],
-            {"a": 0.01, "b": 0.3, "c": 0.01, "d": 0.6, "e": 0.01},
+            0.01,
         ),
         (
             "only tps as IM",
@@ -171,7 +171,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
         (
             "tps and fps and fns",
             TEST_MATCHING["tps and fps and fns"],
-            {"a": 0.01, "b": 0.3, "c": 0.01, "d": 0.6, "e": 0.01},
+            0.01,
         ),
     ],
 )
@@ -180,9 +180,81 @@ def test__metrics__f1__optimal(
     matchings: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     expected: Union[float, Dict[str, float]],
 ) -> None:
-    from kolena._experimental.object_detection.utils import compute_optimal_f1
+    from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
 
-    dictionary = compute_optimal_f1(matchings)
+    dictionary = compute_optimal_f1_threshold(matchings)
+    assert expected == dictionary
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "test_name, matchings, expected",
+    [
+        (
+            "no confusion, one TP per label",
+            TEST_MATCHING["no confusion, one TP per label"],
+            {"a": 0.6, "b": 0.5},
+        ),
+        (
+            "only confusion",
+            TEST_MATCHING["only confusion"],
+            {"a": 0, "b": 0},
+        ),
+        (
+            "only confusion, one TP for a",
+            TEST_MATCHING["only confusion, one TP for a"],
+            {"a": 0.9, "b": 0},
+        ),
+        (
+            "only confusion, one TP for b",
+            TEST_MATCHING["only confusion, one TP for b"],
+            {"a": 0, "b": 0.9},
+        ),
+        (
+            "ones",
+            TEST_MATCHING["ones"],
+            {"a": 0.9, "b": 0.8},
+        ),
+        (
+            "ones, with two matchings, TPs",
+            TEST_MATCHING["ones, with two matchings, TPs"],
+            {"a": 0.9, "b": 0.8},
+        ),
+        (
+            "ones, with two matchings, mixed",
+            TEST_MATCHING["ones, with two matchings, mixed"],
+            {"a": 0.9, "b": 0.6},
+        ),
+        (
+            "two single class matchings",
+            TEST_MATCHING["two single class matchings"],
+            {"a": 0.8, "b": 0.8},
+        ),
+        (
+            "large",
+            TEST_MATCHING["large"],
+            {"cat": 0.2, "cow": 0.4, "dog": 0, "fish": 0},
+        ),
+        (
+            "only tps",
+            TEST_MATCHING["only tps"],
+            {"a": 0.01, "b": 0.3, "c": 0.01, "d": 0.6, "e": 0.01},
+        ),
+        (
+            "tps and fps and fns",
+            TEST_MATCHING["tps and fps and fns"],
+            {"a": 0.01, "b": 0.3, "c": 0.01, "d": 0.6, "e": 0.01},
+        ),
+    ],
+)
+def test__metrics__f1__optimal__multiclass(
+    test_name: str,
+    matchings: List[MulticlassInferenceMatches],
+    expected: Dict[str, float],
+) -> None:
+    from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
+
+    dictionary = compute_optimal_f1_threshold_multiclass(matchings)
     assert expected == dictionary
 
 

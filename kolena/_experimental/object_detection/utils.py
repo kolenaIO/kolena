@@ -182,43 +182,41 @@ def compute_confusion_matrix_plot(
 def _compute_sklearn_arrays_by_class(
     all_matches: List[MulticlassInferenceMatches],
 ) -> Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray], Dict[str, np.ndarray]]:
-    y_true: List[int] = []
-    y_score: List[float] = []
-    y_true_by_label: defaultdict[str, List[int]] = defaultdict(lambda: [])
-    y_score_by_label: defaultdict[str, List[float]] = defaultdict(lambda: [])
-    for image_bbox_matches in all_matches:
-        for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
-            y_true.append(1)
-            y_score.append(bbox_inf.score)
-            y_true_by_label[bbox_inf.label].append(1)
-            y_score_by_label[bbox_inf.label].append(bbox_inf.score)
-        for gt_or_pair in image_bbox_matches.unmatched_gt:  # FN
-            gt_label: str = gt_or_pair[0].label if type(gt_or_pair) is tuple else gt_or_pair.label
-            y_true.append(1)
-            y_score.append(-1)
-            y_true_by_label[gt_label].append(1)
-            y_score_by_label[gt_label].append(-1)
-        for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
-            y_true.append(0)
-            y_score.append(bbox_inf.score)
-            y_true_by_label[bbox_inf.label].append(0)
-            y_score_by_label[bbox_inf.label].append(bbox_inf.score)
+    y_true_by_label: Dict[str, np.ndarray] = {}
+    y_score_by_label: Dict[str, np.ndarray] = {}
 
-    y_true_by_label_np: Dict[str, np.ndarray] = {}
-    for key, value in y_true_by_label.items():
-        y_true_by_label_np[key] = np.array(value)
+    labels: Set[str] = set()
+    for match in all_matches:
+        for _, bbox_inf in match.matched:
+            labels.add(bbox_inf.label)
+        for bbox_gt, _ in match.unmatched_gt:
+            labels.add(bbox_gt.label)
+        for bbox_inf in match.unmatched_inf:
+            labels.add(bbox_inf.label)
 
-    y_score_by_label_np: Dict[str, np.ndarray] = {}
-    for key, value in y_score_by_label.items():
-        y_score_by_label_np[key] = np.array(value)
+    for label in labels:
+        filtered_matchings = [
+            InferenceMatches(
+                matched=[(gt, inf) for gt, inf in match.matched if gt.label == label],
+                unmatched_gt=[gt for gt, _ in match.unmatched_gt if gt.label == label],
+                unmatched_inf=[inf for inf in match.unmatched_inf if inf.label == label],
+            )
+            for match in all_matches
+        ]
 
-    return np.array(y_true), np.array(y_score), y_true_by_label_np, y_score_by_label_np
+        y_true, y_score = _compute_sklearn_arrays(filtered_matchings)
+        y_true_by_label[label] = y_true
+        y_score_by_label[label] = y_score
+
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    return y_true, y_score, y_true_by_label, y_score_by_label
 
 
 def _compute_optimal_f1_with_arrays(
     y_true: np.ndarray,
     y_score: np.ndarray,
 ) -> float:
+    # optimal threshold is 0 if there is no relevant or true label
     if np.all(y_true == 0):
         return 0.0
 
@@ -244,27 +242,45 @@ def _compute_optimal_f1_with_arrays(
         return float(thresholds[max_f1_index])
 
 
-def compute_optimal_f1(
-    all_bbox_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
-) -> Union[float, Dict[str, float]]:
-    optimal_thresholds: Dict[str, float] = {}
-    multiclass = type(all_bbox_matches[0]) is MulticlassInferenceMatches
+def compute_optimal_f1_threshold(
+    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+) -> float:
+    """
+    Computes the optimal F1 threshold for matchings.
 
-    if multiclass:
-        _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_bbox_matches)
-        for label in y_true_by_label.keys():
-            y_true, y_score = y_true_by_label[label], y_score_by_label[label]
-            optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
-        return optimal_thresholds
-    else:
-        y_true, y_score = _compute_sklearn_arrays(all_bbox_matches)
-        return _compute_optimal_f1_with_arrays(y_true, y_score)
+    :param all_matches: A list of matching results.
+    :return: The optimal F1 threshold value.
+    """
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    return _compute_optimal_f1_with_arrays(y_true, y_score)
+
+
+def compute_optimal_f1_threshold_multiclass(
+    all_matches: List[MulticlassInferenceMatches],
+) -> Dict[str, float]:
+    """
+    Creates a mapping of label to optimal F1 thresholds for a multiclass workflow.
+
+    :param all_matches: A list of multiclass matching results.
+    :return: A dictionary with each label and its optimal F1 threshold value.
+    """
+    optimal_thresholds: Dict[str, float] = {}
+
+    _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
+    for label in y_true_by_label.keys():
+        y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+        optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
+    return optimal_thresholds
 
 
 def compute_ap(precisions: List[float], recalls: List[float]) -> float:
     """
-    Computes Average Precision given a PR curve using the same approach as Pascal VOC.
+    Computes the average precision given a PR curve with the metrics methodology of Pascal VOC.
     Based on https://github.com/Cartucho/mAP which implements the Matlab Pascal Voc code in Python.
+
+    :param precisions: A list precision values from a PR curve.
+    :param recalls: A list recall values from a PR curve.
+    :return: The value of the average precision.
     """
 
     if len(precisions) != len(recalls):
