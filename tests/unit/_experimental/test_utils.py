@@ -29,6 +29,11 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
     "test_name, matchings, expected",
     [
         (
+            "empty",
+            [],
+            0.0,
+        ),
+        (
             "no confusion, one TP per label",
             TEST_MATCHING["no confusion, one TP per label"],
             0.5,
@@ -190,6 +195,11 @@ def test__metrics__f1__optimal(
 @pytest.mark.parametrize(
     "test_name, matchings, expected",
     [
+        (
+            "empty",
+            [],
+            {},
+        ),
         (
             "no confusion, one TP per label",
             TEST_MATCHING["no confusion, one TP per label"],
