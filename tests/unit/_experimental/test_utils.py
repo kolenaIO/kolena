@@ -332,15 +332,15 @@ def test__metrics__f1__optimal__multiclass(
         ),
     ],
 )
-def test__compute_ap(precisions: List[float], recalls: List[float], expected: float) -> None:
-    from kolena._experimental.object_detection.utils import compute_ap
+def test__compute__average__precision(precisions: List[float], recalls: List[float], expected: float) -> None:
+    from kolena._experimental.object_detection.utils import compute_average_precision
 
-    assert pytest.approx(compute_ap(precisions, recalls), 1e-12) == expected
+    assert pytest.approx(compute_average_precision(precisions, recalls), 1e-12) == expected
 
 
 @pytest.mark.metrics
-def test__compute_raises_exception() -> None:
-    from kolena._experimental.object_detection.utils import compute_ap
+def test__compute__average__precision__raises__exception() -> None:
+    from kolena._experimental.object_detection.utils import compute_average_precision
 
     with pytest.raises(ValueError):
-        compute_ap([1, 1, 1], [1, 1])
+        compute_average_precision([1, 1, 1], [1, 1])
