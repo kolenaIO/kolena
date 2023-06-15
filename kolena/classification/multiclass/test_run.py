@@ -17,59 +17,23 @@ from typing import Optional
 from pydantic import validate_arguments
 
 from kolena._utils.validators import ValidatorConfig
+from kolena.classification.multiclass import evaluate_multiclass_classification
 from kolena.classification.multiclass import Model
-from kolena.classification.multiclass import MulticlassClassificationEvaluator
 from kolena.classification.multiclass import TestSuite
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
-from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow.test_run import test as base_test
-from kolena.workflow.test_run import TestRun as BaseTestRun
-
-
-class TestRun(BaseTestRun):
-    """
-    Convenience alias for [`kolena.workflow.TestRun`][kolena.workflow.test_run.TestRun], configured for the
-    `kolena.classification.multiclass` workflow and evaluator.
-
-    Interface to run tests for a [`Model`][kolena.classification.multiclass.Model] on a
-    [`TestSuite`][kolena.classification.multiclass.TestSuite].
-
-    For a streamlined interface, see [`test`][kolena.classification.multiclass.test].
-
-    :param model: The model being tested.
-    :param test_suite: The test suite on which to test the model.
-    :param reset: Overwrites existing inferences if set.
-    """
-
-    @validate_arguments(config=ValidatorConfig)
-    def __init__(
-        self,
-        model: Model,
-        test_suite: TestSuite,
-        configurations: Optional[List[EvaluatorConfiguration]] = None,
-        reset: bool = False,
-    ):
-        if configurations is None:
-            configurations = [ThresholdConfiguration()]
-        super().__init__(
-            model=model,
-            test_suite=test_suite,
-            evaluator=MulticlassClassificationEvaluator,
-            configurations=configurations,
-            reset=reset,
-        )
 
 
 @validate_arguments(config=ValidatorConfig)
 def test(
     model: Model,
     test_suite: TestSuite,
-    configurations: Optional[List[EvaluatorConfiguration]] = None,
+    configurations: Optional[List[ThresholdConfiguration]] = None,
     reset: bool = False,
 ) -> None:
     """
-    Convenience alias for [`test`][kolena.workflow.test] configured for the `kolena.classification.multiclass` workflow
-    and evaluator.
+    Convenience alias for [`test`][kolena.workflow.test] configured for the pre-built Multiclass Classification
+    workflow.
 
     Tests the provided [`Model`][kolena.classification.multiclass.Model] on the provided
     [`TestSuite`][kolena.classification.multiclass.TestSuite]. Any test already in progress for this model on this
@@ -86,7 +50,7 @@ def test(
     base_test(
         model=model,
         test_suite=test_suite,
-        evaluator=MulticlassClassificationEvaluator,
+        evaluator=evaluate_multiclass_classification,
         configurations=configurations,
         reset=reset,
     )

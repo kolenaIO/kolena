@@ -21,7 +21,6 @@ from typing import Optional
 from typing import Set
 from typing import Tuple
 from typing import Type
-from typing import Union
 
 import numpy as np
 
@@ -29,14 +28,13 @@ from kolena._utils import log
 from kolena.classification.multiclass._utils import get_histogram_range
 from kolena.classification.multiclass._utils import get_label_confidence
 from kolena.classification.multiclass._utils import roc_curve
-from kolena.classification.multiclass.workflow import AggregatedMetrics
+from kolena.classification.multiclass.workflow import AggregateMetrics
 from kolena.classification.multiclass.workflow import GroundTruth
 from kolena.classification.multiclass.workflow import Inference
-from kolena.classification.multiclass.workflow import InferenceLabel
+from kolena.classification.multiclass.workflow import PerClassMetrics
+from kolena.classification.multiclass.workflow import PerImageMetrics
 from kolena.classification.multiclass.workflow import TestCase
-from kolena.classification.multiclass.workflow import TestCaseMetrics
 from kolena.classification.multiclass.workflow import TestSample
-from kolena.classification.multiclass.workflow import TestSampleMetrics
 from kolena.classification.multiclass.workflow import TestSuiteMetrics
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import BarPlot
@@ -47,7 +45,6 @@ from kolena.workflow import EvaluationResults
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
-from kolena.workflow.annotation import ScoredClassificationLabel
 
 Result = Tuple[TestSample, GroundTruth, Inference]
 
@@ -56,8 +53,8 @@ def _compute_test_sample_metric(
     threshold_configuration: ThresholdConfiguration,
     ground_truth: GroundTruth,
     inference: Inference,
-) -> TestSampleMetrics:
-    empty_metrics = TestSampleMetrics(
+) -> PerImageMetrics:
+    empty_metrics = PerImageMetrics(
         classification=None,
         margin=None,
         is_correct=False,
@@ -68,16 +65,13 @@ def _compute_test_sample_metric(
     sorted_indices = np.argsort([label.score for label in inference.inferences])
     match = inference.inferences[sorted_indices[-1]]
     predicted_label, confidence_score = match.label, match.score
-    margin: Optional[float] = None
-    if len(sorted_indices) > 1:
-        second_closest: Union[ScoredClassificationLabel, InferenceLabel] = inference.inferences[sorted_indices[-2]]
-        margin = confidence_score - second_closest.score
+    margin = confidence_score - inference.inferences[sorted_indices[-2]].score if len(sorted_indices) > 1 else None
 
     if threshold_configuration.threshold is not None and confidence_score < threshold_configuration.threshold:
         return empty_metrics
 
     is_correct = predicted_label == ground_truth.classification.label
-    return TestSampleMetrics(
+    return PerImageMetrics(
         classification=match,
         margin=margin,
         is_correct=is_correct,
@@ -86,7 +80,7 @@ def _compute_test_sample_metric(
 
 def _as_class_metric_plot(
     metric_name: str,
-    metrics_by_label: Dict[str, AggregatedMetrics],
+    metrics_by_label: Dict[str, PerClassMetrics],
     labels: List[str],
 ) -> Optional[BarPlot]:
     if metric_name == "Recall":
@@ -129,7 +123,7 @@ def _as_confidence_histogram(
 
 def _compute_confidence_histograms(
     test_case_name: str,
-    metrics: List[TestSampleMetrics],
+    metrics: List[PerImageMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Histogram]:
     if confidence_range is None:
@@ -159,14 +153,14 @@ def _compute_test_case_plots(
     labels: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-    metrics: List[TestSampleMetrics],
-    metrics_by_label: Dict[str, AggregatedMetrics],
+    metrics: List[PerImageMetrics],
+    metrics_by_label: Dict[str, PerClassMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Plot]:
     gt_labels = {gt.classification.label for gt in ground_truths}
     plots: List[Plot] = [
         _as_class_metric_plot(field.name, metrics_by_label, labels)
-        for field in dataclasses.fields(AggregatedMetrics)
+        for field in dataclasses.fields(PerClassMetrics)
         if len(gt_labels) > 2
         or field.name not in ["Precision", "Recall"]  # Omit single-class TC from precision and recall plots
     ]
@@ -182,7 +176,7 @@ def _compute_test_case_plots(
 def _compute_test_case_confusion_matrix(
     test_case_name: str,
     ground_truths: List[GroundTruth],
-    metrics: List[TestSampleMetrics],
+    metrics: List[PerImageMetrics],
 ) -> Optional[Plot]:
     gt_labels: Set[str] = set()
     pred_labels: Set[str] = set()
@@ -243,8 +237,8 @@ def _aggregate_label_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-    metrics_test_samples: List[TestSampleMetrics],
-) -> Dict[str, AggregatedMetrics]:
+    metrics_test_samples: List[PerImageMetrics],
+) -> Dict[str, PerClassMetrics]:
     aggregated_metrics = {}
     for base_label in labels:
         n_tp = 0
@@ -266,7 +260,7 @@ def _aggregate_label_metrics(
         recall = n_tp / (n_tp + n_fn) if n_tp + n_fn > 0 else 0
         fpr = n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0
         f1_score = (2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0
-        aggregated_metrics[base_label] = AggregatedMetrics(
+        aggregated_metrics[base_label] = PerClassMetrics(
             F1=f1_score,
             Precision=precision,
             Recall=recall,
@@ -278,9 +272,9 @@ def _aggregate_label_metrics(
 def _compute_test_case_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
-    metrics_test_samples: List[TestSampleMetrics],
-    metrics_by_label: Dict[str, AggregatedMetrics],
-) -> TestCaseMetrics:
+    metrics_test_samples: List[PerImageMetrics],
+    metrics_by_label: Dict[str, PerClassMetrics],
+) -> AggregateMetrics:
     n_correct = len([metric for metric in metrics_test_samples if metric.is_correct])
     n_images = len(test_samples)
     n_incorrect = n_images - n_correct
@@ -288,12 +282,12 @@ def _compute_test_case_metrics(
     labels = {gt.classification.label for gt in ground_truths}
 
     macro_metrics_by_name: Dict[str, float] = {}
-    for field in dataclasses.fields(AggregatedMetrics):
+    for field in dataclasses.fields(PerClassMetrics):
         metric_name = field.name
         metrics = [getattr(metrics_by_label[label], metric_name) for label in labels]
         macro_metrics_by_name[metric_name] = sum(metrics) / len(metrics)
 
-    return TestCaseMetrics(
+    return AggregateMetrics(
         n_labels=len(labels),
         n_correct=n_correct,
         n_incorrect=n_incorrect,
@@ -311,8 +305,8 @@ def _compute_test_suite_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-    test_sample_metrics: List[TestSampleMetrics],
-    test_case_metrics: List[TestCaseMetrics],
+    test_sample_metrics: List[PerImageMetrics],
+    test_case_metrics: List[AggregateMetrics],
 ) -> TestSuiteMetrics:
     n_images = len(test_sample_metrics)
     n_correct = len([metric for metric in test_sample_metrics if metric.is_correct])
@@ -326,7 +320,7 @@ def _compute_test_suite_metrics(
     fields: Dict[str, Type] = {}
 
     metrics_by_label = _aggregate_label_metrics(labels, test_samples, ground_truths, inferences, test_sample_metrics)
-    for field in dataclasses.fields(AggregatedMetrics):
+    for field in dataclasses.fields(PerClassMetrics):
         attr = field.name
         label_values = [getattr(metric, attr) for metric in metrics_by_label.values()]
         mean_field_name = f"mean_{attr}"
@@ -345,13 +339,21 @@ def _compute_test_suite_metrics(
     return dc(**values)
 
 
-def MulticlassClassificationEvaluator(
+def evaluate_multiclass_classification(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
-    configuration: ThresholdConfiguration = dataclasses.field(default_factory=ThresholdConfiguration),
+    configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
+    """
+    [Evaluator implementation](../../workflow/evaluator) for the pre-built Multiclass Classification workflow.
+
+    It is not necessary to use this definition directly when testing with
+    [`kolena.classification.multiclass.test`][kolena.classification.multiclass.test], which is already bound to this
+    evaluator implementation. Provide this definition when testing with [`kolena.workflow.test`][kolena.workflow.test]
+    or [`kolena.workflow.TestRun`][kolena.workflow.TestRun].
+    """
     labels_set: Set[str] = set()
     for gt in ground_truths:
         labels_set.add(gt.classification.label)
@@ -360,15 +362,15 @@ def MulticlassClassificationEvaluator(
             labels_set.add(label.label)
     labels = sorted(labels_set)
 
-    metrics_test_sample: List[Tuple[TestSample, TestSampleMetrics]] = [
+    metrics_test_sample: List[Tuple[TestSample, PerImageMetrics]] = [
         (ts, _compute_test_sample_metric(configuration, gt, inf))
         for ts, gt, inf in zip(test_samples, ground_truths, inferences)
     ]
-    test_sample_metrics: List[TestSampleMetrics] = [mts for _, mts in metrics_test_sample]
+    test_sample_metrics: List[PerImageMetrics] = [mts for _, mts in metrics_test_sample]
     confidence_scores = [mts.classification.score for mts in test_sample_metrics if mts.classification is not None]
     confidence_range = get_histogram_range(confidence_scores)
 
-    metrics_test_case: List[Tuple[TestCase, TestCaseMetrics]] = []
+    metrics_test_case: List[Tuple[TestCase, AggregateMetrics]] = []
     plots_test_case: List[Tuple[TestCase, List[Plot]]] = []
     for tc, tc_samples, tc_gts, tc_infs, tc_metrics in test_cases.iter(
         test_samples,

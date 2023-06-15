@@ -11,30 +11,38 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+The Multiclass Classification pre-built workflow provides out-of-the-box definitions for testing image-based multiclass
+classification models on Kolena.
+"""
 
 # noreorder
 from .workflow import TestSample
 from .workflow import GroundTruth
-from .workflow import InferenceLabel
 from .workflow import Inference
 from .workflow import TestCase
 from .workflow import TestSuite
 from .workflow import Model
+from .workflow import PerImageMetrics
+from .workflow import PerClassMetrics
+from .workflow import AggregateMetrics
+from .workflow import TestSuiteMetrics
 from .workflow import ThresholdConfiguration
-from .evaluator import MulticlassClassificationEvaluator
-from .test_run import TestRun
+from .evaluator import evaluate_multiclass_classification
 from .test_run import test
 
 __all__ = [
     "TestSample",
     "GroundTruth",
-    "InferenceLabel",
     "Inference",
     "TestCase",
     "TestSuite",
     "Model",
+    "PerImageMetrics",
+    "PerClassMetrics",
+    "AggregateMetrics",
+    "TestSuiteMetrics",
     "ThresholdConfiguration",
-    "MulticlassClassificationEvaluator",
-    "TestRun",
+    "evaluate_multiclass_classification",
     "test",
 ]

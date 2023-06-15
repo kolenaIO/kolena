@@ -32,7 +32,7 @@ The [kolenaIO/kolena](https://github.com/kolenaIO/kolena) repository contains a 
 and run directly:
 
 <div class="grid cards" markdown>
-- [Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
+- [:kolena-age-estimation-20: Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
 
     ![Example images from the Labeled Faces in the Wild dataset.](assets/images/LFW.jpg)
 
@@ -40,7 +40,7 @@ and run directly:
 
     Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
 
-- [Example: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
+- [:kolena-keypoint-detection-20: Example: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
 
     ![Example image and five-point facial keypoints array from the 300 Faces in the Wild dataset.](assets/images/300-W.jpg)
 
@@ -49,7 +49,7 @@ and run directly:
     Facial Keypoint Detection using the [300 Faces in the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/)
     dataset
 
-- [Example: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
+- [:kolena-text-summarization-20: Example: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
 
     ![Example articles from the CNN-DailyMail dataset.](assets/images/CNN-DailyMail.jpg)
 
