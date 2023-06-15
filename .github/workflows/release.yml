@@ -8,12 +8,12 @@ on:
 jobs:
   release:
     name: Build and publish release of kolena Python package and documentation
-    env:
-      ASSET_BUCKET: kolena-client-assets
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - uses: actions/setup-python@v4
         with:
@@ -26,8 +26,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      - name: Configure SSH key for docs insiders setup
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Install Poetry
-        run: pip install poetry==1.2.2
+        run: pip install poetry==1.5.1
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
@@ -46,8 +51,8 @@ jobs:
 
       - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
-          poetry run mkdocs build
-          poetry run mkdocs gh-deploy
+          ./docs/setup_insiders.sh
+          poetry run mkdocs gh-deploy --verbose --config-file mkdocs.insiders.yml
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

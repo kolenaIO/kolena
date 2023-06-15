@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://app.kolena.io/api/developer/docs/html/_static/wordmark-purple.svg" width="400" alt="Kolena" />
+  <img src="/docs/assets/images/wordmark-violet.svg" width="400" alt="Kolena" />
 </p>
 
 <p align='center'>

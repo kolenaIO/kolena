@@ -34,7 +34,7 @@ jobs:
         default: "3.9"
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -46,13 +46,13 @@ jobs:
           key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
-            equal: [ "", << parameters.extras >> ]
+            equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
                 command: |
                   poetry config installer.max-workers 10
-                  poetry install --no-ansi
+                  poetry install -vv --no-ansi
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
@@ -61,12 +61,45 @@ jobs:
                 name: Install Dependencies
                 command: |
                   poetry config installer.max-workers 10
-                  poetry install --all-extras --no-ansi
+                  poetry install -vv --all-extras --no-ansi
       - save_cache:
           key: *ci-base-cache
           paths:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
+
+  docs:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      extras:
+        type: string
+        default: "none"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: small
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    steps:
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Install system-level build dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libcairo2-dev
+      - run:
+          name: Build documentation without 'insiders' packages
+          command: poetry run mkdocs build
+      - add_ssh_keys:  # add github.com SSH key fingerprint to access private repo forks
+          fingerprints: ["15:8b:d4:ac:1f:cd:2f:d3:92:a7:4c:aa:46:81:0b:7d"]
+      - run:
+          name: Build documentation with 'insiders' packages
+          command: |
+            ./docs/setup_insiders.sh
+            poetry run mkdocs build --config-file mkdocs.insiders.yml
 
   unit-test:
     parameters:
@@ -75,7 +108,7 @@ jobs:
         default: "3.9"
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -96,19 +129,8 @@ jobs:
           steps:
             - run: poetry run pre-commit run -a
       - when:
-          # Ensure docs build only from one Python version
           condition:
-            equal: [ "3.9", << parameters.python-version >> ]
-          steps:
-            - run:
-                name: Build documentation
-                command: |
-                  sudo apt-get update
-                  sudo apt-get install -y libcairo2-dev  # system-level build dependency
-                  poetry run mkdocs build
-      - when:
-          condition:
-            equal: [ "", << parameters.extras >> ]
+            equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Run unit tests
@@ -151,7 +173,7 @@ jobs:
         default: 1
       extras:
         type: string
-        default: ""
+        default: "none"
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: small
@@ -216,7 +238,7 @@ jobs:
           path: ~/project
       - run: |
           poetry config installer.max-workers 10
-          poetry install --no-ansi
+          poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
           command: |
@@ -236,13 +258,21 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["none", "metrics"]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
-              extras: ["", "metrics"]
+              extras: ["none", "metrics"]
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - docs:
+          name: docs-<< matrix.python-version >>
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              extras: ["none"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -251,7 +281,7 @@ workflows:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
-              extras: [""]
+              extras: ["none"]
           enabled: true
           parallelism: 4
           requires:
@@ -261,7 +291,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: [""]
+              extras: ["none"]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1

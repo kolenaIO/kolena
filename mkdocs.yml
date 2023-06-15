@@ -8,57 +8,79 @@ copyright: Copyright &copy; 2021-2023 Kolena
 edit_uri: edit/trunk/docs/
 
 nav:
-  - Testing with Kolena:
-      - Home: index.md
-  - Advanced Usage: advanced-usage.md
-  - Metrics Guide: metrics-guide.md
+  - Developer Guide:
+      - Developer Guide: index.md
+      - Quickstart: quickstart.md
+      - Installing <code>kolena</code>: installing-kolena.md
+      - Building a Workflow: building-a-workflow.md
+      - Core Concepts:
+          - Core Concepts: core-concepts/index.md
+          - Workflow: core-concepts/workflow.md
+          - Test Case & Test Suite: core-concepts/test-suite.md
+          - Model: core-concepts/model.md
+      - Advanced Usage:
+          - Advanced Usage: advanced-usage/index.md
+          - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
+  # TODO: uncomment when content lands
+  # - Metrics Guide:
+  #     - Metrics Guide: metrics-guide/index.md
   - API Reference:
+      - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.workflow</code>:
-          - <code>TestSample</code>: reference/workflow/test_sample.md
-          - <code>GroundTruth</code>: reference/workflow/ground_truth.md
+          - <code>kolena.workflow</code>: reference/workflow/index.md
+          - <code>TestSample</code>: reference/workflow/test-sample.md
+          - <code>GroundTruth</code>: reference/workflow/ground-truth.md
           - <code>Inference</code>: reference/workflow/inference.md
-          - <code>define_workflow</code>: reference/workflow/define_workflow.md
-          - <code>TestCase</code>: reference/workflow/test_case.md
-          - <code>TestSuite</code>: reference/workflow/test_suite.md
-          - <code>Model</code>: reference/workflow/model.md
           - <code>Evaluator</code>: reference/workflow/evaluator.md
-          - <code>test</code>: reference/workflow/test_run.md
+          - <code>TestCase</code>: reference/workflow/test-case.md
+          - <code>TestSuite</code>: reference/workflow/test-suite.md
+          - <code>Model</code>: reference/workflow/model.md
+          - <code>test</code>: reference/workflow/test-run.md
           - Utilities:
               - Annotations: reference/workflow/annotation.md
               - Assets: reference/workflow/asset.md
+              - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
       - Legacy:
+          - Legacy Modules: reference/legacy/index.md
           - Built-in Workflows:
-              - <code>kolena.classification</code>: reference/built-in/classification.md
-              - <code>kolena.detection</code>: reference/built-in/detection.md
-              - <code>kolena.fr</code>: reference/built-in/fr.md
-              - Base Definitions: reference/built-in/base.md
-  - FAQ: faq.md
+              - <code>classification</code>: reference/legacy/built-in/classification.md
+              - <code>detection</code>: reference/legacy/built-in/detection.md
+              - <code>fr</code>: reference/legacy/built-in/fr.md
+              - Base Definitions: reference/legacy/built-in/base.md
+  - Help & FAQ:
+    - Help & FAQ: faq/index.md
+  - Sign in ↗: https://app.kolena.io
 
 theme:
   name: material
   logo: assets/images/logo-white.svg
   favicon: assets/images/favicon.png
+  custom_dir: docs/overrides
   font:
     text: Inter
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: default  # TODO: custom kolena-light theme
+      scheme: default
+      accent: cyan
       toggle:
-        icon: material/toggle-switch
+        icon: kolena/light-mode-20
         name: "Switch to dark mode"
     - media: "(prefers-color-scheme: dark)"
-      scheme: slate  # TODO: custom kolena-dark theme
+      scheme: slate
+      accent: cyan
       toggle:
-        icon: material/toggle-switch-off-outline
+        icon: kolena/dark-mode-20
         name: "Switch to light mode"
+  # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
   features:
     - announce.dismiss
     - content.action.edit
     - content.code.copy
     - content.tabs.link
+    - navigation.indexes
     - navigation.instant
     - navigation.footer
     - navigation.sections
@@ -67,12 +89,10 @@ theme:
     - search.suggest
     - toc.follow
 
-    # require sponsorship
-    # - navigation.path  # breadcrumbs
-
 markdown_extensions:
   - admonition  # callouts
   - footnotes
+  - pymdownx.details
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -81,40 +101,57 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify  # NOTE: insiders only
+        kwds:
+          case: lower
   - toc:
-      permalink: "¤"
+      permalink: "#"
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+      options:
+        custom_icons:
+          - docs/overrides/.icons
+  - pymdownx.arithmatex:
+      generic: true
 
 watch:
   - kolena
 
 extra_css:
-  - css/theme.css
-  - css/mkdocstrings.css
+  - assets/css/theme.css
+  - assets/css/mkdocstrings.css
+
+extra_javascript:
+  - assets/javascript/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 
 plugins:
-  - social  # render social media cards for copy+paste
-  - search:
-      lang: en
-  - mkdocstrings:
-      handlers:
-        python:
-          import:
-            - https://docs.python.org/3/objects.inv
-          options:
-            docstring_style: sphinx
-            merge_init_into_class: true
-            members_order: source  # sort members in the order they are defined
-            show_docstring_attributes: true
-            show_root_toc_entry: false
-            show_source: false
-
-            # require sponsorship:
-            # show_symbol_type_heading: true
-            # show_symbol_type_toc: true
+  social:  # render social media cards for copy+paste
+  search:
+    lang: en
+  git-revision-date-localized:
+  mkdocstrings:
+    handlers:
+      python:
+        import:
+          - https://docs.python.org/3/objects.inv
+        options:
+          docstring_style: sphinx
+          merge_init_into_class: true
+          members_order: source  # sort members in the order they are defined
+          show_docstring_attributes: true
+          show_root_toc_entry: false
+          show_source: false
 
 extra:
-  homepage: https://kolena.io
-  generator: false  # TODO: this removes the theme info from footer -- we should sponsor project
+  generator: false
   social:
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/kolenaIO
@@ -127,3 +164,6 @@ extra:
     - icon: fontawesome/brands/github
       link: https://github.com/kolenaIO/kolena
       name: Kolena on GitHub
+    - icon: kolena/logo
+      link: https://app.kolena.io
+      name: Kolena Platform
