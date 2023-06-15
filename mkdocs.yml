@@ -61,9 +61,6 @@ theme:
   custom_dir: docs/overrides
   font:
     text: Inter
-  icon:
-    admonition:
-      quote: kolena/help-16  # override 'quote' admonition for FAQ usage
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
