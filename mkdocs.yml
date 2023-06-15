@@ -41,6 +41,7 @@ nav:
           - Utilities:
               - Annotations: reference/workflow/annotation.md
               - Assets: reference/workflow/asset.md
+              - Plots: reference/workflow/plot.md
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
       - Legacy:

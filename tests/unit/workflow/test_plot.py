@@ -19,15 +19,15 @@ from typing import Union
 
 import pytest
 
+from kolena.workflow import AxisConfig
+from kolena.workflow import BarPlot
+from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
-from kolena.workflow.evaluator import _PlotType
-from kolena.workflow.evaluator import AxisConfig
-from kolena.workflow.evaluator import BarPlot
-from kolena.workflow.evaluator import ConfusionMatrix
-from kolena.workflow.evaluator import Histogram
-from kolena.workflow.evaluator import NullableNumberSeries
-from kolena.workflow.evaluator import NumberSeries
+from kolena.workflow import Histogram
+from kolena.workflow.plot import _PlotType
+from kolena.workflow.plot import NullableNumberSeries
+from kolena.workflow.plot import NumberSeries
 
 
 def test__curve_plot__validate() -> None:
@@ -223,3 +223,32 @@ def test__bar_plot__validate(valid: bool, labels: List[Union[str, int, float]], 
     else:
         with pytest.raises(ValueError):
             BarPlot(title="tester", x_label="x", y_label="y", labels=labels, values=values)
+
+
+def test__import__base() -> None:
+    from kolena.workflow import AxisConfig  # noqa: F401
+    from kolena.workflow import Curve  # noqa: F401
+    from kolena.workflow import CurvePlot  # noqa: F401
+    from kolena.workflow import Histogram  # noqa: F401
+    from kolena.workflow import BarPlot  # noqa: F401
+    from kolena.workflow import ConfusionMatrix  # noqa: F401
+
+
+def test__import__module() -> None:
+    from kolena.workflow.plot import AxisConfig  # noqa: F401
+    from kolena.workflow.plot import Plot  # noqa: F401
+    from kolena.workflow.plot import Curve  # noqa: F401
+    from kolena.workflow.plot import CurvePlot  # noqa: F401
+    from kolena.workflow.plot import Histogram  # noqa: F401
+    from kolena.workflow.plot import BarPlot  # noqa: F401
+    from kolena.workflow.plot import ConfusionMatrix  # noqa: F401
+
+
+def test__import__backcompat() -> None:
+    from kolena.workflow.evaluator import AxisConfig  # noqa: F401
+    from kolena.workflow.evaluator import Plot  # noqa: F401
+    from kolena.workflow.evaluator import Curve  # noqa: F401
+    from kolena.workflow.evaluator import CurvePlot  # noqa: F401
+    from kolena.workflow.evaluator import Histogram  # noqa: F401
+    from kolena.workflow.evaluator import BarPlot  # noqa: F401
+    from kolena.workflow.evaluator import ConfusionMatrix  # noqa: F401

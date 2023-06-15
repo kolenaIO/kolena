@@ -25,7 +25,7 @@ If you don't see your question here, please reach out to us on Slack or at
     See the available data types in [`kolena.workflow.TestSample`][kolena.workflow.TestSample], and the available
     annotation types in [`kolena.workflow.annotation`][kolena.workflow.annotation.Annotation].
 
-    We're constantly adding new data types and annotation types — if you don't see what you're looking for, reach out
+    We're constantly adding new data types and annotation types — if you don't see what you're looking for, reach out
     to us and we'll happily extend our system to support your use case.
 
 ??? faq "Do I have to upload my datasets to Kolena?"
@@ -57,15 +57,15 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? faq "How do I generate an API token?"
 
-    Generate an API token by visiting [app.kolena.io/~/developer](https://app.kolena.io/redirect/developer), on the
-    bottom of the lefthand sidebar, then copy/paste the shell snippet to set this token as `KOLENA_TOKEN` in your
-    environment.
+    Generate an API token by visiting the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer)
+    page, located at the bottom of the lefthand sidebar, then copy/paste the shell snippet to set this token as
+    `KOLENA_TOKEN` in your environment.
 
 ??? faq "How many API tokens can I generate?"
 
-    API tokens are scoped to your username. Each user is limited to one valid token at a time — generating a new
-    token from [app.kolena.io/~/developer](https://app.kolena.io/redirect/developer) invalidates any previous token
-    generated for your user.
+    API tokens are scoped to your username. Each user is limited to one valid token at a time — generating a new token
+    on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page invalidates any previous
+    token generated for your user.
 
     To retrieve a service user API token that is not scoped to a specific username, please reach out to us on Slack or
     at [contact@kolena.io](mailto:contact@kolena.io).
@@ -73,11 +73,13 @@ If you don't see your question here, please reach out to us on Slack or at
 ??? faq "How can I add new users to my organization?"
 
     Certain members of each organization have administrator privileges. These administrators can add new users, and
-    grant users administrator privileges, by visiting
-    [app.kolena.io/~/organization](https://app.kolena.io/redirect/organization) and adding entries to the **Authorized
-    Users** table.
+    grant users administrator privileges, by visiting the
+    [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization) page and adding
+    entries to the **Authorized Users** table.
 
-??? faq "I'm new to Kolena — how can I learn more about the platform and how to use it?"
+    Note that this page is only visible for organization administrators.
+
+??? faq "I'm new to Kolena — how can I learn more about the platform and how to use it?"
 
     On each page, there is a button with the :kolena-learning-16: icon next to the page title. Click on this
     button to bring up a detailed tutorial explaining the contents of the current page and how it's used.

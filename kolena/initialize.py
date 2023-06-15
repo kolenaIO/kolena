@@ -36,7 +36,7 @@ def initialize(
     """
     Initialize a client session.
 
-    Retrieve an API token from [app.kolena.io/~/developer](https://app.kolena.io/redirect/developer) and
+    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page and
     populate the `KOLENA_TOKEN` environment variable before initializing:
 
     ```python

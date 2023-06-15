@@ -7,9 +7,8 @@ icon: kolena/model-16
 In Kolena, a model is a deterministic transformation from [test samples](workflow.md#test-sample) to
 [inferences](workflow.md#inference).
 
-Kolena only stores metadata associated with your model in its model registry at
-[app.kolena.io/~/models](https://app.kolena.io/redirect/models). Models themselves — their code or their weights — are
-never uploaded to Kolena, only the inferences from models.
+Kolena only stores metadata associated with your model in its [:kolena-model-16: Models](https://app.kolena.io/redirect/models)
+registry. Models themselves — their code or their weights — are never uploaded to Kolena, only the inferences from models.
 
 Models are considered black boxes, which makes Kolena agnostic to the underlying framework
 and architecture. It's possible to test any sort of model, from deep learning to rules-based, on Kolena.
@@ -112,8 +111,8 @@ associate with the model. This metadata can be useful to track relevant informat
 - Training dataset specifier or URL
 - Hyperparameters applied during training
 
-Metadata can be specified on the command line or edited on the web at
-[app.kolena.io/~/models](https://app.kolena.io/redirect/models).
+Metadata can be specified on the command line or edited on the web on the
+[:kolena-model-16: Models](https://app.kolena.io/redirect/models) page.
 
 ## FAQ & Best Practices
 
@@ -138,4 +137,4 @@ Metadata can be specified on the command line or edited on the web at
     helpful-meadow-5 (YOLOR-D6, 1280x1280, pytorch-1.7)
     ```
 
-    Model names can be edited on the web at [app.kolena.io/~/models](https://app.kolena.io/redirect/models).
+    Model names can be edited on the web on the [:kolena-model-16: Models](https://app.kolena.io/redirect/models) page.

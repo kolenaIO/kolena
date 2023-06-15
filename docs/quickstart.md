@@ -85,8 +85,8 @@ Each of the example integrations comes with scripts for two flows:
 
 Before running [`seed_test_suite.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/age_estimation/age_estimation/seed_test_suite.py),
 let's first configure our environment by populating the `KOLENA_TOKEN`
-environment variable. Visit [app.kolena.io/~/developer](https://app.kolena.io/redirect/developer) to generate an
-API token and copy and paste the code snippet into your environment:
+environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page to
+generate an API token and copy and paste the code snippet into your environment:
 
 ```shell
 export KOLENA_TOKEN="********"
@@ -98,8 +98,8 @@ We can now create test suites using the provided seeding script:
 poetry run python3 age_estimation/seed_test_suite.py
 ```
 
-After this script has completed, we can visit [app.kolena.io/~/testing](https://app.kolena.io/redirect/testing) to view
-our newly created test suites.
+After this script has completed, we can visit the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
+page to view our newly created test suites.
 
 In this `age_estimation` example, we've created test suites stratifying the LFW dataset (which is stored as a CSV in
 S3) into test cases by age, estimated race, and estimated gender.
@@ -121,8 +121,8 @@ poetry run python3 age_estimation/seed_test_run.py \
     In this example, model results have already been extracted and are stored in CSV files in S3. To run a new model,
     plug it into the `infer` method in [`seed_test_run.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/age_estimation/age_estimation/seed_test_run.py).
 
-Once this script has completed, click the results link in your console or visit [app.kolena.io/~/results](https://app.kolena.io/redirect/results)
-to view the Results for this newly tested model.
+Once this script has completed, click the results link in your console or visit
+[:kolena-results-16: Results](https://app.kolena.io/redirect/results) to view the test results for this newly tested model.
 
 ## Conclusion
 

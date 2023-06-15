@@ -173,8 +173,8 @@ class TestCaseMetrics(MetricsTestCase):
 !!! tip "Tip: Plots"
 
     Evaluators can also compute test-case-level plots using the [`Plot`][kolena.workflow.Plot] API. These plots are
-    visualized on [app.kolena.io/~/results](https://app.kolena.io/redirect/results) alongside the metrics reported for
-    each test case.
+    visualized on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) dashboard alongside the
+    metrics reported for each test case.
 
 !!! tip "Tip: Test Suite Metrics"
 
@@ -314,7 +314,7 @@ test(
 )
 ```
 
-That wraps up the testing process! We can now visit [app.kolena.io/~/results](https://app.kolena.io/redirect/results)
+That wraps up the testing process! We can now visit [:kolena-results-16: Results](https://app.kolena.io/redirect/results)
 to analyze and debug our model's performance on this test suite.
 
 ### Conclusion
