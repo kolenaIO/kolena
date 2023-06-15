@@ -23,6 +23,8 @@ from pydantic import validate_arguments
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as API
+from kolena._utils.datatypes import get_args
+from kolena._utils.datatypes import get_origin
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
@@ -30,6 +32,7 @@ from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
 
@@ -47,7 +50,7 @@ from kolena.workflow import ConfusionMatrix  # noqa: F401
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestSample(DataObject, metaclass=ABCMeta):
     """
-    Test-sample-level metrics produced by an :class:`Evaluator`.
+    Test-sample-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
@@ -62,12 +65,33 @@ class MetricsTestSample(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestCase(DataObject, metaclass=ABCMeta):
     """
-    Test-case-level metrics produced by an :class:`Evaluator`.
+    Test-case-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
     Test-case-level metrics are aggregate metrics like Precision, Recall, and F1 score. Any and all aggregate metrics
     that fit a workflow should be defined here.
+
+    `MetricsTestCase` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
+    contains multiple classes. Example usage:
+
+    ```python
+    @dataclass(frozen=True)
+    class PerClassMetrics(MetricsTestCase):
+        Class: str
+        Precision: float
+        Recall: float
+        F1: float
+        AP: float
+
+    @dataclass(frozen=True)
+    class TestCaseMetrics(MetricsTestCase):
+        macro_Precision: float
+        macro_Recall: float
+        macro_F1: float
+        mAP: float
+        PerClass: List[PerClassMetrics]
+    ```
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
@@ -77,7 +101,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class MetricsTestSuite(DataObject, metaclass=ABCMeta):
     """
-    Test-suite-level metrics produced by an :class:`Evaluator`.
+    Test-suite-level metrics produced by an [`Evaluator`][kolena.workflow.Evaluator].
 
     This class should be subclassed with the relevant fields for a given workflow.
 
@@ -92,7 +116,7 @@ class MetricsTestSuite(DataObject, metaclass=ABCMeta):
 @dataclass(frozen=True, config=ValidatorConfig)
 class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
     """
-    Configuration for an :class:`Evaluator`.
+    Configuration for an [`Evaluator`][kolena.workflow.Evaluator].
 
     Example evaluator configurations may specify:
 
@@ -103,21 +127,30 @@ class EvaluatorConfiguration(DataObject, metaclass=ABCMeta):
 
     @abstractmethod
     def display_name(self) -> str:
+        """
+        The name to display for this configuration in Kolena. Must be implemented when extending
+        [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
+        """
         raise NotImplementedError
 
 
 class Evaluator(metaclass=ABCMeta):
     """
-    An :class:`kolena.workflow.Evaluator` transforms inferences into metrics.
+    An `Evaluator` transforms inferences into metrics.
 
-    Metrics are computed at the individual test sample level (:class:`kolena.workflow.MetricsTestSample`), in aggregate
-    at the test case level (:class:`kolena.workflow.MetricsTestCase`), and across populations at the test suite level
-    (:class:`kolena.workflow.MetricsTestSuite`).
+    Metrics are computed at the individual test sample level ([`MetricsTestSample`][kolena.workflow.MetricsTestSample]),
+    in aggregate at the test case level ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]), and across populations
+    at the test suite level ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]).
 
-    Test-case-level plots (:class:`kolena.workflow.Plot`) may also be computed.
+    Test-case-level plots ([`Plot`][kolena.workflow.Plot]) may also be computed.
+
+    :param configurations: The configurations at which to perform evaluation. Instance methods such as
+        [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics] are called once per test
+        case per configuration.
     """
 
     configurations: List[EvaluatorConfiguration]
+    """The configurations with which to perform evaluation, provided on instantiation."""
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
@@ -128,6 +161,7 @@ class Evaluator(metaclass=ABCMeta):
             raise ValueError("all configurations must have distinct display names")
 
     def display_name(self) -> str:
+        """The name to display for this evaluator in Kolena. Defaults to the name of this class."""
         return type(self).__name__
 
     @abstractmethod
@@ -138,14 +172,16 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> List[Tuple[TestSample, MetricsTestSample]]:
         """
-        Compute metrics for every test sample in a test case.
+        Compute metrics for every test sample in a test case, i.e. one
+        [`MetricsTestSample`][kolena.workflow.MetricsTestSample] object for each of the provided test samples.
 
         Must be implemented.
 
-        :param test_case: the test case to which the provided test samples and ground truths belong.
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: test-sample-level metrics for each provided test sample.
+        :param test_case: The [`TestCase`][kolena.workflow.TestCase] to which the provided test samples and ground
+            truths belong.
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: [`TestSample`][kolena.workflow.TestSample]-level metrics for each provided test sample.
         """
         raise NotImplementedError
 
@@ -158,16 +194,17 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> MetricsTestCase:
         """
-        Compute aggregate metrics across a test case.
+        Compute aggregate metrics ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]) across a test case.
 
         Must be implemented.
 
-        :param test_case: the test case in question.
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param metrics: the test-sample-level metrics computed by :meth:`Evaluator.compute_test_sample_metrics`.
-            Provided in the same order as ``inferences``.
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: test-case-level metrics for the provided test case.
+        :param test_case: The test case in question.
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param metrics: The [`TestSample`][kolena.workflow.TestSample]-level metrics computed by
+            [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics], provided
+            in the same order as `inferences`.
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: [`TestCase`][kolena.workflow.TestCase]-level metrics for the provided test case.
         """
         raise NotImplementedError
 
@@ -182,12 +219,13 @@ class Evaluator(metaclass=ABCMeta):
         """
         Optionally compute any number of plots to visualize the results for a test case.
 
-        :param test_case: the test case in question
-        :param inferences: the test samples, ground truths, and inferences for all entries in a test case.
-        :param metrics: the test-sample-level metrics computed by :meth:`Evaluator.compute_test_sample_metrics`.
-            Provided in the same order as ``inferences``.
+        :param test_case: The test case in question
+        :param inferences: The test samples, ground truths, and inferences for all entries in a test case.
+        :param metrics: The [`TestSample`][kolena.workflow.TestSample]-level metrics computed by
+            [`compute_test_sample_metrics`][kolena.workflow.Evaluator.compute_test_sample_metrics], provided
+            in the same order as `inferences`.
         :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: zero or more plots for this test case at this configuration.
+        :return: Zero or more plots for this test case at this configuration.
         """
         return None  # not required
 
@@ -199,12 +237,14 @@ class Evaluator(metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration] = None,
     ) -> Optional[MetricsTestSuite]:
         """
-        Optionally compute test-suite-level metrics.
+        Optionally compute [`TestSuite`][kolena.workflow.TestSuite]-level metrics
+        ([`MetricsTestSuite`][kolena.workflow.MetricsTestSuite]) across the provided `test_suite`.
 
-        :param test_suite: the test suite in question
-        :param metrics: the test-case-level metrics computed by :meth:`Evaluator.compute_test_case_metrics`
-        :param configuration: the evaluator configuration to use. Empty for implementations that are not configured.
-        :return: the test-suite-level metrics for this test suite
+        :param test_suite: The test suite in question.
+        :param metrics: The [`TestCase`][kolena.workflow.TestCase]-level metrics computed by
+            [`compute_test_case_metrics`][kolena.workflow.Evaluator.compute_test_case_metrics].
+        :param configuration: The evaluator configuration to use. Empty for implementations that are not configured.
+        :return: The [`TestSuite`][kolena.workflow.TestSuite]-level metrics for this test suite.
         """
         return None  # not required
 
@@ -215,7 +255,22 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    validate_scalar_data_object_type(metrics_test_case_type)
+    validate_scalar_data_object_type(metrics_test_case_type, supported_list_types=[MetricsTestCase])
+
+    # validate that there is only one level of nesting
+    for field_name, field_type in get_data_object_field_types(metrics_test_case_type).items():
+        origin = get_origin(field_type)
+        if origin is not list:  # only need to check lists, as MetricsTestCase is only allowed in lists
+            continue
+        # expand e.g. List[Union[MetricsA, MetricsB]] into [MetricsA, MetricsB]
+        list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
+        for arg_type in list_arg_types:
+            if arg_type is None:
+                raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
+            try:
+                validate_scalar_data_object_type(arg_type)
+            except ValueError:
+                raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
 
 
 def _validate_metrics_test_suite_type(metrics_test_suite_type: Type[DataObject]) -> None:

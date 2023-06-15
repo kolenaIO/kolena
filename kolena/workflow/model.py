@@ -51,23 +51,34 @@ TestSample = TypeVar("TestSample", bound=BaseTestSample)
 
 
 class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
-    """The descriptor of a model tested on Kolena."""
+    """
+    The descriptor of a model tested on Kolena. A model is a deterministic transformation from
+    [`TestSample`][kolena.workflow.TestSample] inputs to [`Inference`][kolena.workflow.Inference] outputs.
 
-    #: The :class:`kolena.workflow.Workflow` of this model.
+    Rather than importing this class directly, use the `Model` type definition returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
+
     workflow: Workflow
+    """
+    The workflow of this model. Automatically populated when constructing via the model type returned from
+    [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
+    """
+
+    name: str
+    """Unique name of the model."""
+
+    metadata: Dict[str, Any]
+    """Unstructured metadata associated with the model."""
+
+    infer: Optional[Callable[[TestSample], Inference]]
+    """
+    Function transforming a [`TestSample`][kolena.workflow.TestSample] for a workflow into an
+    [`Inference`][kolena.workflow.Inference] object. Required when using [`test`][kolena.workflow.test] or
+    [`TestRun.run`][kolena.workflow.TestRun.run].
+    """
 
     _id: int
-
-    #: Unique name of the model.
-    name: str
-
-    #: Unstructured metadata associated with the model.
-    metadata: Dict[str, Any]
-
-    #: Function transforming a :class:`kolena.workflow.TestSample` for a workflow into an
-    #: :class:`kolena.workflow.Inference` object. Required when using :meth:`kolena.workflow.test` or
-    #: :meth:`kolena.workflow.TestRun.run`.
-    infer: Optional[Callable[[TestSample], Inference]]
 
     @telemetry
     def __init_subclass__(cls) -> None:
@@ -91,11 +102,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         except NotFoundError:
             loaded = self.create(name, infer, metadata)
 
-        self._id = loaded._id
-        self.name = loaded.name
-        self.metadata = loaded.metadata
-        self.infer = infer
-        self._freeze()
+        self._populate_from_other(loaded)
 
     @classmethod
     def create(
@@ -107,10 +114,10 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Create a new model.
 
-        :param name: the unique name of the new model to create.
-        :param infer: optional inference function for this model.
-        :param metadata: optional unstructured metadata to store with this model.
-        :return: the newly created model.
+        :param name: The unique name of the new model to create.
+        :param infer: Optional inference function for this model.
+        :param metadata: Optional unstructured metadata to store with this model.
+        :return: The newly created model.
         """
         metadata = metadata or {}
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
@@ -125,8 +132,8 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Load an existing model.
 
-        :param name: the name of the model to load.
-        :param infer: optional inference function for this model.
+        :param name: The name of the model to load.
+        :param infer: Optional inference function for this model.
         """
         request = CoreAPI.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
@@ -140,8 +147,8 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Load all inferences stored for this model on the provided test case.
 
-        :param test_case: the test case for which to load inferences.
-        :return: the ground truths and inferences for all test samples in the test case.
+        :param test_case: The test case for which to load inferences.
+        :return: The ground truths and inferences for all test samples in the test case.
         """
         return list(self.iter_inferences(test_case))
 
@@ -150,8 +157,8 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         Iterate over all inferences stored for this model on the provided test case.
 
-        :param test_case: the test case over which to iterate inferences.
-        :return: an iterator exposing the ground truths and inferences for all test samples in the test case.
+        :param test_case: The test case over which to iterate inferences.
+        :return: Iterator exposing the ground truths and inferences for all test samples in the test case.
         """
         log.info(f"loading inferences from model '{self.name}' on test case '{test_case.name}'")
         assert_workflows_match(self.workflow.name, test_case.workflow.name)
@@ -170,6 +177,14 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
                 inference = self.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference
         log.info(f"loaded inferences from model '{self.name}' on test case '{test_case.name}'")
+
+    def _populate_from_other(self, other: "Model") -> None:
+        with self._unfrozen():
+            self._id = other._id
+            self.name = other.name
+            self.metadata = other.metadata
+            self.workflow = other.workflow
+            self.infer = other.infer
 
     @classmethod
     def _from_data_with_infer(

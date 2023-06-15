@@ -8,12 +8,12 @@ on:
 jobs:
   release:
     name: Build and publish release of kolena Python package and documentation
-    env:
-      ASSET_BUCKET: kolena-client-assets
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - uses: actions/setup-python@v4
         with:
@@ -26,8 +26,13 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      - name: Configure SSH key for docs insiders setup
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Install Poetry
-        run: pip install poetry==1.2.2
+        run: pip install poetry==1.5.1
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
@@ -44,21 +49,10 @@ jobs:
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
 
-      - name: Build 'kolena' documentation and push to S3
+      - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
-          ./render.sh
-          VERSION=$(poetry run python3 -c "import kolena; print(kolena.__version__)")
-
-          BUCKET_PATH="s3://$ASSET_BUCKET/docs/$VERSION"
-          echo "pushing documentation to '$BUCKET_PATH'..."
-          aws s3 rm --recursive "$BUCKET_PATH"
-          aws s3 sync ./build "$BUCKET_PATH"
-
-          BUCKET_PATH="s3://$ASSET_BUCKET/docs/latest"
-          echo "pushing documentation to '$BUCKET_PATH'..."
-          aws s3 rm --recursive "$BUCKET_PATH"
-          aws s3 sync ./build "$BUCKET_PATH"
-        working-directory: ./docs
+          ./docs/setup_insiders.sh
+          poetry run mkdocs gh-deploy --verbose --config-file mkdocs.insiders.yml
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

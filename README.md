@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://app.kolena.io/api/developer/docs/html/_static/wordmark-purple.svg" width="400" alt="Kolena" />
+  <img src="/docs/assets/images/wordmark-violet.svg" width="400" alt="Kolena" />
 </p>
 
 <p align='center'>
@@ -22,6 +22,36 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
 platform.
+
+## Setup
+
+Client builds can be installed directly from PyPI using any Python package manager such as pip:
+
+```zsh
+pip install kolena
+```
+
+Advanced use cases (eg. metrics computation) may require extra dependencies which can be installed by running:
+```zsh
+pip install kolena[metrics]
+```
+
+<details>
+<summary>Installing with <a href="https://python-poetry.org/">Poetry</a></summary>
+<br>
+Install project dependencies by running
+
+```zsh
+poetry update && poetry install
+```
+
+Extra dependencies such as [Scikit-learn](https://scikit-learn.org/stable/) can be included by running
+```zsh
+poetry install --all-extras
+```
+</details>
+
+For more information, see the [installation documentation](https://docs.kolena.io/testing-with-kolena/using-kolena-client#installation).
 
 ## Documentation
 

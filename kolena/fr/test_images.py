@@ -57,11 +57,12 @@ class TestImages(Uninstantiable[None]):
         """
         Load a DataFrame describing images registered in the Kolena platform.
 
-        :param data_source: optionally specify the single data source to be retrieved, e.g. ``"my-data-source"``.
-            Alternatively, provide a :class:`kolena.fr.TestSuite` or :class:`kolena.fr.TestCase` as source.
-            If no argument is provided, all images registered using :meth:`TestImages.register` are returned
-        :param include_augmented: optionally specify that augmented images should be returned. By default, only
-            original images are returned. Ignored when test case or test suite is provided as ``data_source``
+        :param data_source: Optionally specify the single data source to be retrieved, e.g. `"my-data-source"`.
+            Alternatively, provide a [`TestSuite`][kolena.fr.TestSuite] or [`TestCase`][kolena.fr.TestCase] as source.
+            If no argument is provided, all images registered using
+            [`TestImages.register][kolena.fr.TestImages.register] are returned.
+        :param include_augmented: Optionally specify that augmented images should be returned. By default, only
+            original images are returned. Ignored when test case or test suite is provided as `data_source`.
         """
         log.info("loading test images")
         return _BatchedLoader.concat(
@@ -90,15 +91,15 @@ class TestImages(Uninstantiable[None]):
             Add a new image to Kolena. If the provided locator is already registered with the platform, its metadata
             will be updated.
 
-            :param locator: bucket locator for the provided image, e.g. ``s3://bucket-name/path/to/image.jpg``
-            :param data_source: name of the source for the image being registered
-            :param width: width in pixels of the image being registered
-            :param height: height in pixels of the image being registered
-            :param bounding_box: optional 4-element array specifying the ground truth bounding box for this image, of
-                the form ``[top_left_x, top_left_y, bottom_right_x, bottom_right_y]``
-            :param landmarks: optional 10-element array specifying (x, y) coordinates for five facial landmarks of the
-                form ``[left_eye_{x,y}, right_eye_{x,y}, nose_{x,y}, left_mouth_{x,y}, right_mouth_{x,y}]``
-            :param tags: tags to associate with the image, of the form ``{category: value}``
+            :param locator: Bucket locator for the provided image, e.g. `s3://bucket-name/path/to/image.jpg`.
+            :param data_source: Name of the source for the image being registered.
+            :param width: Width in pixels of the image being registered.
+            :param height: Height in pixels of the image being registered.
+            :param bounding_box: Optional 4-element array specifying the ground truth bounding box for this image, of
+                the form `[top_left_x, top_left_y, bottom_right_x, bottom_right_y]`.
+            :param landmarks: Optional 10-element array specifying (x, y) coordinates for five facial landmarks of the
+                form `[left_eye_{x,y}, right_eye_{x,y}, nose_{x,y}, left_mouth_{x,y}, right_mouth_{x,y}]`.
+            :param tags: Tags to associate with the image, of the form `{category: value}`.
             """
             if locator in self.data.locators:
                 raise ValueError(f"duplicate locator: {locator}")
@@ -135,18 +136,18 @@ class TestImages(Uninstantiable[None]):
             Note that the original image must already be registered in a previous pass. Tags on the original image are
             not propagated forward to the augmented image.
 
-            :param original_locator: the bucket locator for the original version of this image within the platform
-            :param augmented_locator: the bucket locator for the augmented image being registered
-            :param augmentation_spec: free-form JSON specification for the augmentation applied to this image
-            :param width: optionally specify the width of the augmented image. When absent, the width of the
-                corresponding original image is used
-            :param height: optionally specify the height of the augmented image. When absent, the height of the
-                corresponding original image is used
-            :param bounding_box: optionally specify a new bounding box for the augmented image. When absent, any
-                bounding box corresponding to the original image is used
-            :param landmarks: optionally specify a new set of landmarks for the augmented image. When absent, any set of
-                landmarks corresponding to the original image is used
-            :param tags: optionally specify a set of tags to associate with the augmented image
+            :param original_locator: The bucket locator for the original version of this image within the platform.
+            :param augmented_locator: The bucket locator for the augmented image being registered.
+            :param augmentation_spec: Free-form JSON specification for the augmentation applied to this image.
+            :param width: Optionally specify the width of the augmented image. When absent, the width of the
+                corresponding original image is used.
+            :param height: Optionally specify the height of the augmented image. When absent, the height of the
+                corresponding original image is used.
+            :param bounding_box: Optionally specify a new bounding box for the augmented image. When absent, any
+                bounding box corresponding to the original image is used.
+            :param landmarks: Optionally specify a new set of landmarks for the augmented image. When absent, any set of
+                landmarks corresponding to the original image is used.
+            :param tags: Optionally specify a set of tags to associate with the augmented image.
             """
             if augmented_locator in self.data.locators:
                 raise ValueError(f"duplicate locator: {augmented_locator}")
@@ -172,7 +173,7 @@ class TestImages(Uninstantiable[None]):
         Context-managed interface to register new images with Kolena. Images with locators that already exist in the
         platform will have their metadata updated. All changes are committed when the context is exited.
 
-        :raises RemoteError: if the registered images were unable to be successfully committed for any reason
+        :raises RemoteError: The registered images were unable to be successfully committed for any reason.
         """
         log.info("registering test images")
         registrar = TestImages.Registrar.__factory__(TestImages._Registrar(records=[], locators=set()))
@@ -204,13 +205,13 @@ class TestImages(Uninstantiable[None]):
         """
         Iterator of DataFrames describing images registered in the Kolena platform.
 
-        :param data_source: optionally specify the single data source to be retrieved, e.g. ``"my-data-source"``.
-            Alternatively, provide a :class:`kolena.fr.TestSuite` or :class:`kolena.fr.TestCase` as source.
-            If no argument is provided, all images registered using :meth:`TestImages.register` are returned
-        :param include_augmented: optionally specify that augmented images should be returned. By default, only
-            original images are returned. Ignored when test case or test suite is provided as ``data_source``
-        :param batch_size: optionally specify maximum number of rows to be returned in a single DataFrame. By default,
-            limits row count to 10_000_000.
+        :param data_source: Optionally specify the single data source to be retrieved, e.g. `"my-data-source"`.
+            Alternatively, provide a [`TestSuite`][kolena.fr.TestSuite] or [`TestCase`][kolena.fr.TestCase] as source.
+            If no argument is provided, all images registered using
+            [`TestImages.register`][kolena.fr.TestImages.register] are returned.
+        :param include_augmented: Optionally specify that augmented images should be returned. By default, only
+            original images are returned. Ignored when test case or test suite is provided as `data_source`.
+        :param batch_size: Optionally specify maximum number of rows to be returned in a single DataFrame.
         """
         test_suite_data = data_source.data if isinstance(data_source, TestSuite) else data_source
         test_suite_id = test_suite_data.id if isinstance(test_suite_data, TestSuite.Data) else None

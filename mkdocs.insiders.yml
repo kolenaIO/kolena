@@ -1,0 +1,41 @@
+INHERIT: mkdocs.yml
+
+strict: false  # allows for missing pages in git-committers (i.e. new or moved pages)
+watch:
+  - kolena
+  - mkdocs.yml
+
+theme:
+  features:
+    # copied from mkdocs.yml -- ensure that these are kept in sync
+    - announce.dismiss
+    - content.action.edit
+    - content.code.copy
+    - content.tabs.link
+    - navigation.indexes
+    - navigation.instant
+    - navigation.footer
+    - navigation.sections
+    - navigation.tabs
+    - search.highlight
+    - search.suggest
+    - toc.follow
+
+    # insider-only features
+    - navigation.path # breadcrumbs
+    - content.tooltips
+
+plugins:
+  social:
+    cards_layout: custom
+    cards_layout_dir: docs/layouts
+  typeset:
+  git-committers:
+    repository: kolenaIO/kolena
+    branch: trunk
+  mkdocstrings:
+    handlers:
+      python:
+        options:
+          show_symbol_type_heading: true
+          show_symbol_type_toc: true
