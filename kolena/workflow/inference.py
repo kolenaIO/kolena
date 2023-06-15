@@ -11,6 +11,23 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+The output from a [`Model`][kolena.workflow.Model]. In other words, a model is a deterministic transformation from a
+[`TestSample`][kolena.workflow.TestSample] to an [`Inference`][kolena.workflow.Inference].
+
+```python
+from dataclasses import dataclass
+from typing import Optional
+
+from kolena.workflow import Inference
+from kolena.workflow.annotation import Keypoints
+
+@dataclass(frozen=True)
+class PoseEstimate(Inference):
+    skeleton: Optional[Keypoints] = None  # leave empty if nothing is detected
+    confidence: Optional[float] = None
+```
+"""
 from typing import Type
 
 from pydantic.dataclasses import dataclass
@@ -31,38 +48,41 @@ class Inference(DataObject):
     """
     The inference produced by a model.
 
-    Typically the structure of this object closely mirrors the structure of the :class:`kolena.workflow.GroundTruth` for
-    a workflow, but this is not a requirement.
+    Typically the structure of this object closely mirrors the structure of the
+    [`GroundTruth`][kolena.workflow.GroundTruth] for a workflow, but this is not a requirement.
 
-    During evaluation, the :class:`kolena.workflow.TestSample` objects, ground truth objects, and these inference
-    objects are provided to the :class:`kolena.workflow.Evaluator` implementation to compute metrics.
+    During evaluation, the [`TestSample`][kolena.workflow.TestSample] objects, ground truth objects, and these inference
+    objects are provided to the [`Evaluator`][kolena.workflow.Evaluator] implementation to compute metrics.
 
-    This object may contain any combination of scalars (e.g. ``str``, ``float``),
-    :class:`kolena.workflow.annotation.Annotation` objects, or lists of these objects.
+    This object may contain any combination of scalars (e.g. `str`, `float`),
+    [`Annotation`][kolena.workflow.annotation.Annotation] objects, or lists of these objects.
 
-    A model processing a :class:`kolean.workflow.Composite` object can produce an inference result for each of its
-    element. To associate an inference result to each test sample element, one can put the attributes and/or annotations
-    inside an :class:`kolena.workflow.DataObject` and use the same name as that in :class:`kolena.workflow.Composite`.
+    A model processing a [`Composite`][kolena.workflow.Composite] test sample can produce an inference result for each
+    of its elements. To associate an inference result to each test sample element, put the attributes and/or annotations
+    inside a `DataObject` and use the same attribute name as that used in the [`Composite`][kolena.workflow.Composite]
+    test sample.
 
-    Continue with the example given in :class:`kolena.workflow.Composite`, which takes an image pair as a
-    test sample, one can design inference as:
+    Continue with the example given in [`Composite`][kolena.workflow.Composite], where the `FacePairSample` test sample
+    type is defined using a pair of images under the `source` and `target` members, we can design a corresponding
+    inference type with image-level annotations defined in the `FaceRegion` object:
 
-    .. code-block:: python
+    ```python
+    from dataclasses import dataclass
 
-        class FacePairSample(kolena.workflow.Composite):
-            source: Image
-            target: Image
+    from kolena.workflow import DataObject, Inference
+    from kolena.workflow.annotation import BoundingBox, Keypoints
 
+    @dataclass(frozen=True)
+    class FaceRegion(DataObject):
+        bounding_box: BoundingBox
+        keypoints: Keypoints
 
-        class FaceRegion(DataObject):
-            bounding_box: BoundingBox
-            keypoints: Keypoints
-
-
-        class FacePair(Inference):
-            source: FaceRegion
-            target: FaceRegion
-            similarity: float
+    @dataclass(frozen=True)
+    class FacePair(Inference):
+        source: FaceRegion
+        target: FaceRegion
+        similarity: float
+    ```
 
     This way, it is clear which bounding boxes and keypoints are associated to which image in the test sample.
     """

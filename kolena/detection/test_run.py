@@ -35,21 +35,22 @@ from kolena.detection.test_config import F1Optimal
 
 class TestRun(BaseTestRun):
     """
-    Interface to run tests for a :class:`kolena.detection.Model` on a set of :class:`kolena.detection.TestSuite` suites.
+    Interface to run tests for a [`Model`][kolena.detection.Model] on a [`TestSuite`][kolena.detection.TestSuite].
 
-    For a streamlined interface, see :meth:`kolena.detection.test`.
+    For a streamlined interface, see [`test`][kolena.detection.test].
 
-    Changes are committed to the Kolena platform during execution and when the context is exited.
+    Changes are committed to Kolena during execution and when the context is exited.
 
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    :param test_config: Optionally specify a :class:`kolena.detection.TestConfig` to customize the metrics
-                           evaluation logic for this test run. Defaults to :class:`kolena.detection.config.F1Optimal`
-                           with an iou_threshold of 0.5 if unspecified.
-    :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test-case.
-                                        The callback would be passed inferences of images in each testcase and should
-                                        return a dictionary with metric name as key and metric value as value.
-    :param reset: overwrites existing inferences if set.
+    :param model: The model being tested.
+    :param test_suite: The test suite on which to test the model.
+    :param test_config: Optionally specify a configuration, e.g.
+        [`FixedGlobalThreshold`][kolena.detection.FixedGlobalThreshold] to customize the metrics evaluation logic for
+        this test run. Defaults to [`F1Optimal`][kolena.detection.F1Optimal] with an `iou_threshold` of 0.5 if
+        unspecified.
+    :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test case.
+        The callback would be passed inferences of images in each testcase and should return a dictionary with metric
+        name as key and metric value as value.
+    :param reset: Overwrites existing inferences if set.
     """
 
     _TestImageClass = TestImage
@@ -94,20 +95,18 @@ def test(
     reset: bool = False,
 ) -> None:
     """
-    Test the provided :class:`kolena.detection.InferenceModel` on one or more provided
-    :class:`kolena.detection.TestSuite` suites. Any tests already in progress for this model on these suites are
-    resumed.
+    Test the provided [`InferenceModel`][kolena.detection.InferenceModel] on the provided
+    [`TestSuite`][kolena.detection.TestSuite]. Any tests already in progress for this model on these suites are resumed.
 
-    :param model: the model being tested.
-    :param test_suite: the test suite on which to test the model.
-    :param test_config: Optionally specify a :class:`kolena.detection.TestConfig` to customize the metrics
-                           evaluation logic for this test run.
-                           Defaults to :class:`kolena.detection.test_config.F1Optimal` with an iou_threshold of 0.5
-                           if unspecified.
-    :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test-case.
-                                        The callback would be passed inferences of images in each testcase and should
-                                        return a dictionary with metric name as key and metric value as value.
-    :param reset: overwrites existing inferences if set.
+    :param model: The model to test.
+    :param test_suite: The test suite on which to test the model.
+    :param test_config: Optionally specify a configuration, e.g.
+        [`FixedGlobalThreshold`][kolena.detection.FixedGlobalThreshold], to customize metrics evaluation logic for this
+        test run. Defaults to [`F1Optimal`][kolena.detection.F1Optimal] with an `iou_threshold` of 0.5 if unspecified.
+    :param custom_metrics_callback: Optionally specify a callback function to compute custom metrics for each test case.
+        The callback would be passed inferences of images in each testcase and should return a dictionary with metric
+        name as key and metric value as value.
+    :param reset: Overwrites existing inferences if set.
     """
     with TestRun(
         model,

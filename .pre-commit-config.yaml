@@ -5,8 +5,8 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-added-large-files
-    -   id: check-docstring-first
     -   id: check-yaml
+        args: [--unsafe]  # allow 'unsafe' to only check syntax instead of loading file (unbreak mkdocs.yml)
     -   id: check-toml
     -   id: debug-statements
 -   repo: https://github.com/asottile/pyupgrade
