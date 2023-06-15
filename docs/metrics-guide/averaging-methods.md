@@ -31,7 +31,7 @@ micro-avg precision = 6 / (6 + 4) = 0.6
 micro-avg recall = 6 / (6 + 4) = 0.6
 ```
 
-Note that precision, recall, and f1-score all have the same value (0.6). This is because micro-averaging essentially computes the proportion of correctly classified instances out of all instances, which is the definition of overall **accuracy**. 
+Note that precision, recall, and f1-score all have the same value (0.6). This is because micro-averaging essentially computes the proportion of correctly classified instances out of all instances, which is the definition of overall **accuracy**.
 
 In the multi-class classification cases where each sample has a single label, we get the following:
 
@@ -45,16 +45,16 @@ In the multi-class classification cases where each sample has a single label, we
 weighted-avg F1 = (0.67  * 0.3) + (0.4 * 0.1) + (0.67 * 0.6) = 0.64
 ```
 
-**Samples averaging** computes the mean of metrics computed per sample. It’s only applicable to multi-label classification cases where a sample has multiple labels. 
+**Samples averaging** computes the mean of metrics computed per sample. It’s only applicable to multi-label classification cases where a sample has multiple labels.
 
 ## Intended Uses
 
 You would generally use these four methods to aggregate the metrics computed per class. Averaging is most commonly used in multi-class/multi-label classification or object detection tasks.
 
-So which average should you use? 
+So which average should you use?
 
 If you’re looking for an easily understandable metric for overall model performance regardless of class, **accuracy** or **micro-average** are probably best.
 
-If you want to treat all classes equally, then using **macro-average** would be a good choice. 
+If you want to treat all classes equally, then using **macro-average** would be a good choice.
 
 If you have an imbalanced dataset but want to assign more weight to classes with more samples, consider using **weighted average** instead of the **macro-average** method.
