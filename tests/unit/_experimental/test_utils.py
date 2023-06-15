@@ -19,9 +19,7 @@ import pytest
 
 from .test_plots import TEST_MATCHING
 from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredBoundingBox
-from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
@@ -172,65 +170,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
         ),
         (
             "tps and fps and fns",
-            [
-                MulticlassInferenceMatches(
-                    matched=[
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.99)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.3)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.2)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.1)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.01)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.7)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.6)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.5)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.4)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.3)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.3)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.1)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.01)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.99)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.9)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.8)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.7)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "d"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.6)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.99)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.9)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), ScoredLabeledBoundingBox((1, 1), (2, 2), "e", 0.01)),
-                    ],
-                    unmatched_gt=[
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "a"), ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "b"), ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "c"), ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1)),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
-                        (LabeledBoundingBox((1, 1), (2, 2), "e"), None),
-                    ],
-                    unmatched_inf=[
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.1),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.7),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "c", 0.2),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
-                        ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
-                    ],
-                ),
-            ],
+            TEST_MATCHING["tps and fps and fns"],
             {"a": 0.01, "b": 0.3, "c": 0.01, "d": 0.6, "e": 0.01},
         ),
     ],
