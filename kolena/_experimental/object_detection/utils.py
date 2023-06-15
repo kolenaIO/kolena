@@ -177,3 +177,118 @@ def compute_confusion_matrix_plot(
     for actual_label in ordered_labels:
         matrix.append([confusion_matrix[actual_label][predicted_label] for predicted_label in ordered_labels])
     return ConfusionMatrix(title=plot_title, labels=ordered_labels, matrix=matrix)
+
+
+def _compute_sklearn_arrays_by_class(
+    all_matches: List[MulticlassInferenceMatches],
+) -> Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray], Dict[str, np.ndarray]]:
+    y_true: List[int] = []
+    y_score: List[float] = []
+    y_true_by_label: defaultdict[str, List[int]] = defaultdict(lambda: [])
+    y_score_by_label: defaultdict[str, List[float]] = defaultdict(lambda: [])
+    for image_bbox_matches in all_matches:
+        for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
+            y_true.append(1)
+            y_score.append(bbox_inf.score)
+            y_true_by_label[bbox_inf.label].append(1)
+            y_score_by_label[bbox_inf.label].append(bbox_inf.score)
+        for gt_or_pair in image_bbox_matches.unmatched_gt:  # FN
+            gt_label: str = gt_or_pair[0].label if type(gt_or_pair) is tuple else gt_or_pair.label
+            y_true.append(1)
+            y_score.append(-1)
+            y_true_by_label[gt_label].append(1)
+            y_score_by_label[gt_label].append(-1)
+        for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
+            y_true.append(0)
+            y_score.append(bbox_inf.score)
+            y_true_by_label[bbox_inf.label].append(0)
+            y_score_by_label[bbox_inf.label].append(bbox_inf.score)
+
+    y_true_by_label_np: Dict[str, np.ndarray] = {}
+    for key, value in y_true_by_label.items():
+        y_true_by_label_np[key] = np.array(value)
+
+    y_score_by_label_np: Dict[str, np.ndarray] = {}
+    for key, value in y_score_by_label.items():
+        y_score_by_label_np[key] = np.array(value)
+
+    return np.array(y_true), np.array(y_score), y_true_by_label_np, y_score_by_label_np
+
+
+def _compute_optimal_f1_with_arrays(
+    y_true: np.ndarray,
+    y_score: np.ndarray,
+) -> float:
+    if np.all(y_true == 0):
+        return 0.0
+
+    precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
+
+    # delete last pr of (1,0)
+    precision = precision[:-1]
+    recall = recall[:-1]
+
+    if thresholds[0] < 0:
+        precision = precision[1:]
+        recall = recall[1:]
+        thresholds = thresholds[1:]
+    if len(thresholds) == 0:
+        return 0.0
+
+    f1_scores = 2 * precision * recall / (precision + recall)
+    f1_scores = np.nan_to_num(f1_scores, nan=0)
+    max_f1_index = np.argmax(f1_scores)
+    if f1_scores[max_f1_index] == 0:
+        return 0.0
+    else:
+        return float(thresholds[max_f1_index])
+
+
+def compute_optimal_f1(
+    all_bbox_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+) -> Union[float, Dict[str, float]]:
+    optimal_thresholds: Dict[str, float] = {}
+    multiclass = type(all_bbox_matches[0]) is MulticlassInferenceMatches
+
+    if multiclass:
+        _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_bbox_matches)
+        for label in y_true_by_label.keys():
+            y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+            optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
+        return optimal_thresholds
+    else:
+        y_true, y_score = _compute_sklearn_arrays(all_bbox_matches)
+        return _compute_optimal_f1_with_arrays(y_true, y_score)
+
+
+def compute_ap(precisions: List[float], recalls: List[float]) -> float:
+    """
+    Computes Average Precision given a PR curve using the same approach as Pascal VOC.
+    Based on https://github.com/Cartucho/mAP which implements the Matlab Pascal Voc code in Python.
+    """
+
+    if len(precisions) != len(recalls):
+        raise ValueError("precisions and recalls differ in length")
+
+    pairs = sorted(zip(recalls, precisions), key=lambda x: x[0])
+    recalls = [x[0] for x in pairs]
+    precisions = [x[1] for x in pairs]
+
+    # add (0,0) to left and (1,0) to right
+    recalls = [0, *recalls, 1]
+    precisions = [0, *precisions, 0]
+
+    # make precisions monotonic decreasing
+    for i in range(len(precisions) - 2, -1, -1):
+        precisions[i] = max(precisions[i], precisions[i + 1])
+
+    # indices where recall has changed
+    recall_changed_indices = []
+    for i in range(1, len(recalls)):
+        if recalls[i] != recalls[i - 1]:
+            recall_changed_indices.append(i)
+
+    ap = 0.0
+    for i in recall_changed_indices:
+        ap += (recalls[i] - recalls[i - 1]) * precisions[i]
+    return ap
