@@ -54,7 +54,7 @@ jobs:
           git config user.name 'kolenabot'
           git config user.email 'bot@kolena.io'
           ./docs/setup_insiders.sh
-          poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/gh-pages --config-file mkdocs.insiders.yml
+          poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
