@@ -230,14 +230,14 @@ def _compute_test_case_ovr_roc_curve(
     return None
 
 
-def _aggregate_label_metrics(
+def _compute_per_class_metrics(
     labels: List[str],
     test_samples: List[Image],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     metrics_test_samples: List[PerImageMetrics],
 ) -> Dict[str, PerClassMetrics]:
-    aggregated_metrics = {}
+    per_class_metrics = {}
     for base_label in labels:
         n_tp = 0
         n_fp = 0
@@ -258,14 +258,14 @@ def _aggregate_label_metrics(
         recall = n_tp / (n_tp + n_fn) if n_tp + n_fn > 0 else 0
         fpr = n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0
         f1_score = (2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0
-        aggregated_metrics[base_label] = PerClassMetrics(
+        per_class_metrics[base_label] = PerClassMetrics(
             label=base_label,
             F1=f1_score,
             Precision=precision,
             Recall=recall,
             FPR=fpr,
         )
-    return aggregated_metrics
+    return per_class_metrics
 
 
 def _compute_aggregate_metrics(
@@ -317,7 +317,7 @@ def _compute_test_suite_metrics(
     )
     fields: Dict[str, Type] = {}
 
-    metrics_by_label = _aggregate_label_metrics(labels, test_samples, ground_truths, inferences, test_sample_metrics)
+    metrics_by_label = _compute_per_class_metrics(labels, test_samples, ground_truths, inferences, test_sample_metrics)
     for field in dataclasses.fields(PerClassMetrics):
         attr = field.name
         label_values = [getattr(metric, attr) for metric in metrics_by_label.values()]
@@ -377,16 +377,16 @@ def evaluate_multiclass_classification(
         inferences,
         test_sample_metrics,
     ):
-        aggregated_label_metrics = _aggregate_label_metrics(labels, tc_samples, tc_gts, tc_infs, tc_metrics)
-        test_case_metrics = _compute_aggregate_metrics(tc_samples, tc_gts, tc_metrics, aggregated_label_metrics)
-        metrics_test_case.append((tc, test_case_metrics))
+        per_class_metrics = _compute_per_class_metrics(labels, tc_samples, tc_gts, tc_infs, tc_metrics)
+        aggregate_metrics = _compute_aggregate_metrics(tc_samples, tc_gts, tc_metrics, per_class_metrics)
+        metrics_test_case.append((tc, aggregate_metrics))
         test_case_plots = _compute_test_case_plots(
             tc.name,
             labels,
             tc_gts,
             tc_infs,
             tc_metrics,
-            aggregated_label_metrics,
+            per_class_metrics,
             confidence_range,
         )
         plots_test_case.append((tc, test_case_plots))

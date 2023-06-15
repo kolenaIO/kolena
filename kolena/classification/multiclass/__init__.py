@@ -14,6 +14,31 @@
 """
 The Multiclass Classification pre-built workflow provides out-of-the-box definitions for testing image-based multiclass
 classification models on Kolena.
+
+Example open-source datasets that can be tested with this workflow:
+
+<div class="grid cards" markdown>
+- [CIFAR-10 and CIFAR-100](https://www.cs.toronto.edu/~kriz/cifar.html)
+
+    ---
+
+    <figure markdown>
+        ![Tiny 32x32 pixel color images with 10 and 100 classes](../../assets/images/cifar.png)
+        <figcaption>Tiny 32x32 pixel color images with 10 and 100 classes</figcaption>
+    </figure>
+
+- [MNIST database](https://paperswithcode.com/dataset/mnist)
+
+    ---
+
+    <figure markdown>
+        ![Single-channel 28x28 pixel handwritten digits (0-9)](../../assets/images/mnist.png)
+        <figcaption>
+            Single-channel 28x28 pixel handwritten digits (0-9)
+            ([attribution](https://commons.wikimedia.org/wiki/File:MnistExamplesModified.png))
+        </figcaption>
+    </figure>
+</div>
 """
 
 # noreorder
