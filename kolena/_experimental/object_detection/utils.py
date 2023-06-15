@@ -214,7 +214,7 @@ def _compute_optimal_f1_with_arrays(
     y_score: np.ndarray,
 ) -> float:
     # optimal threshold is 0 if there is no relevant or true label
-    if np.all(y_true == 0):
+    if len(y_true) == 0 or np.all(y_true == 0):
         return 0.0
 
     precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
@@ -246,7 +246,7 @@ def compute_optimal_f1_threshold(
     Computes the optimal F1 threshold for matchings.
 
     :param all_matches: A list of matching results.
-    :return: The optimal F1 threshold value.
+    :return: The optimal F1 threshold value, zero where invalid.
     """
     y_true, y_score = _compute_sklearn_arrays(all_matches)
     return _compute_optimal_f1_with_arrays(y_true, y_score)
@@ -259,12 +259,11 @@ def compute_optimal_f1_threshold_multiclass(
     Creates a mapping of label to optimal F1 thresholds for a multiclass workflow.
 
     :param all_matches: A list of multiclass matching results.
-    :return: A dictionary with each label and its optimal F1 threshold value.
+    :return: A dictionary with each label and its optimal F1 threshold value, zero where invalid.
     """
     optimal_thresholds: Dict[str, float] = {}
 
     y_true_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
-    for label in y_true_score_by_label.keys():
-        y_true, y_score = y_true_score_by_label[label][0], y_true_score_by_label[label][1]
+    for label, (y_true, y_score) in y_true_score_by_label.items():
         optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
     return optimal_thresholds
