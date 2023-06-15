@@ -271,8 +271,8 @@ def compute_optimal_f1_threshold_multiclass(
 
 def compute_average_precision(precisions: List[float], recalls: List[float]) -> float:
     """
-    Computes the average precision given a PR curve with the metrics methodology of Pascal VOC.
-    Based on https://github.com/Cartucho/mAP which implements the Matlab Pascal Voc code in Python.
+    Computes the average precision given a PR curve with the metrics methodology of PASCAL VOC.
+    Based on the [PASCAL VOC code in Python](https://github.com/Cartucho/mAP).
 
     :param precisions: A list precision values from a PR curve.
     :param recalls: A list recall values from a PR curve.
