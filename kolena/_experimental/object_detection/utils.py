@@ -215,6 +215,35 @@ def _compute_sklearn_arrays_by_class(
     return np.array(y_true), np.array(y_score), y_true_by_label_np, y_score_by_label_np
 
 
+def _compute_optimal_f1_with_arrays(
+    y_true: np.ndarray,
+    y_score: np.ndarray,
+) -> float:
+    if np.all(y_true == 0):
+        return 0.0
+
+    precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
+
+    # delete last pr of (1,0)
+    precision = precision[:-1]
+    recall = recall[:-1]
+
+    if thresholds[0] < 0:
+        precision = precision[1:]
+        recall = recall[1:]
+        thresholds = thresholds[1:]
+    if len(thresholds) == 0:
+        return 0.0
+
+    f1_scores = 2 * precision * recall / (precision + recall)
+    f1_scores = np.nan_to_num(f1_scores, nan=0)
+    max_f1_index = np.argmax(f1_scores)
+    if f1_scores[max_f1_index] == 0:
+        return 0.0
+    else:
+        return float(thresholds[max_f1_index])
+
+
 def compute_optimal_f1(
     all_bbox_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
 ) -> Union[float, Dict[str, float]]:
@@ -223,58 +252,10 @@ def compute_optimal_f1(
 
     if multiclass:
         _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_bbox_matches)
-        for label in sorted(y_true_by_label.keys()):
+        for label in y_true_by_label.keys():
             y_true, y_score = y_true_by_label[label], y_score_by_label[label]
-
-            if np.all(y_true == 0):
-                optimal_thresholds[label] = 0
-                continue
-
-            precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
-
-            # delete last pr of (1,0)
-            precision = precision[:-1]
-            recall = recall[:-1]
-
-            if thresholds[0] < 0:
-                precision = precision[1:]
-                recall = recall[1:]
-                thresholds = thresholds[1:]
-            if len(thresholds) == 0:
-                optimal_thresholds[label] = 0
-                continue
-
-            f1_scores = 2 * precision * recall / (precision + recall)
-            f1_scores = np.nan_to_num(f1_scores, nan=0)
-            max_f1_index = np.argmax(f1_scores)
-            if f1_scores[max_f1_index] == 0:
-                optimal_thresholds[label] = 0
-            else:
-                optimal_thresholds[label] = thresholds[max_f1_index]
+            optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
         return optimal_thresholds
     else:
         y_true, y_score = _compute_sklearn_arrays(all_bbox_matches)
-
-        if np.all(y_true == 0):
-            return 0
-
-        precision, recall, thresholds = sklearn_metrics.precision_recall_curve(y_true, y_score)
-
-        # delete last pr of (1,0)
-        precision = precision[:-1]
-        recall = recall[:-1]
-        if thresholds[0] < 0:
-            precision = precision[1:]
-            recall = recall[1:]
-            thresholds = thresholds[1:]
-        if len(thresholds) == 0:
-            return defaultdict(lambda: 0.0)
-
-        f1_scores = 2 * precision * recall / (precision + recall)
-        f1_scores = np.nan_to_num(f1_scores, nan=0)
-
-        max_f1_index = np.argmax(f1_scores)
-        if f1_scores[max_f1_index] == 0:
-            return 0
-        else:
-            return thresholds[max_f1_index]
+        return _compute_optimal_f1_with_arrays(y_true, y_score)
