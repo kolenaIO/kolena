@@ -181,7 +181,7 @@ def compute_confusion_matrix_plot(
 
 def _compute_sklearn_arrays_by_class(
     all_matches: List[MulticlassInferenceMatches],
-) -> Tuple[np.ndarray, np.ndarray, Dict[str, np.ndarray], Dict[str, np.ndarray]]:
+) -> Tuple[Dict[str, np.ndarray], Dict[str, np.ndarray]]:
     y_true_by_label: Dict[str, np.ndarray] = {}
     y_score_by_label: Dict[str, np.ndarray] = {}
 
@@ -208,8 +208,7 @@ def _compute_sklearn_arrays_by_class(
         y_true_by_label[label] = y_true
         y_score_by_label[label] = y_score
 
-    y_true, y_score = _compute_sklearn_arrays(all_matches)
-    return y_true, y_score, y_true_by_label, y_score_by_label
+    return y_true_by_label, y_score_by_label
 
 
 def _compute_optimal_f1_with_arrays(
@@ -266,7 +265,7 @@ def compute_optimal_f1_threshold_multiclass(
     """
     optimal_thresholds: Dict[str, float] = {}
 
-    _, _, y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
+    y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
     for label in y_true_by_label.keys():
         y_true, y_score = y_true_by_label[label], y_score_by_label[label]
         optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
