@@ -25,6 +25,10 @@ theme:
     - navigation.path # breadcrumbs
     - content.tooltips
 
+extra:
+  status:
+    new: Recently Added
+
 plugins:
   social:
     cards_layout: custom

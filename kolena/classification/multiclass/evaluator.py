@@ -34,7 +34,6 @@ from kolena.classification.multiclass.workflow import Inference
 from kolena.classification.multiclass.workflow import PerClassMetrics
 from kolena.classification.multiclass.workflow import PerImageMetrics
 from kolena.classification.multiclass.workflow import TestCase
-from kolena.classification.multiclass.workflow import TestSample
 from kolena.classification.multiclass.workflow import TestSuiteMetrics
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import BarPlot
@@ -43,13 +42,12 @@ from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Histogram
+from kolena.workflow import Image
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
 
-Result = Tuple[TestSample, GroundTruth, Inference]
 
-
-def _compute_test_sample_metric(
+def _compute_per_image_metrics(
     threshold_configuration: ThresholdConfiguration,
     ground_truth: GroundTruth,
     inference: Inference,
@@ -234,7 +232,7 @@ def _compute_test_case_ovr_roc_curve(
 
 def _aggregate_label_metrics(
     labels: List[str],
-    test_samples: List[TestSample],
+    test_samples: List[Image],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     metrics_test_samples: List[PerImageMetrics],
@@ -261,6 +259,7 @@ def _aggregate_label_metrics(
         fpr = n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0
         f1_score = (2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0
         aggregated_metrics[base_label] = PerClassMetrics(
+            label=base_label,
             F1=f1_score,
             Precision=precision,
             Recall=recall,
@@ -269,8 +268,8 @@ def _aggregate_label_metrics(
     return aggregated_metrics
 
 
-def _compute_test_case_metrics(
-    test_samples: List[TestSample],
+def _compute_aggregate_metrics(
+    test_samples: List[Image],
     ground_truths: List[GroundTruth],
     metrics_test_samples: List[PerImageMetrics],
     metrics_by_label: Dict[str, PerClassMetrics],
@@ -288,7 +287,6 @@ def _compute_test_case_metrics(
         macro_metrics_by_name[metric_name] = sum(metrics) / len(metrics)
 
     return AggregateMetrics(
-        n_labels=len(labels),
         n_correct=n_correct,
         n_incorrect=n_incorrect,
         accuracy=accuracy,
@@ -302,7 +300,7 @@ def _compute_test_case_metrics(
 
 def _compute_test_suite_metrics(
     labels: List[str],
-    test_samples: List[TestSample],
+    test_samples: List[Image],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_sample_metrics: List[PerImageMetrics],
@@ -340,14 +338,15 @@ def _compute_test_suite_metrics(
 
 
 def evaluate_multiclass_classification(
-    test_samples: List[TestSample],
+    test_samples: List[Image],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
     configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
     """
-    [Evaluator implementation](../../workflow/evaluator) for the pre-built Multiclass Classification workflow.
+    [Function-based evaluator implementation][kolena.workflow.BasicEvaluatorFunction] for the pre-built Multiclass
+    Classification workflow.
 
     It is not necessary to use this definition directly when testing with
     [`kolena.classification.multiclass.test`][kolena.classification.multiclass.test], which is already bound to this
@@ -362,8 +361,8 @@ def evaluate_multiclass_classification(
             labels_set.add(label.label)
     labels = sorted(labels_set)
 
-    metrics_test_sample: List[Tuple[TestSample, PerImageMetrics]] = [
-        (ts, _compute_test_sample_metric(configuration, gt, inf))
+    metrics_test_sample: List[Tuple[Image, PerImageMetrics]] = [
+        (ts, _compute_per_image_metrics(configuration, gt, inf))
         for ts, gt, inf in zip(test_samples, ground_truths, inferences)
     ]
     test_sample_metrics: List[PerImageMetrics] = [mts for _, mts in metrics_test_sample]
@@ -379,7 +378,7 @@ def evaluate_multiclass_classification(
         test_sample_metrics,
     ):
         aggregated_label_metrics = _aggregate_label_metrics(labels, tc_samples, tc_gts, tc_infs, tc_metrics)
-        test_case_metrics = _compute_test_case_metrics(tc_samples, tc_gts, tc_metrics, aggregated_label_metrics)
+        test_case_metrics = _compute_aggregate_metrics(tc_samples, tc_gts, tc_metrics, aggregated_label_metrics)
         metrics_test_case.append((tc, test_case_metrics))
         test_case_plots = _compute_test_case_plots(
             tc.name,

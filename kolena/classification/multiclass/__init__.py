@@ -17,7 +17,6 @@ classification models on Kolena.
 """
 
 # noreorder
-from .workflow import TestSample
 from .workflow import GroundTruth
 from .workflow import Inference
 from .workflow import TestCase
@@ -32,7 +31,6 @@ from .evaluator import evaluate_multiclass_classification
 from .test_run import test
 
 __all__ = [
-    "TestSample",
     "GroundTruth",
     "Inference",
     "TestCase",

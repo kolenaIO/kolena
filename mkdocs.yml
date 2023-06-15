@@ -47,8 +47,6 @@ nav:
       - Pre-built Workflows:
           - Pre-built Workflows: reference/pre-built/index.md
           - Multiclass Classification: reference/pre-built/multiclass-classification.md
-          - Object Detection: reference/pre-built/object-detection.md
-          - Keypoint Detection: reference/pre-built/keypoint-detection.md
       - Legacy:
           - Legacy Modules: reference/legacy/index.md
           - Built-in Workflows:

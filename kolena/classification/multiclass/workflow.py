@@ -14,7 +14,6 @@
 from typing import List
 from typing import Optional
 
-from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
@@ -22,7 +21,6 @@ from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Image
 from kolena.workflow import Inference as BaseInference
-from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
@@ -31,21 +29,11 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 
 
 @dataclass(frozen=True)
-class TestSample(Image):
-    """
-    The test sample type for the pre-built Multiclass Classification workflow. Extends [`Image`][kolena.workflow.Image].
-    """
-
-    metadata: Metadata = Field(default_factory=dict)
-    """Free-form metadata to associate with a test sample."""
-
-
-@dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for the pre-built Multiclass Classification workflow."""
 
     classification: ClassificationLabel
-    """The class label for an image."""
+    """The classfication label associated with an image."""
 
 
 @dataclass(frozen=True)
@@ -59,14 +47,38 @@ class Inference(BaseInference):
 
 _workflow, _TestCase, _TestSuite, _Model = define_workflow(
     "Multiclass Classification",
-    TestSample,
+    Image,
     GroundTruth,
     Inference,
 )
 """Example"""
 
 TestCase = _TestCase
-"""[`TestCase`][kolena.workflow.TestCase] definition bound to the pre-built Multiclass Classification workflow."""
+"""
+[`TestCase`][kolena.workflow.TestCase] definition bound to the pre-built Multiclass Classification workflow.
+
+Uses the [`Image`][kolena.workflow.Image] test sample type and the
+[`GroundTruth`][kolena.classification.multiclass.GroundTruth] definition specific to this workflow.
+
+!!! tip "Tip: Extend `Image` test sample type"
+
+    Any test sample extending [`kolena.workflow.Image`][kolena.workflow.Image] can be used for this workflow. If your
+    problem requires additional fields on the test sample, or if you would like to add free-form metadata, simply
+    extend this class:
+
+    ```python
+    from dataclasses import dataclass, field
+
+    from kolena.workflow import Image, Metadata
+
+    @dataclass(frozen=True)
+    class ExampleExtendedImage(Image):
+        # locator: str  # inherit from parent Image class
+        example_field: str  # add as many fields as desired, including annotations and assets
+        example_optional: Optional[int] = None
+        metadata: Metadata = field(default_factory=dict)  # optional metadata dict
+    ```
+"""
 
 TestSuite = _TestSuite
 """[`TestSuite`][kolena.workflow.TestSuite] definition bound to the pre-built Multiclass Classification workflow."""
