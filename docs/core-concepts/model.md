@@ -117,7 +117,7 @@ Metadata can be specified on the command line or edited on the web at
 
 ## FAQ & Best Practices
 
-??? question "How should models be named?"
+??? faq "How should models be named?"
 
     Two factors influence model naming:
 

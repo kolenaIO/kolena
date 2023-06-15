@@ -119,7 +119,7 @@ test_suite_v2 = TestSuite.load("example-name", version=2)
 
 ## FAQ & Best Practices
 
-??? question "How should I map my existing benchmark into test cases and test suites?"
+??? faq "How should I map my existing benchmark into test cases and test suites?"
 
     To start, create a test suite containing a single test case for the complete benchmark. This single-test-case test
     suite represents standard, aggregate evaluation on a benchmark dataset.
@@ -127,7 +127,7 @@ test_suite_v2 = TestSuite.load("example-name", version=2)
     Once this test suite has been created, you can start creating test cases! Use the Studio, the Stratifier, or the
     Python client to create test cases slicing through (stratifying) this benchmark.
 
-??? question "How many test cases should a test suite include?"
+??? faq "How many test cases should a test suite include?"
 
     While test suites can hold anywhere from one to thousands of test cases, the sweet spot for the signal-to-noise
     ratio is in the dozens or low hundreds of test cases per test suite.
@@ -135,7 +135,7 @@ test_suite_v2 = TestSuite.load("example-name", version=2)
     Note that the relationship between benchmark dataset and test suite doesn't need to be 1:1. Often it can be useful
     to create different test suites for different stratification strategies applied to the same benchmark.
 
-??? question "How many samples should be included in a test case?"
+??? faq "How many samples should be included in a test case?"
 
     While there's no one-size-fits-all answer, we usually recommend including at least 100 samples in each test case.
     Smaller test cases can be used to provide a very rough signal about the presence or absence of a model beahvior, but
@@ -145,7 +145,7 @@ test_suite_v2 = TestSuite.load("example-name", version=2)
     when highlighting improvements and regressions. The larger the test case, the smaller the ∆ required to consider a
     change from one model to another as "significant."
 
-??? question "How many negative samples should a test case include?"
+??? faq "How many negative samples should a test case include?"
 
     Many workflows, such as object detection or binary classification, have a concept of "negative" samples. In object
     detection, a "negative sample" is a sample (i.e. image) that does not include any objects to be detected.

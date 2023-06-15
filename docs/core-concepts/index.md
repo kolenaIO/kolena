@@ -1,10 +1,10 @@
 ---
-icon: kolena/flag-16
+icon: kolena/area-of-interest-16
 hide:
   - toc
 ---
 
-# :kolena-flag-20: Core Concepts
+# :kolena-area-of-interest-20: Core Concepts
 
 In this section, we'll get acquainted with the core concepts on Kolena, and learn in-depth about the various features
 offered. For a brief introduction, see the [Quickstart Guide](../quickstart.md) or the

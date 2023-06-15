@@ -33,10 +33,21 @@ df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv")
 ```
 
 !!! note "Note: `s3fs` dependency"
-    To load CSVs directly from S3, make sure to install the `s3fs` Python module:`pip3 install s3fs[boto3]` and
+
+    To load CSVs directly from S3, make sure to install the `s3fs` Python module: `pip3 install s3fs[boto3]` and
     [set up AWS credentials](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
 This **`metadata.csv`** file describes a keypoint detection dataset with the following columns:
+
+!!! note inline end "Note: Five-point facial keypoints array"
+
+    For brevity, the 300-W dataset has been pared down to only 5 keypoints: outermost corner of each eye, bottom of
+    nose, and corners of the mouth.
+
+    <figure markdown>
+      ![Example image and five-point facial keypoints array from 300-W.](assets/images/300-W.jpg)
+      <figcaption>Example image and five-point facial keypoints array from 300-W.</figcaption>
+    </figure>
 
 - **`locator`**: location of the image in S3
 - **`normalization_factor`**: normalization factor of the image. This is used to normalize the error by providing a
@@ -47,10 +58,6 @@ This **`metadata.csv`** file describes a keypoint detection dataset with the fol
 Each `locator` is present exactly one time and contains the keypoint ground truth for that image. In this tutorial,
 we're implementing our workflow with support for only a single keypoint instance per image, but we could easily adapt
 our ground truth, inference, and metrics types to accommodate a variable number of keypoint arrays per image.
-
-!!! note
-    For brevity, the 300-W dataset has been pared down to only 5 keypoints: outermost corner of each eye, bottom of nose,
-    and corners of the mouth.
 
 ### Step 1: Defining Data Types
 
@@ -78,8 +85,8 @@ class TestSample(Image):
 
 #### Ground Truth Type
 
-Next, let's define our ground truth type, typically containing the manually-annotated information necessary to evaluate
-model inferences:
+Next, let's define our [`GroundTruth`][kolena.workflow.GroundTruth] type, typically containing the manually-annotated
+information necessary to evaluate model inferences:
 
 ```python
 from kolena.workflow import GroundTruth as GT
@@ -96,9 +103,9 @@ class GroundTruth(GT):
 
 #### Inference Type
 
-Lastly, we'll define our inference type, containing model outputs that are evaluated against a ground truth. Note that
-our model produces not only a keypoint array, but also an associated `confidence` value that we may use to ignore
-low-confidence predictions:
+Lastly, we'll define our [`Inference`][kolena.workflow.Inference] type, containing model outputs that are evaluated
+against a ground truth. Note that our model produces not only a [`Keypoints`][kolena.workflow.annotation.Keypoints]
+array, but also an associated `confidence` value that we may use to ignore low-confidence predictions:
 
 ```python
 from kolena.workflow import Inference as Inf
@@ -127,7 +134,8 @@ With our core data types defined, the next step is to lay out our evaluation cri
 
 #### Test Sample Metrics
 
-Test Sample Metrics are metrics computed from a single test sample and its associated ground truths and inferences.
+Test Sample Metrics ([`MetricsTestSample`][kolena.workflow.MetricsTestSample]) are metrics computed from a single test
+sample and its associated ground truths and inferences.
 
 For the keypoint detection workflow, an example metric may be **normalized mean error** (NME), the normalized distance
 between the ground truth and inference keypoints.
@@ -146,11 +154,12 @@ class TestSampleMetrics(MetricsTestSample):
 
 #### Test Case Metrics
 
-Test Case metrics are aggregate metrics computed across a population. All of your standard evaluation metrics should
-go here — things like accuracy, precision, recall, or any other aggregate metrics that apply to your problem.
+Test case metrics ([`MetricsTestCase`][kolena.workflow.MetricsTestCase]) are aggregate metrics computed across a
+population. All of your standard evaluation metrics should go here — things like accuracy, precision, recall, or any
+other aggregate metrics that apply to your problem.
 
-For keypoints, we care about the **mean NME** and **alignment failure rate** across the different test samples in a test
-case:
+For keypoint detection, we care about the **mean NME** and **alignment failure rate** across the different test samples
+in a test case:
 
 ```python
 from kolena.workflow import MetricsTestCase
@@ -162,11 +171,13 @@ class TestCaseMetrics(MetricsTestCase):
 ```
 
 !!! tip "Tip: Plots"
+
     Evaluators can also compute test-case-level plots using the [`Plot`][kolena.workflow.Plot] API. These plots are
     visualized on [app.kolena.io/~/results](https://app.kolena.io/redirect/results) alongside the metrics reported for
     each test case.
 
 !!! tip "Tip: Test Suite Metrics"
+
     Metrics can also be computed per test suite by extending [`MetricsTestSuite`][kolena.workflow.MetricsTestSuite].
 
     Test suite metrics typically measure variance in performance across different test cases, being used e.g. to measure
@@ -194,11 +205,10 @@ test_case = TestCase(f"{DATASET} :: basic", test_samples=ts_with_gt)
 ```
 
 !!! note "Note: Creating test cases"
+
     In this tutorial we created only a single simple test case, but more advanced test cases can be generated in a
     variety of fast and scalable ways, either programmatically with the `kolena` Python client or visually in the
     [:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio).
-
-<!-- See [Creating Test Cases](../testing-with-kolena/creating-tests.md#creating-test-cases) for details. -->
 
 Now that we have a basic test case for our entire dataset let's create a test suite for it:
 
@@ -214,13 +224,13 @@ With basic tests defined for the 300-W dataset, we're almost ready to start test
 
 Core to the testing process is the [`Evaluator`][kolena.workflow.Evaluator] implementation to compute the metrics
 defined in [step 2](#step-2-defining-metrics). Usually, an evaluator simply plugs your existing metrics computation
-logic into the [class-based][kolena.workflow.Evaluator] or
-[function-based][kolena.workflow.BasicEvaluatorFunction] evaluator interface.
+logic into the [class-based][kolena.workflow.Evaluator] or [function-based][kolena.workflow.BasicEvaluatorFunction]
+evaluator interface.
 
-Evaluators can have arbitrary [configuration][kolena.workflow.EvaluatorConfiguration], allowing you to evaluate model
-performance under a variety of conditions.
-For this keypoints example, perhaps we want to compute performance at a few different NME threshold values, as this
-threshold drives the `alignment_failure` metric.
+Evaluators can have arbitrary configuration [(`EvaluatorConfiguration`)][kolena.workflow.EvaluatorConfiguration],
+allowing you to evaluate model performance under a variety of conditions.
+For this keypoint detection example, perhaps we want to compute performance at a few different NME threshold values, as
+this threshold drives the `alignment_failure` metric.
 
 ```python
 from kolena.workflow import EvaluatorConfiguration
@@ -235,7 +245,7 @@ class NmeThreshold(EvaluatorConfiguration):
 ```
 
 Here, we'll mock out an evaluator implementation using the [function-based][kolena.workflow.BasicEvaluatorFunction]
-interface.
+interface:
 
 ```python
 from random import random
@@ -257,10 +267,10 @@ def evaluate_keypoint_detection(
     ]
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
-    aggregate_metrics = [
-        TestCaseMetrics(mean_nme=random(), alignment_failure_rate=random())
-        for test_case, *s in test_cases.iter(test_samples, ground_truths, inferences, per_sample_metrics)
-    ]
+    aggregate_metrics = []
+    for test_case, *s in test_cases.iter(test_samples, ground_truths, inferences, per_sample_metrics):
+        test_case_metrics = TestCaseMetrics(mean_nme=random(), alignment_failure_rate=random())
+        aggregate_metrics.append((test_case, test_case_metrics))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, per_sample_metrics)),
@@ -291,14 +301,17 @@ model = Model("example-model-name", infer=infer, metadata=dict(
 ))
 ```
 
-We now have the pieces in place to run tests on our new workflow:
+We now have the pieces in place to run tests on our new workflow using [`test`][kolena.workflow.test]:
 
 ```python
 from kolena.workflow import test
 
-test(model, test_suite, evaluator, configurations=[
-    NmeThreshold(0.01), NmeThreshold(0.05), NmeThreshold(0.1),
-])
+test(
+    model,
+    test_suite,
+    evaluate_keypoint_detection,
+    configurations=[NmeThreshold(0.01), NmeThreshold(0.05), NmeThreshold(0.1)],
+)
 ```
 
 That wraps up the testing process! We can now visit [app.kolena.io/~/results](https://app.kolena.io/redirect/results)

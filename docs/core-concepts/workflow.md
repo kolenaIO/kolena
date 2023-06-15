@@ -89,7 +89,7 @@ class QuadImage(Composite):
     left: Image
 ```
 
-!!! tip "Annotations on `Composite` test samples"
+??? question "How can I specify annotations on `Composite` test samples?"
 
     Image-level (or video-level, document-level, etc.) annotations can be specified when using composite test samples.
     To specify image-level objets in each of the four images, ground truth or inference definitions may look like this:
