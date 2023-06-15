@@ -30,7 +30,13 @@ from .workflow import Workflow
 from .test_case import TestCase
 from .test_suite import TestSuite
 from .model import Model
-from .plot import AxisConfig, Plot, Curve, CurvePlot, Histogram, BarPlot, ConfusionMatrix
+from .plot import AxisConfig
+from .plot import Plot
+from .plot import Curve
+from .plot import CurvePlot
+from .plot import ConfusionMatrix
+from .plot import Histogram
+from .plot import BarPlot
 from .evaluator import MetricsTestCase
 from .evaluator import MetricsTestSample
 from .evaluator import MetricsTestSuite
