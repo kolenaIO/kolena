@@ -27,8 +27,8 @@ from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
+from kolena.workflow import Plot
 from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.evaluator import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
 from tests.integration.helper import fake_locator
