@@ -258,6 +258,7 @@ def test__metrics__f1__optimal__multiclass(
     assert expected == dictionary
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "precisions, recalls, expected",
     [
