@@ -338,6 +338,7 @@ def test__compute_ap(precisions: List[float], recalls: List[float], expected: fl
     assert pytest.approx(compute_ap(precisions, recalls), 1e-12) == expected
 
 
+@pytest.mark.metrics
 def test__compute_raises_exception() -> None:
     from kolena._experimental.object_detection.utils import compute_ap
 
