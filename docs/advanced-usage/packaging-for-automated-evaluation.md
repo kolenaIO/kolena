@@ -198,8 +198,8 @@ option.
 At this point, we are all set to leverage Kolena's automatic metrics evaluation capability. To see it in
 action, let's first use Kolena's Studio to curate a new test case.
 
-Head over to [app.kolena.io/~/studio] and use the "Explore" tab to learn more about the test samples from a given test
-case.
+Head over to the [:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio) and use the "Explore" tab to learn
+more about the test samples from a given test case.
 Select multiple test samples of interest and then go to the "Create" tab to create a new test case with the
 "Create Test Case" button. You will notice there's an option to compute metrics on this new test case for applicable
 models. Since we have the evaluator image registered for our workflow `Keypoint Detection`, Kolena will

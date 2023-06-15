@@ -11,6 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+This module surfaces plot definitions to visualize test-case-level data. [Evaluator](evaluator.md) implementations can
+optionally compute plots using these definitions for visualization on the
+[:kolena-results-16: Results](https://app.kolena.io/redirect/results) page.
+
+The following plot types are available:
+
+- [`CurvePlot`][kolena.workflow.CurvePlot]
+- [`Histogram`][kolena.workflow.Histogram]
+- [`BarPlot`][kolena.workflow.BarPlot]
+- [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix]
+"""
 from abc import ABCMeta
 from typing import List
 from typing import Optional
