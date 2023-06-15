@@ -34,7 +34,7 @@ and run directly:
 <div class="grid cards" markdown>
 - [Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
 
-    ![image](assets/images/LFW.jpg)
+    ![Example images from the Labeled Faces in the Wild dataset.](assets/images/LFW.jpg)
 
     ---
 
@@ -42,7 +42,7 @@ and run directly:
 
 - [Example: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
 
-    ![image](assets/images/300-W.jpg)
+    ![Example image and five-point facial keypoints array from the 300 Faces in the Wild dataset.](assets/images/300-W.jpg)
 
     ---
 
@@ -51,7 +51,7 @@ and run directly:
 
 - [Example: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
 
-    ![image](assets/images/CNN-DailyMail.jpg)
+    ![Example articles from the CNN-DailyMail dataset.](assets/images/CNN-DailyMail.jpg)
 
     ---
 
@@ -62,7 +62,7 @@ and run directly:
 To get started, clone the `kolena` repository:
 
 ```shell
-git clone git@github.com:kolenaIO/kolena.git
+git clone https://github.com/kolenaIO/kolena.git
 ```
 
 With the repository cloned, let's set up the
