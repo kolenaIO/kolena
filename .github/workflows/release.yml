@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "*"
+    branches:
+      - gh/docs-publish-bot
 
 jobs:
   release:
@@ -51,8 +53,13 @@ jobs:
 
       - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
+          git config user.name 'kolenabot'
+          git config user.email 'bot@kolena.io'
           ./docs/setup_insiders.sh
-          poetry run mkdocs gh-deploy --verbose --config-file mkdocs.insiders.yml
+          poetry run mkdocs gh-deploy --verbose --strict --remote-branch bot/gh-pages --config-file mkdocs.insiders.yml
+
+      - name: Fail
+        run: exit 1
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
