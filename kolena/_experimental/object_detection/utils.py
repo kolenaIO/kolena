@@ -282,9 +282,11 @@ def compute_average_precision(precisions: List[float], recalls: List[float]) -> 
     if len(precisions) != len(recalls):
         raise ValueError("precisions and recalls differ in length")
 
+    if len(precisions) == 0:
+        return 0
+
     pairs = sorted(zip(recalls, precisions), key=lambda x: x[0])
-    recalls = [x[0] for x in pairs]
-    precisions = [x[1] for x in pairs]
+    recalls, precisions = zip(*pairs)
 
     # add (0,0) to left and (1,0) to right
     recalls = [0, *recalls, 1]
