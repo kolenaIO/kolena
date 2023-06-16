@@ -14,15 +14,13 @@ scores need to be aggregated. There are a few different averaging methods for do
 
 ## Example: Multiclass Classification
 
-Let’s consider the following multiclass classification metrics:
+Let’s consider the following multiclass classification metrics, computed across a total of 10 samples:
 
-| Classes | TP | FP | FN | Precision | Recall | F1-score |
-| --- | --- | --- | --- | --- | --- | --- |
-| Airplane | 2 | 1 | 1 | 0.67 | 0.67 | 0.67 |
-| Boat | 1 | 3 | 0 | 0.25 | 1.0 | 0.4 |
-| Car | 3 | 0 | 3 | 1.0 | 0.5 | 0.67 |
-
-
+| Class | # Samples | <span title="# True Positives">TP</span> | <span title="# False Positives">FP</span> | <span title="# False Negatives">FN</span> | Precision | Recall | F1-score |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Airplane | 3 | 2 | 1 | 1 | 0.67 | 0.67 | 0.67 |
+| Boat | 1 | 1 | 3 | 0 | 0.25 | 1.0 | 0.4 |
+| Car | 6 | 3 | 0 | 3 | 1.0 | 0.5 | 0.67 |
 
 #### Macro Average
 
