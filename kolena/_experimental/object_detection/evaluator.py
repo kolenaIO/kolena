@@ -20,10 +20,10 @@ from typing import Tuple
 
 import numpy as np
 
-from kolena._experimental.object_detection.utils import compute_ap
+from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
-from kolena._experimental.object_detection.utils import compute_optimal_f1
-from kolena._experimental.object_detection.utils import compute_pr_f1_plots
+from kolena._experimental.object_detection.utils import compute_f1_plot
+from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
 from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.utils import threshold_key
 from kolena._experimental.object_detection.workflow import ClassMetricsPerTestCase
@@ -122,7 +122,7 @@ class ObjectDetectionEvaluator(Evaluator):
             )
             for _, ground_truth, inference in inferences
         ]
-        optimal_thresholds = compute_optimal_f1(all_bbox_matches)
+        optimal_thresholds = compute_optimal_f1_threshold_multiclass(all_bbox_matches)
         self.threshold_cache[configuration.display_name()] = optimal_thresholds
 
     def compute_test_sample_metrics(
@@ -184,7 +184,9 @@ class ObjectDetectionEvaluator(Evaluator):
         baseline_pr_plot = compute_pr_plot(all_bbox_matches)
         baseline_pr_plot = compute_pr_plot(all_bbox_matches).curves[0] if baseline_pr_plot is not None else None
 
-        average_precision = compute_ap(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0
+        average_precision = (
+            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0
+        )
 
         return ClassMetricsPerTestCase(
             Class=label,
@@ -231,7 +233,9 @@ class ObjectDetectionEvaluator(Evaluator):
 
         baseline_pr_plot = compute_pr_plot(all_bbox_matches)
         baseline_pr_plot = compute_pr_plot(all_bbox_matches).curves[0] if baseline_pr_plot is not None else None
-        average_precision = compute_ap(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0
+        average_precision = (
+            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0
+        )
 
         # compute nested metrics per class
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
@@ -276,7 +280,11 @@ class ObjectDetectionEvaluator(Evaluator):
 
         return [
             plot
-            for plot in [*compute_pr_f1_plots(all_bbox_matches), compute_confusion_matrix_plot(all_bbox_matches)]
+            for plot in [
+                compute_f1_plot(all_bbox_matches),
+                compute_pr_plot(all_bbox_matches),
+                compute_confusion_matrix_plot(all_bbox_matches),
+            ]
             if plot is not None
         ]
 

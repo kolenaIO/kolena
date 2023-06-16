@@ -13,7 +13,6 @@
 # limitations under the License.
 import json
 import os
-from argparse import Namespace
 from collections import defaultdict
 from typing import Any
 from typing import Dict
@@ -24,7 +23,7 @@ import numpy as np
 from PIL import Image
 from tqdm import tqdm
 
-import kolena._experimental
+import kolena
 from kolena._experimental.object_detection.workflow import GroundTruth
 from kolena._experimental.object_detection.workflow import TestCase
 from kolena._experimental.object_detection.workflow import TestSample
@@ -69,7 +68,7 @@ coco_data, ids, label_map = load_coco_data(annotations)
 for annotation in coco_data["annotations"]:
     image_id = int(annotation["image_id"])
     category_id = int(annotation["category_id"])
-    if category_id <= VALID_ID and not annotation["iscrowd"]:
+    if category_id <= VALID_ID:  # and not annotation["iscrowd"]:
         bbox = annotation["bbox"]
         top_left = (bbox[0], bbox[1])
         bottom_right = (bbox[0] + bbox[2], bbox[1] + bbox[3])
@@ -121,14 +120,14 @@ def create_complete_case() -> TestCase:
                     },
                 ),
                 GroundTruth(
-                    bboxes=[bb for bb in bounding_boxes if bb.label in PERSON_LABELS],
-                    ignored_bboxes=[bb for bb in bounding_boxes if bb.label in TRANSPORTATION_LABELS],
+                    bboxes=bounding_boxes,
+                    ignored_bboxes=[],
                 ),
             ),
         )
 
     complete_test_case = TestCase(
-        f"person-copy :: {DATASET} [Object Detection]",
+        f"complete-copy :: {DATASET} [Object Detection]",
         description=SUITE_DESCRIPTION,
         test_samples=test_samples_and_ground_truths,
         reset=True,
@@ -137,7 +136,7 @@ def create_complete_case() -> TestCase:
     return complete_test_case
 
 
-def create_complete_person_case(args: Namespace) -> TestCase:
+def create_complete_person_case() -> TestCase:
     test_samples_and_ground_truths: List[Tuple[TestSample, GroundTruth]] = []
 
     filename = "/Users/markchen/Desktop/kolena-2/kolena/_experimental/object_detection/class_person.txt"
@@ -187,7 +186,7 @@ def create_complete_person_case(args: Namespace) -> TestCase:
     return complete_test_case
 
 
-def create_complete_transpo_case(args: Namespace) -> TestCase:
+def create_complete_transpo_case() -> TestCase:
     test_samples_and_ground_truths: List[Tuple[TestSample, GroundTruth]] = []
 
     filename = "/Users/markchen/Desktop/kolena-2/kolena/_experimental/object_detection/class_transportation.txt"
