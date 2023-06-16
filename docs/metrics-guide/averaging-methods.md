@@ -8,9 +8,9 @@ For multiclass workflows like classification or object detection, metrics such a
 computed **per class**. To compute a single value that represents model performance across all classes, these per-class
 scores need to be aggregated. There are a few different averaging methods for doing this, most notably:
 
-- [**macro**](#macro-average): unweighted mean of all per-class scores
-- [**micro**](#micro-average): global average of per-sample TP, FP, FN scores
-- [**weighted**](#weighted-average): mean of all per-class scores, weighted by sample sizes for each class
+- [**Macro**](#macro-average): unweighted mean of all per-class scores
+- [**Micro**](#micro-average): global average of per-sample TP, FP, FN scores
+- [**Weighted**](#weighted-average): mean of all per-class scores, weighted by sample sizes for each class
 
 ## Example: Multiclass Classification
 
