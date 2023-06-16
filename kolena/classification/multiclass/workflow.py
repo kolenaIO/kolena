@@ -108,7 +108,7 @@ class PerImageMetrics(MetricsTestSample):
 
 
 @dataclass(frozen=True)
-class PerClassMetrics:
+class PerClassMetrics(MetricsTestCase):
     """Class-level aggregate metrics for a single class within a test case."""
 
     label: str
@@ -151,6 +151,9 @@ class AggregateMetrics(MetricsTestCase):
 
     FPR_macro: float
     """Macro-averaged false positive rate (FPR) score for all classes within this test case."""
+
+    PerClass: List[PerClassMetrics]
+    """Class-level metrics for all classes within this test case."""
 
 
 @dataclass(frozen=True)

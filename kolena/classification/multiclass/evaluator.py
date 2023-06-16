@@ -76,12 +76,12 @@ def _compute_per_image_metrics(
 def _as_class_metric_plot(
     metric_name: str,
     metrics_by_label: Dict[str, PerClassMetrics],
-    labels: List[str],
+    all_labels: List[str],
     display_name: Optional[str] = None,
 ) -> Optional[BarPlot]:
     title = f"{display_name or metric_name} vs. Class"
-    values = [getattr(metrics_by_label[label], metric_name) for label in labels]
-    valid_pairs = [(label, value) for label, value in zip(labels, values) if value != 0.0]
+    values = [getattr(metrics_by_label[label], metric_name) for label in all_labels]
+    valid_pairs = [(label, value) for label, value in zip(all_labels, values) if value != 0.0]
 
     if len(valid_pairs) == 0:
         return None
@@ -106,12 +106,11 @@ def _as_confidence_histogram(
 
 
 def _compute_confidence_histograms(
-    test_case_name: str,
     metrics: List[PerImageMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Histogram]:
     if confidence_range is None:
-        log.warn(f"skipping confidence histograms for {test_case_name}: unsupported confidence range")
+        log.warn("skipping confidence histograms for test case: unsupported confidence range")
         return []
 
     confidence_all = [mts.classification.score for mts in metrics if mts.classification is not None]
@@ -131,8 +130,7 @@ def _compute_confidence_histograms(
 
 
 def _compute_test_case_plots(
-    test_case_name: str,
-    labels: List[str],
+    all_labels: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     metrics: List[PerImageMetrics],
@@ -140,22 +138,21 @@ def _compute_test_case_plots(
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Plot]:
     gt_labels = {gt.classification.label for gt in ground_truths}
-    plots: List[Optional[Plot]] = [_as_class_metric_plot("FPR", metrics_by_label, labels)]
+    plots: List[Optional[Plot]] = [_as_class_metric_plot("FPR", metrics_by_label, all_labels)]
 
     if len(gt_labels) > 2:  # only plot Precision, Recall, F1 vs. Class when there are multiple classes in the test case
-        plots.append(_as_class_metric_plot("Precision", metrics_by_label, labels))
-        plots.append(_as_class_metric_plot("Recall", metrics_by_label, labels, display_name="Recall (TPR)"))
-        plots.append(_as_class_metric_plot("F1", metrics_by_label, labels))
+        plots.append(_as_class_metric_plot("Precision", metrics_by_label, all_labels))
+        plots.append(_as_class_metric_plot("Recall", metrics_by_label, all_labels, display_name="Recall (TPR)"))
+        plots.append(_as_class_metric_plot("F1", metrics_by_label, all_labels))
 
-    plots.extend(_compute_confidence_histograms(test_case_name, metrics, confidence_range))
-    plots.append(_compute_test_case_ovr_roc_curve(test_case_name, list(gt_labels), ground_truths, inferences))
-    plots.append(_compute_test_case_confusion_matrix(test_case_name, ground_truths, metrics))
+    plots.extend(_compute_confidence_histograms(metrics, confidence_range))
+    plots.append(_compute_test_case_ovr_roc_curve(list(gt_labels), ground_truths, inferences))
+    plots.append(_compute_test_case_confusion_matrix(ground_truths, metrics))
 
     return [plot for plot in plots if plot is not None]
 
 
 def _compute_test_case_confusion_matrix(
-    test_case_name: str,
     ground_truths: List[GroundTruth],
     metrics: List[PerImageMetrics],
 ) -> Optional[Plot]:
@@ -172,7 +169,7 @@ def _compute_test_case_confusion_matrix(
         confusion_matrix[actual_label][predicted_label] += 1
 
     if len(gt_labels) < 2:
-        log.info(f"skipping confusion matrix for {test_case_name}: single label test case")
+        log.info("skipping confusion matrix for single label test case")
         return None
 
     labels: Set[str] = {*gt_labels, *pred_labels}
@@ -186,13 +183,13 @@ def _compute_test_case_confusion_matrix(
 
 
 def _compute_test_case_ovr_roc_curve(
-    test_case_name: str,
     labels: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Optional[Plot]:
-    if len(labels) > 10:
-        log.warn(f"skipping one-vs-rest ROC curve for {test_case_name}: too many labels")
+    n_max = 10
+    if len(labels) > n_max:
+        log.warn(f"skipping one-vs-rest ROC curve for test case: too many labels (got {len(labels)}, max {n_max})")
         return None
 
     curves = []
@@ -215,19 +212,17 @@ def _compute_test_case_ovr_roc_curve(
 
 
 def _compute_per_class_metrics(
-    labels: List[str],
-    test_samples: List[Image],
+    all_labels: List[str],
     ground_truths: List[GroundTruth],
-    inferences: List[Inference],
     metrics_test_samples: List[PerImageMetrics],
 ) -> Dict[str, PerClassMetrics]:
     per_class_metrics_by_label = {}
-    for base_label in labels:
+    for base_label in all_labels:
         n_tp = 0
         n_fp = 0
         n_fn = 0
         n_tn = 0
-        for ts, gt, inf, mts in zip(test_samples, ground_truths, inferences, metrics_test_samples):
+        for gt, mts in zip(ground_truths, metrics_test_samples):
             gt_label = gt.classification.label
             predicted_label = mts.classification.label if mts.classification is not None else None
             if gt_label == base_label and predicted_label == base_label:
@@ -240,14 +235,12 @@ def _compute_per_class_metrics(
                 n_tn += 1
         precision = n_tp / (n_tp + n_fp) if n_tp + n_fp > 0 else 0
         recall = n_tp / (n_tp + n_fn) if n_tp + n_fn > 0 else 0
-        fpr = n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0
-        f1_score = (2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0
         per_class_metrics_by_label[base_label] = PerClassMetrics(
             label=base_label,
-            F1=f1_score,
             Precision=precision,
             Recall=recall,
-            FPR=fpr,
+            F1=(2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0,
+            FPR=n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0,
         )
     return per_class_metrics_by_label
 
@@ -316,13 +309,11 @@ def evaluate_multiclass_classification(
     evaluator implementation. Provide this definition when testing with [`kolena.workflow.test`][kolena.workflow.test]
     or [`kolena.workflow.TestRun`][kolena.workflow.TestRun].
     """
-    labels_set: Set[str] = set()
-    for gt in ground_truths:
-        labels_set.add(gt.classification.label)
-    for inf in inferences:
-        for label in inf.inferences:
-            labels_set.add(label.label)
-    labels = sorted(labels_set)
+    all_labels_set = {
+        *(gt.classification.label for gt in ground_truths),
+        *(label.label for inf in inferences for label in inf.inferences),
+    }
+    all_labels = sorted(all_labels_set)
 
     metrics_test_sample: List[Tuple[Image, PerImageMetrics]] = [
         (ts, _compute_per_image_metrics(configuration, gt, inf))
@@ -340,12 +331,11 @@ def evaluate_multiclass_classification(
         inferences,
         test_sample_metrics,
     ):
-        per_class_metrics = _compute_per_class_metrics(labels, tc_samples, tc_gts, tc_infs, tc_metrics)
+        per_class_metrics = _compute_per_class_metrics(all_labels, tc_gts, tc_metrics)
         aggregate_metrics = _compute_aggregate_metrics(tc_samples, tc_gts, tc_metrics, per_class_metrics)
         metrics_test_case.append((tc, aggregate_metrics))
         test_case_plots = _compute_test_case_plots(
-            tc.name,
-            labels,
+            all_labels,
             tc_gts,
             tc_infs,
             tc_metrics,
