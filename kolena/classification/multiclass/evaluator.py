@@ -77,23 +77,22 @@ def _as_class_metric_plot(
     metric_name: str,
     metrics_by_label: Dict[str, PerClassMetrics],
     labels: List[str],
+    display_name: Optional[str] = None,
 ) -> Optional[BarPlot]:
-    if metric_name == "Recall":
-        title = f"{metric_name} (TPR) vs. Class"
-    else:
-        title = f"{metric_name} vs. Class"
-
+    title = f"{display_name or metric_name} vs. Class"
     values = [getattr(metrics_by_label[label], metric_name) for label in labels]
     valid_pairs = [(label, value) for label, value in zip(labels, values) if value != 0.0]
-    if len(valid_pairs) > 0:
-        return BarPlot(
-            title=title,
-            x_label="Class",
-            y_label=metric_name,
-            labels=[label for label, _ in valid_pairs],
-            values=[value for _, value in valid_pairs],
-        )
-    return None
+
+    if len(valid_pairs) == 0:
+        return None
+
+    return BarPlot(
+        title=title,
+        x_label="Class",
+        y_label=metric_name,
+        labels=[label for label, _ in valid_pairs],
+        values=[value for _, value in valid_pairs],
+    )
 
 
 def _as_confidence_histogram(
@@ -102,18 +101,8 @@ def _as_confidence_histogram(
     confidence_range: Tuple[float, float, int] = (0, 1, 25),
 ) -> Histogram:
     min_range, max_range, bins = confidence_range
-    hist, bins = np.histogram(
-        confidence_scores,
-        bins=bins,
-        range=(min_range, max_range),
-    )
-    return Histogram(
-        title=title,
-        x_label="Confidence",
-        y_label="Count",
-        buckets=list(bins),
-        frequency=list(hist),
-    )
+    hist, bins = np.histogram(confidence_scores, bins=bins, range=(min_range, max_range))
+    return Histogram(title=title, x_label="Confidence", y_label="Count", buckets=list(bins), frequency=list(hist))
 
 
 def _compute_confidence_histograms(
@@ -122,9 +111,7 @@ def _compute_confidence_histograms(
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Histogram]:
     if confidence_range is None:
-        log.warn(
-            f"skipping confidence histograms for {test_case_name}: unsupported confidence range",
-        )
+        log.warn(f"skipping confidence histograms for {test_case_name}: unsupported confidence range")
         return []
 
     confidence_all = [mts.classification.score for mts in metrics if mts.classification is not None]
@@ -153,19 +140,18 @@ def _compute_test_case_plots(
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Plot]:
     gt_labels = {gt.classification.label for gt in ground_truths}
-    plots: List[Plot] = [
-        _as_class_metric_plot(field.name, metrics_by_label, labels)
-        for field in dataclasses.fields(PerClassMetrics)
-        if len(gt_labels) > 2
-        or field.name not in ["Precision", "Recall"]  # Omit single-class TC from precision and recall plots
-    ]
+    plots: List[Optional[Plot]] = [_as_class_metric_plot("FPR", metrics_by_label, labels)]
+
+    if len(gt_labels) > 2:  # only plot Precision, Recall, F1 vs. Class when there are multiple classes in the test case
+        plots.append(_as_class_metric_plot("Precision", metrics_by_label, labels))
+        plots.append(_as_class_metric_plot("Recall", metrics_by_label, labels, display_name="Recall (TPR)"))
+        plots.append(_as_class_metric_plot("F1", metrics_by_label, labels))
 
     plots.extend(_compute_confidence_histograms(test_case_name, metrics, confidence_range))
-    plots.append(_compute_test_case_ovr_roc_curve(test_case_name, gt_labels, ground_truths, inferences))
+    plots.append(_compute_test_case_ovr_roc_curve(test_case_name, list(gt_labels), ground_truths, inferences))
     plots.append(_compute_test_case_confusion_matrix(test_case_name, ground_truths, metrics))
-    plots = list(filter(lambda plot: plot is not None, plots))
 
-    return plots
+    return [plot for plot in plots if plot is not None]
 
 
 def _compute_test_case_confusion_matrix(
@@ -186,7 +172,7 @@ def _compute_test_case_confusion_matrix(
         confusion_matrix[actual_label][predicted_label] += 1
 
     if len(gt_labels) < 2:
-        log.warn(f"skipping confusion matrix for {test_case_name}: single label test case")
+        log.info(f"skipping confusion matrix for {test_case_name}: single label test case")
         return None
 
     labels: Set[str] = {*gt_labels, *pred_labels}
@@ -217,14 +203,15 @@ def _compute_test_case_ovr_roc_curve(
         if len(fpr_values) > 0 and len(tpr_values) > 0:
             curves.append(Curve(x=fpr_values, y=tpr_values, label=label))
 
-    if len(curves) > 0:
-        return CurvePlot(
-            title="Receiver Operating Characteristic (One-vs-Rest)",
-            x_label="False Positive Rate (FPR)",
-            y_label="True Positive Rate (TPR)",
-            curves=curves,
-        )
-    return None
+    if len(curves) == 0:
+        return None
+
+    return CurvePlot(
+        title="Receiver Operating Characteristic (One-vs-Rest)",
+        x_label="False Positive Rate (FPR)",
+        y_label="True Positive Rate (TPR)",
+        curves=curves,
+    )
 
 
 def _compute_per_class_metrics(
@@ -261,7 +248,6 @@ def _compute_per_class_metrics(
             Precision=precision,
             Recall=recall,
             FPR=fpr,
-            TPR=recall,
         )
     return per_class_metrics_by_label
 
@@ -292,7 +278,6 @@ def _compute_aggregate_metrics(
         Precision_macro=macro_metrics_by_name["Precision"],
         Recall_macro=macro_metrics_by_name["Recall"],
         F1_macro=macro_metrics_by_name["F1"],
-        TPR_macro=macro_metrics_by_name["TPR"],
         FPR_macro=macro_metrics_by_name["FPR"],
     )
 
@@ -311,7 +296,6 @@ def _compute_test_suite_metrics(
         variance_Precision_macro=_compute_variance("Precision_macro"),
         variance_Recall_macro=_compute_variance("Recall_macro"),
         variance_F1_macro=_compute_variance("F1_macro"),
-        variance_TPR_macro=_compute_variance("TPR_macro"),
         variance_FPR_macro=_compute_variance("FPR_macro"),
     )
 
@@ -371,14 +355,7 @@ def evaluate_multiclass_classification(
         plots_test_case.append((tc, test_case_plots))
 
     all_test_case_metrics = [metric for _, metric in metrics_test_case]
-    metrics_test_suite = _compute_test_suite_metrics(
-        labels,
-        test_samples,
-        ground_truths,
-        inferences,
-        test_sample_metrics,
-        all_test_case_metrics,
-    )
+    metrics_test_suite = _compute_test_suite_metrics(test_sample_metrics, all_test_case_metrics)
 
     return EvaluationResults(
         metrics_test_sample=metrics_test_sample,

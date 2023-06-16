@@ -118,13 +118,10 @@ class PerClassMetrics:
     """Precision score for this class within this test case."""
 
     Recall: float
-    """Recall score for this class within this test case."""
+    """Recall score for this class within this test case. Equivalent to **True Positive Rate** (TPR)."""
 
     F1: float
     """F1 score score for this class within this test case."""
-
-    TPR: float
-    """True positive rate (TPR) for this class within this test case. Equivalent to `Recall`."""
 
     FPR: float
     """False positive rate (FPR) for this class within this test case."""
@@ -151,11 +148,6 @@ class AggregateMetrics(MetricsTestCase):
 
     F1_macro: float
     """Macro-averaged F1 score for all classes within this test case."""
-
-    TPR_macro: float
-    """
-    Macro-averaged true positive rate (TPR) score for all classes within this test case. Equivalent to `Recall_macro`.
-    """
 
     FPR_macro: float
     """Macro-averaged false positive rate (FPR) score for all classes within this test case."""
@@ -198,12 +190,6 @@ class TestSuiteMetrics(MetricsTestSuite):
     """
     Variance of [macro-averaged F1 scores][kolena.classification.multiclass.AggregateMetrics.F1_macro] across all test
     cases within this test suite.
-    """
-
-    variance_TPR_macro: float
-    """
-    Variance of [macro-averaged true positives rates][kolena.classification.multiclass.AggregateMetrics.TPR_macro]
-    across all test cases within this test suite.
     """
 
     variance_FPR_macro: float
