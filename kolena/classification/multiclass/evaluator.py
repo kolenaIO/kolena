@@ -45,15 +45,11 @@ from kolena.workflow import TestCases
 
 
 def _compute_per_image_metrics(
-    threshold_configuration: ThresholdConfiguration,
     ground_truth: GroundTruth,
     inference: Inference,
+    threshold_configuration: ThresholdConfiguration,
 ) -> PerImageMetrics:
-    empty_metrics = PerImageMetrics(
-        classification=None,
-        margin=None,
-        is_correct=False,
-    )
+    empty_metrics = PerImageMetrics(classification=None, margin=None, is_correct=False)
     if len(inference.inferences) == 0:
         return empty_metrics
 
@@ -75,13 +71,13 @@ def _compute_per_image_metrics(
 
 def _as_class_metric_plot(
     metric_name: str,
-    metrics_by_label: Dict[str, PerClassMetrics],
-    all_labels: List[str],
+    per_class_metrics_by_class: Dict[str, PerClassMetrics],
+    all_classes: List[str],
     display_name: Optional[str] = None,
 ) -> Optional[BarPlot]:
     title = f"{display_name or metric_name} vs. Class"
-    values = [getattr(metrics_by_label[label], metric_name) for label in all_labels]
-    valid_pairs = [(label, value) for label, value in zip(all_labels, values) if value != 0.0]
+    values = [getattr(per_class_metrics_by_class[label], metric_name) for label in all_classes]
+    valid_pairs = [(label, value) for label, value in zip(all_classes, values) if value != 0.0]
 
     if len(valid_pairs) == 0:
         return None
@@ -106,19 +102,19 @@ def _as_confidence_histogram(
 
 
 def _compute_confidence_histograms(
-    metrics: List[PerImageMetrics],
+    per_image_metrics: List[PerImageMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Histogram]:
     if confidence_range is None:
         log.warn("skipping confidence histograms for test case: unsupported confidence range")
         return []
 
-    confidence_all = [mts.classification.score for mts in metrics if mts.classification is not None]
+    confidence_all = [mts.classification.score for mts in per_image_metrics if mts.classification is not None]
     confidence_correct = [
-        mts.classification.score for mts in metrics if mts.classification is not None and mts.is_correct
+        mts.classification.score for mts in per_image_metrics if mts.classification is not None and mts.is_correct
     ]
     confidence_incorrect = [
-        mts.classification.score for mts in metrics if mts.classification is not None and not mts.is_correct
+        mts.classification.score for mts in per_image_metrics if mts.classification is not None and not mts.is_correct
     ]
 
     plots = [
@@ -130,38 +126,40 @@ def _compute_confidence_histograms(
 
 
 def _compute_test_case_plots(
-    all_labels: List[str],
+    all_classes: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-    metrics: List[PerImageMetrics],
-    metrics_by_label: Dict[str, PerClassMetrics],
+    per_image_metrics: List[PerImageMetrics],
+    per_class_metrics_by_class: Dict[str, PerClassMetrics],
     confidence_range: Optional[Tuple[float, float, int]],
 ) -> List[Plot]:
     gt_labels = {gt.classification.label for gt in ground_truths}
-    plots: List[Optional[Plot]] = [_as_class_metric_plot("FPR", metrics_by_label, all_labels)]
+    plots: List[Optional[Plot]] = [_as_class_metric_plot("FPR", per_class_metrics_by_class, all_classes)]
 
     if len(gt_labels) > 2:  # only plot Precision, Recall, F1 vs. Class when there are multiple classes in the test case
-        plots.append(_as_class_metric_plot("Precision", metrics_by_label, all_labels))
-        plots.append(_as_class_metric_plot("Recall", metrics_by_label, all_labels, display_name="Recall (TPR)"))
-        plots.append(_as_class_metric_plot("F1", metrics_by_label, all_labels))
+        plots.append(_as_class_metric_plot("Precision", per_class_metrics_by_class, all_classes))
+        plots.append(
+            _as_class_metric_plot("Recall", per_class_metrics_by_class, all_classes, display_name="Recall (TPR)"),
+        )
+        plots.append(_as_class_metric_plot("F1", per_class_metrics_by_class, all_classes))
 
-    plots.extend(_compute_confidence_histograms(metrics, confidence_range))
+    plots.extend(_compute_confidence_histograms(per_image_metrics, confidence_range))
     plots.append(_compute_test_case_ovr_roc_curve(list(gt_labels), ground_truths, inferences))
-    plots.append(_compute_test_case_confusion_matrix(ground_truths, metrics))
+    plots.append(_compute_test_case_confusion_matrix(ground_truths, per_image_metrics))
 
     return [plot for plot in plots if plot is not None]
 
 
 def _compute_test_case_confusion_matrix(
     ground_truths: List[GroundTruth],
-    metrics: List[PerImageMetrics],
+    per_image_metrics: List[PerImageMetrics],
 ) -> Optional[Plot]:
     gt_labels: Set[str] = set()
     pred_labels: Set[str] = set()
     none_label = "None"
     # actual to predicted to count
     confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
-    for gt, metric in zip(ground_truths, metrics):
+    for gt, metric in zip(ground_truths, per_image_metrics):
         actual_label = gt.classification.label
         predicted_label = metric.classification.label if metric.classification is not None else none_label
         gt_labels.add(actual_label)
@@ -183,17 +181,17 @@ def _compute_test_case_confusion_matrix(
 
 
 def _compute_test_case_ovr_roc_curve(
-    labels: List[str],
+    all_classes: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Optional[Plot]:
     n_max = 10
-    if len(labels) > n_max:
-        log.warn(f"skipping one-vs-rest ROC curve for test case: too many labels (got {len(labels)}, max {n_max})")
+    if len(all_classes) > n_max:
+        log.warn(f"skipping one-vs-rest ROC curve for test case: too many labels (got {len(all_classes)}, max {n_max})")
         return None
 
     curves = []
-    for label in labels:
+    for label in all_classes:
         y_true = [1 if gt.classification.label == label else 0 for gt in ground_truths]
         y_score = [get_label_confidence(label, inf.inferences) for inf in inferences]
         fpr_values, tpr_values = roc_curve(y_true, y_score)
@@ -212,17 +210,17 @@ def _compute_test_case_ovr_roc_curve(
 
 
 def _compute_per_class_metrics(
-    all_labels: List[str],
+    all_classes: List[str],
     ground_truths: List[GroundTruth],
-    metrics_test_samples: List[PerImageMetrics],
+    per_image_metrics: List[PerImageMetrics],
 ) -> Dict[str, PerClassMetrics]:
     per_class_metrics_by_label = {}
-    for base_label in all_labels:
+    for base_label in all_classes:
         n_tp = 0
         n_fp = 0
         n_fn = 0
         n_tn = 0
-        for gt, mts in zip(ground_truths, metrics_test_samples):
+        for gt, mts in zip(ground_truths, per_image_metrics):
             gt_label = gt.classification.label
             predicted_label = mts.classification.label if mts.classification is not None else None
             if gt_label == base_label and predicted_label == base_label:
@@ -246,13 +244,12 @@ def _compute_per_class_metrics(
 
 
 def _compute_aggregate_metrics(
-    test_samples: List[Image],
     ground_truths: List[GroundTruth],
-    metrics_test_samples: List[PerImageMetrics],
-    metrics_by_label: Dict[str, PerClassMetrics],
+    per_image_metrics: List[PerImageMetrics],
+    per_class_metrics_by_class: Dict[str, PerClassMetrics],
 ) -> AggregateMetrics:
-    n_correct = len([metric for metric in metrics_test_samples if metric.is_correct])
-    n_images = len(test_samples)
+    n_correct = len([metric for metric in per_image_metrics if metric.is_correct])
+    n_total = len(ground_truths)
     labels = {gt.classification.label for gt in ground_truths}
 
     macro_metrics_by_name: Dict[str, float] = {}
@@ -261,30 +258,33 @@ def _compute_aggregate_metrics(
         if field.name in non_metric_field_names:
             continue
         # only consider labels that exist within this test case
-        metrics = [getattr(metrics_by_label[label], field.name) for label in labels]
+        metrics = [getattr(per_class_metrics_by_class[label], field.name) for label in labels]
         macro_metrics_by_name[field.name] = sum(metrics) / len(metrics)
 
     return AggregateMetrics(
         n_correct=n_correct,
-        n_incorrect=n_images - n_correct,
-        Accuracy=n_correct / n_images,
+        n_incorrect=n_total - n_correct,
+        Accuracy=n_correct / n_total,
         Precision_macro=macro_metrics_by_name["Precision"],
         Recall_macro=macro_metrics_by_name["Recall"],
         F1_macro=macro_metrics_by_name["F1"],
         FPR_macro=macro_metrics_by_name["FPR"],
+        PerClass=sorted(list(per_class_metrics_by_class.values()), key=lambda pcm: pcm.label),
     )
 
 
 def _compute_test_suite_metrics(
-    test_sample_metrics: List[PerImageMetrics],
-    test_case_metrics: List[AggregateMetrics],
+    per_image_metrics: List[PerImageMetrics],
+    aggregate_metrics: List[AggregateMetrics],
 ) -> TestSuiteMetrics:
     def _compute_variance(metric_name: str) -> float:
-        return float(np.var([getattr(metrics, metric_name) for metrics in test_case_metrics]) / len(test_case_metrics))
+        if len(aggregate_metrics) == 0:
+            return 0
+        return float(np.var([getattr(metrics, metric_name) for metrics in aggregate_metrics]))
 
     return TestSuiteMetrics(
-        n_images=len(test_sample_metrics),
-        n_images_skipped=len([mts for mts in test_sample_metrics if mts.classification is None]),
+        n_images=len(per_image_metrics),
+        n_images_skipped=len([mts for mts in per_image_metrics if mts.classification is None]),
         variance_Accuracy=_compute_variance("Accuracy"),
         variance_Precision_macro=_compute_variance("Precision_macro"),
         variance_Recall_macro=_compute_variance("Recall_macro"),
@@ -294,7 +294,7 @@ def _compute_test_suite_metrics(
 
 
 def evaluate_multiclass_classification(
-    test_samples: List[Image],
+    images: List[Image],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
@@ -315,25 +315,21 @@ def evaluate_multiclass_classification(
     }
     all_labels = sorted(all_labels_set)
 
-    metrics_test_sample: List[Tuple[Image, PerImageMetrics]] = [
-        (ts, _compute_per_image_metrics(configuration, gt, inf))
-        for ts, gt, inf in zip(test_samples, ground_truths, inferences)
+    per_image_metrics = [
+        _compute_per_image_metrics(gt, inf, configuration) for gt, inf in zip(ground_truths, inferences)
     ]
-    test_sample_metrics: List[PerImageMetrics] = [mts for _, mts in metrics_test_sample]
-    confidence_scores = [mts.classification.score for mts in test_sample_metrics if mts.classification is not None]
+    confidence_scores = [pim.classification.score for pim in per_image_metrics if pim.classification is not None]
     confidence_range = get_histogram_range(confidence_scores)
 
     metrics_test_case: List[Tuple[TestCase, AggregateMetrics]] = []
     plots_test_case: List[Tuple[TestCase, List[Plot]]] = []
-    for tc, tc_samples, tc_gts, tc_infs, tc_metrics in test_cases.iter(
-        test_samples,
-        ground_truths,
-        inferences,
-        test_sample_metrics,
-    ):
+    for tc, *tc_samples in test_cases.iter(images, ground_truths, inferences, per_image_metrics):
+        _, tc_gts, tc_infs, tc_metrics = tc_samples
+
         per_class_metrics = _compute_per_class_metrics(all_labels, tc_gts, tc_metrics)
-        aggregate_metrics = _compute_aggregate_metrics(tc_samples, tc_gts, tc_metrics, per_class_metrics)
+        aggregate_metrics = _compute_aggregate_metrics(tc_gts, tc_metrics, per_class_metrics)
         metrics_test_case.append((tc, aggregate_metrics))
+
         test_case_plots = _compute_test_case_plots(
             all_labels,
             tc_gts,
@@ -344,11 +340,10 @@ def evaluate_multiclass_classification(
         )
         plots_test_case.append((tc, test_case_plots))
 
-    all_test_case_metrics = [metric for _, metric in metrics_test_case]
-    metrics_test_suite = _compute_test_suite_metrics(test_sample_metrics, all_test_case_metrics)
+    metrics_test_suite = _compute_test_suite_metrics(per_image_metrics, [metric for _, metric in metrics_test_case])
 
     return EvaluationResults(
-        metrics_test_sample=metrics_test_sample,
+        metrics_test_sample=list(zip(images, per_image_metrics)),
         metrics_test_case=metrics_test_case,
         plots_test_case=plots_test_case,
         metrics_test_suite=metrics_test_suite,
