@@ -16,7 +16,7 @@ scores need to be aggregated. There are a few different averaging methods for do
 
 Let’s consider the following multiclass classification metrics, computed across a total of 10 samples:
 
-| Class | # Samples | <span title="# True Positives">TP</span> | <span title="# False Positives">FP</span> | <span title="# False Negatives">FN</span> | Precision | Recall | F1-score |
+| Class | # Samples | # True Positives  | # False Positives | # False Negatives | Precision | Recall | F1-score |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `Airplane` | 3 | 2 | 1 | 1 | 0.67 | 0.67 | 0.67 |
 | `Boat` | 1 | 1 | 3 | 0 | 0.25 | 1.0 | 0.4 |
@@ -56,7 +56,7 @@ formulas, using the total TP/FP/FN counts across all classes:
 <div class="grid" markdown>
 $$
 \begin{align}
-\text{Precision}_\text{micro} &= \frac{\text{TP}_\texttt{total}}{\text{TP}_\texttt{total} + \text{FP}_\texttt{total}} \\[1em]
+\text{Precision}_\text{micro} &= \frac{\text{TP}_\text{Total}}{\text{TP}_\text{Total} + \text{FP}_\text{Total}} \\[1em]
 &= \frac{6}{6 + 4} \\[1em]
 &= 0.6
 \end{align}
@@ -64,7 +64,7 @@ $$
 
 $$
 \begin{align}
-\text{Recall}_\text{micro} &= \frac{\text{TP}_\texttt{total}}{\text{TP}_\texttt{total} + \text{FN}_\texttt{total}} \\[1em]
+\text{Recall}_\text{micro} &= \frac{\text{TP}_\text{Total}}{\text{TP}_\text{Total} + \text{FN}_\text{Total}} \\[1em]
 &= \frac{6}{6 + 4} \\[1em]
 &= 0.6
 \end{align}
@@ -86,7 +86,7 @@ $$
 **Weighted average** computes the mean of all per-class scores while considering each class’s **support**. In this case,
 support is the number of actual instances of the class in the dataset.
 
-For example, if there are 5 samples of class `Airplane`, then the support value of class `Airplane` is 5. In other
+For example, if there are 3 samples of class `Airplane`, then the support value of class `Airplane` is 3. In other
 words, support is the sum of true positive (TP) and false negative (FN) counts. The weight is the proportion of each
 class’s support relative to the sum of all support values:
 
@@ -95,7 +95,7 @@ $$
 \text{F1}_\text{weighted} &= \left( \text{F1}_\texttt{Airplane} \times \frac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
 + \left( \text{F1}_\texttt{Boat} \times \frac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
 + \left( \text{F1}_\texttt{Car} \times \frac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
-&= (0.67 \times 0.3) + (0.4 \times 0.1) + (0.67 \times 0.6) \\[1em]
+&= \left( 0.67 \times \frac{3}{10} \right) + \left( 0.4 \times \frac{1}{10} \right) + \left( 0.67 \times \frac{6}{10} \right) \\[1em]
 &= 0.64
 \end{align}
 $$
