@@ -40,19 +40,10 @@ $$
 ### Micro Average
 
 In contrast to macro, **micro average** computes a **global** average by counting the sums of true positive (TP), false
-negative (FN) and false positive (FP):
+negative (FN) and false positive (FP).
 
-$$
-\begin{align}
-\text{F1}_\text{micro} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
-&= \frac{\text{TP}_\text{Total}}{\text{TP}_\text{Total} + 0.5 ( \text{FP}_\text{Total} + \text{FN}_\text{Total} )} \\[1em]
-&= \frac{6}{6 + 0.5 \times (4 + 4)} \\[1em]
-&= 0.6
-\end{align}
-$$
-
-But what about **micro precision** and **micro recall**? These are computed with the standard precision and recall
-formulas, using the total TP/FP/FN counts across all classes:
+**Micro precision** and **micro recall** are computed with the standard precision and recall formulas, using the total
+TP/FP/FN counts across all classes:
 
 <div class="grid" markdown>
 $$
@@ -71,6 +62,17 @@ $$
 \end{align}
 $$
 </div>
+
+What about **micro F1**? Plug the micro-averaged values for precision and recall into the standard formula for F1 score:
+
+$$
+\begin{align}
+\text{F1}_\text{micro} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
+&= 2 \times \frac{0.6 * 0.6}{0.6 + 0.6} \\[1em]
+&= 0.6
+\end{align}
+$$
+
 
 Note that precision, recall, and F1-score all have the same value: $0.6$. This is because micro-averaging essentially
 computes the proportion of correctly classified instances out of all instances, which is the definition of overall
@@ -93,10 +95,10 @@ class’s support relative to the sum of all support values:
 
 $$
 \begin{align}
-\text{F1}_\text{weighted} &= \left( \text{F1}_\texttt{Airplane} \times \frac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
-+ \left( \text{F1}_\texttt{Boat} \times \frac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
-+ \left( \text{F1}_\texttt{Car} \times \frac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
-&= \left( 0.67 \times \frac{3}{10} \right) + \left( 0.4 \times \frac{1}{10} \right) + \left( 0.67 \times \frac{6}{10} \right) \\[1em]
+\text{F1}_\text{weighted} &= \left( \text{F1}_\texttt{Airplane} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
++ \left( \text{F1}_\texttt{Boat} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
++ \left( \text{F1}_\texttt{Car} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
+&= \left( 0.67 \times \tfrac{3}{10} \right) + \left( 0.4 \times \tfrac{1}{10} \right) + \left( 0.67 \times \tfrac{6}{10} \right) \\[1em]
 &= 0.64
 \end{align}
 $$
