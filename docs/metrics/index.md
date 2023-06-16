@@ -1,8 +1,8 @@
 ---
-icon: kolena/metrics-guide-16
+icon: kolena/metrics-glossary-16
 ---
 
-# :kolena-metrics-guide-20: Metrics Guide
+# :kolena-metrics-glossary-20: Metrics Glossary
 
 This section contains guides for different metrics used to measure model performance.
 

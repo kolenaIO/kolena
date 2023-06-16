@@ -24,7 +24,7 @@ Let’s consider the following multiclass classification metrics, computed acros
 | Total | 10 | 6 | 4 | 4 | - | - | - |
 
 
-#### Macro Average
+### Macro Average
 
 **Macro average** is perhaps the most straightforward among the numerous options and is computed by taking an
 **unweighted** mean of all the per-class scores:
@@ -37,7 +37,7 @@ $$
 \end{align}
 $$
 
-#### Micro Average
+### Micro Average
 
 In contrast to macro, **micro average** computes a **global** average by counting the sums of true positive (TP), false
 negative (FN) and false positive (FP):
@@ -81,7 +81,7 @@ $$
 \text{F1}_\text{micro} = \text{Precision}_\text{micro} = \text{Recall}_\text{micro} = \text{Accuracy}
 $$
 
-### Weighted Average
+## Weighted Average
 
 **Weighted average** computes the mean of all per-class scores while considering each class’s **support**. In this case,
 support is the number of actual instances of the class in the dataset.
