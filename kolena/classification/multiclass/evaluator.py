@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
 from collections import defaultdict
 from typing import Dict
 from typing import List
@@ -42,6 +41,9 @@ from kolena.workflow import Histogram
 from kolena.workflow import Image
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
+from kolena.workflow.metrics import f1_score
+from kolena.workflow.metrics import precision
+from kolena.workflow.metrics import recall
 
 
 def _compute_per_image_metrics(
@@ -155,13 +157,12 @@ def _compute_test_case_confusion_matrix(
     per_image_metrics: List[PerImageMetrics],
 ) -> Optional[Plot]:
     gt_labels: Set[str] = set()
-    pred_labels: Set[str] = set()
-    none_label = "None"
+    pred_labels: Set[Optional[str]] = set()
     # actual to predicted to count
-    confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    confusion_matrix: Dict[str, Dict[Optional[str], int]] = defaultdict(lambda: defaultdict(int))
     for gt, metric in zip(ground_truths, per_image_metrics):
         actual_label = gt.classification.label
-        predicted_label = metric.classification.label if metric.classification is not None else none_label
+        predicted_label = metric.classification.label  # note: includes None
         gt_labels.add(actual_label)
         pred_labels.add(predicted_label)
         confusion_matrix[actual_label][predicted_label] += 1
@@ -171,12 +172,12 @@ def _compute_test_case_confusion_matrix(
         return None
 
     labels: Set[str] = {*gt_labels, *pred_labels}
-    contains_none = none_label in labels
-    sortable_labels = [label for label in labels if label != none_label]
-    ordered_labels = sorted(sortable_labels) if not contains_none else [*sorted(sortable_labels), none_label]
-    matrix = []
-    for actual_label in ordered_labels:
-        matrix.append([confusion_matrix[actual_label][predicted_label] for predicted_label in ordered_labels])
+    sortable_labels = [label for label in labels if label is not None]
+    ordered_labels = sorted(sortable_labels) if None not in labels else [*sorted(sortable_labels), str(None)]
+    matrix: List[List[Optional[int]]] = [
+        [confusion_matrix[actual_label][predicted_label] for predicted_label in ordered_labels]
+        for actual_label in ordered_labels
+    ]
     return ConfusionMatrix(title="Label Confusion Matrix", labels=ordered_labels, matrix=matrix)
 
 
@@ -231,13 +232,11 @@ def _compute_per_class_metrics(
                 n_fp += 1
             if gt_label != base_label and predicted_label != base_label:
                 n_tn += 1
-        precision = n_tp / (n_tp + n_fp) if n_tp + n_fp > 0 else 0
-        recall = n_tp / (n_tp + n_fn) if n_tp + n_fn > 0 else 0
         per_class_metrics_by_label[base_label] = PerClassMetrics(
             label=base_label,
-            Precision=precision,
-            Recall=recall,
-            F1=(2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0,
+            Precision=precision(n_tp, n_fp),
+            Recall=recall(n_tp, n_fn),
+            F1=f1_score(n_tp, n_fp, n_fn),
             FPR=n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0,
         )
     return per_class_metrics_by_label
@@ -250,25 +249,20 @@ def _compute_aggregate_metrics(
 ) -> AggregateMetrics:
     n_correct = len([metric for metric in per_image_metrics if metric.is_correct])
     n_total = len(ground_truths)
-    labels = {gt.classification.label for gt in ground_truths}
+    test_case_classes = {gt.classification.label for gt in ground_truths}
 
-    macro_metrics_by_name: Dict[str, float] = {}
-    non_metric_field_names = {"label"}
-    for field in dataclasses.fields(PerClassMetrics):
-        if field.name in non_metric_field_names:
-            continue
-        # only consider labels that exist within this test case
-        metrics = [getattr(per_class_metrics_by_class[label], field.name) for label in labels]
-        macro_metrics_by_name[field.name] = sum(metrics) / len(metrics)
+    def macro_metric(metric_name: str) -> float:
+        metrics = [getattr(per_class_metrics_by_class[class_name], metric_name) for class_name in test_case_classes]
+        return sum(metrics) / len(metrics)
 
     return AggregateMetrics(
         n_correct=n_correct,
         n_incorrect=n_total - n_correct,
         Accuracy=n_correct / n_total,
-        Precision_macro=macro_metrics_by_name["Precision"],
-        Recall_macro=macro_metrics_by_name["Recall"],
-        F1_macro=macro_metrics_by_name["F1"],
-        FPR_macro=macro_metrics_by_name["FPR"],
+        Precision_macro=macro_metric("Precision"),
+        Recall_macro=macro_metric("Recall"),
+        F1_macro=macro_metric("F1"),
+        FPR_macro=macro_metric("FPR"),
         PerClass=sorted(list(per_class_metrics_by_class.values()), key=lambda pcm: pcm.label),
     )
 
