@@ -68,7 +68,7 @@ What about **micro F1**? Plug the micro-averaged values for precision and recall
 $$
 \begin{align}
 \text{F1}_\text{micro} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
-&= 2 \times \frac{0.6 * 0.6}{0.6 + 0.6} \\[1em]
+&= 2 \times \frac{0.6 \times 0.6}{0.6 + 0.6} \\[1em]
 &= 0.6
 \end{align}
 $$
