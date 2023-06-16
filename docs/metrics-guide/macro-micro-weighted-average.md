@@ -1,8 +1,8 @@
-# Macro / Micro / Weighted / Samples Average
+# Macro / Micro / Weighted Average
 
 ## Description
 
-In the case of multi-class classification/object detection, you have to compute metrics such as precision, recall, and f1-score **per class**. When you want a single value that represents model performance across all classes, these per-class scores need to be aggregated. There are different averaging methods for doing this, namely, **macro**, **micro,** **weighted,** and **samples**.
+In the case of multi-class classification/object detection, you have to compute metrics such as precision, recall, and f1-score **per class**. When you want a single value that represents model performance across all classes, these per-class scores need to be aggregated. There are different averaging methods for doing this, namely, **macro**, **micro**, and **weighted**.
 
 Let’s consider the following multi-class classification metrics:
 
@@ -16,7 +16,6 @@ Let’s consider the following multi-class classification metrics:
 **Macro average** is perhaps the most straightforward among the numerous options and is computed by taking an **unweighted** mean of all the per-class scores:
 
 $$\begin{aligned}macro \space F1 &= \frac {0.67 + 0.4 + 0.67} 3 \\&= 0.58\end{aligned}$$
-
 
 ### Micro Average
 In contrast, **micro average** computes a **global** average by counting the sums of true positive (TP), false negative (FN) and false positive (FP):
@@ -38,8 +37,6 @@ $$micro \space F1 = micro \space precision = micro \space recall = accuracy$$
 
 $$\begin{aligned}weighted \space F1 &= (0.67 \times 0.3) + (0.4 \times 0.1) + (0.67 \times 0.6) \\&= 0.64\end{aligned}$$
 
-### Samples Average
-**Samples average** computes the mean of metrics computed per sample. It’s only applicable to multi-label classification cases where a sample has multiple labels.
 
 ## Intended Uses
 
