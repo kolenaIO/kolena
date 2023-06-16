@@ -123,6 +123,9 @@ class PerClassMetrics:
     F1: float
     """F1 score score for this class within this test case."""
 
+    TPR: float
+    """True positive rate (TPR) for this class within this test case. Equivalent to `Recall`."""
+
     FPR: float
     """False positive rate (FPR) for this class within this test case."""
 
@@ -137,28 +140,35 @@ class AggregateMetrics(MetricsTestCase):
     n_incorrect: int
     """Total number of incorrect predictions within this test case."""
 
-    accuracy: float
+    Accuracy: float
     """Accuracy for predictions within this test case."""
 
-    macro_precision: float
+    Precision_macro: float
     """Macro-averaged precision score for all classes within this test case."""
 
-    macro_recall: float
+    Recall_macro: float
     """Macro-averaged recall score for all classes within this test case."""
 
-    macro_f1: float
+    F1_macro: float
     """Macro-averaged F1 score for all classes within this test case."""
 
-    macro_tpr: float
-    """Macro-averaged true positive rate (TPR) score for all classes within this test case."""
+    TPR_macro: float
+    """
+    Macro-averaged true positive rate (TPR) score for all classes within this test case. Equivalent to `Recall_macro`.
+    """
 
-    macro_fpr: float
+    FPR_macro: float
     """Macro-averaged false positive rate (FPR) score for all classes within this test case."""
 
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
-    """Test-suite-level metrics for the pre-built Multiclass Classification workflow."""
+    """
+    Test-suite-level metrics for the pre-built Multiclass Classification workflow.
+
+    In addition to the fixed fields below, these metrics are also populated with class-level `mean_X` and `variance_X`
+    for all classes `X`.
+    """
 
     n_images: int
     """Total number of images tested within this test suite."""
@@ -166,8 +176,11 @@ class TestSuiteMetrics(MetricsTestSuite):
     n_correct: int
     """Total number of correct predictions within this test suite."""
 
-    mean_test_case_accuracy: float
-    """Macro-averaged accuracy across all test cases within this test suite."""
+    mean_Accuracy: float
+    """Mean accuracy across all test cases within this test suite."""
+
+    variance_Accuracy: float
+    """Variance of accuracy across all test cases within this test suite."""
 
 
 @dataclass(frozen=True)

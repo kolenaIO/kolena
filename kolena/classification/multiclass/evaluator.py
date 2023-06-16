@@ -34,7 +34,7 @@ from kolena.classification.multiclass.workflow import Inference
 from kolena.classification.multiclass.workflow import PerClassMetrics
 from kolena.classification.multiclass.workflow import PerImageMetrics
 from kolena.classification.multiclass.workflow import TestCase
-from kolena.classification.multiclass.workflow import TestSuiteMetrics
+from kolena.classification.multiclass.workflow import TestSuiteMetrics as BaseTestSuiteMetrics
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import BarPlot
 from kolena.workflow import ConfusionMatrix
@@ -237,7 +237,7 @@ def _compute_per_class_metrics(
     inferences: List[Inference],
     metrics_test_samples: List[PerImageMetrics],
 ) -> Dict[str, PerClassMetrics]:
-    per_class_metrics = {}
+    per_class_metrics_by_label = {}
     for base_label in labels:
         n_tp = 0
         n_fp = 0
@@ -258,14 +258,15 @@ def _compute_per_class_metrics(
         recall = n_tp / (n_tp + n_fn) if n_tp + n_fn > 0 else 0
         fpr = n_fp / (n_fp + n_tn) if n_fp + n_tn > 0 else 0
         f1_score = (2 * precision * recall) / (precision + recall) if precision + recall > 0 else 0
-        per_class_metrics[base_label] = PerClassMetrics(
+        per_class_metrics_by_label[base_label] = PerClassMetrics(
             label=base_label,
             F1=f1_score,
             Precision=precision,
             Recall=recall,
             FPR=fpr,
+            TPR=recall,
         )
-    return per_class_metrics
+    return per_class_metrics_by_label
 
 
 def _compute_aggregate_metrics(
@@ -276,25 +277,26 @@ def _compute_aggregate_metrics(
 ) -> AggregateMetrics:
     n_correct = len([metric for metric in metrics_test_samples if metric.is_correct])
     n_images = len(test_samples)
-    n_incorrect = n_images - n_correct
-    accuracy = n_correct / n_images
     labels = {gt.classification.label for gt in ground_truths}
 
     macro_metrics_by_name: Dict[str, float] = {}
+    non_metric_field_names = {"label"}
     for field in dataclasses.fields(PerClassMetrics):
-        metric_name = field.name
-        metrics = [getattr(metrics_by_label[label], metric_name) for label in labels]
-        macro_metrics_by_name[metric_name] = sum(metrics) / len(metrics)
+        if field.name in non_metric_field_names:
+            continue
+        # only consider labels that exist within this test case
+        metrics = [getattr(metrics_by_label[label], field.name) for label in labels]
+        macro_metrics_by_name[field.name] = sum(metrics) / len(metrics)
 
     return AggregateMetrics(
         n_correct=n_correct,
-        n_incorrect=n_incorrect,
-        accuracy=accuracy,
-        macro_precision=macro_metrics_by_name["Precision"],
-        macro_recall=macro_metrics_by_name["Recall"],
-        macro_f1=macro_metrics_by_name["F1"],
-        macro_tpr=macro_metrics_by_name["Recall"],
-        macro_fpr=macro_metrics_by_name["FPR"],
+        n_incorrect=n_images - n_correct,
+        Accuracy=n_correct / n_images,
+        Precision_macro=macro_metrics_by_name["Precision"],
+        Recall_macro=macro_metrics_by_name["Recall"],
+        F1_macro=macro_metrics_by_name["F1"],
+        TPR_macro=macro_metrics_by_name["TPR"],
+        FPR_macro=macro_metrics_by_name["FPR"],
     )
 
 
@@ -305,10 +307,10 @@ def _compute_test_suite_metrics(
     inferences: List[Inference],
     test_sample_metrics: List[PerImageMetrics],
     test_case_metrics: List[AggregateMetrics],
-) -> TestSuiteMetrics:
+) -> BaseTestSuiteMetrics:
     n_images = len(test_sample_metrics)
     n_correct = len([metric for metric in test_sample_metrics if metric.is_correct])
-    mean_test_case_accuracy = sum([metric.accuracy for metric in test_case_metrics]) / len(test_case_metrics)
+    mean_test_case_accuracy = sum([metric.Accuracy for metric in test_case_metrics]) / len(test_case_metrics)
 
     values: Dict[str, Any] = dict(
         n_images=n_images,
@@ -328,12 +330,7 @@ def _compute_test_suite_metrics(
         values[mean_field_name] = np.mean(label_values)
         values[var_field_name] = np.var(label_values)
 
-    dc = make_dataclass(
-        "WorkflowTestSuiteMetrics",
-        bases=(TestSuiteMetrics,),
-        fields=list(fields.items()),
-        frozen=True,
-    )
+    dc = make_dataclass("TestSuiteMetrics", bases=(BaseTestSuiteMetrics,), fields=list(fields.items()), frozen=True)
     return dc(**values)
 
 
