@@ -24,7 +24,8 @@ def precision(true_positives: int, false_positives: int) -> float:
     :param true_positives: Number of true positive predictions.
     :param false_positives: Number of false positive predictions.
     """
-    return true_positives / (true_positives + false_positives) if (true_positives + false_positives) > 0 else 0
+    denominator = true_positives + false_positives
+    return true_positives / denominator if denominator > 0 else 0
 
 
 def recall(true_positives: int, false_negatives: int) -> float:
@@ -38,10 +39,11 @@ def recall(true_positives: int, false_negatives: int) -> float:
     :param true_positives: Number of true positive predictions.
     :param false_negatives: Number of false negatives.
     """
-    return true_positives / (true_positives + false_negatives) if (true_positives + false_negatives) > 0 else 0
+    denominator = true_positives + false_negatives
+    return true_positives / denominator if denominator > 0 else 0
 
 
-def f1(true_positives: int, false_positives: int, false_negatives: int) -> float:
+def f1_score(true_positives: int, false_positives: int, false_negatives: int) -> float:
     """
     F1 score is the harmonic mean between [`precision`][kolena.workflow.metrics.precision] and
     [`recall`][kolena.workflow.metrics.recall].
@@ -60,4 +62,5 @@ def f1(true_positives: int, false_positives: int, false_negatives: int) -> float
     """
     prec = precision(true_positives, false_positives)
     rec = recall(true_positives, false_negatives)
-    return (2 * prec * rec) / (prec + rec)
+    denominator = prec + rec
+    return 2 * prec * rec / denominator if denominator > 0 else 0
