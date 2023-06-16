@@ -35,28 +35,46 @@ from kolena.workflow.test_run import test
 
 DATASET = "coco-2014-val"
 WORKFLOW = "OD"
-MIN_CONFIDENCE = 0.05
+MIN_CONFIDENCE = 0.0
 LABELS_OF_INTEREST = {
+    # "person",
+    # "bird",
+    # "cat",
+    # "dog",
+    # "horse",
+    # "sheep",
+    # "cow",
+    # "elephant",
+    # "bear",
+    # "zebra",
+    # "giraffe",
+    # "bicycle",
+    # "car",
+    # "motorcycle",
+    # "bus",
+    # "train",
+    # "truck",
+    # "traffic light",
+    # "fire hydrant",
+    # "stop sign",
+    # "bench",
+    # "boat",
+    # "airplane",
+    # "parking meter",
     "person",
-    "bird",
-    "cat",
-    "dog",
-    "horse",
-    "sheep",
-    "cow",
-    "elephant",
-    "bear",
-    "zebra",
-    "giraffe",
-    "bicycle",
-    "car",
-    "motorcycle",
-    "bus",
-    "train",
-    "truck",
-    "traffic light",
-    "fire hydrant",
     "stop sign",
+    "skateboard",
+    "car",
+    "bus",
+    "airplane",
+    "motorcycle",
+    "truck",
+    "boat",
+    "traffic light",
+    "train",
+    "bicycle",
+    "parking meter",
+    "fire hydrant",
 }
 
 MODEL_LIST: Dict[str, str] = {
@@ -69,7 +87,8 @@ MODEL_LIST: Dict[str, str] = {
 }
 
 TEST_SUITE_NAMES = [
-    f"{DATASET} benchmark [Object Detection] :: supercategory",
+    # f"{DATASET} benchmark [Object Detection] :: supercategory",
+    f"{DATASET} benchmark [Object Detection] :: supercategory-copy",
 ]
 
 LINK = "s3://kolena-dev-models/object-detection"
@@ -210,25 +229,27 @@ def seed_test_run(
 
     model = Model(f"{mod[1]}", infer=infer, metadata=MODEL_METADATA[model_name])
 
-    evaluator_configurations = [
-        ThresholdConfiguration(
-            threshold_strategy=ThresholdStrategy.FIXED_05,
-            iou_threshold=0.5,
-            min_confidence_score=min_conf_score,
-        ),
-        ThresholdConfiguration(
-            threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
-            iou_threshold=0.5,
-            min_confidence_score=min_conf_score,
-        ),
-        # ThresholdConfiguration(
-        #     threshold_strategy=ThresholdStrategy.FIXED_075,
-        #     iou_threshold=0.75,
-        #     min_confidence_score=min_conf_score,
-        # ),
-    ]
+    evaluator = ObjectDetectionEvaluator(
+        configurations=[
+            # ThresholdConfiguration(
+            #     threshold_strategy=ThresholdStrategy.FIXED_05,
+            #     iou_threshold=0.5,
+            #     min_confidence_score=min_conf_score,
+            # ),
+            ThresholdConfiguration(
+                threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
+                iou_threshold=0.5,
+                min_confidence_score=min_conf_score,
+            ),
+            # ThresholdConfiguration(
+            #     threshold_strategy=ThresholdStrategy.FIXED_075,
+            #     iou_threshold=0.75,
+            #     min_confidence_score=min_conf_score,
+            # ),
+        ],
+    )
 
-    test(model, test_suite, ObjectDetectionEvaluator, evaluator_configurations, reset=True)
+    test(model, test_suite, evaluator, reset=True)
 
 
 def run(args: Namespace) -> None:
