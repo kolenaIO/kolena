@@ -267,3 +267,42 @@ def compute_optimal_f1_threshold_multiclass(
     for label, (y_true, y_score) in y_true_score_by_label.items():
         optimal_thresholds[label] = _compute_optimal_f1_with_arrays(y_true, y_score)
     return optimal_thresholds
+
+
+def compute_average_precision(precisions: List[float], recalls: List[float]) -> float:
+    """
+    Computes the average precision given a PR curve with the metrics methodology of PASCAL VOC.
+    Based on the [PASCAL VOC code in Python](https://github.com/Cartucho/mAP).
+
+    :param precisions: A list precision values from a PR curve.
+    :param recalls: A list recall values from a PR curve.
+    :return: The value of the average precision.
+    """
+
+    if len(precisions) != len(recalls):
+        raise ValueError("precisions and recalls differ in length")
+
+    if len(precisions) == 0:
+        return 0
+
+    pairs = sorted(zip(recalls, precisions), key=lambda x: x[0])
+    recalls, precisions = zip(*pairs)
+
+    # add (0,0) to left and (1,0) to right
+    recalls = [0, *recalls, 1]
+    precisions = [0, *precisions, 0]
+
+    # make precisions monotonic decreasing
+    for i in range(len(precisions) - 2, -1, -1):
+        precisions[i] = max(precisions[i], precisions[i + 1])
+
+    # indices where recall has changed
+    recall_changed_indices = []
+    for i in range(1, len(recalls)):
+        if recalls[i] != recalls[i - 1]:
+            recall_changed_indices.append(i)
+
+    ap = 0.0
+    for i in recall_changed_indices:
+        ap += (recalls[i] - recalls[i - 1]) * precisions[i]
+    return ap
