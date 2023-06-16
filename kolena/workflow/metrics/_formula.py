@@ -15,7 +15,7 @@
 
 def precision(true_positives: int, false_positives: int) -> float:
     """
-    Precision score following the formula:
+    Precision represents the proportion of predictions that are correct.
 
     $$
     \\text{Precision} = \\frac{\\text{# True Positives}}{\\text{# True Positives} + \\text{# False Positives}}
@@ -29,7 +29,7 @@ def precision(true_positives: int, false_positives: int) -> float:
 
 def recall(true_positives: int, false_negatives: int) -> float:
     """
-    Recall score following the formula:
+    Recall represents the proportion of ground truths that were successfully predicted.
 
     $$
     \\text{Recall} = \\frac{\\text{# True Positives}}{\\text{# True Positives} + \\text{# False Negatives}}
@@ -43,10 +43,15 @@ def recall(true_positives: int, false_negatives: int) -> float:
 
 def f1(true_positives: int, false_positives: int, false_negatives: int) -> float:
     """
-    F1 score following the formula:
+    F1 score is the harmonic mean between [`precision`][kolena.workflow.metrics.precision] and
+    [`recall`][kolena.workflow.metrics.recall].
 
     $$
-    \\text{F1} = 2 \\times \\frac{\\text{Precision} \\times \\text{Recall}}{\\text{Precision} + \\text{Recall}}
+    \\begin{align}
+    \\text{F1}
+    &= \\frac{2}{\\frac{1}{\\text{Precision}} + \\frac{1}{\\text{Recall}}} \\\\[1em]
+    &= 2 \\times \\frac{\\text{Precision} \\times \\text{Recall}}{\\text{Precision} + \\text{Recall}}
+    \\end{align}
     $$
 
     :param true_positives: Number of true positive predictions.
