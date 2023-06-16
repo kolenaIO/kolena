@@ -44,7 +44,8 @@ negative (FN) and false positive (FP):
 
 $$
 \begin{align}
-\text{F1}_\text{micro} &= \text{TODO} \\[1em]
+\text{F1}_\text{micro} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
+&= \frac{\text{TP}_\text{Total}}{\text{TP}_\text{Total} + 0.5 ( \text{FP}_\text{Total} + \text{FN}_\text{Total} )} \\[1em]
 &= \frac{6}{6 + 0.5 \times (4 + 4)} \\[1em]
 &= 0.6
 \end{align}
@@ -81,7 +82,7 @@ $$
 \text{F1}_\text{micro} = \text{Precision}_\text{micro} = \text{Recall}_\text{micro} = \text{Accuracy}
 $$
 
-## Weighted Average
+### Weighted Average
 
 **Weighted average** computes the mean of all per-class scores while considering each class’s **support**. In this case,
 support is the number of actual instances of the class in the dataset.
@@ -102,17 +103,17 @@ $$
 
 
 
-## Intended Uses
+## Which Method Should I Use?
 
 You would generally use these three methods to aggregate the metrics computed per class. Averaging is most commonly used
 in multiclass/multi-label classification and object detection tasks.
 
 So which average should you use?
 
-If you’re looking for an easily understandable metric for overall model performance regardless of class, **accuracy** or
-**micro average** are probably best.
+If you’re looking for an easily understandable metric for overall model performance regardless of class,
+**micro average** is probably best.
 
 If you want to treat all classes equally, then using **macro average** would be a good choice.
 
 If you have an imbalanced dataset but want to assign more weight to classes with more samples, consider using
-**weighted average** instead of the **macro average** method.
+**weighted average** instead of macro average.
