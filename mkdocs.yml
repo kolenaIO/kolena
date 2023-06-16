@@ -23,7 +23,7 @@ nav:
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
   - Metrics Guide:
       - Metrics Guide: metrics-guide/index.md
-      - Macro / Micro / Weighted Average: metrics-guide/macro-micro-weighted-average.md
+      - Averaging Methods: metrics-guide/averaging-methods.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
