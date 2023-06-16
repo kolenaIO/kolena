@@ -21,9 +21,6 @@ nav:
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
-  # TODO: uncomment when content lands
-  # - Metrics Guide:
-  #     - Metrics Guide: metrics-guide/index.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
@@ -54,6 +51,9 @@ nav:
               - <code>detection</code>: reference/legacy/built-in/detection.md
               - <code>fr</code>: reference/legacy/built-in/fr.md
               - Base Definitions: reference/legacy/built-in/base.md
+  - Metrics Glossary:
+      - Metrics Glossary: metrics/index.md
+      - Averaging Methods: metrics/averaging-methods.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
