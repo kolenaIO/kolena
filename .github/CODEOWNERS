@@ -1,6 +1,6 @@
-*                   @kolenaIO/kolena-owners
+*                    @kolenaIO/kolena-owners
 
-README.md           @kolenaIO/docs-owners
-mkdocs.yml          @kolenaIO/docs-owners
-mkdocs.insiders.yml @kolenaIO/docs-owners
-docs/*              @kolenaIO/docs-owners
+/README.md           @kolenaIO/docs-owners
+/mkdocs.yml          @kolenaIO/docs-owners
+/mkdocs.insiders.yml @kolenaIO/docs-owners
+/docs/**             @kolenaIO/docs-owners
