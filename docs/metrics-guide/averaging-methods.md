@@ -18,9 +18,11 @@ Let’s consider the following multiclass classification metrics, computed acros
 
 | Class | # Samples | <span title="# True Positives">TP</span> | <span title="# False Positives">FP</span> | <span title="# False Negatives">FN</span> | Precision | Recall | F1-score |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Airplane | 3 | 2 | 1 | 1 | 0.67 | 0.67 | 0.67 |
-| Boat | 1 | 1 | 3 | 0 | 0.25 | 1.0 | 0.4 |
-| Car | 6 | 3 | 0 | 3 | 1.0 | 0.5 | 0.67 |
+| `Airplane` | 3 | 2 | 1 | 1 | 0.67 | 0.67 | 0.67 |
+| `Boat` | 1 | 1 | 3 | 0 | 0.25 | 1.0 | 0.4 |
+| `Car` | 6 | 3 | 0 | 3 | 1.0 | 0.5 | 0.67 |
+| Total | 10 | 6 | 4 | 4 | - | - | - |
+
 
 #### Macro Average
 
@@ -28,7 +30,11 @@ Let’s consider the following multiclass classification metrics, computed acros
 **unweighted** mean of all the per-class scores:
 
 $$
-\text{F1}_\text{macro} = \frac{0.67 + 0.4 + 0.67}{3} = 0.58
+\begin{align}
+\text{F1}_\text{macro} &= \frac{\text{F1}_\texttt{Airplane} + \text{F1}_\texttt{Boat} + \text{F1}_\texttt{Car}}{3} \\[1em]
+&= \frac{0.67 + 0.4 + 0.67}{3} \\[1em]
+&= 0.58
+\end{align}
 $$
 
 #### Micro Average
@@ -37,22 +43,35 @@ In contrast to macro, **micro average** computes a **global** average by countin
 negative (FN) and false positive (FP):
 
 $$
-\text{F1}_\text{micro} = \frac{6}{6 + 0.5 \times (4 + 4)} = 0.6
+\begin{align}
+\text{F1}_\text{micro} &= \text{TODO} \\[1em]
+&= \frac{6}{6 + 0.5 \times (4 + 4)} \\[1em]
+&= 0.6
+\end{align}
 $$
 
-But what about **micro precision** and **micro recall**?
+But what about **micro precision** and **micro recall**? These are computed with the standard precision and recall
+formulas, using the total TP/FP/FN counts across all classes:
 
 <div class="grid" markdown>
 $$
-\text{Precision}_\text{micro} = \frac{6}{6 + 4} = 0.6
+\begin{align}
+\text{Precision}_\text{micro} &= \frac{\text{TP}_\texttt{total}}{\text{TP}_\texttt{total} + \text{FP}_\texttt{total}} \\[1em]
+&= \frac{6}{6 + 4} \\[1em]
+&= 0.6
+\end{align}
 $$
 
 $$
-\text{Recall}_\text{micro} = \frac{6}{6 + 4} = 0.6
+\begin{align}
+\text{Recall}_\text{micro} &= \frac{\text{TP}_\texttt{total}}{\text{TP}_\texttt{total} + \text{FN}_\texttt{total}} \\[1em]
+&= \frac{6}{6 + 4} \\[1em]
+&= 0.6
+\end{align}
 $$
 </div>
 
-Note that precision, recall, and f1-score all have the same value: $0.6$. This is because micro-averaging essentially
+Note that precision, recall, and F1-score all have the same value: $0.6$. This is because micro-averaging essentially
 computes the proportion of correctly classified instances out of all instances, which is the definition of overall
 **accuracy**.
 
@@ -72,7 +91,13 @@ words, support is the sum of true positive (TP) and false negative (FN) counts. 
 class’s support relative to the sum of all support values:
 
 $$
-\text{F1}_\text{weighted} = (0.67 \times 0.3) + (0.4 \times 0.1) + (0.67 \times 0.6) = 0.64
+\begin{align}
+\text{F1}_\text{weighted} &= \left( \text{F1}_\texttt{Airplane} \times \frac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
++ \left( \text{F1}_\texttt{Boat} \times \frac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
++ \left( \text{F1}_\texttt{Car} \times \frac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
+&= (0.67 \times 0.3) + (0.4 \times 0.1) + (0.67 \times 0.6) \\[1em]
+&= 0.64
+\end{align}
 $$
 
 
