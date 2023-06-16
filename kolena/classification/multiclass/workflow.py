@@ -173,14 +173,44 @@ class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     """Total number of images tested within this test suite."""
 
-    n_correct: int
-    """Total number of correct predictions within this test suite."""
-
-    mean_Accuracy: float
-    """Mean accuracy across all test cases within this test suite."""
+    n_images_skipped: int
+    """Number of skipped images, i.e. images with no predicted class, within this test suite."""
 
     variance_Accuracy: float
-    """Variance of accuracy across all test cases within this test suite."""
+    """
+    Variance of [accuracy][kolena.classification.multiclass.AggregateMetrics.Accuracy] scores across all test cases
+    within this test suite.
+    """
+
+    variance_Precision_macro: float
+    """
+    Variance of [macro-averaged precision][kolena.classification.multiclass.AggregateMetrics.Precision_macro] scores
+    across all test cases within this test suite.
+    """
+
+    variance_Recall_macro: float
+    """
+    Variance of [macro-averaged recall][kolena.classification.multiclass.AggregateMetrics.Recall_macro] across all test
+    cases within this test suite.
+    """
+
+    variance_F1_macro: float
+    """
+    Variance of [macro-averaged F1 scores][kolena.classification.multiclass.AggregateMetrics.F1_macro] across all test
+    cases within this test suite.
+    """
+
+    variance_TPR_macro: float
+    """
+    Variance of [macro-averaged true positives rates][kolena.classification.multiclass.AggregateMetrics.TPR_macro]
+    across all test cases within this test suite.
+    """
+
+    variance_FPR_macro: float
+    """
+    Variance of [macro-averaged false positives rates][kolena.classification.multiclass.AggregateMetrics.FPR_macro]
+    across all test cases within this test suite.
+    """
 
 
 @dataclass(frozen=True)

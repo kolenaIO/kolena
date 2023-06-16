@@ -13,14 +13,11 @@
 # limitations under the License.
 import dataclasses
 from collections import defaultdict
-from dataclasses import make_dataclass
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
-from typing import Type
 
 import numpy as np
 
@@ -34,7 +31,7 @@ from kolena.classification.multiclass.workflow import Inference
 from kolena.classification.multiclass.workflow import PerClassMetrics
 from kolena.classification.multiclass.workflow import PerImageMetrics
 from kolena.classification.multiclass.workflow import TestCase
-from kolena.classification.multiclass.workflow import TestSuiteMetrics as BaseTestSuiteMetrics
+from kolena.classification.multiclass.workflow import TestSuiteMetrics
 from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import BarPlot
 from kolena.workflow import ConfusionMatrix
@@ -301,37 +298,22 @@ def _compute_aggregate_metrics(
 
 
 def _compute_test_suite_metrics(
-    labels: List[str],
-    test_samples: List[Image],
-    ground_truths: List[GroundTruth],
-    inferences: List[Inference],
     test_sample_metrics: List[PerImageMetrics],
     test_case_metrics: List[AggregateMetrics],
-) -> BaseTestSuiteMetrics:
-    n_images = len(test_sample_metrics)
-    n_correct = len([metric for metric in test_sample_metrics if metric.is_correct])
-    mean_test_case_accuracy = sum([metric.Accuracy for metric in test_case_metrics]) / len(test_case_metrics)
+) -> TestSuiteMetrics:
+    def _compute_variance(metric_name: str) -> float:
+        return float(np.var([getattr(metrics, metric_name) for metrics in test_case_metrics]) / len(test_case_metrics))
 
-    values: Dict[str, Any] = dict(
-        n_images=n_images,
-        n_correct=n_correct,
-        mean_test_case_accuracy=mean_test_case_accuracy,
+    return TestSuiteMetrics(
+        n_images=len(test_sample_metrics),
+        n_images_skipped=len([mts for mts in test_sample_metrics if mts.classification is None]),
+        variance_Accuracy=_compute_variance("Accuracy"),
+        variance_Precision_macro=_compute_variance("Precision_macro"),
+        variance_Recall_macro=_compute_variance("Recall_macro"),
+        variance_F1_macro=_compute_variance("F1_macro"),
+        variance_TPR_macro=_compute_variance("TPR_macro"),
+        variance_FPR_macro=_compute_variance("FPR_macro"),
     )
-    fields: Dict[str, Type] = {}
-
-    metrics_by_label = _compute_per_class_metrics(labels, test_samples, ground_truths, inferences, test_sample_metrics)
-    for field in dataclasses.fields(PerClassMetrics):
-        attr = field.name
-        label_values = [getattr(metric, attr) for metric in metrics_by_label.values()]
-        mean_field_name = f"mean_{attr}"
-        var_field_name = f"variance_{attr}"
-        fields[mean_field_name] = float
-        fields[var_field_name] = float
-        values[mean_field_name] = np.mean(label_values)
-        values[var_field_name] = np.var(label_values)
-
-    dc = make_dataclass("TestSuiteMetrics", bases=(BaseTestSuiteMetrics,), fields=list(fields.items()), frozen=True)
-    return dc(**values)
 
 
 def evaluate_multiclass_classification(
