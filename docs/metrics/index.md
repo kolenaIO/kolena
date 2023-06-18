@@ -18,3 +18,12 @@ biases, and its intended uses.
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
 </div>
+
+<div class="grid cards" markdown>
+- [Intersection over Union (IoU)](iou.md)
+
+    ---
+
+    This metric measures the percentage of overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
+    Also known as Jaccard index in classification workflow.
+</div>
