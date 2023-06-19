@@ -163,4 +163,4 @@ The second limitation of IoU is measuring the localization performance of non-ov
 
 ## Kolena API
 
-[kolena.workflow.metrics.iou](https://app.kolena.io/api/developer/docs/html/kolena.workflow.metrics.html#kolena.workflow.metrics.iou)
+[`kolena.workflow.metrics.iou`](https://docs.kolena.io/reference/workflow/metrics/#kolena.workflow.metrics.iou)
