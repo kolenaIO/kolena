@@ -100,9 +100,6 @@ Whenever there is an actual “cat” class, the model never predicts that there
 Sometimes it is easier to see a normalized confusion matrix when you want to focus on class-level behavior. If confusion matrices are color-coded, normalizing can also create a better visual representation:
 
 ![Example of normalized and colored confusion matrix](../assets/images/metrics-confusion-matrix-normalized.png)
-<p style="text-align: center; color: gray;">
-    [Example of normalized and colored confusion matrix from Scikit-Learn](https://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html)
-</p>
 
 You can normalize a confusion matrix by `row` (actual classes), `column` (predicted classes), or `all` (entire matrix). Each type of normalization surfaces a view sharing different information, which is outlined below.
 
