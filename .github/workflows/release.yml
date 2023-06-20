@@ -59,7 +59,7 @@ jobs:
       - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
           ./docs/setup_insiders.sh
-          poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
+          poetry run mkdocs gh-deploy --verbose --shell --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
 
       - name: Fail
         run: exit 1
