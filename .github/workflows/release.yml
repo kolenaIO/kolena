@@ -28,6 +28,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
 
+      - name: Configure kolenabot git user
+        run: |
+          git config --global user.name 'kolenabot'
+          git config --global user.email 'bot@kolena.io'
+
       - name: Configure SSH key for docs insiders setup
         uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -53,8 +58,6 @@ jobs:
 
       - name: Build 'kolena' documentation and push to GitHub Pages
         run: |
-          git config --global user.name 'kolenabot'
-          git config --global user.email 'bot@kolena.io'
           ./docs/setup_insiders.sh
           poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
 
