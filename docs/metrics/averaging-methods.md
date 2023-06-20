@@ -1,5 +1,8 @@
 ---
 subtitle: Macro, Micro, Weighted
+# TODO: remove search exclusion before landing Metrics Glossary
+search:
+  exclude: true
 ---
 
 # Averaging Methods
