@@ -23,6 +23,15 @@ biases, and its intended uses.
 </div>
 
 <div class="grid cards" markdown>
+- [Geometry Matcher](geometry-matcher.md)
+
+    ---
+
+    This algorithm finds the best possible match, given the sets of the ground truth and prediction polygons for each image.
+    It is a building block for any object detection metrics.
+</div>
+
+<div class="grid cards" markdown>
 - [Intersection over Union (IoU)](iou.md)
 
     ---
