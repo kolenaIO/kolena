@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://docs.kolena.io/reference/workflow/asset/">
+        <link rel="canonical" href="https://docs.kolena.io/reference/workflow/plot/">
       
       
-        <link rel="prev" href="../annotation/">
+        <link rel="prev" href="../asset/">
       
       
-        <link rel="next" href="../plot/">
+        <link rel="next" href="../define-workflow/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Assets - Testing with Kolena</title>
+        <title>Plots - Testing with Kolena</title>
       
     
     
@@ -81,7 +81,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#assets-kolenaworkflowasset" class="md-skip">
+        <a href="#plots-kolenaworkflowplot" class="md-skip">
           Skip to content
         </a>
       
@@ -113,7 +113,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Assets
+              Plots
             
           </span>
         </div>
@@ -1457,6 +1457,32 @@
                 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../asset/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    Assets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -1474,7 +1500,7 @@
   <span class="md-ellipsis">
     
   
-    Assets
+    Plots
   
 
     
@@ -1491,7 +1517,7 @@
   <span class="md-ellipsis">
     
   
-    Assets
+    Plots
   
 
     
@@ -1517,10 +1543,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.Asset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.NumberSeries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Asset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> NumberSeries
       
     </span>
   </a>
@@ -1528,22 +1554,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.ImageAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.NullableNumberSeries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> ImageAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> NullableNumberSeries
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="ImageAsset">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.AxisConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> AxisConfig
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AxisConfig">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.ImageAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.AxisConfig.type" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> type
       
     </span>
   </a>
@@ -1556,22 +1593,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PlainTextAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Plot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> PlainTextAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Plot
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="PlainTextAsset">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Curve
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Curve">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PlainTextAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Curve.x" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Curve.y" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Curve.label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> label
       
     </span>
   </a>
@@ -1584,22 +1654,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BinaryAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.CurvePlot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> BinaryAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> CurvePlot
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="BinaryAsset">
+    <nav class="md-nav" aria-label="CurvePlot">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BinaryAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.CurvePlot.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.curves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> curves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.x_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.y_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_config
       
     </span>
   </a>
@@ -1612,22 +1737,99 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PointCloudAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Histogram" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> PointCloudAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Histogram
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="PointCloudAsset">
+    <nav class="md-nav" aria-label="Histogram">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PointCloudAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Histogram.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.buckets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> buckets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.frequency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> frequency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.x_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.y_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_config
       
     </span>
   </a>
@@ -1640,22 +1842,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BaseVideoAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.BarPlot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> BaseVideoAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> BarPlot
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="BaseVideoAsset">
+    <nav class="md-nav" aria-label="BarPlot">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BaseVideoAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.BarPlot.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> config
       
     </span>
   </a>
@@ -1668,22 +1925,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> VideoAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> ConfusionMatrix
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="VideoAsset">
+    <nav class="md-nav" aria-label="ConfusionMatrix">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
       
     </span>
   </a>
@@ -1691,10 +1948,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.thumbnail" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.labels" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> thumbnail
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> labels
       
     </span>
   </a>
@@ -1702,10 +1959,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.start" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> start
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> matrix
       
     </span>
   </a>
@@ -1713,10 +1970,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.end" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.x_label" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> end
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
       
     </span>
   </a>
@@ -1732,32 +2000,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    Plots
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -2273,10 +2515,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.Asset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.NumberSeries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Asset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> NumberSeries
       
     </span>
   </a>
@@ -2284,22 +2526,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.ImageAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.NullableNumberSeries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> ImageAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> NullableNumberSeries
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="ImageAsset">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.AxisConfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> AxisConfig
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AxisConfig">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.ImageAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.AxisConfig.type" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> type
       
     </span>
   </a>
@@ -2312,22 +2565,55 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PlainTextAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Plot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> PlainTextAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Plot
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="PlainTextAsset">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Curve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Curve
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Curve">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PlainTextAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Curve.x" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Curve.y" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Curve.label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> label
       
     </span>
   </a>
@@ -2340,22 +2626,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BinaryAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.CurvePlot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> BinaryAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> CurvePlot
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="BinaryAsset">
+    <nav class="md-nav" aria-label="CurvePlot">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BinaryAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.CurvePlot.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.curves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> curves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.x_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.CurvePlot.y_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_config
       
     </span>
   </a>
@@ -2368,22 +2709,99 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PointCloudAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Histogram" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> PointCloudAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> Histogram
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="PointCloudAsset">
+    <nav class="md-nav" aria-label="Histogram">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.PointCloudAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.Histogram.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.buckets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> buckets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.frequency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> frequency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.x_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_config
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.Histogram.y_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_config
       
     </span>
   </a>
@@ -2396,22 +2814,77 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BaseVideoAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.BarPlot" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> BaseVideoAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> BarPlot
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="BaseVideoAsset">
+    <nav class="md-nav" aria-label="BarPlot">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.BaseVideoAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.BarPlot.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.x_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> labels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.BarPlot.config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> config
       
     </span>
   </a>
@@ -2424,22 +2897,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> VideoAsset
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code> ConfusionMatrix
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="VideoAsset">
+    <nav class="md-nav" aria-label="ConfusionMatrix">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.locator" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.title" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> locator
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> title
       
     </span>
   </a>
@@ -2447,10 +2920,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.thumbnail" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.labels" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> thumbnail
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> labels
       
     </span>
   </a>
@@ -2458,10 +2931,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.start" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.matrix" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> start
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> matrix
       
     </span>
   </a>
@@ -2469,10 +2942,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.asset.VideoAsset.end" class="md-nav__link">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.x_label" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> end
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> x_label
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena.workflow.plot.ConfusionMatrix.y_label" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-attribute"></code> y_label
       
     </span>
   </a>
@@ -2564,7 +3048,7 @@
                   
 
   
-    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/reference/workflow/asset.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/reference/workflow/plot.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -2572,7 +3056,7 @@
   
 
 
-<h1 id="assets-kolenaworkflowasset">Assets: <code>kolena.workflow.asset</code><a class="headerlink" href="#assets-kolenaworkflowasset" title="Permanent link">#</a></h1>
+<h1 id="plots-kolenaworkflowplot">Plots: <code>kolena.workflow.plot</code><a class="headerlink" href="#plots-kolenaworkflowplot" title="Permanent link">#</a></h1>
 
 
 <div class="doc doc-object doc-module">
@@ -2584,16 +3068,31 @@
 
   <div class="doc doc-contents first">
   
-      <p>Assets are additional files linked to the <a class="autorefs autorefs-internal" href="../test-sample/#kolena.workflow.test_sample.TestSample"><code>TestSample</code></a>,
-<a class="autorefs autorefs-internal" href="../ground-truth/#kolena.workflow.ground_truth.GroundTruth"><code>GroundTruth</code></a>, or <a class="autorefs autorefs-internal" href="../inference/#kolena.workflow.inference.Inference"><code>Inference</code></a> objects for your workflow.
-Assets can be visualized in the Kolena Studio when exploring your test cases or model results.</p>
-<p>The following asset types are available:</p>
+      <p>This module surfaces plot definitions to visualize test-case-level data. <a href="../evaluator/">Evaluator</a> implementations can
+optionally compute plots using these definitions for visualization on the
+<a href="https://app.kolena.io/redirect/results"><span class="twemoji"><?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="chart">
+	<g>
+		<path fill-rule="evenodd" clip-rule="evenodd" d="M0,15c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1V9.4L0,11V15z M6,9.5V15
+			c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1v-5l-1,1L6,9.5z M13,7l-1,1v7c0,0.55,0.45,1,1,1h2c0.55,0,1-0.45,1-1V7.88
+			C15.74,7.95,15.42,8,15,8C13.04,8,13,7,13,7z M15,1h-3c-0.55,0-1,0.45-1,1c0,0.55,0.45,1,1,1h0.59L8.8,6.78L5.45,5.11l0,0.01
+			C5.31,5.05,5.16,5,5,5S4.69,5.05,4.56,5.11l0-0.01l-4,2l0,0.01C0.23,7.28,0,7.61,0,8c0,0.55,0.45,1,1,1
+			c0.16,0,0.31-0.05,0.44-0.11l0,0.01L5,7.12l3.55,1.78l0-0.01C8.69,8.95,8.84,9,9,9c0.28,0,0.53-0.11,0.71-0.29L14,4.41V5
+			c0,0.55,0.45,1,1,1s1-0.45,1-1V2C16,1.45,15.55,1,15,1z"/>
+	</g>
+</g>
+</svg>
+</span> Results</a> page.</p>
+<p>The following plot types are available:</p>
 <ul>
-<li><a class="autorefs autorefs-internal" href="#kolena.workflow.asset.ImageAsset"><code>ImageAsset</code></a></li>
-<li><a class="autorefs autorefs-internal" href="#kolena.workflow.asset.PlainTextAsset"><code>PlainTextAsset</code></a></li>
-<li><a class="autorefs autorefs-internal" href="#kolena.workflow.asset.BinaryAsset"><code>BinaryAsset</code></a></li>
-<li><a class="autorefs autorefs-internal" href="#kolena.workflow.asset.PointCloudAsset"><code>PointCloudAsset</code></a></li>
-<li><a class="autorefs autorefs-internal" href="#kolena.workflow.asset.VideoAsset"><code>VideoAsset</code></a></li>
+<li><a class="autorefs autorefs-internal" href="#kolena.workflow.plot.CurvePlot"><code>CurvePlot</code></a></li>
+<li><a class="autorefs autorefs-internal" href="#kolena.workflow.plot.Histogram"><code>Histogram</code></a></li>
+<li><a class="autorefs autorefs-internal" href="#kolena.workflow.plot.BarPlot"><code>BarPlot</code></a></li>
+<li><a class="autorefs autorefs-internal" href="#kolena.workflow.plot.ConfusionMatrix"><code>ConfusionMatrix</code></a></li>
 </ul>
 
   
@@ -2606,46 +3105,67 @@ Assets can be visualized in the Kolena Studio when exploring your test cases or 
 
 
 
-
-<div class="doc doc-object doc-class">
-
+<div class="doc doc-object doc-attribute">
 
 
-<h3 id="kolena.workflow.asset.Asset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>Asset</code>
-<a href="#kolena.workflow.asset.Asset" class="headerlink" title="Permanent link">#</a></h3>
+
+<h3 id="kolena.workflow.plot.NumberSeries" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">NumberSeries</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.NumberSeries" class="headerlink" title="Permanent link">#</a></h3>
 
 
 
   <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code><span title="kolena.workflow._datatypes.TypedDataObject">TypedDataObject</span>[<span title="kolena.workflow.asset._AssetType">_AssetType</span>]</code></p>
-
   
-      <p>Base class for all asset types.</p>
-
-
-
+      <p>A sequence of numeric values.</p>
   </div>
 
 </div>
 
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="kolena.workflow.plot.NullableNumberSeries" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">NullableNumberSeries</span> <span class="o">=</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.NullableNumberSeries" class="headerlink" title="Permanent link">#</a></h3>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>A sequence of numeric values or <code>None</code>.</p>
+  </div>
+
+</div>
+
+
 <div class="doc doc-object doc-class">
 
 
 
-<h3 id="kolena.workflow.asset.ImageAsset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>ImageAsset</code>
-<a href="#kolena.workflow.asset.ImageAsset" class="headerlink" title="Permanent link">#</a></h3>
+<h3 id="kolena.workflow.plot.AxisConfig" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>AxisConfig</code>
+<a href="#kolena.workflow.plot.AxisConfig" class="headerlink" title="Permanent link">#</a></h3>
 
 
 
   <div class="doc doc-contents ">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.asset.Asset" href="#kolena.workflow.asset.Asset">Asset</a></code></p>
+        Bases: <code><span title="kolena.workflow._datatypes.DataObject">DataObject</span></code></p>
 
   
-      <p>An image in a cloud bucket.</p>
+      <p>Configuration for the format of a given axis on a plot.</p>
 
 
 
@@ -2663,20 +3183,20 @@ Assets can be visualized in the Kolena Studio when exploring your test cases or 
 
 
 
-<h4 id="kolena.workflow.asset.ImageAsset.locator" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">locator</span><span class="p">:</span> <span class="nb">str</span></code>
+<h4 id="kolena.workflow.plot.AxisConfig.type" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="nb">type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="n">linear</span><span class="p">,</span> <span class="n">log</span><span class="p">]</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#kolena.workflow.asset.ImageAsset.locator" class="headerlink" title="Permanent link">#</a></h4>
+<a href="#kolena.workflow.plot.AxisConfig.type" class="headerlink" title="Permanent link">#</a></h4>
 
 
 
   <div class="doc doc-contents ">
   
-      <p>The location of this image in a cloud bucket, e.g. <code>s3://my-bucket/path/to/my-image-asset.png</code>.</p>
+      <p>Type of axis to display. Supported options are <code>linear</code> and <code>log</code>.</p>
   </div>
 
 </div>
@@ -2695,58 +3215,20 @@ Assets can be visualized in the Kolena Studio when exploring your test cases or 
 
 
 
-<h3 id="kolena.workflow.asset.PlainTextAsset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>PlainTextAsset</code>
-<a href="#kolena.workflow.asset.PlainTextAsset" class="headerlink" title="Permanent link">#</a></h3>
+<h3 id="kolena.workflow.plot.Plot" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>Plot</code>
+<a href="#kolena.workflow.plot.Plot" class="headerlink" title="Permanent link">#</a></h3>
 
 
 
   <div class="doc doc-contents ">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.asset.Asset" href="#kolena.workflow.asset.Asset">Asset</a></code></p>
+        Bases: <code><span title="kolena.workflow._datatypes.TypedDataObject">TypedDataObject</span>[<span title="kolena.workflow.plot._PlotType">_PlotType</span>]</code></p>
 
   
-      <p>A plain text file in a cloud bucket.</p>
+      <p>A data visualization shown when exploring model results in the web platform.</p>
 
 
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="kolena.workflow.asset.PlainTextAsset.locator" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">locator</span><span class="p">:</span> <span class="nb">str</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#kolena.workflow.asset.PlainTextAsset.locator" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>The location of this text file in a cloud bucket, e.g. <code>s3://my-bucket/path/to/my-text-asset.txt</code>.</p>
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
 
   </div>
 
@@ -2756,18 +3238,18 @@ Assets can be visualized in the Kolena Studio when exploring your test cases or 
 
 
 
-<h3 id="kolena.workflow.asset.BinaryAsset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>BinaryAsset</code>
-<a href="#kolena.workflow.asset.BinaryAsset" class="headerlink" title="Permanent link">#</a></h3>
+<h3 id="kolena.workflow.plot.Curve" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>Curve</code>
+<a href="#kolena.workflow.plot.Curve" class="headerlink" title="Permanent link">#</a></h3>
 
 
 
   <div class="doc doc-contents ">
       <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.asset.Asset" href="#kolena.workflow.asset.Asset">Asset</a></code></p>
+        Bases: <code><span title="kolena.workflow._datatypes.DataObject">DataObject</span></code></p>
 
   
-      <p>A binary file in a cloud bucket.</p>
+      <p>A single series on a <a class="autorefs autorefs-internal" href="#kolena.workflow.plot.CurvePlot"><code>CurvePlot</code></a>.</p>
 
 
 
@@ -2785,204 +3267,20 @@ Assets can be visualized in the Kolena Studio when exploring your test cases or 
 
 
 
-<h4 id="kolena.workflow.asset.BinaryAsset.locator" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">locator</span><span class="p">:</span> <span class="nb">str</span></code>
+<h4 id="kolena.workflow.plot.Curve.x" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x</span><span class="p">:</span> <span class="n">NumberSeries</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
   </span>
 
-<a href="#kolena.workflow.asset.BinaryAsset.locator" class="headerlink" title="Permanent link">#</a></h4>
+<a href="#kolena.workflow.plot.Curve.x" class="headerlink" title="Permanent link">#</a></h4>
 
 
 
   <div class="doc doc-contents ">
   
-      <p>The location of this text file in a cloud bucket, e.g. <code>s3://my-bucket/path/to/my-binary-asset.bin</code>.</p>
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="kolena.workflow.asset.PointCloudAsset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>PointCloudAsset</code>
-<a href="#kolena.workflow.asset.PointCloudAsset" class="headerlink" title="Permanent link">#</a></h3>
-
-
-
-  <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.asset.Asset" href="#kolena.workflow.asset.Asset">Asset</a></code></p>
-
-  
-      <p>A three-dimensional point cloud located in a cloud bucket. Points are assumed to be specified in a right-handed,
-Z-up coordinate system with the origin around the sensor that captured the point cloud.</p>
-
-
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="kolena.workflow.asset.PointCloudAsset.locator" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">locator</span><span class="p">:</span> <span class="nb">str</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#kolena.workflow.asset.PointCloudAsset.locator" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>The location of this point cloud in a cloud bucket, e.g. <code>s3://my-bucket/path/to/my-point-cloud.pcd</code>.</p>
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="kolena.workflow.asset.BaseVideoAsset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>BaseVideoAsset</code>
-<a href="#kolena.workflow.asset.BaseVideoAsset" class="headerlink" title="Permanent link">#</a></h3>
-
-
-
-  <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.asset.Asset" href="#kolena.workflow.asset.Asset">Asset</a></code></p>
-
-  
-      <p>A video clip located in a cloud bucket or served at a URL.</p>
-
-
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="kolena.workflow.asset.BaseVideoAsset.locator" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">locator</span><span class="p">:</span> <span class="nb">str</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#kolena.workflow.asset.BaseVideoAsset.locator" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>URL (e.g. S3, HTTPS) of the video file.</p>
-  </div>
-
-</div>
-
-
-
-
-
-  </div>
-
-  </div>
-
-</div>
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="kolena.workflow.asset.VideoAsset" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>VideoAsset</code>
-<a href="#kolena.workflow.asset.VideoAsset" class="headerlink" title="Permanent link">#</a></h3>
-
-
-
-  <div class="doc doc-contents ">
-      <p class="doc doc-class-bases">
-        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.asset.BaseVideoAsset" href="#kolena.workflow.asset.BaseVideoAsset">BaseVideoAsset</a></code></p>
-
-  
-      <p>A video clip located in a cloud bucket or served at a URL.</p>
-
-
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-<div class="doc doc-object doc-attribute">
-
-
-
-<h4 id="kolena.workflow.asset.VideoAsset.locator" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">locator</span><span class="p">:</span> <span class="nb">str</span></code>
-  
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-  </span>
-
-<a href="#kolena.workflow.asset.VideoAsset.locator" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>URL (e.g. S3, HTTPS) of the video file.</p>
+      <p>The <code>x</code> coordinates of this curve. Length must match the provided <code>y</code> coordinates.</p>
   </div>
 
 </div>
@@ -2991,21 +3289,107 @@ Z-up coordinate system with the origin around the sensor that captured the point
 
 
 
-<h4 id="kolena.workflow.asset.VideoAsset.thumbnail" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">thumbnail</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ImageAsset</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+<h4 id="kolena.workflow.plot.Curve.y" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y</span><span class="p">:</span> <span class="n">NumberSeries</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Curve.y" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The <code>y</code> coordinates of this curve. Length must match the provided <code>x</code> coordinates.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Curve.label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">label</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
   </span>
 
-<a href="#kolena.workflow.asset.VideoAsset.thumbnail" class="headerlink" title="Permanent link">#</a></h4>
+<a href="#kolena.workflow.plot.Curve.label" class="headerlink" title="Permanent link">#</a></h4>
 
 
 
   <div class="doc doc-contents ">
   
-      <p>Optionally provide asset locator for custom video thumbnail image.</p>
+      <p>Optionally specify an additional label (in addition to the associated test case) to apply to this curve, for use
+when e.g. there are multiple curves generated per test case.</p>
+  </div>
+
+</div>
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="kolena.workflow.plot.CurvePlot" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>CurvePlot</code>
+<a href="#kolena.workflow.plot.CurvePlot" class="headerlink" title="Permanent link">#</a></h3>
+
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.plot.Plot" href="#kolena.workflow.plot.Plot">Plot</a></code></p>
+
+  
+      <p>A plot visualizing one or more curves per test case.</p>
+<p>Examples include Receiver Operating Characteristic (ROC) curves, Precision versus Recall (PR) curves,
+Detection-Error Tradeoff (DET) curves, etc.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.CurvePlot.title" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">title</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.CurvePlot.title" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The title for the plot.</p>
   </div>
 
 </div>
@@ -3014,21 +3398,20 @@ Z-up coordinate system with the origin around the sensor that captured the point
 
 
 
-<h4 id="kolena.workflow.asset.VideoAsset.start" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+<h4 id="kolena.workflow.plot.CurvePlot.x_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
-      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
   </span>
 
-<a href="#kolena.workflow.asset.VideoAsset.start" class="headerlink" title="Permanent link">#</a></h4>
+<a href="#kolena.workflow.plot.CurvePlot.x_label" class="headerlink" title="Permanent link">#</a></h4>
 
 
 
   <div class="doc doc-contents ">
   
-      <p>Optionally specify start time of video snippet, in seconds.</p>
+      <p>The label describing the plot's <code>x</code> axis.</p>
   </div>
 
 </div>
@@ -3037,21 +3420,658 @@ Z-up coordinate system with the origin around the sensor that captured the point
 
 
 
-<h4 id="kolena.workflow.asset.VideoAsset.end" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+<h4 id="kolena.workflow.plot.CurvePlot.y_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.CurvePlot.y_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The label describing the plot's <code>y</code> axis.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.CurvePlot.curves" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">curves</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Curve</span><span class="p">]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.CurvePlot.curves" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>A test case may generate zero or more curves on a given plot. However, under most circumstances, a single curve
+per test case is desirable.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.CurvePlot.x_config" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AxisConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
   
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
       <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
   </span>
 
-<a href="#kolena.workflow.asset.VideoAsset.end" class="headerlink" title="Permanent link">#</a></h4>
+<a href="#kolena.workflow.plot.CurvePlot.x_config" class="headerlink" title="Permanent link">#</a></h4>
 
 
 
   <div class="doc doc-contents ">
   
-      <p>Optionally specify end time of video snippet, in seconds.</p>
+      <p>Custom options to allow for control over the display of the plot <code>x</code> axis. See
+<a class="autorefs autorefs-internal" href="#kolena.workflow.plot.AxisConfig"><code>AxisConfig</code></a> for details.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.CurvePlot.y_config" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AxisConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.CurvePlot.y_config" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Custom options to allow for control over the display of the plot <code>y</code> axis. See
+<a class="autorefs autorefs-internal" href="#kolena.workflow.plot.AxisConfig"><code>AxisConfig</code></a> for details.</p>
+  </div>
+
+</div>
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="kolena.workflow.plot.Histogram" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>Histogram</code>
+<a href="#kolena.workflow.plot.Histogram" class="headerlink" title="Permanent link">#</a></h3>
+
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.plot.Plot" href="#kolena.workflow.plot.Plot">Plot</a></code></p>
+
+  
+      <p>A plot visualizing distribution of one or more continuous values, e.g. distribution of an error metric across all
+samples within a test case.</p>
+<p>For visualization of discrete values, see <a class="autorefs autorefs-internal" href="#kolena.workflow.plot.BarPlot"><code>BarPlot</code></a>.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.title" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">title</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.title" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The title for the plot.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.x_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.x_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The label describing the plot's <code>x</code> axis.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.y_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.y_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The label describing the plot's <code>y</code> axis.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.buckets" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">buckets</span><span class="p">:</span> <span class="n">NumberSeries</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.buckets" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>A Histogram requires intervals to bucket the data. For <code>n</code> buckets, <code>n+1</code> consecutive bounds must be specified in
+increasing order.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.frequency" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">frequency</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">NumberSeries</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NumberSeries</span><span class="p">]]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.frequency" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>For <code>n</code> buckets, there are <code>n</code> frequencies corresponding to the height of each bucket. The frequency at index <code>i</code>
+corresponds to the bucket with bounds (<code>i</code>, <code>i+1</code>) in <code>buckets</code>.</p>
+<p>To specify multiple distributions for a given test case, multiple frequency series can be provided, corresponding
+e.g. to the distribution for a given class within a test case, with name specified in <code>labels</code>.</p>
+<p>Specify a list of labels corresponding to the different <code>frequency</code> series when multiple series are provided.
+Can be omitted when a single <code>frequency</code> series is provided.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.labels" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">labels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.labels" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Specify the label corresponding to a given distribution when multiple are specified in <code>frequency</code>.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.x_config" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AxisConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.x_config" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Custom options to allow for control over the display of the plot <code>x</code> axis. See
+<a class="autorefs autorefs-internal" href="#kolena.workflow.plot.AxisConfig"><code>AxisConfig</code></a> for details.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.Histogram.y_config" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y_config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AxisConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.Histogram.y_config" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Custom options to allow for control over the display of the plot <code>y</code> axis. See
+<a class="autorefs autorefs-internal" href="#kolena.workflow.plot.AxisConfig"><code>AxisConfig</code></a> for details.</p>
+  </div>
+
+</div>
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="kolena.workflow.plot.BarPlot" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>BarPlot</code>
+<a href="#kolena.workflow.plot.BarPlot" class="headerlink" title="Permanent link">#</a></h3>
+
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.plot.Plot" href="#kolena.workflow.plot.Plot">Plot</a></code></p>
+
+  
+      <p>A plot visualizing a set of bars per test case.</p>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.BarPlot.title" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">title</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.BarPlot.title" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The plot title.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.BarPlot.x_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.BarPlot.x_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Axis label for the axis along which the bars are laid out (<code>labels</code>).</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.BarPlot.y_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.BarPlot.y_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Axis label for the axis corresponding to bar height (<code>values</code>).</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.BarPlot.labels" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">labels</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.BarPlot.labels" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Labels for each bar with corresponding height specified in <code>values</code>.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.BarPlot.values" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">values</span><span class="p">:</span> <span class="n">NullableNumberSeries</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.BarPlot.values" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Values for each bar with corresponding label specified in <code>labels</code>.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.BarPlot.config" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AxisConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.BarPlot.config" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Custom format options to allow for control over the display of the numerical plot axis (<code>values</code>).</p>
+  </div>
+
+</div>
+
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="kolena.workflow.plot.ConfusionMatrix" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code>ConfusionMatrix</code>
+<a href="#kolena.workflow.plot.ConfusionMatrix" class="headerlink" title="Permanent link">#</a></h3>
+
+
+
+  <div class="doc doc-contents ">
+      <p class="doc doc-class-bases">
+        Bases: <code><a class="autorefs autorefs-internal" title="kolena.workflow.plot.Plot" href="#kolena.workflow.plot.Plot">Plot</a></code></p>
+
+  
+      <p>A confusion matrix. Example:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ConfusionMatrix</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Cat and Dog Confusion&quot;</span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Cat&quot;</span><span class="p">,</span> <span class="s2">&quot;Dog&quot;</span><span class="p">],</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">matrix</span><span class="o">=</span><span class="p">[[</span><span class="mi">90</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">95</span><span class="p">]],</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">)</span>
+</span></code></pre></div>
+<p>Yields a confusion matrix of the form:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>            Predicted
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>            Cat   Dog
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>           +----+----+
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>       Cat | 90 | 10 |
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>Actual     +----+----+
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>       Dog |  5 | 95 |
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>           +----+----+
+</span></code></pre></div>
+
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.ConfusionMatrix.title" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">title</span><span class="p">:</span> <span class="nb">str</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.ConfusionMatrix.title" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The plot title.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.ConfusionMatrix.labels" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.ConfusionMatrix.labels" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The labels corresponding to each entry in the square <code>matrix</code>.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.ConfusionMatrix.matrix" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">matrix</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">NullableNumberSeries</span><span class="p">]</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.ConfusionMatrix.matrix" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>A square matrix, typically representing the number of matches between class <code>i</code> and class <code>j</code>.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.ConfusionMatrix.x_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">x_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Predicted&#39;</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.ConfusionMatrix.x_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The label for the <code>x</code> axis of the confusion matrix.</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="kolena.workflow.plot.ConfusionMatrix.y_label" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code><code class="highlight language-python"><span class="n">y_label</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;Actual&#39;</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+  </span>
+
+<a href="#kolena.workflow.plot.ConfusionMatrix.y_label" class="headerlink" title="Permanent link">#</a></h4>
+
+
+
+  <div class="doc doc-contents ">
+  
+      <p>The label for the <code>y</code> axis of the confusion matrix.</p>
   </div>
 
 </div>
@@ -3087,7 +4107,7 @@ Z-up coordinate system with the origin around the sensor that captured the point
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 8, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 15, 2023</span>
       </span>
     
     
@@ -3135,7 +4155,7 @@ Z-up coordinate system with the origin around the sensor that captured the point
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../annotation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Annotations" rel="prev">
+          <a href="../asset/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Assets" rel="prev">
             <div class="md-footer__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
             </div>
@@ -3144,20 +4164,20 @@ Z-up coordinate system with the origin around the sensor that captured the point
                 Previous
               </span>
               <div class="md-ellipsis">
-                Annotations
+                Assets
               </div>
             </div>
           </a>
         
         
           
-          <a href="../plot/" class="md-footer__link md-footer__link--next" aria-label="Next: Plots" rel="next">
+          <a href="../define-workflow/" class="md-footer__link md-footer__link--next" aria-label="Next: &lt;code&gt;define_workflow&lt;/code&gt;" rel="next">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Plots
+                <code>define_workflow</code>
               </div>
             </div>
             <div class="md-footer__button md-icon">
