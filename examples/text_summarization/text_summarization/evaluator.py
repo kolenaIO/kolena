@@ -26,11 +26,11 @@ from text_summarization.workflow import TestSample
 from text_summarization.workflow import TestSampleMetric
 from text_summarization.workflow import TestSuiteMetric
 
+from kolena.workflow import AxisConfig
+from kolena.workflow import Curve
+from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
-from kolena.workflow.evaluator import AxisConfig
-from kolena.workflow.evaluator import Curve
-from kolena.workflow.evaluator import CurvePlot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
 
