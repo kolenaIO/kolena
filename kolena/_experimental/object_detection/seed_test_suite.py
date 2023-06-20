@@ -33,7 +33,7 @@ from kolena._experimental.object_detection.workflow import TestSample
 from kolena._experimental.object_detection.workflow import TestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 
-DATASET = "coco-2014-val-mini"
+DATASET = "coco-2014-val-car-and-cats"
 S3_PATH = "s3://kolena-public-datasets/coco-2014-val/imgs/"
 PERSON_LABELS = {"person"}
 ANIMAL_LABELS = {"bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe"}
@@ -52,7 +52,7 @@ TRANSPORTATION_LABELS = {
     "airplane",
     "parking meter",
 }
-VALID_ID = 24  # last animal, person and transportation IDs are lower
+VALID_ID = 24  # ignore animal, person and transportation IDs are lower
 SUITE_DESCRIPTION = f"All images in the {DATASET} dataset"
 
 
@@ -65,7 +65,7 @@ def create_complete_test_case(args: Namespace) -> TestCase:
     for annotation in coco_data["annotations"]:
         image_id = int(annotation["image_id"])
         category_id = int(annotation["category_id"])
-        if category_id <= VALID_ID:  # and not annotation["iscrowd"]:
+        if 1 < category_id <= VALID_ID and not annotation["iscrowd"]:
             bbox = annotation["bbox"]
             top_left = (bbox[0], bbox[1])
             bottom_right = (bbox[0] + bbox[2], bbox[1] + bbox[3])
@@ -113,17 +113,17 @@ def create_complete_test_case(args: Namespace) -> TestCase:
 
 
 def seed_test_suite_by_supercategory(test_suite_name: str, complete_test_case: TestCase) -> None:
-    # test_case_name_to_decision_logic_map = {
-    #     "person": lambda cat: cat in PERSON_LABELS,
-    #     "animal": lambda cat: cat in ANIMAL_LABELS,
-    #     "transportation": lambda cat: cat in TRANSPORTATION_LABELS,
-    # }
-
     test_case_name_to_decision_logic_map = {
-        "person": lambda cat: cat not in TRANSPORTATION_LABELS and cat not in ANIMAL_LABELS,
-        "animal": lambda cat: cat not in TRANSPORTATION_LABELS and cat not in PERSON_LABELS,
-        "transportation": lambda cat: cat not in ANIMAL_LABELS and cat not in PERSON_LABELS,
+        # "person": lambda cat: cat in PERSON_LABELS,
+        "animal": lambda cat: cat in ANIMAL_LABELS,
+        "transportation": lambda cat: cat in TRANSPORTATION_LABELS,
     }
+
+    # test_case_name_to_decision_logic_map = {
+    #     "person": lambda cat: cat not in TRANSPORTATION_LABELS and cat not in ANIMAL_LABELS,
+    #     "animal": lambda cat: cat not in TRANSPORTATION_LABELS and cat not in PERSON_LABELS,
+    #     "transportation": lambda cat: cat not in ANIMAL_LABELS and cat not in PERSON_LABELS,
+    # }
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
@@ -200,10 +200,6 @@ def main() -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     run(ap.parse_args())
 
-
-# poetry run python3 kolena/_experimental/object_detection/seed_test_suite.py
-# --annotations "/Users/markchen/Desktop/Kolena/coco-2014-val/instances_val2014.json"
-# --images "/Users/markchen/Desktop/val2014/"
 
 if __name__ == "__main__":
     main()

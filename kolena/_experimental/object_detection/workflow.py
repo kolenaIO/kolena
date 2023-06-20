@@ -79,6 +79,7 @@ class TestSampleMetrics(MetricsTestSample):
 @dataclass(frozen=True)
 class ClassMetricsPerTestCase(MetricsTestCase):
     Class: str
+    TestSamples: int
     Objects: int
     Inferences: int
     TP: int
@@ -94,6 +95,7 @@ class ClassMetricsPerTestCase(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
+    TestSamples: int
     PerClass: List[ClassMetricsPerTestCase]
     Objects: int
     Inferences: int
@@ -118,13 +120,13 @@ class TestSuiteMetrics(MetricsTestSuite):
 class ThresholdStrategy(str, Enum):
     F1_OPTIMAL = "F1_OPTIMAL"
     FIXED_05 = "FIXED_05"
-    # FIXED_075 = "FIXED_075"
+    FIXED_075 = "FIXED_075"
 
     def display_name(self) -> str:
         if self is ThresholdStrategy.FIXED_05:
             return "Fixed(0.5)"
-        # if self is ThresholdStrategy.FIXED_075:
-        #     return "Fixed(0.75)"
+        if self is ThresholdStrategy.FIXED_075:
+            return "Fixed(0.75)"
         if self is ThresholdStrategy.F1_OPTIMAL:
             return "F1-Optimal"
         raise RuntimeError(f"unrecognized threshold strategy: {self}")

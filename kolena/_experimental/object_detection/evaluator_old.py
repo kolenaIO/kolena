@@ -41,7 +41,6 @@ from kolena._experimental.object_detection.workflow import ThresholdStrategy
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
 from kolena.workflow.metrics import match_inferences_multiclass
-from kolena.workflow.metrics._geometry import InferenceMatches
 from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
 
 
@@ -65,22 +64,25 @@ class ObjectDetectionEvaluator(Evaluator):
         thresholds = self.get_confidence_thresholds(configuration)
         bbox_matches: MulticlassInferenceMatches = match_inferences_multiclass(
             ground_truth.bboxes,
-            [
-                inf
-                for inf in inference.bboxes
-                if inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
-            ],
+            [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
             ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        tp = [inf for _, inf in bbox_matches.matched if inf.label in labels]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.label in labels]
-        fn = [gt for gt, _ in bbox_matches.unmatched_gt if gt.label in labels]
-
-        confused = [inf for gt, inf in bbox_matches.unmatched_gt if inf is not None and gt.label in labels]
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label] and inf.label in labels]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label] and inf.label in labels]
+        fn = [gt for gt, _ in bbox_matches.unmatched_gt if gt.label in labels] + [
+            gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label] and gt.label in labels
+        ]
+        confused = [
+            inf
+            for gt, inf in bbox_matches.unmatched_gt
+            if inf is not None and inf.score >= thresholds[inf.label] and gt.label in labels
+        ]
         non_ignored_inferences = [inf for _, inf in bbox_matches.matched] + bbox_matches.unmatched_inf
-        scores = [inf.score for inf in non_ignored_inferences if inf.label in labels]
+        scores = [
+            inf.score for inf in non_ignored_inferences if inf.score >= thresholds[inf.label] and inf.label in labels
+        ]
         fields = [(threshold_key(label), float) for label in thresholds.keys()]
         dc = make_dataclass("ExtendedImageMetrics", bases=(TestSampleMetrics,), fields=fields, frozen=True)
         return dc(
@@ -133,13 +135,14 @@ class ObjectDetectionEvaluator(Evaluator):
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
-        self.compute_f1_optimal_thresholds(configuration, inferences)
+        self.compute_f1_optimal_thresholds(configuration=configuration, inferences=inferences)
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         return [(ts, self.compute_image_metrics(gt, inf, configuration, labels)) for ts, gt, inf in inferences]
 
     def compute_aggregate_label_metrics(
         self,
         matchings: List[MulticlassInferenceMatches],
+        thresholds: Dict[str, float],
         label: str,
     ) -> ClassMetricsPerTestCase:
         m_matched = []
@@ -147,58 +150,57 @@ class ObjectDetectionEvaluator(Evaluator):
         m_unmatched_inf = []
         tpr_counter = 0
         fpr_counter = 0
-        confused_counter = 0
-        samples = 0
+        confused_count = 0
+        matched_fns = 0
         # filter the matching to only consider one class
         for match in matchings:
             has_tp = False
-            has_fn = False
             has_fp = False
             for gt, inf in match.matched:
-                if gt.label == label:
+                if gt.label == label and inf.score >= thresholds[inf.label]:
                     m_matched.append((gt, inf))
                     has_tp = True
+                elif gt.label == label:
+                    matched_fns += 1
             for gt, inf in match.unmatched_gt:
-                if gt.label == label:
-                    m_unmatched_gt.append(gt)
-                    has_fn = True
-                    if inf is None:
-                        confused_counter += 1
+                if gt.label == label and inf is None:
+                    m_unmatched_gt.append((gt, inf))
+                    confused_count += 1
+                elif gt.label == label and inf.score >= thresholds[inf.label]:
+                    m_unmatched_gt.append((gt, inf))
             for inf in match.unmatched_inf:
-                if inf.label == label:
+                if inf.label == label and inf.score >= thresholds[inf.label]:
                     m_unmatched_inf.append(inf)
                     has_fp = True
             if has_tp:
                 tpr_counter += 1
             if has_fp:
                 fpr_counter += 1
-            if has_tp or has_fn or has_fp:
-                samples += 1
         tp_count = len(m_matched)
         fp_count = len(m_unmatched_inf)
-        fn_count = len(m_unmatched_gt)
+        fn_count = len(m_unmatched_gt) + matched_fns
         precision = tp_count / (tp_count + fp_count) if (tp_count + fp_count) > 0 else 0
         recall = tp_count / (tp_count + fn_count) if (tp_count + fn_count) > 0 else 0
         all_bbox_matches = [
-            InferenceMatches(matched=m_matched, unmatched_gt=m_unmatched_gt, unmatched_inf=m_unmatched_inf),
+            MulticlassInferenceMatches(matched=m_matched, unmatched_gt=m_unmatched_gt, unmatched_inf=m_unmatched_inf),
         ]
         baseline_pr_plot = compute_pr_plot(all_bbox_matches)
         baseline_pr_plot = baseline_pr_plot.curves[0] if baseline_pr_plot is not None else None
         average_precision = (
-            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0.0
+            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0
         )
 
         return ClassMetricsPerTestCase(
             Class=label,
-            TestSamples=samples,
+            TestSamples=len(matchings),
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
-            Confused=confused_counter,
-            TPR=tpr_counter / samples if samples > 0 else 0.0,
-            FPR=fpr_counter / samples if samples > 0 else 0.0,
+            Confused=confused_count,
+            TPR=tpr_counter / len(matchings) if len(matchings) > 0 else 0.0,
+            FPR=fpr_counter / len(matchings) if len(matchings) > 0 else 0.0,
             Precision=precision,
             Recall=recall,
             F1=2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0,
@@ -217,11 +219,7 @@ class ObjectDetectionEvaluator(Evaluator):
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
-                [
-                    inf
-                    for inf in inference.bboxes
-                    if inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
-                ],
+                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
@@ -238,18 +236,18 @@ class ObjectDetectionEvaluator(Evaluator):
         baseline_pr_plot = compute_pr_plot(all_bbox_matches)
         baseline_pr_plot = baseline_pr_plot.curves[0] if baseline_pr_plot is not None else None
         average_precision = (
-            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0.0
+            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x) if baseline_pr_plot is not None else 0
         )
 
         # compute nested metrics per class
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         per_class_metrics: List[ClassMetricsPerTestCase] = []
         for label in labels:
-            metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label)
+            metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, thresholds, label)
             per_class_metrics.append(metrics_per_class)
 
         return TestCaseMetrics(
-            TestSamples=len(inferences),
+            TestSamples=len(all_bbox_matches),
             PerClass=per_class_metrics,
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
@@ -272,15 +270,10 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        thresholds = self.get_confidence_thresholds(configuration)
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
-                [
-                    inf
-                    for inf in inference.bboxes
-                    if inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
-                ],
+                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
@@ -300,7 +293,7 @@ class ObjectDetectionEvaluator(Evaluator):
             ),
         )
 
-        return plots
+        return plots or None
 
     def compute_test_suite_metrics(
         self,

@@ -37,17 +37,17 @@ DATASET = "coco-2014-val"
 WORKFLOW = "OD"
 MIN_CONFIDENCE = 0.0
 LABELS_OF_INTEREST = {
-    "person",
-    # "bird",
-    # "cat",
-    # "dog",
-    # "horse",
-    # "sheep",
-    # "cow",
-    # "elephant",
-    # "bear",
-    # "zebra",
-    # "giraffe",
+    # "person",
+    "bird",
+    "cat",
+    "dog",
+    "horse",
+    "sheep",
+    "cow",
+    "elephant",
+    "bear",
+    "zebra",
+    "giraffe",
     "bicycle",
     "car",
     "motorcycle",
@@ -57,19 +57,10 @@ LABELS_OF_INTEREST = {
     "traffic light",
     "fire hydrant",
     "stop sign",
-    # "bench",
-    # "boat",
-    # "airplane",
-    # "parking meter",
-    "bicycle",
-    "car",
-    "motorcycle",
-    "bus",
-    "train",
-    "truck",
-    "traffic light",
-    "fire hydrant",
-    "stop sign",
+    "bench",
+    "boat",
+    "airplane",
+    "parking meter",
 }
 
 MODEL_LIST: Dict[str, str] = {
@@ -82,8 +73,7 @@ MODEL_LIST: Dict[str, str] = {
 }
 
 TEST_SUITE_NAMES = [
-    # f"{DATASET} benchmark [Object Detection] :: supercategory",
-    f"{DATASET} benchmark [Object Detection] :: supercategory-copy",
+    f"{DATASET} benchmark [Object Detection] :: supercategory",
 ]
 
 LINK = "s3://kolena-dev-models/object-detection"
@@ -226,21 +216,21 @@ def seed_test_run(
 
     evaluator = ObjectDetectionEvaluator(
         configurations=[
-            # ThresholdConfiguration(
-            #     threshold_strategy=ThresholdStrategy.FIXED_05,
-            #     iou_threshold=0.5,
-            #     min_confidence_score=min_conf_score,
-            # ),
+            ThresholdConfiguration(
+                threshold_strategy=ThresholdStrategy.FIXED_05,
+                iou_threshold=0.5,
+                min_confidence_score=min_conf_score,
+            ),
             ThresholdConfiguration(
                 threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
                 iou_threshold=0.5,
                 min_confidence_score=min_conf_score,
             ),
-            # ThresholdConfiguration(
-            #     threshold_strategy=ThresholdStrategy.FIXED_075,
-            #     iou_threshold=0.75,
-            #     min_confidence_score=min_conf_score,
-            # ),
+            ThresholdConfiguration(
+                threshold_strategy=ThresholdStrategy.FIXED_075,
+                iou_threshold=0.75,
+                min_confidence_score=min_conf_score,
+            ),
         ],
     )
 
@@ -281,11 +271,6 @@ def main() -> None:
 
     run(ap.parse_args())
 
-
-# poetry run python3 kolena/_experimental/object_detection/seed_test_run.py
-# --model_name "yolo_x" --inference_csv "/Users/markchen/Desktop/models/yolo_x/coco-2014-val_prediction.csv"
-# --test_suite "coco-2014-val benchmark [Object Detection] :: supercategory-copy"
-# --test_suite "coco-2014-val benchmark [Object Detection] :: supercategory"
 
 if __name__ == "__main__":
     main()
