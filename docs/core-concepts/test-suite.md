@@ -67,7 +67,7 @@ These classes can then be used to create, load, and edit test cases and test sui
     Test cases be edited using the context-managed [`Editor`][kolena.workflow.TestCase.Editor] interface:
 
     ```python
-    with TestCasf("example-test-case").edit(reset=True) as editor:
+    with TestCase("example-test-case").edit(reset=True) as editor:
         # perform desired editing actions within context
         editor.add(ts0, gt0)
     ```
