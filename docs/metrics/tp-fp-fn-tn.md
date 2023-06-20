@@ -1,6 +1,6 @@
-# Metric :: TP / FP / FN / TN
+# TP / FP / FN / TN
 
-# Description
+## Description
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN) are essential metrics for summarizing predictions and ground truths, thereby letting you measure a classification task’s performance. These metrics are the building blocks of many other metrics, including accuracy, precision, and recall.
 
@@ -18,11 +18,11 @@ Images of a dog are **positive** samples, and images without a dog are **negativ
 
 Similarly, if it predicts that there is a dog on a **negative** sample, then it’s an **FP**.  A negative prediction on a negative sample is a **TN**.
 
-# Intended Uses
+## Intended Uses
 
 These terminologies have been around for a long time and are mainly used to evaluate classification and detection models.
 
-# Implementation Details
+## Implementation Details
 
 The implementation of these metrics is simple and straightforward. That said, there are some guidelines for binary vs. multiple classes and more.
 
@@ -199,7 +199,7 @@ FP=1
 
 If you are looking for a **single** score that summarizes model performance across all classes, there are four different ways to aggregate per-class metrics: **macro**, **micro**, **weighted,** and **samples**. You can read more on these different averaging methods in [this guide](./averaging-methods.md).
 
-# Limitations and Biases
+## Limitations and Biases
 
 TP, FP, TN, and FN are four metrics based on the assumption that each sample/instance can be classified as a positive or a negative, thus they can only be applied to single-class applications. The workaround for multiple-class applications is to compute these metrics for each label and then treat it as a single-class problem.
 
