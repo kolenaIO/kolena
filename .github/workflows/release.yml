@@ -12,6 +12,16 @@ jobs:
     name: Build and publish release of kolena Python package and documentation
     runs-on: ubuntu-latest
     steps:
+      - name: Configure kolenabot git user
+        run: |
+          git config --global user.name 'kolenabot'
+          git config --global user.email 'bot@kolena.io'
+
+      - name: Configure SSH key for docs insiders setup
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Check out the repo
         uses: actions/checkout@v3
         with:
@@ -27,16 +37,6 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-west-2
-
-      - name: Configure kolenabot git user
-        run: |
-          git config --global user.name 'kolenabot'
-          git config --global user.email 'bot@kolena.io'
-
-      - name: Configure SSH key for docs insiders setup
-        uses: webfactory/ssh-agent@v0.8.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Install Poetry
         run: pip install poetry==1.5.1
