@@ -50,8 +50,8 @@ Certain metrics computation functionality depends on additional packages like
 
 Once you have `kolena` installed, initialize a session with `kolena.initialize(token)`.
 
-From [app.kolena.io/~/developer](https://app.kolena.io/redirect/developer), generate an API token and set the
-`KOLENA_TOKEN` environment variable:
+From the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page, generate an API token and set
+the `KOLENA_TOKEN` environment variable:
 
 ```bash
 export KOLENA_TOKEN="********"
