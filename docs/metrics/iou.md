@@ -89,7 +89,7 @@ $$
 
 **A segmentation mask** is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The prediction shape matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that labels areas where a specific class is present:
 
-![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.png)
+![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.jpg)
 <p style="text-align: center; color: gray;">
     From left to right: the original RGB image, the ground truth segmentation mask, and the prediction segmentation mask
 </p>
@@ -103,7 +103,7 @@ $$
 
 Let’s look at what TP, FP, and FN look like on a segmentation mask:
 
-![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.png)
+![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.jpg)
 <p style="text-align: center; color: gray;">
     From left to right: the ground truth segmentation mask, the prediction segmentation mask, and the overlay with TP, FP, and FN labeled
 </p>
