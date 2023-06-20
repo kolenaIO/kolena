@@ -110,9 +110,13 @@ Let’s look at what TP, FP, and FN look like on a segmentation mask:
 
 From the cat image shown above, when you overlay the ground truth and prediction masks, the pixels that belong to both masks are TP. The pixels that only exist in the ground truth mask are FNs, and the pixels that only exist in the prediction mask are FPs. Let's consider the following pixel counts for each category:
 
+<center>
+
 | # True Positives | # False Positives | # False Negatives |
 | --- | --- | --- |
 | 100 | 25 | 50 |
+
+</center>
 
 Then the IoU becomes:
 
