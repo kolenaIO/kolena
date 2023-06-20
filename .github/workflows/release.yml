@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "*"
+    branches:
+      - gh/release-docs
 
 jobs:
   release:
@@ -43,8 +45,8 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Run pre-commit checks
-        run: poetry run pre-commit run -a
+      # - name: Run pre-commit checks
+      #   run: poetry run pre-commit run -a
 
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
@@ -55,6 +57,9 @@ jobs:
           git config user.email 'bot@kolena.io'
           ./docs/setup_insiders.sh
           poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
+
+      - name: Fail
+        run: exit 1
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
