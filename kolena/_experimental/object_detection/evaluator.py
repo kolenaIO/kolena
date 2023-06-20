@@ -68,7 +68,7 @@ class ObjectDetectionEvaluator(Evaluator):
             [
                 inf
                 for inf in inference.bboxes
-                if inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
+                if inf.label in labels and inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
             ],
             ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
@@ -111,11 +111,15 @@ class ObjectDetectionEvaluator(Evaluator):
 
         if configuration.display_name() in self.threshold_cache.keys():
             return
-
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
-                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
+                [
+                    inf
+                    for inf in inference.bboxes
+                    if inf.label in labels and inf.score >= configuration.min_confidence_score
+                ],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
@@ -214,13 +218,15 @@ class ObjectDetectionEvaluator(Evaluator):
     ) -> TestCaseMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
                 [
                     inf
                     for inf in inference.bboxes
-                    if inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
+                    if inf.label in labels
+                    and inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
                 ],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
@@ -273,13 +279,15 @@ class ObjectDetectionEvaluator(Evaluator):
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
                 [
                     inf
                     for inf in inference.bboxes
-                    if inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
+                    if inf.label in labels
+                    and inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
                 ],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
