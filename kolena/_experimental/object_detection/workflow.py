@@ -79,6 +79,7 @@ class TestSampleMetrics(MetricsTestSample):
 @dataclass(frozen=True)
 class ClassMetricsPerTestCase(MetricsTestCase):
     Class: str
+    Threshold: float
     TestSamples: int
     Objects: int
     Inferences: int

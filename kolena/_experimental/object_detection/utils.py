@@ -116,6 +116,39 @@ def compute_pr_plot(
     )
 
 
+def compute_pr_plot_multiclass(
+    all_matches: List[MulticlassInferenceMatches],
+    curve_label: Optional[str] = None,
+) -> CurvePlot:
+    """
+    Creates a PR (precision-recall) curve for the multiclass object detection workflow.
+    For `n` labels, each plot has `n+1` curves. One for the test case, and one per label.
+
+    :param all_matches: a list of multiclass matching results.
+    :param curve_label: the label of the main curve.
+    :return: :class:`CurvePlot` for the PR curves of the test case and each label.
+    """
+    pr_curves: List[Curve] = []
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
+    pr_curve = _compute_threshold_curve(y_true, y_score, "pr", curve_label)
+    pr_curves.append(pr_curve)
+
+    classes = sorted(y_true_by_label.keys())
+    for label in classes:
+        y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+        if len(y_true) > 0:
+            pr_curve = _compute_threshold_curve(y_true, y_score, "pr", label)
+            pr_curves.append(pr_curve)
+
+    return CurvePlot(
+        title="Precision vs. Recall Per Class",
+        x_label="Recall",
+        y_label="Precision",
+        curves=pr_curves,
+    )
+
+
 def compute_f1_plot(
     all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     curve_label: Optional[str] = None,
@@ -129,6 +162,7 @@ def compute_f1_plot(
     """
     y_true, y_score = _compute_sklearn_arrays(all_matches)
     curve = _compute_threshold_curve(y_true, y_score, "f1", curve_label)
+
     if curve is None:
         return None
 
@@ -137,6 +171,39 @@ def compute_f1_plot(
         x_label="Confidence Threshold",
         y_label="F1-Score",
         curves=[curve],
+    )
+
+
+def compute_f1_plot_multiclass(
+    all_matches: List[MulticlassInferenceMatches],
+    curve_label: Optional[str] = None,
+) -> CurvePlot:
+    """
+    Creates a F1-threshold (confidence threshold) curve for the multiclass object detection workflow.
+    For `n` labels, each plot has `n+1` curves. One for the test case, and one per label.
+
+    :param all_matches: a list of multiclass matching results.
+    :param curve_label: the label of the main curve.
+    :return: :class:`CurvePlot` for the F1-threshold curves of the test case and each label.
+    """
+    f1_curves: List[Curve] = []
+    y_true, y_score = _compute_sklearn_arrays(all_matches)
+    y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
+    f1_curve = _compute_threshold_curve(y_true, y_score, "f1", curve_label)
+    f1_curves.append(f1_curve)
+
+    classes = sorted(y_true_by_label.keys())
+    for label in classes:
+        y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+        if len(y_true) > 0:
+            f1_curve = _compute_threshold_curve(y_true, y_score, "f1", label)
+            f1_curves.append(f1_curve)
+
+    return CurvePlot(
+        title="F1-Score vs. Confidence Threshold Per Class",
+        x_label="Confidence Threshold",
+        y_label="F1-Score",
+        curves=f1_curves,
     )
 
 
