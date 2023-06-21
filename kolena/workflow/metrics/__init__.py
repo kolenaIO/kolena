@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from ._formula import f1_score
+from ._formula import precision
+from ._formula import recall
 from ._geometry import InferenceMatches
 from ._geometry import iou
 from ._geometry import match_inferences
@@ -18,6 +21,9 @@ from ._geometry import match_inferences_multiclass
 from ._geometry import MulticlassInferenceMatches
 
 __all__ = [
+    "precision",
+    "recall",
+    "f1_score",
     "iou",
     "InferenceMatches",
     "match_inferences",
