@@ -1,3 +1,23 @@
+definitions:
+  - &page_title_with_site_name "{{ page.title }} - {{ config.site_name }}"
+  - &page_description "{{ config.site_description }}"
+  - &font_family "DM Sans"
+  - &color "white"
+
+tags:  # adapted from mkdocs-material-insiders layouts/default.yml
+  og:type: website
+  og:title: *page_title_with_site_name
+  og:description: *page_description
+  og:image: "{{ image.url }}"
+  og:image:type: "{{ image.type }}"
+  og:image:width: "{{ image.width }}"
+  og:image:height: "{{ image.height }}"
+  og:url: "{{ page.canonical_url }}"
+  twitter:card: summary_large_image
+  twitter:title: *page_title_with_site_name
+  twitter:description: *page_description
+  twitter:image: "{{ image.url }}"
+
 size: { width: 1200, height: 630 }
 layers:
   - background:
@@ -19,8 +39,8 @@ layers:
     offset: { x: 64, y: 64 }
     typography:
       content: "{{ config.site_name }}"
-      color: white
-      font: { family: DM Sans, style: Bold }
+      color: *color
+      font: { family: *font_family, style: Bold }
 
   # Page title
   - size: { width: 832, height: 310 }
@@ -28,16 +48,16 @@ layers:
     typography:
       content: "{{ page.title | striptags }}"  # strip out any HTML tags, e.g. <code>
       align: start
-      color: white
+      color: *color
       line: { amount: 3, height: 1.25 }
-      font: { family: DM Sans, style: Bold }
+      font: { family: *font_family, style: Bold }
 
   # Page description
   - size: { width: 832, height: 66 }
     offset: { x: 64, y: 512 }
     typography:
-      content: "{{ config.site_description }}"
+      content: *page_description
       align: start
-      color: white
+      color: *color
       line: { amount: 2, height: 1.5 }
       font: { family: Inter, style: Regular }
