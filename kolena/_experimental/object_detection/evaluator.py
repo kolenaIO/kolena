@@ -169,8 +169,6 @@ class ObjectDetectionEvaluator(Evaluator):
         inf_match_matched = []
         inf_match_unmatched_gt = []
         inf_match_unmatched_inf = []
-        tpr_counter = 0
-        fpr_counter = 0
         confused_counter = 0
         samples = 0
         # filter the matching to only consider one class
@@ -181,7 +179,7 @@ class ObjectDetectionEvaluator(Evaluator):
             for gt, inf in match.matched:
                 if gt.label == label:
                     inf_match_matched.append((gt, inf))
-                    tpr_counter += 1
+                    has_tp = True
             for gt, inf in match.unmatched_gt:
                 if gt.label == label:
                     inf_match_unmatched_gt.append(gt)
@@ -192,10 +190,7 @@ class ObjectDetectionEvaluator(Evaluator):
                 if inf.label == label:
                     inf_match_unmatched_inf.append(inf)
                     has_fp = True
-            if has_tp:
-                tpr_counter += 1
-            if has_fp:
-                fpr_counter += 1
+
             if has_tp or has_fn or has_fp:
                 samples += 1
         tp_count = len(inf_match_matched)
