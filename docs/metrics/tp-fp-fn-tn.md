@@ -57,16 +57,19 @@ TN = sum(not gt and inf <  T for gt, inf in zip(ground_truths, inferences))
 
 ??? example "Example: Binary Classification"
 
+    This example considers five samples with the following ground truths, inferences, and threshold:
+
     ```python
-    >>> ground_truths = [False, True, False, False, True]
-    >>> inferences = [0.3, 0.2, 0.9, 0.4, 0.5]
-    >>> T = 0.5
-    >>> TP = sum(    gt and inf >= T for gt, inf in zip(ground_truths, inferences))
-    >>> FP = sum(not gt and inf >= T for gt, inf in zip(ground_truths, inferences))
-    >>> FN = sum(    gt and inf <  T for gt, inf in zip(ground_truths, inferences))
-    >>> TN = sum(not gt and inf <  T for gt, inf in zip(ground_truths, inferences))
-    >>> print(f"TP={TP}, FP={FP}, FN={FN}, TN={TN}")
-    TP=1, FN=1, FP=1, TN=2
+    ground_truths = [False, True, False, False, True]
+    inferences = [0.3, 0.2, 0.9, 0.4, 0.5]
+    T = 0.5
+    ```
+
+    Using the above formula for TP, FP, FN, and TN yields the following metrics:
+
+    ```python
+    print(f"TP={TP}, FP={FP}, FN={FN}, TN={TN}")
+    # TP=1, FN=1, FP=1, TN=2
     ```
 
 
@@ -74,7 +77,7 @@ TN = sum(not gt and inf <  T for gt, inf in zip(ground_truths, inferences))
 
 TP / FP / FN / TN metrics are computed a little differently in **multiclass** classification tasks.
 
-For **multiclass** classification tasks, these four metrics are defined **per class**. This technique,
+For multiclass classification tasks, these four metrics are defined **per class**. This technique,
 also known as **one-vs-rest** (OvR), essentially evaluates each class as a binary classification problem.
 
 Consider a classification problem where a given image belongs to either the `Airplane`, `Boat`, or `Car` class. Each of
@@ -112,72 +115,54 @@ There are some differences in how these four metrics work for a detection task c
 In an object detection task, checking for detection correctness requires a couple of other metrics (e.g., Intersection
 over Union (IoU) and Geometry Matching).
 
-Let’s assume that a matching algorithm has already been run on all predictions and that the matched pairs and unmatched
-ground truths and predictions are given. Consider the following notations:
+#### Single-class
 
-- `matched`: is the list of **matched** ground truth and prediction bounding box **pairs** (from Geometry Matcher)
-- `unmatched_gt`: is the list of **unmatched** ground truth bounding boxes (from Geometry Matcher)
-- `unmatched_inf`: is the list of **unmatched** inference bounding boxes (from Geometry Matcher)
-- `T`: the threshold used to filter valid prediction bounding boxes based on their confidence scores
+Let’s assume that a matching algorithm has already been run on all predictions and that the matched pairs and unmatched
+ground truths and predictions are given. Consider the following variables, adapted from
+[`match_inferences`][kolena.workflow.metrics.match_inferences]:
+
+| Variable | Type | Description |
+| --- | --- | --- |
+| `matched` | <nobr>`List[Tuple[GT, Inf]]`</nobr> | List of **matched** ground truth and prediction bounding box **pairs** (from Geometry Matcher) |
+| `unmatched_gt` | `List[GT]` | List of **unmatched** ground truth bounding boxes (from Geometry Matcher) |
+| <nobr>`unmatched_inf`</nobr> | `List[Inf]` | List of **unmatched** inference bounding boxes (from Geometry Matcher) |
+| `T` | `float` | Threshold used to filter valid prediction bounding boxes based on their confidence scores |
 
 Then these metrics are defined:
 
 ```python
-TP = len([m.pred.confidence >= T for m in matched])
-FN = len([m.pred.confidence <  T for m in matched] + unmatched_gt)
-FP = len([m.pred.confidence >= T for m in unmatched_inf])
+TP = len([inf.score >= T for _, inf in matched])
+FN = len([inf.score <  T for _, inf in matched]) + len(unmatched_gt)
+FP = len([inf.score >= T for inf in unmatched_inf])
 ```
 
-Other than the differences that were mentioned above, the handling of single and multiple classes still applies to an
-object detection task.
+??? example "Example: Single-class Object Detection"
 
-Let’s look at some examples for different object detection tasks. Building on top of the examples previously used in the Geometry Matcher guide, these four metrics are computed given the ground truth/prediction match results:
+    ![Legends](../assets/images/metrics-tpfpfntn-legends.png)
 
-**Example of single-class object detection**
+    ![Single-class example](../assets/images/metrics-tpfpfntn-single-class.png)
 
-A simple example of two ground truths and two predictions is one with a matched pair, one unmatched ground truth, and one unmatched prediction. Let’s see what the counts of TP, FP, and FN look like on this one:
+    This example includes two ground truths and two inferences, and when computed with an IoU threshold of 0.5 and
+    confidence score threshold of 0.5 yields a single TP, a single FP, and a single FN.
 
-![Legends](../assets/images/metrics-tpfpfntn-legends.png)
+#### Multiclass
 
-![Single-class example](../assets/images/metrics-tpfpfntn-single-class.png)
+Like classification, multiclass object detection tasks compute TP / FP / FN per class.
 
-```python
->>> iou_threshold = 0.5
->>> score_threshold = 0.5
->>> matches = match_inferences([A, B], [a, b], iou_threshold)
->>> print(f"matches: {matches}")
-matches: matched=[(A, a)], unmatched_gt=[B], unmatched_inf=[b]
->>> print(f"{evaluate(matches, score_threshold=0.5)}")
-TP=1
-FN=1
-FP=1
-```
+??? example "Example: Multiclass Object Detection"
 
-**Example of multi-class object detection**
+    ![Legends](../assets/images/metrics-tpfpfntn-legends.png)
 
-Similar to the multi-class classification, the four metrics are computed for class Apple and class Banana in the example below:
+    ![Multi-class example](../assets/images/metrics-tpfpfntn-multi-class.png)
 
-![Legends](../assets/images/metrics-tpfpfntn-legends.png)
+    Similar to multiclass classification, TP / FP / FN are computed for class `Apple` and class `Banana` separately.
 
-![Multi-class example](../assets/images/metrics-tpfpfntn-multi-class.png)
+    Using an IoU threshold of 0.5 and a confidence score threshold of 0.5, this example yields the following metrics:
 
-```python
->>> iou_threshold = 0.5
->>> score_threshold = 0.5
->>> matches = match_inferences([A], [a, b], iou_threshold)
->>> print(f"matches: {matches}")
-matches: matched=[], unmatched_gt=[A], unmatched_inf=[a, b]
->>> results = evaluate(matches, labels=["Apple", "Banana"], score_threshold=[0.5, 0.5])
->>> print(f"{results}")
-class Apple:
-TP=0
-FN=1
-FP=0
-class Banana:
-TP=0
-FN=0
-FP=1
-```
+    | Class | TP | FP | FN |
+    | --- | --- | --- | --- |
+    | `Apple` | 0 | 0 | 1 |
+    | `Banana` | 0 | 1 | 0 |
 
 ### Averaging Per-class Metrics
 
@@ -191,11 +176,12 @@ Read more about these different averaging methods in the [Averaging Methods guid
 
 TP, FP, TN, and FN are four metrics based on the assumption that each sample/instance can be classified as a positive
 or a negative, thus they can only be applied to single-class applications. The workaround for multiple-class
-applications is to compute these metrics for each label and then treat it as a single-class problem.
+applications is to compute these metrics for each label using the **one-versus-rest** (OvR) strategy and then treat it
+as a single-class problem.
 
-These four metrics are great at quantifying how well a model makes a correct prediction, but they don’t quantify model
-confidence
-correct or incorrect each prediction is. A prediction with a score of **0.66**, for example, can be considered as a
-correct prediction as much as one with a score of **0.99**, if the score threshold is set to 0.5. As long as the
-confidence score is above the threshold, it is considered to be a positive prediction. To take a closer look at how
-correct the model is at predicting, you should consider plotting the score distribution histogram.
+Additionally, these four metrics don't take model confidence score into account. All inferences above the confidence
+score threshold are treated the same! For example, when using a confidence score threshold of 0.5, a prediction with a
+confidence score barely above the threshold (e.g. 0.55) is treated the same as a prediction with a very high confidence
+score (e.g. 0.99). In other words, any inference above the confidence threshold is considered as a positive prediction.
+To examine performance taking confidence score into account, consider plotting a histogram of the distribution of
+confidence scores.
