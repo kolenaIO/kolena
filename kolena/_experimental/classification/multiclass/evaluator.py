@@ -20,18 +20,18 @@ from typing import Tuple
 
 import numpy as np
 
+from kolena._experimental.classification.multiclass._utils import get_histogram_range
+from kolena._experimental.classification.multiclass._utils import get_label_confidence
+from kolena._experimental.classification.multiclass._utils import roc_curve
+from kolena._experimental.classification.multiclass.workflow import AggregateMetrics
+from kolena._experimental.classification.multiclass.workflow import GroundTruth
+from kolena._experimental.classification.multiclass.workflow import Inference
+from kolena._experimental.classification.multiclass.workflow import PerClassMetrics
+from kolena._experimental.classification.multiclass.workflow import PerImageMetrics
+from kolena._experimental.classification.multiclass.workflow import TestCase
+from kolena._experimental.classification.multiclass.workflow import TestSuiteMetrics
+from kolena._experimental.classification.multiclass.workflow import ThresholdConfiguration
 from kolena._utils import log
-from kolena.classification.multiclass._utils import get_histogram_range
-from kolena.classification.multiclass._utils import get_label_confidence
-from kolena.classification.multiclass._utils import roc_curve
-from kolena.classification.multiclass.workflow import AggregateMetrics
-from kolena.classification.multiclass.workflow import GroundTruth
-from kolena.classification.multiclass.workflow import Inference
-from kolena.classification.multiclass.workflow import PerClassMetrics
-from kolena.classification.multiclass.workflow import PerImageMetrics
-from kolena.classification.multiclass.workflow import TestCase
-from kolena.classification.multiclass.workflow import TestSuiteMetrics
-from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow import BarPlot
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve

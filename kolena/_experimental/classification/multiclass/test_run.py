@@ -16,11 +16,11 @@ from typing import Optional
 
 from pydantic import validate_arguments
 
+from kolena._experimental.classification.multiclass import evaluate_multiclass_classification
+from kolena._experimental.classification.multiclass import Model
+from kolena._experimental.classification.multiclass import TestSuite
+from kolena._experimental.classification.multiclass import ThresholdConfiguration
 from kolena._utils.validators import ValidatorConfig
-from kolena.classification.multiclass import evaluate_multiclass_classification
-from kolena.classification.multiclass import Model
-from kolena.classification.multiclass import TestSuite
-from kolena.classification.multiclass.workflow import ThresholdConfiguration
 from kolena.workflow.test_run import test as base_test
 
 

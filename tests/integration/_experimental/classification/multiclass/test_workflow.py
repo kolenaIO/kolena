@@ -19,12 +19,12 @@ from typing import Type
 import pydantic
 import pytest
 
-from kolena.classification.multiclass import GroundTruth
-from kolena.classification.multiclass import Inference
-from kolena.classification.multiclass import Model
-from kolena.classification.multiclass import test
-from kolena.classification.multiclass import TestCase
-from kolena.classification.multiclass import TestSuite
+from kolena._experimental.classification.multiclass import GroundTruth
+from kolena._experimental.classification.multiclass import Inference
+from kolena._experimental.classification.multiclass import Model
+from kolena._experimental.classification.multiclass import test
+from kolena._experimental.classification.multiclass import TestCase
+from kolena._experimental.classification.multiclass import TestSuite
 from kolena.workflow import Image
 from kolena.workflow import Metadata
 from kolena.workflow.annotation import ClassificationLabel

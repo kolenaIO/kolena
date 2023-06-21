@@ -16,16 +16,16 @@ from typing import List
 
 import pytest
 
-from kolena.classification.multiclass import AggregateMetrics
-from kolena.classification.multiclass import GroundTruth
-from kolena.classification.multiclass import Inference
-from kolena.classification.multiclass import PerClassMetrics
-from kolena.classification.multiclass import PerImageMetrics
-from kolena.classification.multiclass import TestSuiteMetrics
-from kolena.classification.multiclass import ThresholdConfiguration
-from kolena.classification.multiclass.evaluator import _compute_per_class_metrics
-from kolena.classification.multiclass.evaluator import _compute_per_image_metrics
-from kolena.classification.multiclass.evaluator import _compute_test_suite_metrics
+from kolena._experimental.classification.multiclass import AggregateMetrics
+from kolena._experimental.classification.multiclass import GroundTruth
+from kolena._experimental.classification.multiclass import Inference
+from kolena._experimental.classification.multiclass import PerClassMetrics
+from kolena._experimental.classification.multiclass import PerImageMetrics
+from kolena._experimental.classification.multiclass import TestSuiteMetrics
+from kolena._experimental.classification.multiclass import ThresholdConfiguration
+from kolena._experimental.classification.multiclass.evaluator import _compute_per_class_metrics
+from kolena._experimental.classification.multiclass.evaluator import _compute_per_image_metrics
+from kolena._experimental.classification.multiclass.evaluator import _compute_test_suite_metrics
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
 
