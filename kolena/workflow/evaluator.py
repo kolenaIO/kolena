@@ -69,8 +69,11 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 
     This class should be subclassed with the relevant fields for a given workflow.
 
-    Test-case-level metrics are aggregate metrics like Precision, Recall, and F1 score. Any and all aggregate metrics
-    that fit a workflow should be defined here.
+    Test-case-level metrics are aggregate metrics like [`precision`][kolena.workflow.metrics.precision],
+    [`recall`][kolena.workflow.metrics.recall], and [`f1_score`][kolena.workflow.metrics.f1_score]. Any and all
+    aggregate metrics that fit a workflow should be defined here.
+
+    ## Nesting Aggregate Metrics
 
     `MetricsTestCase` supports nesting metrics objects, for e.g. reporting class-level metrics within a test case that
     contains multiple classes. Example usage:
@@ -92,6 +95,13 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
         mAP: float
         PerClass: List[PerClassMetrics]
     ```
+
+    Any `str`-type fields (e.g. `Class` in the above example) will be used as identifiers when displaying nested metrics
+    on Kolena. For best results, include at least one `str`-type field in nested metrics definitions.
+
+    When comparing nested metrics from multiple models, an `int`-type column with any of the following names will be
+    used for sample size in statistical significance calculations: `N`, `n`, `nTestSamples`, `n_test_samples`,
+    `sampleSize`, `sample_size`, `SampleSize`.
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
