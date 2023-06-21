@@ -42,7 +42,7 @@ nav:
               - Plots: reference/workflow/plot.md
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
-      - Legacy:
+      - Legacy Modules:
           - Legacy Modules: reference/legacy/index.md
           - Built-in Workflows:
               - <code>classification</code>: reference/legacy/built-in/classification.md
