@@ -113,7 +113,7 @@ is assigned to one group, and the definitions of the terms are slightly altered:
 | True Positive | TP | Inference matched with a ground truth |
 | False Positive | FP | Inference that is not matched with a ground truth |
 | <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference |
-| True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><div>One common definition of true negative for object detection is any image that does not have any true positive or false positive inferences.</div> |
+| True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><p>In object detection tasks, a true negative is any non-object that isn't detected as an object. This isn't well defined and as such true negative isn't a commonly used metric in object detection.</p><div>Occasionally, for object detection tasks "true negative" is used to refer to any image that does not have any true positive or false positive inferences.</div> |
 
 In an object detection task, checking for detection correctness requires a couple of other metrics (e.g., Intersection
 over Union (IoU) and Geometry Matching).
