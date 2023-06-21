@@ -86,10 +86,13 @@ jobs:
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
-          name: Install system-level build dependencies
+          name: Install system-level build and checkout dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install -y libcairo2-dev
+            sudo apt-get install -y libcairo2-dev git-lfs
+      - run:
+          name: Checkout LFS blobs
+          command: git lfs pull
       - run:
           name: Build documentation without 'insiders' packages
           command: poetry run mkdocs build
