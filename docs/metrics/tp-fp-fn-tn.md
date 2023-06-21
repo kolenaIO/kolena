@@ -6,10 +6,10 @@ many other metrics, including accuracy, precision, and recall.
 
 | Metric | | Description |
 | --- | --- | --- |
-| **True Positive** | TP | An instance for which both predicted and actual values are positive |
-| **False Positive** | FP | An instance for which predicted value is positive but actual value is negative |
-| **<nobr>False Negative</nobr>** | FN | An instance for which predicted value is negative but actual value is positive |
-| **True Negative** | TN | An instance for which both predicted and actual values are negative |
+| True Positive | TP | An instance for which both predicted and actual values are positive |
+| False Positive | FP | An instance for which predicted value is positive but actual value is negative |
+| <nobr>False Negative</nobr> | FN | An instance for which predicted value is negative but actual value is positive |
+| True Negative | TN | An instance for which both predicted and actual values are negative |
 
 To compute these metrics, each prediction is compared to a ground truth and categorized into one of the four groups.
 Let’s say we’re building a dog classifier that predicts whether an image has a dog or not:
@@ -85,10 +85,10 @@ these TP / FP / FN / TN metrics is computed for each class. For class `Airplane`
 
 | Metric | Example |
 | --- | --- |
-| **True Positive** | Any image predicted as an `Airplane` that is labeled as an `Airplane` |
-| **False Positive** | Any image predicted as an `Airplane` that is _not_ labeled as an `Airplane` (e.g. labeled as `Boat` but predicted as `Airplane`) |
-| **<nobr>False Negative</nobr>** | Any image _not_ predicted as an `Airplane` that is labeled as an `Airplane` (e.g. labeled as `Airplane` but predicted as `Car`) |
-| **True Negative** | Any image _not_ predicted as an `Airplane` that is _not_ labeled as an `Airplane` (e.g. labeled as `Boat` but predicted as `Boat` or `Car`) |
+| True Positive | Any image predicted as an `Airplane` that is labeled as an `Airplane` |
+| False Positive | Any image predicted as an `Airplane` that is _not_ labeled as an `Airplane` (e.g. labeled as `Boat` but predicted as `Airplane`) |
+| <nobr>False Negative</nobr> | Any image _not_ predicted as an `Airplane` that is labeled as an `Airplane` (e.g. labeled as `Airplane` but predicted as `Car`) |
+| True Negative | Any image _not_ predicted as an `Airplane` that is _not_ labeled as an `Airplane` (e.g. labeled as `Boat` but predicted as `Boat` or `Car`) |
 
 #### Multi-label
 
@@ -103,14 +103,17 @@ Multi-label classification tasks can alternately be thought of as a collection o
 
 ### Object Detection
 
-There are some differences in how these four metrics work for a detection task compared to a classification task as they won’t be at a sample level but at an instance level that the model is detecting. For example, given an image with multiple objects, each prediction/ground truth is assigned to one group, and the definitions of the terms are slightly altered:
+There are some differences in how these four metrics work for a detection task compared to a classification task.
+Rather than being computed at the sample level (e.g. per image), they're computed at the instance level (i.e. per object)
+for instances that the model is detecting. When given an image with multiple objects, each inference and each ground truth
+is assigned to one group, and the definitions of the terms are slightly altered:
 
 | Metric | | Description |
 | --- | --- | --- |
-| **True Positive** | TP | Inference matched with a ground truth |
-| **False Positive** | FP | Inference that is not matched with a ground truth |
-| **<nobr>False Negative</nobr>** | FN | Ground truth that is not matched with an inference |
-| **True Negative** | TN | <p>Poorly defined for object detection.</p><div>One common definition of true negative for object detection is any image that does not have any true positive or false positive inferences.</div> |
+| True Positive | TP | Inference matched with a ground truth |
+| False Positive | FP | Inference that is not matched with a ground truth |
+| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference |
+| True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><div>One common definition of true negative for object detection is any image that does not have any true positive or false positive inferences.</div> |
 
 In an object detection task, checking for detection correctness requires a couple of other metrics (e.g., Intersection
 over Union (IoU) and Geometry Matching).
@@ -143,7 +146,11 @@ FP = len([inf.score >= T for inf in unmatched_inf])
     ![Single-class example](../assets/images/metrics-tpfpfntn-single-class.png)
 
     This example includes two ground truths and two inferences, and when computed with an IoU threshold of 0.5 and
-    confidence score threshold of 0.5 yields a single TP, a single FP, and a single FN.
+    confidence score threshold of 0.5 yields:
+
+    | TP | FP | FN |
+    | --- | --- | --- |
+    | 1 | 1 | 1 |
 
 #### Multiclass
 
@@ -157,7 +164,7 @@ Like classification, multiclass object detection tasks compute TP / FP / FN per 
 
     Similar to multiclass classification, TP / FP / FN are computed for class `Apple` and class `Banana` separately.
 
-    Using an IoU threshold of 0.5 and a confidence score threshold of 0.5, this example yields the following metrics:
+    Using an IoU threshold of 0.5 and a confidence score threshold of 0.5, this example yields:
 
     | Class | TP | FP | FN |
     | --- | --- | --- | --- |
