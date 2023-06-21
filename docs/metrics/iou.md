@@ -41,10 +41,20 @@ $$
 \text{A} \cap \text{B}\,_{\text{bottomright}} = (\min \left( x_{a2}, \, x_{b2} \right), \, \min \left(y_{a2}, \, y_{b2} \right))
 $$
 
-Once the intersection box $(\text{A} \cap \text{B})$ is identified, the area of the union, $(\text{A} \cup \text{B})$, is simply a sum of the area of $\text{A}$ and ${\text{B}}$ minus the area of the intersection box. Finally, IoU is calculated by taking the ratio of the area of intersection box and the area of the union region.
+Once the intersection box $(\text{A} \cap \text{B})$ is identified, the area of the union, $(\text{A} \cup \text{B})$, is simply a sum of the area of $\text{A}$ and ${\text{B}}$ minus the area of the intersection box.
 
 $$
 \text{area} \left( \text{A} \cup \text{B} \right) = \text{area} \left( \text{A} \right) + \text{area} \left( \text{B} \right) - \text{area} \left( \text{A} \cap \text{B} \right)
+$$
+
+Finally, IoU is calculated by taking the ratio of the area of intersection box and the area of the union region.
+
+$$
+\begin{align}
+\text{IoU} \left( \text{A}, \, \text{B} \right)
+&= \frac {\text{area} \left( \text{A} \cap \text{B} \right)} {\text{area} \left( \text{A} \cup \text{B} \right)} \\[1em]
+&= \frac {\text{area} \left( \text{A} \cap \text{B} \right)} {\text{area} \left( \text{A} \right) + \text{area} \left( \text{B} \right) - \text{area} \left( \text{A} \cap \text{B} \right)}
+\end{align}
 $$
 
 #### Examples: IoU of 2D Bounding Boxes
@@ -93,7 +103,7 @@ $$
 
 ### Segmentation Mask
 
-**A [segmentation mask](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask)** is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The prediction shape matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that labels areas where a specific class is present:
+A [segmentation mask](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask) is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The prediction shape matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that labels areas where a specific class is present:
 
 ![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.jpg)
 <p style="text-align: center; color: gray;">
@@ -101,7 +111,7 @@ $$
 </p>
 
 
-The IoU metric measures the **intersection** (the number of pixels **common** between the ground truth and prediction masks, **true positive (TP)**) divided by the **union** (the **total** number of pixels present across **both** masks, **TP + false negative (FN) + false positive (FP)**). And here is the formula for the IoU metric for a segmentation mask:
+The IoU metric measures the intersection (the number of pixels common between the ground truth and prediction masks, **true positive (TP)**) divided by the union (the total number of pixels present across both masks, **TP + false negative (FN) + false positive (FP)**). And here is the formula for the IoU metric for a segmentation mask:
 
 $$
 \text{IoU} \left( \text{A}, \, \text{B} \right) = \frac {\text{TP}} {\text{TP} + \text{FN} + \text{FP}}
@@ -135,36 +145,45 @@ $$
 
 ### Set of Labels
 
-The **set of labels** used in multi-label classification tasks is often a [binarized](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.label_binarize.html) list with a number of label elements, for example, let’s say there are three classes, `Airplane`, `Boat`, and `Car`, and a sample is labeled as `Boat` and `Car`. The binary set of labels would then be $[0, 1, 1]$, where each element represents each class, respectively.
+The set of labels used in multi-label classification tasks is often a [binarized](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.label_binarize.html) list with a number of label elements, for example, let’s say there are three classes, `Airplane`, `Boat`, and `Car`, and a sample is labeled as `Boat` and `Car`. The binary set of labels would then be $[0, 1, 1]$, where each element represents each class, respectively.
 
-Similar to the segmentation mask, the IoU or Jaccard index metric for the ground truth/prediction labels would be the size of the **intersection** of the two sets (the number of labels **common** between two sets, or TP) divided by the size of the **union** of the two sets (the total number of labels present in both sets, **TP + FN + FP**):
+Similar to the segmentation mask, the IoU or Jaccard index metric for the ground truth/prediction labels would be the size of the intersection of the two sets (the number of labels common between two sets, or **TP**) divided by the size of the union of the two sets (the total number of labels present in both sets, **TP + FN + FP**):
 
 $$
-IoU(A, B) = \frac {TP} {TP + FN + FP}
+\text{IoU} \left( \text{A}, \, \text{B} \right) = \frac {\text{TP}} {\text{TP} + \text{FN} + \text{FP}}
 $$
 
 The IoU for multi-label classification is defined per class. This technique, also known as one-vs-the-rest (OvR), evaluates each class as a binary classification problem. Per-class IoU values can then be aggregated using different [averaging methods](./averaging-methods.md). The popular choice for this workflow is **macro**, so let’s take a look at examples of different averaged IoU/Jaccard index metrics for multi-class multi-label classification:
 
 **Example: macro IoU of ground truth and prediction sets of labels: `Airplane`, `Boat`, `Car`**
 
+<center>
+
+| Set | Sample #1 | Sample #2 | Sample #3 | Sample #4 |
+| --- | --- | --- | --- | --- |
+| ground truth | `Airplane`, `Boat`, `Car` | `Airplane`, `Car` | `Boat`, `Car` | `Airplane`, `Boat`, `Car` |
+| prediction | `Boat` | `Airplane`, `Boat`, `Car` | `Airplane`, `Boat`, `Car` | `Airplane`, `Boat`, `Car` |
+
+</center>
+
 $$
-\text{A} = [[1, 1, 1], \, [1, 0, 0], \, [0, 1, 1]]
+\text{ground truth} = [[1, 1, 1], \, [1, 0, 1], \, [0, 1, 1], \, [1, 1, 1]]
 $$
 
 $$
-\text{B} = [[0, 1, 0], \, [1, 1, 0], \, [1, 1, 0]]
+\text{prediction} = [[0, 1, 0], \, [1, 1, 1], \, [1, 1, 1], \, [1, 1, 1]]
 $$
 
 $$
 \begin{align}
 \text{IoU}_\text{macro} &= \frac {\text{IoU}_\texttt{Airplane} + \text{IoU}_\texttt{Boat} + \text{IoU}_\texttt{Car}} {3} \\[1em]
-&= \frac {\frac 1 3 + \frac 2 3 + \frac 0 2} {3} \\[1em]
-&= \frac 1 3
+&= \frac {\frac 2 4 + \frac 3 4 + \frac 3 4} {3} \\[1em]
+&= \frac 2 3
 \end{align}
 $$
 
 
-## Limitations and Biasess
+## Limitations and Biases
 
 IoU works well to measure the overlap between two sets, whether they are types of geometry or a list of labels. However, this metric cannot be directly used to measure the overlap of a prediction and `iscrowd` ground truth, which is an annotation from [COCO Detection Challenge Evaluation](https://cocodataset.org/#format-data) used to label a large groups of objects (e.g., a crowd of people). Therefore, the prediction is expected to take up a small portion of the ground truth region, resulting in a low IoU score and a pair not being a valid match. In this scenario, a variation of IoU, called [intersection over foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred. This variation is used when there are ground truth regions you want to ignore in evaluation, such as `iscrowd`.
 
