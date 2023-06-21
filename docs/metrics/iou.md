@@ -1,19 +1,25 @@
+---
+# TODO: remove search exclusion before landing Metrics Glossary
+search:
+  exclude: true
+---
+
 # Intersection over Union (IoU)
 
-Intersection over Union (IoU) measures the ratio of the intersection and the union between two instances, ranging from 0 to 1 where 1 indicates a perfect match.  It is one of the metrics that measure the similarity between two instances, often used to compare predictions to ground truths.
+Intersection over Union (IoU) measures the ratio of the intersection and the union between ground truth and prediction, ranging from 0 to 1 where 1 indicates a perfect match.  The objective of this metric is to compare predictions to ground truths by measuring similarity between them.
 
-As the name suggests, the IoU of two instances ($A$ and $B$) is defined as:
+As the name suggests, the IoU of two instances ($\text{A}$ and $\text{B}$) is defined as:
 
-$$IoU(A, B) = \frac {A \cap B} {A \cup B}$$
+$$\text{IoU} \left( \text{A}, \text{B} \right) = \frac {\text{A} \cap \text{B}} {\text{A} \cup \text{B}}$$
 
 
 ## When Do I Use IoU?
-It is often used to compare two geometries (e.g., bounding boxes, polygons) or segmentation masks in object detection, instance segmentation, or semantic segmentation models. In multi-label classification, IoU, more likely known as the [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index), is used to compare set of prediction labels for a sample to the corresponding set of ground truth labels. Moreover, there are workflows such as [action detection](https://paperswithcode.com/task/action-detection) and [video moment retrieval](https://paperswithcode.com/task/moment-retrieval) where IoU measures the **temporal** overlap between two time-series snippets.
+It is often used to compare two geometries (e.g., [bounding boxes](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.BoundingBox), [polygons](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.Polygon)) or [segmentation masks](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask) in object detection, instance segmentation, or semantic segmentation workflows. In multi-label classification, IoU, more likely known as the [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index), is used to compare set of prediction labels for a sample to the corresponding set of ground truth labels. Moreover, there are workflows such as [action detection](https://paperswithcode.com/task/action-detection) and [video moment retrieval](https://paperswithcode.com/task/moment-retrieval) where IoU measures the **temporal** overlap between two time-series snippets.
 
 
 Because IoU can be used on various types of data, let's look at how the metric is defined for some of these data types:
 
-- [**2D Axis-Aligned Bounding Boxes**](#2d-axis-aligned-bounding-box)
+- [**2D Axis-Aligned Bounding Box**](#2d-axis-aligned-bounding-box)
 - [**Segmentation Mask**](#segmentation-mask)
 - [**Set of Labels**](#set-of-labels)
 
@@ -25,14 +31,14 @@ Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, an
 ![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox.png)
 
 
-In order to compute IoU for two 2D axis-aligned bounding boxes, the first step is identifying the area of the intersection box, $(\text{A} \cap \text{B})$. The two coordinates of the intersection box, top-left and bottom-right corners, can be defined as:
+In order to compute IoU for two 2D bounding boxes, the first step is identifying the area of the intersection box, $(\text{A} \cap \text{B})$. The two coordinates of the intersection box, top-left and bottom-right corners, can be defined as:
 
 $$
-\text{A} \cap \text{B}\,_{\text{topleft}} = ( max \left( x_{a1}, \, x_{b1} \right), \, max \left( y_{a1}, \, y_{b1} \right))
+\text{A} \cap \text{B}\,_{\text{topleft}} = (\max \left( x_{a1}, \, x_{b1} \right), \, \max \left( y_{a1}, \, y_{b1} \right))
 $$
 
 $$
-\text{A} \cap \text{B}\,_{\text{bottomright}} = (min \left( x_{a2}, \, x_{b2} \right), \, min \left(y_{a2}, \, y_{b2} \right))
+\text{A} \cap \text{B}\,_{\text{bottomright}} = (\min \left( x_{a2}, \, x_{b2} \right), \, \min \left(y_{a2}, \, y_{b2} \right))
 $$
 
 Once the intersection box $(\text{A} \cap \text{B})$ is identified, the area of the union, $(\text{A} \cup \text{B})$, is simply a sum of the area of $\text{A}$ and ${\text{B}}$ minus the area of the intersection box. Finally, IoU is calculated by taking the ratio of the area of intersection box and the area of the union region.
@@ -51,9 +57,9 @@ The following examples show what IoU values look like in different scenarios wit
 $$
 \begin{align}
 \text{IoU} \left( \text{A}, \, \text{B} \right)
-&= \frac {(10 - 5) \times (10 - 5)} {10 \times 10 + (15 - 5) \times (15 - 5) - (10 - 5) \times (10 - 5)} \\[1em]
-&= \frac {25} {100 + 100 - 25} \\[1em]
-&= 0.143
+&= \frac {(10 - 5) \times (10 - 2)} {10 \times 10 + (15 - 5) \times (12 - 2) - (10 - 5) \times (10 - 2)} \\[1em]
+&= \frac {40} {100 + 100 - 40} \\[1em]
+&= 0.25
 \end{align}
 $$
 
@@ -87,7 +93,7 @@ $$
 
 ### Segmentation Mask
 
-**A segmentation mask** is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The prediction shape matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that labels areas where a specific class is present:
+**A [segmentation mask](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask)** is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The prediction shape matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that labels areas where a specific class is present:
 
 ![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.jpg)
 <p style="text-align: center; color: gray;">
@@ -114,7 +120,7 @@ From the cat image shown above, when you overlay the ground truth and prediction
 
 | # True Positives | # False Positives | # False Negatives |
 | --- | --- | --- |
-| 100 | 25 | 50 |
+| 100 | 25 | 75 |
 
 </center>
 
@@ -122,8 +128,8 @@ Then the IoU becomes:
 
 $$
 \begin{align}
-\text{IoU} &= \frac {100} {(100 + 25 + 50)} \\[1em]
-&= 0.571
+\text{IoU} &= \frac {100} {(100 + 25 + 75)} \\[1em]
+&= 0.5
 \end{align}
 $$
 
@@ -137,7 +143,7 @@ $$
 IoU(A, B) = \frac {TP} {TP + FN + FP}
 $$
 
-The IoU for multi-label classification is defined per class. This technique, also known as one-vs-the-rest (OVR), evaluates each class as a binary classification problem. Per-class IoU values can then be aggregated using different [averaging methods](./averaging-methods.md). The popular choice for this workflow is **macro**, so let’s take a look at examples of different averaged IoU/Jaccard index metrics for multi-class multi-label classification:
+The IoU for multi-label classification is defined per class. This technique, also known as one-vs-the-rest (OvR), evaluates each class as a binary classification problem. Per-class IoU values can then be aggregated using different [averaging methods](./averaging-methods.md). The popular choice for this workflow is **macro**, so let’s take a look at examples of different averaged IoU/Jaccard index metrics for multi-class multi-label classification:
 
 **Example: macro IoU of ground truth and prediction sets of labels: `Airplane`, `Boat`, `Car`**
 
@@ -146,21 +152,21 @@ $$
 $$
 
 $$
-\text{B} = [[0, 1, 0], \, [1, 0, 0], \, [1, 1, 0]]
+\text{B} = [[0, 1, 0], \, [1, 1, 0], \, [1, 1, 0]]
 $$
 
 $$
 \begin{align}
 \text{IoU}_\text{macro} &= \frac {\text{IoU}_\texttt{Airplane} + \text{IoU}_\texttt{Boat} + \text{IoU}_\texttt{Car}} {3} \\[1em]
-&= \frac {\frac 1 3 + \frac 2 2 + \frac 0 2} {3} \\[1em]
-&= 0.444
+&= \frac {\frac 1 3 + \frac 2 3 + \frac 0 2} {3} \\[1em]
+&= \frac 1 3
 \end{align}
 $$
 
 
-## Limitations and Biases
+## Limitations and Biasess
 
-IoU works great to measure the overlap between two sets, whether they are types of geometry or a list of labels. However, this metric cannot be directly used to measure the overlap of a prediction and `iscrowd` ground truth, which is an annotation used to label a large groups of objects (e.g., a crowd of people). Therefore, the prediction is expected to take up a small portion of the ground truth region, resulting in a low IoU score and a pair not being a valid match. In this scenario, a variation of IoU, called [intersection over foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred. This variation is used when there are ground truth regions you want to ignore in evaluation, such as `iscrowd`.
+IoU works well to measure the overlap between two sets, whether they are types of geometry or a list of labels. However, this metric cannot be directly used to measure the overlap of a prediction and `iscrowd` ground truth, which is an annotation from [COCO Detection Challenge Evaluation](https://cocodataset.org/#format-data) used to label a large groups of objects (e.g., a crowd of people). Therefore, the prediction is expected to take up a small portion of the ground truth region, resulting in a low IoU score and a pair not being a valid match. In this scenario, a variation of IoU, called [intersection over foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred. This variation is used when there are ground truth regions you want to ignore in evaluation, such as `iscrowd`.
 
 The second limitation of IoU is measuring the localization performance of non-overlaps. IoU ranges from 0 (no overlap) to 1 (complete overlap), so when two bounding boxes have zero overlap, it’s hard to tell how bad the localization performance is solely based on IoU. There are variations of IoU, such as [signed IoU (SIoU)](https://arxiv.org/pdf/1905.12365.pdf) and [generalized IoU (GIoU)](https://giou.stanford.edu/GIoU.pdf), that aim to measure the localization error even when there is no overlap. These metrics can replace IoU metric if the objective is to measure the localization performance of non-overlaps.
 

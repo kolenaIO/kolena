@@ -24,6 +24,6 @@ biases, and its intended uses.
 
     ---
 
-    This metric measures the percentage of overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
+    This metric measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
     Also known as Jaccard index in classification workflow.
 </div>
