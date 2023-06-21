@@ -18,6 +18,32 @@ The implementation of a confusion matrix depends on whether the workflow concern
 
 Single-class confusion matrices are similar to binary classification problems. After computing the number of TPs, FPs, FNs, and TNs, a confusion matrix would look like this:
 
+<table>
+  <thead>
+    <tr>
+      <td colspan="2" />
+      <td colspan="2">Predicted</td>
+    </tr>
+    <tr>
+      <td colspan="2" />
+      <td>Positive</td>
+      <td>Negative</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td rowspan="2">Actual</td>
+      <td>Positive</td>
+      <td>True Positive</td>
+      <td>False Positive</td>
+    </tr>
+    <tr>
+      <td>Negative</td>
+      <td>False Negative</td>
+      <td>True Negative</td>
+    </tr>
+  </tbody>
+</table>
 |  | Predicted Positive | Predicted Negative |
 | --- | --- | --- |
 | Actual Positive | True Positive (TP) | False Negative (FN) |
