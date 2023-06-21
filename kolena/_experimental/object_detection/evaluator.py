@@ -21,14 +21,15 @@ from typing import Tuple
 
 import numpy as np
 
+from kolena._experimental.object_detection.utils import clean_threshold_key
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
 from kolena._experimental.object_detection.utils import compute_f1_plot
 from kolena._experimental.object_detection.utils import compute_f1_plot_multiclass
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
+from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.utils import compute_pr_plot_multiclass
-from kolena._experimental.object_detection.utils import threshold_key
 from kolena._experimental.object_detection.workflow import ClassMetricsPerTestCase
 from kolena._experimental.object_detection.workflow import GroundTruth
 from kolena._experimental.object_detection.workflow import Inference
@@ -42,12 +43,27 @@ from kolena._experimental.object_detection.workflow import ThresholdConfiguratio
 from kolena._experimental.object_detection.workflow import ThresholdStrategy
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
+from kolena.workflow.metrics import f1_score as compute_f1_score
+from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import match_inferences_multiclass
-from kolena.workflow.metrics._geometry import InferenceMatches
-from kolena.workflow.metrics._geometry import MulticlassInferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
+from kolena.workflow.metrics import precision as compute_precision
+from kolena.workflow.metrics import recall as compute_recall
 
 
 class ObjectDetectionEvaluator(Evaluator):
+    """
+    This `ObjectDetectionEvaluator` transforms inferences into metrics for the object detection workflow for a single
+    class or multiple classes.
+
+    When a [`ThresholdConfiguration`][kolena._experimental.object_detection.workflow.ThresholdConfiguration] is
+    configured to use an F1-Optimal threshold strategy, the evaluator requires that the first test case retrieved for
+    a test suite contains the complete sample set.
+
+    For additional functionality, see the associated
+    [base class documentation][kolena.workflow.evaluator.Evaluator].
+    """
+
     # Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
     # F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
     # hit this cache and use the previously computed population level confidence thresholds.
@@ -76,14 +92,15 @@ class ObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        tp = [inf for _, inf in bbox_matches.matched if inf.label in labels]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.label in labels]
-        fn = [gt for gt, _ in bbox_matches.unmatched_gt if gt.label in labels]
+        tp = [inf for _, inf in bbox_matches.matched]
+        fp = bbox_matches.unmatched_inf
+        fn = [gt for gt, _ in bbox_matches.unmatched_gt]
 
-        confused = [inf for gt, inf in bbox_matches.unmatched_gt if inf is not None and gt.label in labels]
-        non_ignored_inferences = [inf for _, inf in bbox_matches.matched] + bbox_matches.unmatched_inf
-        scores = [inf.score for inf in non_ignored_inferences if inf.label in labels]
-        fields = [(threshold_key(label), float) for label in thresholds.keys()]
+        confused = [inf for _, inf in bbox_matches.unmatched_gt if inf is not None]
+        non_ignored_inferences = tp + fp
+        scores = [inf.score for inf in non_ignored_inferences]
+        image_labels = {gt.label for gt in ground_truth.bboxes}
+        fields = [(clean_threshold_key(label), float) for label in thresholds.keys() if label in image_labels]
         dc = make_dataclass("ExtendedImageMetrics", bases=(TestSampleMetrics,), fields=fields, frozen=True)
         return dc(
             TP=tp,
@@ -100,10 +117,10 @@ class ObjectDetectionEvaluator(Evaluator):
             has_Confused=len(confused) > 0,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            **{threshold_key(label): value for label, value in thresholds.items()},
+            **{clean_threshold_key(label): value for label, value in thresholds.items() if label in image_labels},
         )
 
-    def compute_f1_optimal_thresholds(
+    def compute_and_cache_f1_optimal_thresholds(
         self,
         configuration: ThresholdConfiguration,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
@@ -139,7 +156,7 @@ class ObjectDetectionEvaluator(Evaluator):
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
-        self.compute_f1_optimal_thresholds(configuration, inferences)
+        self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         return [(ts, self.compute_image_metrics(gt, inf, configuration, labels)) for ts, gt, inf in inferences]
 
@@ -149,9 +166,9 @@ class ObjectDetectionEvaluator(Evaluator):
         label: str,
         thresholds: Dict[str, float],
     ) -> ClassMetricsPerTestCase:
-        m_matched = []
-        m_unmatched_gt = []
-        m_unmatched_inf = []
+        inf_match_matched = []
+        inf_match_unmatched_gt = []
+        inf_match_unmatched_inf = []
         tpr_counter = 0
         fpr_counter = 0
         confused_counter = 0
@@ -163,17 +180,17 @@ class ObjectDetectionEvaluator(Evaluator):
             has_fp = False
             for gt, inf in match.matched:
                 if gt.label == label:
-                    m_matched.append((gt, inf))
-                    has_tp = True
+                    inf_match_matched.append((gt, inf))
+                    tpr_counter += 1
             for gt, inf in match.unmatched_gt:
                 if gt.label == label:
-                    m_unmatched_gt.append(gt)
+                    inf_match_unmatched_gt.append(gt)
                     has_fn = True
-                    if inf is None:
+                    if inf is not None:
                         confused_counter += 1
             for inf in match.unmatched_inf:
                 if inf.label == label:
-                    m_unmatched_inf.append(inf)
+                    inf_match_unmatched_inf.append(inf)
                     has_fp = True
             if has_tp:
                 tpr_counter += 1
@@ -181,21 +198,25 @@ class ObjectDetectionEvaluator(Evaluator):
                 fpr_counter += 1
             if has_tp or has_fn or has_fp:
                 samples += 1
-        tp_count = len(m_matched)
-        fp_count = len(m_unmatched_inf)
-        fn_count = len(m_unmatched_gt)
-        precision = tp_count / (tp_count + fp_count) if (tp_count + fp_count) > 0 else 0
-        recall = tp_count / (tp_count + fn_count) if (tp_count + fn_count) > 0 else 0
+        tp_count = len(inf_match_matched)
+        fp_count = len(inf_match_unmatched_inf)
+        fn_count = len(inf_match_unmatched_gt)
+        precision = compute_precision(tp_count, fp_count)
+        recall = compute_recall(tp_count, fn_count)
+        f1_score = compute_f1_score(tp_count, fp_count, fn_count)
         all_bbox_matches = [
-            InferenceMatches(matched=m_matched, unmatched_gt=m_unmatched_gt, unmatched_inf=m_unmatched_inf),
+            InferenceMatches(
+                matched=inf_match_matched,
+                unmatched_gt=inf_match_unmatched_gt,
+                unmatched_inf=inf_match_unmatched_inf,
+            ),
         ]
-        baseline_pr_plot = compute_pr_plot(all_bbox_matches)
-        baseline_pr_plot = baseline_pr_plot.curves[0] if baseline_pr_plot is not None else None
-        average_precision = (
-            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x)
-            if baseline_pr_plot is not None and precision > 0
-            else 0.0
-        )
+
+        average_precision = 0.0
+        if precision > 0:
+            baseline_pr_curve = compute_pr_curve(all_bbox_matches)
+            if baseline_pr_curve is not None:
+                average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
         return ClassMetricsPerTestCase(
             Class=label,
@@ -207,11 +228,9 @@ class ObjectDetectionEvaluator(Evaluator):
             FN=fn_count,
             FP=fp_count,
             Confused=confused_counter,
-            TPR=tpr_counter / samples if samples > 0 else 0.0,
-            FPR=fpr_counter / samples if samples > 0 else 0.0,
             Precision=precision,
             Recall=recall,
-            F1=2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0,
+            F1=f1_score,
             AP=average_precision,
         )
 
@@ -244,19 +263,17 @@ class ObjectDetectionEvaluator(Evaluator):
         tp_count = sum(im.count_TP for im in metrics)
         fp_count = sum(im.count_FP for im in metrics)
         fn_count = sum(im.count_FN for im in metrics)
-        precision = tp_count / (tp_count + fp_count) if (tp_count + fp_count) > 0 else 0
-        recall = tp_count / (tp_count + fn_count) if (tp_count + fn_count) > 0 else 0
+        precision = compute_precision(tp_count, fp_count)
+        recall = compute_recall(tp_count, fn_count)
+        f1_score = compute_f1_score(tp_count, fp_count, fn_count)
 
-        baseline_pr_plot = compute_pr_plot(all_bbox_matches)
-        baseline_pr_plot = baseline_pr_plot.curves[0] if baseline_pr_plot is not None else None
-        average_precision = (
-            compute_average_precision(baseline_pr_plot.y, baseline_pr_plot.x)
-            if baseline_pr_plot is not None and precision > 0
-            else 0.0
-        )
+        average_precision = 0.0
+        if precision > 0:
+            baseline_pr_curve = compute_pr_curve(all_bbox_matches)
+            if baseline_pr_curve is not None:
+                average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
         # compute nested metrics per class
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         per_class_metrics: List[ClassMetricsPerTestCase] = []
         for label in labels:
             metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label, thresholds)
@@ -270,11 +287,9 @@ class ObjectDetectionEvaluator(Evaluator):
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
-            TPR=sum(1 for im in metrics if im.has_TP) / len(metrics) if len(metrics) > 0 else 0.0,
-            FPR=sum(1 for im in metrics if im.has_FP) / len(metrics) if len(metrics) > 0 else 0.0,
             Precision=precision,
             Recall=recall,
-            F1=2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0.0,
+            F1=f1_score,
             AP=average_precision,
         )
 
@@ -334,6 +349,8 @@ class ObjectDetectionEvaluator(Evaluator):
         )
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_03:
+            return defaultdict(lambda: 0.3)
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_05:
             return defaultdict(lambda: 0.5)
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_075:

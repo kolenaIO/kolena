@@ -496,38 +496,35 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
 
 @pytest.mark.metrics
 @pytest.mark.parametrize(
+    "test_name",
+    [
+        "zeros with unmatched gt and unmatched inf",
+        "zeros with two matchings",
+        "zeros, but one match for label a",
+        "zeros, but one match for label b",
+        "zeros, but b is confused with a",
+        "zeros, but a is confused with b",
+    ],
+)
+def test__none__curve__plot(
+    test_name: str,
+) -> None:
+    from kolena._experimental.object_detection.utils import compute_f1_plot
+    from kolena._experimental.object_detection.utils import compute_pr_plot
+    from kolena._experimental.object_detection.utils import compute_pr_curve
+
+    f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    pr_curve: Curve = compute_pr_curve(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    assert f1 is None
+    assert pr is None
+    assert pr_curve is None
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
     "test_name, f1_curve, pr_curve",
     [
-        (
-            "zeros with unmatched gt and unmatched inf",
-            None,
-            None,
-        ),
-        (
-            "zeros with two matchings",
-            None,
-            None,
-        ),
-        (
-            "zeros, but one match for label a",
-            None,
-            None,
-        ),
-        (
-            "zeros, but one match for label b",
-            None,
-            None,
-        ),
-        (
-            "zeros, but b is confused with a",
-            None,
-            None,
-        ),
-        (
-            "zeros, but a is confused with b",
-            None,
-            None,
-        ),
         (
             "no confusion, one TP per label",
             CurvePlot(
@@ -1007,9 +1004,576 @@ def test__curve__plots(
 ) -> None:
     from kolena._experimental.object_detection.utils import compute_f1_plot
     from kolena._experimental.object_detection.utils import compute_pr_plot
+    from kolena._experimental.object_detection.utils import compute_pr_curve
 
     f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    assert f1 == f1_curve
+    assert pr == pr_curve
+    assert pr.curves[0] == compute_pr_curve(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "test_name, f1_curve, pr_curve",
+    [
+        (
+            "no confusion, one TP per label",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[Curve(x=[0.5, 0.6], y=[0.6666666666666666, 0.4], label="no confusion, one TP per label")],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[Curve(x=[0.5, 0.25], y=[1.0, 1.0], label="no confusion, one TP per label")],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "only confusion",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[Curve(x=[0.7, 0.8], y=[0.0, 0.0], label="only confusion")],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion")],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "only confusion, one TP for a",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(x=[0.7, 0.8, 0.9], y=[0.3333333333333333, 0.4, 0.5], label="only confusion, one TP for a"),
+                    Curve(x=[0.8, 0.9], y=[0.5, 0.6666666666666666], label="a"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+                        y=[0.3333333333333333, 0.5, 1.0],
+                        label="only confusion, one TP for a",
+                    ),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "only confusion, one TP for b",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(x=[0.7, 0.8, 0.9], y=[0.3333333333333333, 0.4, 0.5], label="only confusion, one TP for b"),
+                    Curve(x=[0.7, 0.9], y=[0.5, 0.6666666666666666], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
+                        y=[0.3333333333333333, 0.5, 1.0],
+                        label="only confusion, one TP for b",
+                    ),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "ones",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(x=[0.6, 0.7, 0.8, 0.9], y=[0.5, 0.5714285714285715, 0.6666666666666666, 0.4], label="ones"),
+                    Curve(x=[0.7, 0.9], y=[0.5, 0.6666666666666666], label="a"),
+                    Curve(x=[0.6, 0.8], y=[0.5, 0.6666666666666666], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(x=[0.5, 0.5, 0.5, 0.25], y=[0.5, 0.6666666666666666, 1.0, 1.0], label="ones"),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "ones, with two matchings, TPs",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.6, 0.7, 0.8, 0.9],
+                        y=[0.5, 0.5714285714285715, 0.6666666666666666, 0.4],
+                        label="ones, with two matchings, TPs",
+                    ),
+                    Curve(x=[0.7, 0.9], y=[0.5, 0.6666666666666666], label="a"),
+                    Curve(x=[0.6, 0.8], y=[0.5, 0.6666666666666666], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[0.5, 0.5, 0.5, 0.25],
+                        y=[0.5, 0.6666666666666666, 1.0, 1.0],
+                        label="ones, with two matchings, TPs",
+                    ),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "ones, with two matchings, mixed",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.5, 0.6, 0.8, 0.9],
+                        y=[0.5, 0.5714285714285715, 0.3333333333333333, 0.4],
+                        label="ones, with two matchings, mixed",
+                    ),
+                    Curve(x=[0.5, 0.9], y=[0.5, 0.6666666666666666], label="a"),
+                    Curve(x=[0.6, 0.8], y=[0.5, 0.0], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[0.5, 0.5, 0.25, 0.25],
+                        y=[0.5, 0.6666666666666666, 0.5, 1.0],
+                        label="ones, with two matchings, mixed",
+                    ),
+                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
+                    Curve(x=[0.5, 0.0], y=[0.5, 0.0], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "two single class matchings",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.7, 0.8, 0.9],
+                        y=[0.6666666666666666, 0.7272727272727272, 0.5],
+                        label="two single class matchings",
+                    ),
+                    Curve(x=[0.8, 0.9], y=[0.6666666666666666, 0.5], label="a"),
+                    Curve(x=[0.7, 0.8, 0.9], y=[0.6666666666666666, 0.8, 0.5], label="b"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[0.6666666666666666, 0.6666666666666666, 0.3333333333333333],
+                        y=[0.6666666666666666, 0.8, 1.0],
+                        label="two single class matchings",
+                    ),
+                    Curve(x=[0.6666666666666666, 0.3333333333333333], y=[0.6666666666666666, 1.0], label="a"),
+                    Curve(
+                        x=[0.6666666666666666, 0.6666666666666666, 0.3333333333333333],
+                        y=[0.6666666666666666, 1.0, 1.0],
+                        label="b",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "large",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.1, 0.2, 0.3, 0.4, 0.5, 0.75, 0.77, 0.8, 0.9, 0.99],
+                        y=[
+                            0.5,
+                            0.5263157894736842,
+                            0.4444444444444444,
+                            0.47058823529411764,
+                            0.375,
+                            0.42857142857142855,
+                            0.30769230769230765,
+                            0.16666666666666666,
+                            0.1818181818181818,
+                            0.0,
+                        ],
+                        label="large",
+                    ),
+                    Curve(x=[0.2, 0.3], y=[0.6666666666666666, 0.0], label="cat"),
+                    Curve(
+                        x=[0.4, 0.5, 0.75, 0.77, 0.9],
+                        y=[0.6666666666666666, 0.5454545454545454, 0.6, 0.4444444444444445, 0.25],
+                        label="cow",
+                    ),
+                    Curve(x=[0.1, 0.5, 0.8, 0.99], y=[0.0, 0.0, 0.0, 0.0], label="dog"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[
+                            0.5555555555555556,
+                            0.5555555555555556,
+                            0.4444444444444444,
+                            0.4444444444444444,
+                            0.3333333333333333,
+                            0.3333333333333333,
+                            0.2222222222222222,
+                            0.1111111111111111,
+                            0.1111111111111111,
+                            0.0,
+                        ],
+                        y=[
+                            0.45454545454545453,
+                            0.5,
+                            0.4444444444444444,
+                            0.5,
+                            0.42857142857142855,
+                            0.6,
+                            0.5,
+                            0.3333333333333333,
+                            0.5,
+                            0.0,
+                        ],
+                        label="large",
+                    ),
+                    Curve(x=[1.0, 0.0], y=[0.5, 0.0], label="cat"),
+                    Curve(
+                        x=[
+                            0.5714285714285714,
+                            0.42857142857142855,
+                            0.42857142857142855,
+                            0.2857142857142857,
+                            0.14285714285714285,
+                        ],
+                        y=[0.8, 0.75, 1.0, 1.0, 1.0],
+                        label="cow",
+                    ),
+                    Curve(x=[0.0, 0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0, 0.0], label="dog"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "only tps",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99],
+                        y=[
+                            1.0,
+                            0.9361702127659575,
+                            0.888888888888889,
+                            0.8372093023255813,
+                            0.7499999999999999,
+                            0.717948717948718,
+                            0.6842105263157895,
+                            0.6111111111111112,
+                            0.5294117647058824,
+                            0.3870967741935484,
+                            0.21428571428571425,
+                        ],
+                        label="only tps",
+                    ),
+                    Curve(
+                        x=[0.01, 0.1, 0.2, 0.3, 0.8, 0.9, 0.99],
+                        y=[
+                            1.0,
+                            0.923076923076923,
+                            0.8333333333333333,
+                            0.7272727272727273,
+                            0.6,
+                            0.4444444444444445,
+                            0.25,
+                        ],
+                        label="a",
+                    ),
+                    Curve(
+                        x=[0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                        y=[1.0, 0.9090909090909091, 0.8, 0.6666666666666666, 0.5, 0.2857142857142857],
+                        label="b",
+                    ),
+                    Curve(x=[0.01, 0.1, 0.2, 0.3], y=[1.0, 0.8571428571428571, 0.6666666666666666, 0.4], label="c"),
+                    Curve(
+                        x=[0.6, 0.7, 0.8, 0.9, 0.99],
+                        y=[1.0, 0.888888888888889, 0.7499999999999999, 0.5714285714285715, 0.33333333333333337],
+                        label="d",
+                    ),
+                    Curve(x=[0.01, 0.9, 0.99], y=[1.0, 0.8, 0.5], label="e"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[1.0, 0.88, 0.8, 0.72, 0.6, 0.56, 0.52, 0.44, 0.36, 0.24, 0.12],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        label="only tps",
+                    ),
+                    Curve(
+                        x=[
+                            1.0,
+                            0.8571428571428571,
+                            0.7142857142857143,
+                            0.5714285714285714,
+                            0.42857142857142855,
+                            0.2857142857142857,
+                            0.14285714285714285,
+                        ],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        label="a",
+                    ),
+                    Curve(
+                        x=[1.0, 0.8333333333333334, 0.6666666666666666, 0.5, 0.3333333333333333, 0.16666666666666666],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        label="b",
+                    ),
+                    Curve(x=[1.0, 0.75, 0.5, 0.25], y=[1.0, 1.0, 1.0, 1.0], label="c"),
+                    Curve(x=[1.0, 0.8, 0.6, 0.4, 0.2], y=[1.0, 1.0, 1.0, 1.0, 1.0], label="d"),
+                    Curve(x=[1.0, 0.6666666666666666, 0.3333333333333333], y=[1.0, 1.0, 1.0], label="e"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "tps and fps and fns",
+            CurvePlot(
+                title="F1-Score vs. Confidence Threshold Per Class",
+                x_label="Confidence Threshold",
+                y_label="F1-Score",
+                curves=[
+                    Curve(
+                        x=[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99],
+                        y=[
+                            0.6756756756756757,
+                            0.619718309859155,
+                            0.6451612903225806,
+                            0.6101694915254237,
+                            0.5357142857142858,
+                            0.509090909090909,
+                            0.4814814814814815,
+                            0.4230769230769231,
+                            0.36734693877551017,
+                            0.2926829268292683,
+                            0.15789473684210528,
+                        ],
+                        label="tps and fps and fns",
+                    ),
+                    Curve(
+                        x=[0.01, 0.1, 0.2, 0.3, 0.8, 0.9, 0.99],
+                        y=[
+                            0.7000000000000001,
+                            0.631578947368421,
+                            0.5555555555555556,
+                            0.47058823529411764,
+                            0.375,
+                            0.3636363636363636,
+                            0.19999999999999998,
+                        ],
+                        label="a",
+                    ),
+                    Curve(
+                        x=[0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                        y=[
+                            0.6,
+                            0.7999999999999999,
+                            0.7142857142857143,
+                            0.6153846153846154,
+                            0.5,
+                            0.36363636363636365,
+                            0.2,
+                        ],
+                        label="b",
+                    ),
+                    Curve(
+                        x=[0.01, 0.1, 0.2, 0.3, 0.7],
+                        y=[0.6666666666666666, 0.5454545454545454, 0.4, 0.25, 0.0],
+                        label="c",
+                    ),
+                    Curve(
+                        x=[0.1, 0.6, 0.7, 0.8, 0.9, 0.99],
+                        y=[
+                            0.8333333333333333,
+                            1.0,
+                            0.888888888888889,
+                            0.7499999999999999,
+                            0.5714285714285715,
+                            0.33333333333333337,
+                        ],
+                        label="d",
+                    ),
+                    Curve(x=[0.01, 0.9, 0.99], y=[0.6, 0.4444444444444445, 0.25], label="e"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[
+                            0.7142857142857143,
+                            0.6285714285714286,
+                            0.5714285714285714,
+                            0.5142857142857142,
+                            0.42857142857142855,
+                            0.4,
+                            0.37142857142857144,
+                            0.3142857142857143,
+                            0.2571428571428571,
+                            0.17142857142857143,
+                            0.08571428571428572,
+                        ],
+                        y=[
+                            0.6410256410256411,
+                            0.6111111111111112,
+                            0.7407407407407407,
+                            0.75,
+                            0.7142857142857143,
+                            0.7,
+                            0.6842105263157895,
+                            0.6470588235294118,
+                            0.6428571428571429,
+                            1.0,
+                            1.0,
+                        ],
+                        label="tps and fps and fns",
+                    ),
+                    Curve(
+                        x=[
+                            0.7777777777777778,
+                            0.6666666666666666,
+                            0.5555555555555556,
+                            0.4444444444444444,
+                            0.3333333333333333,
+                            0.2222222222222222,
+                            0.1111111111111111,
+                        ],
+                        y=[0.6363636363636364, 0.6, 0.5555555555555556, 0.5, 0.42857142857142855, 1.0, 1.0],
+                        label="a",
+                    ),
+                    Curve(
+                        x=[0.75, 0.75, 0.625, 0.5, 0.375, 0.25, 0.125],
+                        y=[0.5, 0.8571428571428571, 0.8333333333333334, 0.8, 0.75, 0.6666666666666666, 0.5],
+                        label="b",
+                    ),
+                    Curve(
+                        x=[0.6666666666666666, 0.5, 0.3333333333333333, 0.16666666666666666, 0.0],
+                        y=[0.6666666666666666, 0.6, 0.5, 0.5, 0.0],
+                        label="c",
+                    ),
+                    Curve(x=[1.0, 1.0, 0.8, 0.6, 0.4, 0.2], y=[0.7142857142857143, 1.0, 1.0, 1.0, 1.0, 1.0], label="d"),
+                    Curve(
+                        x=[0.42857142857142855, 0.2857142857142857, 0.14285714285714285],
+                        y=[1.0, 1.0, 1.0],
+                        label="e",
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+    ],
+)
+def test__curve__plots__multiclass(
+    test_name: str,
+    f1_curve: CurvePlot,
+    pr_curve: CurvePlot,
+) -> None:
+    from kolena._experimental.object_detection.utils import compute_f1_plot_multiclass
+    from kolena._experimental.object_detection.utils import compute_pr_plot_multiclass
+
+    f1: CurvePlot = compute_f1_plot_multiclass(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    pr: CurvePlot = compute_pr_plot_multiclass(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     assert f1 == f1_curve
     assert pr == pr_curve
 

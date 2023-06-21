@@ -86,8 +86,6 @@ class ClassMetricsPerTestCase(MetricsTestCase):
     TP: int
     FN: int
     FP: int
-    TPR: float
-    FPR: float
     Precision: float
     Recall: float
     F1: float
@@ -103,8 +101,6 @@ class TestCaseMetrics(MetricsTestCase):
     TP: int
     FN: int
     FP: int
-    TPR: float
-    FPR: float
     Precision: float
     Recall: float
     F1: float
@@ -120,10 +116,13 @@ class TestSuiteMetrics(MetricsTestSuite):
 
 class ThresholdStrategy(str, Enum):
     F1_OPTIMAL = "F1_OPTIMAL"
+    FIXED_03 = "FIXED_03"
     FIXED_05 = "FIXED_05"
     FIXED_075 = "FIXED_075"
 
     def display_name(self) -> str:
+        if self is ThresholdStrategy.FIXED_03:
+            return "Fixed(0.3)"
         if self is ThresholdStrategy.FIXED_05:
             return "Fixed(0.5)"
         if self is ThresholdStrategy.FIXED_075:
