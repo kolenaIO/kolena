@@ -130,13 +130,11 @@ def compute_pr_plot_multiclass(
     """
     pr_curves: List[Curve] = []
     y_true, y_score = _compute_sklearn_arrays(all_matches)
-    y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
+    y_true_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
     pr_curve = _compute_threshold_curve(y_true, y_score, "pr", curve_label)
     pr_curves.append(pr_curve)
 
-    classes = sorted(y_true_by_label.keys())
-    for label in classes:
-        y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+    for label, (y_true, y_score) in y_true_score_by_label.items():
         if len(y_true) > 0:
             pr_curve = _compute_threshold_curve(y_true, y_score, "pr", label)
             pr_curves.append(pr_curve)
@@ -188,13 +186,11 @@ def compute_f1_plot_multiclass(
     """
     f1_curves: List[Curve] = []
     y_true, y_score = _compute_sklearn_arrays(all_matches)
-    y_true_by_label, y_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
+    y_true_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
     f1_curve = _compute_threshold_curve(y_true, y_score, "f1", curve_label)
     f1_curves.append(f1_curve)
 
-    classes = sorted(y_true_by_label.keys())
-    for label in classes:
-        y_true, y_score = y_true_by_label[label], y_score_by_label[label]
+    for label, (y_true, y_score) in y_true_score_by_label.items():
         if len(y_true) > 0:
             f1_curve = _compute_threshold_curve(y_true, y_score, "f1", label)
             f1_curves.append(f1_curve)
