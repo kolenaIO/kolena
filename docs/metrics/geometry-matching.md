@@ -14,7 +14,8 @@ While it may sound simple, geometry matching is surprisingly challenging and ful
 focus on 2D object detection—specifically 2D bounding box matching—to learn about geometry matching algorithms.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`match_inferences`][kolena.workflow.metrics.match_inferences], [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass] ↗
+- :kolena-manual-16: API Reference: [`match_inferences`][kolena.workflow.metrics.match_inferences],
+[`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass] ↗
 </div>
 
 ## Algorithm Overview
@@ -25,8 +26,6 @@ In a geometry matching algorithm, the following criteria must be met for a valid
 2. For multiclass workflows, inference label must match the ground truth label
 
 ??? info "Pseudocode: Geometry Matching"
-
-	Here is the general matching logic:
 
 	1. Loop through all images in your dataset;
 	2. Loop through all labels;
@@ -41,7 +40,7 @@ In a geometry matching algorithm, the following criteria must be met for a valid
 
 ## Examples: Matching 2D Bounding Boxes
 
-Let's apply the logic above to the following examples of 2D object detection. Bounding boxes (see:
+Let's apply the algorithm above to the following examples of 2D object detection. Bounding boxes (see:
 [`BoundingBox`][kolena.workflow.annotation.BoundingBox]) in the diagrams below use the following colors based on their
 type and the matching result:
 
@@ -49,7 +48,7 @@ type and the matching result:
 
 ### Example 1
 
-This example contains to ground truth and two inference bounding boxes, each with the same label.
+This example contains two ground truth and two inference bounding boxes, each with the same label.
 The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap
 (IoU of 0.13). Let's find out what the matched results look like in this example with a IoU threshold of 0.5:
 
@@ -142,9 +141,9 @@ Inference $\text{a}$ has a higher IoU with ground truth $\text{B}$, so $\text{a}
 
 Geometry matching is a fundamental part of evaluation for workflows with localization. Metrics such as precision,
 recall, and average precision are built on top of these matches.
-The matching logic we've covered above is standard across various popular object detection benchmarks.
+The matching algorithm we've covered above is standard across various popular object detection benchmarks.
 
-In this section, we'll examine the differences in matching logic from a few popular benchmarks:
+In this section, we'll examine the differences in matching algorithm from a few popular benchmarks:
 
 - [**Pascal VOC Challenge**](#pascal-voc-challenge)
 - [**COCO Detection Challenge**](#coco-detection-challenge)
@@ -164,7 +163,7 @@ evaluation section (4.4) in
 [development kit doc](http://host.robots.ox.ac.uk/pascal/VOC/voc2010/devkit_doc_08-May-2010.pdf), IoU must **exceed**
 the IoU threshold to be considered as a valid match.
 
-??? info "Psuedocode: Pascal VOC Matching"
+??? info "Pseudocode: Pascal VOC Matching"
 
 	1. Loop through all images in your dataset;
 	2. Loop through all labels;
@@ -203,10 +202,10 @@ This `iscrowd` flag is intended to avoid penalizing models for failing to detect
 ### Open Images Detection Challenge
 
 The [Open Images V7 Challenge](https://storage.googleapis.com/openimages/web/evaluation.html) evaluation introduces two
-key differences in the matching logic.
+key differences in the matching algorithm.
 
 The first is with the way that the images are annotated in this dataset. Images are annotated with **positive**
-**image-level** labels, indicating certain object classes are preset, and with **negative** **image-level** labels,
+**image-level** labels, indicating certain object classes are present, and with **negative** **image-level** labels,
 indicating certain classes are absent. Therefore, for fair evaluation, all
 unannotated classes are **excluded** from evaluation in that image, so if an inference has a class label that is
 unannotated on that image, this inference is excluded in the matching results.
@@ -250,8 +249,8 @@ Also, multiple correct inferences inside the same `group-of` box still count as 
 
 ## Limitations and Biases
 
-The standard matching logic appears to have an undesirable behavior when there are many overlapping ground truths and
-inferences with high confidence scores due to its **greedy matching**. Because the logic optimizes for higher confidence
+The standard matching algorithm appears to have an undesirable behavior when there are many overlapping ground truths and
+inferences with high confidence scores due to its **greedy matching**. Because it optimizes for higher confidence
 score and maximum IoU, it can potentially miss valid matches by matching a non-optimal pair, resulting in a poorer
 matching performance.
 
