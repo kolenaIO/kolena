@@ -89,8 +89,13 @@ class ObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
+        image_labels = {gt.label for gt in ground_truth.bboxes}
         tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
+        fp = [
+            inf
+            for inf in bbox_matches.unmatched_inf
+            if inf.label in image_labels and inf.score >= thresholds[inf.label]
+        ]
         fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
             gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
         ]
@@ -99,7 +104,7 @@ class ObjectDetectionEvaluator(Evaluator):
         ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
-        image_labels = {gt.label for gt in ground_truth.bboxes}
+
         fields = [
             ScoredClassificationLabel(label=label, score=thresholds[label])
             for label in thresholds.keys()
