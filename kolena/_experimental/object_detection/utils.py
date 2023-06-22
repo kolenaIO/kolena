@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import re
 from collections import defaultdict
 from typing import Dict
 from typing import List
@@ -398,14 +397,3 @@ def compute_average_precision(precisions: List[float], recalls: List[float]) -> 
     for i in recall_changed_indices:
         ap += (recalls[i] - recalls[i - 1]) * precisions[i]
     return ap
-
-
-def clean_threshold_key(label: str) -> str:
-    """
-    Cleans a string by replacing white space characters with an underscore, and prepends it with `threshold_`.
-
-    :param label: The threshold string to clean
-    :return: The label with white space replaced by underscores, prepended by `threshold_`.
-    """
-    sanitized = re.sub(r"\W+", "_", label)
-    return f"threshold_{sanitized}"

@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import defaultdict
-from dataclasses import make_dataclass
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -21,7 +20,6 @@ from typing import Tuple
 
 import numpy as np
 
-from kolena._experimental.object_detection.utils import clean_threshold_key
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
 from kolena._experimental.object_detection.utils import compute_f1_plot
@@ -43,8 +41,8 @@ from kolena._experimental.object_detection.workflow import ThresholdConfiguratio
 from kolena._experimental.object_detection.workflow import ThresholdStrategy
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
+from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.metrics import f1_score as compute_f1_score
-from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics import MulticlassInferenceMatches
 from kolena.workflow.metrics import precision as compute_precision
@@ -60,8 +58,7 @@ class ObjectDetectionEvaluator(Evaluator):
     configured to use an F1-Optimal threshold strategy, the evaluator requires that the first test case retrieved for
     a test suite contains the complete sample set.
 
-    For additional functionality, see the associated
-    [base class documentation][kolena.workflow.evaluator.Evaluator].
+    For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
     # Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
@@ -86,23 +83,30 @@ class ObjectDetectionEvaluator(Evaluator):
             [
                 inf
                 for inf in inference.bboxes
-                if inf.label in labels and inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
+                if inf.label in labels and inf.score >= configuration.min_confidence_score
             ],
             ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        tp = [inf for _, inf in bbox_matches.matched]
-        fp = bbox_matches.unmatched_inf
-        fn = [gt for gt, _ in bbox_matches.unmatched_gt]
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
+        fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
+            gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
+        ]
 
-        confused = [inf for _, inf in bbox_matches.unmatched_gt if inf is not None]
+        confused = [
+            inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]
+        ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
         image_labels = {gt.label for gt in ground_truth.bboxes}
-        fields = [(clean_threshold_key(label), float) for label in thresholds.keys() if label in image_labels]
-        dc = make_dataclass("ExtendedImageMetrics", bases=(TestSampleMetrics,), fields=fields, frozen=True)
-        return dc(
+        fields = [
+            ScoredClassificationLabel(label=label, score=thresholds[label])
+            for label in thresholds.keys()
+            if label in image_labels
+        ]
+        return TestSampleMetrics(
             TP=tp,
             FP=fp,
             FN=fn,
@@ -117,7 +121,7 @@ class ObjectDetectionEvaluator(Evaluator):
             has_Confused=len(confused) > 0,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            **{clean_threshold_key(label): value for label, value in thresholds.items() if label in image_labels},
+            thresholds=fields,
         )
 
     def compute_and_cache_f1_optimal_thresholds(
@@ -166,57 +170,59 @@ class ObjectDetectionEvaluator(Evaluator):
         label: str,
         thresholds: Dict[str, float],
     ) -> ClassMetricsPerTestCase:
-        inf_match_matched = []
-        inf_match_unmatched_gt = []
-        inf_match_unmatched_inf = []
+        match_matched = []
+        match_unmatched_gt = []
+        match_unmatched_inf = []
         confused_counter = 0
-        samples = 0
+        samples_with_label = 0
         # filter the matching to only consider one class
         for match in matchings:
-            has_tp = False
-            has_fn = False
-            has_fp = False
+            sample_flag = False
             for gt, inf in match.matched:
                 if gt.label == label:
-                    inf_match_matched.append((gt, inf))
-                    has_tp = True
+                    sample_flag = True
+                    match_matched.append((gt, inf))
             for gt, inf in match.unmatched_gt:
                 if gt.label == label:
-                    inf_match_unmatched_gt.append(gt)
-                    has_fn = True
-                    if inf is not None:
-                        confused_counter += 1
+                    sample_flag = True
+                    match_unmatched_gt.append((gt, inf))
             for inf in match.unmatched_inf:
                 if inf.label == label:
-                    inf_match_unmatched_inf.append(inf)
-                    has_fp = True
+                    sample_flag = True
+                    match_unmatched_inf.append(inf)
+            if sample_flag:
+                samples_with_label += 1
 
-            if has_tp or has_fn or has_fp:
-                samples += 1
-        tp_count = len(inf_match_matched)
-        fp_count = len(inf_match_unmatched_inf)
-        fn_count = len(inf_match_unmatched_gt)
-        precision = compute_precision(tp_count, fp_count)
-        recall = compute_recall(tp_count, fn_count)
-        f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-        all_bbox_matches = [
-            InferenceMatches(
-                matched=inf_match_matched,
-                unmatched_gt=inf_match_unmatched_gt,
-                unmatched_inf=inf_match_unmatched_inf,
+        all_bbox_matches_for_one_label = [
+            MulticlassInferenceMatches(
+                matched=match_matched,
+                unmatched_gt=match_unmatched_gt,
+                unmatched_inf=match_unmatched_inf,
             ),
         ]
 
+        tp = [inf for _, inf in match_matched if inf.score >= thresholds[inf.label]]
+        fp = [inf for inf in match_unmatched_inf if inf.score >= thresholds[inf.label]]
+        fn = [gt for gt, _ in match_unmatched_gt] + [
+            gt for gt, inf in match_matched if inf.score < thresholds[inf.label]
+        ]
+        tp_count = len(tp)
+        fp_count = len(fp)
+        fn_count = len(fn)
+        precision = compute_precision(tp_count, fp_count)
+        recall = compute_recall(tp_count, fn_count)
+        f1_score = compute_f1_score(tp_count, fp_count, fn_count)
+
         average_precision = 0.0
         if precision > 0:
-            baseline_pr_curve = compute_pr_curve(all_bbox_matches)
+            baseline_pr_curve = compute_pr_curve(all_bbox_matches_for_one_label)
             if baseline_pr_curve is not None:
                 average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
         return ClassMetricsPerTestCase(
             Class=label,
+            TestSamples=samples_with_label,
             Threshold=thresholds[label],
-            TestSamples=samples,
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
             TP=tp_count,
@@ -245,8 +251,7 @@ class ObjectDetectionEvaluator(Evaluator):
                 [
                     inf
                     for inf in inference.bboxes
-                    if inf.label in labels
-                    and inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
+                    if inf.label in labels and inf.score >= configuration.min_confidence_score
                 ],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
@@ -254,19 +259,6 @@ class ObjectDetectionEvaluator(Evaluator):
             )
             for _, ground_truth, inference in inferences
         ]
-        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
-        tp_count = sum(im.count_TP for im in metrics)
-        fp_count = sum(im.count_FP for im in metrics)
-        fn_count = sum(im.count_FN for im in metrics)
-        precision = compute_precision(tp_count, fp_count)
-        recall = compute_recall(tp_count, fn_count)
-        f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-
-        average_precision = 0.0
-        if precision > 0:
-            baseline_pr_curve = compute_pr_curve(all_bbox_matches)
-            if baseline_pr_curve is not None:
-                average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
         # compute nested metrics per class
         per_class_metrics: List[ClassMetricsPerTestCase] = []
@@ -274,18 +266,22 @@ class ObjectDetectionEvaluator(Evaluator):
             metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label, thresholds)
             per_class_metrics.append(metrics_per_class)
 
+        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
+        tp_count = sum(im.count_TP for im in metrics)
+        fp_count = sum(im.count_FP for im in metrics)
+        fn_count = sum(im.count_FN for im in metrics)
+
         return TestCaseMetrics(
-            TestSamples=len(inferences),
             PerClass=per_class_metrics,
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
-            Precision=precision,
-            Recall=recall,
-            F1=f1_score,
-            AP=average_precision,
+            macro_Precision=np.mean([class_metrics.Precision for class_metrics in per_class_metrics]),
+            macro_Recall=np.mean([class_metrics.Recall for class_metrics in per_class_metrics]),
+            macro_F1=np.mean([class_metrics.F1 for class_metrics in per_class_metrics]),
+            mean_AP=np.mean([class_metrics.AP for class_metrics in per_class_metrics]),
         )
 
     def compute_test_case_plots(
@@ -296,16 +292,15 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        thresholds = self.get_confidence_thresholds(configuration)
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
+        thresholds = self.get_confidence_thresholds(configuration)
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
                 [
                     inf
                     for inf in inference.bboxes
-                    if inf.label in labels
-                    and inf.score >= max(configuration.min_confidence_score, thresholds[inf.label])
+                    if inf.label in labels and inf.score >= configuration.min_confidence_score
                 ],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
@@ -314,16 +309,34 @@ class ObjectDetectionEvaluator(Evaluator):
             for _, ground_truth, inference in inferences
         ]
 
+        # clean matching for confusion matrix
+        match_matched = [
+            (gt, inf) for match in all_bbox_matches for gt, inf in match.matched if inf.score >= thresholds[inf.label]
+        ]
+        match_unmatched_gt = [
+            (gt, inf)
+            for match in all_bbox_matches
+            for gt, inf in match.unmatched_gt
+            if inf is not None and inf.score >= thresholds[inf.label]
+        ]
+        confusion_matrix_matchings = [
+            MulticlassInferenceMatches(
+                matched=match_matched,
+                unmatched_gt=match_unmatched_gt,
+                unmatched_inf=[],
+            ),
+        ]
+
         plots: Optional[List[Plot]] = []
         plots.extend(
             filter(
                 None,
                 [
-                    compute_f1_plot_multiclass(all_bbox_matches),
-                    compute_f1_plot(all_bbox_matches),
-                    compute_pr_plot_multiclass(all_bbox_matches),
                     compute_pr_plot(all_bbox_matches),
-                    compute_confusion_matrix_plot(all_bbox_matches),
+                    compute_f1_plot(all_bbox_matches),
+                    compute_f1_plot_multiclass(all_bbox_matches),
+                    compute_pr_plot_multiclass(all_bbox_matches),
+                    compute_confusion_matrix_plot(confusion_matrix_matchings),
                 ],
             ),
         )
@@ -339,8 +352,7 @@ class ObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         return TestSuiteMetrics(
             n_images=len({locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}),
-            mean_AP=np.average([tcm.AP for _, tcm in metrics]),
-            variance_AP=np.var([tcm.AP for _, tcm in metrics]),
+            mean_AP=np.average([tcm.mean_AP for _, tcm in metrics]),
         )
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:

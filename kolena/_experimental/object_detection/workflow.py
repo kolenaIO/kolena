@@ -28,6 +28,7 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
+from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 
@@ -39,7 +40,13 @@ class TestSample(Image):
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     bboxes: List[LabeledBoundingBox]
-    ignored_bboxes: List[LabeledBoundingBox]
+    ignored_bboxes: List[LabeledBoundingBox] = dataclasses.field(default_factory=list)
+    labels: List[str] = dataclasses.field(init=False, default_factory=list)
+    n_bboxes: int = dataclasses.field(init=False, default_factory=lambda: 0)
+
+    def __post_init__(self):
+        object.__setattr__(self, "labels", sorted({box.label for box in self.bboxes}))
+        object.__setattr__(self, "n_bboxes", len(self.bboxes))
 
 
 @dataclass(frozen=True)
@@ -74,13 +81,14 @@ class TestSampleMetrics(MetricsTestSample):
 
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
+    thresholds: List[ScoredClassificationLabel]
 
 
 @dataclass(frozen=True)
 class ClassMetricsPerTestCase(MetricsTestCase):
     Class: str
-    Threshold: float
     TestSamples: int
+    Threshold: float
     Objects: int
     Inferences: int
     TP: int
@@ -94,24 +102,22 @@ class ClassMetricsPerTestCase(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    TestSamples: int
     PerClass: List[ClassMetricsPerTestCase]
     Objects: int
     Inferences: int
     TP: int
     FN: int
     FP: int
-    Precision: float
-    Recall: float
-    F1: float
-    AP: float
+    macro_Precision: float
+    macro_Recall: float
+    macro_F1: float
+    mean_AP: float
 
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     mean_AP: float
-    variance_AP: float
 
 
 class ThresholdStrategy(str, Enum):
@@ -141,5 +147,5 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     def display_name(self) -> str:
         return (
             f"Threshold: {self.threshold_strategy.display_name()}, "
-            f"IOU: {self.iou_threshold}, confidence ≥ {self.min_confidence_score}"
+            f"IoU: {self.iou_threshold}, confidence ≥ {self.min_confidence_score}"
         )
