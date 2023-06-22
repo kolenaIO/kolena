@@ -100,12 +100,13 @@ on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) pag
 ### Statistical Significance
 
 When comparing models, Kolena highlights performance improvements and regressions that are likely to be statistically
-significant. These calculations take the number of samples into account. For nested metrics, certain fields like `N` in
-the above `PerClassMetrics` example are used as the population size for statistical significance calculations.
+significant. The number of samples being evaluated factors into these calculations.
 
-To ensure that highlighted improvements and regressions in these nested metrics are statistically significant, populate
-this field for each class reported. In the above example, `N` could be populated with the number of images containing
-a certain class (good) or with the number of instances of that class across all images in the test case (better).
+For nested metrics, certain fields like `N` in the above `PerClassMetrics` example are used as the population size for
+statistical significance calculations. To ensure that highlighted improvements and regressions in these nested metrics
+are statistically significant, populate this field for each class reported. In the above example, `N` can be populated
+with the number of images containing a certain class (good) or with the number of instances of that class across all
+images in the test case (better).
 
 For a full list of reserved field names for statistical significance calculations, see the API reference documentation
 for [`MetricsTestCase`][kolena.workflow.MetricsTestCase].
