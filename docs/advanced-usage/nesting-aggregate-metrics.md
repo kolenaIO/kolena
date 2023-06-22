@@ -92,13 +92,25 @@ Now we have the definitions to tell us everything we need to know about model pe
 `AggregateMetrics` describes overall performance across all classes within the test case, and `PerClassMetrics`
 describes performance for each of the given classes within the test case.
 
-### Naming a Record
+### Naming Nested Metrics
 
-...
+When defining nested metrics, e.g. `PerClassMetrics` above, it's important to identify each row by including at least
+one `str`-type column. This column, `Class` in the above example, is pinned to the left when displaying nested metrics
+on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) page.
 
 ### Statistical Significance
 
-...
+When comparing models, Kolena only highlights performance improvements and regressions that are likely to be
+statistically significant. These calculations take the number of samples into account. When reporting nested metrics,
+certain fields, such as `N` in the above `PerClassMetrics` example, are interpreted as population size and used for
+statistical significance calculations.
+
+To ensure that highlighted improvements and regressions in these nested metrics are statistically significant, populate
+this field for each class reported. In the above example, `N` could be populated with the number of images containing
+a certain class (good) or with the number of instances of that class across all images in the test case (better).
+
+For a full list of reserved field names for statistical significance calculations, see the API reference documentation
+for [`MetricsTestCase`][kolena.workflow.MetricsTestCase].
 
 ## Conclusion
 
