@@ -20,10 +20,8 @@ $$\text{IoU} \left( \text{A}, \text{B} \right) = \frac {\text{A} \cap \text{B}} 
 
 
 ## When Do I Use IoU?
-It is often used to compare two geometries (e.g.,
-[bounding boxes](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.BoundingBox),
-[polygons](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.Polygon)) or
-[segmentation masks](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask)
+It is often used to compare two geometries (e.g., [bounding boxes][kolena.workflow.annotation.BoundingBox],
+[polygons][kolena.workflow.annotation.Polygon] or [segmentation masks][kolena.workflow.annotation.SegmentationMask])
 in object detection, instance segmentation, or semantic segmentation workflows. In multi-label classification, IoU,
 more likely known as the [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index), is used to compare set of
 inference labels for a sample to the corresponding set of ground truth labels. Moreover, there are workflows such as
@@ -44,7 +42,8 @@ Because IoU can be used on various types of data, let's look at how the metric i
 Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, and notice the highlighted overlap region,
 which is always going to be a 2D axis-aligned bounding box.
 
-![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox.png)
+![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-light.svg#only-light)
+![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-dark.svg#only-dark)
 
 
 In order to compute IoU for two 2D bounding boxes, the first step is identifying the area of the intersection box,
@@ -85,7 +84,8 @@ The following examples show what IoU values look like in different scenarios wit
 
 **Example 1: overlapping bounding boxes**
 
-![An example of overlapping bounding boxes](../assets/images/metrics-iou-example1.png)
+![An example of overlapping bounding boxes](../assets/images/metrics-iou-example1-light.svg#only-light)
+![An example of overlapping bounding boxes](../assets/images/metrics-iou-example1-dark.svg#only-dark)
 
 $$
 \begin{align}
@@ -98,7 +98,8 @@ $$
 
 **Example 2: non-overlapping bounding boxes**
 
-![An example of non-overlapping bounding boxes](../assets/images/metrics-iou-example2.png)
+![An example of non-overlapping bounding boxes](../assets/images/metrics-iou-example2-light.svg#only-light)
+![An example of non-overlapping bounding boxes](../assets/images/metrics-iou-example2-dark.svg#only-dark)
 
 $$
 \begin{align}
@@ -112,7 +113,8 @@ $$
 
 **Example 3: completely matching bounding boxes**
 
-![An example of completely matching bounding boxes](../assets/images/metrics-iou-example3.png)
+![An example of completely matching bounding boxes](../assets/images/metrics-iou-example3-light.svg#only-light)
+![An example of completely matching bounding boxes](../assets/images/metrics-iou-example3-dark.svg#only-dark)
 
 $$
 \begin{align}
@@ -126,16 +128,15 @@ $$
 
 ### Segmentation Mask
 
-A [segmentation mask](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask)
-is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The inference shape
-matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be
-predicted. Each channel is a binary mask that labels areas where a specific class is present:
+A [segmentation mask][kolena.workflow.annotation.SegmentationMask] is a 2D image where each pixel is a class label
+commonly used in semantic segmentation tasks. The inference shape matches the ground truth shape (width and height),
+with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that
+labels areas where a specific class is present:
 
-![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.jpg)
-<p style="text-align: center; color: gray;">
-    From left to right: the original RGB image, the ground truth segmentation mask, and the inference segmentation mask
-</p>
-
+<figure markdown>
+  ![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.png)
+  <figcaption>From left to right: the original RGB image, the ground truth segmentation mask, and the inference segmentation mask</figcaption>
+</figure>
 
 The IoU metric measures the intersection (the number of pixels common between the ground truth and inference masks,
 **true positive (TP)**) divided by the union (the total number of pixels present across both masks,
@@ -147,11 +148,10 @@ $$
 
 Let’s look at what TP, FP, and FN look like on a segmentation mask:
 
-![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.jpg)
-<p style="text-align: center; color: gray;">
-    From left to right: the ground truth segmentation mask, the inference segmentation mask, and the overlay with TP,
-    FP, and FN labeled
-</p>
+<figure markdown>
+  ![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.png)
+  <figcaption>From left to right: the ground truth segmentation mask, the inference segmentation mask, and the overlay with TP, FP, and FN labeled</figcaption>
+</figure>
 
 From the cat image shown above, when you overlay the ground truth and inference masks, the pixels that belong to both
 masks are TP. The pixels that only exist in the ground truth mask are FNs, and the pixels that only exist in the
@@ -169,7 +169,7 @@ Then the IoU becomes:
 
 $$
 \begin{align}
-\text{IoU} &= \frac {100} {(100 + 25 + 75)} \\[1em]
+\text{IoU} &= \frac {100} {100 + 25 + 75} \\[1em]
 &= 0.5
 \end{align}
 $$
