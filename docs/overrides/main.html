@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block htmltitle %}
+<title>{{ page.title | striptags }} · {{ config.site_name }}</title>
+{% endblock %}
+
 {% block extrahead %}
 {{ super() }}
 <script>
@@ -14,7 +18,7 @@
       applicationId: '32c8b59a-335b-4a60-8320-52cf94822079',
       site: 'datadoghq.com',
       service: 'docs.kolena.io',
-      env: window.location.hostname,
+      env: window.location.hostname === 'docs.kolena.io' ? 'production' : 'development',
       sessionSampleRate: 100,
       sessionReplaySampleRate: 100,
       trackUserInteractions: true,
