@@ -102,6 +102,9 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
     When comparing nested metrics from multiple models, an `int`-type column with any of the following names will be
     used for sample size in statistical significance calculations: `N`, `n`, `nTestSamples`, `n_test_samples`,
     `sampleSize`, `sample_size`, `SampleSize`.
+
+    For a detailed overview of this feature, see the [:kolena-nest-16: Nesting Aggregate
+    Metrics](../../advanced-usage/nesting-aggregate-metrics.md) advanced usage guide.
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:

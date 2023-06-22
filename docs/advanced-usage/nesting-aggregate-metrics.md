@@ -8,19 +8,13 @@ When computing [test case metrics][kolena.workflow.MetricsTestCase] in an
 [evaluator](../reference/workflow/evaluator.md), in some cases it is desirable to compute multiple sets of aggregate
 metrics within a given test case. Here are a few examples of scenarios where this pattern might be warranted:
 
-- **Multiclass workflows**: for ML tasks with multiple classes, a given test case may contain samples from
-  more than one class. While it's useful to report metrics aggregated across all classes using an
-  [averaging method](../metrics/averaging-methods.md), it's also useful to see aggregate metrics computed for each of
-  the classes.
-- **Ensembles of models**: when testing an ensemble containing multiple models, it can be useful
-  to see metrics from the output of the complete ensemble as well as metrics computed for each of the
-  constituent models.
-- **Model pipelines**: when testing a pipeline of models, where one model's output is used as an input for the next
-  model, it can be difficult to understand _where_ along the pipeline performance broke down. Reporting overall metrics
-  as well as per-model metrics for each model in the pipeline (the metrics used can differ from one model to the next!)
-  can help pinpoint the cause of failures within a pipeline.
+| Use Case | Description |
+| --- | --- |
+| Multiclass workflows | For ML tasks with multiple classes, a given test case may contain samples from more than one class. While it's useful to report metrics aggregated across all classes using an [averaging method](../metrics/averaging-methods.md), it's also useful to see aggregate metrics computed for each of the classes. |
+| Ensembles of models | When testing an ensemble containing multiple models, it can be useful to see metrics from the output of the complete ensemble as well as metrics computed for each of the constituent models. |
+| Model pipelines | When testing a pipeline of models, in which one model's output is used as an input for the next model, it can be difficult to understand _where_ along the pipeline performance broke down. Reporting overall metrics as well as per-model metrics for each model in the pipeline (the metrics used can differ from one model to the next!) can help pinpoint the cause of failures within a pipeline. |
 
-In these cases, it is possible to nest additional aggregate metrics records within a
+In these cases, Kolena provides the API to nest additional aggregate metrics records within a
 [`MetricsTestCase`][kolena.workflow.MetricsTestCase] object returned from an evaluator. In this tutorial, we'll learn
 how to use this API to report class-level or other nested aggregate metrics within a test case.
 
@@ -31,15 +25,15 @@ When a test case contains images with each of these three classes, test-case-lev
 [micro](../metrics/averaging-methods.md#micro-average), [macro](../metrics/averaging-methods.md#macro-average), or
 [weighted](../metrics/averaging-methods.md#weighted-average)) of class-level metrics across each of these three classes.
 
-Using [macro-averaged](../metrics/averaging-methods.md#macro-average) precision, recall, and F1 score, and mean average
-precision score (mAP) across all images in the test case.
+For this workflow, we may consider using [macro-averaged](../metrics/averaging-methods.md#macro-average) precision,
+recall, and F1 score, and mean average precision score (mAP) across all images as our metrics:
 
 | Test Case | # Images | <nobr>`macro_Precision`</nobr> | <nobr>`macro_Recall`</nobr> | <nobr>`macro_F1`</nobr> | <nobr>`mAP`</nobr> |
 | --- | --- | --- | --- | --- | --- |
 | Scenario A | 2,500 | 0.91 | 0.99 | 0.95 | 0.97 |
 | Scenario B | 1,500 | 0.83 | 0.96 | 0.89 | 0.91 |
 
-These metrics would be defined:
+At the API level, these metrics would be defined:
 
 ```python
 from dataclasses import dataclass
@@ -106,9 +100,8 @@ on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) pag
 ### Statistical Significance
 
 When comparing models, Kolena highlights performance improvements and regressions that are likely to be statistically
-significant. These calculations take the number of samples into account. When reporting nested metrics,
-certain fields, such as `N` in the above `PerClassMetrics` example, are interpreted as population size and used for
-statistical significance calculations.
+significant. These calculations take the number of samples into account. For nested metrics, certain fields like `N` in
+the above `PerClassMetrics` example are used as the population size for statistical significance calculations.
 
 To ensure that highlighted improvements and regressions in these nested metrics are statistically significant, populate
 this field for each class reported. In the above example, `N` could be populated with the number of images containing
