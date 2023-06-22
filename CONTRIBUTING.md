@@ -4,6 +4,7 @@
 
 The documentation for `kolena`, hosted at [docs.kolena.io](https://docs.kolena.io/), is built out of this repo using
 [MkDocs](https://www.mkdocs.org/).
+Building the documentation locally requires installing the poetry dependencies for `kolena` and [OS-level dependencies for `MkDocs`](https://squidfunk.github.io/mkdocs-material/setup/dependencies/image-processing/).
 
 To run the documentation server locally, run:
 
