@@ -1,8 +1,8 @@
 ---
-icon: kolena/nest-16
+icon: kolena/diagram-tree-16
 ---
 
-# :kolena-nest-20: Nesting Aggregate Metrics
+# :kolena-diagram-tree-20: Nesting Aggregate Metrics
 
 When computing [test case metrics][kolena.workflow.MetricsTestCase] in an
 [evaluator](../reference/workflow/evaluator.md), in some cases it is desirable to compute multiple sets of aggregate
