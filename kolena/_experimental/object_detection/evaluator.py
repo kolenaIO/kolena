@@ -221,7 +221,7 @@ class ObjectDetectionEvaluator(Evaluator):
 
         return ClassMetricsPerTestCase(
             Class=label,
-            TestSamples=samples_with_label,
+            n_test_samples=samples_with_label,
             Threshold=thresholds[label],
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
