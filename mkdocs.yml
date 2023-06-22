@@ -52,7 +52,7 @@ nav:
   # - Metrics Glossary:
   #     - Metrics Glossary: metrics/index.md
   #     - Averaging Methods: metrics/averaging-methods.md
-  #     - Geometry Matcher: metrics/geometry-matcher.md
+  #     - Geometry Matching: metrics/geometry-matching.md
   #     - Intersection over Union (IoU): metrics/iou.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md

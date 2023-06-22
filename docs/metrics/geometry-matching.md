@@ -3,17 +3,25 @@ search:
   exclude: true
 ---
 
-# Geometry Matcher
+# Geometry Matching
 
-Geometry matcher finds the best possible match, given the sets of the ground truth and prediction polygons for each
-image. The geometry matcher utility is a building block for any object detection metrics, such as precision, recall,
-and average precision. In this guide, we will focus on 2D object detection workflow, specifically 2D bounding box
-matching.
+Geometry matching is the process of finding the best possible inference for a given ground truth. It is a building
+block for downstream metrics like precision and recall in any geometry-based workflow, such as 2D and 3D object
+detection and instance segmentation.
 
-The criteria for a valid match is as follows:
+While it may sound simple, geometry matching is surprisingly challenging and full of edge cases! In this guide, we'll
+focus on 2D object detection—specifically 2D bounding box matching—to learn about geometry matching algorithms.
 
-1. The prediction label matches the ground truth label.
-2. The prediction polygon has more than or equal to a certain overlap (i.e. IoU threshold) with the ground truth polygon.
+<div class="grid cards" markdown>
+- :kolena-manual-16: API Reference: [`match_inferences`][kolena.workflow.metrics.match_inferences], [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass] ↗
+</div>
+
+## Algorithm Overview
+
+In a geometry matching algorithm, the following criteria must be met for a valid match:
+
+1. The [IoU](./iou.md) between the inference and ground truth must be greater than or equal to a threshold
+2. For multiclass workflows, inference label must match the ground truth label
 
 Here is the general matching logic:
 
