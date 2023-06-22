@@ -171,3 +171,6 @@ extra:
     - icon: kolena/logo
       link: https://app.kolena.io
       name: Kolena Platform
+  dd_rum:
+    client_token: !ENV [DD_RUM_CLIENT_TOKEN, blank]
+    application_id: !ENV [DD_RUM_APPLICATION_ID, blank]
