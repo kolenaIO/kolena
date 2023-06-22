@@ -149,8 +149,8 @@ $$
 Let’s look at what TP, FP, and FN look like on a segmentation mask:
 
 <figure markdown>
-![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.png)
-<figcaption>From left to right: the ground truth segmentation mask, the inference segmentation mask, and the overlay with TP, FP, and FN labeled</figcaption>
+  ![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.png)
+  <figcaption>From left to right: the ground truth segmentation mask, the inference segmentation mask, and the overlay with TP, FP, and FN labeled</figcaption>
 </figure>
 
 From the cat image shown above, when you overlay the ground truth and inference masks, the pixels that belong to both
