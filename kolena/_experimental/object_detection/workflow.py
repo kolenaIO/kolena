@@ -41,8 +41,8 @@ class TestSample(Image):
 class GroundTruth(BaseGroundTruth):
     bboxes: List[LabeledBoundingBox]
     ignored_bboxes: List[LabeledBoundingBox] = dataclasses.field(default_factory=list)
-    labels: List[str] = dataclasses.field(init=False, default_factory=list)
-    n_bboxes: int = dataclasses.field(init=False, default_factory=lambda: 0)
+    labels: List[str] = dataclasses.field(default_factory=list)
+    n_bboxes: int = dataclasses.field(default_factory=lambda: 0)
 
     def __post_init__(self):
         object.__setattr__(self, "labels", sorted({box.label for box in self.bboxes}))
@@ -87,7 +87,7 @@ class TestSampleMetrics(MetricsTestSample):
 @dataclass(frozen=True)
 class ClassMetricsPerTestCase(MetricsTestCase):
     Class: str
-    n_test_samples: int
+    nImages: int
     Threshold: float
     Objects: int
     Inferences: int

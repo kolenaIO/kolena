@@ -94,7 +94,6 @@ class ObjectDetectionEvaluator(Evaluator):
         fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
             gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
         ]
-
         confused = [
             inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]
         ]
@@ -134,15 +133,11 @@ class ObjectDetectionEvaluator(Evaluator):
 
         if configuration.display_name() in self.threshold_cache.keys():
             return
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
+
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
-                [
-                    inf
-                    for inf in inference.bboxes
-                    if inf.label in labels and inf.score >= configuration.min_confidence_score
-                ],
+                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
@@ -173,7 +168,6 @@ class ObjectDetectionEvaluator(Evaluator):
         match_matched = []
         match_unmatched_gt = []
         match_unmatched_inf = []
-        confused_counter = 0
         samples_with_label = 0
         # filter the matching to only consider one class
         for match in matchings:
@@ -206,9 +200,11 @@ class ObjectDetectionEvaluator(Evaluator):
         fn = [gt for gt, _ in match_unmatched_gt] + [
             gt for gt, inf in match_matched if inf.score < thresholds[inf.label]
         ]
+        confused = [inf for _, inf in match_unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]]
         tp_count = len(tp)
         fp_count = len(fp)
         fn_count = len(fn)
+        confused_count = len(confused)
         precision = compute_precision(tp_count, fp_count)
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
@@ -221,14 +217,14 @@ class ObjectDetectionEvaluator(Evaluator):
 
         return ClassMetricsPerTestCase(
             Class=label,
-            n_test_samples=samples_with_label,
+            nImages=samples_with_label,
             Threshold=thresholds[label],
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
-            Confused=confused_counter,
+            Confused=confused_count,
             Precision=precision,
             Recall=recall,
             F1=f1_score,
