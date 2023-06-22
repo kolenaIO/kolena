@@ -5,9 +5,9 @@ search:
 
 # Geometry Matching
 
-Geometry matching is the process of finding the best possible inference for a given ground truth. It is a building
-block for downstream metrics like precision and recall in any geometry-based workflow, such as 2D and 3D object
-detection and instance segmentation.
+Geometry matching is the process of matching inferences to ground truths for geometry-based workflows such as 2D and 3D
+object detection and instance segmentation. It is a building block for metrics like true positive/false positive/false
+negative counts and any metrics derived from these, such as precision and recall.
 
 While it may sound simple, geometry matching is surprisingly challenging and full of edge cases! In this guide, we'll
 focus on 2D object detection—specifically 2D bounding box matching—to learn about geometry matching algorithms.
@@ -23,118 +23,121 @@ In a geometry matching algorithm, the following criteria must be met for a valid
 1. The [IoU](./iou.md) between the inference and ground truth must be greater than or equal to a threshold
 2. For multiclass workflows, inference label must match the ground truth label
 
-Here is the general matching logic:
+??? info "Pseudocode: Geometry Matching"
 
-1. Loop through all images in your dataset;
-2. Loop through all labels;
-3. Get predictions and ground truths with the evaluating label;
-4. Sort predictions by descending confidence score;
-5. Check against all ground truths and find a ground truth that results in maximum IoU;
-6. Check for the following criteria for a valid match:
-	1. This ground truth is not matched yet AND
-	2. The IoU is greater than or equal to the IoU threshold;
-7. Repeat 5-6 on the next prediction;
+	Here is the general matching logic:
+
+	1. Loop through all images in your dataset;
+	2. Loop through all labels;
+	3. Get inferences and ground truths with the current label;
+	4. Sort inferences by descending confidence score;
+	5. Check against all ground truths and find a ground truth that results in maximum IoU;
+	6. Check for the following criteria for a valid match:
+		1. This ground truth is not matched yet AND
+		2. The IoU is greater than or equal to the IoU threshold;
+	7. Repeat 5-6 on the next inference;
 
 
-## Examples: 2D Bounding Boxes Matching
+## Examples: Matching 2D Bounding Boxes
 
-Let's apply the logic above to the following examples of 2D object detection sample. Bounding boxes in the images below
-are using the following colors based on their type and the matching result:
+Let's apply the logic above to the following examples of 2D object detection. Bounding boxes (see:
+[`BoundingBox`][kolena.workflow.annotation.BoundingBox]) in the diagrams below use the following colors based on their
+type and the matching result:
 
 ![example legends](../assets/images/metrics-matcher-legends.png)
 
 ### Example 1
 
-Here is an example of two ground truth and two prediction bounding boxes with a same label where
-(A, a) pair has a great overlap, IoU of 0.9, and the other pair (B, b) has a
-poor overlap, IoU of 0.13. Let's find out what the matched results look like in this example with a
-IoU threshold of 0.5.
+This example contains to ground truth and two inference bounding boxes, each with the same label.
+The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap
+(IoU of 0.13). Let's find out what the matched results look like in this example with a IoU threshold of 0.5:
 
 ![example 1](../assets/images/metrics-matcher-example1.png)
 
-Because prediction a has a higher confidence score than prediction b, it gets matched first. It is
-pretty clear that ground truth A scores the maximum IoU with prediction a, and IoU is greater than
-IoU threshold, so a is **matched** with A.
+Because inference $\text{a}$ has a higher confidence score than inference $\text{b}$, it gets matched first. It is
+pretty clear that ground truth $\text{A}$ scores the highest IoU with inference $\text{a}$, and IoU is greater than
+IoU threshold, so $\text{a}$ and $\text{A}$ are **matched**.
 
-Next, prediction b gets compared against all ground truth bounding boxes. Once again, it is clear that ground
-truth B scores the maximum IoU with prediction b but this time IoU is less than the IoU threshold,
-so b becomes an **unmatched prediction**.
+Next, inference $\text{b}$ gets compared against all ground truth bounding boxes. Once again, it is clear that ground
+truth $\text{B}$ scores the maximum IoU with inference $\text{b}$, but this time IoU is less than the IoU threshold,
+so $\text{b}$ becomes an **unmatched inference**.
 
-Now that we have checked all predictions, any ground truth bounding boxes that are not matched yet are marked as
-unmatched. In this case, ground truth B is the only **unmatched ground truth**.
+Now that we have checked all inferences, any ground truth bounding boxes that are not matched yet are marked as
+unmatched. In this case, ground truth $\text{B}$ is the only **unmatched ground truth**.
 
 <center>
 
-| Bounding Box(es) | Match / Unmatch |
+| Bounding Box(es) | Match Type |
 | --- | --- |
-| (A, a) | Matched Pair |
-| B | Unmatched GT |
-| b | Unmatched Prediction |
+| $(\text{A}, \text{a})$ | Matched Pair |
+| $\text{B}$ | Unmatched Ground Truth |
+| $\text{b}$ | Unmatched Inference |
 
 </center>
 
 ### Example 2
 
-Let's take a look at another example with multiple classes (`Apple` and `Banana`) this time.
+Let's take a look at another example with multiple classes: `Apple` and `Banana`.
 
 ![example 2](../assets/images/metrics-matcher-example2.png)
 
-Each class is evaluated independently. Starting with `Apple`, there is one ground truth A and one prediction
-a, but these two do not overlap at all, IoU of 0.0. Because IoU is less than the IoU threshold, there is **no match**
-for class `Apple`.
+Each class is evaluated independently. Starting with `Apple`, there is one ground truth $\text{A}$ and one inference
+$\text{a}$, but these two do not overlap at all (IoU of 0.0). Because IoU is less than the IoU threshold, there is **no
+match** for class `Apple`.
 
-For class `Banana`, there is only one prediction and no ground truth. Therefore, there is also **no match** for class
+For class `Banana`, there is only one inference and no ground truths. Therefore, there is also **no match** for class
 `Banana`.
 
 <center>
 
-| Bounding Box(es) | Match / Unmatch |
+| Bounding Box(es) | Match Type |
 | --- | --- |
-| A | Unmatched GT |
-| a | Unmatched Prediction |
-| b | Unmatched Prediction |
+| $\text{A}$ | Unmatched Ground Truth |
+| $\text{a}$ | Unmatched Inference |
+| $\text{b}$ | Unmatched Inference |
 
 </center>
 
 ### Example 3
 
-Here is another example with multiple predictions overlapping with a same ground truth.
+Here is another example with multiple inferences overlapping with the same ground truth.
 
 ![example 3](../assets/images/metrics-matcher-example3.png)
 
-Among the two predictions a and b, b has a higher confidence score, so b gets to be matched first. IoU between
-ground truth A and b is greater than the IoU threshold, so they become a **match**.
+Among the two inferences $\text{a}$ and $\text{b}$, $\text{b}$ has a higher confidence score, so $\text{b}$ gets matched
+first. IoU between ground truth $\text{A}$ and $\text{b}$ is greater than the IoU threshold, so they become a **match**.
 
-Prediction a is compared with ground truth A, but even though IoU is greater than the IoU threshold, they cannot become
-a match because A is already matched with b, so prediction a remains **unmatched**.
+Inference $\text{a}$ is compared with ground truth $\text{A}$, but even though IoU is greater than the IoU threshold,
+they cannot become a match because $\text{A}$ is already matched with $\text{b}$, so inference $\text{a}$ remains
+**unmatched**.
 
 <center>
 
-| Bounding Box(es) | Match / Unmatch |
+| Bounding Box(es) | Match Type |
 | --- | --- |
-| (A, b) | Matched Pair |
-| a | Unmatched Prediction |
+| $(\text{A}, \text{b})$ | Matched Pair |
+| $\text{a}$ | Unmatched Inference |
 
 </center>
 
 ### Example 4
 
-Let's consider another scenario where there are multiple ground truths overlapping with a same prediction.
+Let's consider another scenario where there are multiple ground truths overlapping with the same inference.
 
 ![example 4](../assets/images/metrics-matcher-example4.png)
 
-Prediction a has a higher IoU with ground truth B, so a and B become matched.
+Inference $\text{a}$ has a higher IoU with ground truth $\text{B}$, so $\text{a}$ and $\text{B}$ become matched.
 
 <center>
 
-| Bounding Box(es) | Match / Unmatch |
+| Bounding Box(es) | Match Type |
 | --- | --- |
-| (B, a) | Matched Pair |
-| A | Unmatched GT |
+| $(\text{B}, \text{a})$ | Matched Pair |
+| $\text{A}$ | Unmatched Ground Truth |
 
 </center>
 
-## Comparison of Different Matching Logic From Popular Benchmarks
+## Comparison of Matching Algorithms from Popular Benchmarks
 
 For object detection workflow, matching predictions to ground truths is a foundation to compute detection metrics
 such as precision, recall, and average precision. The matching logic we have covered above is a base for popular object
@@ -274,10 +277,3 @@ Another behavior to note here is that it is possible to get different matching r
 	matched with any ground truth. The matched result can change depending on the ground truth order. If A is evaluated
 	before B, prediction b is matched with A, and a can be matched with B. However, if B comes before A, prediction b
 	is matched with B instead, leaving prediction a with no match.
-
-
-## Kolena API
-
-[`kolena.workflow.metrics.match_inferences`](https://docs.kolena.io/reference/workflow/metrics/#kolena.workflow.metrics.match_inferences)
-
-[`kolena.workflow.metrics.match_inferences_multiclass`](https://docs.kolena.io/reference/workflow/metrics/#kolena.workflow.metrics.match_inferences_multiclass)
