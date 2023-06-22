@@ -55,6 +55,9 @@ jobs:
           git config user.email 'bot@kolena.io'
           ./docs/setup_insiders.sh
           poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
+        env:
+          DD_RUM_CLIENT_TOKEN: ${{ secrets.DD_RUM_CLIENT_TOKEN }}
+          DD_RUM_APPLICATION_ID: ${{ secrets.DD_RUM_APPLICATION_ID }}
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

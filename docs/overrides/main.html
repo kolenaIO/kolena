@@ -14,8 +14,8 @@
   })(window,document,'script','https://www.datadoghq-browser-agent.com/us1/v4/datadog-rum.js','DD_RUM')
   window.DD_RUM.onReady(function() {
     window.DD_RUM.init({
-      clientToken: 'pub77d1be21718df74d03f852860d7f6b7f',
-      applicationId: '32c8b59a-335b-4a60-8320-52cf94822079',
+      clientToken: '{{ config.extra.dd_rum.client_token }}',
+      applicationId: '{{ config.extra.dd_rum.application_id }}',
       site: 'datadoghq.com',
       service: 'docs.kolena.io',
       env: window.location.hostname === 'docs.kolena.io' ? 'production' : 'development',
