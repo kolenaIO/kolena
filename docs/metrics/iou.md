@@ -169,7 +169,7 @@ Then the IoU becomes:
 
 $$
 \begin{align}
-\text{IoU} &= \frac {100} {(100 + 25 + 75)} \\[1em]
+\text{IoU} &= \frac {100} {100 + 25 + 75} \\[1em]
 &= 0.5
 \end{align}
 $$
