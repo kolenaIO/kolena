@@ -115,25 +115,25 @@ is assigned to one group, and the definitions of the terms are slightly altered:
 
 | Metric | | Description |
 | --- | --- | --- |
-| True Positive | TP | Inference matched with a ground truth |
-| False Positive | FP | Inference that is not matched with a ground truth |
-| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference |
+| True Positive | TP | Inference that is matched with a ground truth and has a confidence score $\geq$ threshold |
+| False Positive | FP | Inference that is not matched with a ground truth and has a confidence score $\geq$ threshold |
+| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference or that is matched with an inference that has a confidence score $<$ threshold |
 | True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><p>In object detection tasks, a true negative is any non-object that isn't detected as an object. This isn't well defined and as such true negative isn't a commonly used metric in object detection.</p><div>Occasionally, for object detection tasks "true negative" is used to refer to any image that does not have any true positive or false positive inferences.</div> |
 
-In an object detection task, checking for detection correctness requires a couple of other metrics (e.g., Intersection
-over Union (IoU) and Geometry Matching).
+In an object detection task, checking for detection correctness requires a couple of other metrics (e.g., [Intersection
+over Union (IoU)](./iou.md) and [Geometry Matching](./geometry-matching.md)).
 
 #### Single-class
 
-Let’s assume that a matching algorithm has already been run on all predictions and that the matched pairs and unmatched
+Let’s assume that a [matching algorithm](./geometry-matching.md) has already been run on all predictions and that the matched pairs and unmatched
 ground truths and predictions are given. Consider the following variables, adapted from
 [`match_inferences`][kolena.workflow.metrics.match_inferences]:
 
 | Variable | Type | Description |
 | --- | --- | --- |
-| `matched` | <nobr>`List[Tuple[GT, Inf]]`</nobr> | List of **matched** ground truth and prediction bounding box **pairs** (from Geometry Matcher) |
-| `unmatched_gt` | `List[GT]` | List of **unmatched** ground truth bounding boxes (from Geometry Matcher) |
-| <nobr>`unmatched_inf`</nobr> | `List[Inf]` | List of **unmatched** inference bounding boxes (from Geometry Matcher) |
+| `matched` | <nobr>`List[Tuple[GT, Inf]]`</nobr> | List of **matched** ground truth and prediction bounding box **pairs** |
+| `unmatched_gt` | `List[GT]` | List of **unmatched** ground truth bounding boxes |
+| <nobr>`unmatched_inf`</nobr> | `List[Inf]` | List of **unmatched** inference bounding boxes |
 | `T` | `float` | Threshold used to filter valid prediction bounding boxes based on their confidence scores |
 
 Then these metrics are defined:
