@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # TP / FP / FN / TN
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)
@@ -183,7 +188,7 @@ Read more about these different averaging methods in the [Averaging Methods guid
 
 TP, FP, TN, and FN are four metrics based on the assumption that each sample/instance can be classified as a positive
 or a negative, thus they can only be applied to single-class applications. The workaround for multiple-class
-applications is to compute these metrics for each label using the **one-versus-rest** (OvR) strategy and then treat it
+applications is to compute these metrics for each label using the **one-vs-rest** (OvR) strategy and then treat it
 as a single-class problem.
 
 Additionally, these four metrics don't take model confidence score into account. All inferences above the confidence
