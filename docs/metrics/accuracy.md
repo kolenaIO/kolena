@@ -5,56 +5,102 @@ search:
 
 # Accuracy
 
-Because it is simple to understand and easy to implement, accuracy is one of the most well-known metrics in machine learning model evaluation. It works by measuring how often a model correctly predicts something (ranging from 0 to 1, with 1 being a perfect prediction), and it serves as a ratio of the number of correct predictions to the total number of predictions, making it a good metric for assessing model performance in simple cases with balanced data. That said, it runs into some issues if the data is unbalanced.
+Accuracy is one of the most well-known metrics in machine learning model evaluation because it is simple to understand
+and straightforward to calculate.
 
+Accuracy measures how often a model correctly predicts something (ranging from 0 to 1, with 1 being perfect
+predictions). It reports the ratio of the number of correct predictions to the total number of predictions,
+making it a good metric for assessing model performance in simple cases with balanced data. However, accuracy is much
+less meaningful with unbalanced datasets (e.g. far more negative samples than positive samples) and should be used with
+caution.
 
 ## Implementation Details
-Accuracy is generally used to train or evaluate classification models. Aside from classification, it has also been used to evaluate semantic segmentation models by measuring the percent of correctly classified pixels in an image.
 
-In a classification task, accuracy is simply a ratio of the number of correct predictions to the total number of predictions.
+Accuracy is generally used to evaluate classification models. Aside from classification, accuracy is also often
+used to evaluate semantic segmentation models by measuring the percent of correctly classified pixels in an image.
 
-Consider the following notation, where
+In a classification task, accuracy is the ratio of the number of correct predictions to the total number of predictions.
 
-- $y_{true}$ is the list of ground truths
-- $y_{pred}$ is the list of predictions
-
-The metric is then defined as
+With [TP / FP / FN / TN counts](./tp-fp-fn-tn.md) computed, accuracy is defined:
 
 $$
-accuracy(y_{true}, y_{pred}) =  \frac {TP + TN} {TP + TN + FP + FN}
+\text{Accuracy} =  \frac {\text{TP} + \text{TN}} {\text{TP} + \text{FP} + \text{FN} + \text{TN}}
 $$
 
-Read this [guide](./tp-fp-fn-tn.md) if you are not familiar with TP, FP, FN and TN.
+### Examples
 
-Here are some examples of what accuracy looks like in different scenarios of classification tasks:
+Perfect predictions across 20 samples:
 
-**Example of perfect predictions**
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 10 |
+| FP | 0 |
+| FN | 0 |
+| TN | 10 |
 
-```python
->>> y_true = [0, 0, 0, 1, 1, 1]
->>> y_pred = [0, 0, 0, 1, 1, 1]
->>> print(f"accuracy: {accuracy(y_true, y_pred)}")
-accuracy: 1.0
-```
+$$
+\begin{align}
+\text{Accuracy} &= \frac{10 + 10}{10 + 0 + 0 + 10} \\[1em]
+&= 1.0
+\end{align}
+$$
+</div>
 
-**Example of some incorrect predictions**
+Partially correct predictions across 20 samples:
 
-```python
->>> y_true = [0, 1, 2, 3]
->>> y_pred = [0, 2, 1, 3]
->>> print(f"accuracy: {accuracy(y_true, y_pred)}")
-accuracy: 0.5
-```
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 8 |
+| FP | 4 |
+| FN | 2 |
+| TN | 6 |
 
-**Example of imbalanced data**
+$$
+\begin{align}
+\text{Accuracy} &= \frac{8 + 6}{8 + 4 + 2 + 6} \\[1em]
+&= 0.7
+\end{align}
+$$
+</div>
 
-```python
->>> y_true = [0, 0, 0, 0, 0, 0, 1, 1]
->>> y_pred = [0, 0, 0, 0, 0, 0, 0, 0]
->>> print(f"accuracy: {accuracy(y_true, y_pred)}")
-accuracy: 0.75
-```
+Highly imbalanced data, with 99 negative samples and 10 positive samples, with _no_ positive predictions:
+
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 0 |
+| FP | 0 |
+| FN | 10 |
+| TN | 990 |
+
+$$
+\begin{align}
+\text{Accuracy} &= \frac{0 + 990}{0 + 0 + 10 + 990} \\[1em]
+&= 0.99
+\end{align}
+$$
+</div>
+
+!!! warning "Be careful with imbalanced datasets!"
+
+    This example describes a trivial model that only ever returns negative predictions, yet it has the high accuracy
+    score of 99%!
 
 ## Limitations and Biases
 
-While accuracy generally describes a classifier’s performance (in most scenarios), it is important to note that the metric can be deceptive, especially when [the data is imbalanced](https://stephenallwright.com/imbalanced-data/). For example, let’s say there are a total of 500 samples, with 450 belonging to the positive class and 50 to the negative. If the model correctly predicts all the positive samples but misses all the negative ones, its accuracy is `450 / 500 = 0.9`.  But is the model truly 90% accurate when it fails to classify the negative samples 100% of the time? Using the accuracy metric alone can hide a model’s true performance, so we recommend other metrics that are better suited for imbalanced data: [balanced accuracy](https://stephenallwright.com/balanced-accuracy/), [precision](./precision.md), [recall](./recall.md), f-score, etc.
+While accuracy generally describes a classifier’s performance, it is important to note that the metric can be deceptive,
+especially when [the data is imbalanced](https://stephenallwright.com/imbalanced-data/).
+
+For example, let’s say there
+are a total of 500 samples, with 450 belonging to the positive class and 50 to the negative. If the model correctly
+predicts all the positive samples but misses all the negative ones, its accuracy is `450 / 500 = 0.9`. An accuracy score
+of 90% indicates a pretty good model — but is a model that fails 100% of the time on negative samples useful? Using the
+accuracy metric alone can hide a model’s true performance, so we recommend other metrics that are better suited for
+imbalanced data, such as:
+
+- [Balanced accuracy](https://stephenallwright.com/balanced-accuracy/)
+- Precision
+- Recall
+- F1 score
