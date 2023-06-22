@@ -6,13 +6,17 @@ search:
 
 # Intersection over Union (IoU)
 
-Intersection over Union (IoU) measures the ratio of the intersection and the union between ground truth and prediction,
-ranging from 0 to 1 where 1 indicates a perfect match.  The objective of this metric is to compare predictions to
+Intersection over Union (IoU) measures the ratio of the intersection and the union between ground truth and inference,
+ranging from 0 to 1 where 1 indicates a perfect match.  The objective of this metric is to compare inferences to
 ground truths by measuring similarity between them.
 
 As the name suggests, the IoU of two instances ($\text{A}$ and $\text{B}$) is defined as:
 
 $$\text{IoU} \left( \text{A}, \text{B} \right) = \frac {\text{A} \cap \text{B}} {\text{A} \cup \text{B}}$$
+
+<div class="grid cards" markdown>
+- :kolena-manual-16: API Reference: [`iou`][kolena.workflow.metrics.iou] ↗
+</div>
 
 
 ## When Do I Use IoU?
@@ -22,7 +26,7 @@ It is often used to compare two geometries (e.g.,
 [segmentation masks](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask)
 in object detection, instance segmentation, or semantic segmentation workflows. In multi-label classification, IoU,
 more likely known as the [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index), is used to compare set of
-prediction labels for a sample to the corresponding set of ground truth labels. Moreover, there are workflows such as
+inference labels for a sample to the corresponding set of ground truth labels. Moreover, there are workflows such as
 [action detection](https://paperswithcode.com/task/action-detection) and
 [video moment retrieval](https://paperswithcode.com/task/moment-retrieval) where IoU measures the **temporal** overlap
 between two time-series snippets.
@@ -123,18 +127,18 @@ $$
 ### Segmentation Mask
 
 A [segmentation mask](https://docs.kolena.io/reference/workflow/annotation/#kolena.workflow.annotation.SegmentationMask)
-is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The prediction shape
+is a 2D image where each pixel is a class label commonly used in semantic segmentation tasks. The inference shape
 matches the ground truth shape (width and height), with a channel depth equivalent to the number of class labels to be
 predicted. Each channel is a binary mask that labels areas where a specific class is present:
 
 ![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.jpg)
 <p style="text-align: center; color: gray;">
-    From left to right: the original RGB image, the ground truth segmentation mask, and the prediction segmentation mask
+    From left to right: the original RGB image, the ground truth segmentation mask, and the inference segmentation mask
 </p>
 
 
-The IoU metric measures the intersection (the number of pixels common between the ground truth and prediction masks,
-**true positive (TP)**) divided by the union (the total number of pixels present across both masks,
+The IoU metric measures the intersection (the number of pixels common between the ground truth and inference masks,
+**true positive (TP)**) divided by the union (the total number of pixels present across both masks,
 **TP + false negative (FN) + false positive (FP)**). And here is the formula for the IoU metric for a segmentation mask:
 
 $$
@@ -145,13 +149,13 @@ Let’s look at what TP, FP, and FN look like on a segmentation mask:
 
 ![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.jpg)
 <p style="text-align: center; color: gray;">
-    From left to right: the ground truth segmentation mask, the prediction segmentation mask, and the overlay with TP,
+    From left to right: the ground truth segmentation mask, the inference segmentation mask, and the overlay with TP,
     FP, and FN labeled
 </p>
 
-From the cat image shown above, when you overlay the ground truth and prediction masks, the pixels that belong to both
+From the cat image shown above, when you overlay the ground truth and inference masks, the pixels that belong to both
 masks are TP. The pixels that only exist in the ground truth mask are FNs, and the pixels that only exist in the
-prediction mask are FPs. Let's consider the following pixel counts for each category:
+inference mask are FPs. Let's consider the following pixel counts for each category:
 
 <center>
 
@@ -178,7 +182,7 @@ number of label elements, for example, let’s say there are three classes, `Air
 is labeled as `Boat` and `Car`. The binary set of labels would then be $[0, 1, 1]$, where each element represents each
 class, respectively.
 
-Similar to the segmentation mask, the IoU or Jaccard index metric for the ground truth/prediction labels would be the
+Similar to the segmentation mask, the IoU or Jaccard index metric for the ground truth/inference labels would be the
 size of the intersection of the two sets (the number of labels common between two sets, or **TP**) divided by the size
 of the union of the two sets (the total number of labels present in both sets, **TP + FN + FP**):
 
@@ -191,14 +195,14 @@ evaluates each class as a binary classification problem. Per-class IoU values ca
 [averaging methods](./averaging-methods.md). The popular choice for this workflow is **macro**, so let’s take a look at
 examples of different averaged IoU/Jaccard index metrics for multi-class multi-label classification:
 
-**Example: macro IoU of ground truth and prediction sets of labels: `Airplane`, `Boat`, `Car`**
+**Example: macro IoU of ground truth and inference label sets: `Airplane`, `Boat`, `Car`**
 
 <center>
 
 | Set | Sample #1 | Sample #2 | Sample #3 | Sample #4 |
 | --- | --- | --- | --- | --- |
 | ground truth | `Airplane`, `Boat`, `Car` | `Airplane`, `Car` | `Boat`, `Car` | `Airplane`, `Boat`, `Car` |
-| prediction | `Boat` | `Airplane`, `Boat`, `Car` | `Airplane`, `Boat`, `Car` | `Airplane`, `Boat`, `Car` |
+| inference | `Boat` | `Airplane`, `Boat`, `Car` | `Airplane`, `Boat`, `Car` | `Airplane`, `Boat`, `Car` |
 
 </center>
 
@@ -207,7 +211,7 @@ $$
 $$
 
 $$
-\text{prediction} = [[0, 1, 0], \, [1, 1, 1], \, [1, 1, 1], \, [1, 1, 1]]
+\text{inference} = [[0, 1, 0], \, [1, 1, 1], \, [1, 1, 1], \, [1, 1, 1]]
 $$
 
 $$
@@ -223,9 +227,9 @@ $$
 ## Limitations and Biases
 
 IoU works well to measure the overlap between two sets, whether they are types of geometry or a list of labels. However,
-this metric cannot be directly used to measure the overlap of a prediction and `iscrowd` ground truth, which is an
+this metric cannot be directly used to measure the overlap of an inference and `iscrowd` ground truth, which is an
 annotation from [COCO Detection Challenge Evaluation](https://cocodataset.org/#format-data) used to label a large
-groups of objects (e.g., a crowd of people). Therefore, the prediction is expected to take up a small portion of the
+groups of objects (e.g., a crowd of people). Therefore, the inference is expected to take up a small portion of the
 ground truth region, resulting in a low IoU score and a pair not being a valid match. In this scenario, a variation of
 IoU, called [intersection over foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred.
 This variation is used when there are ground truth regions you want to ignore in evaluation, such as `iscrowd`.
@@ -237,8 +241,3 @@ performance is solely based on IoU. There are variations of IoU, such as
 [generalized IoU (GIoU)](https://giou.stanford.edu/GIoU.pdf), that aim to measure the localization error even when there
 is no overlap. These metrics can replace IoU metric if the objective is to measure the localization performance of
 non-overlaps.
-
-
-## Kolena API
-
-[`kolena.workflow.metrics.iou`](https://docs.kolena.io/reference/workflow/metrics/#kolena.workflow.metrics.iou)

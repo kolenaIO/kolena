@@ -270,7 +270,7 @@ matching performance.
     with ground truth $\text{A}$, resulting in no FPs.
 
 Another behavior to note here is that it is possible to get different matching results depending on the **ground truth**
-**order** when there are multiple ground truths overlapping with a inference with the equal IoU or depending on the
+**order** when there are multiple ground truths overlapping with an inference with the equal IoU or depending on the
 **inference order** when there are multiple inferences overlapping with a ground truth with the equal confidence score.
 
 ??? example "Example: Different Matching Results when Ground Truth Order Changes"
