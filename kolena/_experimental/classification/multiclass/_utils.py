@@ -14,20 +14,15 @@
 from typing import List
 from typing import Optional
 from typing import Tuple
-from typing import Union
 
 import numpy as np
 
 from kolena._utils import log
-from kolena.classification.multiclass import InferenceLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
 
 
-def get_label_confidence(label: str, inference_labels: List[Union[ScoredClassificationLabel, InferenceLabel]]) -> float:
-    for inf_label in inference_labels:
-        if inf_label.label == label:
-            return inf_label.score
-    return 0
+def get_label_confidence(label: str, inference_labels: List[ScoredClassificationLabel]) -> float:
+    return next((inf.score for inf in inference_labels if inf.label == label), 0)
 
 
 def roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], List[float]]:

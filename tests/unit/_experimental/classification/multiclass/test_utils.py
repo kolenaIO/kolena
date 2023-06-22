@@ -18,8 +18,8 @@ from typing import Tuple
 import numpy as np
 import pytest
 
-from kolena.classification.multiclass._utils import get_histogram_range
-from kolena.classification.multiclass._utils import roc_curve
+from kolena._experimental.classification.multiclass._utils import get_histogram_range
+from kolena._experimental.classification.multiclass._utils import roc_curve
 
 
 def test__roc_curve():
