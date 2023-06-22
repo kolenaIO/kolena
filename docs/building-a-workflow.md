@@ -227,7 +227,7 @@ defined in [step 2](#step-2-defining-metrics). Usually, an evaluator simply plug
 logic into the [class-based][kolena.workflow.Evaluator] or [function-based][kolena.workflow.BasicEvaluatorFunction]
 evaluator interface.
 
-Evaluators can have arbitrary configuration [(`EvaluatorConfiguration`)][kolena.workflow.EvaluatorConfiguration],
+Evaluators can have arbitrary configuration ([`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration]),
 allowing you to evaluate model performance under a variety of conditions.
 For this keypoint detection example, perhaps we want to compute performance at a few different NME threshold values, as
 this threshold drives the `alignment_failure` metric.
