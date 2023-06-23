@@ -33,10 +33,18 @@ html {
 .md-nav__link svg {
   height: 1em;
 }
+.md-nav__link:not(:hover, .md-nav__link--active) svg {
+  color: var(--md-default-fg-color--light); /* slightly muted nav icons */
+}
 @media screen and (min-width: 76.25em) {
   .md-nav__item--section {
     margin: 2em 0;
   }
+}
+
+/* smaller figcaptions */
+figcaption {
+  font-size: 0.8em;
 }
 
 /* Disable interactivity styles on grid cards, which are not interactive */
