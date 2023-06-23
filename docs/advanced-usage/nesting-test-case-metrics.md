@@ -122,5 +122,5 @@ for [`MetricsTestCase`][kolena.workflow.MetricsTestCase].
 ## Conclusion
 
 In this tutorial, we learned how to use the [`MetricsTestCase`][kolena.workflow.MetricsTestCase] API to define
-class-level metrics within a test case. Nesting aggregate metrics is desirable for multiclass workflows, as well as when
-testing ensembles of models or testing model pipelines.
+class-level metrics within a test case. Nesting test case metrics is desirable for workflows with multiple classes, as
+well as when testing ensembles of models or testing model pipelines.
