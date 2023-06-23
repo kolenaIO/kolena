@@ -19,15 +19,15 @@ Thus, the F<sub>1</sub>-score has become a popular metric for the evaluation of 
 object detection, semantic segmentation, and information retrieval.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`f1_score`][kolena.workflow.metrics.f1_score] ↗
+- :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.workflow.metrics.f1_score]
 </div>
 
 ## Implementation Details
 
 Using [TP / FP / FN / TN](./tp-fp-fn-tn.md), we can define [precision](./precision.md) and [recall](./recall.md).
-The F<sub>1</sub> score is computed simply by taking the **harmonic mean** of **precision** and **recall**.
+The F<sub>1</sub>-score is computed by taking the **harmonic mean** of **precision** and **recall**.
 
-The F<sub>1</sub> score is defined:
+The F<sub>1</sub>-score is defined:
 
 $$
 \begin{align}
@@ -36,7 +36,8 @@ $$
 \end{align}
 $$
 
-It can also be calculated directly from **true positive** (TP) / **false positive** (FP) / **false negative** (FN):
+It can also be calculated directly from **true positive** (TP) / **false positive** (FP) / **false negative** (FN)
+counts:
 
 $$
 \text{F}_1 = \frac {\text{TP}} {\text{TP} + \frac 1 2 \left( \text{FP} + \text{FN} \right)}
@@ -103,14 +104,14 @@ Zero correct inferences with non-zero false positive and false negative:
 | Metric | Value |
 | --- | --- |
 | TP | 0 |
-| FP | 10 |
+| FP | 15 |
 | FN | 10 |
 
 $$
 \begin{align}
-\text{Precision} = \frac{0}{10 + 0} &= 0.0 \\[1em]
-\text{Recall} = \frac{0}{10 + 0} &= 0.0 \\[1em]
-\text{F}_1 = \frac{0}{0 + \frac 1 2 \left( 10 + 10\right)} &= 0.0
+\text{Precision} = \frac{0}{0 + 15} &= 0.0 \\[1em]
+\text{Recall} = \frac{0}{0 + 10} &= 0.0 \\[1em]
+\text{F}_1 = \frac{0}{0 + \frac 1 2 \left( 15 + 10\right)} &= 0.0
 \end{align}
 $$
 </div>
@@ -145,7 +146,7 @@ $$
 
 ### Multiple Classes
 
-In workflows with multiple classes, the F<sub>1</sub>-score can be computed per class. In the[TP / FP / FN / TN](./tp-fp-fn-tn.md)
+In workflows with multiple classes, the F<sub>1</sub>-score can be computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md)
 guide, we learned how to compute per-class metrics when there are multiple classes, using the [one-vs-rest](./tp-fp-fn-tn.md#multiclass)
 (OvR) strategy. Once you have TP, FP, and FN counts computed for each class, you can compute precision, recall, and
 F<sub>1</sub>-score for each class by treating each as a single-class problem.
@@ -158,7 +159,7 @@ these methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 ## F$_\beta$-score
 
-The **F$_\beta$-score** is a generic form of the F<sub>1</sub> score with a weight parameter, $\beta$, where
+The **F$_\beta$-score** is a generic form of the F<sub>1</sub>-score with a weight parameter, $\beta$, where
 recall is considered $\beta$ times more important than precision:
 
 $$
@@ -173,7 +174,7 @@ The three most common values for the beta parameter are as follows:
 
 ## Limitations and Biases
 
-While the F<sub>1</sub> score can be used to evaluate classification/object detection models with a single metric,
+While the F<sub>1</sub>-score can be used to evaluate classification/object detection models with a single metric,
 this metric is not adequate to use for all applications. In some applications, such as identifying pedestrians from an
 autonomous vehicle, any false negatives can be life-threatening. In these scenarios, having a few more false positives
 as a trade-off for reducing the chance of any life-threatening events happening is preferred. Here, recall should be

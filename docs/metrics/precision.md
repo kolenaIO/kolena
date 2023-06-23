@@ -25,7 +25,7 @@ positive inferences.
 </div>
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`precision`][kolena.workflow.metrics.precision] ↗
+- :kolena-manual-16: API Reference: [`precision` ↗][kolena.workflow.metrics.precision]
 </div>
 
 

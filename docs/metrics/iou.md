@@ -9,7 +9,7 @@ As the name suggests, the IoU of two instances ($\text{A}$ and $\text{B}$) is de
 $$\text{IoU} \left( \text{A}, \text{B} \right) = \frac {\text{A} \cap \text{B}} {\text{A} \cup \text{B}}$$
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`iou`][kolena.workflow.metrics.iou] ↗
+- :kolena-manual-16: API Reference: [`iou` ↗][kolena.workflow.metrics.iou]
 </div>
 
 
