@@ -2,11 +2,19 @@
 icon: kolena/diagram-tree-16
 ---
 
-# :kolena-diagram-tree-20: Nesting Aggregate Metrics
+# :kolena-diagram-tree-20: Hierarchical Metrics
 
 When computing [test case metrics][kolena.workflow.MetricsTestCase] in an
 [evaluator](../reference/workflow/evaluator.md), in some cases it is desirable to compute multiple sets of aggregate
-metrics within a given test case. Here are a few examples of scenarios where this pattern might be warranted:
+metrics within a given test case.
+
+<figure markdown>
+  ![Class-level metrics](../../assets/images/hierarchical-metrics-light.jpg#only-light)
+  ![Class-level metrics](../../assets/images/hierarchical-metrics-dark.jpg#only-dark)
+  <figcaption markdown>Class-level metrics for the `airplane`, `bear`, `bench`, etc. classes reported for the test case `complete :: coco-2014-val [Object Detection]`</figcaption>
+</figure>
+
+Here are a few examples of scenarios where this pattern might be warranted:
 
 | Use Case | Description |
 | --- | --- |
@@ -16,7 +24,7 @@ metrics within a given test case. Here are a few examples of scenarios where thi
 
 In these cases, Kolena provides the API to nest additional aggregate metrics records within a
 [`MetricsTestCase`][kolena.workflow.MetricsTestCase] object returned from an evaluator. In this tutorial, we'll learn
-how to use this API to report class-level or other nested aggregate metrics within a test case.
+how to use this API to report class-level or other hierarchical aggregate metrics within a test case.
 
 ## Example: Multiclass Object Detection
 
@@ -91,13 +99,13 @@ Now we have the definitions to tell us everything we need to know about model pe
 `AggregateMetrics` describes overall performance across all classes within the test case, and `PerClassMetrics`
 describes performance for each of the given classes within the test case.
 
-### Naming Nested Metrics
+## Naming Hierarchical Metric Records
 
-When defining nested metrics, e.g. `PerClassMetrics` above, it's important to identify each row by including at least
-one `str`-type column. This column, `Class` in the above example, is pinned to the left when displaying nested metrics
-on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) page.
+When defining nested metrics, e.g. `PerClassMetrics` in the example above, it's important to identify each row by
+including at least one `str`-type column. This column, e.g. `Class` above, is pinned to the left when displaying nested
+metrics on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) page.
 
-### Statistical Significance
+## Statistical Significance
 
 When comparing models, Kolena highlights performance improvements and regressions that are likely to be statistically
 significant. The number of samples being evaluated factors into these calculations.

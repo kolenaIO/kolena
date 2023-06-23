@@ -21,7 +21,7 @@ nav:
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
-          - Nesting Aggregate Metrics: advanced-usage/nesting-aggregate-metrics.md
+          - Hierarchical Metrics: advanced-usage/hierarchical-metrics.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md

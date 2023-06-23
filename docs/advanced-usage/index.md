@@ -18,7 +18,7 @@ This section contains tutorial documentation for advanced features available in 
 </div>
 
 <div class="grid cards" markdown>
-- [:kolena-diagram-tree-16: Nesting Aggregate Metridcs](nesting-aggregate-metrics.md)
+- [:kolena-diagram-tree-16: Hierarchical Metrics](hierarchical-metrics.md)
 
     ---
 
