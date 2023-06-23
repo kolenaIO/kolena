@@ -63,6 +63,38 @@ _workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
+class TestSampleMetricsSingleClass(MetricsTestSample):
+    TP: List[ScoredLabeledBoundingBox]
+    FP: List[ScoredLabeledBoundingBox]
+    FN: List[LabeledBoundingBox]
+
+    count_TP: int
+    count_FP: int
+    count_FN: int
+
+    has_TP: bool
+    has_FP: bool
+    has_FN: bool
+
+    max_confidence_above_t: Optional[float]
+    min_confidence_above_t: Optional[float]
+    thresholds: float
+
+
+@dataclass(frozen=True)
+class TestCaseMetricsSingleClass(MetricsTestCase):
+    Objects: int
+    Inferences: int
+    TP: int
+    FN: int
+    FP: int
+    Precision: float
+    Recall: float
+    F1: float
+    AP: float
+
+
+@dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     TP: List[ScoredLabeledBoundingBox]
     FP: List[ScoredLabeledBoundingBox]
