@@ -103,8 +103,8 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
     used for sample size in statistical significance calculations: `N`, `n`, `nTestSamples`, `n_test_samples`,
     `sampleSize`, `sample_size`, `SampleSize`.
 
-    For a detailed overview of this feature, see the [:kolena-diagram-tree-16: Nesting Aggregate
-    Metrics](../../advanced-usage/nesting-aggregate-metrics.md) advanced usage guide.
+    For a detailed overview of this feature, see the [:kolena-diagram-tree-16: Hierarchical
+    Metrics](../../advanced-usage/hierarchical-metrics.md) advanced usage guide.
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
