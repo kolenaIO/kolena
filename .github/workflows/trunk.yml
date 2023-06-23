@@ -1,4 +1,4 @@
-name: Trunk
+name: Trunk (Docs)
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - gh/trunk-docs
 
 jobs:
-  release:
+  trunk-docs:
     name: Build and publish dev build of kolena documentation
     runs-on: ubuntu-latest
     steps:
@@ -41,15 +41,15 @@ jobs:
       - name: Update package version to PEP 440-compliant production release tag
         run: poetry version $(git describe --tags --abbrev=0)
 
-      - name: Install dependencies
+      - name: Install Poetry dependencies
         run: poetry install
 
-      - name: Build 'kolena' documentation and push to S3
+      - name: Install docs 'insiders' dependencies
+        run: ./docs/setup_insiders.sh
+
+      - name: Build 'kolena' documentation
         run: |
-          ./docs/setup_insiders.sh
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
 
-          BUCKET="s3://trunk-docs.kolena.io"
-          echo "pushing documentation to '$BUCKET'..."
-          aws s3 rm --recursive "$BUCKET"
-          aws s3 sync ./site "$BUCKET"
+      - name: Public 'kolena' documentation to S3
+        run: aws s3 sync ./site "s3://trunk-docs.kolena.io"
