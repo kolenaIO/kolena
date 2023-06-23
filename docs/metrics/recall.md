@@ -3,82 +3,121 @@ search:
   exclude: true
 ---
 
-# Recall / TPR
+# Recall (TPR, Sensitivity)
 
-The recall metric, also known as true positive rate (TPR) and sensitivity, is designed to measure the percentage of **positive instances** that a model correctly predicted, ranging from 0 to 1 (where 1 is best).
+<div class="grid" markdown>
+<div markdown>
+Recall, also known as **true positive rate** (TPR) and **sensitivity**, measures the proportion of all **positive
+ground truths** that a model correctly predicts, ranging from 0 to 1 (where 1 is best).
 
-![precision and recall from Wikipedia](../assets/images/metrics-precision-recall.png)
-<p style="text-align: center; color: gray;">
-    A diagram of precision and recall from
-	<a href="https://en.wikipedia.org/wiki/Precision_and_recall#Precision">Wikipedia</a>
-</p>
+As shown in this diagram, recall is the fraction all positive ground truths that are correctly predicted:
 
-As shown in the image above, recall is the fraction of correct predictions along all positive samples: `TP / (TP + FN)`, where `TP` is the number of true positives and `FN` is the number of false negatives.
+$$\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
 
-In other words, the recall metric measures a classifier’s ability to find all positive samples.
+In the above formula, $\text{TP}$ is the number of true positive inferences and $\text{FN}$ is the number of false
+negative ground truths.
 
-Read this [guide](./tp-fp-fn-tn.md) if you are not familiar with TP, FP, FN and TN.
+!!! info "Guide: True Positive / False Negative"
+
+    Read the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide if you're not familiar with "TP" and "FN" terminology.
+
+</div>
+
+<figure markdown>
+  ![Precision and recall from Wikipedia](../assets/images/metrics-precision-recall.png)
+  <figcaption markdown>Placeholder diagram of precision and recall from [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall#Precision)
+</figure>
+</div>
+
+<div class="grid cards" markdown>
+- :kolena-manual-16: API Reference: [`recall`][kolena.workflow.metrics.recall] ↗
+</div>
 
 
 ## Implementation Details
-The recall metric is generally used to evaluate classification models, especially when the objective is to reduce the **false** **negatives** in positive samples**.**
 
-Aside from classification, it is also commonly used in object detection, semantic segmentation, and information retrieval.
+Recall is used across a wide range of workflows, including classification, object detection, instance segmentation,
+semantic segmentation, and information retrieval. It is especially useful when the objective is to measure and reduce
+**false negative** ground truths, i.e. model misses.
 
-In a binary classification task, the recall metric is simply a ratio of the number of correct positive predictions to the total number of positive samples.
-
-Consider the following notation, where
-
-- $y_{true}$ is the list of ground truth
-- $y_{pred}$ is the list of prediction
-
-Then the metric is defined as
+For most tasks, recall is the ratio of the number of correct positive predictions to the total number of positive
+ground truths.
 
 $$
-recall(y_{true}, y_{pred}) = \frac {TP} {TP + FN}
+\text{Recall} = \frac {\text{# True Positives}} {\text{# True Positives} + \text{# False Negatives}}
 $$
 
-**Example of perfect recall**
+For workflows with a localization component, such as object detection and instance segmentation, see the
+[Geometry Matching](./geometry-matching.md) guide to learn how to compute true positive and false negative counts.
 
-```python
->>> y_true = [0, 0, 0, 1, 1, 1]
->>> y_pred = [0, 1, 1, 1, 1, 1]
->>> print(f"recall: {recall(y_true, y_pred)}")
-recall: 1.0
-```
+### Examples
 
-**Example of some incorrectly predicted positive samples**
+Perfect model predictions, where every ground truth is recalled by an inference:
 
-```python
->>> y_true = [0, 0, 1, 1, 1, 1]
->>> y_pred = [0, 0, 0, 0, 1, 1]
->>> print(f"recall: {recall(y_true, y_pred)}")
-recall: 0.5
-```
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 20 |
+| FN | 0 |
 
-**Example of zero positive samples**
+$$
+\begin{align}
+\text{Recall} &= \frac{20}{20 + 0} \\[1em]
+&= 1.0
+\end{align}
+$$
+</div>
 
-```python
->>> y_true = [0, 0, 0, 0, 0, 0]
->>> y_pred = [0, 0, 0, 0, 1, 1]
->>> print(f"recall: {recall(y_true, y_pred)}")
-recall: 0.0
-```
+Partially correct predictions, where some ground truths are correctly recalled (TP) and others are missed (FN):
+
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 85 |
+| FN | 15 |
+
+$$
+\begin{align}
+\text{Recall} &= \frac{85}{85 + 15} \\[1em]
+&= 0.85
+\end{align}
+$$
+</div>
+
+Zero correct inferences — no positive ground truths are recalled:
+
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 0 |
+| FN | 20 |
+
+$$
+\begin{align}
+\text{Recall} &= \frac{0}{0 + 20} \\[1em]
+&= 0.0
+\end{align}
+$$
+</div>
 
 ### Multiple Classes
 
-So far, we’ve only looked at binary classification/object detection cases, but in the **multi-class** or **multi-label** cases, recall is computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md) metrics guide, we went over multiple-class cases and how these metrics are computed. Once you have them computed per class, you can compute recall for each class by treating it as a binary class problem.
+So far, we have only looked at **binary** classification/object detection cases, but in **multi-class** or
+**multi-label** cases, recall is computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide,
+we went over multiple-class cases and how these metrics are computed. Once you have these four metrics computed per
+class, you can compute recall for each class by treating each as a single-class problem.
 
 ### Aggregating Per-class Metrics
 
-If you are looking for a **single** precision score that summarizes model performance across all classes, there are different ways to aggregate these per-class precision scores: **macro**, **micro**, **weighted,** and **samples**. You can read more on different averaging methods in [this guide](./averaging-methods.md).
+If you are looking for a **single** recall score that summarizes model performance across all classes, there are
+different ways to aggregate per-class recall scores: **macro**, **micro**, and **weighted**. Read more about these
+methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 ## Limitations and Biases
 
-As shown in the formula above, recall only uses TP and FN; TN and FP are not taken into account. Thus, recall should only be used in situations where performance on the negative class does not play a role. This is why this metric is mainly used for object detection and information retrieval: **failing to detect negative samples has no consequences**.
+As seen in its formula, recall only takes **positive** ground truths (TP and FN) into account; negative ground truths
+(TN and FP) are not considered. Thus, recall only provides one half of the picture, and should always be used in
+tandem with [precision](./precision.md): precision penalizes false positives (FP), whereas recall does not.
 
-Recall is a particularly bad measure when there are only a few positive samples because it will result in high recall when the model fails to predict most of the negative samples. In such scenarios, you should use the [precision](./precision.md) metric instead.
-
-## Kolena API
-
-[`kolena.workflow.metrics.recall`](https://docs.kolena.io/reference/workflow/metrics/#kolena.workflow.metrics.recall)
+For a single metric that takes both precision and recall into account, use F1 score, which is the harmonic mean between
+precision and recall.
