@@ -15,7 +15,7 @@ focus on 2D object detection—specifically 2D bounding box matching—to learn 
 
 <div class="grid cards" markdown>
 - :kolena-manual-16: API Reference: [`match_inferences`][kolena.workflow.metrics.match_inferences],
-[`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass] ↗
+  [`match_inferences_multiclass` ↗][kolena.workflow.metrics.match_inferences_multiclass]
 </div>
 
 ## Algorithm Overview

@@ -72,7 +72,11 @@ def _iou_bbox(box1: BoundingBox, box2: BoundingBox) -> float:
 
 def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float:
     """
-    Compute the Intersection Over Union (IOU) of two geometries.
+    Compute the Intersection Over Union (IoU) of two geometries.
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Intersection over Union (IoU) ↗](../../metrics/iou.md)
+    </div>
 
     :param a: The first geometry in computation.
     :param b: The second geometry in computation.
@@ -185,6 +189,10 @@ def match_inferences(
       its match. Multiple inferences are able to match with the same ignored ground truth. See the
       [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
 
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../../metrics/geometry-matching.md)
+    </div>
+
     :param List[Geometry] ground_truths: A list of [`BoundingBox`][kolena.workflow.annotation.BoundingBox] or
         [`Polygon`][kolena.workflow.annotation.Polygon] ground truths.
     :param List[ScoredGeometry] inferences: A list of
@@ -268,6 +276,10 @@ def match_inferences_multiclass(
     - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IOU is
       its match. Multiple inferences are able to match with the same ignored ground truth. See the
       [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../../metrics/geometry-matching.md)
+    </div>
 
     :param List[LabeledGeometry] ground_truths: A list of
         [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox] or

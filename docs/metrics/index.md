@@ -3,6 +3,8 @@ icon: kolena/metrics-glossary-16
 # TODO: remove search exclusion before landing Metrics Glossary
 search:
   exclude: true
+hide:
+  - toc
 ---
 
 # :kolena-metrics-glossary-20: Metrics Glossary

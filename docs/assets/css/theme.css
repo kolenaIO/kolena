@@ -33,7 +33,7 @@ html {
 .md-nav__link svg {
   height: 1em;
 }
-.md-nav__link:not(:hover, .md-nav__link--active) svg {
+.md-nav__link:not(:hover, .md-nav__link--active) > svg {
   color: var(--md-default-fg-color--light); /* slightly muted nav icons */
 }
 @media screen and (min-width: 76.25em) {
