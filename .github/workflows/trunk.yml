@@ -44,9 +44,6 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Run pre-commit checks
-        run: poetry run pre-commit run -a
-
       - name: Build 'kolena' documentation and push to S3
         run: |
           ./docs/setup_insiders.sh
