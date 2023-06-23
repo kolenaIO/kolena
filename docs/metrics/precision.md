@@ -7,7 +7,7 @@ search:
 
 <div class="grid" markdown>
 <div markdown>
-Precision measures the proportion of **positive inferences** from a model that are correct, ranging from 0 to 1 (where
+Precision measures the proportion of positive inferences from a model that are correct, ranging from 0 to 1 (where
 1 is best).
 
 As shown in this diagram, precision is the fraction all inferences that are correct:
@@ -40,8 +40,8 @@ Precision is used across a wide range of workflows, including classification, ob
 semantic segmentation, and information retrieval. It is especially useful when the objective is to measure and reduce
 **false positive** inferences.
 
-For most tasks, precision metric is the ratio of the number of correct positive predictions to
-the total number of positive predictions:
+For most tasks, precision is the ratio of the number of correct positive inferences to
+the total number of positive inferences:
 
 $$\text{Precision} = \frac{\text{# True Positives}}{\text{# True Positives} + \text{# False Positives}}$$
 
@@ -66,7 +66,7 @@ $$
 $$
 </div>
 
-Partially correct inferences:
+Partially correct inferences, where some inferences are correct (TP) and others are incorrect (FP):
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -82,7 +82,7 @@ $$
 $$
 </div>
 
-Zero positive inferences:
+Zero correct inferences — all positive predictions are incorrect:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -115,7 +115,7 @@ methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 As seen in its formula, precision only takes **positive** inferences (TP and FP) into account; negative inferences
 (TN and FN) are not considered. Thus, precision only provides one half of the picture, and should always be used in
-tandem with recall: recall penalizes false negatives, whereas precision does not.
+tandem with [recall](./recall.md): recall penalizes false negatives (FN), whereas precision does not.
 
 For a single metric that takes both precision and recall into account, use F1 score, which is the harmonic mean between
 precision and recall.
