@@ -49,7 +49,7 @@ jobs:
           ./docs/setup_insiders.sh
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
 
-          BUCKET_PATH="s3://kolena-public-assets/docs/latest"
-          echo "pushing documentation to '$BUCKET_PATH'..."
-          aws s3 rm --recursive "$BUCKET_PATH"
-          aws s3 sync ./site "$BUCKET_PATH"
+          BUCKET="s3://trunk-docs.kolena.io"
+          echo "pushing documentation to '$BUCKET'..."
+          aws s3 rm --recursive "$BUCKET"
+          aws s3 sync ./site "$BUCKET"
