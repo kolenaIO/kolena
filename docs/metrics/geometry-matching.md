@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Geometry Matching
 
 Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a

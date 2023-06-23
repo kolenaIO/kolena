@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Accuracy
 
 Accuracy is one of the most well-known metrics in machine learning model evaluation because it is simple to understand
