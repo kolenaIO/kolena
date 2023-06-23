@@ -19,27 +19,21 @@ biases, and its intended uses.
 
     Accuracy measures how well a model predicts correctly. It's a good metric for assessing model performance in simple
     cases with balanced data.
-</div>
 
-<div class="grid cards" markdown>
 - [Averaging Methods: Macro, Micro, Weighted](averaging-methods.md)
 
     ---
 
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
-</div>
 
-<div class="grid cards" markdown>
 - [F<sub>1</sub> score](f1-score.md)
 
     ---
 
     F<sub>1</sub> score is a metric that combines two competing metrics, [precision](precision.md) and
     [recall](recall.md) with an equal weight. It symmetrically represents both precision and recall as one metric.
-</div>
 
-<div class="grid cards" markdown>
 - [Geometry Matching](geometry-matching.md)
 
     ---
@@ -48,27 +42,21 @@ biases, and its intended uses.
     localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any
     metrics built on top of these, like [precision](precision.md), [recall](recall.md), and
     [F<sub>1</sub> score](f1-score.md).
-</div>
 
-<div class="grid cards" markdown>
 - [Intersection over Union (IoU)](iou.md)
 
     ---
 
     IoU measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
     Also known as Jaccard index in classification workflow.
-</div>
 
-<div class="grid cards" markdown>
 - [Precision](precision.md)
 
     ---
 
     Precision measures the proportion of positive inferences from a model that are correct. It is useful when the
     objective is to measure and reduce false positive inferences.
-</div>
 
-<div class="grid cards" markdown>
 - [Recall](recall.md)
 
     ---
@@ -76,9 +64,7 @@ biases, and its intended uses.
     Recall, also known as true positive rate (TPR) and sensitivity, measures the proportion of all positive ground
     truths that a model correctly predicts. It is useful when the objective is to measure and reduce false negative
     ground truths, i.e. model misses.
-</div>
 
-<div class="grid cards" markdown>
 - [TP / FP / FN / TN](tp-fp-fn-tn.md)
 
     ---
