@@ -1,3 +1,9 @@
+---
+# TODO: remove search exclusion before landing Metrics Glossary
+search:
+  exclude: true
+---
+
 # Intersection over Union (IoU)
 
 Intersection over Union (IoU) measures the ratio of the intersection and the union between ground truth and inference,

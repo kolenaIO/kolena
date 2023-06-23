@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Precision
 
 <div class="grid" markdown>
