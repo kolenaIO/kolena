@@ -1,5 +1,7 @@
 ---
 icon: kolena/metrics-glossary-16
+hide:
+  - toc
 ---
 
 # :kolena-metrics-glossary-20: Metrics Glossary
