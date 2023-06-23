@@ -21,6 +21,10 @@ def precision(true_positives: int, false_positives: int) -> float:
     \\text{Precision} = \\frac{\\text{# True Positives}}{\\text{# True Positives} + \\text{# False Positives}}
     $$
 
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Precision ↗](../../metrics/precision.md)
+    </div>
+
     :param true_positives: Number of true positive predictions.
     :param false_positives: Number of false positive predictions.
     """
@@ -35,6 +39,10 @@ def recall(true_positives: int, false_negatives: int) -> float:
     $$
     \\text{Recall} = \\frac{\\text{# True Positives}}{\\text{# True Positives} + \\text{# False Negatives}}
     $$
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Recall ↗](../../metrics/recall.md)
+    </div>
 
     :param true_positives: Number of true positive predictions.
     :param false_negatives: Number of false negatives.
@@ -55,6 +63,10 @@ def f1_score(true_positives: int, false_positives: int, false_negatives: int) ->
     &= 2 \\times \\frac{\\text{Precision} \\times \\text{Recall}}{\\text{Precision} + \\text{Recall}}
     \\end{align}
     $$
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [F<sub>1</sub>-score ↗](../../metrics/f1-score.md)
+    </div>
 
     :param true_positives: Number of true positive predictions.
     :param false_positives: Number of false positive predictions.
