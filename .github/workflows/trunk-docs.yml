@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - trunk
-      - gh/trunk-docs
 
 jobs:
   trunk-docs:
@@ -48,8 +47,7 @@ jobs:
         run: ./docs/setup_insiders.sh
 
       - name: Build 'kolena' documentation
-        run: |
-          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+        run: poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
 
-      - name: Public 'kolena' documentation to S3
+      - name: Publish 'kolena' documentation to S3
         run: aws s3 sync ./site "s3://trunk-docs.kolena.io"

@@ -4,8 +4,6 @@ hide:
   - toc
 ---
 
-REVERT ME
-
 <figure markdown>
   ![Kolena](assets/images/wordmark-violet.svg#only-light){ width="400" }
   ![Kolena](assets/images/wordmark-white.svg#only-dark){ width="400" }
