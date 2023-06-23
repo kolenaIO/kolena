@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -58,13 +57,17 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    # Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
-    # F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
-    # hit this cache and use the previously computed population level confidence thresholds.
-    threshold_cache: Dict[str, Dict[str, float]] = {}  # configuration -> label -> threshold
+    threshold_cache: Dict[str, float] = {}  # configuration -> threshold
+    """
+    Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
+    F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
+    hit this cache and use the previously computed population level confidence thresholds.
+    """
 
-    # Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics)
     locators_by_test_case: Dict[str, List[str]] = {}
+    """
+    Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics)
+    """
 
     def compute_image_metrics(
         self,
@@ -82,14 +85,13 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
         fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
-            gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
+            gt for gt, inf in bbox_matches.matched if inf.score < thresholds
         ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
-        fields = list(labels)
         return TestSampleMetricsSingleClass(
             TP=tp,
             FP=fp,
@@ -102,7 +104,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             has_FN=len(fn) > 0,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            threshold=thresholds[fields[0]],
+            threshold=thresholds,
         )
 
     def compute_and_cache_f1_optimal_thresholds(
@@ -236,13 +238,13 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             mean_AP=np.average([tcm.AP for _, tcm in metrics]),
         )
 
-    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
+    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_03:
-            return defaultdict(lambda: 0.3)
+            return 0.3
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_05:
-            return defaultdict(lambda: 0.5)
+            return 0.5
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_075:
-            return defaultdict(lambda: 0.75)
+            return 0.75
         if configuration.threshold_strategy == ThresholdStrategy.F1_OPTIMAL:
             return self.threshold_cache[configuration.display_name()]
         raise RuntimeError(f"unrecognized threshold strategy: {configuration.threshold_strategy}")

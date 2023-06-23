@@ -53,7 +53,7 @@ class ObjectDetectionEvaluator(Evaluator):
     evaluator: Union[
         SingleClassObjectDetectionEvaluator,
         MulticlassObjectDetectionEvaluator,
-    ] = MulticlassObjectDetectionEvaluator
+    ] = MulticlassObjectDetectionEvaluator()
 
     def compute_test_sample_metrics(
         self,
@@ -62,13 +62,12 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
         assert configuration is not None, "must specify configuration"
-        # compute thresholds to cache values for subsequent steps
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes + gts.ignored_bboxes}
 
         if len(labels) == 1:
-            self.evaluator = SingleClassObjectDetectionEvaluator
+            self.evaluator = SingleClassObjectDetectionEvaluator()
         else:
-            self.evaluator = MulticlassObjectDetectionEvaluator
+            self.evaluator = MulticlassObjectDetectionEvaluator()
 
         return self.evaluator.compute_test_sample_metrics(
             test_case=test_case,

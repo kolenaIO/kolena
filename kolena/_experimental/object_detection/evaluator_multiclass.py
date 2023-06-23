@@ -61,13 +61,17 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    # Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
-    # F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
-    # hit this cache and use the previously computed population level confidence thresholds.
     threshold_cache: Dict[str, Dict[str, float]] = {}  # configuration -> label -> threshold
+    """
+    Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
+    F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
+    hit this cache and use the previously computed population level confidence thresholds.
+    """
 
-    # Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics)
     locators_by_test_case: Dict[str, List[str]] = {}
+    """
+    Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics)
+    """
 
     def compute_image_metrics(
         self,
