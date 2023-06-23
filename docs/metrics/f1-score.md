@@ -145,15 +145,15 @@ $$
 
 ### Multiple Classes
 
-In a **multi-class** case, the F<sub>1</sub> score can be computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md)
-guide, we went over multi-class cases and how these metrics are computed. Once you have these four metrics computed per
-class, you can compute precision, recall, and F<sub>1</sub> score for each class by treating each as a single-class
-problem.
+In workflows with multiple classes, the F<sub>1</sub>-score can be computed per class. In the[TP / FP / FN / TN](./tp-fp-fn-tn.md)
+guide, we learned how to compute per-class metrics when there are multiple classes, using the [one-vs-rest](./tp-fp-fn-tn.md#multiclass)
+(OvR) strategy. Once you have TP, FP, and FN counts computed for each class, you can compute precision, recall, and
+F<sub>1</sub>-score for each class by treating each as a single-class problem.
 
 ### Aggregating Per-class Metrics
 
-If you are looking for a **single** F<sub>1</sub> score that summarizes model performance across all classes, there are
-different ways to aggregate per-class F<sub>1</sub> scores: **macro**, **micro**, and **weighted**. Read more about
+If you are looking for a **single** F<sub>1</sub>-score that summarizes model performance across all classes, there are
+different ways to aggregate per-class F<sub>1</sub>-scores: **macro**, **micro**, and **weighted**. Read more about
 these methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 ## F$_\beta$-score
@@ -186,5 +186,6 @@ Precision, recall, and F<sub>1</sub>-score are all **threshold-dependent** metri
 before computing these metrics, a confidence score threshold must be applied to inferences to decide which should be
 used for metrics computation and which should be ignored.
 
-A small change to this confidence score threshold can have a large impact on threshold-dependent metrics. While most
-models are deployed with a
+A small change to this confidence score threshold can have a large impact on threshold-dependent metrics. To evaluate
+a model across _all_ thresholds, rather than at a single-threshold, use threshold-independent metrics, like
+**average precision**.
