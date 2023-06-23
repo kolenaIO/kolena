@@ -9,14 +9,6 @@ hide:
 This section contains detailed API reference documentation for `kolena`.
 
 <div class="grid cards" markdown>
-- [:kolena-cube-16: `kolena.workflow`](workflow)
-
-    ---
-
-    Building blocks to test any ML problem in Kolena
-</div>
-
-<div class="grid cards" markdown>
 - [`kolena.initialize`](initialize)
 
     ---
@@ -28,4 +20,23 @@ This section contains detailed API reference documentation for `kolena`.
     ---
 
     Custom error definitions
+</div>
+
+<div class="grid cards" markdown>
+- [:kolena-cube-16: `kolena.workflow`](workflow)
+
+    ---
+
+    Building blocks to test any ML problem in Kolena
+</div>
+
+---
+
+<div class="grid cards" markdown>
+- [:kolena-archive-16: Legacy Modules](workflow)
+
+    ---
+
+    Built-in [`kolena.classification`](./legacy/built-in/classification.md),
+    [`kolena.detection`](./legacy/built-in/detection.md), and [`kolena.fr`](./legacy/built-in/fr.md) workflows
 </div>
