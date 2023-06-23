@@ -2,15 +2,15 @@
 icon: kolena/diagram-tree-16
 ---
 
-# :kolena-diagram-tree-20: Hierarchical Metrics
+# :kolena-diagram-tree-20: Nesting Test Case Metrics
 
 When computing [test case metrics][kolena.workflow.MetricsTestCase] in an
 [evaluator](../reference/workflow/evaluator.md), in some cases it is desirable to compute multiple sets of aggregate
 metrics within a given test case.
 
 <figure markdown>
-  ![Class-level metrics](../assets/images/hierarchical-metrics-light.jpg#only-light)
-  ![Class-level metrics](../assets/images/hierarchical-metrics-dark.jpg#only-dark)
+  ![Class-level metrics](../assets/images/nesting-test-case-metrics-light.jpg#only-light)
+  ![Class-level metrics](../assets/images/nesting-test-case-metrics-dark.jpg#only-dark)
   <figcaption markdown>Class-level metrics for the `airplane`, `bear`, `bench`, etc. classes reported for the test case `complete :: coco-2014-val [Object Detection]`</figcaption>
 </figure>
 
@@ -24,7 +24,7 @@ Here are a few examples of scenarios where this pattern might be warranted:
 
 In these cases, Kolena provides the API to nest additional aggregate metrics records within a
 [`MetricsTestCase`][kolena.workflow.MetricsTestCase] object returned from an evaluator. In this tutorial, we'll learn
-how to use this API to report class-level or other hierarchical aggregate metrics within a test case.
+how to use this API to report class-level or other nested test case metrics for our models.
 
 ## Example: Multiclass Object Detection
 
@@ -99,7 +99,7 @@ Now we have the definitions to tell us everything we need to know about model pe
 `AggregateMetrics` describes overall performance across all classes within the test case, and `PerClassMetrics`
 describes performance for each of the given classes within the test case.
 
-## Naming Hierarchical Metric Records
+## Naming Nested Metric Records
 
 When defining nested metrics, e.g. `PerClassMetrics` in the example above, it's important to identify each row by
 including at least one `str`-type column. This column, e.g. `Class` above, is pinned to the left when displaying nested

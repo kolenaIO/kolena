@@ -9,7 +9,7 @@ hide:
 This section contains tutorial documentation for advanced features available in Kolena.
 
 <div class="grid cards" markdown>
-- [:octicons-container-24: Packaging for Automated Evaluation](packaging-for-automated-evaluation.md)
+- [:octicons-container-24: Packaging for Automated Evaluation](./packaging-for-automated-evaluation.md)
 
     ---
 
@@ -18,7 +18,7 @@ This section contains tutorial documentation for advanced features available in 
 </div>
 
 <div class="grid cards" markdown>
-- [:kolena-diagram-tree-16: Hierarchical Metrics](hierarchical-metrics.md)
+- [:kolena-diagram-tree-16: Nesting Test Case Metrics](./nesting-test-case-metrics.md)
 
     ---
 
