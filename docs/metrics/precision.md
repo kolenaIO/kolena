@@ -37,73 +37,85 @@ In other words, precision measures the ability of a model to not label a negativ
 
 ## Implementation Details
 
-Precision is generally used to evaluate classification models, especially when the objective is to reduce the
-**false positives** in predictions.
+Precision is used across a wide range of workflows, including classification, object detection, instance segmentation,
+semantic segmentation, and information retrieval. It is especially useful when the objective is to measure and reduce
+**false positive** inferences.
 
-Aside from classification, it has also been commonly used in object detection, semantic segmentation, and information
-retrieval.
+For most tasks, precision metric is the ratio of the number of correct positive predictions to
+the total number of positive predictions:
 
-In a binary classification task, the precision metric is simply a ratio of the number of correct positive predictions to
-the total number of positive predictions.
+$$\text{Precision} = \frac{\text{# True Positives}}{\text{# True Positives} + \text{# False Positives}}$$
 
- Consider the following notation, where
+For workflows with a localization component, such as object detection and instance segmentation, see the
+[Geometry Matching](./geometry-matching.md) guide to learn how to compute true positive and false positive counts.
 
-- $y_{true}$ is the list of ground truth
-- $y_{pred}$ is the list of prediction
+### Examples
 
-Then the metric is defined as
+Perfect inferences:
+
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 20 |
+| FP | 0 |
 
 $$
-precision(y_{true}, y_{pred}) = \frac {TP} {TP + FP}
+\begin{align}
+\text{Precision} &= \frac{20}{20 + 0} \\[1em]
+&= 1.0
+\end{align}
 $$
+</div>
 
-**Example of perfect precision**
+Partially correct inferences:
 
-```python
->>> y_true = [0, 0, 1, 1, 1, 1]
->>> y_pred = [0, 0, 0, 0, 1, 1]
->>> print(f"precision: {precision(y_true, y_pred)}")
-precision: 1.0
-```
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 90 |
+| FP | 10 |
 
-**Example of some incorrect predictions**
+$$
+\begin{align}
+\text{Precision} &= \frac{90}{90 + 10} \\[1em]
+&= 0.9
+\end{align}
+$$
+</div>
 
-```python
->>> y_true = [0, 0, 0, 1, 1, 1]
->>> y_pred = [0, 1, 1, 0, 1, 1]
->>> print(f"precision: {precision(y_true, y_pred)}")
-precision: 0.5
-```
+Zero positive inferences:
 
-**Example of zero positive predictions**
+<div class="grid" markdown>
+| Metric | Value |
+| --- | --- |
+| TP | 0 |
+| FP | 20 |
 
-```python
->>> y_true = [0, 0, 0, 0, 1, 1, 1, 1]
->>> y_pred = [0, 0, 0, 0, 0, 0, 0, 0]
->>> print(f"precision: {precision(y_true, y_pred)}")
-precision: 0.0
-```
+$$
+\begin{align}
+\text{Precision} &= \frac{0}{0 + 20} \\[1em]
+&= 0.0
+\end{align}
+$$
+</div>
 
 ### Multiple Classes
 
 So far, we have only looked at **binary** classification/object detection cases, but in **multi-class** or
-**multi-label** cases, precision is computed per class. In the [**TP / FP / FN / TN**](./tp-fp-fn-tn.md) metrics guide,
+**multi-label** cases, precision is computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide,
 we went over multiple-class cases and how these metrics are computed. Once you have these four metrics computed per
-class, you can compute precision for each class by treating it as a binary class problem.
+class, you can compute precision for each class by treating each as a single-class problem.
 
 ### Aggregating Per-class Metrics
 
 If you are looking for a **single** precision score that summarizes model performance across all classes, there are
-different ways to aggregate per-class precision scores: **macro**, **micro**, **weighted,** and **samples**. You can
-read more on different averaging methods in [this guide](./averaging-methods.md).
+different ways to aggregate per-class precision scores: **macro**, **micro**, and **weighted**. Read more about these
+methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 ## Limitations and Biases
 
-As shown in the formula above, precision only uses TP and FP; TN and FN are not taken into account. Thus, precision
-should only be used in situations where correct identification of the negative class and incorrect identification of the
-positive class do not play a role. This is why this metric is mainly used for object detection and information
-retrieval: **failing to detect negative samples has no consequences**.
+As seen in its formula, precision only takes **positive** inferences (TP and FP) into account; negative inferences
+(TN and FN) are not considered. Thus, precision only provides one half of the picture, and should always be used in
+tandem with recall: recall penalizes failures to detect negative samples, where precision does not.
 
-Precision is a particularly bad measure when there are only a few predictions that belong to the positive class because
-it will result in high precision even when the model fails to predict most of the positive samples. In such scenarios,
-you should use the [recall](./recall.md) metric instead.
+For a single metric that takes both precision and recall into account, use F1 score.

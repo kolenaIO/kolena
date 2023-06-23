@@ -9,7 +9,7 @@ Accuracy is one of the most well-known metrics in machine learning model evaluat
 and straightforward to calculate.
 
 Accuracy measures how often a model correctly predicts something (ranging from 0 to 1, with 1 being perfect
-predictions). It reports the ratio of the number of correct predictions to the total number of predictions,
+inferences). It reports the ratio of the number of correct inferences to the total number of inferences,
 making it a good metric for assessing model performance in simple cases with balanced data. However, accuracy is much
 less meaningful with unbalanced datasets (e.g. far more negative samples than positive samples) and should be used with
 caution.
@@ -29,7 +29,7 @@ $$
 
 ### Examples
 
-Perfect predictions across 20 samples:
+Perfect inferences across 20 samples:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -47,7 +47,7 @@ $$
 $$
 </div>
 
-Partially correct predictions across 20 samples:
+Partially correct inferences across 20 samples:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -65,7 +65,7 @@ $$
 $$
 </div>
 
-Highly imbalanced data, with 99 negative samples and 10 positive samples, with _no_ positive predictions:
+Highly imbalanced data, with 99 negative samples and 10 positive samples, with _no_ positive inferences:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -85,7 +85,7 @@ $$
 
 !!! warning "Be careful with imbalanced datasets!"
 
-    This example describes a trivial model that only ever returns negative predictions, yet it has the high accuracy
+    This example describes a trivial model that only ever returns negative inferences, yet it has the high accuracy
     score of 99%!
 
 ## Limitations and Biases
