@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Recall (TPR, Sensitivity)
 
 <div class="grid" markdown>
