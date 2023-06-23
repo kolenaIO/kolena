@@ -117,5 +117,5 @@ As seen in its formula, precision only takes **positive** inferences (TP and FP)
 (TN and FN) are not considered. Thus, precision only provides one half of the picture, and should always be used in
 tandem with recall: recall penalizes false negatives, whereas precision does not.
 
-For a single metric that takes both precision and recall into account, use F1 score, which is the [harmonic] mean between precision
-and recall.
+For a single metric that takes both precision and recall into account, use F1 score, which is the harmonic mean between
+precision and recall.
