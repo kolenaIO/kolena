@@ -21,10 +21,10 @@ Let’s say we’re building a dog classifier that predicts whether an image has
 
 <center>
 
-|                              | Positive Inference (Dog) | Negative Inference (No Dog) |
-|                              | :----------------------: | :-------------------------: |
-| **Positive Sample (Dog)**    | True Positive (TP)       | False Negative (FN)         |
-| **Negative Sample (No Dog)** | False Positive (FP)      | True Negative (TN)          |
+|                                    | Positive Inference (Dog) | Negative Inference (No Dog) |
+|                                    | :----------------------: | :-------------------------: |
+| **Positive Ground Truth (Dog)**    | True Positive (TP)       | False Negative (FN)         |
+| **Negative Ground Truth (No Dog)** | False Positive (FP)      | True Negative (TN)          |
 
 </center>
 
