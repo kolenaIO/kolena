@@ -23,6 +23,16 @@ biases, and its intended uses.
 </div>
 
 <div class="grid cards" markdown>
+- [Geometry Matching](geometry-matching.md)
+
+    ---
+
+    Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
+    localization component. It is a core building block for metrics such as TP, FP, and FN, and any metrics built on
+    top of these, like precision, recall, and F1 score.
+</div>
+
+<div class="grid cards" markdown>
 - [Intersection over Union (IoU)](iou.md)
 
     ---
