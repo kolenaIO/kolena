@@ -40,8 +40,8 @@ Precision is used across a wide range of workflows, including classification, ob
 semantic segmentation, and information retrieval. It is especially useful when the objective is to measure and reduce
 **false positive** inferences.
 
-For most tasks, precision is the ratio of the number of correct positive predictions to
-the total number of positive predictions:
+For most tasks, precision is the ratio of the number of correct positive inferences to
+the total number of positive inferences:
 
 $$\text{Precision} = \frac{\text{# True Positives}}{\text{# True Positives} + \text{# False Positives}}$$
 

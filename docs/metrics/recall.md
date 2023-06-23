@@ -40,7 +40,7 @@ Recall is used across a wide range of workflows, including classification, objec
 semantic segmentation, and information retrieval. It is especially useful when the objective is to measure and reduce
 **false negative** ground truths, i.e. model misses.
 
-For most tasks, recall is the ratio of the number of correct positive predictions to the total number of positive
+For most tasks, recall is the ratio of the number of correct positive inferences to the total number of positive
 ground truths.
 
 $$
@@ -52,7 +52,7 @@ For workflows with a localization component, such as object detection and instan
 
 ### Examples
 
-Perfect model predictions, where every ground truth is recalled by an inference:
+Perfect model inferences, where every ground truth is recalled by an inference:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -68,7 +68,7 @@ $$
 $$
 </div>
 
-Partially correct predictions, where some ground truths are correctly recalled (TP) and others are missed (FN):
+Partially correct inferences, where some ground truths are correctly recalled (TP) and others are missed (FN):
 
 <div class="grid" markdown>
 | Metric | Value |
