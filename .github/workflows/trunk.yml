@@ -1,0 +1,61 @@
+name: Trunk
+
+on:
+  push:
+    branches:
+      - trunk
+      - gh/trunk-docs
+
+jobs:
+  release:
+    name: Build and publish dev build of kolena documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Configure SSH key for docs insiders setup
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Install Poetry
+        run: pip install poetry==1.5.1
+
+      - name: Fetch tags to enable autoversioning
+        run: git fetch --prune --unshallow --tags
+
+      - name: Update package version to PEP 440-compliant production release tag
+        run: poetry version $(git describe --tags --abbrev=0)
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Run pre-commit checks
+        run: poetry run pre-commit run -a
+
+      - name: Build 'kolena' documentation and push to S3
+        run: |
+          ./docs/setup_insiders.sh
+          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+
+          BUCKET_PATH="s3://kolena-public-assets/docs/latest"
+          echo "pushing documentation to '$BUCKET_PATH'..."
+          aws s3 rm --recursive "$BUCKET_PATH"
+          aws s3 sync ./build "$BUCKET_PATH"
+        env:
+          DD_RUM_CLIENT_TOKEN: ${{ vars.DD_RUM_CLIENT_TOKEN }}
+          DD_RUM_APPLICATION_ID: ${{ vars.DD_RUM_APPLICATION_ID }}
