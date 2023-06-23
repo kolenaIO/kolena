@@ -7,8 +7,8 @@ search:
 
 <div class="grid" markdown>
 <div markdown>
-Recall, also known as **true positive rate** (TPR) and **sensitivity**, measures the proportion of all **positive
-ground truths** that a model correctly predicts, ranging from 0 to 1 (where 1 is best).
+Recall, also known as **true positive rate** (TPR) and **sensitivity**, measures the proportion of all positive
+ground truths that a model correctly predicts, ranging from 0 to 1 (where 1 is best).
 
 As shown in this diagram, recall is the fraction all positive ground truths that are correctly predicted:
 

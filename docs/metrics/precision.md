@@ -7,7 +7,7 @@ search:
 
 <div class="grid" markdown>
 <div markdown>
-Precision measures the proportion of **positive inferences** from a model that are correct, ranging from 0 to 1 (where
+Precision measures the proportion of positive inferences from a model that are correct, ranging from 0 to 1 (where
 1 is best).
 
 As shown in this diagram, precision is the fraction all inferences that are correct:
