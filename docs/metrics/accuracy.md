@@ -75,18 +75,20 @@ Highly imbalanced data, with 99 negative samples and 10 positive samples, with _
 | FN | 10 |
 | TN | 990 |
 
+<div markdown>
 $$
 \begin{align}
 \text{Accuracy} &= \frac{0 + 990}{0 + 0 + 10 + 990} \\[1em]
 &= 0.99
 \end{align}
 $$
-</div>
 
 !!! warning "Be careful with imbalanced datasets!"
 
     This example describes a trivial model that only ever returns negative inferences, yet it has the high accuracy
-    score of 99%!
+    score of 99%.
+</div>
+</div>
 
 ## Limitations and Biases
 

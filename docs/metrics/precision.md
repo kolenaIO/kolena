@@ -116,6 +116,7 @@ methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 As seen in its formula, precision only takes **positive** inferences (TP and FP) into account; negative inferences
 (TN and FN) are not considered. Thus, precision only provides one half of the picture, and should always be used in
-tandem with recall: recall penalizes failures to detect negative samples, where precision does not.
+tandem with recall: recall penalizes false negatives, whereas precision does not.
 
-For a single metric that takes both precision and recall into account, use F1 score.
+For a single metric that takes both precision and recall into account, use F1 score, which is the [harmonic] mean between precision
+and recall.
