@@ -1,5 +1,3 @@
-REVERTME
-
 <p align="center">
   <img src="https://docs.kolena.io/assets/images/wordmark-violet.svg" width="400" alt="Kolena" />
 </p>
