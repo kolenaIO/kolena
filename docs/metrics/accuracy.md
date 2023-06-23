@@ -19,7 +19,7 @@ caution.
 Accuracy is generally used to evaluate classification models. Aside from classification, accuracy is also often
 used to evaluate semantic segmentation models by measuring the percent of correctly classified pixels in an image.
 
-In a classification task, accuracy is the ratio of the number of correct predictions to the total number of predictions.
+In a classification task, accuracy is the ratio of the number of correct inferences to the total number of inferences.
 
 With [TP / FP / FN / TN counts](./tp-fp-fn-tn.md) computed, accuracy is defined:
 

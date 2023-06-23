@@ -7,16 +7,15 @@ search:
 
 <div class="grid" markdown>
 <div markdown>
-The precision metric is designed to measure the percentage of **positive predictions** that a model correctly predicted,
-ranging from 0 to 1 (where 1 is best).
+Precision measures the proportion of **positive inferences** from a model that are correct, ranging from 0 to 1 (where
+1 is best).
 
 As shown in this diagram, precision is the fraction all inferences that are correct:
 
 $$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}$$
 
-Where $\text{TP}$ is the number of true positive inferences and $\text{FP}$ is the number of false positive inferences.
-
-In other words, precision measures the ability of a model to not label a negative sample as positive.
+In the above formula, $\text{TP}$ is the number of true positive inferences and $\text{FP}$ is the number of false
+positive inferences.
 
 !!! info "Guide: True Positive / False Positive"
 
