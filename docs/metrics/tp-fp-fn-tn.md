@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # TP / FP / FN / TN
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)
