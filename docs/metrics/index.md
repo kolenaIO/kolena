@@ -27,11 +27,11 @@ biases, and its intended uses.
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
 
-- [F<sub>1</sub> score](f1-score.md)
+- [F<sub>1</sub>-score](f1-score.md)
 
     ---
 
-    F<sub>1</sub> score is a metric that combines two competing metrics, [precision](precision.md) and
+    F<sub>1</sub>-score is a metric that combines two competing metrics, [precision](precision.md) and
     [recall](recall.md) with an equal weight. It symmetrically represents both precision and recall as one metric.
 
 - [Geometry Matching](geometry-matching.md)
@@ -41,7 +41,7 @@ biases, and its intended uses.
     Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
     localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any
     metrics built on top of these, like [precision](precision.md), [recall](recall.md), and
-    [F<sub>1</sub> score](f1-score.md).
+    [F<sub>1</sub>-score](f1-score.md).
 
 - [Intersection over Union (IoU)](iou.md)
 
