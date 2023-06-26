@@ -175,6 +175,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     threshold_strategy: ThresholdStrategy
     iou_threshold: float
     min_confidence_score: float
+    with_class_level_metrics: bool
 
     def display_name(self) -> str:
         return (

@@ -22,11 +22,9 @@ import numpy as np
 
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
-from kolena._experimental.object_detection.utils import compute_f1_plot
 from kolena._experimental.object_detection.utils import compute_f1_plot_multiclass
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
 from kolena._experimental.object_detection.utils import compute_pr_curve
-from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.utils import compute_pr_plot_multiclass
 from kolena._experimental.object_detection.workflow import ClassMetricsPerTestCase
 from kolena._experimental.object_detection.workflow import GroundTruth
@@ -70,7 +68,12 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
 
     locators_by_test_case: Dict[str, List[str]] = {}
     """
-    Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics)
+    Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics).
+    """
+
+    matchings_by_test_case: Dict[str, List[MulticlassInferenceMatches]] = defaultdict(list)
+    """
+    Caches matchings per test case for test case metrics and test case plots.
     """
 
     def compute_image_metrics(
@@ -78,6 +81,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         ground_truth: GroundTruth,
         inference: Inference,
         configuration: ThresholdConfiguration,
+        test_case_name: str,
         labels: Set[str],  # the labels being tested in this test case
     ) -> TestSampleMetrics:
         assert configuration is not None, "must specify configuration"
@@ -93,6 +97,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
+        self.matchings_by_test_case[test_case_name].append(bbox_matches)
         tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
         fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
         fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
@@ -164,7 +169,10 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
-        return [(ts, self.compute_image_metrics(gt, inf, configuration, labels)) for ts, gt, inf in inferences]
+        return [
+            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name, labels))
+            for ts, gt, inf in inferences
+        ]
 
     def compute_aggregate_label_metrics(
         self,
@@ -248,20 +256,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
-        all_bbox_matches = [
-            match_inferences_multiclass(
-                ground_truth.bboxes,
-                [
-                    inf
-                    for inf in inference.bboxes
-                    if inf.label in labels and inf.score >= configuration.min_confidence_score
-                ],
-                ignored_ground_truths=ground_truth.ignored_bboxes,
-                mode="pascal",
-                iou_threshold=configuration.iou_threshold,
-            )
-            for _, ground_truth, inference in inferences
-        ]
+        all_bbox_matches = self.matchings_by_test_case[test_case.name]
 
         # compute nested metrics per class
         per_class_metrics: List[ClassMetricsPerTestCase] = []
@@ -295,22 +290,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         thresholds = self.get_confidence_thresholds(configuration)
-        all_bbox_matches = [
-            match_inferences_multiclass(
-                ground_truth.bboxes,
-                [
-                    inf
-                    for inf in inference.bboxes
-                    if inf.label in labels and inf.score >= configuration.min_confidence_score
-                ],
-                ignored_ground_truths=ground_truth.ignored_bboxes,
-                mode="pascal",
-                iou_threshold=configuration.iou_threshold,
-            )
-            for _, ground_truth, inference in inferences
-        ]
+        all_bbox_matches = self.matchings_by_test_case[test_case.name]
 
         # clean matching for confusion matrix
         match_matched = [
@@ -335,8 +316,6 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             filter(
                 None,
                 [
-                    compute_pr_plot(all_bbox_matches),
-                    compute_f1_plot(all_bbox_matches),
                     compute_f1_plot_multiclass(all_bbox_matches),
                     compute_pr_plot_multiclass(all_bbox_matches),
                     compute_confusion_matrix_plot(confusion_matrix_matchings),

@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -66,7 +67,12 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
     locators_by_test_case: Dict[str, List[str]] = {}
     """
-    Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics)
+    Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics).
+    """
+
+    matchings_by_test_case: Dict[str, List[InferenceMatches]] = defaultdict(list)
+    """
+    Caches matchings per test case for test case metrics and test case plots.
     """
 
     def compute_image_metrics(
@@ -74,6 +80,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         ground_truth: GroundTruth,
         inference: Inference,
         configuration: ThresholdConfiguration,
+        test_case_name: str,
         labels: Set[str],  # the label being tested in this test case
     ) -> TestSampleMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
@@ -85,6 +92,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
+        self.matchings_by_test_case[test_case_name].append(bbox_matches)
         tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
         fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
         fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
@@ -138,7 +146,10 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        return [(ts, self.compute_image_metrics(gt, inf, configuration, set())) for ts, gt, inf in inferences]
+        return [
+            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name, set()))
+            for ts, gt, inf in inferences
+        ]
 
     def compute_test_case_metrics(
         self,
@@ -148,16 +159,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestCaseMetrics:
         assert configuration is not None, "must specify configuration"
-        all_bbox_matches = [
-            match_inferences(
-                ground_truth.bboxes,
-                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
-                ignored_ground_truths=ground_truth.ignored_bboxes,
-                mode="pascal",
-                iou_threshold=configuration.iou_threshold,
-            )
-            for _, ground_truth, inference in inferences
-        ]
+        all_bbox_matches = self.matchings_by_test_case[test_case.name]
 
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
         tp_count = sum(im.count_TP for im in metrics)
@@ -194,21 +196,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
-        all_bbox_matches = [
-            match_inferences(
-                ground_truth.bboxes,
-                [
-                    inf
-                    for inf in inference.bboxes
-                    if inf.label in labels and inf.score >= configuration.min_confidence_score
-                ],
-                ignored_ground_truths=ground_truth.ignored_bboxes,
-                mode="pascal",
-                iou_threshold=configuration.iou_threshold,
-            )
-            for _, ground_truth, inference in inferences
-        ]
+        all_bbox_matches = self.matchings_by_test_case[test_case.name]
 
         plots: Optional[List[Plot]] = []
         plots.extend(

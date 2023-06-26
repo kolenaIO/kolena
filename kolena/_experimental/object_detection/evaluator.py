@@ -65,14 +65,12 @@ class ObjectDetectionEvaluator(Evaluator):
     ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
         assert configuration is not None, "must specify configuration"
 
-        labels = {obj.label for _, gts, inf in inferences for obj in gts.bboxes + inf.bboxes}
-
         # Use complete test case to determine workflow, single class or multiclass
         if self.evaluator is None:
-            if len(labels) == 1:
-                self.evaluator = SingleClassObjectDetectionEvaluator()
-            else:
+            if configuration.with_class_level_metrics:
                 self.evaluator = MulticlassObjectDetectionEvaluator()
+            else:
+                self.evaluator = SingleClassObjectDetectionEvaluator()
 
         return self.evaluator.compute_test_sample_metrics(
             test_case=test_case,
