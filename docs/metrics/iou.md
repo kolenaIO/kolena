@@ -235,7 +235,7 @@ this metric cannot be directly used to measure the overlap of an inference and `
 annotation from [COCO Detection Challenge Evaluation](https://cocodataset.org/#format-data) used to label a large
 groups of objects (e.g., a crowd of people). Therefore, the inference is expected to take up a small portion of the
 ground truth region, resulting in a low IoU score and a pair not being a valid match. In this scenario, a variation of
-IoU, called [intersection over foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred.
+IoU, called [Intersection over Foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred.
 This variation is used when there are ground truth regions you want to ignore in evaluation, such as `iscrowd`.
 
 The second limitation of IoU is measuring the localization performance of non-overlaps. IoU ranges from 0 (no overlap)
