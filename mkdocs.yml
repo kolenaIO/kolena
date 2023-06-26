@@ -53,8 +53,8 @@ nav:
       - Metrics Glossary: metrics/index.md
       - metrics/accuracy.md
       - metrics/averaging-methods.md
-      - metrics/geometry-matching.md
       - metrics/f1-score.md
+      - metrics/geometry-matching.md
       - metrics/iou.md
       - metrics/precision.md
       - metrics/recall.md

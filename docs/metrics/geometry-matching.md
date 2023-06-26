@@ -2,8 +2,8 @@
 
 Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
 localization component, such as 2D and 3D object detection and instance segmentation. It is a building block for metrics
-like true positive/false positive/false negative counts and any metrics derived from these, such as precision and
-recall.
+like [TP / FP / FN counts](./tp-fp-fn-tn.md) and any metrics derived from these, such as [precision](./precision.md) and
+[recall](./recall.md).
 
 While it may sound simple, geometry matching is surprisingly challenging and full of edge cases! In this guide, we'll
 focus on 2D object detection—specifically 2D bounding box matching—to learn about geometry matching algorithms.
@@ -267,7 +267,7 @@ Another behavior to note here is that it is possible to get different matching r
 **order** when there are multiple ground truths overlapping with an inference with the equal IoU or depending on the
 **inference order** when there are multiple inferences overlapping with a ground truth with the equal confidence score.
 
-??? example "Example: Different Matching Results when Ground Truth Order Changes"
+??? example "Example: Different Matching Results When Ground Truth Order Changes"
 
 	![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order.png)
 

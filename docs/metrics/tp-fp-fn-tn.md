@@ -2,7 +2,7 @@
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)
 inferences and ground truths are essential for summarizing model performance. These metrics are the building blocks of
-many other metrics, including accuracy, precision, and recall.
+many other metrics, including [accuracy](./accuracy.md), [precision](./precision.md), and [recall](./recall.md).
 
 | Metric | | Description |
 | --- | --- | --- |
@@ -41,7 +41,7 @@ cases to be aware of for binary and multiclass problems as well as object detect
 
 ### Classification
 
-There are three types of classification tasks: **binary**, **multi-class,** and **multi-label**.
+There are three types of classification tasks: **binary**, **multiclass,** and **multi-label**.
 
 #### Binary
 
@@ -188,7 +188,7 @@ Read more about these different averaging methods in the [Averaging Methods guid
 
 ## Limitations and Biases
 
-TP, FP, TN, and FN are four metrics based on the assumption that each sample/instance can be classified as a positive
+TP, FP, FN, and TN are four metrics based on the assumption that each sample/instance can be classified as a positive
 or a negative, thus they can only be applied to single-class applications. The workaround for multiple-class
 applications is to compute these metrics for each label using the **one-vs-rest** (OvR) strategy and then treat it
 as a single-class problem.

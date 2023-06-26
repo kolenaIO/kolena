@@ -95,7 +95,7 @@ $$
 
 ### Multiple Classes
 
-So far, we have only looked at **binary** classification/object detection cases, but in **multi-class** or
+So far, we have only looked at **binary** classification/object detection cases, but in **multiclass** or
 **multi-label** cases, precision is computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide,
 we went over multiple-class cases and how these metrics are computed. Once you have these four metrics computed per
 class, you can compute precision for each class by treating each as a single-class problem.
@@ -112,5 +112,5 @@ As seen in its formula, precision only takes **positive** inferences (TP and FP)
 (TN and FN) are not considered. Thus, precision only provides one half of the picture, and should always be used in
 tandem with [recall](./recall.md): recall penalizes false negatives (FN), whereas precision does not.
 
-For a single metric that takes both precision and recall into account, use F1 score, which is the harmonic mean between
+For a single metric that takes both precision and recall into account, use F<sub>1</sub>-score, which is the harmonic mean between
 precision and recall.

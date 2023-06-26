@@ -6,7 +6,7 @@ and straightforward to calculate.
 Accuracy measures how often a model correctly predicts something (ranging from 0 to 1, with 1 being perfect
 inferences). It reports the ratio of the number of correct inferences to the total number of inferences,
 making it a good metric for assessing model performance in simple cases with balanced data. However, accuracy is much
-less meaningful with unbalanced datasets (e.g. far more negative samples than positive samples) and should be used with
+less meaningful with unbalanced datasets (e.g. far more negative ground truths than positive ground truths) and should be used with
 caution.
 
 ## Implementation Details
@@ -24,7 +24,7 @@ $$
 
 ### Examples
 
-Perfect inferences across 20 samples:
+Perfect inferences:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -42,7 +42,7 @@ $$
 $$
 </div>
 
-Partially correct inferences across 20 samples:
+Partially correct inferences:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -60,7 +60,7 @@ $$
 $$
 </div>
 
-Highly imbalanced data, with 99 negative samples and 10 positive samples, with _no_ positive inferences:
+Highly imbalanced data, with 990 negative ground truths and 10 positive ground truths, with _no_ positive inferences:
 
 <div class="grid" markdown>
 | Metric | Value |
@@ -91,13 +91,13 @@ While accuracy generally describes a classifier’s performance, it is important
 especially when [the data is imbalanced](https://stephenallwright.com/imbalanced-data/).
 
 For example, let’s say there
-are a total of 500 samples, with 450 belonging to the positive class and 50 to the negative. If the model correctly
-predicts all the positive samples but misses all the negative ones, its accuracy is `450 / 500 = 0.9`. An accuracy score
-of 90% indicates a pretty good model — but is a model that fails 100% of the time on negative samples useful? Using the
+are a total of 500 ground truths, with 450 belonging to the positive class and 50 to the negative. If the model correctly
+predicts all the positive ground truths but misses all the negative ones, its accuracy is `450 / 500 = 0.9`. An accuracy score
+of 90% indicates a pretty good model — but is a model that fails 100% of the time on negative ground truths useful? Using the
 accuracy metric alone can hide a model’s true performance, so we recommend other metrics that are better suited for
 imbalanced data, such as:
 
 - [Balanced accuracy](https://stephenallwright.com/balanced-accuracy/)
-- Precision
-- Recall
-- F1 score
+- [Precision](./precision.md)
+- [Recall](./recall.md)
+- [F<sub>1</sub>-score](./f1-score.md)
