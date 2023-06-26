@@ -87,9 +87,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         )
         tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
         fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
-        fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
-            gt for gt, inf in bbox_matches.matched if inf.score < thresholds
-        ]
+        fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
         return TestSampleMetricsSingleClass(
@@ -104,7 +102,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             has_FN=len(fn) > 0,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            threshold=thresholds,
+            thresholds=thresholds,
         )
 
     def compute_and_cache_f1_optimal_thresholds(
@@ -129,7 +127,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             for _, ground_truth, inference in inferences
         ]
         optimal_thresholds = compute_optimal_f1_threshold(all_bbox_matches)
-        self.threshold_cache[configuration.display_name()] = optimal_thresholds
+        self.threshold_cache[configuration.display_name()] = max(configuration.min_confidence_score, optimal_thresholds)
 
     def compute_test_sample_metrics(
         self,
@@ -140,8 +138,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        labels = list({gt.label for _, gts, _ in inferences for gt in gts.bboxes})
-        return [(ts, self.compute_image_metrics(gt, inf, configuration, labels[0])) for ts, gt, inf in inferences]
+        return [(ts, self.compute_image_metrics(gt, inf, configuration, set())) for ts, gt, inf in inferences]
 
     def compute_test_case_metrics(
         self,

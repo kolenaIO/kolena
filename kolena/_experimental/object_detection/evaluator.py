@@ -50,10 +50,12 @@ class ObjectDetectionEvaluator(Evaluator):
     """
 
     # The evaluator class to use for single or multiclass object detection
-    evaluator: Union[
-        SingleClassObjectDetectionEvaluator,
-        MulticlassObjectDetectionEvaluator,
-    ] = MulticlassObjectDetectionEvaluator()
+    evaluator: Optional[
+        Union[
+            SingleClassObjectDetectionEvaluator,
+            MulticlassObjectDetectionEvaluator,
+        ]
+    ] = None
 
     def compute_test_sample_metrics(
         self,
@@ -62,12 +64,15 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
         assert configuration is not None, "must specify configuration"
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes + gts.ignored_bboxes}
 
-        if len(labels) == 1:
-            self.evaluator = SingleClassObjectDetectionEvaluator()
-        else:
-            self.evaluator = MulticlassObjectDetectionEvaluator()
+        labels = {obj.label for _, gts, inf in inferences for obj in gts.bboxes + inf.bboxes}
+
+        # Use complete test case to determine workflow, single class or multiclass
+        if self.evaluator is None:
+            if len(labels) == 1:
+                self.evaluator = SingleClassObjectDetectionEvaluator()
+            else:
+                self.evaluator = MulticlassObjectDetectionEvaluator()
 
         return self.evaluator.compute_test_sample_metrics(
             test_case=test_case,
@@ -115,4 +120,5 @@ class ObjectDetectionEvaluator(Evaluator):
         return self.evaluator.compute_test_suite_metrics(
             test_suite=test_suite,
             metrics=metrics,
+            configuration=configuration,
         )

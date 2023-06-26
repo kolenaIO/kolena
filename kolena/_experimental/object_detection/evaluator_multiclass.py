@@ -93,13 +93,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        image_labels = {gt.label for gt in ground_truth.bboxes}
         tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
-        fp = [
-            inf
-            for inf in bbox_matches.unmatched_inf
-            if inf.label in image_labels and inf.score >= thresholds[inf.label]
-        ]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
         fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
             gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
         ]
@@ -108,7 +103,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
-
+        image_labels = {gt.label for gt in ground_truth.bboxes}
         fields = [
             ScoredClassificationLabel(label=label, score=thresholds[label])
             for label in thresholds.keys()
@@ -154,7 +149,10 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             for _, ground_truth, inference in inferences
         ]
         optimal_thresholds = compute_optimal_f1_threshold_multiclass(all_bbox_matches)
-        self.threshold_cache[configuration.display_name()] = optimal_thresholds
+        self.threshold_cache[configuration.display_name()] = defaultdict(
+            lambda: configuration.min_confidence_score,
+            optimal_thresholds,
+        )
 
     def compute_test_sample_metrics(
         self,
