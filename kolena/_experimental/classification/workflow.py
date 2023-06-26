@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from enum import Enum
+from typing import List
 from typing import Optional
 
 from pydantic import Field
@@ -41,7 +43,7 @@ class GroundTruth(BaseGroundTruth):
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    inference: ScoredClassificationLabel
+    inferences: List[ScoredClassificationLabel]
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow(
@@ -54,12 +56,14 @@ _workflow, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
+    label: Optional[str]
+    score: Optional[float]
     margin: Optional[float]
     is_correct: bool
 
 
 @dataclass(frozen=True)
-class ClassMetricsPerTestCase:
+class ClassMetricsPerTestCase(MetricsTestCase):
     label: str
     n_correct: int
     n_incorrect: int
@@ -72,6 +76,7 @@ class ClassMetricsPerTestCase:
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
+    PerClass: List[ClassMetricsPerTestCase]
     n_labels: int
     n_correct: int
     n_incorrect: int
@@ -85,15 +90,27 @@ class TestCaseMetrics(MetricsTestCase):
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
+    n_invalid: int
     n_correct: int
-    mean_test_case_accuracy: float
+    overall_accuracy: float
+
+
+class ThresholdStrategy(str, Enum):
+    F1_OPTIMAL = "F1_OPTIMAL"
+    FIXED_05 = "FIXED_05"
+
+    def display_name(self) -> str:
+        if self is ThresholdStrategy.FIXED_05:
+            return "Fixed(0.5)"
+        if self is ThresholdStrategy.F1_OPTIMAL:
+            return "F1-Optimal"
+        raise RuntimeError(f"unrecognized threshold strategy: {self}")
 
 
 @dataclass(frozen=True)
 class ThresholdConfiguration(EvaluatorConfiguration):
-    threshold: Optional[float] = None
+    threshold_strategy: ThresholdStrategy
+    min_confidence_score: float
 
     def display_name(self) -> str:
-        if self.threshold:
-            return f"Confidence Above Threshold (threshold={self.threshold})"
-        return "Max Confidence"
+        return f"Threshold: {self.threshold_strategy.display_name()}, " f"confidence ≥ {self.min_confidence_score}"

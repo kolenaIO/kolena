@@ -19,17 +19,18 @@ from .workflow import Inference
 from .workflow import TestCase
 from .workflow import TestSuite
 from .workflow import Model
+from .workflow import ThresholdStrategy
 from .workflow import ThresholdConfiguration
-from .evaluator import MulticlassClassificationEvaluator
+from .evaluator import evaluate_multiclass_classification
 
 __all__ = [
     "TestSample",
     "GroundTruth",
-    "InferenceLabel",
     "Inference",
     "TestCase",
     "TestSuite",
     "Model",
+    "ThresholdStrategy",
     "ThresholdConfiguration",
-    "MulticlassClassificationEvaluator",
+    "evaluate_multiclass_classification",
 ]
