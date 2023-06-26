@@ -123,7 +123,7 @@ $$
 ### Segmentation Mask
 
 A [segmentation mask][kolena.workflow.annotation.SegmentationMask] is a 2D image where each pixel is a class label
-commonly used in semantic segmentation tasks. The inference shape matches the ground truth shape (width and height),
+commonly used in semantic segmentation workflow. The inference shape matches the ground truth shape (width and height),
 with a channel depth equivalent to the number of class labels to be predicted. Each channel is a binary mask that
 labels areas where a specific class is present:
 
@@ -170,7 +170,7 @@ $$
 
 ### Set of Labels
 
-The set of labels used in multi-label classification tasks is often a
+The set of labels used in multi-label classification workflow is often a
 [binarized](https://scikit-learn.org/stable/modules/generated/sklearn.preprocessing.label_binarize.html) list with a
 number of label elements, for example, let’s say there are three classes, `Airplane`, `Boat`, and `Car`, and a sample
 is labeled as `Boat` and `Car`. The binary set of labels would then be $[0, 1, 1]$, where each element represents each

@@ -41,11 +41,11 @@ cases to be aware of for binary and multiclass problems as well as object detect
 
 ### Classification
 
-There are three types of classification tasks: **binary**, **multiclass,** and **multi-label**.
+There are three types of classification workflows: **binary**, **multiclass,** and **multi-label**.
 
 #### Binary
 
-In a binary classification task, TP, FN, FP, and TN are implemented as follows:
+In binary classification workflow, TP, FN, FP, and TN are implemented as follows:
 
 | Variable | Type | Description |
 | --- | --- | --- |
@@ -82,9 +82,9 @@ TN = sum(not gt and inf <  T for gt, inf in zip(ground_truths, inferences))
 
 #### Multiclass
 
-TP / FP / FN / TN metrics are computed a little differently in **multiclass** classification tasks.
+TP / FP / FN / TN metrics are computed a little differently in a **multiclass** classification workflow.
 
-For multiclass classification tasks, these four metrics are defined **per class**. This technique,
+For a multiclass classification workflow, these four metrics are defined **per class**. This technique,
 also known as **one-vs-rest** (OvR), essentially evaluates each class as a binary classification problem.
 
 Consider a classification problem where a given image belongs to either the `Airplane`, `Boat`, or `Car` class. Each of
@@ -99,18 +99,18 @@ these TP / FP / FN / TN metrics is computed for each class. For class `Airplane`
 
 #### Multi-label
 
-In a **multi-label** classification task, TP / FP / FN / TN are computed per class, like in multiclass classification.
+In a **multi-label** classification workflow, TP / FP / FN / TN are computed per class, like in multiclass classification.
 
 A sample is considered to be a positive one if the ground truth **includes** the evaluating class; otherwise, it’s a
 negative sample. The same logic can be applied to the inferences, so, for example, if a classifier predicts that this
 sample belongs to class `Airplane` and `Boat`, and the ground truth for the same sample is only class `Airplane`, then
 this sample is considered to be a TP for class `Airplane`, and FP for class `Boat`.
 
-Multi-label classification tasks can alternately be thought of as a collection of binary classification tasks.
+Multi-label classification workflow can alternately be thought of as a collection of binary classification workflows.
 
 ### Object Detection
 
-There are some differences in how these four metrics work for a detection task compared to a classification task.
+There are some differences in how these four metrics work for a detection workflow compared to a classification workflow.
 Rather than being computed at the sample level (e.g. per image), they're computed at the instance level (i.e. per object)
 for instances that the model is detecting. When given an image with multiple objects, each inference and each ground truth
 is assigned to one group, and the definitions of the terms are slightly altered:
@@ -120,9 +120,9 @@ is assigned to one group, and the definitions of the terms are slightly altered:
 | True Positive | TP | Inference that is matched with a ground truth and has a confidence score $\geq$ threshold |
 | False Positive | FP | Inference that is not matched with a ground truth and has a confidence score $\geq$ threshold |
 | <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference or that is matched with an inference that has a confidence score $<$ threshold |
-| True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><p>In object detection tasks, a true negative is any non-object that isn't detected as an object. This isn't well defined and as such true negative isn't a commonly used metric in object detection.</p><div>Occasionally, for object detection tasks "true negative" is used to refer to any image that does not have any true positive or false positive inferences.</div> |
+| True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><p>In object detection workflow, a true negative is any non-object that isn't detected as an object. This isn't well defined and as such true negative isn't a commonly used metric in object detection.</p><div>Occasionally, for object detection workflow "true negative" is used to refer to any image that does not have any true positive or false positive inferences.</div> |
 
-In an object detection task, checking for detection correctness requires a couple of other metrics (e.g., [Intersection
+In object detection workflow, checking for detection correctness requires a couple of other metrics (e.g., [Intersection
 over Union (IoU)](./iou.md) and [Geometry Matching](./geometry-matching.md)).
 
 #### Single-class
@@ -161,7 +161,7 @@ FP = len([inf.score >= T for inf in unmatched_inf])
 
 #### Multiclass
 
-Like classification, multiclass object detection tasks compute TP / FP / FN per class.
+Like classification, multiclass object detection workflow compute TP / FP / FN per class.
 
 ??? example "Example: Multiclass Object Detection"
 
