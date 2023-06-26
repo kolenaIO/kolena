@@ -33,23 +33,33 @@ Because IoU can be used on various types of data, let's look at how the metric i
 
 ### 2D Axis-Aligned Bounding Box
 
-Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, and notice the highlighted overlap region,
-which is always going to be a 2D axis-aligned bounding box.
+Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, with the origin of the coordinates being
+the top-left corner of the image, and to the right and down are the positive directions of the $x$ and $y$ axes,
+respectively. This is a common image coordinate system in computer vision domain.
 
+<div class="grid" markdown>
 ![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-light.svg#only-light)
 ![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-dark.svg#only-dark)
 
+!!! info "Guides: Commonly Used Bounding Box Representations"
+
+    A bounding box is often defined by the $x$ and $y$ coordinates of the top-left and bottom-right corners. Another
+    commonly used representation is the $x$ and $y$ coordinates of bounding box center, and the width and the height of
+    the box.
+
+</div>
 
 In order to compute IoU for two 2D bounding boxes, the first step is identifying the area of the intersection box,
-$(\text{A} \cap \text{B})$. The two coordinates of the intersection box, top-left and bottom-right corners, can be defined as:
+$(\text{A} \cap \text{B})$.  This is the highlighted overlap region in the image above. The two coordinates of the
+intersection box, top-left and bottom-right corners, can be defined as:
 
 $$
-\text{A} \cap \text{B}\,_{\text{topleft}}
+\text{A} \cap \text{B}\,_{\text{top-left}}
 = (\max \left( x_{a1}, \, x_{b1} \right), \, \max \left( y_{a1}, \, y_{b1} \right))
 $$
 
 $$
-\text{A} \cap \text{B}\,_{\text{bottomright}}
+\text{A} \cap \text{B}\,_{\text{bottom-right}}
 = (\min \left( x_{a2}, \, x_{b2} \right), \, \min \left(y_{a2}, \, y_{b2} \right))
 $$
 
