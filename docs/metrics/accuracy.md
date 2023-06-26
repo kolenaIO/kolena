@@ -6,7 +6,7 @@ and straightforward to calculate.
 Accuracy measures how often a model correctly predicts something (ranging from 0 to 1, with 1 being perfect
 inferences). It reports the ratio of the number of correct inferences to the total number of inferences,
 making it a good metric for assessing model performance in simple cases with balanced data. However, accuracy is much
-less meaningful with unbalanced datasets (e.g. far more negative ground truths than positive ground truths) and should be used with
+less meaningful with imbalanced datasets (e.g. far more negative ground truths than positive ground truths) and should be used with
 caution.
 
 ## Implementation Details
