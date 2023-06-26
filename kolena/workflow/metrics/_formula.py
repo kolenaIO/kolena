@@ -15,7 +15,7 @@
 
 def precision(true_positives: int, false_positives: int) -> float:
     """
-    Precision represents the proportion of predictions that are correct.
+    Precision represents the proportion of inferences that are correct.
 
     $$
     \\text{Precision} = \\frac{\\text{# True Positives}}{\\text{# True Positives} + \\text{# False Positives}}
@@ -25,8 +25,8 @@ def precision(true_positives: int, false_positives: int) -> float:
     - :kolena-metrics-glossary-16: Metrics Glossary: [Precision ↗](../../metrics/precision.md)
     </div>
 
-    :param true_positives: Number of true positive predictions.
-    :param false_positives: Number of false positive predictions.
+    :param true_positives: Number of true positive inferences.
+    :param false_positives: Number of false positive inferences.
     """
     denominator = true_positives + false_positives
     return true_positives / denominator if denominator > 0 else 0
@@ -44,7 +44,7 @@ def recall(true_positives: int, false_negatives: int) -> float:
     - :kolena-metrics-glossary-16: Metrics Glossary: [Recall ↗](../../metrics/recall.md)
     </div>
 
-    :param true_positives: Number of true positive predictions.
+    :param true_positives: Number of true positive inferences.
     :param false_negatives: Number of false negatives.
     """
     denominator = true_positives + false_negatives
@@ -53,7 +53,7 @@ def recall(true_positives: int, false_negatives: int) -> float:
 
 def f1_score(true_positives: int, false_positives: int, false_negatives: int) -> float:
     """
-    F1 score is the harmonic mean between [`precision`][kolena.workflow.metrics.precision] and
+    F<sub>1</sub>-score is the harmonic mean between [`precision`][kolena.workflow.metrics.precision] and
     [`recall`][kolena.workflow.metrics.recall].
 
     $$
@@ -68,8 +68,8 @@ def f1_score(true_positives: int, false_positives: int, false_negatives: int) ->
     - :kolena-metrics-glossary-16: Metrics Glossary: [F<sub>1</sub>-score ↗](../../metrics/f1-score.md)
     </div>
 
-    :param true_positives: Number of true positive predictions.
-    :param false_positives: Number of false positive predictions.
+    :param true_positives: Number of true positive inferences.
+    :param false_positives: Number of false positive inferences.
     :param false_negatives: Number of false negatives.
     """
     prec = precision(true_positives, false_positives)

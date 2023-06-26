@@ -5,7 +5,7 @@
 Recall, also known as **true positive rate** (TPR) and **sensitivity**, measures the proportion of all positive
 ground truths that a model correctly predicts, ranging from 0 to 1 (where 1 is best).
 
-As shown in this diagram, recall is the fraction all positive ground truths that are correctly predicted:
+As shown in this diagram, recall is the fraction of all positive ground truths that are correctly predicted:
 
 $$\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
 
@@ -97,7 +97,7 @@ $$
 
 ### Multiple Classes
 
-So far, we have only looked at **binary** classification/object detection cases, but in **multi-class** or
+So far, we have only looked at **binary** classification/object detection cases, but in **multiclass** or
 **multi-label** cases, recall is computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide,
 we went over multiple-class cases and how these metrics are computed. Once you have these four metrics computed per
 class, you can compute recall for each class by treating each as a single-class problem.
@@ -114,5 +114,5 @@ As seen in its formula, recall only takes **positive** ground truths (TP and FN)
 (TN and FP) are not considered. Thus, recall only provides one half of the picture, and should always be used in
 tandem with [precision](./precision.md): precision penalizes false positives (FP), whereas recall does not.
 
-For a single metric that takes both precision and recall into account, use F1 score, which is the harmonic mean between
+For a single metric that takes both precision and recall into account, use F<sub>1</sub>-score, which is the harmonic mean between
 precision and recall.

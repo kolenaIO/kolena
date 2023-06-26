@@ -80,7 +80,7 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
 
     :param a: The first geometry in computation.
     :param b: The second geometry in computation.
-    :return: The value of the IOU between geometries `a` and `b`.
+    :return: The value of the IoU between geometries `a` and `b`.
     """
 
     if isinstance(a, BoundingBox) and isinstance(b, BoundingBox):
@@ -117,7 +117,7 @@ class InferenceMatches(Generic[GT, Inf]):
 
     matched: List[Tuple[GT, Inf]]
     """
-    Pairs of matched ground truth and inference objects above the IOU threshold. Considered as true positive
+    Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
     detections after applying some confidence threshold.
     """
 
@@ -145,13 +145,13 @@ def _match_inferences_single_class_pascal_voc(
     # sort inferences by highest confidence first
     inferences = sorted(inferences, key=lambda inf: -inf.score)
 
-    # for each inference, find the ground truth with the highest IOU
+    # for each inference, find the ground truth with the highest IoU
     for inf in inferences:
         best_gt = None
         best_gt_iou = -1.0
         for g, gt in enumerate(gt_objects):
             inf_gt_iou = iou(gt, inf)
-            # track the highest iou over the threshold
+            # track the highest IoU over the threshold
             if inf_gt_iou >= iou_threshold and inf_gt_iou > best_gt_iou:
                 best_gt_iou = inf_gt_iou
                 best_gt = g
@@ -185,7 +185,7 @@ def match_inferences(
 
     Available modes:
 
-    - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IOU is
+    - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IoU is
       its match. Multiple inferences are able to match with the same ignored ground truth. See the
       [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
 
@@ -203,7 +203,7 @@ def match_inferences(
         ground truths to ignore. These ignored ground truths and any inferences matched with them are
         omitted from the returned [`InferenceMatches`][kolena.workflow.metrics.InferenceMatches].
     :param mode: The matching methodology to use. See available modes above.
-    :param iou_threshold: The IOU (intersection over union, see [`iou`][kolena.workflow.metrics.iou]) threshold for
+    :param iou_threshold: The IoU (intersection over union, see [`iou`][kolena.workflow.metrics.iou]) threshold for
         valid matches.
     :return: [`InferenceMatches`][kolena.workflow.metrics.InferenceMatches] containing the matches (true positives),
         unmatched ground truths (false negatives) and unmatched inferences (false positives).
@@ -241,13 +241,13 @@ class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
 
     matched: List[Tuple[GT_Multiclass, Inf_Multiclass]]
     """
-    Pairs of matched ground truth and inference objects above the IOU threshold. Considered as true positive
+    Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
     detections after applying some confidence threshold.
     """
 
     unmatched_gt: List[Tuple[GT_Multiclass, Optional[Inf_Multiclass]]]
     """
-    Pairs of unmatched ground truth objects with its confused inference object (i.e. IOU above threshold with
+    Pairs of unmatched ground truth objects with its confused inference object (i.e. IoU above threshold with
     mismatching `label`), if such an inference exists. Considered as false negatives and "confused" detections.
     """
 
@@ -268,12 +268,12 @@ def match_inferences_multiclass(
 
     This matcher considers `label` values matching per class. After matching inferences and ground truths with
     equivalent `label` values, unmatched inferences and unmatched ground truths are matched once more to identify
-    confused matches, where localization succeeded (i.e. IOU above `iou_threshold`) but classification failed (i.e.
+    confused matches, where localization succeeded (i.e. IoU above `iou_threshold`) but classification failed (i.e.
     mismatching `label` values).
 
     Available modes:
 
-    - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IOU is
+    - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IoU is
       its match. Multiple inferences are able to match with the same ignored ground truth. See the
       [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
 
@@ -293,7 +293,7 @@ def match_inferences_multiclass(
         truths and any inferences matched with them are omitted from the returned
         [`MulticlassInferenceMatches`][kolena.workflow.metrics.MulticlassInferenceMatches].
     :param mode: The matching methodology to use. See available modes above.
-    :param iou_threshold: The IOU threshold cutoff for valid matches.
+    :param iou_threshold: The IoU threshold cutoff for valid matches.
     :return:
         [`MulticlassInferenceMatches`][kolena.workflow.metrics.MulticlassInferenceMatches] containing the matches
         (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).

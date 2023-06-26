@@ -57,7 +57,7 @@ biases, and its intended uses.
     Precision measures the proportion of positive inferences from a model that are correct. It is useful when the
     objective is to measure and reduce false positive inferences.
 
-- [Recall](recall.md)
+- [Recall (TPR, Sensitivity)](recall.md)
 
     ---
 

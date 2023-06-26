@@ -4,9 +4,10 @@ subtitle: Macro, Micro, Weighted
 
 # Averaging Methods
 
-For multiclass workflows like classification or object detection, metrics such as precision, recall, and F1-score are
-computed **per class**. To compute a single value that represents model performance across all classes, these per-class
-scores need to be aggregated. There are a few different averaging methods for doing this, most notably:
+For multiclass workflows like classification or object detection, metrics such as [precision](./precision.md),
+[recall](./recall.md), and [F<sub>1</sub>-score](./f1-score.md) are computed **per class**. To compute a single value that represents model performance across all
+classes, these per-class scores need to be aggregated. There are a few different averaging methods for doing this, most
+notably:
 
 - [**Macro**](#macro-average): unweighted mean of all per-class scores
 - [**Micro**](#micro-average): global average of per-sample TP, FP, FN scores
@@ -31,7 +32,7 @@ Let’s consider the following multiclass classification metrics, computed acros
 
 $$
 \begin{align}
-\text{F1}_\text{macro} &= \frac{\text{F1}_\texttt{Airplane} + \text{F1}_\texttt{Boat} + \text{F1}_\texttt{Car}}{3} \\[1em]
+\text{F}_{1 \, \text{macro}} &= \frac{\text{F}_{1 \, \texttt{Airplane}} + \text{F}_{1 \, \texttt{Boat}} + \text{F}_{1 \, \texttt{Car}}}{3} \\[1em]
 &= \frac{0.67 + 0.4 + 0.67}{3} \\[1em]
 &= 0.58
 \end{align}
@@ -39,8 +40,8 @@ $$
 
 ### Micro Average
 
-In contrast to macro, **micro average** computes a **global** average by counting the sums of true positive (TP), false
-negative (FN) and false positive (FP).
+In contrast to macro, **micro average** computes a **global** average by counting the sums of [true positive (TP), false
+negative (FN) and false positive (FP)](./tp-fp-fn-tn.md).
 
 **Micro precision** and **micro recall** are computed with the standard precision and recall formulas, using the total
 TP/FP/FN counts across all classes:
@@ -63,25 +64,25 @@ $$
 $$
 </div>
 
-What about **micro F1**? Plug the micro-averaged values for precision and recall into the standard formula for F1 score:
+What about **micro F<sub>1</sub>**? Plug the micro-averaged values for precision and recall into the standard formula for F<sub>1</sub>-score:
 
 $$
 \begin{align}
-\text{F1}_\text{micro} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
+\text{F}_{1 \, \text{micro}} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
 &= 2 \times \frac{0.6 \times 0.6}{0.6 + 0.6} \\[1em]
 &= 0.6
 \end{align}
 $$
 
 
-Note that precision, recall, and F1-score all have the same value: $0.6$. This is because micro-averaging essentially
+Note that precision, recall, and F<sub>1</sub>-score all have the same value: $0.6$. This is because micro-averaging essentially
 computes the proportion of correctly classified instances out of all instances, which is the definition of overall
 **accuracy**.
 
-In the multi-class classification cases where each sample has a single label, we get the following:
+In the multiclass classification cases where each sample has a single label, we get the following:
 
 $$
-\text{F1}_\text{micro} = \text{Precision}_\text{micro} = \text{Recall}_\text{micro} = \text{Accuracy}
+\text{F}_{1 \, \text{micro}} = \text{Precision}_\text{micro} = \text{Recall}_\text{micro} = \text{Accuracy}
 $$
 
 ### Weighted Average
@@ -95,9 +96,9 @@ class’s support relative to the sum of all support values:
 
 $$
 \begin{align}
-\text{F1}_\text{weighted} &= \left( \text{F1}_\texttt{Airplane} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
-+ \left( \text{F1}_\texttt{Boat} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
-+ \left( \text{F1}_\texttt{Car} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
+\text{F}_{1 \, \text{weighted}} &= \left( \text{F}_{1 \, \texttt{Airplane}} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
++ \left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
++ \left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
 &= \left( 0.67 \times \tfrac{3}{10} \right) + \left( 0.4 \times \tfrac{1}{10} \right) + \left( 0.67 \times \tfrac{6}{10} \right) \\[1em]
 &= 0.64
 \end{align}
