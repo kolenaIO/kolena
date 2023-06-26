@@ -1,7 +1,7 @@
 # TP / FP / FN / TN
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)
-inferences and ground truths are essential for summarizing model performance. These metrics are the building blocks of
+ground truths and inferences are essential for summarizing model performance. These metrics are the building blocks of
 many other metrics, including [accuracy](./accuracy.md), [precision](./precision.md), and [recall](./recall.md).
 
 | Metric | | Description |
