@@ -13,6 +13,7 @@ comparing model performance. In each metrics guide, you can learn about the metr
 biases, and its intended uses.
 
 <div class="grid cards" markdown>
+
 - [Accuracy](accuracy.md)
 
     ---

@@ -41,7 +41,6 @@ type and the matching result:
 
 ![example legends](../assets/images/metrics-matcher-legends.png)
 
-### Example 1
 
 This example contains two ground truth and two inference bounding boxes, each with the same label.
 The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap
@@ -70,7 +69,6 @@ unmatched. In this case, ground truth $\text{B}$ is the only **unmatched ground 
 
 </center>
 
-### Example 2
 
 Let's take a look at another example with multiple classes: `Apple` and `Banana`.
 
@@ -93,7 +91,6 @@ For class `Banana`, there is only one inference and no ground truths. Therefore,
 
 </center>
 
-### Example 3
 
 Here is another example with multiple inferences overlapping with the same ground truth.
 
@@ -115,7 +112,6 @@ they cannot become a match because $\text{A}$ is already matched with $\text{b}$
 
 </center>
 
-### Example 4
 
 Let's consider another scenario where there are multiple ground truths overlapping with the same inference.
 
@@ -197,7 +193,7 @@ This `iscrowd` flag is intended to avoid penalizing models for failing to detect
 ### Open Images Detection Challenge
 
 The [Open Images V7 Challenge](https://storage.googleapis.com/openimages/web/evaluation.html) evaluation introduces two
-key differences in the matching algorithm.
+key differences in its matching algorithm.
 
 The first is with the way that the images are annotated in this dataset. Images are annotated with **positive**
 **image-level** labels, indicating certain object classes are present, and with **negative** **image-level** labels,

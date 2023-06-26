@@ -40,7 +40,7 @@ $$
 
 ### Micro Average
 
-In contrast to macro, **micro average** computes a **global** average by counting the sums of [true positive (TP), false
+In contrast to macro, **micro average** computes a global average by counting the sums of [true positive (TP), false
 negative (FN) and false positive (FP)](./tp-fp-fn-tn.md).
 
 **Micro precision** and **micro recall** are computed with the standard precision and recall formulas, using the total
