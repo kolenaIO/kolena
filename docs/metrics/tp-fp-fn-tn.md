@@ -53,6 +53,13 @@ In binary classification workflow, TP, FN, FP, and TN are implemented as follows
 | `inferences` | <nobr>`List[float]`</nobr> | Predicted confidence scores, where a higher score indicates a higher confidence of the sample being positive |
 | `T` | `float` | Threshold value to compare against the inference’s confidence score, where `score >= T` is positive |
 
+!!! question "Should Threshold Be Inclusive or Exclusive?"
+
+    A confidence threshold is defined as "the minimum score that the model will consider the inference
+    to be positive (i.e. true)". Therefore, it is a standard practice to consider inferences with confidence score
+    **greater than or equal to** the confidence threshold as positive.
+
+
 With these inputs, TP / FP/ FN / TN metrics are defined:
 
 ```python
@@ -117,9 +124,9 @@ is assigned to one group, and the definitions of the terms are slightly altered:
 
 | Metric | | Description |
 | --- | --- | --- |
-| True Positive | TP | Inference that is matched with a ground truth and has a confidence score $\geq$ threshold |
-| False Positive | FP | Inference that is not matched with a ground truth and has a confidence score $\geq$ threshold |
-| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference or that is matched with an inference that has a confidence score $<$ threshold |
+| True Positive | TP | Positive inference (`score >= T`) that is matched with a ground truth |
+| False Positive | FP | Positive inference (`score >= T`) that is not matched with a ground truth |
+| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference or that is matched with a negative inference (`score < T`) |
 | True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><p>In object detection workflow, a true negative is any non-object that isn't detected as an object. This isn't well defined and as such true negative isn't a commonly used metric in object detection.</p><div>Occasionally, for object detection workflow "true negative" is used to refer to any image that does not have any true positive or false positive inferences.</div> |
 
 In object detection workflow, checking for detection correctness requires a couple of other metrics (e.g., [Intersection
