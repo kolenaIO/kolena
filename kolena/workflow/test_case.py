@@ -401,7 +401,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         cls._validate_test_samples()
 
-        log.info(f"processing {len(data)} test cases")
+        log.info(f"initializing {len(data)} test cases")
         start = time.time()
 
         df_test_samples = [
@@ -439,6 +439,6 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         end = time.time()
         status_msg = ", ".join([f"{s.value} {statuses[s]}" for s in BulkProcessStatus])
-        log.info(f"processed {len(data)} test cases: {status_msg} in {end - start} seconds")
+        log.info(f"initialized {len(data)} test cases: {status_msg} in {end - start:0.3f} seconds")
 
         return test_cases
