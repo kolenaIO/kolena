@@ -53,6 +53,11 @@ figcaption {
   box-shadow: unset;
 }
 
+/* hide math overflow */
+.md-typeset div.arithmatex {
+  overflow-y: hidden;
+}
+
 /* Apply Kolena branding colors on top of 'default' scheme */
 [data-md-color-scheme="default"] {
   --md-primary-fg-color: #6434c1;
