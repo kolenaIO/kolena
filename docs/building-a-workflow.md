@@ -1,5 +1,7 @@
 ---
 icon: kolena/cube-16
+search:
+  boost: 2
 ---
 
 # :kolena-cube-20: Building a Workflow
@@ -51,7 +53,7 @@ This **`metadata.csv`** file describes a keypoint detection dataset with the fol
 
 - **`locator`**: location of the image in S3
 - **`normalization_factor`**: normalization factor of the image. This is used to normalize the error by providing a
-    factor for each image. Common techniques for computation include the Euclidian distance between two points or the
+    factor for each image. Common techniques for computation include the Euclidean distance between two points or the
     diagonal measurement of the image.
 - **`points`**: stringified list of coordinates corresponding to the `(x, y)` coordinates of the keypoint ground truths
 

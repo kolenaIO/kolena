@@ -1,5 +1,7 @@
 ---
 icon: kolena/workflow-16
+search:
+  boost: 2
 ---
 
 # :kolena-workflow-20: Workflow
