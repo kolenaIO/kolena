@@ -184,7 +184,7 @@ Like classification, multiclass object detection workflow compute TP / FP / FN p
 
     | Bounding Box | Class | Score | IoU($\text{A}$) |
     | --- | --- | --- | --- |
-    | $\text{A}$ | `Apple` | --- | --- |
+    | $\text{A}$ | `Apple` | — | — |
     | $\text{a}$ | `Apple` | 0.3 | 0.0 |
     | $\text{b}$ | `Banana` | 0.5 | 0.8 |
 

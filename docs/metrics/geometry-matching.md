@@ -89,7 +89,7 @@ Let's take a look at another example with multiple classes: `Apple` and `Banana`
 
 | Bounding Box | Class | Score | IoU($\text{A}$) |
 | --- | --- | --- | --- |
-| $\text{A}$ | `Apple` | --- | --- |
+| $\text{A}$ | `Apple` | — | — |
 | $\text{a}$ | `Apple` | 0.3 | 0.0 |
 | $\text{b}$ | `Banana` | 0.5 | 0.8 |
 
