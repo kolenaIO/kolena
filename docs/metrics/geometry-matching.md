@@ -167,7 +167,7 @@ the IoU threshold to be considered as a valid match.
 ### COCO
 
 [COCO (Common Objects in Context)](https://cocodataset.org) evaluation has a couple more things to consider when matching
-inference geometries. First, similarly to how `difficult` ground truths are treated in [PASCAL VOC](#pascal-voc-2012), COCO benchmark
+inference geometries. First, similarly to how `difficult` ground truths are treated in [PASCAL VOC](#pascal-voc-2012), COCO
 labels its ground truth annotations with an `iscrowd` field to specify when a ground truth includes multiple objects.
 Ground truths marked `iscrowd`, and any inferences matched with them, are **excluded** from the matched results.
 This `iscrowd` flag is intended to avoid penalizing models for failing to detect objects in a crowded scene.
@@ -209,7 +209,7 @@ Also, multiple correct inferences inside the same `group-of` box still count as 
 
 <figure markdown>
   ![An example of group-of boxes](../assets/images/metrics-matcher-oid-group-of.jpg)
-  <figcaption markdown>An example of group-of boxes from [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html)</figcaption>
+  <figcaption markdown>An example of `group-of` boxes from [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html)</figcaption>
 </figure>
 
 ??? info "Pseudocode: Open Images V7 Matching"
