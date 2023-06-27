@@ -146,7 +146,7 @@ In this section, we'll examine the differences in matching algorithm from a few 
 
 ### PASCAL VOC 2012
 
-[PASCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC/) benchmark includes a `difficult` boolean
+The [PASCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC/) benchmark includes a `difficult` boolean
 annotation for each ground truth, used to differentiate objects that are difficult to recognize from an image.
 Any ground truth with the `difficult` flag and any inferences that are matched with a `difficult` ground truth will
 be ignored in the matching process. In other words, these ground truths and the inferences that are matched with them
@@ -174,7 +174,7 @@ the IoU threshold to be considered as a valid match.
 
 ### COCO
 
-Microsoft's [COCO (Common Objects in Context)](https://cocodataset.org) evaluation has a couple more things to consider when matching
+[COCO (Common Objects in Context)](https://cocodataset.org) evaluation has a couple more things to consider when matching
 inference geometries. First, similarly to how `difficult` ground truths are treated in [PASCAL VOC](#pascal-voc-2012), COCO benchmark
 labels its ground truth annotations with an `iscrowd` field to specify when a ground truth includes multiple objects.
 Ground truths marked `iscrowd`, and any inferences matched with them, are **excluded** from the matched results.
@@ -196,7 +196,7 @@ This `iscrowd` flag is intended to avoid penalizing models for failing to detect
 
 ### Open Images V7
 
-Google's [Open Images V7 Challenge](https://storage.googleapis.com/openimages/web/evaluation.html) evaluation introduces two
+The [Open Images V7 Challenge](https://storage.googleapis.com/openimages/web/evaluation.html) evaluation introduces two
 key differences in the matching algorithm.
 
 The first is with the way that the images are annotated in this dataset. Images are annotated with **positive**
