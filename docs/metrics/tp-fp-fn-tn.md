@@ -53,11 +53,11 @@ In binary classification workflow, TP, FN, FP, and TN are implemented as follows
 | `inferences` | <nobr>`List[float]`</nobr> | Predicted confidence scores, where a higher score indicates a higher confidence of the sample being positive |
 | `T` | `float` | Threshold value to compare against the inference’s confidence score, where `score >= T` is positive |
 
-!!! info "Should Threshold Be Inclusive or Exclusive?"
+!!! question "Should Threshold Be Inclusive or Exclusive?"
 
     A confidence threshold is defined as "the minimum score that the model will consider the inference
-    to be positive (i.e. true)". Therefore, it is a standard practice to consider inferences with greater than or
-    **equal** to the confidence threshold as positive.
+    to be positive (i.e. true)". Therefore, it is a standard practice to consider inferences with confidence score
+    **greater than or equal to** the confidence threshold as positive.
 
 
 With these inputs, TP / FP/ FN / TN metrics are defined:
