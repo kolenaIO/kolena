@@ -94,6 +94,7 @@ theme:
     - navigation.footer
     - navigation.sections
     - navigation.tabs
+    - navigation.tabs.sticky
     - search.highlight
     - search.suggest
     - toc.follow
