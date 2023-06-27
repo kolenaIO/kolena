@@ -140,25 +140,25 @@ The matching algorithm we've covered above is standard across various popular ob
 
 In this section, we'll examine the differences in matching algorithm from a few popular benchmarks:
 
-- [**Pascal VOC Challenge**](#pascal-voc-challenge)
-- [**COCO Detection Challenge**](#coco-detection-challenge)
-- [**Google Open Image V7 Competition**](#open-images-detection-challenge)
+- [**PASCAL VOC 2012**](#pascal-voc-2012)
+- [**COCO**](#coco)
+- [**Open Images V7**](#open-images-v7)
 
-### Pascal VOC Challenge
+### PASCAL VOC 2012
 
-The [Pascal VOC Challenge](http://host.robots.ox.ac.uk/pascal/VOC/) benchmark includes a `difficult` boolean
+The [PASCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC/) benchmark includes a `difficult` boolean
 annotation for each ground truth, used to differentiate objects that are difficult to recognize from an image.
 Any ground truth with the `difficult` flag and any inferences that are matched with a `difficult` ground truth will
 be ignored in the matching process. In other words, these ground truths and the inferences that are matched with them
 are **excluded** in the matched results. Hence, models will not be penalized for failing to detect these `difficult`
 objects, nor rewarded for detecting them.
 
-Another difference that is noteworthy is how Pascal VOC outlines the IoU criteria for a valid match. According to the
+Another difference that is noteworthy is how PASCAL VOC outlines the IoU criteria for a valid match. According to the
 evaluation section (4.4) in
 [development kit doc](http://host.robots.ox.ac.uk/pascal/VOC/voc2010/devkit_doc_08-May-2010.pdf), IoU must **exceed**
 the IoU threshold to be considered as a valid match.
 
-??? info "Pseudocode: Pascal VOC Matching"
+??? info "Pseudocode: PASCAL VOC Matching"
 
 	1. Loop through all images in your dataset;
 	2. Loop through all labels;
@@ -172,10 +172,10 @@ the IoU threshold to be considered as a valid match.
 	8. Repeat 5-7 on the next inference;
 
 
-### COCO Detection Challenge
+### COCO
 
-[COCO detection challenge](https://cocodataset.org) evaluation has a couple more things to consider when matching
-inference geometries. First, similarly to how `difficult` ground truths are treated in Pascal VOC, COCO benchmark
+[COCO (Common Objects in Context)](https://cocodataset.org) evaluation has a couple more things to consider when matching
+inference geometries. First, similarly to how `difficult` ground truths are treated in [PASCAL VOC](#pascal-voc-2012), COCO benchmark
 labels its ground truth annotations with an `iscrowd` field to specify when a ground truth includes multiple objects.
 Ground truths marked `iscrowd`, and any inferences matched with them, are **excluded** from the matched results.
 This `iscrowd` flag is intended to avoid penalizing models for failing to detect objects in a crowded scene.
@@ -194,7 +194,7 @@ This `iscrowd` flag is intended to avoid penalizing models for failing to detect
 	8. Repeat 5-7 on the next inference;
 
 
-### Open Images Detection Challenge
+### Open Images V7
 
 The [Open Images V7 Challenge](https://storage.googleapis.com/openimages/web/evaluation.html) evaluation introduces two
 key differences in the matching algorithm.
@@ -209,11 +209,11 @@ unannotated on that image, this inference is excluded in the matching results.
 
 <p style="text-align: center; color: gray;">
     An example of non-exhaustive image-level labeling from
-	<a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Image Challenge Evaluation</a>
+	<a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Images Challenge Evaluation</a>
 </p>
 
 The second difference is with handling `group-of` boxes, which is similar to `iscrowd` annotation from
-[COCO](#coco-detection-challenge) but is not just simply ignored. If at least one inference is inside the `group-of`
+[COCO](#coco) but is not just simply ignored. If at least one inference is inside the `group-of`
 box, then it is considered to be a match. Otherwise, the `group-of` box is considered as an unmatched ground truth.
 Also, multiple correct inferences inside the same `group-of` box still count as a single match:
 
@@ -221,10 +221,10 @@ Also, multiple correct inferences inside the same `group-of` box still count as 
 
 <p style="text-align: center; color: gray;">
 	An example of group-of boxes from
-	<a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Image Challenge Evaluation</a>
+	<a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Images Challenge Evaluation</a>
 </p>
 
-??? info "Pseudocode: Open Images Matching"
+??? info "Pseudocode: Open Images V7 Matching"
 
 	1. Loop through all images in your dataset;
 	2. Loop through all **positive image-level** labels;
