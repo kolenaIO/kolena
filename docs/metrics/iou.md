@@ -189,7 +189,9 @@ evaluates each class as a binary classification problem. Per-class IoU values ca
 [averaging methods](./averaging-methods.md). The popular choice for this workflow is **macro**, so let’s take a look at
 examples of different averaged IoU/Jaccard index metrics for multiclass multi-label classification:
 
-#### Example: macro IoU of multi-label classification: `Airplane`, `Boat`, `Car`
+#### Example: Macro IoU of Multi-label Classification
+
+Consider the case of multi-label classification with classes `Airplane`, `Boat`, `Car`:
 
 <center>
 

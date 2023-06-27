@@ -41,7 +41,6 @@ type and the matching result:
 
 ![example legends](../assets/images/metrics-matcher-legends.png)
 
-
 This example contains two ground truth and two inference bounding boxes, each with the same label.
 The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap
 (IoU of 0.13). Let's find out what the matched results look like in this example with a IoU threshold of 0.5:
@@ -69,8 +68,7 @@ unmatched. In this case, ground truth $\text{B}$ is the only **unmatched ground 
 
 </center>
 
-
-Let's take a look at another example with multiple classes: `Apple` and `Banana`.
+Let's take a look at another example with multiple classes, `Apple` and `Banana`:
 
 ![example 2](../assets/images/metrics-matcher-example2.png)
 
@@ -91,8 +89,7 @@ For class `Banana`, there is only one inference and no ground truths. Therefore,
 
 </center>
 
-
-Here is another example with multiple inferences overlapping with the same ground truth.
+Here is another example with multiple inferences overlapping with the same ground truth:
 
 ![example 3](../assets/images/metrics-matcher-example3.png)
 
@@ -112,8 +109,7 @@ they cannot become a match because $\text{A}$ is already matched with $\text{b}$
 
 </center>
 
-
-Let's consider another scenario where there are multiple ground truths overlapping with the same inference.
+Finally, let's consider another scenario where there are multiple ground truths overlapping with the same inference:
 
 ![example 4](../assets/images/metrics-matcher-example4.png)
 

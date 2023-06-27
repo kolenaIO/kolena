@@ -1,6 +1,6 @@
 # Accuracy
 
-Accuracy is one of the most well-known metrics in machine learning model evaluation metrics because it is simple to understand
+Accuracy is one of the most well-known metrics in machine learning model evaluation because it is simple to understand
 and straightforward to calculate.
 
 Accuracy measures how often a model correctly predicts something (ranging from 0 to 1, with 1 being perfect
