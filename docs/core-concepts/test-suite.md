@@ -64,7 +64,23 @@ These classes can then be used to create, load, and edit test cases and test sui
     test_case = TestCase("example-test-case")
     ```
 
-    Test cases be edited using the context-managed [`Editor`][kolena.workflow.TestCase.Editor] interface:
+    Use [`TestCase.init_many`][kolena.workflow.TestCase.init_many] to initialize multiple test cases at once:
+
+    ```python
+    # loads test cases or creates them if they do not already exist
+    test_cases = TestCase.init_many([
+        ("test-case 1", [(test_sample_0, ground_truth_0), (test_sample_1, ground_truth_1)]),
+        ("test-case 2", [(test_sample_2, ground_truth_2), (test_sample_3, ground_truth_3)])
+    ])
+
+    # With 'reset=True', test cases that already exist would be updated with the new test_samples and ground_truths
+    test_cases = TestCase.init_many([
+        ("test-case 1", [(test_sample_0, ground_truth_0), (test_sample_1, ground_truth_1)]),
+        ("test-case 2", [(test_sample_2, ground_truth_2), (test_sample_3, ground_truth_3)])
+    ], reset=True)
+    ```
+
+    Test cases can be edited using the context-managed [`Editor`][kolena.workflow.TestCase.Editor] interface:
 
     ```python
     with TestCase("example-test-case").edit(reset=True) as editor:
