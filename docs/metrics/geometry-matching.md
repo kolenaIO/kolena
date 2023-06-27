@@ -36,10 +36,8 @@ In a geometry matching algorithm, the following criteria must be met for a valid
 ## Examples: Matching 2D Bounding Boxes
 
 Let's apply the algorithm above to the following examples of 2D object detection. Bounding boxes (see:
-[`BoundingBox`][kolena.workflow.annotation.BoundingBox]) in the diagrams below use the following colors based on their
-type and the matching result:
-
-![example legends](../assets/images/metrics-matcher-legends.png)
+[`BoundingBox`][kolena.workflow.annotation.BoundingBox]) in the diagrams below use different color based on their
+type and the matching result.
 
 ### Example 1
 
@@ -47,7 +45,17 @@ This example contains two ground truth and two inference bounding boxes, each wi
 The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap
 (IoU of 0.13). Let's find out what the matched results look like in this example with a IoU threshold of 0.5:
 
-![example 1](../assets/images/metrics-matcher-example1.png)
+![example 1](../assets/images/metrics-matcher-example1-light.svg#only-light)
+![example 1](../assets/images/metrics-matcher-example1-dark.svg#only-dark)
+
+<center>
+
+| Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+| --- | --- | --- | --- |
+| $\text{a}$ | 0.98 | 0.9 | 0.0 |
+| $\text{b}$ | 0.6 | 0.0 | 0.13 |
+
+</center>
 
 Because inference $\text{a}$ has a higher confidence score than inference $\text{b}$, it gets matched first. It is
 pretty clear that ground truth $\text{A}$ scores the highest IoU with inference $\text{a}$, and IoU is greater than
@@ -74,7 +82,19 @@ unmatched. In this case, ground truth $\text{B}$ is the only **unmatched ground 
 
 Let's take a look at another example with multiple classes: `Apple` and `Banana`.
 
-![example 2](../assets/images/metrics-matcher-example2.png)
+![example 2](../assets/images/metrics-matcher-example2-light.svg#only-light)
+![example 2](../assets/images/metrics-matcher-example2-dark.svg#only-dark)
+
+<center>
+
+| Bounding Box | Class | Score | IoU($\text{A}$) |
+| --- | --- | --- | --- |
+| $\text{A}$ | `Apple` | --- | --- |
+| $\text{a}$ | `Apple` | 0.3 | 0.0 |
+| $\text{b}$ | `Banana` | 0.5 | 0.8 |
+
+</center>
+
 
 Each class is evaluated independently. Starting with `Apple`, there is one ground truth $\text{A}$ and one inference
 $\text{a}$, but these two do not overlap at all (IoU of 0.0). Because IoU is less than the IoU threshold, there is **no
@@ -97,7 +117,17 @@ For class `Banana`, there is only one inference and no ground truths. Therefore,
 
 Here is another example with multiple inferences overlapping with the same ground truth.
 
-![example 3](../assets/images/metrics-matcher-example3.png)
+![example 3](../assets/images/metrics-matcher-example3-light.svg#only-light)
+![example 3](../assets/images/metrics-matcher-example3-dark.svg#only-dark)
+
+<center>
+
+| Bounding Box | Score | IoU($\text{A}$) |
+| --- | --- | --- |
+| $\text{a}$ | 0.5 | 0.8 |
+| $\text{b}$ | 0.8 | 0.5 |
+
+</center>
 
 Among the two inferences $\text{a}$ and $\text{b}$, $\text{b}$ has a higher confidence score, so $\text{b}$ gets matched
 first. IoU between ground truth $\text{A}$ and $\text{b}$ is greater than the IoU threshold, so they become a **match**.
@@ -119,7 +149,16 @@ they cannot become a match because $\text{A}$ is already matched with $\text{b}$
 
 Let's consider another scenario where there are multiple ground truths overlapping with the same inference.
 
-![example 4](../assets/images/metrics-matcher-example4.png)
+![example 4](../assets/images/metrics-matcher-example4-light.svg#only-light)
+![example 4](../assets/images/metrics-matcher-example4-dark.svg#only-dark)
+
+<center>
+
+| Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+| --- | --- | --- | --- |
+| $\text{a}$ | 0.8 | 0.6 | 0.9 |
+
+</center>
 
 Inference $\text{a}$ has a higher IoU with ground truth $\text{B}$, so $\text{a}$ and $\text{B}$ become matched.
 
@@ -251,10 +290,20 @@ matching performance.
 
 ??? example "Example: Greedy Matching"
 
-	![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching.png)
+	![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching-light.svg#only-light)
+	![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching-dark.svg#only-dark)
+
+	<center>
+
+	| Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+	| --- | --- | --- | --- |
+	| $\text{a}$ | 0.7 | 0.0 | 0.6 |
+	| $\text{b}$ | 0.8 | 0.5 | 0.7 |
+
+	</center>
 
 	When there are two ground truths and two inferences, one inference $\text{b}$ with a higher score overlaps well with
-	both ground truths $\text{A}$ and $text{B}$, and the other one, $\text{a}$, with a lower score overlaps well with
+	both ground truths $\text{A}$ and $\text{B}$, and the other one, $\text{a}$, with a lower score overlaps well with
     just one ground truth $\text{B}$. Because the IoU between $\text{B}$ and $\text{b}$ is greater than IoU between
     $\text{A}$ and $\text{b}$, inference $\text{b}$ is matched with ground truth $\text{B}$, causing
 	inference $\text{a}$ to fail to match.
@@ -269,7 +318,17 @@ Another behavior to note here is that it is possible to get different matching r
 
 ??? example "Example: Different Matching Results When Ground Truth Order Changes"
 
-	![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order.png)
+	![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order-light.svg#only-light)
+	![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order-dark.svg#only-dark)
+
+	<center>
+
+	| Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+	| --- | --- | --- | --- |
+	| $\text{a}$ | 0.7 | 0.0 | 0.5 |
+	| $\text{b}$ | 0.7 | 0.5 | 0.5 |
+
+	</center>
 
 	The three pairs of ground truth and inference have **same IoU** and both inferences have **same confidence score**.
 
