@@ -14,8 +14,8 @@ $$\text{IoU} \left( \text{A}, \text{B} \right) = \frac {\text{A} \cap \text{B}} 
 
 
 ## When Do I Use IoU?
-It is often used to compare two geometries (e.g., [bounding boxes][kolena.workflow.annotation.BoundingBox],
-[polygons][kolena.workflow.annotation.Polygon] or [segmentation masks][kolena.workflow.annotation.SegmentationMask])
+It is often used to compare two geometries (e.g., [`BoundingBox`][kolena.workflow.annotation.BoundingBox],
+[`Polygon`][kolena.workflow.annotation.Polygon] or [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask])
 in object detection, instance segmentation, or semantic segmentation workflows. In multi-label classification, IoU,
 more likely known as the [Jaccard index](https://en.wikipedia.org/wiki/Jaccard_index), is used to compare set of
 inference labels for a sample to the corresponding set of ground truth labels. Moreover, there are workflows such as
@@ -201,7 +201,9 @@ evaluates each class as a binary classification problem. Per-class IoU values ca
 [averaging methods](./averaging-methods.md). The popular choice for this workflow is **macro**, so let’s take a look at
 examples of different averaged IoU/Jaccard index metrics for multiclass multi-label classification:
 
-**Example: macro IoU of ground truth and inference label sets: `Airplane`, `Boat`, `Car`**
+#### Example: Macro IoU of Multi-label Classification
+
+Consider the case of multi-label classification with classes `Airplane`, `Boat`, `Car`:
 
 <center>
 
