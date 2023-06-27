@@ -205,11 +205,10 @@ the IoU threshold to be considered as a valid match.
 
 ### COCO
 
-[COCO (Common Objects in Context)](https://cocodataset.org) evaluation has a couple more things to consider when matching
-inference geometries. First, similarly to how `difficult` ground truths are treated in [PASCAL VOC](#pascal-voc-2012), COCO benchmark
-labels its ground truth annotations with an `iscrowd` field to specify when a ground truth includes multiple objects.
-Ground truths marked `iscrowd`, and any inferences matched with them, are **excluded** from the matched results.
-This `iscrowd` flag is intended to avoid penalizing models for failing to detect objects in a crowded scene.
+[COCO (Common Objects in Context)](https://cocodataset.org) labels its ground truth annotations with an `iscrowd` field
+to specify when a ground truth includes multiple objects. Similarly to how `difficult` ground truths are treated in
+[PASCAL VOC](#pascal-voc-2012), any inferences matched with these `iscrowd` ground truths, are **excluded** from the
+matched results. This `iscrowd` flag is intended to avoid penalizing models for failing to detect objects in a crowded scene.
 
 ??? info "Pseudocode: COCO Matching"
 
