@@ -160,14 +160,6 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             self.description = other.description
             self.workflow = other.workflow
 
-    def _populate_from_data(self, data: CoreAPI.EntityData) -> None:
-        assert_workflows_match(self.workflow.name, data.workflow)
-        with self._unfrozen():
-            self._id = data.id
-            self.name = data.name
-            self.version = data.version
-            self.description = data.description
-
     @classmethod
     def _create_from_data(cls, data: CoreAPI.EntityData) -> "TestCase":
         assert_workflows_match(cls.workflow.name, data.workflow)
@@ -206,7 +198,6 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: The newly created test case.
         """
         cls._validate_test_samples(test_samples)
-
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
