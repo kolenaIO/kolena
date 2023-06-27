@@ -1,5 +1,7 @@
 ---
 icon: kolena/cube-16
+search:
+  boost: 2
 ---
 
 # :kolena-cube-20: Building a Workflow
