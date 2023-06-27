@@ -33,23 +33,35 @@ Because IoU can be used on various types of data, let's look at how the metric i
 
 ### 2D Axis-Aligned Bounding Box
 
-Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, and notice the highlighted overlap region,
-which is always going to be a 2D axis-aligned bounding box.
+Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, with the origin of the coordinates being
+the top-left corner of the image, and to the right and down are the positive directions of the $x$ and $y$ axes,
+respectively. This is the most common coordinate system in computer vision.
 
+<div class="grid" markdown>
 ![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-light.svg#only-light)
 ![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-dark.svg#only-dark)
 
+!!! info "Guides: Commonly Used Bounding Box Representations"
+
+    A bounding box is often defined by the $x$ and $y$ coordinates of the top-left and bottom-right corners. This is
+    the format used in this guide and in the `kolena` package.
+
+    Another commonly used representation is the $x$ and $y$ coordinates of bounding box center, along with the width and
+    height of the box.
+
+</div>
 
 In order to compute IoU for two 2D bounding boxes, the first step is identifying the area of the intersection box,
-$(\text{A} \cap \text{B})$. The two coordinates of the intersection box, top-left and bottom-right corners, can be defined as:
+$(\text{A} \cap \text{B})$.  This is the highlighted overlap region in the image above. The two coordinates of the
+intersection box, top-left and bottom-right corners, can be defined as:
 
 $$
-\text{A} \cap \text{B}\,_{\text{topleft}}
+\text{A} \cap \text{B}\,_{\text{top-left}}
 = (\max \left( x_{a1}, \, x_{b1} \right), \, \max \left( y_{a1}, \, y_{b1} \right))
 $$
 
 $$
-\text{A} \cap \text{B}\,_{\text{bottomright}}
+\text{A} \cap \text{B}\,_{\text{bottom-right}}
 = (\min \left( x_{a2}, \, x_{b2} \right), \, \min \left(y_{a2}, \, y_{b2} \right))
 $$
 
@@ -225,7 +237,7 @@ this metric cannot be directly used to measure the overlap of an inference and `
 annotation from [COCO Detection Challenge Evaluation](https://cocodataset.org/#format-data) used to label a large
 groups of objects (e.g., a crowd of people). Therefore, the inference is expected to take up a small portion of the
 ground truth region, resulting in a low IoU score and a pair not being a valid match. In this scenario, a variation of
-IoU, called [intersection over foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred.
+IoU, called [Intersection over Foreground (IoF)](https://github.com/open-mmlab/mmdetection/issues/393), is preferred.
 This variation is used when there are ground truth regions you want to ignore in evaluation, such as `iscrowd`.
 
 The second limitation of IoU is measuring the localization performance of non-overlaps. IoU ranges from 0 (no overlap)
