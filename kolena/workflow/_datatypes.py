@@ -250,6 +250,7 @@ class TestSuiteTestSamplesDataFrame(
 
 
 class TestCaseEditorDataFrameSchema(pa.SchemaModel):
+    test_case_name: Series[pa.typing.String] = pa.Field(nullable=True)
     test_sample_type: Series[pa.typing.String] = pa.Field(coerce=True)
     test_sample: Series[JSONObject] = pa.Field(coerce=True)  # TODO: validators?
     test_sample_metadata: Series[JSONObject] = pa.Field(coerce=True)

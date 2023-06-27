@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from enum import Enum
 from typing import Any
 from typing import Dict
 from typing import List
@@ -54,12 +55,38 @@ class TestCaseInfo:
     membership: Optional[Dict[str, str]] = None
 
 
+class BulkProcessStatus(Enum):
+    CREATED = "created"
+    LOADED = "loaded"
+    EDITED = "edited"
+
+
 class TestCase:
     @dataclass(frozen=True)
     class CreateRequest:
         name: str
         description: str
         workflow: str
+
+    @dataclass(frozen=True)
+    class SingleProcessRequest:
+        name: str
+        reset: bool = False
+
+    @dataclass(frozen=True)
+    class SingleProcessResponse:
+        data: "TestCase.EntityData"
+        status: BulkProcessStatus
+
+    @dataclass(frozen=True)
+    class BulkProcessRequest:
+        test_cases: List["TestCase.SingleProcessRequest"]
+        workflow: str
+        uuid: Optional[str] = None
+
+    @dataclass(frozen=True)
+    class BulkProcessResponse:
+        test_cases: List["TestCase.SingleProcessResponse"]
 
     @dataclass(frozen=True)
     class CreateFromExistingRequest(BatchedLoad.WithLoadUUID):
@@ -105,6 +132,11 @@ class TestCase:
     @dataclass(frozen=True)
     class CompleteEditRequest(EditRequest, BatchedLoad.WithLoadUUID):
         ...
+
+
+TestCase.SingleProcessResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+TestCase.BulkProcessRequest.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+TestCase.BulkProcessResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
 
 
 class TestSuite:

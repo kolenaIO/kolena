@@ -13,6 +13,8 @@
 # limitations under the License.
 import random
 import uuid
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -43,7 +45,11 @@ from tests.integration.workflow.dummy import TestSuite
 N_DUMMY = 10
 
 
-def dummy_test_sample(index: int, directory: str = "default") -> DummyTestSample:
+def dummy_test_sample(
+    index: int,
+    directory: str = "default",
+    metadata: Optional[Dict[str, Any]] = None,
+) -> DummyTestSample:
     # TODO: this type ignore is ridiculous and will be annoying for customers extending our classes
     #  mypy: error: Unexpected keyword argument "locator" for "DummyTestSample"
     return DummyTestSample(  # type: ignore
@@ -53,7 +59,7 @@ def dummy_test_sample(index: int, directory: str = "default") -> DummyTestSample
             top_left=(random.randint(0, 10), random.randint(0, 10)),
             bottom_right=(random.randint(11, 20), random.randint(11, 20)),
         ),
-        metadata={},
+        metadata=metadata or {},
     )
 
 
