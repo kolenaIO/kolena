@@ -35,7 +35,7 @@ Because IoU can be used on various types of data, let's look at how the metric i
 
 Let's consider two 2D axis-aligned bounding boxes, $\text{A}$ and $\text{B}$, with the origin of the coordinates being
 the top-left corner of the image, and to the right and down are the positive directions of the $x$ and $y$ axes,
-respectively. This is a common image coordinate system in computer vision domain.
+respectively. This is the most common coordinate system in computer vision.
 
 <div class="grid" markdown>
 ![An example of a 2D axis-aligned bounding box](../assets/images/metrics-iou-2dbbox-light.svg#only-light)
@@ -43,9 +43,11 @@ respectively. This is a common image coordinate system in computer vision domain
 
 !!! info "Guides: Commonly Used Bounding Box Representations"
 
-    A bounding box is often defined by the $x$ and $y$ coordinates of the top-left and bottom-right corners. Another
-    commonly used representation is the $x$ and $y$ coordinates of bounding box center, and the width and the height of
-    the box.
+    A bounding box is often defined by the $x$ and $y$ coordinates of the top-left and bottom-right corners. This is
+    the format used in this guide and in the `kolena` package.
+
+    Another commonly used representation is the $x$ and $y$ coordinates of bounding box center, along with the width and
+    height of the box.
 
 </div>
 
