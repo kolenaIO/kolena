@@ -69,14 +69,14 @@ These classes can then be used to create, load, and edit test cases and test sui
     ```python
     # loads test cases or creates them if they do not already exist
     test_cases = TestCase.init_many([
-        ("test-case 1", [(test_sample_0, ground_truth_0), (test_sample_1, ground_truth_1)]),
-        ("test-case 2", [(test_sample_2, ground_truth_2), (test_sample_3, ground_truth_3)])
+        ("test case 1", [(test_sample_0, ground_truth_0), (test_sample_1, ground_truth_1)]),
+        ("test case 2", [(test_sample_2, ground_truth_2), (test_sample_3, ground_truth_3)])
     ])
 
     # With 'reset=True', test cases that already exist would be updated with the new test_samples and ground_truths
     test_cases = TestCase.init_many([
-        ("test-case 1", [(test_sample_0, ground_truth_0), (test_sample_1, ground_truth_1)]),
-        ("test-case 2", [(test_sample_2, ground_truth_2), (test_sample_3, ground_truth_3)])
+        ("test case 1", [(test_sample_0, ground_truth_0), (test_sample_1, ground_truth_1)]),
+        ("test case 2", [(test_sample_2, ground_truth_2), (test_sample_3, ground_truth_3)])
     ], reset=True)
     ```
 
