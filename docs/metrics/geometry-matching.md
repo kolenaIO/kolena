@@ -197,24 +197,20 @@ indicating certain classes are absent. Therefore, for fair evaluation, all
 unannotated classes are **excluded** from evaluation in that image, so if an inference has a class label that is
 unannotated on that image, this inference is excluded in the matching results.
 
-![An example of non-exhaustive labeling](../assets/images/metrics-matcher-oid-non-exhaustive.jpg)
-
-<p style="text-align: center; color: gray;">
-    An example of non-exhaustive image-level labeling from
-	<a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Images Challenge Evaluation</a>
-</p>
+<figure markdown>
+  ![An example of non-exhaustive labeling](../assets/images/metrics-matcher-oid-non-exhaustive.jpg)
+  <figcaption markdown>An example of non-exhaustive image-level labeling from [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html)</figcaption>
+</figure>
 
 The second difference is with handling `group-of` boxes, which is similar to `iscrowd` annotation from
 [COCO](#coco) but is not just simply ignored. If at least one inference is inside the `group-of`
 box, then it is considered to be a match. Otherwise, the `group-of` box is considered as an unmatched ground truth.
 Also, multiple correct inferences inside the same `group-of` box still count as a single match:
 
-![An example of group-of boxes](../assets/images/metrics-matcher-oid-group-of.jpg)
-
-<p style="text-align: center; color: gray;">
-	An example of group-of boxes from
-	<a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Images Challenge Evaluation</a>
-</p>
+<figure markdown>
+  ![An example of group-of boxes](../assets/images/metrics-matcher-oid-group-of.jpg)
+  <figcaption markdown>An example of group-of boxes from [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html)</figcaption>
+</figure>
 
 ??? info "Pseudocode: Open Images V7 Matching"
 
