@@ -41,6 +41,7 @@ class TestCase:
         LOAD = "/generic/test-case/load"
         INIT_LOAD_TEST_SAMPLES = "/generic/test-case/load-test-samples"
         COMPLETE_EDIT = "/generic/test-case/edit"
+        BULK_PROCESS = "/generic/test-case/bulk-process"
 
 
 class TestSuite:

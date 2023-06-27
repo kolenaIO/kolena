@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import uuid
+from http import HTTPStatus
 from typing import Any
 from typing import Dict
 
@@ -26,6 +27,7 @@ from kolena import __version__ as client_version
 from kolena._utils.endpoints import get_endpoint
 from kolena._utils.state import get_client_state
 from kolena._utils.state import kolena_initialized
+from kolena.errors import IncorrectUsageError
 from kolena.errors import NameConflictError
 from kolena.errors import NotFoundError
 from kolena.errors import RemoteError
@@ -38,11 +40,6 @@ __all__ = [
     "delete",
     "raise_for_status",
 ]
-
-STATUS_CODE__BAD_REQUEST = 400
-STATUS_CODE__UNAUTHORIZED = 401
-STATUS_CODE__NOT_FOUND = 404
-STATUS_CODE__CONFLICT = 409
 
 # Give the client 15 seconds to connect to kolena server
 # Slightly more than a multiple of 3, as per https://docs.python-requests.org/en/master/user/advanced/#timeouts
@@ -108,13 +105,15 @@ def delete(endpoint_path: str, **kwargs: Any) -> requests.Response:
 
 
 def raise_for_status(response: requests.Response) -> None:
-    if response.status_code == STATUS_CODE__UNAUTHORIZED:
+    if response.status_code == HTTPStatus.UNAUTHORIZED:
         # HTTP 401 is "unauthorized" but used as "unauthenticated"
         raise UnauthenticatedError(response.content)
-    if response.status_code == STATUS_CODE__NOT_FOUND:
+    if response.status_code == HTTPStatus.NOT_FOUND:
         raise NotFoundError(response.content)
-    if response.status_code == STATUS_CODE__CONFLICT:
+    if response.status_code == HTTPStatus.CONFLICT:
         raise NameConflictError(response.content)
+    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+        raise IncorrectUsageError(response.content)
 
     try:
         response.raise_for_status()
