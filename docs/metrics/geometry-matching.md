@@ -36,8 +36,12 @@ In a geometry matching algorithm, the following criteria must be met for a valid
 ## Examples: Matching 2D Bounding Boxes
 
 Let's apply the algorithm above to the following examples of 2D object detection. Bounding boxes (see:
-[`BoundingBox`][kolena.workflow.annotation.BoundingBox]) in the diagrams below use different color based on their
-type and the matching result.
+[`BoundingBox`][kolena.workflow.annotation.BoundingBox]) in the diagrams below use the following colors based on their
+type and the matching result:
+
+![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
+![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
+
 
 This example contains two ground truth and two inference bounding boxes, each with the same label.
 The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap

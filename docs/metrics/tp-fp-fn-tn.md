@@ -155,6 +155,8 @@ FP = len([inf.score >= T for inf in unmatched_inf])
 
 ??? example "Example: Single-class Object Detection"
 
+    ![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
+    ![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
     ![example 1](../assets/images/metrics-matcher-example1-light.svg#only-light)
     ![example 1](../assets/images/metrics-matcher-example1-dark.svg#only-dark)
 
@@ -184,6 +186,8 @@ Like classification, multiclass object detection workflow compute TP / FP / FN p
 
 ??? example "Example: Multiclass Object Detection"
 
+    ![example legends](../assets/images/metrics-bbox-legend-unmatched-light.svg#only-light)
+    ![example legends](../assets/images/metrics-bbox-legend-unmatched-dark.svg#only-dark)
     ![example 2](../assets/images/metrics-matcher-example2-light.svg#only-light)
     ![example 2](../assets/images/metrics-matcher-example2-dark.svg#only-dark)
 
