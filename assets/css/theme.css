@@ -1,5 +1,5 @@
 html {
-  overscroll-behavior: none;
+  overscroll-behavior-y: none;
 }
 
 .md-typeset h5 {
@@ -33,16 +33,29 @@ html {
 .md-nav__link svg {
   height: 1em;
 }
+.md-nav__link:not(:hover, .md-nav__link--active) > svg {
+  color: var(--md-default-fg-color--light); /* slightly muted nav icons */
+}
 @media screen and (min-width: 76.25em) {
   .md-nav__item--section {
     margin: 2em 0;
   }
 }
 
+/* smaller figcaptions */
+figcaption {
+  font-size: 0.8em;
+}
+
 /* Disable interactivity styles on grid cards, which are not interactive */
 .md-typeset .grid.cards>ul>li:hover {
   border: .05rem solid var(--md-default-fg-color--lightest); /* copy from base grid card styles */
   box-shadow: unset;
+}
+
+/* hide math overflow */
+.md-typeset div.arithmatex {
+  overflow-y: hidden;
 }
 
 /* Apply Kolena branding colors on top of 'default' scheme */
