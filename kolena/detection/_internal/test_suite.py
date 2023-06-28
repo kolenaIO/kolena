@@ -35,6 +35,7 @@ from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.detection._internal import BaseTestCase
 from kolena.errors import NotFoundError
@@ -71,6 +72,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         test_cases: Optional[List[BaseTestCase]] = None,
         reset: bool = False,
     ):
+        validate_not_blank(name)
         self._validate_test_cases(test_cases)
 
         try:

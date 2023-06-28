@@ -31,6 +31,7 @@ from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.fr.test_case import TestCase
@@ -86,6 +87,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         non_baseline_test_cases: Optional[List[TestCase]] = None,
         reset: bool = False,
     ):
+        validate_not_blank(name)
         try:
             self._populate_from_other(self.load(name, version))
             if description is not None and self.description != description and not reset:

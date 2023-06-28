@@ -262,3 +262,9 @@ def test__load_test_samples(
         (test_case_1, sorted([dummy_test_samples[0], dummy_test_samples[1]])),
         (test_case_2, sorted([dummy_test_samples[2], dummy_test_samples[1]])),
     ]
+
+
+def test__empty_test_suite_name() -> None:
+    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__empty_test_suite_name test case 1"))
+    with pytest.raises(ValueError):
+        TestSuite("", test_cases=[test_case_1])

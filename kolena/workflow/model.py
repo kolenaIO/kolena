@@ -36,6 +36,7 @@ from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.workflow import GroundTruth
@@ -119,6 +120,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param metadata: Optional unstructured metadata to store with this model.
         :return: The newly created model.
         """
+        validate_not_blank(name)
         metadata = metadata or {}
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))

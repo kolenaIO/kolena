@@ -37,6 +37,7 @@ from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.workflow import GroundTruth
@@ -93,6 +94,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
     ):
         if type(self) == TestCase:
             raise Exception("<TestCase> must be subclassed.")
+        validate_not_blank(name)
         self._validate_test_samples(test_samples)
 
         try:

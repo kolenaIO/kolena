@@ -37,6 +37,7 @@ from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
@@ -104,6 +105,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         reset: bool = False,
         tags: Optional[Set[str]] = None,
     ):
+        validate_not_blank(name)
         self._validate_workflow()
         self._validate_test_cases(test_cases)
 

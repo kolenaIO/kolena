@@ -11,17 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pydantic import Extra
+import pytest
+
+from kolena._utils.validators import validate_not_blank
 
 
-class ValidatorConfig:
-    """Pydantic configuration for dataclasses and @validate_arguments decorators."""
+def test__validate__field_name__empty() -> None:
+    with pytest.raises(ValueError):
+        validate_not_blank("")
 
-    arbitrary_types_allowed = True
-    smart_union = True
-    extra = Extra.allow  # do not fail when unrecognized values are provided
-
-
-def validate_not_blank(field: str):
-    if not bool(field and not field.isspace()):
-        raise ValueError("Names must be non empty")
+    with pytest.raises(ValueError):
+        validate_not_blank("  ")

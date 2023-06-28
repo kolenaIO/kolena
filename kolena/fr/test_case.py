@@ -36,6 +36,7 @@ from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.fr.datatypes import TEST_CASE_COLUMNS
@@ -88,6 +89,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         test_samples: Optional[List[TestCaseRecord]] = None,
         reset: bool = False,
     ):
+        validate_not_blank(name)
         try:
             self._populate_from_other(self.load(name, version))
             if description is not None and self.description != description and not reset:

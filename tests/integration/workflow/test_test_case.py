@@ -197,3 +197,8 @@ def test__edit__remove_only(
 
     assert test_case.version == 2
     assert sorted(test_case.load_test_samples()) == sorted(rest)
+
+
+def test__empty_test_case_name() -> None:
+    with pytest.raises(ValueError):
+        TestCase("")

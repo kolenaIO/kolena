@@ -112,3 +112,8 @@ def test__load_inferences(
 
     inferences = model.load_inferences(dummy_test_suites[0].test_cases[0])
     assert_sorted_list_equal(inferences, list(zip(dummy_test_samples, dummy_ground_truths, dummy_inferences_list)))
+
+
+def test__empty_model__name() -> None:
+    with pytest.raises(ValueError):
+        Model.create(name=" ", infer=lambda x: None, metadata=META_DATA)

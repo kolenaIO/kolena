@@ -30,6 +30,7 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.serde import from_dict
 from kolena._utils.uninstantiable import Uninstantiable
+from kolena._utils.validators import validate_not_blank
 from kolena._utils.validators import ValidatorConfig
 from kolena.fr import TestCase
 from kolena.fr import TestSuite
@@ -55,6 +56,7 @@ class Model(Uninstantiable["Model.Data"]):
         :return: The newly created model.
         :raises ValueError: A model by the provided name already exists.
         """
+        validate_not_blank(name)
         request = API.CreateRequest(name=name, metadata=metadata)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

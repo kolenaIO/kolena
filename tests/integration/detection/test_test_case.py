@@ -449,3 +449,8 @@ def test__create__with_locator_collision() -> None:
     test_case = TestCase(test_case_name, images=[TestImage(locator)])
     images = test_case.load_images()
     assert len(images) == 1
+
+
+def test__empty_test_case_name() -> None:
+    with pytest.raises(ValueError):
+        TestCase("")

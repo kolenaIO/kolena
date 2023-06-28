@@ -323,3 +323,9 @@ def test__load__with_version_mismatch() -> None:
 
     exc_info_value = str(exc_info.value)
     assert f"{mismatch_version}" in exc_info_value
+
+
+def test__empty_test_suite_name() -> None:
+    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__empty_test_suite_name test case 1"))
+    with pytest.raises(ValueError):
+        TestSuite("", test_cases=[test_case_1])
