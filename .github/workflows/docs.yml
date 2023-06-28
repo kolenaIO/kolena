@@ -27,7 +27,7 @@ jobs:
           echo "$ENVIRONMENT"
           exit 1
         env:
-          ENVIRONMENT: ${{ input.environment }}
+          ENVIRONMENT: ${{ inputs.environment }}
 
       - uses: actions/setup-python@v4
         with:
