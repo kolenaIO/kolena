@@ -1,0 +1,70 @@
+name: Manual Docs Deploy
+
+on:
+  push:
+    workflow_dispatch:
+      inputs:
+        environment:
+          description: Environment to deploy docs
+          type: choice
+          options: [trunk, production]
+          default: trunk
+    branches:
+      - trunk
+
+jobs:
+  trunk-docs:
+    name: Build and publish dev build of kolena documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v3
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-2
+
+      - name: Configure SSH key for docs insiders setup
+        uses: webfactory/ssh-agent@v0.8.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Install Poetry
+        run: pip install poetry==1.5.1
+
+      - name: Fetch tags to enable autoversioning
+        run: git fetch --prune --unshallow --tags
+
+      - name: Update package version to PEP 440-compliant production release tag
+        run: poetry version $(git describe --tags --abbrev=0)
+
+      - name: Install Poetry dependencies
+        run: poetry install
+
+      - name: Install docs 'insiders' dependencies
+        run: ./docs/setup_insiders.sh
+
+      - name: Publish 'kolena' documentation to trunk (S3)
+        when: inputs.environment == 'trunk'
+        run: |
+          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+          aws s3 sync ./site "s3://trunk-docs.kolena.io"
+
+      - name: Publish 'kolena' documentation to production (docs.kolena.io)
+        when: inputs.environment == 'production'
+        run: |
+          git config user.name 'kolenabot'
+          git config user.email 'bot@kolena.io'
+          poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
+        env:
+          DD_RUM_CLIENT_TOKEN: ${{ vars.DD_RUM_CLIENT_TOKEN }}
+          DD_RUM_APPLICATION_ID: ${{ vars.DD_RUM_APPLICATION_ID }}
