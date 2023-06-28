@@ -155,16 +155,30 @@ FP = len([inf.score >= T for inf in unmatched_inf])
 
 ??? example "Example: Single-class Object Detection"
 
-    ![Legends](../assets/images/metrics-tpfpfntn-legends.png)
+    ![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
+    ![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
+    ![example 1](../assets/images/metrics-matcher-example1-light.svg#only-light)
+    ![example 1](../assets/images/metrics-matcher-example1-dark.svg#only-dark)
 
-    ![Single-class example](../assets/images/metrics-tpfpfntn-single-class.png)
+    <center>
+
+    | Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+    | --- | --- | --- | --- |
+    | $\text{a}$ | 0.98 | 0.9 | 0.0 |
+    | $\text{b}$ | 0.6 | 0.0 | 0.13 |
+
+    </center>
 
     This example includes two ground truths and two inferences, and when computed with an IoU threshold of 0.5 and
     confidence score threshold of 0.5 yields:
 
+    <center>
+
     | TP | FP | FN |
     | --- | --- | --- |
     | 1 | 1 | 1 |
+
+    </center>
 
 #### Multiclass
 
@@ -172,18 +186,33 @@ Like classification, multiclass object detection workflow compute TP / FP / FN p
 
 ??? example "Example: Multiclass Object Detection"
 
-    ![Legends](../assets/images/metrics-tpfpfntn-legends.png)
+    ![example legends](../assets/images/metrics-bbox-legend-unmatched-light.svg#only-light)
+    ![example legends](../assets/images/metrics-bbox-legend-unmatched-dark.svg#only-dark)
+    ![example 2](../assets/images/metrics-matcher-example2-light.svg#only-light)
+    ![example 2](../assets/images/metrics-matcher-example2-dark.svg#only-dark)
 
-    ![Multi-class example](../assets/images/metrics-tpfpfntn-multi-class.png)
+    <center>
+
+    | Bounding Box | Class | Score | IoU($\text{A}$) |
+    | --- | --- | --- | --- |
+    | $\text{A}$ | `Apple` | — | — |
+    | $\text{a}$ | `Apple` | 0.3 | 0.0 |
+    | $\text{b}$ | `Banana` | 0.5 | 0.8 |
+
+    </center>
 
     Similar to multiclass classification, TP / FP / FN are computed for class `Apple` and class `Banana` separately.
 
     Using an IoU threshold of 0.5 and a confidence score threshold of 0.5, this example yields:
 
+    <center>
+
     | Class | TP | FP | FN |
     | --- | --- | --- | --- |
     | `Apple` | 0 | 0 | 1 |
     | `Banana` | 0 | 1 | 0 |
+
+    </center>
 
 ### Averaging Per-class Metrics
 
