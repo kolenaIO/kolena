@@ -61,13 +61,13 @@ jobs:
         run: ./docs/setup_insiders.sh
 
       - name: Publish 'kolena' documentation to trunk (S3)
-        when: inputs.environment == 'trunk'
+        if: inputs.environment == 'trunk'
         run: |
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://trunk-docs.kolena.io"
 
       - name: Publish 'kolena' documentation to production (docs.kolena.io)
-        when: inputs.environment == 'production'
+        if: inputs.environment == 'production'
         run: |
           git config user.name 'kolenabot'
           git config user.email 'bot@kolena.io'
