@@ -344,3 +344,8 @@ def test__edit__reset(test_samples: List[TestCaseRecord]) -> None:
     assert test_case.image_count == 3
     assert test_case.pair_count_genuine == 0
     assert test_case.pair_count_imposter == 3
+
+
+def test__empty_test_case_name() -> None:
+    with pytest.raises(ValueError):
+        TestCase("")

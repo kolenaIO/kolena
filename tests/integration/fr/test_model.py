@@ -47,6 +47,11 @@ def test__create() -> None:
     assert created_model.data.metadata == model_metadata
 
 
+def test__empty_model__name() -> None:
+    with pytest.raises(ValueError):
+        Model.create(name=" ", metadata={})
+
+
 def test__load_by_name() -> None:
     model_name = with_test_prefix(f"{__file__} test_load_by_name")
     created_model = Model.create(name=model_name, metadata={})

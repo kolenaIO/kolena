@@ -389,3 +389,9 @@ def test__edit__reset(single_test_case: TestCase, multi_version_test_case: List[
     assert test_suite.version == 3
     assert test_suite.description == new_description  # not updated or cleared
     assert test_suite.baseline_test_cases == [multi_version_test_case[2]]
+
+
+def test__empty_test_suite_name() -> None:
+    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__empty_test_suite_name test case 1"))
+    with pytest.raises(ValueError):
+        TestSuite("", test_cases=[test_case_1])
