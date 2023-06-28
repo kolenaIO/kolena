@@ -1,14 +1,14 @@
 name: Deploy Documentation
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy docs
+        type: choice
+        options: [trunk, production]
+        default: trunk
   push:
-    workflow_dispatch:
-      inputs:
-        environment:
-          description: Environment to deploy docs
-          type: choice
-          options: [trunk, production]
-          default: trunk
     branches:
       - trunk
 
