@@ -22,20 +22,90 @@ from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import ObjectDetectionEvaluator
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
-from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection import ThresholdStrategy
-from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
 from kolena._experimental.object_detection.workflow import TestSampleMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSuiteMetrics
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 TEST_CASE = TestCase(with_test_prefix("test_evaluator_single_class"))
-TEST_CASE_2 = TestCase(with_test_prefix("test_evaluator_single_class_2"))
-TEST_SUITE = TestSuite(with_test_prefix("test_evaluator_single_class_suite"))
+
+TEST_PARAMS = [
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "nothing"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "nothing"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "nothing"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "nothing"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no inferences"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no inferences"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no inferences"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no inferences"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no ground truths"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no ground truths"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no ground truths"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no ground truths"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=1 and different labels and max confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=1 and different labels and max confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0 and same labels"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0 and same labels"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0 and same labels"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0 and same labels"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0 confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0 confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.5 confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.5 confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.99 confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.99 confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0 confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0 confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.5 confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.5 confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.99 confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.99 confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, perfect match"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, perfect match"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied iou"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied iou"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied confidence"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied confidence"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, many inferences"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, many inferences"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, too few inferences"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, too few inferences"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, suboptimal infs"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, suboptimal infs"),
+    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
+    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, ignored matches"),
+    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, ignored matches"),
+]
 
 
 TEST_DATA: Dict[str, List[Tuple[TestSample, GroundTruth, Inference]]] = {
@@ -517,7 +587,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.5 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(10, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.5)],
                     FP=[],
@@ -536,7 +606,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.99 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(11, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.99)],
                     FP=[],
@@ -555,7 +625,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, perfect match": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(12, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -579,7 +649,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied iou": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(13, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.1, 1.0), bottom_right=(2.1, 2.0), label="a", score=0.9),
@@ -602,7 +672,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(14, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.6),
@@ -625,7 +695,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, many inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(15, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -654,7 +724,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, too few inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(16, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -679,7 +749,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, suboptimal infs": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(17, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(5.0, 5.0), bottom_right=(6.0, 6.0), label="a", score=0.9)],
                     FP=[ScoredLabeledBoundingBox(top_left=(7.0, 7.0), bottom_right=(9.0, 9.0), label="a", score=0.9)],
@@ -702,7 +772,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, ignored matches": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(18, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -897,7 +967,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.5 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(10, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.5)],
                     FP=[],
@@ -916,7 +986,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.99 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(11, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.99)],
                     FP=[],
@@ -935,7 +1005,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, perfect match": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(12, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -959,7 +1029,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied iou": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(13, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.1, 1.0), bottom_right=(2.1, 2.0), label="a", score=0.9),
@@ -987,7 +1057,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(14, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.6),
@@ -1012,7 +1082,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, many inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(15, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -1041,7 +1111,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, too few inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(16, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -1066,7 +1136,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, suboptimal infs": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(17, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(5.0, 5.0), bottom_right=(6.0, 6.0), label="a", score=0.9)],
                     FP=[ScoredLabeledBoundingBox(top_left=(7.0, 7.0), bottom_right=(9.0, 9.0), label="a", score=0.9)],
@@ -1089,7 +1159,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, ignored matches": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(18, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -1284,7 +1354,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.5 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(10, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.5)],
                     FP=[],
@@ -1303,7 +1373,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.99 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(11, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.99)],
                     FP=[],
@@ -1322,7 +1392,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, perfect match": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(12, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -1346,7 +1416,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied iou": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(13, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.1, 1.0), bottom_right=(2.1, 2.0), label="a", score=0.9),
@@ -1374,7 +1444,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(14, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.6),
@@ -1399,7 +1469,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, many inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(15, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -1428,7 +1498,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, too few inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(16, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -1453,7 +1523,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, suboptimal infs": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(17, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(5.0, 5.0), bottom_right=(6.0, 6.0), label="a", score=0.9)],
                     FP=[ScoredLabeledBoundingBox(top_left=(7.0, 7.0), bottom_right=(9.0, 9.0), label="a", score=0.9)],
@@ -1476,7 +1546,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, ignored matches": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(18, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -1671,7 +1741,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.5 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(10, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.5)],
                     FP=[],
@@ -1690,7 +1760,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "iou=0.5 and same labels but 0.99 confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(11, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(2.0, 1.0), bottom_right=(5.0, 4.0), label="b", score=0.99)],
                     FP=[],
@@ -1709,7 +1779,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, perfect match": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(12, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -1733,7 +1803,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied iou": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(13, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.1, 1.0), bottom_right=(2.1, 2.0), label="a", score=0.9),
@@ -1761,7 +1831,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, varied confidence": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(14, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.6),
@@ -1784,7 +1854,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, many inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(15, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -1813,7 +1883,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, too few inferences": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(16, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.99),
@@ -1838,7 +1908,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, suboptimal infs": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(17, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[ScoredLabeledBoundingBox(top_left=(5.0, 5.0), bottom_right=(6.0, 6.0), label="a", score=0.9)],
                     FP=[ScoredLabeledBoundingBox(top_left=(7.0, 7.0), bottom_right=(9.0, 9.0), label="a", score=0.9)],
@@ -1861,7 +1931,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
         ],
         "multiple bboxes in an image, ignored matches": [
             (
-                TestSample(locator=fake_locator(1, "OD"), metadata={}),
+                TestSample(locator=fake_locator(18, "OD"), metadata={}),
                 TestSampleMetricsSingleClass(
                     TP=[
                         ScoredLabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(2.0, 2.0), label="a", score=0.9),
@@ -1881,890 +1951,13 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
                 ),
             ),
         ],
-    },
-}
-
-# evaluator_configuration -> test_name -> test_case_metrics
-EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[str, Dict[str, TestCaseMetricsSingleClass]] = {
-    "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0": {
-        "nothing": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=0,
-            TP=0,
-            FN=0,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no inferences": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no ground truths": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=1,
-            TP=0,
-            FN=0,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=1 and different labels and max confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4272074506720952,
-        ),
-        "iou=0 and same labels": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.3926325080131927,
-        ),
-        "iou=0.5 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.3988727670279049,
-        ),
-        "multiple bboxes in an image, perfect match": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=4,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.40951485170235175,
-        ),
-        "multiple bboxes in an image, varied iou": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=3,
-            FN=1,
-            FP=1,
-            Precision=0.75,
-            Recall=0.75,
-            F1=0.75,
-            AP=0.42852585300501966,
-        ),
-        "multiple bboxes in an image, varied confidence": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=3,
-            TP=3,
-            FN=1,
-            FP=0,
-            Precision=1.0,
-            Recall=0.75,
-            F1=0.8571428571428571,
-            AP=0.4266850829855224,
-        ),
-        "multiple bboxes in an image, many inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=8,
-            TP=4,
-            FN=0,
-            FP=4,
-            Precision=0.5,
-            Recall=1.0,
-            F1=0.6666666666666666,
-            AP=0.4372560077979224,
-        ),
-        "multiple bboxes in an image, too few inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=2,
-            FN=2,
-            FP=0,
-            Precision=1.0,
-            Recall=0.5,
-            F1=0.6666666666666666,
-            AP=0.4350202624924517,
-        ),
-        "multiple bboxes in an image, suboptimal infs": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=1,
-            FN=3,
-            FP=1,
-            Precision=0.5,
-            Recall=0.25,
-            F1=0.3333333333333333,
-            AP=0.4338218694169238,
-        ),
-        "multiple bboxes in an image, ignored matches": TestCaseMetricsSingleClass(
-            Objects=2,
-            Inferences=2,
-            TP=2,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4283473934674454,
-        ),
-    },
-    "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0": {
-        "nothing": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=0,
-            TP=0,
-            FN=0,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no inferences": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no ground truths": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=1,
-            TP=0,
-            FN=0,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=1 and different labels and max confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.428837349700659,
-        ),
-        "iou=0 and same labels": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.39420363139782927,
-        ),
-        "iou=0.5 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.40041454364562773,
-        ),
-        "multiple bboxes in an image, perfect match": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=4,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.41544159544159553,
-        ),
-        "multiple bboxes in an image, varied iou": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=2,
-            FN=2,
-            FP=2,
-            Precision=0.5,
-            Recall=0.5,
-            F1=0.5,
-            AP=0.4260551550042678,
-        ),
-        "multiple bboxes in an image, varied confidence": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=2,
-            FN=2,
-            FP=0,
-            Precision=1.0,
-            Recall=0.5,
-            F1=0.6666666666666666,
-            AP=0.4319672208562497,
-        ),
-        "multiple bboxes in an image, many inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=8,
-            TP=4,
-            FN=0,
-            FP=4,
-            Precision=0.5,
-            Recall=1.0,
-            F1=0.6666666666666666,
-            AP=0.4372395109752708,
-        ),
-        "multiple bboxes in an image, too few inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=2,
-            FN=2,
-            FP=0,
-            Precision=1.0,
-            Recall=0.5,
-            F1=0.6666666666666666,
-            AP=0.43514419419152073,
-        ),
-        "multiple bboxes in an image, suboptimal infs": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=1,
-            FN=3,
-            FP=1,
-            Precision=0.5,
-            Recall=0.25,
-            F1=0.3333333333333333,
-            AP=0.4323494849484949,
-        ),
-        "multiple bboxes in an image, ignored matches": TestCaseMetricsSingleClass(
-            Objects=2,
-            Inferences=2,
-            TP=2,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4305562166793603,
-        ),
-    },
-    "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3": {
-        "nothing": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=0,
-            TP=0,
-            FN=0,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no inferences": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no ground truths": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=1,
-            TP=0,
-            FN=0,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=1 and different labels and max confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4304586363835988,
-        ),
-        "iou=0 and same labels": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.39576735369733695,
-        ),
-        "iou=0.5 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4019490903434968,
-        ),
-        "multiple bboxes in an image, perfect match": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=4,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.421259302741262,
-        ),
-        "multiple bboxes in an image, varied iou": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=2,
-            FN=2,
-            FP=2,
-            Precision=0.5,
-            Recall=0.5,
-            F1=0.5,
-            AP=0.4236510358293639,
-        ),
-        "multiple bboxes in an image, varied confidence": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=2,
-            FN=2,
-            FP=0,
-            Precision=1.0,
-            Recall=0.5,
-            F1=0.6666666666666666,
-            AP=0.4346588861647574,
-        ),
-        "multiple bboxes in an image, many inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=8,
-            TP=4,
-            FN=0,
-            FP=4,
-            Precision=0.5,
-            Recall=1.0,
-            F1=0.6666666666666666,
-            AP=0.43484288861584863,
-        ),
-        "multiple bboxes in an image, too few inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=2,
-            FN=2,
-            FP=0,
-            Precision=1.0,
-            Recall=0.5,
-            F1=0.6666666666666666,
-            AP=0.4352714273271663,
-        ),
-        "multiple bboxes in an image, suboptimal infs": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=1,
-            FN=3,
-            FP=1,
-            Precision=0.5,
-            Recall=0.25,
-            F1=0.3333333333333333,
-            AP=0.4292048477682531,
-        ),
-        "multiple bboxes in an image, ignored matches": TestCaseMetricsSingleClass(
-            Objects=2,
-            Inferences=2,
-            TP=2,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.43277279300115,
-        ),
-    },
-    "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1": {
-        "nothing": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=0,
-            TP=0,
-            FN=0,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no inferences": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "no ground truths": TestCaseMetricsSingleClass(
-            Objects=0,
-            Inferences=1,
-            TP=0,
-            FN=0,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=1 and different labels and max confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.43207137021475245,
-        ),
-        "iou=0 and same labels": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.33 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=0,
-            FN=1,
-            FP=1,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=0,
-            TP=0,
-            FN=1,
-            FP=0,
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            AP=0.0,
-        ),
-        "iou=0.5 and same labels but 0.5 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.39732371794871796,
-        ),
-        "iou=0.5 and same labels but 0.99 confidence": TestCaseMetricsSingleClass(
-            Objects=1,
-            Inferences=1,
-            TP=1,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4034764494902942,
-        ),
-        "multiple bboxes in an image, perfect match": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=4,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4269705445157252,
-        ),
-        "multiple bboxes in an image, varied iou": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=4,
-            TP=2,
-            FN=2,
-            FP=2,
-            Precision=0.5,
-            Recall=0.5,
-            F1=0.5,
-            AP=0.4213108668328975,
-        ),
-        "multiple bboxes in an image, varied confidence": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=3,
-            TP=3,
-            FN=1,
-            FP=0,
-            Precision=1.0,
-            Recall=0.75,
-            F1=0.8571428571428571,
-            AP=0.437306206050923,
-        ),
-        "multiple bboxes in an image, many inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=8,
-            TP=4,
-            FN=0,
-            FP=4,
-            Precision=0.5,
-            Recall=1.0,
-            F1=0.6666666666666666,
-            AP=0.43489983541808785,
-        ),
-        "multiple bboxes in an image, too few inferences": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=2,
-            FN=2,
-            FP=0,
-            Precision=1.0,
-            Recall=0.5,
-            F1=0.6666666666666666,
-            AP=0.43540176895791877,
-        ),
-        "multiple bboxes in an image, suboptimal infs": TestCaseMetricsSingleClass(
-            Objects=4,
-            Inferences=2,
-            TP=1,
-            FN=3,
-            FP=1,
-            Precision=0.5,
-            Recall=0.25,
-            F1=0.3333333333333333,
-            AP=0.426122572815534,
-        ),
-        "multiple bboxes in an image, ignored matches": TestCaseMetricsSingleClass(
-            Objects=2,
-            Inferences=2,
-            TP=2,
-            FN=0,
-            FP=0,
-            Precision=1.0,
-            Recall=1.0,
-            F1=1.0,
-            AP=0.4349967679379444,
-        ),
     },
 }
 
 
 @pytest.mark.parametrize(
     "config_name, test_name",
-    [
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "nothing"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "nothing"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "nothing"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "nothing"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no inferences"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no inferences"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no ground truths"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no ground truths"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no ground truths"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no ground truths"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=1 and different labels and max confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=1 and different labels and max confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0 and same labels"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0 and same labels"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0 and same labels"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0 and same labels"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, perfect match"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, perfect match"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied iou"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied iou"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, many inferences"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, many inferences"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, ignored matches"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, ignored matches"),
-    ],
+    TEST_PARAMS,
 )
 def test__prebuilt__object__detection__single__class__compute__test__sample__metrics(
     config_name: str,
@@ -2772,12 +1965,13 @@ def test__prebuilt__object__detection__single__class__compute__test__sample__met
 ) -> None:
     config = TEST_CONFIGURATIONS[config_name]
     eval = ObjectDetectionEvaluator(configurations=[config])
-
-    assert EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_name] == eval.compute_test_sample_metrics(
+    result = eval.compute_test_sample_metrics(
         test_case=TEST_CASE,
         inferences=TEST_DATA[test_name],
         configuration=config,
     )
+
+    assert EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_name] == result
 
 
 def test__prebuilt__object__detection__single__class__compute__test__sample__metrics__all() -> None:
@@ -2785,357 +1979,12 @@ def test__prebuilt__object__detection__single__class__compute__test__sample__met
         if config_name not in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS:
             continue
         eval = ObjectDetectionEvaluator(configurations=[config])
-        assert [
-            pair for _, results in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name].items() for pair in results
-        ] == eval.compute_test_sample_metrics(
+        result = eval.compute_test_sample_metrics(
             test_case=TEST_CASE,
             inferences=[ts_gt_inf for _, data in TEST_DATA.items() for ts_gt_inf in data],
             configuration=config,
         )
 
-
-@pytest.mark.metrics
-@pytest.mark.parametrize(
-    "config_name, test_name",
-    [
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "nothing"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "nothing"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "nothing"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "nothing"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no inferences"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no inferences"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no ground truths"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no ground truths"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no ground truths"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no ground truths"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=1 and different labels and max confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=1 and different labels and max confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0 and same labels"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0 and same labels"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0 and same labels"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0 and same labels"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.5 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.99 confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, perfect match"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, perfect match"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied iou"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied iou"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied confidence"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, many inferences"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, many inferences"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, too few inferences"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, suboptimal infs"),
-        ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
-        ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, ignored matches"),
-        ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, ignored matches"),
-    ],
-)
-def test__prebuilt__object__detection__single__class__compute__test__case__metrics(
-    config_name: str,
-    test_name: str,
-) -> None:
-    config = TEST_CONFIGURATIONS[config_name]
-
-    eval = ObjectDetectionEvaluator(configurations=[config])
-    eval.compute_test_sample_metrics(
-        test_case=TEST_CASE,
-        inferences=TEST_DATA[test_name],
-        configuration=config,
-    )
-
-    result = eval.compute_test_case_metrics(
-        test_case=TEST_CASE,
-        inferences=TEST_DATA[test_name],
-        metrics=[metric for _, metric in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_name]],
-        configuration=config,
-    )
-
-    expected = EXPECTED_COMPUTE_TEST_CASE_METRICS[config_name][test_name]
-    assert expected == result
-
-
-@pytest.mark.metrics
-@pytest.mark.parametrize(
-    "config_name, expected",
-    [
-        (
-            "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
-            TestCaseMetricsSingleClass(
-                Objects=35,
-                Inferences=32,
-                TP=22,
-                FN=13,
-                FP=10,
-                Precision=0.6875,
-                Recall=0.6285714285714286,
-                F1=0.6567164179104478,
-                AP=0.43971982269854615,
-            ),
-        ),
-        (
-            "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
-            TestCaseMetricsSingleClass(
-                Objects=35,
-                Inferences=31,
-                TP=20,
-                FN=15,
-                FP=11,
-                Precision=0.6451612903225806,
-                Recall=0.5714285714285714,
-                F1=0.606060606060606,
-                AP=0.4409702828499821,
-            ),
-        ),
-        (
-            "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
-            TestCaseMetricsSingleClass(
-                Objects=35,
-                Inferences=31,
-                TP=20,
-                FN=15,
-                FP=11,
-                Precision=0.6451612903225806,
-                Recall=0.5714285714285714,
-                F1=0.606060606060606,
-                AP=0.437782006245121,
-            ),
-        ),
-        (
-            "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
-            TestCaseMetricsSingleClass(
-                Objects=35,
-                Inferences=32,
-                TP=21,
-                FN=14,
-                FP=11,
-                Precision=0.65625,
-                Recall=0.6,
-                F1=0.626865671641791,
-                AP=0.4349967679379444,
-            ),
-        ),
-    ],
-)
-def test__prebuilt__object__detection__single__class__compute__test__case__metrics__all(
-    config_name: str,
-    expected: TestCaseMetricsSingleClass,
-) -> None:
-    config = TEST_CONFIGURATIONS[config_name]
-    eval = ObjectDetectionEvaluator(configurations=[config])
-    eval.compute_test_sample_metrics(
-        test_case=TEST_CASE,
-        inferences=[ts_gt_inf for _, data in TEST_DATA.items() for ts_gt_inf in data],
-        configuration=config,
-    )
-    result = eval.compute_test_case_metrics(
-        test_case=TEST_CASE,
-        inferences=[ts_gt_inf for _, data in TEST_DATA.items() for ts_gt_inf in data],
-        metrics=[
-            metric for _, metrics in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name].items() for _, metric in metrics
-        ],
-        configuration=config,
-    )
-
-    assert expected == result
-
-
-@pytest.mark.metrics
-@pytest.mark.parametrize(
-    "config_name, test_name, test_case_metrics, expected",
-    [
-        (
-            "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
-            "nothing",
-            [
-                (
-                    TEST_CASE_2,
-                    TestCaseMetricsSingleClass(
-                        Objects=0,
-                        Inferences=0,
-                        TP=0,
-                        FN=0,
-                        FP=0,
-                        Precision=0,
-                        Recall=0,
-                        F1=0,
-                        AP=0,
-                    ),
-                ),
-            ],
-            TestSuiteMetrics(
-                n_images=1,
-                mean_AP=0,
-            ),
-        ),
-        (
-            "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
-            "multiple bboxes in an image, perfect match",
-            [
-                (
-                    TEST_CASE,
-                    TestCaseMetricsSingleClass(
-                        Objects=0,
-                        Inferences=0,
-                        TP=0,
-                        FN=0,
-                        FP=0,
-                        Precision=0,
-                        Recall=0,
-                        F1=0,
-                        AP=0.123,
-                    ),
-                ),
-            ],
-            TestSuiteMetrics(
-                n_images=1,
-                mean_AP=0.123,
-            ),
-        ),
-    ],
-)
-def test__prebuilt__object__detection__single__class__compute__test__suite__metrics(
-    config_name: str,
-    test_name: str,
-    test_case_metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],
-    expected: TestSuiteMetrics,
-) -> None:
-    config = TEST_CONFIGURATIONS[config_name]
-    eval = ObjectDetectionEvaluator(configurations=[config])
-    eval.compute_test_sample_metrics(
-        test_case=test_case_metrics[0][0],
-        inferences=TEST_DATA[test_name],
-        configuration=config,
-    )
-
-    eval.compute_test_case_metrics(
-        test_case=test_case_metrics[0][0],
-        inferences=TEST_DATA[test_name],
-        metrics=[metric for _, metric in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_name]],
-        configuration=config,
-    )
-
-    result = eval.compute_test_suite_metrics(
-        test_suite=TEST_SUITE,
-        metrics=test_case_metrics,
-        configuration=config,
-    )
-
-    assert expected == result
-
-
-@pytest.mark.metrics
-def test__prebuilt__object__detection__single__class__compute__multiple__test__suite__metric() -> None:
-    config_name = "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0"
-    test_1 = "multiple bboxes in an image, perfect match"
-    test_2 = "nothing"
-    config = TEST_CONFIGURATIONS[config_name]
-    eval = ObjectDetectionEvaluator(configurations=[config])
-    eval.compute_test_sample_metrics(
-        test_case=TEST_CASE,
-        inferences=TEST_DATA[test_1],
-        configuration=config,
-    )
-
-    eval.compute_test_case_metrics(
-        test_case=TEST_CASE,
-        inferences=TEST_DATA[test_1],
-        metrics=[EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_1][0][1]],
-        configuration=config,
-    )
-
-    eval.compute_test_sample_metrics(
-        test_case=TEST_CASE_2,
-        inferences=TEST_DATA[test_2],
-        configuration=config,
-    )
-
-    eval.compute_test_case_metrics(
-        test_case=TEST_CASE_2,
-        inferences=TEST_DATA[test_2],
-        metrics=[EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_2][0][1]],
-        configuration=config,
-    )
-
-    test_case_metrics = [
-        (
-            TEST_CASE,
-            TestCaseMetricsSingleClass(
-                Objects=0,
-                Inferences=0,
-                TP=0,
-                FN=0,
-                FP=0,
-                Precision=0.0,
-                Recall=0.0,
-                F1=0.0,
-                AP=0.3,
-            ),
-        ),
-        (
-            TEST_CASE_2,
-            TestCaseMetricsSingleClass(
-                Objects=0,
-                Inferences=0,
-                TP=0,
-                FN=0,
-                FP=0,
-                Precision=0.0,
-                Recall=0.0,
-                F1=0.0,
-                AP=0.7,
-            ),
-        ),
-    ]
-
-    result = eval.compute_test_suite_metrics(
-        test_suite=TEST_SUITE,
-        metrics=test_case_metrics,
-        configuration=config,
-    )
-
-    assert result == TestSuiteMetrics(
-        n_images=2,
-        mean_AP=0.5,
-    )
+        assert [
+            pair for _, results in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name].items() for pair in results
+        ] == result

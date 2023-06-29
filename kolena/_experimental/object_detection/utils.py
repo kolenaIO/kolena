@@ -59,12 +59,13 @@ def _compute_threshold_curve(
     curve_type: Literal["pr", "f1"],
     curve_label: Optional[str] = None,
 ) -> Optional[Curve]:
-    if len(y_score) >= 501:
-        thresholds = list(np.linspace(min(abs(y_score)), max(y_score), 501))
-    elif len(y_score) > 1:
-        thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
-    else:
+    if len(y_score) < 1:
         return None
+
+    thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
+
+    if len(thresholds) >= 501:
+        thresholds = list(np.linspace(min(thresholds), max(thresholds), 501))
 
     precisions: List[float] = []
     recalls: List[float] = []
