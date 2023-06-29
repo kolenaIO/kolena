@@ -13,6 +13,8 @@
 # limitations under the License.
 import random
 
+import pytest
+
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import Model
@@ -26,6 +28,7 @@ from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 
+@pytest.mark.metrics
 def test__multiclass__object__detection__smoke() -> None:
     name = with_test_prefix(f"{__file__} test__multiclass__object__detection__smoke")
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
