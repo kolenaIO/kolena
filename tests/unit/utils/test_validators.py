@@ -26,3 +26,8 @@ def test__validate_name__error(name) -> None:
 def test__validate_name__error__field_name(name) -> None:
     with pytest.raises(ValueError, match="Test must be non empty"):
         validate_name(name, field_name="Test")
+
+
+@pytest.mark.parametrize("name", ["a", "a  b", "a ::  b"])
+def test__validate_name__no_error(name) -> None:
+    validate_name(name)
