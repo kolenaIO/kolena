@@ -1,4 +1,4 @@
-name: Deploy Documentation
+name: Docs
 
 on:
   workflow_dispatch:
@@ -13,8 +13,8 @@ on:
       - trunk
 
 jobs:
-  trunk-docs:
-    name: Build and publish dev build of kolena documentation
+  docs:
+    name: Build and publish documentation
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
