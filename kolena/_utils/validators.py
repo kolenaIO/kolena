@@ -24,4 +24,4 @@ class ValidatorConfig:
 
 def validate_not_blank(field: str):
     if not bool(field and not field.isspace()):
-        raise ValueError("Names must be non empty")
+        raise ValueError("Field must be non empty")
