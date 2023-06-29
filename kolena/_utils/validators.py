@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Optional
+
 from pydantic import Extra
 
 
@@ -22,6 +24,7 @@ class ValidatorConfig:
     extra = Extra.allow  # do not fail when unrecognized values are provided
 
 
-def validate_not_blank(field: str):
+def validate_name(field: str, field_name: Optional[str] = None):
+    field_name_str = field_name if field_name else "field"
     if not bool(field and not field.isspace()):
-        raise ValueError("Field must be non empty")
+        raise ValueError(f"{field_name_str} must be non empty")

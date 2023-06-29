@@ -32,12 +32,13 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.consts import FieldNamesError
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
-from kolena._utils.validators import validate_not_blank
+from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.workflow import GroundTruth
@@ -94,7 +95,8 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
     ):
         if type(self) == TestCase:
             raise Exception("<TestCase> must be subclassed.")
-        validate_not_blank(name)
+
+        validate_name(name, FieldNamesError.TEST_CASE_NAME)
         self._validate_test_samples(test_samples)
 
         try:
@@ -169,7 +171,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: The newly created test case.
         """
         cls._validate_test_samples(test_samples)
-        validate_not_blank(name)
+        validate_name(name, FieldNamesError.TEST_CASE_NAME)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

@@ -46,6 +46,11 @@ def test__create() -> None:
         Model.create(name)
 
 
+def test__create__validate_name() -> None:
+    with pytest.raises(ValueError):
+        Model.create(name=" ", infer=lambda x: None, metadata=META_DATA)
+
+
 def test__load() -> None:
     name = with_test_prefix(f"{__file__}::test__load model")
 
@@ -88,6 +93,11 @@ def test__init_no_meta() -> None:
     assert model.metadata == loaded.metadata
 
 
+def test__init__validate_name() -> None:
+    with pytest.raises(ValueError):
+        Model(name=" ", infer=lambda x: None, metadata=META_DATA)
+
+
 def test__load_inferences__empty(dummy_test_suites: List[TestSuite]) -> None:
     name = with_test_prefix(f"{__file__}::test__load_inferences__empty model")
     model = Model(name)
@@ -112,8 +122,3 @@ def test__load_inferences(
 
     inferences = model.load_inferences(dummy_test_suites[0].test_cases[0])
     assert_sorted_list_equal(inferences, list(zip(dummy_test_samples, dummy_ground_truths, dummy_inferences_list)))
-
-
-def test__empty_model__name() -> None:
-    with pytest.raises(ValueError):
-        Model.create(name=" ", infer=lambda x: None, metadata=META_DATA)

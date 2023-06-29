@@ -47,7 +47,7 @@ def test__create() -> None:
     assert created_model.data.metadata == model_metadata
 
 
-def test__empty_model__name() -> None:
+def test__create__validate_name() -> None:
     with pytest.raises(ValueError):
         Model.create(name=" ", metadata={})
 

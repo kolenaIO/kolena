@@ -31,12 +31,13 @@ from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import BatchSize
+from kolena._utils.consts import FieldNamesError
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
-from kolena._utils.validators import validate_not_blank
+from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.workflow import GroundTruth
@@ -96,6 +97,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
     ):
         if type(self) == Model:
             raise Exception("<Model> must be subclassed.")
+        validate_name(name, FieldNamesError.MODEL_NAME)
         try:
             loaded = self.load(name, infer)
             if len(loaded.metadata.keys()) > 0 and loaded.metadata != metadata:
@@ -120,7 +122,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param metadata: Optional unstructured metadata to store with this model.
         :return: The newly created model.
         """
-        validate_not_blank(name)
+        validate_name(name, FieldNamesError.MODEL_NAME)
         metadata = metadata or {}
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))

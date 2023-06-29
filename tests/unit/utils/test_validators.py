@@ -13,12 +13,16 @@
 # limitations under the License.
 import pytest
 
-from kolena._utils.validators import validate_not_blank
+from kolena._utils.validators import validate_name
 
 
-def test__validate__field_name__empty() -> None:
-    with pytest.raises(ValueError):
-        validate_not_blank("")
+@pytest.mark.parametrize("name", ["", " ", "    ", None])
+def test__validate_name__error(name) -> None:
+    with pytest.raises(ValueError, match="field must be non empty"):
+        validate_name(name)
 
-    with pytest.raises(ValueError):
-        validate_not_blank("  ")
+
+@pytest.mark.parametrize("name", ["", " ", "    ", None])
+def test__validate_name__error__field_name(name) -> None:
+    with pytest.raises(ValueError, match="Test must be non empty"):
+        validate_name(name, field_name="Test")
