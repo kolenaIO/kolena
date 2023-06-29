@@ -11,9 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from kolena._experimental.object_detection import GroundTruth
-from kolena._experimental.object_detection import Inference
-from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection.workflow import GroundTruth
+from kolena._experimental.object_detection.workflow import Inference
+from kolena._experimental.object_detection.workflow import TestSample
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
