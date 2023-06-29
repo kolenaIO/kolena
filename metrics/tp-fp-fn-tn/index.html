@@ -3116,10 +3116,39 @@ ground truths and inferences are given. Consider the following variables, adapte
 </span></code></pre></div>
 <details class="example">
 <summary>Example: Single-class Object Detection</summary>
-<p><img alt="Legends" src="../../assets/images/metrics-tpfpfntn-legends.png" /></p>
-<p><img alt="Single-class example" src="../../assets/images/metrics-tpfpfntn-single-class.png" /></p>
+<p><img alt="example legends" src="../../assets/images/metrics-bbox-legend-light.svg#only-light" />
+<img alt="example legends" src="../../assets/images/metrics-bbox-legend-dark.svg#only-dark" />
+<img alt="example 1" src="../../assets/images/metrics-matcher-example1-light.svg#only-light" />
+<img alt="example 1" src="../../assets/images/metrics-matcher-example1-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+<th>IoU(<span class="arithmatex">\(\text{B}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td>0.98</td>
+<td>0.9</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td>0.6</td>
+<td>0.0</td>
+<td>0.13</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>This example includes two ground truths and two inferences, and when computed with an IoU threshold of 0.5 and
 confidence score threshold of 0.5 yields:</p>
+<p><center></p>
 <table>
 <thead>
 <tr>
@@ -3136,15 +3165,51 @@ confidence score threshold of 0.5 yields:</p>
 </tr>
 </tbody>
 </table>
+<p></center></p>
 </details>
 <h4 id="multiclass_1">Multiclass<a class="headerlink" href="#multiclass_1" title="Permanent link">#</a></h4>
 <p>Like classification, multiclass object detection workflow compute TP / FP / FN per class.</p>
 <details class="example">
 <summary>Example: Multiclass Object Detection</summary>
-<p><img alt="Legends" src="../../assets/images/metrics-tpfpfntn-legends.png" /></p>
-<p><img alt="Multi-class example" src="../../assets/images/metrics-tpfpfntn-multi-class.png" /></p>
+<p><img alt="example legends" src="../../assets/images/metrics-bbox-legend-unmatched-light.svg#only-light" />
+<img alt="example legends" src="../../assets/images/metrics-bbox-legend-unmatched-dark.svg#only-dark" />
+<img alt="example 2" src="../../assets/images/metrics-matcher-example2-light.svg#only-light" />
+<img alt="example 2" src="../../assets/images/metrics-matcher-example2-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Class</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{A}\)</span></td>
+<td><code>Apple</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td><code>Apple</code></td>
+<td>0.3</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td><code>Banana</code></td>
+<td>0.5</td>
+<td>0.8</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>Similar to multiclass classification, TP / FP / FN are computed for class <code>Apple</code> and class <code>Banana</code> separately.</p>
 <p>Using an IoU threshold of 0.5 and a confidence score threshold of 0.5, this example yields:</p>
+<p><center></p>
 <table>
 <thead>
 <tr>
@@ -3169,6 +3234,7 @@ confidence score threshold of 0.5 yields:</p>
 </tr>
 </tbody>
 </table>
+<p></center></p>
 </details>
 <h3 id="averaging-per-class-metrics">Averaging Per-class Metrics<a class="headerlink" href="#averaging-per-class-metrics" title="Permanent link">#</a></h3>
 <p>For problems with multiple classes, these TP / FP / FN / TN metrics are computed for each class. If you are looking for
@@ -3199,7 +3265,7 @@ confidence scores.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 27, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 28, 2023</span>
       </span>
     
     

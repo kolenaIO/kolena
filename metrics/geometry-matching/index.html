@@ -2801,11 +2801,39 @@ focus on 2D object detection—specifically 2D bounding box matching—to learn 
 <p>Let's apply the algorithm above to the following examples of 2D object detection. Bounding boxes (see:
 <a class="autorefs autorefs-internal" href="../../reference/workflow/annotation/#kolena.workflow.annotation.BoundingBox"><code>BoundingBox</code></a>) in the diagrams below use the following colors based on their
 type and the matching result:</p>
-<p><img alt="example legends" src="../../assets/images/metrics-matcher-legends.png" /></p>
+<p><img alt="example legends" src="../../assets/images/metrics-bbox-legend-light.svg#only-light" />
+<img alt="example legends" src="../../assets/images/metrics-bbox-legend-dark.svg#only-dark" /></p>
 <p>This example contains two ground truth and two inference bounding boxes, each with the same label.
 The pair <span class="arithmatex">\((\text{A}, \text{a})\)</span> has high overlap (IoU of 0.9) and the pair <span class="arithmatex">\((\text{B}, \text{b})\)</span> has low overlap
 (IoU of 0.13). Let's find out what the matched results look like in this example with a IoU threshold of 0.5:</p>
-<p><img alt="example 1" src="../../assets/images/metrics-matcher-example1.png" /></p>
+<p><img alt="example 1" src="../../assets/images/metrics-matcher-example1-light.svg#only-light" />
+<img alt="example 1" src="../../assets/images/metrics-matcher-example1-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+<th>IoU(<span class="arithmatex">\(\text{B}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td>0.98</td>
+<td>0.9</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td>0.6</td>
+<td>0.0</td>
+<td>0.13</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>Because inference <span class="arithmatex">\(\text{a}\)</span> has a higher confidence score than inference <span class="arithmatex">\(\text{b}\)</span>, it gets matched first. It is
 pretty clear that ground truth <span class="arithmatex">\(\text{A}\)</span> scores the highest IoU with inference <span class="arithmatex">\(\text{a}\)</span>, and IoU is greater than
 IoU threshold, so <span class="arithmatex">\(\text{a}\)</span> and <span class="arithmatex">\(\text{A}\)</span> are <strong>matched</strong>.</p>
@@ -2839,7 +2867,40 @@ unmatched. In this case, ground truth <span class="arithmatex">\(\text{B}\)</spa
 </table>
 <p></center></p>
 <p>Let's take a look at another example with multiple classes, <code>Apple</code> and <code>Banana</code>:</p>
-<p><img alt="example 2" src="../../assets/images/metrics-matcher-example2.png" /></p>
+<p><img alt="example 2" src="../../assets/images/metrics-matcher-example2-light.svg#only-light" />
+<img alt="example 2" src="../../assets/images/metrics-matcher-example2-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Class</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{A}\)</span></td>
+<td><code>Apple</code></td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td><code>Apple</code></td>
+<td>0.3</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td><code>Banana</code></td>
+<td>0.5</td>
+<td>0.8</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>Each class is evaluated independently. Starting with <code>Apple</code>, there is one ground truth <span class="arithmatex">\(\text{A}\)</span> and one inference
 <span class="arithmatex">\(\text{a}\)</span>, but these two do not overlap at all (IoU of 0.0). Because IoU is less than the IoU threshold, there is <strong>no
 match</strong> for class <code>Apple</code>.</p>
@@ -2870,7 +2931,31 @@ match</strong> for class <code>Apple</code>.</p>
 </table>
 <p></center></p>
 <p>Here is another example with multiple inferences overlapping with the same ground truth:</p>
-<p><img alt="example 3" src="../../assets/images/metrics-matcher-example3.png" /></p>
+<p><img alt="example 3" src="../../assets/images/metrics-matcher-example3-light.svg#only-light" />
+<img alt="example 3" src="../../assets/images/metrics-matcher-example3-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td>0.5</td>
+<td>0.8</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td>0.8</td>
+<td>0.5</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>Among the two inferences <span class="arithmatex">\(\text{a}\)</span> and <span class="arithmatex">\(\text{b}\)</span>, <span class="arithmatex">\(\text{b}\)</span> has a higher confidence score, so <span class="arithmatex">\(\text{b}\)</span> gets matched
 first. IoU between ground truth <span class="arithmatex">\(\text{A}\)</span> and <span class="arithmatex">\(\text{b}\)</span> is greater than the IoU threshold, so they become a <strong>match</strong>.</p>
 <p>Inference <span class="arithmatex">\(\text{a}\)</span> is compared with ground truth <span class="arithmatex">\(\text{A}\)</span>, but even though IoU is greater than the IoU threshold,
@@ -2897,7 +2982,28 @@ they cannot become a match because <span class="arithmatex">\(\text{A}\)</span> 
 </table>
 <p></center></p>
 <p>Finally, let's consider another scenario where there are multiple ground truths overlapping with the same inference:</p>
-<p><img alt="example 4" src="../../assets/images/metrics-matcher-example4.png" /></p>
+<p><img alt="example 4" src="../../assets/images/metrics-matcher-example4-light.svg#only-light" />
+<img alt="example 4" src="../../assets/images/metrics-matcher-example4-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+<th>IoU(<span class="arithmatex">\(\text{B}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td>0.8</td>
+<td>0.6</td>
+<td>0.9</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>Inference <span class="arithmatex">\(\text{a}\)</span> has a higher IoU with ground truth <span class="arithmatex">\(\text{B}\)</span>, so <span class="arithmatex">\(\text{a}\)</span> and <span class="arithmatex">\(\text{B}\)</span> become matched.</p>
 <p><center></p>
 <table>
@@ -3033,9 +3139,36 @@ score and maximum IoU, it can potentially miss valid matches by matching a non-o
 matching performance.</p>
 <details class="example">
 <summary>Example: Greedy Matching</summary>
-<p><img alt="An example of greedy matching" src="../../assets/images/metrics-matcher-greedy-matching.png" /></p>
+<p><img alt="An example of greedy matching" src="../../assets/images/metrics-matcher-greedy-matching-light.svg#only-light" />
+<img alt="An example of greedy matching" src="../../assets/images/metrics-matcher-greedy-matching-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+<th>IoU(<span class="arithmatex">\(\text{B}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td>0.7</td>
+<td>0.0</td>
+<td>0.6</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td>0.8</td>
+<td>0.5</td>
+<td>0.7</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>When there are two ground truths and two inferences, one inference <span class="arithmatex">\(\text{b}\)</span> with a higher score overlaps well with
-both ground truths <span class="arithmatex">\(\text{A}\)</span> and <span class="arithmatex">\(text{B}\)</span>, and the other one, <span class="arithmatex">\(\text{a}\)</span>, with a lower score overlaps well with
+both ground truths <span class="arithmatex">\(\text{A}\)</span> and <span class="arithmatex">\(\text{B}\)</span>, and the other one, <span class="arithmatex">\(\text{a}\)</span>, with a lower score overlaps well with
 just one ground truth <span class="arithmatex">\(\text{B}\)</span>. Because the IoU between <span class="arithmatex">\(\text{B}\)</span> and <span class="arithmatex">\(\text{b}\)</span> is greater than IoU between
 <span class="arithmatex">\(\text{A}\)</span> and <span class="arithmatex">\(\text{b}\)</span>, inference <span class="arithmatex">\(\text{b}\)</span> is matched with ground truth <span class="arithmatex">\(\text{B}\)</span>, causing
 inference <span class="arithmatex">\(\text{a}\)</span> to fail to match.</p>
@@ -3048,7 +3181,34 @@ with ground truth <span class="arithmatex">\(\text{A}\)</span>, resulting in no 
 <strong>inference order</strong> when there are multiple inferences overlapping with a ground truth with the equal confidence score.</p>
 <details class="example">
 <summary>Example: Different Matching Results When Ground Truth Order Changes</summary>
-<p><img alt="An example of ground truth ordering" src="../../assets/images/metrics-matcher-gt-order.png" /></p>
+<p><img alt="An example of ground truth ordering" src="../../assets/images/metrics-matcher-gt-order-light.svg#only-light" />
+<img alt="An example of ground truth ordering" src="../../assets/images/metrics-matcher-gt-order-dark.svg#only-dark" /></p>
+<p><center></p>
+<table>
+<thead>
+<tr>
+<th>Bounding Box</th>
+<th>Score</th>
+<th>IoU(<span class="arithmatex">\(\text{A}\)</span>)</th>
+<th>IoU(<span class="arithmatex">\(\text{B}\)</span>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="arithmatex">\(\text{a}\)</span></td>
+<td>0.7</td>
+<td>0.0</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td><span class="arithmatex">\(\text{b}\)</span></td>
+<td>0.7</td>
+<td>0.5</td>
+<td>0.5</td>
+</tr>
+</tbody>
+</table>
+<p></center></p>
 <p>The three pairs of ground truth and inference have <strong>same IoU</strong> and both inferences have <strong>same confidence score</strong>.</p>
 <p>If the ground truths are ordered as <span class="arithmatex">\([\text{A}, \text{B}]\)</span> and the inferences as <span class="arithmatex">\([\text{a}, \text{b}]\)</span>, inference
 <span class="arithmatex">\(\text{a}\)</span> is matched with <span class="arithmatex">\(\text{B}\)</span> first, so inference <span class="arithmatex">\(\text{b}\)</span> gets matched with <span class="arithmatex">\(\text{A}\)</span>.</p>
@@ -3071,7 +3231,7 @@ inference <span class="arithmatex">\(\text{a}\)</span> with no match.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 27, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 28, 2023</span>
       </span>
     
     
