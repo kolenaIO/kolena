@@ -132,6 +132,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         images: Optional[List[_TestImageClass]] = None,
     ) -> "BaseTestCase":
         """Create a new test case with the provided name."""
+        validate_not_blank(name)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

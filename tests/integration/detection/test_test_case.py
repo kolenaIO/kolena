@@ -451,6 +451,11 @@ def test__create__with_locator_collision() -> None:
     assert len(images) == 1
 
 
-def test__empty_test_case_name() -> None:
+def test__init__validate_name() -> None:
     with pytest.raises(ValueError):
         TestCase("")
+
+
+def test__create__validate_name() -> None:
+    with pytest.raises(ValueError):
+        TestCase.create("")

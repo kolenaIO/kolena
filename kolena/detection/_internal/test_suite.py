@@ -113,6 +113,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         test_cases: Optional[List[BaseTestCase]] = None,
     ) -> "BaseTestSuite":
         """Create a new test suite with the provided name."""
+        validate_not_blank(name)
         request = CoreAPI.TestSuite.CreateRequest(name=name, description=description or "", workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

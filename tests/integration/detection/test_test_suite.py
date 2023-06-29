@@ -325,7 +325,13 @@ def test__load__with_version_mismatch() -> None:
     assert f"{mismatch_version}" in exc_info_value
 
 
-def test__empty_test_suite_name() -> None:
+def test__init__validate_name() -> None:
     test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__empty_test_suite_name test case 1"))
     with pytest.raises(ValueError):
         TestSuite("", test_cases=[test_case_1])
+
+
+def test__create__validate_name() -> None:
+    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__create__validate_name test case 1"))
+    with pytest.raises(ValueError):
+        TestSuite.create("", test_cases=[test_case_1])

@@ -199,6 +199,11 @@ def test__edit__remove_only(
     assert sorted(test_case.load_test_samples()) == sorted(rest)
 
 
-def test__empty_test_case_name() -> None:
+def test__init__validate_name() -> None:
     with pytest.raises(ValueError):
         TestCase("")
+
+
+def test__create__validate_name() -> None:
+    with pytest.raises(ValueError):
+        TestCase.create("")

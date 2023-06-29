@@ -197,6 +197,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         cls._validate_workflow()
         cls._validate_test_cases(test_cases)
+        validate_not_blank(name)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name, tags=tags)
         res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

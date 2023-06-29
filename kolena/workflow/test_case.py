@@ -169,6 +169,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: The newly created test case.
         """
         cls._validate_test_samples(test_samples)
+        validate_not_blank(name)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

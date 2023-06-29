@@ -136,6 +136,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         :param non_baseline_test_cases: Optionally specify a list of test cases to populate the test suite.
         :return: The newly created test suite.
         """
+        validate_not_blank(name)
         request = API.CreateRequest(name=name, description=description or "")
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
