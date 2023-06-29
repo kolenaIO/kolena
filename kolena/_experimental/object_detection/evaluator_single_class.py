@@ -28,10 +28,8 @@ from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.workflow import GroundTruth
 from kolena._experimental.object_detection.workflow import Inference
 from kolena._experimental.object_detection.workflow import TestCase
-from kolena._experimental.object_detection.workflow import TestCaseMetrics
 from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
 from kolena._experimental.object_detection.workflow import TestSample
-from kolena._experimental.object_detection.workflow import TestSampleMetrics
 from kolena._experimental.object_detection.workflow import TestSampleMetricsSingleClass
 from kolena._experimental.object_detection.workflow import TestSuite
 from kolena._experimental.object_detection.workflow import TestSuiteMetrics
@@ -142,7 +140,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
         configuration: Optional[ThresholdConfiguration] = None,
-    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
+    ) -> List[Tuple[TestSample, TestSampleMetricsSingleClass]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
@@ -155,9 +153,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         self,
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
+        metrics: List[TestSampleMetricsSingleClass],
         configuration: Optional[ThresholdConfiguration] = None,
-    ) -> TestCaseMetrics:
+    ) -> TestCaseMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
         all_bbox_matches = self.matchings_by_test_case[test_case.name]
 
@@ -192,7 +190,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         self,
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
+        metrics: List[TestSampleMetricsSingleClass],
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"

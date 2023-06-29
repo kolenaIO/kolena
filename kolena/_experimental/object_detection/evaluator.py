@@ -82,7 +82,7 @@ class ObjectDetectionEvaluator(Evaluator):
         self,
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
+        metrics: List[Union[TestSampleMetrics, TestSampleMetricsSingleClass]],
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Union[TestCaseMetrics, TestCaseMetricsSingleClass]:
         assert configuration is not None, "must specify configuration"
@@ -97,7 +97,7 @@ class ObjectDetectionEvaluator(Evaluator):
         self,
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
+        metrics: List[Union[TestSampleMetrics, TestSampleMetricsSingleClass]],
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
@@ -111,7 +111,7 @@ class ObjectDetectionEvaluator(Evaluator):
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],
+        metrics: List[Tuple[TestCase, Union[TestCaseMetrics, TestCaseMetricsSingleClass]]],
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"

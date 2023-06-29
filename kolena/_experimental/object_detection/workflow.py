@@ -179,6 +179,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
 
     def display_name(self) -> str:
         return (
-            f"Threshold: {self.threshold_strategy.display_name()}, "
+            f"Threshold: {self.threshold_strategy.display_name()}"
+            f"{' by class' if self.with_class_level_metrics else ''}, "
             f"IoU: {self.iou_threshold}, confidence ≥ {self.min_confidence_score}"
         )
