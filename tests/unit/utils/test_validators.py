@@ -16,7 +16,7 @@ import pytest
 from kolena._utils.validators import validate_name
 
 
-@pytest.mark.parametrize("name", ["", " ", "    ", None])
+@pytest.mark.parametrize("name", ["", " ", "    ", "\t", "\n", "\t \n"])
 def test__validate_name__error(name) -> None:
     with pytest.raises(ValueError, match="field must be non empty"):
         validate_name(name)
