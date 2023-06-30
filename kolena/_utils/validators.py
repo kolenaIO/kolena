@@ -26,5 +26,5 @@ class ValidatorConfig:
 
 def validate_name(field: str, field_name: Optional[str] = None):
     field_name_str = field_name if field_name else "field"
-    if not bool(field and not field.isspace()):
+    if not field or field.isspace():
         raise ValueError(f"{field_name_str} must be non empty")

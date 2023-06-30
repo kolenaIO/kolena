@@ -31,7 +31,7 @@ from kolena._api.v1.detection import TestSuite as API
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.consts import FieldNamesError
+from kolena._utils.consts import FieldNames
 from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
@@ -73,7 +73,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         test_cases: Optional[List[BaseTestCase]] = None,
         reset: bool = False,
     ):
-        validate_name(name, FieldNamesError.TEST_SUITE_NAME)
+        validate_name(name, FieldNames.TEST_SUITE_NAME)
         self._validate_test_cases(test_cases)
 
         try:
@@ -114,7 +114,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         test_cases: Optional[List[BaseTestCase]] = None,
     ) -> "BaseTestSuite":
         """Create a new test suite with the provided name."""
-        validate_name(name, FieldNamesError.TEST_SUITE_NAME)
+        validate_name(name, FieldNames.TEST_SUITE_NAME)
         request = CoreAPI.TestSuite.CreateRequest(name=name, description=description or "", workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

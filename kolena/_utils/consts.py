@@ -23,7 +23,7 @@ class BatchSize(int, Enum):
     LOAD_SAMPLES = 1_000_000
 
 
-class FieldNamesError(str, Enum):
+class FieldNames(str, Enum):
     TEST_CASE_NAME = "Test Case name"
     TEST_SUITE_NAME = "Test Suite name"
     MODEL_NAME = "Model name"

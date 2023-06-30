@@ -32,7 +32,7 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
-from kolena._utils.consts import FieldNamesError
+from kolena._utils.consts import FieldNames
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
@@ -90,7 +90,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         test_samples: Optional[List[TestCaseRecord]] = None,
         reset: bool = False,
     ):
-        validate_name(name, FieldNamesError.TEST_CASE_NAME)
+        validate_name(name, FieldNames.TEST_CASE_NAME)
         try:
             self._populate_from_other(self.load(name, version))
             if description is not None and self.description != description and not reset:
@@ -137,7 +137,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         :param test_samples: Optionally specify a set of test samples to populate the test case.
         :return: The newly created test case.
         """
-        validate_name(name, FieldNamesError.TEST_CASE_NAME)
+        validate_name(name, FieldNames.TEST_CASE_NAME)
         request = API.CreateRequest(name=name, description=description or "")
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
