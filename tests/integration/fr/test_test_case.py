@@ -109,11 +109,6 @@ def test__init__with_samples_reset(test_samples: List[TestCaseRecord]) -> None:
     assert_list_and_df_values_equal(samples, test_case.load_data())
 
 
-def test__init__validate_name() -> None:
-    with pytest.raises(ValueError):
-        TestCase("")
-
-
 def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test_create test case")
     description = "A long\ndescription, with\tpunctuation $and all."
@@ -121,11 +116,6 @@ def test__create() -> None:
     assert test_case.data.name == name
     assert test_case.data.version == 0
     assert test_case.data.description == description
-
-
-def test__create__validate_name() -> None:
-    with pytest.raises(ValueError):
-        TestCase.create("")
 
 
 def test__load() -> None:

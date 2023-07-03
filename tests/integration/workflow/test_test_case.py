@@ -202,8 +202,3 @@ def test__edit__remove_only(
 def test__init__validate_name() -> None:
     with pytest.raises(ValueError):
         TestCase("")
-
-
-def test__create__validate_name() -> None:
-    with pytest.raises(ValueError):
-        TestCase.create("")

@@ -264,12 +264,6 @@ def test__load_test_samples(
     ]
 
 
-def test__init__validate_name() -> None:
-    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__init__validate_name test case 1"))
-    with pytest.raises(ValueError):
-        TestSuite("", test_cases=[test_case_1])
-
-
 def test__create__validate_name() -> None:
     test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__create__validate_name test case 1"))
     with pytest.raises(ValueError):

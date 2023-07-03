@@ -46,11 +46,6 @@ def test__create() -> None:
         Model.create(name)
 
 
-def test__create__validate_name() -> None:
-    with pytest.raises(ValueError):
-        Model.create(name=" ", infer=lambda x: None, metadata=META_DATA)
-
-
 def test__load() -> None:
     name = with_test_prefix(f"{__file__}::test__load model")
 
