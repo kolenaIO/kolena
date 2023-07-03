@@ -13,7 +13,9 @@
 # limitations under the License.
 import dataclasses
 import json
+import time
 from abc import ABCMeta
+from collections import defaultdict
 from contextlib import contextmanager
 from typing import Iterator
 from typing import List
@@ -24,6 +26,7 @@ import pandas as pd
 from pydantic import validate_arguments
 from pydantic.dataclasses import dataclass
 
+from kolena._api.v1.core import BulkProcessStatus
 from kolena._api.v1.core import TestCase as CoreAPI
 from kolena._api.v1.generic import TestCase as API
 from kolena._utils import krequests
@@ -40,6 +43,7 @@ from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
+from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from kolena.workflow import GroundTruth
 from kolena.workflow import TestSample
@@ -48,6 +52,33 @@ from kolena.workflow._datatypes import TestSampleDataFrame
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.test_sample import _METADATA_KEY
 from kolena.workflow.workflow import Workflow
+
+
+def _to_editor_data_frame(
+    edits: List[Tuple[TestSample, Optional[GroundTruth], bool]],
+    test_case_name: Optional[str] = None,
+) -> TestCaseEditorDataFrame:
+    records = [
+        (
+            test_case_name,
+            test_sample._data_type().value,
+            test_sample._to_dict(),
+            test_sample._to_metadata_dict(),
+            ground_truth._to_dict() if ground_truth is not None else None,
+            remove,
+        )
+        for test_sample, ground_truth, remove, in edits
+    ]
+    columns = [
+        "test_case_name",
+        "test_sample_type",
+        "test_sample",
+        "test_sample_metadata",
+        "ground_truth",
+        "remove",
+    ]
+    df = pd.DataFrame(records, columns=columns)
+    return TestCaseEditorDataFrame(validate_df_schema(df, TestCaseEditorDataFrame.get_schema(), trusted=True))
 
 
 class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
@@ -279,20 +310,11 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         def _edited(self) -> bool:
             return len(self._edits) > 0 or self._reset or self._description != self._initial_description
 
-        def _to_data_frame(self) -> TestCaseEditorDataFrame:
-            records = [
-                (
-                    edit.test_sample._data_type().value,
-                    edit.test_sample._to_dict(),
-                    edit.test_sample._to_metadata_dict(),
-                    edit.ground_truth._to_dict() if edit.ground_truth is not None else None,
-                    edit.remove,
-                )
-                for edit in self._edits
-            ]
-            columns = ["test_sample_type", "test_sample", "test_sample_metadata", "ground_truth", "remove"]
-            df = pd.DataFrame(records, columns=columns)
-            return TestCaseEditorDataFrame(validate_df_schema(df, TestCaseEditorDataFrame.get_schema(), trusted=True))
+        def _to_data_frame(self, test_case_name: Optional[str] = None) -> TestCaseEditorDataFrame:
+            return _to_editor_data_frame(
+                [(edit.test_sample, edit.ground_truth, edit.remove) for edit in self._edits],
+                test_case_name,
+            )
 
     @contextmanager
     def edit(self, reset: bool = False) -> Iterator[Editor]:
@@ -337,3 +359,91 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_case_data = from_dict(data_class=CoreAPI.EntityData, data=complete_res.json())
         self._populate_from_other(self._create_from_data(test_case_data))
         log.success(f"edited test case '{self.name}' (v{self.version})")
+
+    @classmethod
+    def init_many(
+        cls,
+        data: List[Tuple[str, List[Tuple[TestSample, GroundTruth]]]],
+        reset: bool = False,
+    ) -> List["TestCase"]:
+        """
+        !!! note "Experimental"
+
+            This function is considered **experimental**, so beware that it is subject to changes
+            even in patch releases.
+
+        Create, load or edit multiple test cases.
+
+        ```python
+        test_cases = TestCase.init_many([
+            ("test-case 1", [(test_sample_1, ground_truth_1), ...]),
+            ("test-case 2", [(test_sample_2, ground_truth_2), ...])
+        ])
+
+        test_suite = TestSuite("my test suite", test_cases=test_cases)
+        ```
+
+        Changes are committed to the Kolena platform together. If there is an error, none of the edits would take
+        effect.
+
+        :param data: A list of tuples where each tuple is a test case name and a set of test samples and ground truths
+                     tuples for the test case.
+        :param reset: If a test case of the same name already exists, overwrite with the provided test_samples.
+        :return: The test cases.
+
+
+        """
+
+        if not hasattr(cls, "workflow"):
+            raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")
+
+        if len({name for name, _ in data}) != len(data):
+            raise IncorrectUsageError("Multiple edits to the same test case")
+
+        for _, test_samples in data:
+            if test_samples:
+                cls._validate_test_samples(test_samples)
+
+        cls._validate_test_samples()
+
+        log.info(f"initializing {len(data)} test cases")
+        start = time.time()
+
+        df_test_samples = [
+            _to_editor_data_frame(
+                [(sample, ground_truth, False) for sample, ground_truth in test_samples],
+                name,
+            ).as_serializable()
+            for name, test_samples in data
+            if test_samples
+        ]
+        df_serialized = pd.concat(df_test_samples) if df_test_samples else pd.DataFrame()
+        if len(df_serialized):
+            load_uuid = init_upload().uuid
+            upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+        else:
+            load_uuid = None
+
+        request = CoreAPI.BulkProcessRequest(
+            test_cases=[CoreAPI.SingleProcessRequest(name=name, reset=reset) for name, _ in data],
+            workflow=cls.workflow.name,
+            uuid=load_uuid,
+        )
+        response = krequests.post(
+            endpoint_path=API.Path.BULK_PROCESS.value,
+            data=json.dumps(dataclasses.asdict(request)),
+        )
+        krequests.raise_for_status(response)
+        bulk_response = from_dict(data_class=CoreAPI.BulkProcessResponse, data=response.json())
+
+        test_cases = []
+        statuses = defaultdict(int)
+        for test_case_data in bulk_response.test_cases:
+            test_cases.append(cls._create_from_data(test_case_data.data))
+            statuses[test_case_data.status] += 1
+
+        end = time.time()
+        status_msg = ", ".join([f"{s.value} {statuses[s]}" for s in BulkProcessStatus])
+        log.info(f"initialized {len(data)} test cases: {status_msg} in {end - start:0.3f} seconds")
+
+        return test_cases

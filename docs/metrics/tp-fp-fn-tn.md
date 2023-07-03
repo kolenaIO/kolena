@@ -53,6 +53,13 @@ In binary classification workflow, TP, FN, FP, and TN are implemented as follows
 | `inferences` | <nobr>`List[float]`</nobr> | Predicted confidence scores, where a higher score indicates a higher confidence of the sample being positive |
 | `T` | `float` | Threshold value to compare against the inference’s confidence score, where `score >= T` is positive |
 
+!!! question "Should Threshold Be Inclusive or Exclusive?"
+
+    A confidence threshold is defined as "the minimum score that the model will consider the inference
+    to be positive (i.e. true)". Therefore, it is a standard practice to consider inferences with confidence score
+    **greater than or equal to** the confidence threshold as positive.
+
+
 With these inputs, TP / FP/ FN / TN metrics are defined:
 
 ```python
@@ -117,9 +124,9 @@ is assigned to one group, and the definitions of the terms are slightly altered:
 
 | Metric | | Description |
 | --- | --- | --- |
-| True Positive | TP | Inference that is matched with a ground truth and has a confidence score $\geq$ threshold |
-| False Positive | FP | Inference that is not matched with a ground truth and has a confidence score $\geq$ threshold |
-| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference or that is matched with an inference that has a confidence score $<$ threshold |
+| True Positive | TP | Positive inference (`score >= T`) that is matched with a ground truth |
+| False Positive | FP | Positive inference (`score >= T`) that is not matched with a ground truth |
+| <nobr>False Negative</nobr> | FN | Ground truth that is not matched with an inference or that is matched with a negative inference (`score < T`) |
 | True Negative | TN | <p>:kolena-warning-sign-16: **Poorly defined for object detection!** :kolena-warning-sign-16:</p><p>In object detection workflow, a true negative is any non-object that isn't detected as an object. This isn't well defined and as such true negative isn't a commonly used metric in object detection.</p><div>Occasionally, for object detection workflow "true negative" is used to refer to any image that does not have any true positive or false positive inferences.</div> |
 
 In object detection workflow, checking for detection correctness requires a couple of other metrics (e.g., [Intersection
@@ -148,16 +155,30 @@ FP = len([inf.score >= T for inf in unmatched_inf])
 
 ??? example "Example: Single-class Object Detection"
 
-    ![Legends](../assets/images/metrics-tpfpfntn-legends.png)
+    ![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
+    ![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
+    ![example 1](../assets/images/metrics-matcher-example1-light.svg#only-light)
+    ![example 1](../assets/images/metrics-matcher-example1-dark.svg#only-dark)
 
-    ![Single-class example](../assets/images/metrics-tpfpfntn-single-class.png)
+    <center>
+
+    | Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+    | --- | --- | --- | --- |
+    | $\text{a}$ | 0.98 | 0.9 | 0.0 |
+    | $\text{b}$ | 0.6 | 0.0 | 0.13 |
+
+    </center>
 
     This example includes two ground truths and two inferences, and when computed with an IoU threshold of 0.5 and
     confidence score threshold of 0.5 yields:
 
+    <center>
+
     | TP | FP | FN |
     | --- | --- | --- |
     | 1 | 1 | 1 |
+
+    </center>
 
 #### Multiclass
 
@@ -165,18 +186,33 @@ Like classification, multiclass object detection workflow compute TP / FP / FN p
 
 ??? example "Example: Multiclass Object Detection"
 
-    ![Legends](../assets/images/metrics-tpfpfntn-legends.png)
+    ![example legends](../assets/images/metrics-bbox-legend-unmatched-light.svg#only-light)
+    ![example legends](../assets/images/metrics-bbox-legend-unmatched-dark.svg#only-dark)
+    ![example 2](../assets/images/metrics-matcher-example2-light.svg#only-light)
+    ![example 2](../assets/images/metrics-matcher-example2-dark.svg#only-dark)
 
-    ![Multi-class example](../assets/images/metrics-tpfpfntn-multi-class.png)
+    <center>
+
+    | Bounding Box | Class | Score | IoU($\text{A}$) |
+    | --- | --- | --- | --- |
+    | $\text{A}$ | `Apple` | — | — |
+    | $\text{a}$ | `Apple` | 0.3 | 0.0 |
+    | $\text{b}$ | `Banana` | 0.5 | 0.8 |
+
+    </center>
 
     Similar to multiclass classification, TP / FP / FN are computed for class `Apple` and class `Banana` separately.
 
     Using an IoU threshold of 0.5 and a confidence score threshold of 0.5, this example yields:
 
+    <center>
+
     | Class | TP | FP | FN |
     | --- | --- | --- | --- |
     | `Apple` | 0 | 0 | 1 |
     | `Banana` | 0 | 1 | 0 |
+
+    </center>
 
 ### Averaging Per-class Metrics
 

@@ -20,7 +20,7 @@ positive inferences.
 
 <figure markdown>
   ![Precision and recall from Wikipedia](../assets/images/metrics-precision-recall.png)
-  <figcaption markdown>Placeholder diagram of precision and recall from [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall#Precision)
+  <figcaption markdown>Diagram of precision and recall from [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall#Precision)
 </figure>
 </div>
 
