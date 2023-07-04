@@ -30,82 +30,7 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-TEST_CASE = TestCase(with_test_prefix("test_evaluator_single_class"))
-
-TEST_PARAMS = [
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "nothing"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "nothing"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "nothing"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "nothing"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no inferences"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no inferences"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no inferences"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no inferences"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "no ground truths"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "no ground truths"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "no ground truths"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "no ground truths"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=1 and different labels and max confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=1 and different labels and max confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=1 and different labels and max confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0 and same labels"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0 and same labels"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0 and same labels"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0 and same labels"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0 confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0 confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.5 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.5 confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.5 confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.33 and same labels but 0.99 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.33 and same labels but 0.99 confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.33 and same labels but 0.99 confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0 confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0 confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.5 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.5 confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.5 confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "iou=0.5 and same labels but 0.99 confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "iou=0.5 and same labels but 0.99 confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "iou=0.5 and same labels but 0.99 confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, perfect match"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, perfect match"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, perfect match"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied iou"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied iou"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied iou"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, varied confidence"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, varied confidence"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, varied confidence"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, many inferences"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, many inferences"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, many inferences"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, too few inferences"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, too few inferences"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, too few inferences"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, suboptimal infs"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, suboptimal infs"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, suboptimal infs"),
-    ("Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0", "multiple bboxes in an image, ignored matches"),
-    ("Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3", "multiple bboxes in an image, ignored matches"),
-    ("Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1", "multiple bboxes in an image, ignored matches"),
-]
+TEST_CASE = TestCase(with_test_prefix("test_evaluator_single_class"), reset=True)
 
 
 TEST_DATA: Dict[str, List[Tuple[TestSample, GroundTruth, Inference]]] = {
@@ -409,6 +334,9 @@ TEST_CONFIGURATIONS: Dict[str, ThresholdConfiguration] = {
         with_class_level_metrics=False,
     ),
 }
+
+
+TEST_PARAMS = [(config, name) for name in TEST_DATA.keys() for config in TEST_CONFIGURATIONS.keys()]
 
 
 # evaluator_configuration -> test_name -> test_sample_metrics

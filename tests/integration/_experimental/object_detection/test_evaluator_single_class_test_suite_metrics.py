@@ -128,7 +128,7 @@ def test__prebuilt__object__detection__single__class__compute__multiple__test__s
     eval = ObjectDetectionEvaluator(configurations=[config])
 
     test_case_1 = TestCase(
-        with_test_prefix(TEST_CASE_1),
+        with_test_prefix("random test case #1"),
         test_samples=[(ts, gt) for ts, gt, _ in TEST_DATA[test_1]],
         reset=True,
     )
@@ -146,7 +146,7 @@ def test__prebuilt__object__detection__single__class__compute__multiple__test__s
     )
 
     test_case_2 = TestCase(
-        with_test_prefix(TEST_CASE_2),
+        with_test_prefix("random test case #2"),
         test_samples=[(ts, gt) for ts, gt, _ in TEST_DATA[test_2]],
         reset=True,
     )
@@ -204,7 +204,6 @@ def test__prebuilt__object__detection__single__class__compute__multiple__test__s
         configuration=config,
     )
 
-    print(result)
     assert result == TestSuiteMetrics(
         n_images=2,
         mean_AP=0.5,

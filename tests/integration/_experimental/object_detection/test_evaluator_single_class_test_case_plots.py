@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import uuid
 from typing import List
 from typing import Optional
 
@@ -272,7 +273,7 @@ def test__prebuilt__object__detection__single__class__compute__test__case__plots
 ) -> None:
     config = TEST_CONFIGURATIONS[config_name]
     test_case = TestCase(
-        with_test_prefix(f"complete {config_name}"),
+        with_test_prefix(f"complete {config_name} {str(uuid.uuid4())}"),
         test_samples=[(ts, gt) for _, data in TEST_DATA.items() for ts, gt, _ in data],
     )
     eval = ObjectDetectionEvaluator(configurations=[config])

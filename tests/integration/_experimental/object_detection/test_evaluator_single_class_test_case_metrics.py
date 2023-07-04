@@ -11,18 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import uuid
 from typing import Dict
 from typing import Tuple
 
 import pytest
 
 from .test_evaluator_single_class_test_sample_metrics import EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
-from .test_evaluator_single_class_test_sample_metrics import TEST_CASE
 from .test_evaluator_single_class_test_sample_metrics import TEST_CONFIGURATIONS
 from .test_evaluator_single_class_test_sample_metrics import TEST_DATA
 from .test_evaluator_single_class_test_sample_metrics import TEST_PARAMS
 from kolena._experimental.object_detection import ObjectDetectionEvaluator
+from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
+from tests.integration.helper import with_test_prefix
 
 
 # evaluator_configuration, test_name -> test_case_metrics
@@ -295,7 +297,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.07494252873563219,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -309,7 +311,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.08547008547008546,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -323,7 +325,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.0967741935483871,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -337,7 +339,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.11160714285714286,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -351,7 +353,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.1264367816091954,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -365,7 +367,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.1411764705882353,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -379,7 +381,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.1557603686635945,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -393,7 +395,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.1701388888888889,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -407,7 +409,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.225,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -421,7 +423,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.28329725829725827,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -435,7 +437,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.3350378787878787,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -449,7 +451,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.3806818181818181,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -463,7 +465,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.75,
         Recall=0.75,
         F1=0.75,
-        AP=0.3942422161172161,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -477,7 +479,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.5,
         F1=0.5,
-        AP=0.3817016317016317,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -491,7 +493,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.5,
         F1=0.5,
-        AP=0.3711588541666667,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -505,7 +507,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.5,
         F1=0.5,
-        AP=0.3621724170437406,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -519,7 +521,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.75,
         F1=0.8571428571428571,
-        AP=0.3827833560704156,
+        AP=1.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -533,7 +535,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.5,
         F1=0.6666666666666666,
-        AP=0.40901272789817683,
+        AP=1.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -547,7 +549,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.5,
         F1=0.6666666666666666,
-        AP=0.4223004694835681,
+        AP=0.75,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -561,7 +563,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.75,
         F1=0.8571428571428571,
-        AP=0.4346145596145596,
+        AP=0.75,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -575,7 +577,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=1.0,
         F1=0.6666666666666666,
-        AP=0.4342707420203166,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -589,7 +591,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=1.0,
         F1=0.6666666666666666,
-        AP=0.4345179360674273,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -603,7 +605,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=1.0,
         F1=0.6666666666666666,
-        AP=0.4351511437908496,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -617,7 +619,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=1.0,
         F1=0.6666666666666666,
-        AP=0.43603602058319035,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -631,7 +633,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.5,
         F1=0.6666666666666666,
-        AP=0.43606913919413914,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -645,7 +647,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.5,
         F1=0.6666666666666666,
-        AP=0.4361849489042472,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -659,7 +661,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.5,
         F1=0.6666666666666666,
-        AP=0.43637018384940185,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -673,7 +675,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=0.5,
         F1=0.6666666666666666,
-        AP=0.43661370697345353,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -687,7 +689,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.25,
         F1=0.3333333333333333,
-        AP=0.43317498999317183,
+        AP=0.3333333333333333,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -701,7 +703,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.25,
         F1=0.3333333333333333,
-        AP=0.42995794311481095,
+        AP=0.3333333333333333,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -715,7 +717,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.25,
         F1=0.3333333333333333,
-        AP=0.42000471636742126,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -729,7 +731,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=0.5,
         Recall=0.25,
         F1=0.3333333333333333,
-        AP=0.41066791911045947,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.3), IoU: 0.3, confidence ≥ 0.0",
@@ -743,7 +745,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.4177783244947424,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0",
@@ -757,7 +759,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.42473157586898386,
+        AP=0.0,
     ),
     (
         "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.3",
@@ -771,7 +773,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.4315321386379141,
+        AP=0.0,
     ),
     (
         "Threshold: F1-Optimal, IoU: 0.5, confidence ≥ 0.1",
@@ -785,7 +787,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
         Precision=1.0,
         Recall=1.0,
         F1=1.0,
-        AP=0.43818436465495286,
+        AP=0.0,
     ),
 }
 
@@ -800,16 +802,19 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
     test_name: str,
 ) -> None:
     config = TEST_CONFIGURATIONS[config_name]
-
     eval = ObjectDetectionEvaluator(configurations=[config])
+
+    random_test_case_name = with_test_prefix("test_evaluator_single_class") + str(uuid.uuid4())
+    test_case = TestCase(random_test_case_name, reset=True)
+
     eval.compute_test_sample_metrics(
-        test_case=TEST_CASE,
+        test_case=test_case,
         inferences=TEST_DATA[test_name],
         configuration=config,
     )
 
     result = eval.compute_test_case_metrics(
-        test_case=TEST_CASE,
+        test_case=test_case,
         inferences=TEST_DATA[test_name],
         metrics=[metric for _, metric in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_name]],
         configuration=config,
@@ -834,7 +839,7 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
                 Precision=0.6875,
                 Recall=0.6285714285714286,
                 F1=0.6567164179104478,
-                AP=0.4511139574910939,
+                AP=0.503874883286648,
             ),
         ),
         (
@@ -848,7 +853,7 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
                 Precision=0.6451612903225806,
                 Recall=0.5714285714285714,
                 F1=0.606060606060606,
-                AP=0.45320146520146526,
+                AP=0.46358543417366943,
             ),
         ),
         (
@@ -862,7 +867,7 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
                 Precision=0.6451612903225806,
                 Recall=0.5714285714285714,
                 F1=0.606060606060606,
-                AP=0.4446082570959419,
+                AP=0.39375,
             ),
         ),
         (
@@ -876,7 +881,7 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
                 Precision=0.65625,
                 Recall=0.6,
                 F1=0.626865671641791,
-                AP=0.43818436465495286,
+                AP=0.39375,
             ),
         ),
     ],
@@ -887,18 +892,19 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
 ) -> None:
     config = TEST_CONFIGURATIONS[config_name]
     eval = ObjectDetectionEvaluator(configurations=[config])
+    random_test_case_name = with_test_prefix("test_evaluator_single_class") + str(uuid.uuid4())
+    test_case = TestCase(random_test_case_name, reset=True)
     eval.compute_test_sample_metrics(
-        test_case=TEST_CASE,
+        test_case=test_case,
         inferences=[ts_gt_inf for _, data in TEST_DATA.items() for ts_gt_inf in data],
         configuration=config,
     )
     result = eval.compute_test_case_metrics(
-        test_case=TEST_CASE,
+        test_case=test_case,
         inferences=[ts_gt_inf for _, data in TEST_DATA.items() for ts_gt_inf in data],
         metrics=[
             metric for _, metrics in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name].items() for _, metric in metrics
         ],
         configuration=config,
     )
-
     assert expected == result

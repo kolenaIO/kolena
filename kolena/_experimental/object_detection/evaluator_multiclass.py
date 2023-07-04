@@ -260,7 +260,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
 
         # compute nested metrics per class
         per_class_metrics: List[ClassMetricsPerTestCase] = []
-        for label in labels:
+        for label in sorted(labels):
             metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label, thresholds)
             per_class_metrics.append(metrics_per_class)
 

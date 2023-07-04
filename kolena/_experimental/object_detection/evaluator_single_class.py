@@ -15,7 +15,6 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -79,7 +78,6 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         inference: Inference,
         configuration: ThresholdConfiguration,
         test_case_name: str,
-        labels: Set[str],  # the label being tested in this test case
     ) -> TestSampleMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
@@ -144,10 +142,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        return [
-            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name, set()))
-            for ts, gt, inf in inferences
-        ]
+        return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
     def compute_test_case_metrics(
         self,
