@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Average Precision
 
 Average precision (AP) summarizes a precision-recall (PR) curve into a single value representing the average of all
@@ -15,8 +20,8 @@ metric that removes the dependency of selecting one confidence threshold value a
 all thresholds.
 
 AP is commonly used to evaluate the performance of object detection and information retrieval workflows. This metric
-(or an aggregated version of it called **mean average precision** (mAP)) is the primary metric used across popular
-object detection benchmarks such as [PASCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC/),
+(or an aggregated version of it called [mean average precision (mAP)](#mean-average-precision-map)) is the primary
+metric used across popular object detection benchmarks such as [PASCAL VOC 2012](http://host.robots.ox.ac.uk/pascal/VOC/),
 [COCO](https://cocodataset.org/#detection-2015), and
 [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html).
 
@@ -200,6 +205,12 @@ example, AP becomes:
 $$
 \text{AP} = \frac {(\frac 1 1 + \frac 0 2 + \frac 0 3 + \frac 2 4 + \frac 3 5 + \frac 0 6 + ... + 0)} 3 = 0.7
 $$
+
+### mean Average Precision (mAP)
+
+The mean average precision (mAP) is simply the [macro-average](./averaging-methods.md) of the AP calculated across
+different classes for object detection workflow or across different queries for information retrieval workflow. It is
+important to note that some papers use AP and mAP interchangeably.
 
 ## Limitations and Biases
 
