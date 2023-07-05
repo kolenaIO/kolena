@@ -13,6 +13,7 @@
 # limitations under the License.
 import pytest
 
+from kolena._utils.consts import FieldNames
 from kolena._utils.validators import validate_name
 
 
@@ -24,8 +25,8 @@ def test__validate_name__error(name) -> None:
 
 @pytest.mark.parametrize("name", ["", " ", "    ", None])
 def test__validate_name__error__field_name(name) -> None:
-    with pytest.raises(ValueError, match="Test must be non empty"):
-        validate_name(name, field_name="Test")
+    with pytest.raises(ValueError, match="Model name must be non empty"):
+        validate_name(name, field_name=FieldNames.MODEL_NAME)
 
 
 @pytest.mark.parametrize("name", ["a", "a  b", "a ::  b"])
