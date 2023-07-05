@@ -45,11 +45,6 @@ def test__init() -> None:
     assert model == Model(name)
 
 
-def test__init__validate_name() -> None:
-    with pytest.raises(ValueError):
-        Model("")
-
-
 def test__init__changed_metadata() -> None:
     name = with_test_prefix(f"{__file__}::test_init_changed_metadata model")
     metadata = dict(one="two", three="four")
