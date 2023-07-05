@@ -21,7 +21,6 @@ absl-py = "^1.4.0"
 nltk = "^3.8.1"
 rouge-score = "^0.1.2"
 sacrebleu = "^2.3.1"
-pydantic = ">=1.8,<2.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"
