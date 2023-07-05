@@ -15,7 +15,7 @@ from typing import Optional
 
 from pydantic import Extra
 
-from kolena._utils.consts import FieldNames
+from kolena._utils.consts import FieldName
 
 
 class ValidatorConfig:
@@ -26,7 +26,7 @@ class ValidatorConfig:
     extra = Extra.allow  # do not fail when unrecognized values are provided
 
 
-def validate_name(field: str, field_name: Optional[FieldNames] = None):
+def validate_name(field: str, field_name: Optional[FieldName] = None):
     field_name_str = field_name.value if field_name else "field"
     if not field or field.isspace():
         raise ValueError(f"{field_name_str} must be non empty")

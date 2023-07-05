@@ -27,7 +27,7 @@ from kolena._api.v1.fr import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
-from kolena._utils.consts import FieldNames
+from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.serde import from_dict
 from kolena._utils.uninstantiable import Uninstantiable
@@ -57,7 +57,7 @@ class Model(Uninstantiable["Model.Data"]):
         :return: The newly created model.
         :raises ValueError: A model by the provided name already exists.
         """
-        validate_name(name, FieldNames.MODEL_NAME)
+        validate_name(name, FieldName.MODEL_NAME)
         request = API.CreateRequest(name=name, metadata=metadata)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
