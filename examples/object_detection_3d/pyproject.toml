@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "object_detection_3d"
+version = "0.1.0"
+description = "Example Kolena integration for KITTI 3D object detection"
+authors = ["Kolena Engineering <eng@kolena.io>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.12"
+kolena = ">=0.76.0,<1"
+pydantic = ">=1.8,<2.0"
+# pin to CPU-only for CI. This can be safely removed on GPU systems
+torch = { version = "^2.0.1+cpu", source = "torch+cpu" }
+openmim = "^0.3.9"
+mmcv-lite = ">=2.0.0rc4"
+mmdet = ">=3.0.0"
+mmdet3d = ">=1.1.0"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.17"
+pytest = "^7"
+pytest-depends = "^1.0.1"
+
+[[tool.poetry.source]]
+name = "torch+cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

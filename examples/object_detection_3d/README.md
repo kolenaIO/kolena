@@ -1,0 +1,106 @@
+# Example Integration: KITTI 3D Object Detection
+
+This example integration uses the image and LIDAR data from the KITTI dataset to
+demonstrate how to test 3D Object Detection on Kolena.
+
+## Setup
+
+This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
+
+```shell
+poetry update && poetry install
+```
+
+## Usage
+
+This example integration will use pre-trained models provided by [MMDetection3D](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/model_zoo.md) library. Please follow the [Installation](https://mmdetection3d.readthedocs.io/en/latest/get_started.html#installation) and set up your environment.
+
+### Data preparation
+
+We will use the same data directory structure as detailed in [KITTI dataset preparation guide](https://mmdetection3d.readthedocs.io/en/latest/advanced_guides/datasets/kitti.html), replacing the root directory in the guide with current project directory.
+
+### Test the model
+
+After setting up the KITTI dataset as instructed in the guide,
+
+In this example, we will use [PointPillars](https://github.com/open-mmlab/mmdetection3d/tree/main/configs/pointpillars)
+baseline. You can choose other suitable models with the same process.
+
+```
+mim download mmdet3d --config pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class --dest checkpoints
+```
+
+We provide a script to test the model on KITTI dataset that is easy to integrate with Kolena.
+
+```
+$ poetry run python3 object_detection_3d/prepare_inference_results.py --help
+usage: prepare_inference_results.py [-h] [--device DEVICE] [--result-file RESULT_FILE] datadir config checkpoint
+
+positional arguments:
+  datadir               Data dir
+  config                Config file
+  checkpoint            Checkpoint file
+
+options:
+  -h, --help            show this help message and exit
+  --device DEVICE       Device used for inference
+  --result-file RESULT_FILE
+                        Result file
+$ poetry run python3 object_detection_3d/prepare_inference_results.py --device cpu \
+    data/kitti checkpoints/pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class.py \
+    checkpoints/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class_20220301_150306-37dc2420.pth
+```
+
+The script would perform post-processing and raw label data and create pointcloud files for each raw velodyne binary
+file, stored in `$datadir/label_2_lidar` and `$datadir/velodyne_pcd` directories respectively. The generated
+information would be used to in the integration scripts in the next step. The model inference results are stored in
+`result-file`, which can be passed into seeding script, explained in the following section.
+
+### Kolena integration
+
+First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
+[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+
+This project defines two scripts that perform the following operations:
+
+1. [`seed_test_suite.py`](object_detection_3d/seed_test_suite.py) creates a test suite `KITTI 3D Object Detection :: training :: metrics` using KITTI dataset for 3D object detection.
+
+2. [`seed_test_run.py`](object_detection_3d/seed_test_run.py) tests a specified model, e.g. `second_hv_secfpn_8xb6-80e_kitti-3d-3class`, on the above test suites.
+
+Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
+Run a script using the `--help` flag for more information:
+
+```
+$ poetry run python3 object_detection_3d/seed_test_suite.py --help
+usage: seed_test_suite.py [-h] --datadir DATADIR --remote-prefix REMOTE_PREFIX [--test-suite TEST_SUITE]
+
+options:
+  -h, --help            show this help message and exit
+  --datadir DATADIR     Data dir
+  --remote-prefix REMOTE_PREFIX
+                        Prefix of cloud storage of KITTI raw data
+  --test-suite TEST_SUITE
+                        Name of test suite
+$ poetry run python3 object_detection_3d/seed_test_suite.py --datadir d:/kitti \
+  --remote-prefix s3://mybucket/kitti/3d-object-detection
+```
+
+For best utilization of the visualization features of Kolena platform, in this integration example, the
+`remote-prefix` is used to link remote KITTI data to each test sample, including camera images and pointcloud file.
+With KITTI raw data uploaded to the specified remote cloud storage location, mirroring the directory structure as
+described in [Data preparation](#data-preparation) section, you can view the camera images and visualize pointcloud
+data of the test suite in [Kolena studio](https://app.kolena.io/redirect/studio).
+
+
+```
+$ poetry run python3 object_detection_3d/seed_test_run.py --help
+usage: seed_test_run.py [-h] model test_suite
+
+positional arguments:
+  model        Name of model in directory to test
+  test_suite   Name of test suite to test.
+
+optional arguments:
+  -h, --help   show this help message and exit
+```
