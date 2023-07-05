@@ -12,10 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
-from typing import Type
-from typing import Union
-
-import pytest
+import uuid
 
 from kolena.classification.multiclass import GroundTruth
 from kolena.classification.multiclass import Inference
@@ -31,11 +28,10 @@ from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 
-@pytest.mark.parametrize("inference_type", [ScoredClassificationLabel, InferenceLabel])
-def test__multiclass_classification__smoke(
-    inference_type: Union[Type[ScoredClassificationLabel], Type[InferenceLabel]],
-) -> None:
-    name = with_test_prefix(f"{__file__} test__multiclass_classification__smoke ({inference_type.__name__})")
+def test__multiclass_classification__smoke__scored__classification_label() -> None:
+    name = with_test_prefix(
+        f"{__file__} test__multiclass_classification__smoke (ScoredClassificationLabel) {str(uuid.uuid4())}",
+    )
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
     ground_truth = GroundTruth(classification=ClassificationLabel(label="example"))
     test_case = TestCase(f"{name} test case", test_samples=[(test_sample, ground_truth)])
@@ -44,7 +40,23 @@ def test__multiclass_classification__smoke(
     def infer(_: TestSample) -> Inference:
         score = random.random()
         inferences = [("example", 1 - score), ("another", score / 2), ("third", score / 2)]
-        return Inference(inferences=[inference_type(label, conf) for label, conf in inferences])
+        return Inference(inferences=[ScoredClassificationLabel(label, conf) for label, conf in inferences])
 
     model = Model(f"{name} model", infer=infer)
-    test(model, test_suite)  # TODO: add detailed unit tests for MulticlassClassificationEvaluator
+    test(model, test_suite)
+
+
+def test__multiclass_classification__smoke__inference__label() -> None:
+    name = with_test_prefix(f"{__file__} test__multiclass_classification__smoke (InferenceLabel) {str(uuid.uuid4())}")
+    test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
+    ground_truth = GroundTruth(classification=ClassificationLabel(label="example"))
+    test_case = TestCase(f"{name} test case", test_samples=[(test_sample, ground_truth)])
+    test_suite = TestSuite(f"{name} test suite", test_cases=[test_case])
+
+    def infer(_: TestSample) -> Inference:
+        score = random.random()
+        inferences = [("example", 1 - score), ("another", score / 2), ("third", score / 2)]
+        return Inference(inferences=[InferenceLabel(label, conf) for label, conf in inferences])
+
+    model = Model(f"{name} model", infer=infer)
+    test(model, test_suite)
