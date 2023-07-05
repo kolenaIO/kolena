@@ -33,16 +33,29 @@ html {
 .md-nav__link svg {
   height: 1em;
 }
+.md-nav__link:not(:hover, .md-nav__link--active) > svg {
+  color: var(--md-default-fg-color--light); /* slightly muted nav icons */
+}
 @media screen and (min-width: 76.25em) {
   .md-nav__item--section {
     margin: 2em 0;
   }
 }
 
+/* smaller figcaptions */
+figcaption {
+  font-size: 0.8em;
+}
+
 /* Disable interactivity styles on grid cards, which are not interactive */
 .md-typeset .grid.cards>ul>li:hover {
   border: .05rem solid var(--md-default-fg-color--lightest); /* copy from base grid card styles */
   box-shadow: unset;
+}
+
+/* hide math overflow */
+.md-typeset div.arithmatex {
+  overflow-y: hidden;
 }
 
 /* Apply Kolena branding colors on top of 'default' scheme */
@@ -77,6 +90,8 @@ html {
 
     --md-code-fg-color:                hsla(var(--md-hue), 7%, 90%, 1);
     --md-code-bg-color:                hsla(var(--md-hue), 7%, 17%, 1);
+    --md-code-bg-color--light:         hsla(var(--md-hue), 7%, 17%, 0.75);
+    --md-code-bg-color--lighter:       hsla(var(--md-hue), 7%, 17%, 0.5);
 
     --md-footer-bg-color:              hsla(var(--md-hue), 7%, 10%, 0.87);
     --md-footer-bg-color--dark:        hsla(var(--md-hue), 7%, 8%, 1);
