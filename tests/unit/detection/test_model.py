@@ -11,22 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Optional
+import pytest
 
-from pydantic import Extra
-
-from kolena._utils.consts import FieldName
+from kolena.detection.model import Model
 
 
-class ValidatorConfig:
-    """Pydantic configuration for dataclasses and @validate_arguments decorators."""
-
-    arbitrary_types_allowed = True
-    smart_union = True
-    extra = Extra.allow  # do not fail when unrecognized values are provided
-
-
-def validate_name(field: str, field_name: Optional[FieldName] = None):
-    field_name_str = field_name.value if field_name else "field"
-    if not field or field.isspace():
-        raise ValueError(f"{field_name_str} must be non empty")
+def test__init__validate_name() -> None:
+    with pytest.raises(ValueError):
+        Model("")

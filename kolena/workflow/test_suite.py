@@ -32,11 +32,13 @@ from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import BatchSize
+from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
@@ -104,6 +106,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         reset: bool = False,
         tags: Optional[Set[str]] = None,
     ):
+        validate_name(name, FieldName.TEST_SUITE_NAME)
         self._validate_workflow()
         self._validate_test_cases(test_cases)
 
@@ -195,6 +198,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         cls._validate_workflow()
         cls._validate_test_cases(test_cases)
+        validate_name(name, FieldName.TEST_SUITE_NAME)
         request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name, tags=tags)
         res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)

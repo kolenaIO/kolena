@@ -88,6 +88,11 @@ def test__init_no_meta() -> None:
     assert model.metadata == loaded.metadata
 
 
+def test__init__validate_name() -> None:
+    with pytest.raises(ValueError):
+        Model(name=" ", infer=lambda x: None, metadata=META_DATA)
+
+
 def test__load_inferences__empty(dummy_test_suites: List[TestSuite]) -> None:
     name = with_test_prefix(f"{__file__}::test__load_inferences__empty model")
     model = Model(name)
