@@ -39,7 +39,7 @@ or [Poetry](https://python-poetry.org/):
     AttributeError: type object 'SingleProcessResponse' has no attribute '__pydantic_model__'
     ```
 
-    If you see the error above, please check that your `pydantic` version and make sure that V1 is installed.
+    If you see the error above, please install the latest version of `kolena`.
 
 
 #### Extra Dependency Groups
