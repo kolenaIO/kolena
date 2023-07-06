@@ -29,6 +29,19 @@ or [Poetry](https://python-poetry.org/):
     poetry add kolena
     ```
 
+!!! note
+    Kolena uses pydantic for data validation. Kolena client only works with pydantic V1. Pydantic introduced
+    breaking changes in V2 which would cause problem. Before `0.76.0`, Kolena client did not set an
+    upper bound on compatible pydantic version, therefore a fresh installation of earlier versions could pull down
+    incompatible pydantic `2.0.x` alongside, and this would lead to error like
+
+    ```
+    AttributeError: type object 'SingleProcessResponse' has no attribute '__pydantic_model__'
+    ```
+
+    If you see error above, please check pydantic version and make sure V1 is installed.
+
+
 #### Extra Dependency Groups
 
 Certain metrics computation functionality depends on additional packages like

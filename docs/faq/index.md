@@ -92,3 +92,11 @@ If you don't see your question here, please reach out to us on Slack or at
     issues.
 
     Please include any relevant stacktrace or platform URL when reporting an issue.
+
+
+## Troubleshooting errors
+
+??? faq "I'm seeing error like AttributeError: type object 'SingleProcessResponse' has no attribute '__pydantic_model__'"
+
+    If you see error message lik this, please check that `pydantic < 2.0` is installed. Currently Kolena is not
+    compatible with pydantic V2. For more information, refer to [`kolena` Installation](../installing-kolena.md).
