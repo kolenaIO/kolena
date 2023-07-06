@@ -11,11 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 from enum import Enum
 from typing import List
 from typing import Optional
 
-from pydantic import Field
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
@@ -27,39 +27,84 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
+from kolena.workflow import Text
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
-
-
-@dataclass(frozen=True)
-class TestSample(Image):
-    metadata: Metadata = Field(default_factory=dict)
+from kolena.workflow.test_sample import BaseVideo
 
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
+    """Ground truth type for the pre-built Classification workflow."""
+
     classification: ClassificationLabel
+    """The classfication label associated with an image."""
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
+    """Inference type for the pre-built Classification workflow."""
+
     inferences: List[ScoredClassificationLabel]
+    """
+    The model predictions for an image. For `N`-class problems, `inferences` is expected to contain `N` entries, one for
+    each class and its associated confidence score.
+    """
 
 
-_workflow, TestCase, TestSuite, Model = define_workflow(
-    "Prebuilt Multiclass Classification",
-    TestSample,
+@dataclass(frozen=True)
+class ClassificationTestSample(Text):
+    """Test sample type for the pre-built Classification workflow."""
+
+    metadata: Metadata = dataclasses.field(default_factory=dict)
+    """The metadata associated with the test sample."""
+
+
+_workflow, _TestCase, _TestSuite, _Model = define_workflow(
+    "Classification",
+    ClassificationTestSample,
     GroundTruth,
     Inference,
 )
+"""Example"""
+
+
+TestCase = _TestCase
+"""[`TestCase`][kolena.workflow.TestCase] definition bound to the pre-built Classification workflow."""
+
+
+TestSuite = _TestSuite
+"""[`TestSuite`][kolena.workflow.TestSuite] definition bound to the pre-built Classification workflow."""
+
+
+Model = _Model
+"""[`Model`][kolena.workflow.Model] definition bound to the pre-built Classification workflow."""
 
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    label: Optional[str]
-    score: Optional[float]
+    """TestSample-level metrics for the pre-built Classification workflow."""
+
+    classification_label: Optional[str]
+    """
+    The model's classification label of greatest confidence score. Empty when no inference has a sufficient confidence
+    score based on the [`ThresholdConfiguration`][kolena._experimental.classification.workflow.ThresholdConfiguration].
+    """
+
+    classification_score: Optional[float]
+    """
+    The model's confidence score for the `classification_label`. Empty when no inference has a sufficient confidence
+    score based on the [`ThresholdConfiguration`][kolena._experimental.classification.workflow.ThresholdConfiguration].
+    """
+
     margin: Optional[float]
+    """
+    The difference in confidence scores between the `classification_score` and the inference with the second-highest
+    confidence score. Empty when no prediction with sufficient confidence score is provided.
+    """
+
     is_correct: bool
+    """An indication of the `classification_label` matching the associated ground truth label."""
 
 
 @dataclass(frozen=True)
@@ -114,3 +159,48 @@ class ThresholdConfiguration(EvaluatorConfiguration):
 
     def display_name(self) -> str:
         return f"Threshold: {self.threshold_strategy.display_name()}, " f"confidence ≥ {self.min_confidence_score}"
+
+
+class WORKFLOW_TYPES(str, Enum):
+    IMAGE = "Image"
+    VIDEO = "Video"
+    TEXT = "Text"
+
+
+@dataclass(frozen=True)
+class ImageTestSample(Image):
+    metadata: Metadata = dataclasses.field(default_factory=dict)
+
+
+ImageWorkflow, ImageTestCase, ImageTestSuite, ImageModel = define_workflow(
+    "Image Classification",
+    ImageTestSample,
+    GroundTruth,
+    Inference,
+)
+
+
+@dataclass(frozen=True)
+class VideoTestSample(BaseVideo):
+    metadata: Metadata = dataclasses.field(default_factory=dict)
+
+
+VideoWorkflow, VideoTestCase, VideoTestSuite, VideoModel = define_workflow(
+    "Video Classification",
+    VideoTestSample,
+    GroundTruth,
+    Inference,
+)
+
+
+@dataclass(frozen=True)
+class TextTestSample(Text):
+    metadata: Metadata = dataclasses.field(default_factory=dict)
+
+
+TextWorkflow, TextTestCase, TextTestSuite, TextModel = define_workflow(
+    "Text Classification",
+    TextTestSample,
+    GroundTruth,
+    Inference,
+)
