@@ -94,10 +94,10 @@ If you don't see your question here, please reach out to us on Slack or at
     Please include any relevant stacktrace or platform URL when reporting an issue.
 
 
-## Troubleshooting errors
+## Troubleshooting Errors
 
-??? faq "I'm seeing error like AttributeError: type object XXX has no attribute '\_\_pydantic_model__'"
+??? faq "I'm seeing the error: AttributeError: type object XXX has no attribute '\_\_pydantic_model__'"
 
-    If you see error message lik this, please check that `pydantic < 2.0` is installed. Currently Kolena is not
-    compatible with pydantic V2. For more information, refer to
+    If you see error message like this, please check that `pydantic < 2.0` is installed. Kolena is not currently
+    compatible with `pydantic` V2. For more information, refer to
     [`kolena` Installation](../installing-kolena/#installation).
