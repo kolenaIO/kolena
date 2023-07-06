@@ -59,12 +59,13 @@ def _compute_threshold_curve(
     curve_type: Literal["pr", "f1"],
     curve_label: Optional[str] = None,
 ) -> Optional[Curve]:
-    if len(y_score) >= 501:
-        thresholds = list(np.linspace(min(abs(y_score)), max(y_score), 501))
-    elif len(y_score) > 1:
-        thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
-    else:
+    if len(y_score) < 1:
         return None
+
+    thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
+
+    if len(thresholds) >= 501:
+        thresholds = list(np.linspace(min(thresholds), max(thresholds), 501))
 
     precisions: List[float] = []
     recalls: List[float] = []
@@ -95,15 +96,9 @@ def _compute_threshold_curve(
 def _compute_multiclass_curves(
     all_matches: List[MulticlassInferenceMatches],
     curve_type: Literal["pr", "f1"],
-    curve_label: Optional[str] = None,
 ) -> Optional[List[Curve]]:
     curves: List[Curve] = []
-    y_true, y_score = _compute_sklearn_arrays(all_matches)
     y_true_score_by_label = _compute_sklearn_arrays_by_class(all_matches)
-    curve = _compute_threshold_curve(y_true, y_score, curve_type, curve_label)
-    if curve is None:
-        return None
-    curves.append(curve)
 
     for label, (y_true, y_score) in sorted(y_true_score_by_label.items(), key=lambda x: x[0]):
         curve = _compute_threshold_curve(y_true, y_score, curve_type, label)
@@ -154,17 +149,15 @@ def compute_pr_plot(
 
 def compute_pr_plot_multiclass(
     all_matches: List[MulticlassInferenceMatches],
-    curve_label: Optional[str] = None,
 ) -> Optional[CurvePlot]:
     """
     Creates a PR (precision-recall) curve for the multiclass object detection workflow.
     For `n` labels, each plot has `n+1` curves. One for the test case, and one per label.
 
     :param all_matches: a list of multiclass matching results.
-    :param curve_label: the label of the main curve.
     :return: :class:`CurvePlot` for the PR curves of the test case and each label.
     """
-    pr_curves: Optional[List[Curve]] = _compute_multiclass_curves(all_matches, "pr", curve_label)
+    pr_curves: Optional[List[Curve]] = _compute_multiclass_curves(all_matches, "pr")
 
     return (
         CurvePlot(
@@ -206,7 +199,6 @@ def compute_f1_plot(
 
 def compute_f1_plot_multiclass(
     all_matches: List[MulticlassInferenceMatches],
-    curve_label: Optional[str] = None,
 ) -> Optional[CurvePlot]:
     """
     Creates a F1-threshold (confidence threshold) curve for the multiclass object detection workflow.
@@ -216,7 +208,7 @@ def compute_f1_plot_multiclass(
     :param curve_label: the label of the main curve.
     :return: :class:`CurvePlot` for the F1-threshold curves of the test case and each label.
     """
-    f1_curves: Optional[List[Curve]] = _compute_multiclass_curves(all_matches, "f1", curve_label)
+    f1_curves: Optional[List[Curve]] = _compute_multiclass_curves(all_matches, "f1")
 
     return (
         CurvePlot(
