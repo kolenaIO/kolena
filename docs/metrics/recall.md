@@ -17,11 +17,7 @@ negative ground truths.
     Read the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide if you're not familiar with "TP" and "FN" terminology.
 
 </div>
-
-<figure markdown>
-  ![Precision and recall from Wikipedia](../assets/images/metrics-precision-recall.png)
-  <figcaption markdown>Diagram of precision and recall from [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall#Precision)
-</figure>
+![Metrics Recall Light](../assets/images/metrics-recall-light.svg#only-light)
 </div>
 
 <div class="grid cards" markdown>

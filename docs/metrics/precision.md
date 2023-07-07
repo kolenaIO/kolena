@@ -18,10 +18,8 @@ positive inferences.
 
 </div>
 
-<figure markdown>
-  ![Precision and recall from Wikipedia](../assets/images/metrics-precision-recall.png)
-  <figcaption markdown>Diagram of precision and recall from [Wikipedia](https://en.wikipedia.org/wiki/Precision_and_recall#Precision)
-</figure>
+![Precision and recall from Wikipedia](../assets/images/metrics-precision-light.svg#only-light)
+![Precision and recall from Wikipedia](../assets/images/metrics-precision-dark.svg#only-dark)
 </div>
 
 <div class="grid cards" markdown>
