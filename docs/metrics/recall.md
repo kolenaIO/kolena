@@ -17,7 +17,8 @@ negative ground truths.
     Read the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide if you're not familiar with "TP" and "FN" terminology.
 
 </div>
-![Metrics Recall Light](../assets/images/metrics-recall-light.svg#only-light)
+![Recall Image](../assets/images/metrics-recall-light.svg#only-light)
+![Recall Image](../assets/images/metrics-recall-dark.svg#only-dark)
 </div>
 
 <div class="grid cards" markdown>
