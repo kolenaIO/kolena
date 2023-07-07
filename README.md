@@ -23,38 +23,8 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
 platform.
 
-## Setup
+## Quick Links
 
-Client builds can be installed directly from PyPI using any Python package manager such as pip:
-
-```zsh
-pip install kolena
-```
-
-Advanced use cases (eg. metrics computation) may require extra dependencies which can be installed by running:
-```zsh
-pip install kolena[metrics]
-```
-
-<details>
-<summary>Installing with <a href="https://python-poetry.org/">Poetry</a></summary>
-<br>
-Install project dependencies by running
-
-```zsh
-poetry update && poetry install
-```
-
-Extra dependencies such as [Scikit-learn](https://scikit-learn.org/stable/) can be included by running
-```zsh
-poetry install --all-extras
-```
-</details>
-
-For more information, see the [installation documentation](https://docs.kolena.io/testing-with-kolena/using-kolena-client#installation).
-
-## Documentation
-
-Visit [docs.kolena.io](https://docs.kolena.io/) for tutorial and usage documentation and the
-[API Reference](https://app.kolena.io/api/developer/docs/html/index.html) for detailed `kolena` typing and
-function documentation.
+| [Developer Guide ↗](https://docs.kolena.io) | [Quickstart ↗](https://docs.kolena.io/quickstart) | [API Reference ↗](https://docs.kolena.io/reference) | [Example Integrations ↗](./examples) |
+| --- | --- | --- | --- |
+| Tutorial and usage documentation | Install Kolena to set up rigorous and repeatable model testing in minutes | Detailed `kolena` typing and function documentation | Reference Kolena integrations for different machine learning workflows |
