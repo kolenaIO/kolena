@@ -25,6 +25,6 @@ platform.
 
 ## Quick Links
 
-| [Developer Guide ↗](https://docs.kolena.io) | [Quickstart ↗](https://docs.kolena.io/quickstart) | [API Reference ↗](https://docs.kolena.io/reference) | [Example Integrations ↗](./examples) |
+| [Developer Guide](https://docs.kolena.io) | [Quickstart](https://docs.kolena.io/quickstart) | [API Reference](https://docs.kolena.io/reference) | [Examples](./examples) |
 | --- | --- | --- | --- |
-| Tutorial and usage documentation | Install Kolena to set up rigorous and repeatable model testing in minutes | Detailed `kolena` typing and function documentation | Reference Kolena integrations for different machine learning workflows |
+| Tutorial and usage documentation | Set up rigorous and repeatable model testing in minutes | Detailed `kolena` typing and function documentation | Reference integrations for different machine learning workflows |
