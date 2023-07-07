@@ -18,8 +18,8 @@ positive inferences.
 
 </div>
 
-![Precision and recall from Wikipedia](../assets/images/metrics-precision-light.svg#only-light)
-![Precision and recall from Wikipedia](../assets/images/metrics-precision-dark.svg#only-dark)
+![Precision Image](../assets/images/metrics-precision-light.svg#only-light)
+![Precision Image](../assets/images/metrics-precision-dark.svg#only-dark)
 </div>
 
 <div class="grid cards" markdown>
