@@ -20,7 +20,12 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 - Automate model testing and deployment workflows
 
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
-platform.
+platform. [Install](https://docs.kolena.io/installing-kolena) with your favorite Python package manager and
+[get started in minutes](https://docs.kolena.io/quickstart):
+
+```
+pip install kolena
+```
 
 ## Quick Links
 
