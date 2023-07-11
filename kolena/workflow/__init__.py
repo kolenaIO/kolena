@@ -24,6 +24,7 @@ from .test_sample import Text
 from .test_sample import BaseVideo
 from .test_sample import Video
 from .test_sample import Document
+from .test_sample import PointCloud
 from .ground_truth import GroundTruth
 from .inference import Inference
 from .workflow import Workflow
@@ -61,6 +62,7 @@ __all__ = [
     "BaseVideo",
     "Video",
     "Document",
+    "PointCloud",
     "GroundTruth",
     "Inference",
     "Workflow",
