@@ -175,6 +175,19 @@ def test__colorize_activation_map__invalid_input(activation_map: np.ndarray) -> 
                 ],
             ),
         ),
+        (
+            np.array([[0.627, 0.875, 1.0]], dtype=np.float64),
+            True,
+            np.array(
+                [
+                    [
+                        [0, 252, 255, 250],
+                        [0, 0, 255, 254],
+                        [0, 0, 128, 254],
+                    ],
+                ],
+            ),
+        ),
     ],
 )
 def test__colorize_activation_map(
