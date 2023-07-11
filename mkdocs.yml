@@ -1,5 +1,5 @@
 site_name: Testing with Kolena
-site_description: Python client for Kolena's machine learning (ML) testing and debugging platform
+site_description: Python client for Kolena's machine learning testing platform
 site_url: https://docs.kolena.io
 strict: true
 repo_name: kolenaIO/kolena

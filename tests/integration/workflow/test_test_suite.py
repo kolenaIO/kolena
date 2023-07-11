@@ -262,3 +262,9 @@ def test__load_test_samples(
         (test_case_1, sorted([dummy_test_samples[0], dummy_test_samples[1]])),
         (test_case_2, sorted([dummy_test_samples[2], dummy_test_samples[1]])),
     ]
+
+
+def test__create__validate_name() -> None:
+    test_case_1 = TestCase(with_test_prefix(f"{__file__}::test__create__validate_name test case 1"))
+    with pytest.raises(ValueError):
+        TestSuite.create("", test_cases=[test_case_1])

@@ -1,13 +1,12 @@
 <p align="center">
-  <img src="https://docs.kolena.io/assets/images/wordmark-violet.svg" width="400" alt="Kolena" />
+  <img src="https://docs.kolena.io/assets/images/kolena-banner.png" width="640" alt="Kolena" />
 </p>
 
 <p align='center'>
-  <a href="https://pypi.python.org/pypi/kolena"><img src="https://img.shields.io/pypi/v/kolena" /></a>
-  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena" /></a>
-  <a href="https://github.com/kolenaIO/kolena/actions"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk" /></a>
-  <a href="https://codecov.io/gh/kolenaIO/kolena" ><img src="https://codecov.io/gh/kolenaIO/kolena/branch/trunk/graph/badge.svg?token=8WOY5I8SF1"/></a>
-  <a href="https://docs.kolena.io"><img src="https://img.shields.io/badge/resource-docs-6434c1" /></a>
+  <a href="https://pypi.python.org/pypi/kolena"><img src="https://img.shields.io/pypi/v/kolena?logo=python&logoColor=white&style=flat-square" /></a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena?style=flat-square" /></a>
+  <a href="https://github.com/kolenaIO/kolena/actions"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk?logo=circleci&logoColor=white&style=flat-square" /></a>
+  <a href="https://codecov.io/gh/kolenaIO/kolena" ><img src="https://img.shields.io/codecov/c/github/kolenaIO/kolena?logo=codecov&logoColor=white&style=flat-square&token=8WOY5I8SF1" /></a>
 </p>
 
 ---
@@ -21,40 +20,15 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 - Automate model testing and deployment workflows
 
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
-platform.
+platform. [Install](https://docs.kolena.io/installing-kolena) with your favorite Python package manager and
+[get started in minutes](https://docs.kolena.io/quickstart):
 
-## Setup
-
-Client builds can be installed directly from PyPI using any Python package manager such as pip:
-
-```zsh
+```
 pip install kolena
 ```
 
-Advanced use cases (eg. metrics computation) may require extra dependencies which can be installed by running:
-```zsh
-pip install kolena[metrics]
-```
+## Quick Links
 
-<details>
-<summary>Installing with <a href="https://python-poetry.org/">Poetry</a></summary>
-<br>
-Install project dependencies by running
-
-```zsh
-poetry update && poetry install
-```
-
-Extra dependencies such as [Scikit-learn](https://scikit-learn.org/stable/) can be included by running
-```zsh
-poetry install --all-extras
-```
-</details>
-
-For more information, see the [installation documentation](https://docs.kolena.io/testing-with-kolena/using-kolena-client#installation).
-
-## Documentation
-
-Visit [docs.kolena.io](https://docs.kolena.io/) for tutorial and usage documentation and the
-[API Reference](https://app.kolena.io/api/developer/docs/html/index.html) for detailed `kolena` typing and
-function documentation.
+| [Developer Guide](https://docs.kolena.io) | [Quickstart](https://docs.kolena.io/quickstart) | [API Reference](https://docs.kolena.io/reference) | [Examples](./examples) |
+| --- | --- | --- | --- |
+| Tutorial and usage documentation | Set up rigorous and repeatable model testing in minutes | Detailed `kolena` typing and function documentation | Reference integrations for different machine learning workflows |

@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-kolena = ">=0.69.0,<1"
+kolena = ">=0.76.0,<1"
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
 

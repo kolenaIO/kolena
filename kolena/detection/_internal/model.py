@@ -36,10 +36,12 @@ from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import DFType
 from kolena._utils.consts import BatchSize
+from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
 from kolena.detection._internal import BaseTestCase
 from kolena.detection._internal import BaseTestImage
@@ -79,6 +81,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
 
     @validate_arguments(config=ValidatorConfig)
     def __init__(self, name: str, workflow: WorkflowType, metadata: Optional[Dict[str, Any]] = None):
+        validate_name(name, FieldName.MODEL_NAME)
         try:
             loaded = self._load_by_name(name)
             if len(loaded.metadata) > 0 and loaded.metadata != metadata:

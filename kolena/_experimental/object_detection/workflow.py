@@ -63,6 +63,38 @@ _workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
+class TestSampleMetricsSingleClass(MetricsTestSample):
+    TP: List[ScoredLabeledBoundingBox]
+    FP: List[ScoredLabeledBoundingBox]
+    FN: List[LabeledBoundingBox]
+
+    count_TP: int
+    count_FP: int
+    count_FN: int
+
+    has_TP: bool
+    has_FP: bool
+    has_FN: bool
+
+    max_confidence_above_t: Optional[float]
+    min_confidence_above_t: Optional[float]
+    thresholds: float
+
+
+@dataclass(frozen=True)
+class TestCaseMetricsSingleClass(MetricsTestCase):
+    Objects: int
+    Inferences: int
+    TP: int
+    FN: int
+    FP: int
+    Precision: float
+    Recall: float
+    F1: float
+    AP: float
+
+
+@dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     TP: List[ScoredLabeledBoundingBox]
     FP: List[ScoredLabeledBoundingBox]
@@ -143,9 +175,11 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     threshold_strategy: ThresholdStrategy
     iou_threshold: float
     min_confidence_score: float
+    with_class_level_metrics: bool
 
     def display_name(self) -> str:
         return (
-            f"Threshold: {self.threshold_strategy.display_name()}, "
+            f"Threshold: {self.threshold_strategy.display_name()}"
+            f"{' by class' if self.with_class_level_metrics else ''}, "
             f"IoU: {self.iou_threshold}, confidence ≥ {self.min_confidence_score}"
         )
