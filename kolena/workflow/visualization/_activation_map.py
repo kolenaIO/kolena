@@ -105,25 +105,22 @@ def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: boo
                 f"input image must be a single-channel, but received {activation_map.shape[2]} channels\n"
                 "Expected shape is (h, w) or (h, w, 1)",
             )
-
         activation_map = np.repeat(activation_map, 4, axis=2)
-        if fade_low_activation:
-            # apply non-linear scaling alpha channel [0, 255]
-            alpha = MAX_UINT8 / (1 + np.exp(((MAX_UINT8 / 2) - activation_map[:, :, 1]) / 8))
-            activation_map[:, :, 3] = alpha
 
     colormap = ColorMapJet()
-    for i, row in enumerate(activation_map):
-        for j, pixel in enumerate(row):
-            intensity = pixel[0]
-            activation_map[i][j] = np.array(
-                [
-                    colormap.blue(intensity),
-                    colormap.green(intensity),
-                    colormap.red(intensity),
-                    pixel[3] if fade_low_activation else MAX_UINT8,
-                ],
-                dtype=np.uint8,
-            )
+    vred = np.vectorize(colormap.red)
+    vgreen = np.vectorize(colormap.green)
+    vblue = np.vectorize(colormap.blue)
+
+    if fade_low_activation:
+        # apply non-linear scaling alpha channel [0, 255]
+        alpha = MAX_UINT8 / (1 + np.exp(((MAX_UINT8 / 2) - activation_map[:, :, 0]) / 8))
+        activation_map[:, :, 3] = alpha
+    else:
+        activation_map[:, :, 3] = MAX_UINT8
+
+    activation_map[:, :, 0] = vblue(activation_map[:, :, 0])
+    activation_map[:, :, 1] = vgreen(activation_map[:, :, 1])
+    activation_map[:, :, 2] = vred(activation_map[:, :, 2])
 
     return activation_map
