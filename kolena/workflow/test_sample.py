@@ -109,7 +109,7 @@ class _TestSampleType(DataType):
     VIDEO = "VIDEO"
     DOCUMENT = "DOCUMENT"
     COMPOSITE = "COMPOSITE"
-    POINTCLOUD = "POINTCLOUD"
+    POINT_CLOUD = "POINT_CLOUD"
     CUSTOM = "CUSTOM"
 
     @staticmethod
@@ -277,7 +277,7 @@ class PointCloud(TestSample):
 
     @classmethod
     def _data_type(cls) -> _TestSampleType:
-        return _TestSampleType.POINTCLOUD
+        return _TestSampleType.POINT_CLOUD
 
 
 _TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo, Document, PointCloud]
