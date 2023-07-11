@@ -18,8 +18,6 @@ import numpy as np
 
 from kolena.errors import InputValidationError
 
-MAX_UINT8: np.uint8 = 255
-
 
 class ColorMap(ABC):
     @abstractmethod
@@ -48,25 +46,26 @@ class ColorMapJet(ColorMap):
     """
 
     def _scale_to_colormap(self, intensity: np.uint8) -> np.uint8:
-        if intensity <= MAX_UINT8 / 8:
+        max_uint8 = np.iinfo(np.uint8).max
+        if intensity <= max_uint8 / 8:
             return 0
-        elif intensity <= MAX_UINT8 * 3 / 8:
-            return self._interpolate(intensity, MAX_UINT8 / 8, 0.0, MAX_UINT8 * 3 / 8, MAX_UINT8)
-        elif intensity <= MAX_UINT8 * 5 / 8:
-            return MAX_UINT8
-        elif intensity <= MAX_UINT8 * 7 / 8:
-            return self._interpolate(intensity, MAX_UINT8 * 5 / 8, MAX_UINT8, MAX_UINT8 * 7 / 8, 0.0)
+        elif intensity <= max_uint8 * 3 / 8:
+            return self._interpolate(intensity, max_uint8 / 8, 0.0, max_uint8 * 3 / 8, max_uint8)
+        elif intensity <= max_uint8 * 5 / 8:
+            return max_uint8
+        elif intensity <= max_uint8 * 7 / 8:
+            return self._interpolate(intensity, max_uint8 * 5 / 8, max_uint8, max_uint8 * 7 / 8, 0.0)
         else:
             return 0
 
     def red(self, intensity: np.uint8) -> float:
-        return self._scale_to_colormap(intensity - MAX_UINT8 / 4)
+        return self._scale_to_colormap(intensity - np.iinfo(np.uint8).max / 4)
 
     def green(self, intensity: np.uint8) -> float:
         return self._scale_to_colormap(intensity)
 
     def blue(self, intensity: np.uint8) -> float:
-        return self._scale_to_colormap(intensity + MAX_UINT8 / 4)
+        return self._scale_to_colormap(intensity + np.iinfo(np.uint8).max / 4)
 
 
 def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: bool = True) -> np.ndarray:
@@ -81,11 +80,13 @@ def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: boo
         This option makes the overlay visualization better by highlighting only the important regions.
     :return: The colorized activation map in BGRA format, in (h, w, 4) shape.
     """
+    max_uint8 = np.iinfo(np.uint8).max
+
     if activation_map.size == 0:
         raise InputValidationError("input array is empty")
 
     if np.issubdtype(activation_map.dtype, np.floating) and ((0 <= activation_map) & (activation_map <= 1)).all():
-        activation_map = np.rint(activation_map * MAX_UINT8).astype(np.uint8)
+        activation_map = np.rint(activation_map * max_uint8).astype(np.uint8)
 
     if activation_map.dtype != np.uint8:
         raise InputValidationError(f"input array type must be np.uint8, but received {activation_map.dtype}")
@@ -114,10 +115,10 @@ def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: boo
 
     if fade_low_activation:
         # apply non-linear scaling alpha channel [0, 255]
-        alpha = MAX_UINT8 / (1 + np.exp(((MAX_UINT8 / 2) - activation_map[:, :, 0]) / 8))
+        alpha = max_uint8 / (1 + np.exp(((max_uint8 / 2) - activation_map[:, :, 0]) / 8))
         activation_map[:, :, 3] = alpha
     else:
-        activation_map[:, :, 3] = MAX_UINT8
+        activation_map[:, :, 3] = max_uint8
 
     activation_map[:, :, 0] = vblue(activation_map[:, :, 0])
     activation_map[:, :, 1] = vgreen(activation_map[:, :, 1])
