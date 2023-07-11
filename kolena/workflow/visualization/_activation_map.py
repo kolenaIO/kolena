@@ -70,6 +70,17 @@ class ColorMapJet(ColorMap):
 
 
 def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: bool = True) -> np.ndarray:
+    """
+    Applies the [MATLAB "Jet" colormap](http://blogs.mathworks.com/images/loren/73/colormapManip_14.png) to the
+    activation map.
+
+    :param np.ndarray activation_map: A 2D numpy array, shaped (h, w) or (h, w, 1), of the activation map in `np.uint8`
+        or `float` ranging [0, 1].
+    :param bool fade_low_activation: Fades out the regions with low activation by applying zero alpha value if set
+        `True`; otherwise, activation map is shown as is without any fading applied. By default, it's set to `True`.
+        This option makes the overlay visualization better by highlighting only the important regions.
+    :return: np.ndarray colorized activation map in BGRA format, in (h, w, 4) shape.
+    """
     if activation_map.size == 0:
         raise InputValidationError("input array is empty")
 
