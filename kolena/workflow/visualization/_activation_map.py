@@ -22,7 +22,7 @@ from kolena.errors import InputValidationError
 
 class Colormap(ABC):
     """
-    A `Colormap` maps a pixel intensity to BGRA.
+    A `Colormap` maps a pixel intensity to RGBA.
     """
 
     fade_low_activation: bool
@@ -71,9 +71,9 @@ class Colormap(ABC):
     def colorize(self, intensity: np.uint8) -> np.array:
         return np.array(
             [
-                self.blue(intensity),
-                self.green(intensity),
                 self.red(intensity),
+                self.green(intensity),
+                self.blue(intensity),
                 self.alpha(intensity),
             ],
             dtype=np.uint8,
@@ -123,7 +123,7 @@ def colorize_activation_map(activation_map: np.ndarray, colormap: Optional[Color
         or `float` ranging [0, 1].
     :param colormap: The colormap used to colorize the input activation map. Defaults to the
         [MATLAB "Jet" colormap](http://blogs.mathworks.com/images/loren/73/colormapManip_14.png).
-    :return: The colorized activation map in BGRA format, in (h, w, 4) shape.
+    :return: The colorized activation map in RGBA format, in (h, w, 4) shape.
     """
     max_uint8 = np.iinfo(np.uint8).max
 
