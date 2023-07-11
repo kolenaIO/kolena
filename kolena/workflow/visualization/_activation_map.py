@@ -84,7 +84,7 @@ def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: boo
     if activation_map.size == 0:
         raise InputValidationError("input array is empty")
 
-    if activation_map.dtype == float and np.max(activation_map) <= 1.0 and np.min(activation_map) >= 0.0:
+    if np.issubdtype(activation_map.dtype, np.floating) and ((0 <= activation_map) & (activation_map <= 1)).all():
         activation_map = np.rint(activation_map * MAX_UINT8).astype(np.uint8)
 
     if activation_map.dtype != np.uint8:

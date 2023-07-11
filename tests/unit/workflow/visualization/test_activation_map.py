@@ -24,6 +24,8 @@ from kolena.workflow.visualization import colorize_activation_map
         np.array([[]], dtype=int),
         np.array([], dtype=np.uint8),
         np.array([[]], dtype=float),
+        np.array([[0.4], [-0.4], [3.0]], dtype=float),
+        np.array([[0.4], [-0.4], [3.0]], dtype=np.float64),
         np.array([[]], dtype=np.uint8),
         np.array([[[]]], dtype=np.uint8),
         np.array([[[[]]]], dtype=np.uint8),
@@ -143,6 +145,32 @@ def test__colorize_activation_map__invalid_input(activation_map: np.ndarray) -> 
                         [128, 0, 0, 255],
                         [128, 0, 0, 255],
                         [128, 0, 0, 255],
+                    ],
+                ],
+            ),
+        ),
+        (
+            np.array([[0.627, 0.875, 1.0]], dtype=float),
+            True,
+            np.array(
+                [
+                    [
+                        [0, 252, 255, 250],
+                        [0, 0, 255, 254],
+                        [0, 0, 128, 254],
+                    ],
+                ],
+            ),
+        ),
+        (
+            np.array([[0.627, 0.875, 1.0]], dtype=np.float32),
+            True,
+            np.array(
+                [
+                    [
+                        [0, 252, 255, 250],
+                        [0, 0, 255, 254],
+                        [0, 0, 128, 254],
                     ],
                 ],
             ),
