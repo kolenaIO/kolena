@@ -219,12 +219,12 @@ of precision and recall at one specific threshold, it lets you compare model per
 this metric is very popular and commonly used in object detection and information retrieval workflows, it has some
 limitations. Let's make sure to understand these limitations before using the metric to compare your models.
 
-!!! note "1. AP is often overestimated."
+??? info "AP is often overestimated."
 
     To approximate the area under the curve, it is standard practice to take the maximum precision from the right side
     of the plot. By doing so, it overestimates the area under the curve.
 
-!!! note "2. AP cannot distinguish between very different-looking PR curves."
+??? info "AP cannot distinguish between very different-looking PR curves."
 
     Consider the following three plots:
 
@@ -234,20 +234,20 @@ limitations. Let's make sure to understand these limitations before using the me
     Thus, relying solely on the AP metric is not enough. We recommend plotting the PR curve along with the AP metric
     to better understand the behavior of your model.
 
-!!! note "3. AP is not confidence score sensitive."
+??? info "AP is not confidence score sensitive."
 
     AP uses confidence score to sort inferences, and as long as the sorted order is preserved, the distribution of
     confidence scores does not change the AP score. Therefore, predictions that have confidence scores within a very
     small range versus ones with scores that are nicely distributed from 0 to 1 can have the same AP as long as the
     order is preserved.
 
-!!! note "4. AP uses the interpolated PR curve."
+??? info "AP uses the interpolated PR curve."
 
     As mentioned in the section above, there are many different ways of interpolating the PR curve. Depending on the
     granularity of the plot, the AP value can be different, so when comparing models using AP, we need to ensure that
     it is calculated using the same interpolation method.
 
-!!! note "5. AP is not a fair comparison for thresholded models where the tail part of the PR curve is missing."
+??? info "AP is not a fair comparison for thresholded models where the tail part of the PR curve is missing."
 
     It is pretty common for object detectors to filter out predictions with very small confidence scores. In such a
     scenario, the curve will be missing the tail part, but because the metric considers the entire recall domain, any
