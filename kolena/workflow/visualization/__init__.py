@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from ._activation_map import colorize_activation_map
+from ._activation_map import Colormap
+from ._activation_map import ColormapJet
 
 __all__ = [
+    "Colormap",
+    "ColormapJet",
     "colorize_activation_map",
 ]

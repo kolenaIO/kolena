@@ -16,6 +16,7 @@ import pytest
 
 from kolena.errors import InputValidationError
 from kolena.workflow.visualization import colorize_activation_map
+from kolena.workflow.visualization import ColormapJet
 
 
 @pytest.mark.parametrize(
@@ -34,10 +35,10 @@ from kolena.workflow.visualization import colorize_activation_map
 )
 def test__colorize_activation_map__invalid_input(activation_map: np.ndarray) -> None:
     with pytest.raises(InputValidationError):
-        colorize_activation_map(activation_map, fade_low_activation=True)
+        colorize_activation_map(activation_map)
 
     with pytest.raises(InputValidationError):
-        colorize_activation_map(activation_map, fade_low_activation=False)
+        colorize_activation_map(activation_map, colormap=ColormapJet(fade_low_activation=False))
 
 
 @pytest.mark.parametrize(
@@ -195,5 +196,36 @@ def test__colorize_activation_map(
     fade_low_activation: bool,
     expected: np.ndarray,
 ) -> None:
-    colorized_map = colorize_activation_map(activation_map, fade_low_activation=fade_low_activation)
+    colorized_map = colorize_activation_map(
+        activation_map,
+        colormap=ColormapJet(fade_low_activation=fade_low_activation),
+    )
     np.testing.assert_array_equal(expected, colorized_map)
+
+
+@pytest.mark.parametrize(
+    "intensity, fade_low_activation, expected",
+    [
+        (0, True, [128, 0, 0, 0]),
+        (0, False, [128, 0, 0, 255]),
+        (255, True, [0, 0, 128, 254]),
+        (255, False, [0, 0, 128, 255]),
+        (128, True, [126, 255, 130, 131]),
+        (128, False, [126, 255, 130, 255]),
+        (32, True, [255, 0, 0, 0]),
+        (32, False, [255, 0, 0, 255]),
+        (95, True, [255, 252, 0, 4]),
+        (95, False, [255, 252, 0, 255]),
+        (160, True, [0, 252, 255, 250]),
+        (160, False, [0, 252, 255, 255]),
+        (223, True, [0, 0, 255, 254]),
+        (223, False, [0, 0, 255, 255]),
+    ],
+)
+def test__colormap_jet(
+    intensity: np.uint8,
+    fade_low_activation: bool,
+    expected: np.array,
+) -> None:
+    colormap = ColormapJet(fade_low_activation=fade_low_activation)
+    np.testing.assert_array_equal(expected, colormap.colorize(intensity))

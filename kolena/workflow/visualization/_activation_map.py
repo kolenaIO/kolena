@@ -13,30 +13,77 @@
 # limitations under the License.
 from abc import ABC
 from abc import abstractmethod
+from typing import Optional
 
 import numpy as np
 
 from kolena.errors import InputValidationError
 
 
-class ColorMap(ABC):
+class Colormap(ABC):
+    """
+    A `Colormap` maps a pixel intensity to BGRA.
+    """
+
+    fade_low_activation: bool
+    """
+    Fades out the regions with low activation by applying zero alpha value if set
+    `True`; otherwise, activation map is shown as is without any fading applied. By default, it's set to `True`.
+    This option makes the overlay visualization better by highlighting only the important regions.
+    """
+
+    def __init__(self, fade_low_activation: Optional[bool] = True):
+        self.fade_low_activation = fade_low_activation
+
     @abstractmethod
     def red(self, intensity: np.uint8) -> np.uint8:
-        ...
+        """
+        Maps a grayscale pixel intensity to color red: [0, 255]
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def green(self, intensity: np.uint8) -> np.uint8:
-        ...
+        """
+        Maps a grayscale pixel intensity to color green: [0, 255]
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def blue(self, intensity: np.uint8) -> np.uint8:
-        ...
+        """
+        Maps a grayscale pixel intensity to color blue: [0, 255]
+        """
+        raise NotImplementedError
+
+    def alpha(self, intensity: np.uint8) -> np.uint8:
+        """
+        Maps the grayscale pixel intensity to alpha: [0, 255]. If `fade_low_activation`
+        is False, then it returns the maximum alpha value.
+        """
+        max_uint8 = np.iinfo(np.uint8).max
+        if self.fade_low_activation:
+            # apply non-linear scaling alpha channel [0, 255]
+            return max_uint8 / (1 + np.exp(((max_uint8 / 2) - intensity) / 8))
+        else:
+            return max_uint8
+
+    def colorize(self, intensity: np.uint8) -> np.array:
+        return np.array(
+            [
+                self.blue(intensity),
+                self.green(intensity),
+                self.red(intensity),
+                self.alpha(intensity),
+            ],
+            dtype=np.uint8,
+        )
 
     def _interpolate(self, intensity: np.uint8, x0: float, y0: float, x1: float, y1: float) -> np.uint8:
         return np.uint8(round((intensity - x0) * (y1 - y0) / (x1 - x0) + y0))
 
 
-class ColorMapJet(ColorMap):
+class ColormapJet(Colormap):
     """
     The [MATLAB "Jet" color palette](http://blogs.mathworks.com/images/loren/73/colormapManip_14.png) is a standard
     palette used for scientific and mathematical data.
@@ -58,26 +105,24 @@ class ColorMapJet(ColorMap):
         else:
             return 0
 
-    def red(self, intensity: np.uint8) -> float:
+    def red(self, intensity: np.uint8) -> np.uint8:
         return self._scale_to_colormap(intensity - np.iinfo(np.uint8).max / 4)
 
-    def green(self, intensity: np.uint8) -> float:
+    def green(self, intensity: np.uint8) -> np.uint8:
         return self._scale_to_colormap(intensity)
 
-    def blue(self, intensity: np.uint8) -> float:
+    def blue(self, intensity: np.uint8) -> np.uint8:
         return self._scale_to_colormap(intensity + np.iinfo(np.uint8).max / 4)
 
 
-def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: bool = True) -> np.ndarray:
+def colorize_activation_map(activation_map: np.ndarray, colormap: Optional[Colormap] = ColormapJet()) -> np.ndarray:
     """
-    Applies the [MATLAB "Jet" colormap](http://blogs.mathworks.com/images/loren/73/colormapManip_14.png) to the
-    activation map.
+    Applies the specified colormap to the activation map.
 
     :param activation_map: A 2D numpy array, shaped (h, w) or (h, w, 1), of the activation map in `np.uint8`
         or `float` ranging [0, 1].
-    :param fade_low_activation: Fades out the regions with low activation by applying zero alpha value if set
-        `True`; otherwise, activation map is shown as is without any fading applied. By default, it's set to `True`.
-        This option makes the overlay visualization better by highlighting only the important regions.
+    :param colormap: The colormap used to colorize the input activation map. Defaults to the
+        [MATLAB "Jet" colormap](http://blogs.mathworks.com/images/loren/73/colormapManip_14.png).
     :return: The colorized activation map in BGRA format, in (h, w, 4) shape.
     """
     max_uint8 = np.iinfo(np.uint8).max
@@ -108,20 +153,7 @@ def colorize_activation_map(activation_map: np.ndarray, fade_low_activation: boo
             )
         activation_map = np.repeat(activation_map, 4, axis=2)
 
-    colormap = ColorMapJet()
-    vred = np.vectorize(colormap.red)
-    vgreen = np.vectorize(colormap.green)
-    vblue = np.vectorize(colormap.blue)
-
-    if fade_low_activation:
-        # apply non-linear scaling alpha channel [0, 255]
-        alpha = max_uint8 / (1 + np.exp(((max_uint8 / 2) - activation_map[:, :, 0]) / 8))
-        activation_map[:, :, 3] = alpha
-    else:
-        activation_map[:, :, 3] = max_uint8
-
-    activation_map[:, :, 0] = vblue(activation_map[:, :, 0])
-    activation_map[:, :, 1] = vgreen(activation_map[:, :, 1])
-    activation_map[:, :, 2] = vred(activation_map[:, :, 2])
+    vcolorize = np.vectorize(colormap.colorize, signature="()->(n)")
+    activation_map[:, :] = vcolorize(activation_map[:, :, 0])
 
     return activation_map
