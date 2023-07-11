@@ -27,6 +27,7 @@ import dacite
 import numpy as np
 import pydantic
 import pytest
+from workflow.test_sample import PointCloud
 
 from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
@@ -615,3 +616,14 @@ def test__instantiate__document(dataclass: Callable) -> None:
     Tester(locator=locator, example="test")
     Tester(locator=locator, example=None)
     Tester(locator=locator)
+
+
+@pytest.mark.parametrize("dataclass", [dataclasses.dataclass, pydantic.dataclasses.dataclass])
+def test__instantiate__pointcloud(dataclass: Callable) -> None:
+    @dataclass(frozen=True)
+    class Tester(PointCloud):
+        width: int
+        height: int
+
+    locator = "s3://bucket/path/to/pointcloud.pcd"
+    Tester(locator=locator, width=10, height=10)

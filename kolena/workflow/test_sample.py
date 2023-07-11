@@ -109,6 +109,7 @@ class _TestSampleType(DataType):
     VIDEO = "VIDEO"
     DOCUMENT = "DOCUMENT"
     COMPOSITE = "COMPOSITE"
+    POINT_CLOUD = "POINT_CLOUD"
     CUSTOM = "CUSTOM"
 
     @staticmethod
@@ -267,7 +268,19 @@ class Document(TestSample):
         return _TestSampleType.DOCUMENT
 
 
-_TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo, Document]
+@dataclass(frozen=True, config=ValidatorConfig)
+class PointCloud(TestSample):
+    """A pointcloud file located in a cloud bucket or served at a URL."""
+
+    locator: str
+    """The URL of the pointcloud file, using e.g. `s3`, `gs`, or `https` scheme (`s3://my-bucket/path/to/image.pcd`)."""
+
+    @classmethod
+    def _data_type(cls) -> _TestSampleType:
+        return _TestSampleType.POINT_CLOUD
+
+
+_TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo, Document, PointCloud]
 
 
 def _validate_test_sample_type(test_sample_type: Type[TestSample], recurse: bool = True) -> None:
