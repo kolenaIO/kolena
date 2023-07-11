@@ -6,9 +6,9 @@ search:
 # Average Precision
 
 Average precision (AP) summarizes a precision-recall (PR) curve into a single value representing the average of all
-precisions. It is generally understood as the approximation of the area under the PR curve. This metric ranges between
-0 to 1, where a perfect model with a [precision](./precision.md) and [recall](./recall.md) of 1 scores 1.
-The larger the metric, the better a model performs across different thresholds.
+precisions. It is generally understood as the approximation of the area under the PR curve. AP ranges between 0 and 1,
+where a perfect model has [precision](./precision.md), [recall](./recall.md), and AP scores of 1. The larger the metric,
+the better a model performs across different thresholds.
 
 !!! info inline end "Guides: Precision and Recall"
 
@@ -16,8 +16,8 @@ The larger the metric, the better a model performs across different thresholds.
 
 Unlike metrics like [precision](./precision.md), [recall](./recall.md), and [F<sub>1</sub>-score](./f1-score.md), which
 are threshold-dependent where a confidence threshold value must be defined to compute them, AP is a key performance
-metric that removes the dependency of selecting one confidence threshold value and measures a model's performance across
-all thresholds.
+**threshold-independent** metric that removes the dependency of selecting one confidence threshold value and measures a
+model's performance across all thresholds.
 
 AP is commonly used to evaluate the performance of object detection and information retrieval workflows. This metric
 (or an aggregated version of it called [mean average precision (mAP)](#mean-average-precision-map)) is the primary
@@ -66,7 +66,7 @@ The above three images show a total of four ground truth objects, all of which a
 based on the [Intersection over Union (IoU)](./iou.md) scores. Let’s look at each inference bounding box and sort them
 by their confidence score in descending order.
 
-| Inference | Confidence ↓ | TP/FP | cumsum(TP) | cumsum(FP) | Precision | Recall |
+| Inference | <nobr>Confidence ↓</nobr> | TP/FP | cumsum(TP) | cumsum(FP) | Precision | Recall |
 | --- | --- | --- | --- | --- | --- | --- |
 | H | 0.99 | TP | 1 | 0 | 1.0 | 0.2 |
 | A | 0.88 | TP | 2 | 0 | 1.0 | 0.4 |
@@ -100,7 +100,7 @@ Now that we have the precision and recall defined at each threshold, let’s plo
 
 ![object detection example - PR curve](../assets/images/metrics-ap-od-pr.png)
 
-Notice the zigzag pattern, called “**wiggles**” — the precision goes down with FPs and goes up again with TPs as the
+Notice the zigzag pattern, often referred to as “**wiggles**” — the precision goes down with FPs and goes up again with TPs as the
 recall increases. It is a common practice to first smooth out the wiggles before calculating the AP metric by taking the
 maximum precision value to its graphical right side of each recall value. This is why AP is called the **approximation**
 of the area under the PR curve. The interpolated precision at each recall is defined:
@@ -206,7 +206,7 @@ $$
 \text{AP} = \frac {(\frac 1 1 + \frac 0 2 + \frac 0 3 + \frac 2 4 + \frac 3 5 + \frac 0 6 + ... + 0)} 3 = 0.7
 $$
 
-### mean Average Precision (mAP)
+### Mean Average Precision (mAP)
 
 The mean average precision (mAP) is simply the [macro-average](./averaging-methods.md) of the AP calculated across
 different classes for object detection workflow or across different queries for information retrieval workflow. It is
@@ -219,12 +219,12 @@ of precision and recall at one specific threshold, it lets you compare model per
 this metric is very popular and commonly used in object detection and information retrieval workflows, it has some
 limitations. Let's make sure to understand these limitations before using the metric to compare your models.
 
-1. AP is often overestimated.
+!!! note "1. AP is often overestimated."
 
     To approximate the area under the curve, it is standard practice to take the maximum precision from the right side
     of the plot. By doing so, it overestimates the area under the curve.
 
-2. AP cannot distinguish between very different-looking PR curves.
+!!! note "2. AP cannot distinguish between very different-looking PR curves."
 
     Consider the following three plots:
 
@@ -234,21 +234,20 @@ limitations. Let's make sure to understand these limitations before using the me
     Thus, relying solely on the AP metric is not enough. We recommend plotting the PR curve along with the AP metric
     to better understand the behavior of your model.
 
-3. AP is not confidence score sensitive.
+!!! note "3. AP is not confidence score sensitive."
 
     AP uses confidence score to sort inferences, and as long as the sorted order is preserved, the distribution of
     confidence scores does not change the AP score. Therefore, predictions that have confidence scores within a very
     small range versus ones with scores that are nicely distributed from 0 to 1 can have the same AP as long as the
     order is preserved.
 
-4. AP uses the interpolated PR curve.
+!!! note "4. AP uses the interpolated PR curve."
 
     As mentioned in the section above, there are many different ways of interpolating the PR curve. Depending on the
     granularity of the plot, the AP value can be different, so when comparing models using AP, we need to ensure that
     it is calculated using the same interpolation method.
 
-5. AP considers the entire recall domain from 0 to 1, so it is not a fair comparison for thresholded detectors where
-    the tail part of the PR curve is missing.
+!!! note "5. AP is not a fair comparison for thresholded models where the tail part of the PR curve is missing."
 
     It is pretty common for object detectors to filter out predictions with very small confidence scores. In such a
     scenario, the curve will be missing the tail part, but because the metric considers the entire recall domain, any
