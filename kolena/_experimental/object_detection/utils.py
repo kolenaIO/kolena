@@ -94,8 +94,10 @@ def _compute_threshold_curve(
             zero_division=0,
         )
 
-        precisions.append(precision)
-        recalls.append(recall)
+        # avoid curves with one x-value and two 2-values
+        if recall not in recalls:
+            precisions.append(precision)
+            recalls.append(recall)
         f1s.append(f1)
 
     # omit curves with no points
@@ -105,11 +107,12 @@ def _compute_threshold_curve(
     if curve_type == "f1":
         return Curve(x=thresholds, y=f1s, label=curve_label) if len(f1s) >= 2 else None
     else:
-        # add a point to start the PR curve on the vertical axis
-        minpos = recalls.index(min(recalls))
-        precisions.append(precisions[minpos])
-        recalls.append(0.0)
-        return Curve(x=recalls, y=precisions, label=curve_label)
+        # add a point to start the PR curve on the vertical axis if needed
+        if 0.0 not in recalls:
+            minpos = recalls.index(min(recalls))
+            precisions.append(precisions[minpos])
+            recalls.append(0.0)
+        return Curve(x=recalls, y=precisions, label=curve_label) if len(recalls) >= 2 else None
 
 
 def _compute_multiclass_curves(
