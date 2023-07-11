@@ -27,7 +27,6 @@ import dacite
 import numpy as np
 import pydantic
 import pytest
-from workflow.test_sample import PointCloud
 
 from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
@@ -38,6 +37,7 @@ from kolena.workflow import Image
 from kolena.workflow import ImagePair
 from kolena.workflow import ImageText
 from kolena.workflow import Metadata
+from kolena.workflow import PointCloud
 from kolena.workflow import TestSample
 from kolena.workflow import Text
 from kolena.workflow import Video
