@@ -15,7 +15,6 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -26,6 +25,7 @@ from kolena._experimental.object_detection.utils import compute_f1_plot_multicla
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot_multiclass
+from kolena._experimental.object_detection.utils import filter_inferences
 from kolena._experimental.object_detection.workflow import ClassMetricsPerTestCase
 from kolena._experimental.object_detection.workflow import GroundTruth
 from kolena._experimental.object_detection.workflow import Inference
@@ -82,17 +82,16 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         inference: Inference,
         configuration: ThresholdConfiguration,
         test_case_name: str,
-        labels: Set[str],  # the labels being tested in this test case
     ) -> TestSampleMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
+        filtered_inferences = filter_inferences(
+            inferences=inference.bboxes,
+            confidence_score=configuration.min_confidence_score,
+        )
         bbox_matches: MulticlassInferenceMatches = match_inferences_multiclass(
             ground_truth.bboxes,
-            [
-                inf
-                for inf in inference.bboxes
-                if inf.label in labels and inf.score >= configuration.min_confidence_score
-            ],
+            filtered_inferences,
             ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
@@ -146,7 +145,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         all_bbox_matches = [
             match_inferences_multiclass(
                 ground_truth.bboxes,
-                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
+                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
@@ -168,11 +167,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
-        return [
-            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name, labels))
-            for ts, gt, inf in inferences
-        ]
+        return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
     def compute_aggregate_label_metrics(
         self,
@@ -224,7 +219,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
 
-        average_precision = 0.0
+        average_precision = compute_average_precision([precision], [recall])
         if precision > 0:
             baseline_pr_curve = compute_pr_curve(all_bbox_matches_for_one_label)
             if baseline_pr_curve is not None:

@@ -24,6 +24,7 @@ from kolena._experimental.object_detection.utils import compute_f1_plot
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot
+from kolena._experimental.object_detection.utils import filter_inferences
 from kolena._experimental.object_detection.workflow import GroundTruth
 from kolena._experimental.object_detection.workflow import Inference
 from kolena._experimental.object_detection.workflow import TestCase
@@ -83,7 +84,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         thresholds = self.get_confidence_thresholds(configuration)
         bbox_matches: InferenceMatches = match_inferences(
             ground_truth.bboxes,
-            [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
+            filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
             ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
@@ -123,7 +124,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         all_bbox_matches = [
             match_inferences(
                 ground_truth.bboxes,
-                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
+                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
