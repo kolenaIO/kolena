@@ -60,7 +60,7 @@ and run directly:
 
   - [Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
 
-    ![Example pointcloud and 3d object bounding boxes fro the KITTI dataset.](assets/images/KITTI-pointcloud.jpg)
+    ![Example pointcloud and 3d object bounding boxes fro the KITTI dataset.](assets/images/KITTI-pointcloud.png)
 
     ---
 
