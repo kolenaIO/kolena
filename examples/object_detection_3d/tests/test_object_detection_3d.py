@@ -104,7 +104,7 @@ def test__seed_test_suite__smoke() -> None:
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-@pytest.skip("expected to fail until evaluation codes can run without cuda")
+@pytest.mark.skip("expected to fail until evaluation codes can run without cuda")
 def test__seed_test_run__smoke() -> None:
     model_name = f"KITTI 3D Object Detection ({uuid.uuid4()})"
     seed_test_run(TEST_SUITE_NAME, model_name, dummy_results())
