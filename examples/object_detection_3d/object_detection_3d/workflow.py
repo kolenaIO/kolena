@@ -92,6 +92,13 @@ class AnnotatedBoundingBox3D(LabeledBoundingBox3D):
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     total_objects: int
+    n_pedestrian: int
+    n_car: int
+    n_cyclist: int
+    n_easy: int
+    n_moderate: int
+    n_hard: int
+    n_unknown: int
     bboxes_2d: List[LabeledBoundingBox]
     bboxes_3d: List[AnnotatedBoundingBox3D]
 

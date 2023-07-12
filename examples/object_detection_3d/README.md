@@ -20,9 +20,33 @@ This example integration will use pre-trained models provided by [MMDetection3D]
 
 We will use the same data directory structure as detailed in [KITTI dataset preparation guide](https://mmdetection3d.readthedocs.io/en/latest/advanced_guides/datasets/kitti.html), replacing the root directory in the guide with current project directory.
 
-### Test the model
+After downloading the dataset, we provide a script to process them into a format that suitable for integration with
+Kolena platform.
 
-After setting up the KITTI dataset as instructed in the guide,
+```
+$ poetry run python3 object_detection_3d/prepare_test_samples.py --help
+usage: prepare_test_samples.py [-h] datadir remote-prefix output
+
+positional arguments:
+  datadir        KITTI dataset dir
+  remote_prefix  Prefix of cloud storage of KITTI raw data
+  output         output file
+
+options:
+  -h, --help     show this help message and exit
+$ poetry run python3 object_detection_3d/prepare_test_samples.py data/kitti s3://mybucket/kitti/3d-object-detection \
+    test_samples_data.json
+```
+
+The script generated a file containing structured test samples and ground truth. This file will be used in
+[Kolena integration](#kolena-integration) to create a test suite. The script also creates pointcloud files for each raw
+velodyne binary file under `$datadir/velodyne_pcd`. Upload the camera images and pointcloud files to the cloud storage
+location specified in the argument `remote_prefix`, mirroring the directory structure as described in
+[Data preparation](#data-preparation) section, you can view the camera images and visualize pointcloud data in
+[Kolena studio](https://app.kolena.io/redirect/studio) after a test suite is created in
+[Kolena Integration](#kolena-integration).
+
+### Test the model
 
 In this example, we will use [PointPillars](https://github.com/open-mmlab/mmdetection3d/tree/main/configs/pointpillars)
 baseline. You can choose other suitable models with the same process.
@@ -38,7 +62,7 @@ $ poetry run python3 object_detection_3d/prepare_inference_results.py --help
 usage: prepare_inference_results.py [-h] [--device DEVICE] [--result-file RESULT_FILE] datadir config checkpoint
 
 positional arguments:
-  datadir               Data dir
+  datadir               KITTI dataset dir
   config                Config file
   checkpoint            Checkpoint file
 
@@ -52,10 +76,8 @@ $ poetry run python3 object_detection_3d/prepare_inference_results.py --device c
     checkpoints/hv_pointpillars_secfpn_6x8_160e_kitti-3d-3class_20220301_150306-37dc2420.pth
 ```
 
-The script would perform post-processing and raw label data and create pointcloud files for each raw velodyne binary
-file, stored in `$datadir/label_2_lidar` and `$datadir/velodyne_pcd` directories respectively. The generated
-information would be used to in the integration scripts in the next step. The model inference results are stored in
-`result-file`, which can be passed into seeding script, explained in the following section.
+The model inference results are stored in `result-file`, which can be passed into seeding script, explained in the
+next section.
 
 ### Kolena integration
 
@@ -73,34 +95,32 @@ Run a script using the `--help` flag for more information:
 
 ```
 $ poetry run python3 object_detection_3d/seed_test_suite.py --help
-usage: seed_test_suite.py [-h] --datadir DATADIR --remote-prefix REMOTE_PREFIX [--test-suite TEST_SUITE]
+usage: seed_test_suite.py [-h] [--test-suite TEST_SUITE] sample-file
+
+positional arguments:
+  sample_file           File containing test sample and ground truth data
 
 options:
   -h, --help            show this help message and exit
-  --datadir DATADIR     Data dir
-  --remote-prefix REMOTE_PREFIX
-                        Prefix of cloud storage of KITTI raw data
   --test-suite TEST_SUITE
                         Name of test suite
-$ poetry run python3 object_detection_3d/seed_test_suite.py --datadir d:/kitti \
-  --remote-prefix s3://mybucket/kitti/3d-object-detection
-```
 
-For best utilization of the visualization features of Kolena platform, in this integration example, the
-`remote-prefix` is used to link remote KITTI data to each test sample, including camera images and pointcloud file.
-With KITTI raw data uploaded to the specified remote cloud storage location, mirroring the directory structure as
-described in [Data preparation](#data-preparation) section, you can view the camera images and visualize pointcloud
-data of the test suite in [Kolena studio](https://app.kolena.io/redirect/studio).
+$ poetry run python3 object_detection_3d/seed_test_suite.py test_samples_data.json
+```
 
 
 ```
 $ poetry run python3 object_detection_3d/seed_test_run.py --help
-usage: seed_test_run.py [-h] model test_suite
+usage: seed_test_run.py [-h] [--test-suite TEST_SUITE] model model_results_file
 
 positional arguments:
-  model        Name of model in directory to test
-  test_suite   Name of test suite to test.
+  model                 Model name.
+  model_results_file    Name of model results file.
 
-optional arguments:
-  -h, --help   show this help message and exit
+options:
+  -h, --help            show this help message and exit
+  --test-suite TEST_SUITE
+                        Name of test suite to test.
+$ poetry run python3 object_detection_3d/seed_test_run.py pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class \
+    results.json
 ```

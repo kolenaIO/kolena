@@ -23,21 +23,11 @@ from typing import Any
 from typing import Dict
 from typing import List
 
-import numpy as np
-import open3d
-import pandas as pd
 from mmdet3d.apis import inference_detector
 from mmdet3d.apis import init_model
 from mmdet3d.evaluation import KittiMetric
-from mmdet3d.structures import Box3DMode
-from object_detection_3d.utils import calibration_from_label_id
-from object_detection_3d.utils import get_label_path
-from object_detection_3d.utils import get_lidar_label_path
 from object_detection_3d.utils import get_result_path
 from object_detection_3d.utils import get_velodyne_path
-from object_detection_3d.utils import get_velodyne_pcd_path
-from object_detection_3d.utils import LABEL_FILE_COLUMNS
-from tqdm import tqdm
 
 
 DEFAULT_RESULT_FILE = "results.json"
@@ -69,7 +59,7 @@ def save_prediction(result_path: Path, bboxes: List[Dict[str, Any]]) -> None:
 
 def save_inferences(result_file: Path, results: List[Dict[str, Any]], classes: List[str]) -> None:
     with open(str(result_file), "w") as f:
-        json.dump(dict(results=results, classes=classes), f, indent=2)
+        json.dump(dict(results=results, classes=classes), f)
 
 
 def prepare_inferences(args: Namespace) -> None:
@@ -96,71 +86,9 @@ def prepare_inferences(args: Namespace) -> None:
     save_inferences(args.datadir / args.result_file, results, model.dataset_meta["classes"])
 
 
-def convert_kitti_to_pcd(lidar_file: str, target_file: str) -> None:
-    bin_pcd = np.fromfile(lidar_file, dtype=np.float32)
-    points = bin_pcd.reshape((-1, 4))[:, 0:3]
-    o3d_pcd = open3d.geometry.PointCloud(open3d.utility.Vector3dVector(points))
-    open3d.io.write_point_cloud(target_file, o3d_pcd, compressed=True)
-
-
-def calibrate_velo_to_cam(datadir: Path) -> None:
-    """Convert KITTI 3D bbox coordinates to image coordinates"""
-
-    lidar_label_dir = get_lidar_label_path(datadir)
-    if not os.path.exists(lidar_label_dir):
-        os.mkdir(lidar_label_dir)
-
-    for label_filepath in tqdm(glob.glob(f"{get_label_path(datadir)}/*.txt")):
-        label_id = Path(label_filepath).stem
-        lidar_label_filepath = get_lidar_label_path(datadir) / f"{label_id}.txt"
-        if not os.path.exists(lidar_label_filepath):
-            continue
-
-        df = pd.read_csv(label_filepath, delimiter=" ", header=None, names=LABEL_FILE_COLUMNS)
-        calibration = calibration_from_label_id(datadir, label_id)
-
-        camera_bboxes = [
-            [record.loc_x, record.loc_y, record.loc_z, record.dim_x, record.dim_y, record.dim_z, record.rotation_y]
-            for record in df.itertuples()
-        ]
-
-        lidar_bboxes = Box3DMode.convert(
-            np.array(camera_bboxes),
-            Box3DMode.CAM,
-            Box3DMode.LIDAR,
-            rt_mat=np.linalg.inv(calibration["camera_rectification"] @ calibration["velodyne_to_camera"]),
-            with_yaw=True,
-        )
-
-        df["loc_x"] = [bbox[0] for bbox in lidar_bboxes]
-        df["loc_y"] = [bbox[1] for bbox in lidar_bboxes]
-        df["loc_z"] = [bbox[2] for bbox in lidar_bboxes]
-        df["dim_x"] = [bbox[3] for bbox in lidar_bboxes]
-        df["dim_y"] = [bbox[4] for bbox in lidar_bboxes]
-        df["dim_z"] = [bbox[5] for bbox in lidar_bboxes]
-        df["rotation_y"] = [bbox[6] for bbox in lidar_bboxes]
-
-        df.to_csv(lidar_label_filepath, header=False, index=False, sep=" ")
-
-
-def prepare_pcd(datadir: Path) -> None:
-    """Convert KITTI velodyne bin format to PCD for visualization"""
-
-    velodyne_path = get_velodyne_path(datadir)
-    pcd_path = get_velodyne_pcd_path(datadir)
-    if not os.path.exists(pcd_path):
-        os.mkdir(pcd_path)
-
-    for bin in glob.glob(f"{velodyne_path}/*.bin"):
-        filename = os.path.basename(bin)
-        pcd = str(pcd_path / f"{os.path.splitext(filename)[0]}.pcd")
-        if not os.path.exists(pcd):
-            convert_kitti_to_pcd(bin, pcd)
-
-
 def parse_args() -> Namespace:
     parser = ArgumentParser()
-    parser.add_argument("datadir", help="Data dir", type=Path)
+    parser.add_argument("datadir", help="KITTI dataset dir", type=Path)
     parser.add_argument("config", help="Config file")
     parser.add_argument("checkpoint", help="Checkpoint file")
     parser.add_argument(
@@ -174,8 +102,6 @@ def parse_args() -> Namespace:
 
 
 def main(args: Namespace) -> None:
-    calibrate_velo_to_cam(args.datadir)
-    prepare_pcd(args.datadir)
     prepare_inferences(args)
 
 

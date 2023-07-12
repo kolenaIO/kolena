@@ -64,11 +64,6 @@ def get_label_path(datadir: Path) -> Path:
     return datadir / get_path_component("label_2")
 
 
-# storing results of applying velo-to-cam calibration of KITTI label_2
-def get_lidar_label_path(datadir: Path) -> Path:
-    return datadir / get_path_component("label_2_lidar")
-
-
 def get_calib_path(datadir: Path, training: bool = True) -> Path:
     return datadir / get_path_component("calib", training)
 

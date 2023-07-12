@@ -22,11 +22,11 @@ from typing import Tuple
 import pytest
 from object_detection_3d.seed_test_run import seed_test_run
 from object_detection_3d.seed_test_suite import seed_test_suite
+from object_detection_3d.workflow import AnnotatedBoundingBox
 from object_detection_3d.workflow import AnnotatedBoundingBox3D
 from object_detection_3d.workflow import GroundTruth
 from object_detection_3d.workflow import TestSample
 
-from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.asset import PointCloudAsset
 
 
@@ -37,6 +37,7 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
     random_prefix = uuid.uuid4()
     n_samples = 10
     n_gt = 5
+    difficulties = ["easy", "hard", "moderate", "unknown"]
     return [
         (
             TestSample(
@@ -47,18 +48,24 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
                 image_projection=[random.random() for _ in range(4) for _ in range(4)],
             ),
             GroundTruth(
-                total=n_gt,
-                easy_image_bboxes=[],
-                easy_velodyne_bboxes=[],
-                moderate_image_bboxes=[
-                    LabeledBoundingBox(
+                total_objects=n_gt,
+                n_easy=1,
+                n_moderate=1,
+                n_hard=1,
+                n_unknown=1,
+                n_car=1,
+                n_cyclist=1,
+                n_pedestrian=0,
+                bboxes_2d=[
+                    AnnotatedBoundingBox(
                         label="Car",
                         top_left=(100 + i * 5, 100 + i * 5),
                         bottom_right=(150 + i * 5, 150 + i * 5),
+                        difficulty=random.choice(difficulties),
                     )
                     for i in range(n_gt)
                 ],
-                moderate_velodyne_bboxes=[
+                bboxes_3d=[
                     AnnotatedBoundingBox3D(
                         label="Car",
                         truncated=0,
@@ -67,14 +74,10 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
                         center=(100 + i * 10, 100 + i * 10, 50 + i * 10),
                         dimensions=(50, 50, 50),
                         rotations=(0, 0, 0),
-                        difficulty="moderate",
+                        difficulty=random.choice(difficulties),
                     )
                     for i in range(n_gt)
                 ],
-                hard_image_bboxes=[],
-                hard_velodyne_bboxes=[],
-                other_image_bboxes=[],
-                other_velodyne_bboxes=[],
             ),
         )
         for i in range(n_samples)

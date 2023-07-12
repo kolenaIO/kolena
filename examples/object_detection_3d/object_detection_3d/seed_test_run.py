@@ -57,8 +57,8 @@ def as_3d_bbox(coords: List[float], score: float, label: str) -> ScoredLabeledBo
 
 def as_inference(raw: Dict[str, Any]) -> Inference:
     return Inference(
-        image_bboxes=[as_2d_bbox(box["box"], box["score"], box["pred"]) for box in raw["bboxes"]],
-        velodyne_bboxes=[as_3d_bbox(box["box3d"], box["score"], box["pred"]) for box in raw["bboxes"]],
+        bboxes_2d=[as_2d_bbox(box["box"], box["score"], box["pred"]) for box in raw["bboxes"]],
+        bboxes_3d=[as_3d_bbox(box["box3d"], box["score"], box["pred"]) for box in raw["bboxes"]],
     )
 
 
