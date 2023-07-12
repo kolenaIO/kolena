@@ -37,6 +37,7 @@ from kolena.workflow import Image
 from kolena.workflow import ImagePair
 from kolena.workflow import ImageText
 from kolena.workflow import Metadata
+from kolena.workflow import PointCloud
 from kolena.workflow import TestSample
 from kolena.workflow import Text
 from kolena.workflow import Video
@@ -615,3 +616,14 @@ def test__instantiate__document(dataclass: Callable) -> None:
     Tester(locator=locator, example="test")
     Tester(locator=locator, example=None)
     Tester(locator=locator)
+
+
+@pytest.mark.parametrize("dataclass", [dataclasses.dataclass, pydantic.dataclasses.dataclass])
+def test__instantiate__pointcloud(dataclass: Callable) -> None:
+    @dataclass(frozen=True)
+    class Tester(PointCloud):
+        width: int
+        height: int
+
+    locator = "s3://bucket/path/to/pointcloud.pcd"
+    Tester(locator=locator, width=10, height=10)
