@@ -500,8 +500,6 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
     [
         "zeros with unmatched gt and unmatched inf",
         "zeros with two matchings",
-        "zeros, but one match for label a",
-        "zeros, but one match for label b",
         "zeros, but b is confused with a",
         "zeros, but a is confused with b",
     ],
@@ -513,6 +511,7 @@ def test__none__curve__plot(
     from kolena._experimental.object_detection.utils import compute_pr_plot
     from kolena._experimental.object_detection.utils import compute_pr_curve
 
+    print(test_name)
     f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr_curve: Curve = compute_pr_curve(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
@@ -522,9 +521,55 @@ def test__none__curve__plot(
 
 
 @pytest.mark.metrics
+def test__none__curve__plot__only__confusion() -> None:
+    from kolena._experimental.object_detection.utils import compute_f1_plot
+    from kolena._experimental.object_detection.utils import compute_pr_plot
+    from kolena._experimental.object_detection.utils import compute_pr_curve
+
+    test_name = "only confusion"
+    f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    pr_curve: Curve = compute_pr_curve(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+    assert f1 == CurvePlot(
+        title="F1-Score vs. Confidence Threshold",
+        x_label="Confidence Threshold",
+        y_label="F1-Score",
+        curves=[Curve(x=[0.7, 0.8], y=[0.0, 0.0], label="only confusion")],
+        x_config=None,
+        y_config=None,
+    )
+    assert pr is None
+    assert pr_curve is None
+
+
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, f1_curve, pr_curve",
     [
+        (
+            "zeros, but one match for label a",
+            None,
+            CurvePlot(
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[Curve(x=[0.3333333333333333, 0.0], y=[1.0, 1.0], label="zeros, but one match for label a")],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "zeros, but one match for label b",
+            None,
+            CurvePlot(
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[Curve(x=[0.3333333333333333, 0.0], y=[1.0, 1.0], label="zeros, but one match for label b")],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
         (
             "no confusion, one TP per label",
             CurvePlot(
@@ -539,26 +584,7 @@ def test__none__curve__plot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0.25], y=[1.0, 1.0], label="no confusion, one TP per label")],
-                x_config=None,
-                y_config=None,
-            ),
-        ),
-        (
-            "only confusion",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[Curve(x=[0.7, 0.8], y=[0.0, 0.0], label="only confusion")],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[Curve(x=[0.0, 0.0], y=[0.0, 0.0], label="only confusion")],
+                curves=[Curve(x=[0.5, 0.25, 0.0], y=[1.0, 1.0, 1.0], label="no confusion, one TP per label")],
                 x_config=None,
                 y_config=None,
             ),
@@ -581,8 +607,8 @@ def test__none__curve__plot(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
-                        y=[0.3333333333333333, 0.5, 1.0],
+                        x=[0.3333333333333333, 0.0],
+                        y=[0.3333333333333333, 0.3333333333333333],
                         label="only confusion, one TP for a",
                     ),
                 ],
@@ -608,8 +634,8 @@ def test__none__curve__plot(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[0.3333333333333333, 0.3333333333333333, 0.3333333333333333],
-                        y=[0.3333333333333333, 0.5, 1.0],
+                        x=[0.3333333333333333, 0.0],
+                        y=[0.3333333333333333, 0.3333333333333333],
                         label="only confusion, one TP for b",
                     ),
                 ],
@@ -633,7 +659,7 @@ def test__none__curve__plot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0.5, 0.5, 0.25], y=[0.5, 0.6666666666666666, 1.0, 1.0], label="ones")],
+                curves=[Curve(x=[0.5, 0.25, 0.0], y=[0.5, 1.0, 1.0], label="ones")],
                 x_config=None,
                 y_config=None,
             ),
@@ -658,13 +684,7 @@ def test__none__curve__plot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(
-                        x=[0.5, 0.5, 0.5, 0.25],
-                        y=[0.5, 0.6666666666666666, 1.0, 1.0],
-                        label="ones, with two matchings, TPs",
-                    ),
-                ],
+                curves=[Curve(x=[0.5, 0.25, 0.0], y=[0.5, 1.0, 1.0], label="ones, with two matchings, TPs")],
                 x_config=None,
                 y_config=None,
             ),
@@ -689,13 +709,7 @@ def test__none__curve__plot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(
-                        x=[0.5, 0.5, 0.25, 0.25],
-                        y=[0.5, 0.6666666666666666, 0.5, 1.0],
-                        label="ones, with two matchings, mixed",
-                    ),
-                ],
+                curves=[Curve(x=[0.5, 0.25, 0.0], y=[0.5, 0.5, 0.5], label="ones, with two matchings, mixed")],
                 x_config=None,
                 y_config=None,
             ),
@@ -722,8 +736,8 @@ def test__none__curve__plot(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[0.6666666666666666, 0.6666666666666666, 0.3333333333333333],
-                        y=[0.6666666666666666, 0.8, 1.0],
+                        x=[0.6666666666666666, 0.3333333333333333, 0.0],
+                        y=[0.6666666666666666, 1.0, 1.0],
                         label="two single class matchings",
                     ),
                 ],
@@ -753,8 +767,8 @@ def test__none__curve__plot(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[0.6666666666666666, 0.6666666666666666, 0.5, 0.3333333333333333, 0.16666666666666666],
-                        y=[0.6666666666666666, 0.8, 0.75, 1.0, 1.0],
+                        x=[0.6666666666666666, 0.5, 0.3333333333333333, 0.16666666666666666, 0.0],
+                        y=[0.6666666666666666, 0.75, 1.0, 1.0, 1.0],
                         label="two single class matchings as IMs",
                     ),
                 ],
@@ -808,28 +822,13 @@ def test__none__curve__plot(
                     Curve(
                         x=[
                             0.5555555555555556,
-                            0.5555555555555556,
                             0.4444444444444444,
-                            0.4444444444444444,
-                            0.3333333333333333,
                             0.3333333333333333,
                             0.2222222222222222,
                             0.1111111111111111,
-                            0.1111111111111111,
                             0.0,
                         ],
-                        y=[
-                            0.45454545454545453,
-                            0.5,
-                            0.4444444444444444,
-                            0.5,
-                            0.42857142857142855,
-                            0.6,
-                            0.5,
-                            0.3333333333333333,
-                            0.5,
-                            0.0,
-                        ],
+                        y=[0.45454545454545453, 0.4444444444444444, 0.42857142857142855, 0.5, 0.3333333333333333, 0.0],
                         label="large",
                     ),
                 ],
@@ -883,32 +882,8 @@ def test__none__curve__plot(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[
-                            1.0,
-                            0.88,
-                            0.8,
-                            0.72,
-                            0.6,
-                            0.56,
-                            0.52,
-                            0.44,
-                            0.36,
-                            0.24,
-                            0.12,
-                        ],
-                        y=[
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                            1.0,
-                        ],
+                        x=[1.0, 0.88, 0.8, 0.72, 0.6, 0.56, 0.52, 0.44, 0.36, 0.24, 0.12, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                         label="only tps",
                     ),
                 ],
@@ -974,6 +949,7 @@ def test__none__curve__plot(
                             0.2571428571428571,
                             0.17142857142857143,
                             0.08571428571428572,
+                            0.0,
                         ],
                         y=[
                             0.6410256410256411,
@@ -985,6 +961,7 @@ def test__none__curve__plot(
                             0.6842105263157895,
                             0.6470588235294118,
                             0.6428571428571429,
+                            1.0,
                             1.0,
                             1.0,
                         ],
@@ -1020,7 +997,14 @@ def test__curve__plots(
         (
             "no confusion, one TP per label",
             None,
-            None,
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="a"), Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="b")],
+                x_config=None,
+                y_config=None,
+            ),
         ),
         (
             "only confusion",
@@ -1043,9 +1027,7 @@ def test__curve__plots(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
-                ],
+                curves=[Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="a")],
                 x_config=None,
                 y_config=None,
             ),
@@ -1066,9 +1048,7 @@ def test__curve__plots(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="b"),
-                ],
+                curves=[Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="b")],
                 x_config=None,
                 y_config=None,
             ),
@@ -1090,10 +1070,7 @@ def test__curve__plots(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="b"),
-                ],
+                curves=[Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="a"), Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="b")],
                 x_config=None,
                 y_config=None,
             ),
@@ -1115,10 +1092,7 @@ def test__curve__plots(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="b"),
-                ],
+                curves=[Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="a"), Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="b")],
                 x_config=None,
                 y_config=None,
             ),
@@ -1140,10 +1114,7 @@ def test__curve__plots(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(x=[0.5, 0.5], y=[0.5, 1.0], label="a"),
-                    Curve(x=[0.5, 0.0], y=[0.5, 0.0], label="b"),
-                ],
+                curves=[Curve(x=[0.5, 0.0], y=[0.5, 0.5], label="a"), Curve(x=[0.5, 0.0], y=[0.5, 0.0], label="b")],
                 x_config=None,
                 y_config=None,
             ),
@@ -1166,12 +1137,8 @@ def test__curve__plots(
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[0.6666666666666666, 0.3333333333333333], y=[0.6666666666666666, 1.0], label="a"),
-                    Curve(
-                        x=[0.6666666666666666, 0.6666666666666666, 0.3333333333333333],
-                        y=[0.6666666666666666, 1.0, 1.0],
-                        label="b",
-                    ),
+                    Curve(x=[0.6666666666666666, 0.3333333333333333, 0.0], y=[0.6666666666666666, 1.0, 1.0], label="a"),
+                    Curve(x=[0.6666666666666666, 0.3333333333333333, 0.0], y=[0.6666666666666666, 1.0, 1.0], label="b"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1202,17 +1169,10 @@ def test__curve__plots(
                 curves=[
                     Curve(x=[1.0, 0.0], y=[0.5, 0.0], label="cat"),
                     Curve(
-                        x=[
-                            0.5714285714285714,
-                            0.42857142857142855,
-                            0.42857142857142855,
-                            0.2857142857142857,
-                            0.14285714285714285,
-                        ],
+                        x=[0.5714285714285714, 0.42857142857142855, 0.2857142857142857, 0.14285714285714285, 0.0],
                         y=[0.8, 0.75, 1.0, 1.0, 1.0],
                         label="cow",
                     ),
-                    Curve(x=[0.0, 0.0, 0.0, 0.0], y=[0.0, 0.0, 0.0, 0.0], label="dog"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1268,18 +1228,27 @@ def test__curve__plots(
                             0.42857142857142855,
                             0.2857142857142857,
                             0.14285714285714285,
+                            0.0,
                         ],
-                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                         label="a",
                     ),
                     Curve(
-                        x=[1.0, 0.8333333333333334, 0.6666666666666666, 0.5, 0.3333333333333333, 0.16666666666666666],
-                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        x=[
+                            1.0,
+                            0.8333333333333334,
+                            0.6666666666666666,
+                            0.5,
+                            0.3333333333333333,
+                            0.16666666666666666,
+                            0.0,
+                        ],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                         label="b",
                     ),
-                    Curve(x=[1.0, 0.75, 0.5, 0.25], y=[1.0, 1.0, 1.0, 1.0], label="c"),
-                    Curve(x=[1.0, 0.8, 0.6, 0.4, 0.2], y=[1.0, 1.0, 1.0, 1.0, 1.0], label="d"),
-                    Curve(x=[1.0, 0.6666666666666666, 0.3333333333333333], y=[1.0, 1.0, 1.0], label="e"),
+                    Curve(x=[1.0, 0.75, 0.5, 0.25, 0.0], y=[1.0, 1.0, 1.0, 1.0, 1.0], label="c"),
+                    Curve(x=[1.0, 0.8, 0.6, 0.4, 0.2, 0.0], y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0], label="d"),
+                    Curve(x=[1.0, 0.6666666666666666, 0.3333333333333333, 0.0], y=[1.0, 1.0, 1.0, 1.0], label="e"),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1354,13 +1323,14 @@ def test__curve__plots(
                             0.3333333333333333,
                             0.2222222222222222,
                             0.1111111111111111,
+                            0.0,
                         ],
-                        y=[0.6363636363636364, 0.6, 0.5555555555555556, 0.5, 0.42857142857142855, 1.0, 1.0],
+                        y=[0.6363636363636364, 0.6, 0.5555555555555556, 0.5, 0.42857142857142855, 1.0, 1.0, 1.0],
                         label="a",
                     ),
                     Curve(
-                        x=[0.75, 0.75, 0.625, 0.5, 0.375, 0.25, 0.125],
-                        y=[0.5, 0.8571428571428571, 0.8333333333333334, 0.8, 0.75, 0.6666666666666666, 0.5],
+                        x=[0.75, 0.625, 0.5, 0.375, 0.25, 0.125, 0.0],
+                        y=[0.5, 0.8333333333333334, 0.8, 0.75, 0.6666666666666666, 0.5, 0.5],
                         label="b",
                     ),
                     Curve(
@@ -1368,10 +1338,10 @@ def test__curve__plots(
                         y=[0.6666666666666666, 0.6, 0.5, 0.5, 0.0],
                         label="c",
                     ),
-                    Curve(x=[1.0, 1.0, 0.8, 0.6, 0.4, 0.2], y=[0.7142857142857143, 1.0, 1.0, 1.0, 1.0, 1.0], label="d"),
+                    Curve(x=[1.0, 0.8, 0.6, 0.4, 0.2, 0.0], y=[0.7142857142857143, 1.0, 1.0, 1.0, 1.0, 1.0], label="d"),
                     Curve(
-                        x=[0.42857142857142855, 0.2857142857142857, 0.14285714285714285],
-                        y=[1.0, 1.0, 1.0],
+                        x=[0.42857142857142855, 0.2857142857142857, 0.14285714285714285, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0],
                         label="e",
                     ),
                 ],
@@ -1391,6 +1361,8 @@ def test__curve__plots__multiclass(
 
     f1: CurvePlot = compute_f1_plot_multiclass(all_matches=TEST_MATCHING[test_name])
     pr: CurvePlot = compute_pr_plot_multiclass(all_matches=TEST_MATCHING[test_name])
+    print(test_name)
+    print(pr)
     assert f1 == f1_curve
     assert pr == pr_curve
 
