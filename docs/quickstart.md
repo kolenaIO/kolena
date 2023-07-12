@@ -60,7 +60,7 @@ and run directly:
 
   - [Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
 
-    ![Example articles from the CNN-DailyMail dataset.](assets/images/CNN-DailyMail.jpg)
+    ![Example pointcloud and 3d object bounding boxes fro the KITTI dataset.](assets/images/KITTI-pointcloud.jpg)
 
     ---
 
