@@ -67,8 +67,8 @@ def save_prediction(result_path: Path, bboxes: List[Dict[str, Any]]) -> None:
             writer.writerow([bbox["pred"], *bbox["box"], *bbox["box3d"], bbox["score"]])
 
 
-def save_inferences(results: List[Dict[str, Any]], classes: List[str]) -> None:
-    with open(str(args.datadir / "results.json"), "w") as f:
+def save_inferences(result_file: Path, results: List[Dict[str, Any]], classes: List[str]) -> None:
+    with open(str(result_file), "w") as f:
         json.dump(dict(results=results, classes=classes), f, indent=2)
 
 
@@ -93,8 +93,7 @@ def prepare_inferences(args: Namespace) -> None:
         result_file = result_path / f"{label_id}.txt"
         save_prediction(result_file, bboxes)
         results.append(dict(label_id=label_id, bboxes=bboxes))
-
-    save_inferences(results, model.dataset_meta["classes"])
+    save_inferences(args.datadir / args.result_file, results, model.dataset_meta["classes"])
 
 
 def convert_kitti_to_pcd(lidar_file: str, target_file: str) -> None:
@@ -175,8 +174,8 @@ def parse_args() -> Namespace:
 
 
 def main(args: Namespace) -> None:
-    # calibrate_velo_to_cam(args.datadir)
-    # prepare_pcd(args.datadir)
+    calibrate_velo_to_cam(args.datadir)
+    prepare_pcd(args.datadir)
     prepare_inferences(args)
 
 
