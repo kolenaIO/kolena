@@ -38,11 +38,11 @@ $ poetry run python3 object_detection_3d/prepare_test_samples.py data/kitti s3:/
     test_samples_data.json
 ```
 
-The script generated a file containing structured test samples and ground truth. This file will be used in
+The script generates a file containing structured test samples and ground truths. This file will be used in
 [Kolena integration](#kolena-integration) to create a test suite. The script also creates pointcloud files for each raw
 velodyne binary file under `$datadir/velodyne_pcd`. Upload the camera images and pointcloud files to the cloud storage
 location specified in the argument `remote_prefix`, mirroring the directory structure as described in
-[Data preparation](#data-preparation) section, you can view the camera images and visualize pointcloud data in
+[Data preparation](#data-preparation) section, you can then view the images and visualize pointcloud data in
 [Kolena studio](https://app.kolena.io/redirect/studio) after a test suite is created in
 [Kolena Integration](#kolena-integration).
 
