@@ -20,8 +20,9 @@ from typing import Dict
 import pandas as pd
 from constants import DATASET
 from constants import MODEL_METADATA
-from constants import S3_BUCKET
+from constants import S3_BUCKET_COCO
 from constants import S3_MODEL_INFERENCE_PREFIX
+from constants import S3_PREFIX
 from constants import TRANSPORTATION_LABELS
 from constants import WORKFLOW
 
@@ -133,10 +134,10 @@ def main(args: Namespace) -> None:
     df_results = df_results[df_results.label.isin(TRANSPORTATION_LABELS)]
 
     # convert local paths to locators
-    df_results["relative_path"] = df_results["relative_path"].apply(lambda x: f"{S3_BUCKET}coco-2014-val/{x}")
+    df_results["locator"] = df_results["relative_path"].apply(lambda x: f"{S3_PREFIX}{S3_BUCKET_COCO}/{x}")
 
     # group image inferences together
-    metadata_by_image = df_results.groupby("relative_path")
+    metadata_by_image = df_results.groupby("locator")
 
     model_alias = args.model
     model_full_name = MODEL_LIST[model_alias]
