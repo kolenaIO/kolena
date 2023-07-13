@@ -36,7 +36,7 @@ DATASET = "coco-2014-val"
 TEST_SUITE_DESCRIPTION = f"Transportation images from the {DATASET} dataset"
 S3_IMAGE_LOCATION = "s3://kolena-public-datasets/coco-2014-val/imgs/"
 S3_BUCKET = "kolena-public-datasets"
-S3_FILE_PATH = "coco-2014-val/meta/instances_val2014.json"
+S3_ANNOTATION_FILE_PATH = "coco-2014-val/meta/instances_val2014.json"
 TRANSPORTATION_LABELS = {
     "bicycle",
     "car",
@@ -52,7 +52,7 @@ TRANSPORTATION_LABELS = {
 
 def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
     s3 = s3fs.S3FileSystem()
-    with s3.open(f"{S3_BUCKET}/{S3_FILE_PATH}", "r") as file:
+    with s3.open(f"{S3_BUCKET}/{S3_ANNOTATION_FILE_PATH}", "r") as file:
         coco_data = json.load(file)
 
         # gather image IDs with the Attribution 2.0 license - https://creativecommons.org/licenses/by/2.0/
