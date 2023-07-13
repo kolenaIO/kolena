@@ -19,18 +19,18 @@ from PIL import Image
 from kolena.errors import InputValidationError
 
 
-def create_png(image: np.ndarray, mode: str) -> io.BytesIO:
+def encode_png(image: np.ndarray, mode: str) -> io.BytesIO:
     """
-    Creates an in-memory png image that is represented as binary data. It is used when you want to upload a 2 or
-    3-dimensional image in a numpy array format to cloud.
+    Encodes an image into an in-memory PNG file that is represented as binary data. It is used when you want to upload
+    a 2 or 3-dimensional image in a NumPy array format to cloud.
 
     It can be used in conjunction with
     [`colorized_activation_map`][kolena.workflow.visualization.colorize_activation_map] when uploading an
     activation map.
 
-    :param image: A 2D or 3D numpy array, shaped either (h, w), (h, w, 1), (h, w, 3), or (h, w, 4)
+    :param image: A 2D or 3D NumPy array, shaped either `(h, w)`, `(h, w, 1)`, `(h, w, 3)`, or `(h, w, 4)`
     :param mode: A [PIL mode](https://pillow.readthedocs.io/en/stable/handbook/concepts.html#modes)
-    :return: The in-memory png image represented as binary data.
+    :return: The in-memory PNG file represented as binary data.
     """
     if image.size == 0:
         raise InputValidationError("input array is empty")

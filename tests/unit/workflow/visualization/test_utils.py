@@ -18,7 +18,7 @@ import pytest
 from PIL import Image
 
 from kolena.errors import InputValidationError
-from kolena.workflow.visualization import create_png
+from kolena.workflow.visualization import encode_png
 
 
 @pytest.mark.parametrize(
@@ -34,9 +34,9 @@ from kolena.workflow.visualization import create_png
         np.array([[[[1], [2], [3]]]], dtype=np.uint8),
     ],
 )
-def test__create_png__invalid_input(image: np.ndarray) -> None:
+def test__encode_png__invalid_input(image: np.ndarray) -> None:
     with pytest.raises(InputValidationError):
-        create_png(image, mode="RGB")
+        encode_png(image, mode="RGB")
 
 
 def load_test_image(mode: str) -> np.ndarray:
@@ -52,14 +52,14 @@ def load_test_image(mode: str) -> np.ndarray:
         "L",
     ],
 )
-def test__create_png(mode: str) -> None:
+def test__encode_png(mode: str) -> None:
     # testing for a complete run without any errors raised
     image = load_test_image(mode)
-    create_png(image, mode)
+    encode_png(image, mode)
 
 
-def test__create_png__invalid_mode() -> None:
+def test__encode_png__invalid_mode() -> None:
     image = load_test_image("RGB")
 
     with pytest.raises(ValueError):
-        create_png(image, "INVALID")
+        encode_png(image, "INVALID")
