@@ -115,7 +115,7 @@ def seed_test_run(
 
 
 def main(args: Namespace) -> None:
-    # load the inferences csv
+    print("loading csv of inferences...")
     df_results = pd.read_csv(
         model_alias_to_data_path(args.model),
         dtype={
@@ -133,7 +133,7 @@ def main(args: Namespace) -> None:
     df_results = df_results[df_results.label.isin(TRANSPORTATION_LABELS)]
 
     # convert local paths to locators
-    df_results["relative_path"] = df_results["relative_path"].apply(lambda x: f"{S3_BUCKET}/coco-2014-val/{x}")
+    df_results["relative_path"] = df_results["relative_path"].apply(lambda x: f"{S3_BUCKET}coco-2014-val/{x}")
 
     # group image inferences together
     metadata_by_image = df_results.groupby("relative_path")
