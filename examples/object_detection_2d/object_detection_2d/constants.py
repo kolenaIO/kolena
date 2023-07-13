@@ -16,9 +16,12 @@ from typing import Dict
 DATASET = "coco-2014-val"
 WORKFLOW = "Object Detection"
 
-S3_IMAGE_LOCATION = "s3://kolena-public-datasets/coco-2014-val/imgs/"
-S3_BUCKET = "kolena-public-datasets"
-S3_ANNOTATION_FILE_PATH = "coco-2014-val/meta/instances_val2014.json"
+
+S3_ANNOTATION_FILE_PATH = "kolena-public-datasets/coco-2014-val/meta/instances_val2014.json"
+S3_BUCKET = "s3://kolena-public-datasets/"
+S3_IMAGE_LOCATION = f"{S3_BUCKET}coco-2014-val/imgs/"
+S3_MODEL_INFERENCE_PREFIX = f"{S3_BUCKET}coco-2014-val/results/object_detection/coco_models/"
+
 
 TEST_SUITE_DESCRIPTION = f"Transportation images from the {DATASET} dataset"
 TRANSPORTATION_LABELS = {

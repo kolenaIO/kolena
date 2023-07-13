@@ -20,6 +20,8 @@ from typing import Dict
 import pandas as pd
 from constants import DATASET
 from constants import MODEL_METADATA
+from constants import S3_BUCKET
+from constants import S3_MODEL_INFERENCE_PREFIX
 from constants import TRANSPORTATION_LABELS
 from constants import WORKFLOW
 
@@ -34,7 +36,6 @@ from kolena._experimental.object_detection import ThresholdStrategy
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.test_run import test
 
-MODEL_INFERENCE_PREFIX = "s3://kolena-public-datasets/coco-2014-val/results/object_detection/coco_models/"
 
 MODEL_LIST: Dict[str, str] = {
     "yolo_r": f"YOLOR-D6 (modified CSP, {WORKFLOW})",
@@ -52,7 +53,7 @@ TEST_SUITE_NAMES = [
 
 
 def model_alias_to_data_path(alias: str) -> str:
-    return MODEL_INFERENCE_PREFIX + alias + "/coco-2014-val_prediction.csv"
+    return S3_MODEL_INFERENCE_PREFIX + alias + "/coco-2014-val_prediction.csv"
 
 
 # transforms test samples into inferences using a dataframe
@@ -62,9 +63,7 @@ def get_stored_inferences(
     # a function that creates an inference from a test sample
     def infer(sample: TestSample) -> Inference:
         try:
-            image_loc = sample.locator
-            image_name = "imgs/" + image_loc.split("/")[-1]
-            image_inferences = metadata_by_image.get_group(image_name)
+            image_inferences = metadata_by_image.get_group(sample.locator)
             return Inference(
                 bboxes=[
                     ScoredLabeledBoundingBox(
@@ -130,7 +129,13 @@ def main(args: Namespace) -> None:
         },
     )
 
+    # filter for transportation inferences
     df_results = df_results[df_results.label.isin(TRANSPORTATION_LABELS)]
+
+    # convert local paths to locators
+    df_results["relative_path"] = df_results["relative_path"].apply(lambda x: f"{S3_BUCKET}/coco-2014-val/{x}")
+
+    # group image inferences together
     metadata_by_image = df_results.groupby("relative_path")
 
     model_alias = args.model

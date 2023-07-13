@@ -25,7 +25,6 @@ import pandas as pd
 import s3fs
 from constants import DATASET
 from constants import S3_ANNOTATION_FILE_PATH
-from constants import S3_BUCKET
 from constants import S3_IMAGE_LOCATION
 from constants import TEST_SUITE_DESCRIPTION
 from constants import TRANSPORTATION_LABELS
@@ -40,7 +39,7 @@ from kolena.workflow.annotation import LabeledBoundingBox
 
 def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
     s3 = s3fs.S3FileSystem()
-    with s3.open(f"{S3_BUCKET}/{S3_ANNOTATION_FILE_PATH}", "r") as file:
+    with s3.open(S3_ANNOTATION_FILE_PATH, "r") as file:
         coco_data = json.load(file)
 
         # gather image IDs with the Attribution 2.0 license - https://creativecommons.org/licenses/by/2.0/
