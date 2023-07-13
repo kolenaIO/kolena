@@ -57,6 +57,14 @@ and run directly:
 
     Text Summarization using [OpenAI GPT-family models](https://platform.openai.com/docs/guides/gpt) and the
     [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
+
+  - [Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
+
+    ![Example pointcloud and 3d object bounding boxes from the KITTI dataset.](assets/images/KITTI-pointcloud.png)
+
+    ---
+
+    3D Object Detection using the [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset
 </div>
 
 To get started, clone the `kolena` repository:
