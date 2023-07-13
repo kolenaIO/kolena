@@ -152,6 +152,3 @@ if __name__ == "__main__":
     ap.add_argument("--test_suite", type=str, default="none", help="Name of the test suite to run.")
 
     main(ap.parse_args())
-
-
-# poetry run python3 object_detection_2d/seed_test_run.py --model "yolo_x"
