@@ -14,9 +14,11 @@
 from ._activation_map import colorize_activation_map
 from ._activation_map import Colormap
 from ._activation_map import ColormapJet
+from ._utils import encode_png
 
 __all__ = [
     "Colormap",
     "ColormapJet",
     "colorize_activation_map",
+    "encode_png",
 ]
