@@ -1,7 +1,7 @@
 # Example Integration: 2D Object Detection
 
 This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test 2D
-object detection problems on Kolena.
+object detection problems on Kolena. Only images with the [Attribution 2.0]()
 
 ## Setup
 
@@ -26,4 +26,24 @@ This project defines two scripts that perform the following operations:
     - `coco-2014-val :: transportation brightness [Object Detection]`, stratified by `light`, `normal`, and `dark`
         brightness
 
-2. [`seed_test_run.py`](object_detection_2d/seed_test_run.py) tests models. #TODO
+2. [`seed_test_run.py`](object_detection_2d/seed_test_run.py) tests the following models on the above test suites:
+  `yolo_r`, `yolo_x`, `mask_cnn`, `faster_rcnn`, `yolo_v4s`, and `yolo_v3`. Information about these models can be
+  found in [`constants.py`](object_detection_2d/constants.py).
+
+Command line arguments are defined within each script to specify what model to use and what test suite to
+  seed/evaluate. Run a script using the `--help` flag for more information:
+
+```shell
+$ poetry run python3 object_detection_2d/seed_test_run.py --help
+usage: seed_test_run.py [-h] [--test_suite TEST_SUITE] [--model MODEL] {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,
+  yolo_v3}
+
+positional arguments:
+  {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
+                        The alias of the model to test.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --test-suite TEST_SUITE
+                        Optionally specify a test suite to test. Test against all available test suites when unspecified.
+```
