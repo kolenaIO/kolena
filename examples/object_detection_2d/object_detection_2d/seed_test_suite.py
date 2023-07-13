@@ -23,6 +23,12 @@ from typing import Tuple
 
 import pandas as pd
 import s3fs
+from constants import DATASET
+from constants import S3_ANNOTATION_FILE_PATH
+from constants import S3_BUCKET
+from constants import S3_IMAGE_LOCATION
+from constants import TEST_SUITE_DESCRIPTION
+from constants import TRANSPORTATION_LABELS
 
 import kolena
 from kolena._experimental.object_detection import GroundTruth
@@ -30,24 +36,6 @@ from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
-
-
-DATASET = "coco-2014-val"
-TEST_SUITE_DESCRIPTION = f"Transportation images from the {DATASET} dataset"
-S3_IMAGE_LOCATION = "s3://kolena-public-datasets/coco-2014-val/imgs/"
-S3_BUCKET = "kolena-public-datasets"
-S3_ANNOTATION_FILE_PATH = "coco-2014-val/meta/instances_val2014.json"
-TRANSPORTATION_LABELS = {
-    "bicycle",
-    "car",
-    "motorcycle",
-    "bus",
-    "train",
-    "truck",
-    "traffic light",
-    "fire hydrant",
-    "stop sign",
-}
 
 
 def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:

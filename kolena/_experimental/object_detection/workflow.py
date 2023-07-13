@@ -174,8 +174,8 @@ class ThresholdStrategy(str, Enum):
 class ThresholdConfiguration(EvaluatorConfiguration):
     threshold_strategy: ThresholdStrategy
     iou_threshold: float
-    min_confidence_score: float
     with_class_level_metrics: bool
+    min_confidence_score: Optional[float] = dataclasses.field(default=0.0)
 
     def display_name(self) -> str:
         return (
