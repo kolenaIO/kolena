@@ -331,7 +331,6 @@ workflows:
   example-evaluator:
     when:
       condition:
-        # equal: [ "trunk", << pipeline.git.branch >> ]
-        not: false
+        equal: [ "trunk", << pipeline.git.branch >> ]
     jobs:
       - example-evaluator
