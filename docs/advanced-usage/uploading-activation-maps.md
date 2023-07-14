@@ -30,7 +30,7 @@ In this tutorial, we’ll learn how to upload activation maps on Kolena.
 Uploading activation maps to Kolena can be done in three simple steps:
 
 - [**Step 1**](#step-1-creating-png-bitmaps): creating PNG bitmaps from 2D array activation maps
-- [**Step 2**](#step-2-uploading-png-bitmaps-to-cloud): uploading in-memory PNG bitmaps to a cloud storage
+- [**Step 2**](#step-2-uploading-png-bitmaps-to-cloud-storage): uploading in-memory PNG bitmaps to a cloud storage
 - [**Step 3**](#step-3-updating-inference-and-running-tests): updating inferences and running tests
 
 Let's take a look at each step with example code snippets.
@@ -60,7 +60,7 @@ def create_bitmap(activation_map: np.ndarray) -> io.BytesIO:
     scaled-down dimensions with the fixed ratio. Kolena automatically scales the overlay annotations to the images so
     there is no need to up-scale the map to match the image dimensions.
 
-### Step 2: Uploading PNG Bitmaps to Cloud
+### Step 2: Uploading PNG Bitmaps to Cloud Storage
 
 In order to visualize the bitmaps on Kolena, these bitmaps must be uploaded to a cloud storage first, and their locators
 are used to create [`BitmapMask`][kolena.workflow.annotation.BitmapMask]s. In this tutorial, we will learn how to upload
@@ -102,7 +102,7 @@ def create_and_upload_bitmap(
     return BitmapMask(locator)
 ```
 
-### Step 3: Updating `Inference` and Running tests
+### Step 3: Updating `Inference` and Running Tests
 
 !!! info inline end
     If you are not familiar with the workflow concept, please read the
