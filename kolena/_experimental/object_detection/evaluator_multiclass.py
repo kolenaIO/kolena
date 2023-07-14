@@ -15,7 +15,6 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -82,17 +81,12 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         inference: Inference,
         configuration: ThresholdConfiguration,
         test_case_name: str,
-        labels: Set[str],  # the labels being tested in this test case
     ) -> TestSampleMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
         bbox_matches: MulticlassInferenceMatches = match_inferences_multiclass(
             ground_truth.bboxes,
-            [
-                inf
-                for inf in inference.bboxes
-                if inf.label in labels and inf.score >= configuration.min_confidence_score
-            ],
+            [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
             ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
@@ -168,11 +162,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
-        return [
-            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name, labels))
-            for ts, gt, inf in inferences
-        ]
+        return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
     def compute_aggregate_label_metrics(
         self,
