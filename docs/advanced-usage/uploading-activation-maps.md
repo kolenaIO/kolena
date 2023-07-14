@@ -41,17 +41,17 @@ The activation map is a 2D data array ranging from 0 to 1 with `(h, w)` shape. T
 using the following two utility methods:
 
 - [`colorize_activation_map`][kolena.workflow.visualization.colorize_activation_map]: applies color and opacity to the input activation map
-- [`create_png`][kolena.workflow.visualization.create_png]: creates an in-memory PNG image represented as binary data
+- [`encode_png`][kolena.workflow.visualization.encode_png]: encodes the colorized map into an in-memory PNG image represented as binary data
 
 ```python
 import io
 import numpy as np
 from kolena.workflow.visualization import colorize_activation_map
-from kolena.workflow.visualization import create_png
+from kolena.workflow.visualization import encode_png
 
 def create_bitmap(activation_map: np.ndarray) -> io.BytesIO:
     bitmap = colorize_activation_map(activation_map)
-    image_buffer = create_png(bitmap, mode="RGBA")
+    image_buffer = encode_png(bitmap, mode="RGBA")
     return image_buffer
 ```
 
