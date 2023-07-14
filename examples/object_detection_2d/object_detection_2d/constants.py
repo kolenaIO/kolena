@@ -19,7 +19,7 @@ WORKFLOW = "Object Detection"
 
 S3_PREFIX = "s3://"
 S3_BUCKET_COCO = "kolena-public-datasets/coco-2014-val"
-S3_ANNOTATION_FILE_PATH = f"{S3_BUCKET_COCO}/meta/instances_val2014.json"
+S3_ANNOTATION_FILE_PATH = f"{S3_BUCKET_COCO}/meta/instances_val2014_attribution_2.0_transportation.json"
 S3_IMAGE_LOCATION = f"{S3_PREFIX}{S3_BUCKET_COCO}/imgs/"
 S3_MODEL_INFERENCE_PREFIX = f"{S3_PREFIX}{S3_BUCKET_COCO}/results/object_detection/coco_models/"
 

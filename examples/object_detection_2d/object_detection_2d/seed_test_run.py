@@ -20,9 +20,7 @@ from typing import Dict
 import pandas as pd
 from constants import DATASET
 from constants import MODEL_METADATA
-from constants import S3_BUCKET_COCO
 from constants import S3_MODEL_INFERENCE_PREFIX
-from constants import S3_PREFIX
 from constants import TRANSPORTATION_LABELS
 from constants import WORKFLOW
 
@@ -54,7 +52,7 @@ TEST_SUITE_NAMES = [
 
 
 def model_alias_to_data_path(alias: str) -> str:
-    return S3_MODEL_INFERENCE_PREFIX + alias + "/coco-2014-val_prediction.csv"
+    return S3_MODEL_INFERENCE_PREFIX + alias + "/coco-2014-val_prediction_attribution_2.0_transportation.csv"
 
 
 # transforms test samples into inferences using a dataframe
@@ -116,25 +114,27 @@ def seed_test_run(
 
 
 def main(args: Namespace) -> None:
-    print("loading csv of inferences...")
-    df_results = pd.read_csv(
-        model_alias_to_data_path(args.model),
-        dtype={
-            "relative_path": object,
-            "label": object,
-            "confidence_score": object,
-            "min_x": object,
-            "min_y": object,
-            "max_x": object,
-            "max_y": object,
-        },
-    )
+    print("loading csv of inferences from S3...")
+
+    try:
+        df_results = pd.read_csv(
+            model_alias_to_data_path(args.model),
+            dtype={
+                "locator": object,
+                "label": object,
+                "confidence_score": object,
+                "min_x": object,
+                "min_y": object,
+                "max_x": object,
+                "max_y": object,
+            },
+        )
+    except OSError as e:
+        print(e, "\nPlease ensure you have set up AWS credentials.")
+        exit()
 
     # filter for transportation inferences
     df_results = df_results[df_results.label.isin(TRANSPORTATION_LABELS)]
-
-    # convert local paths to locators
-    df_results["locator"] = df_results["relative_path"].apply(lambda x: f"{S3_PREFIX}{S3_BUCKET_COCO}/{x}")
 
     # group image inferences together
     metadata_by_image = df_results.groupby("locator")

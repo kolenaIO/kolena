@@ -39,32 +39,38 @@ from kolena.workflow.annotation import LabeledBoundingBox
 
 def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
     s3 = s3fs.S3FileSystem()
-    with s3.open(S3_ANNOTATION_FILE_PATH, "r") as file:
-        coco_data = json.load(file)
 
-        # gather image IDs with the Attribution 2.0 license - https://creativecommons.org/licenses/by/2.0/
-        ids = {int(entry["id"]) for entry in coco_data["images"] if entry["license"] == 3}
+    try:
+        with s3.open(S3_ANNOTATION_FILE_PATH, "r") as file:
+            coco_data = json.load(file)
+    except OSError as e:
+        print(e, "\nPlease ensure you have set up AWS credentials.")
+        exit()
 
-        # class id to string label
-        label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
+    # gather image IDs with the Attribution 2.0 license - https://creativecommons.org/licenses/by/2.0/
+    ids = {int(entry["id"]) for entry in coco_data["images"] if entry["license"] == 3}
 
-        # cache bounding boxes per image
-        image_to_boxes: Dict[int, List[LabeledBoundingBox]] = defaultdict(lambda: [])
-        for annotation in coco_data["annotations"]:
-            image_id = annotation["image_id"]
-            label = label_map[annotation["category_id"]]
+    # class id to string label
+    label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
 
-            # check that the box is in a valid image, not a crowd box, and in the transportation supercategory
-            if image_id in ids and not annotation["iscrowd"] and label in TRANSPORTATION_LABELS:
-                bbox = annotation["bbox"]
-                top_left = (bbox[0], bbox[1])
-                bottom_right = (bbox[0] + bbox[2], bbox[1] + bbox[3])
-                bounding_box = LabeledBoundingBox(top_left, bottom_right, label)
-                image_to_boxes["COCO_val2014_" + str(image_id).zfill(12) + ".jpg"].append(bounding_box)
-        return image_to_boxes
+    # cache bounding boxes per image
+    image_to_boxes: Dict[int, List[LabeledBoundingBox]] = defaultdict(lambda: [])
+    for annotation in coco_data["annotations"]:
+        image_id = annotation["image_id"]
+        label = label_map[annotation["category_id"]]
+
+        # check that the box is in a valid image, not a crowd box, and in the transportation supercategory
+        if image_id in ids and not annotation["iscrowd"] and label in TRANSPORTATION_LABELS:
+            bbox = annotation["bbox"]
+            top_left = (bbox[0], bbox[1])
+            bottom_right = (bbox[0] + bbox[2], bbox[1] + bbox[3])
+            bounding_box = LabeledBoundingBox(top_left, bottom_right, label)
+            image_to_boxes["COCO_val2014_" + str(image_id).zfill(12) + ".jpg"].append(bounding_box)
+    return image_to_boxes
 
 
 def create_complete_transportation_case(args: Namespace) -> TestCase:
+    print("loading S3 files...")
     image_to_boxes = load_transportation_data()
     data = pd.read_csv(args.metadata)
 
@@ -125,8 +131,7 @@ def seed_test_suite_by_brightness(test_suite_name: str, complete_test_case: Test
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
-
-    print(f"created test suite {test_suite.name} v{test_suite.version}")
+    print(f"created test suite '{test_suite.name}' v{test_suite.version}")
 
 
 def main(args: Namespace) -> None:
