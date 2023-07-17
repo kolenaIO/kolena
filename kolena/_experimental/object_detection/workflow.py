@@ -114,6 +114,7 @@ class TestSampleMetrics(MetricsTestSample):
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
     thresholds: List[ScoredClassificationLabel]
+    inference_labels: List[str]
 
 
 @dataclass(frozen=True)

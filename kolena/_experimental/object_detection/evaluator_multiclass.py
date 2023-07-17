@@ -124,6 +124,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
             thresholds=fields,
+            inference_labels=sorted({inf.label for inf in inference.bboxes}),
         )
 
     def compute_and_cache_f1_optimal_thresholds(
