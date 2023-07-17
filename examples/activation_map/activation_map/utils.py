@@ -61,5 +61,5 @@ def create_and_upload_bitmap(
     return BitmapMask(bitmap_locator)
 
 
-def bitmap_locator(upload_s3_bucket: str, upload_path: str, filename: str) -> str:
-    return os.path.join("s3://", upload_s3_bucket, upload_path, f"{filename}.png")
+def bitmap_locator(bucket: str, path: str, filename: str) -> str:
+    return os.path.join("s3://", bucket, path, f"{filename}.png")

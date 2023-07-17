@@ -23,7 +23,7 @@ from kolena.workflow import MetricsTestSample
 from kolena.workflow import TestCases
 
 
-def evaluate(
+def evaluate_dummy(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
