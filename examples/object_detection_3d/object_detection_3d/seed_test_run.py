@@ -105,10 +105,5 @@ if __name__ == "__main__":
     ap.add_argument("model", help="Model name.")
     ap.add_argument("model_results_file", help="Name of model results file.")
     ap.add_argument("--test-suite", help="Name of test suite to test.", default=DEFAULT_TEST_SUITE_NAME)
-    ap.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Run through inference and metrics computation, but do not upload results.",
-    )
 
     sys.exit(main(ap.parse_args()))
