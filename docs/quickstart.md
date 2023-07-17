@@ -32,6 +32,7 @@ The [kolenaIO/kolena](https://github.com/kolenaIO/kolena) repository contains a 
 and run directly:
 
 <div class="grid cards" markdown>
+
 - [Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
 
     ![Example images from the Labeled Faces in the Wild dataset.](assets/images/LFW.jpg)
@@ -58,9 +59,17 @@ and run directly:
     Text Summarization using [OpenAI GPT-family models](https://platform.openai.com/docs/guides/gpt) and the
     [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
 
-  - [Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
+- [Example: 2D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
 
-    ![Example pointcloud and 3d object bounding boxes from the KITTI dataset.](assets/images/KITTI-pointcloud.png)
+    ![Example 2D bounding boxes from the COCO dataset.](assets/images/COCO-transportation.jpeg)
+
+    ---
+
+    2D Object Detection using the [COCO](https://cocodataset.org/#overview) dataset
+
+- [Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
+
+    ![Example pointcloud and 3D object bounding boxes from the KITTI dataset.](assets/images/KITTI-pointcloud.png)
 
     ---
 
