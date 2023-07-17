@@ -57,7 +57,9 @@ class TestSample(Image):
 
 @dataclass(frozen=True)
 class AnnotatedBoundingBox(LabeledBoundingBox):
-    difficulty: str
+    is_easy: bool
+    is_moderate: bool
+    is_hard: bool
 
 
 @dataclass(frozen=True)
@@ -86,7 +88,9 @@ class AnnotatedBoundingBox3D(LabeledBoundingBox3D):
     truncated: float
     occluded: int
     alpha: float
-    difficulty: str
+    is_easy: bool
+    is_moderate: bool
+    is_hard: bool
 
 
 @dataclass(frozen=True)

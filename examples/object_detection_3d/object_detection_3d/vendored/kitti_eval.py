@@ -201,6 +201,10 @@ def compute_statistics_jit(
                 ignored_threshold[i] = True
     NO_DETECTION = -10000000
     tp, fp, fn, similarity = 0, 0, 0, 0
+    # MODIFIED by Kolena: track tp/fp/fn
+    tps = np.zeros((det_size,))
+    fps = np.zeros((det_size,))
+    fns = np.zeros((gt_size,))
     # thresholds = [0.0]
     # delta = [0.0]
     thresholds = np.zeros((gt_size,))
@@ -244,10 +248,12 @@ def compute_statistics_jit(
 
         if valid_detection == NO_DETECTION and ignored_gt[i] == 0:
             fn += 1
+            fns[i] = 1
         elif valid_detection != NO_DETECTION and (ignored_gt[i] == 1 or ignored_det[det_idx] == 1):
             assigned_detection[det_idx] = True
         elif valid_detection != NO_DETECTION:
             tp += 1
+            tps[det_idx] = 1
             # thresholds.append(dt_scores[det_idx])
             thresholds[thresh_idx] = dt_scores[det_idx]
             thresh_idx += 1
@@ -261,6 +267,7 @@ def compute_statistics_jit(
         for i in range(det_size):
             if not (assigned_detection[i] or ignored_det[i] == -1 or ignored_det[i] == 1 or ignored_threshold[i]):
                 fp += 1
+                fps[i] = 1
         nstuff = 0
         if metric == 0:
             overlaps_dt_dc = image_box_overlap(dt_bboxes, dc_bboxes, 0)
@@ -275,6 +282,7 @@ def compute_statistics_jit(
                     if overlaps_dt_dc[j, i] > min_overlap:
                         assigned_detection[j] = True
                         nstuff += 1
+                        fps[j] = 0
         fp -= nstuff
         if compute_aos:
             tmp = np.zeros((fp + delta_idx,))
@@ -288,7 +296,11 @@ def compute_statistics_jit(
                 similarity = np.sum(tmp)
             else:
                 similarity = -1
-    return tp, fp, fn, similarity, thresholds[:thresh_idx]
+
+    assert tps.sum() == tp
+    assert fps.sum() == fp
+    assert fns.sum() == fn
+    return tp, fp, fn, similarity, thresholds[:thresh_idx], tps, fps, fns
 
 
 def get_split_parts(num, num_part):
@@ -329,7 +341,7 @@ def fused_compute_statistics(
             ignored_gt = ignored_gts[gt_num : gt_num + gt_nums[i]]
             ignored_det = ignored_dets[dt_num : dt_num + dt_nums[i]]
             dontcare = dontcares[dc_num : dc_num + dc_nums[i]]
-            tp, fp, fn, similarity, _ = compute_statistics_jit(
+            tp, fp, fn, similarity, _, _, _, _ = compute_statistics_jit(
                 overlap,
                 gt_data,
                 dt_data,
@@ -490,6 +502,7 @@ def eval_class(
     precision = np.zeros([num_class, num_difficulty, num_minoverlap, N_SAMPLE_PTS])
     recall = np.zeros([num_class, num_difficulty, num_minoverlap, N_SAMPLE_PTS])
     aos = np.zeros([num_class, num_difficulty, num_minoverlap, N_SAMPLE_PTS])
+    thrds = np.zeros([num_class, num_difficulty, num_minoverlap, N_SAMPLE_PTS])
     for m, current_class in enumerate(current_classes):
         for idx_l, difficulty in enumerate(difficultys):
             rets = _prepare_data(gt_annos, dt_annos, current_class, difficulty)
@@ -517,7 +530,7 @@ def eval_class(
                         thresh=0.0,
                         compute_fp=False,
                     )
-                    tp, fp, fn, similarity, thresholds = rets
+                    tp, fp, fn, similarity, thresholds, *_ = rets
                     thresholdss += thresholds.tolist()
                 thresholdss = np.array(thresholdss)
                 thresholds = get_thresholds(thresholdss, total_num_valid_gt)
@@ -551,6 +564,7 @@ def eval_class(
                 for i in range(len(thresholds)):
                     recall[m, idx_l, k, i] = pr[i, 0] / (pr[i, 0] + pr[i, 2])
                     precision[m, idx_l, k, i] = pr[i, 0] / (pr[i, 0] + pr[i, 1])
+                    thrds[m, idx_l, k, i] = thresholds[i]
                     if compute_aos:
                         aos[m, idx_l, k, i] = pr[i, 3] / (pr[i, 0] + pr[i, 1])
 
@@ -568,6 +582,7 @@ def eval_class(
         "recall": recall,
         "precision": precision,
         "orientation": aos,
+        "thresholds": thrds,
     }
 
     # clean temp variables

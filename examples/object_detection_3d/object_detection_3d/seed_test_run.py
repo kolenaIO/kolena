@@ -67,7 +67,7 @@ def load_results(path: str) -> Dict[str, Any]:
         return json.load(f)
 
 
-def seed_test_run(test_suite_name: str, model_name: str, results: List[Dict[str, Any]]) -> None:
+def seed_test_run(test_suite_name: str, model_name: str, results: List[Dict[str, Any]], dry_run: bool = False) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
     inference_by_id = {result["label_id"]: result for result in results}
@@ -91,12 +91,12 @@ def seed_test_run(test_suite_name: str, model_name: str, results: List[Dict[str,
     )
     print(f"using evaluator: {evaluator}")
 
-    test(model, test_suite, evaluator, reset=True)
+    results = test(model, test_suite, evaluator, reset=True, dry_run=dry_run)
 
 
 def main(args: Namespace) -> int:
     results = load_results(str(args.model_results_file))
-    seed_test_run(args.test_suite, args.model, results["results"])
+    seed_test_run(args.test_suite, args.model, results["results"], args.dry_run)
     return 0
 
 
@@ -105,5 +105,10 @@ if __name__ == "__main__":
     ap.add_argument("model", help="Model name.")
     ap.add_argument("model_results_file", help="Name of model results file.")
     ap.add_argument("--test-suite", help="Name of test suite to test.", default=DEFAULT_TEST_SUITE_NAME)
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Run through inference and metrics computation, but do not upload results.",
+    )
 
     sys.exit(main(ap.parse_args()))
