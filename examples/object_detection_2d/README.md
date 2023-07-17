@@ -36,8 +36,7 @@ Command line arguments are defined within each script to specify what model to u
 
 ```shell
 $ poetry run python3 object_detection_2d/seed_test_run.py --help
-usage: seed_test_run.py [-h] model {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
-  [--test_suite TEST_SUITE]
+usage: seed_test_run.py [-h] [--test_suite TEST_SUITE] {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
 
 positional arguments:
   {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
