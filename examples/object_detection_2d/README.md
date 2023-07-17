@@ -2,7 +2,7 @@
 
 This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test 2D
 object detection problems on Kolena. Only images with the
-[Attribution 2.0](https://creativecommons.org/licenses/by/2.0/) license.
+[Attribution 2.0](https://creativecommons.org/licenses/by/2.0/) license are included.
 
 ## Setup
 
@@ -15,7 +15,7 @@ poetry update && poetry install
 
 ## Usage
 
-The image data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
+All data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
@@ -36,8 +36,7 @@ Command line arguments are defined within each script to specify what model to u
 
 ```shell
 $ poetry run python3 object_detection_2d/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--model MODEL] {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
-  [--test_suite TEST_SUITE]
+usage: seed_test_run.py [-h] [--test_suite TEST_SUITE] {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
 
 positional arguments:
   {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}

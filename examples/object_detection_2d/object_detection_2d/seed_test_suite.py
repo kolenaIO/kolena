@@ -48,7 +48,7 @@ def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
         exit()
 
     # gather image IDs with the Attribution 2.0 license - https://creativecommons.org/licenses/by/2.0/
-    ids = {int(entry["id"]) for entry in coco_data["images"] if entry["license"] == 3}
+    ids = {int(entry["id"]) for entry in coco_data["images"] if entry["license"] == 4}
 
     # class id to string label
     label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
@@ -106,9 +106,9 @@ def create_complete_transportation_case(args: Namespace) -> TestCase:
 
 def seed_test_suite_by_brightness(test_suite_name: str, complete_test_case: TestCase) -> None:
     stratification_logic_map = {
-        "light": lambda brightness: brightness >= 140,
-        "normal": lambda brightness: 90 <= brightness < 140,
-        "dark": lambda brightness: 0 <= brightness < 90,
+        "light": lambda brightness: brightness >= 130,
+        "normal": lambda brightness: 100 <= brightness < 130,
+        "dark": lambda brightness: 0 <= brightness < 100,
     }
 
     # create each test case by stratification

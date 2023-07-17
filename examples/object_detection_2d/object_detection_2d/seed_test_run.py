@@ -154,7 +154,12 @@ def main(args: Namespace) -> None:
 
 if __name__ == "__main__":
     ap = ArgumentParser()
-    ap.add_argument("--model", type=str, help=f"One of {MODEL_LIST.keys()} models.")
-    ap.add_argument("--test_suite", type=str, default="none", help="Name of the test suite to run.")
+    ap.add_argument("model", choices=MODEL_LIST.keys(), help="The alias of the model to test.")
+    ap.add_argument(
+        "--test-suite",
+        type=str,
+        default="none",
+        help="Optionally specify a test suite to test. Test against all available test suites when unspecified.",
+    )
 
     main(ap.parse_args())

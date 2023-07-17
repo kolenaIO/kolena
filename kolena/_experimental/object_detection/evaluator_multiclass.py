@@ -109,9 +109,13 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             if label in image_labels
         ]
         return TestSampleMetrics(
+            TP_labels=sorted({inf.label for inf in tp}),
             TP=tp,
+            FP_labels=sorted({inf.label for inf in fp}),
             FP=fp,
+            FN_labels=sorted({inf.label for inf in fn}),
             FN=fn,
+            Confused_labels=sorted({inf.label for inf in confused}),
             Confused=confused,
             count_TP=len(tp),
             count_FP=len(fp),
@@ -124,6 +128,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
             thresholds=fields,
+            inference_labels=sorted({inf.label for inf in inference.bboxes}),
         )
 
     def compute_and_cache_f1_optimal_thresholds(
