@@ -96,9 +96,13 @@ class TestCaseMetricsSingleClass(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
+    TP_labels: List[str]
     TP: List[ScoredLabeledBoundingBox]
+    FP_labels: List[str]
     FP: List[ScoredLabeledBoundingBox]
+    FN_labels: List[str]
     FN: List[LabeledBoundingBox]
+    Confused_labels: List[str]
     Confused: List[ScoredLabeledBoundingBox]
 
     count_TP: int
