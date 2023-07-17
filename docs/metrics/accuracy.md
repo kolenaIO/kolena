@@ -9,6 +9,10 @@ making it a good metric for assessing model performance in simple cases with bal
 less meaningful with imbalanced datasets (e.g. far more negative ground truths than positive ground truths) and should be used with
 caution.
 
+<div class="grid cards" markdown>
+- :kolena-manual-16: API Reference: [`accuracy` ↗][kolena.workflow.metrics.accuracy]
+</div>
+
 ## Implementation Details
 
 Accuracy is generally used to evaluate classification models. Aside from classification, accuracy is also often

@@ -13,6 +13,29 @@
 # limitations under the License.
 
 
+def accuracy(true_positives: int, false_positives: int, false_negatives: int, true_negatives: int) -> float:
+    """
+    Accuracy represents the proportion of inferences that are correct (including both positives and negatives).
+
+    $$
+    \\text{Accuracy} = \\frac{\\text{# TP} + \\text{# TN}}
+    {\\text{# TP} + \\text{# FP} + \\text{# FN} + \\text{# TN}}
+    $$
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Accuracy ↗](../../metrics/accuracy.md)
+    </div>
+
+    :param true_positives: Number of true positive inferences.
+    :param false_positives: Number of false positive inferences.
+    :param false_negatives: Number of false negatives.
+    :param true_negatives: Number of true negatives.
+    """
+    numerator = true_positives + true_negatives
+    denominator = true_positives + false_positives + false_negatives + true_negatives
+    return numerator / denominator if denominator > 0 else 0
+
+
 def precision(true_positives: int, false_positives: int) -> float:
     """
     Precision represents the proportion of inferences that are correct.
