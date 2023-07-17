@@ -93,6 +93,8 @@ With all the building blocks we learned from [Step 1](#step-1-creating-png-bitma
 [`BitmapMask`][kolena.workflow.annotation.BitmapMask] with a given activation map.
 
 ```python
+from kolena.workflow.annotation import BitmapMask
+
 def create_and_upload_bitmap(
     filename: str,
     activation_map: np.ndarray,
