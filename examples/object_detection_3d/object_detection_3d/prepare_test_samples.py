@@ -64,31 +64,19 @@ LABEL_FILE_COLUMNS = [
 ]
 
 
-def get_difficulty(truncated: float, occluded: int, height: float):
-    # Easy: Min. bounding box height: 40 Px, Max. occlusion level: Fully visible, Max. truncation: 15 %
-    # Moderate: Min. bounding box height: 25 Px, Max. occlusion level: Partly occluded, Max. truncation: 30 %
-    # Hard: Min. bounding box height: 25 Px, Max. occlusion level: Difficult to see, Max. truncation: 50 %
-
-    if height >= 25 and occluded <= 2 and truncated <= 0.5:
-        return "hard"
-    if height >= 25 and occluded <= 1 and truncated <= 0.30:
-        return "moderate"
-    if height >= 40 and occluded == 0 and truncated <= 0.15:
-        return "easy"
-
-    return "unknown"
+# Easy: Min. bounding box height: 40 Px, Max. occlusion level: Fully visible, Max. truncation: 15 %
+# Moderate: Min. bounding box height: 25 Px, Max. occlusion level: Partly occluded, Max. truncation: 30 %
+# Hard: Min. bounding box height: 25 Px, Max. occlusion level: Difficult to see, Max. truncation: 50 %
+def easy_ignore(label: str, truncated: float, occluded: int, height: float) -> bool:
+    return label.lower() == "dontcare" or height <= 40 or occluded > 0 or truncated > 0.15
 
 
-def is_easy(truncated: float, occluded: int, height: float) -> bool:
-    return not (height <= 40 or occluded > 0 or truncated > 0.15)
+def moderate_ignore(label: str, truncated: float, occluded: int, height: float) -> bool:
+    return label.lower() == "dontcare" or height <= 25 or occluded > 1 or truncated > 0.30
 
 
-def is_moderate(truncated: float, occluded: int, height: float) -> bool:
-    return not (height <= 25 or occluded > 1 or truncated > 0.30)
-
-
-def is_hard(truncated: float, occluded: int, height: float) -> bool:
-    return not (height <= 25 or occluded > 2 or truncated > 0.5)
+def hard_ignore(label: str, truncated: float, occluded: int, height: float) -> bool:
+    return label.lower() == "dontcare" or height <= 25 or occluded > 2 or truncated > 0.5
 
 
 def calibrate_velo_to_cam(label_filepath: str, calibration: Dict[str, np.ndarray]) -> pd.DataFrame:
@@ -128,16 +116,16 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
     counts_by_difficulty: Dict[str, int] = defaultdict(int)
     for row in df.itertuples():
         height = math.fabs(row.bbox_y1 - row.bbox_y0)
-        easy = is_easy(row.truncated, row.occluded, height)
-        moderate = is_moderate(row.truncated, row.occluded, height)
-        hard = is_hard(row.truncated, row.occluded, height)
+        ignore_by_easy = easy_ignore(row.type, row.truncated, row.occluded, height)
+        ignore_by_moderate = moderate_ignore(row.type, row.truncated, row.occluded, height)
+        ignore_by_hard = hard_ignore(row.type, row.truncated, row.occluded, height)
         bbox_2d = AnnotatedBoundingBox(
             label=row.type,
             top_left=(row.bbox_x0, row.bbox_y0),
             bottom_right=(row.bbox_x1, row.bbox_y1),
-            is_easy=easy,
-            is_moderate=moderate,
-            is_hard=hard,
+            ignore_by_easy=ignore_by_easy,
+            ignore_by_moderate=ignore_by_moderate,
+            ignore_by_hard=ignore_by_hard,
         )
         bbox_3d = AnnotatedBoundingBox3D(
             label=row.type,
@@ -147,14 +135,14 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
             truncated=row.truncated,
             occluded=row.occluded,
             alpha=row.alpha,
-            is_easy=easy,
-            is_moderate=moderate,
-            is_hard=hard,
+            ignore_by_easy=ignore_by_easy,
+            ignore_by_moderate=ignore_by_moderate,
+            ignore_by_hard=ignore_by_hard,
         )
         counts_by_label[row.type] += 1
-        counts_by_difficulty["easy"] += int(easy)
-        counts_by_difficulty["moderate"] += int(moderate)
-        counts_by_difficulty["hard"] += int(hard)
+        counts_by_difficulty["easy"] += 1 - int(ignore_by_easy)
+        counts_by_difficulty["moderate"] += 1 - int(ignore_by_moderate)
+        counts_by_difficulty["hard"] += 1 - int(ignore_by_hard)
         bboxes_2d.append(bbox_2d)
         bboxes_3d.append(bbox_3d)
 
@@ -166,7 +154,6 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
         n_easy=counts_by_difficulty["easy"],
         n_moderate=counts_by_difficulty["moderate"],
         n_hard=counts_by_difficulty["hard"],
-        n_unknown=counts_by_difficulty["unknown"],
         bboxes_2d=bboxes_2d,
         bboxes_3d=bboxes_3d,
     )

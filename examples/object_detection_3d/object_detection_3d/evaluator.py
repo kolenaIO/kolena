@@ -157,7 +157,7 @@ class KITTI3DEvaluator(Evaluator):
         class_name_value = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
         difficulty = configuration.difficulty.value
         results = [{} for _ in range(len(inferences))]
-        ignored = {}
+        ignored = [[False] * len(inf.bboxes_2d) for _, _, inf in inferences]
         overlaps, parted_overlaps, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
 
         for current_class in VALID_LABELS:
@@ -179,7 +179,10 @@ class KITTI3DEvaluator(Evaluator):
                 total_dc_num,
                 total_num_valid_gt,
             ) = rets
-            ignored[current_class] = ignored_dets
+            for i, ignored_det in enumerate(ignored_dets):
+                for j, ignore in enumerate(ignored_det):
+                    if ignore == 0:
+                        ignored[i][j] = False
             for i in range(len(gt_annos)):
                 tp, fp, fn, similarity, thresholds, tps, fps, fns = compute_statistics_jit(
                     overlaps[i],
@@ -204,26 +207,14 @@ class KITTI3DEvaluator(Evaluator):
             assert all(x <= 1 for x in TP)
             assert all(x <= 1 for x in FP)
             assert all(x <= 1 for x in FN)
-            FP_2D = [inf.bboxes_2d[i] for i, fp in enumerate(FP) if fp]
-            FP_3D = [inf.bboxes_3d[i] for i, fp in enumerate(FP) if fp]
-            TP_2D = [inf.bboxes_2d[i] for i, fp in enumerate(TP) if fp]
-            TP_3D = [inf.bboxes_3d[i] for i, fp in enumerate(TP) if fp]
-            FN_2D = [gt.bboxes_2d[i] for i, fn in enumerate(FN) if fn]
-            FN_3D = [gt.bboxes_3d[i] for i, fn in enumerate(FN) if fn]
-            ignored_2D = [
-                inf.bboxes_2d[i]
-                for i, (ignored_car, ignored_cyclist, ignored_pedestrian) in enumerate(
-                    zip(ignored["Car"], ignored["Cyclist"], ignored["Pedestrian"]),
-                )
-                if ignored_car == 0 or ignored_cyclist == 0 or ignored_pedestrian == 0
-            ]
-            ignored_3D = [
-                inf.bboxes_3d[i]
-                for i, (ignored_car, ignored_cyclist, ignored_pedestrian) in enumerate(
-                    zip(ignored["Car"], ignored["Cyclist"], ignored["Pedestrian"]),
-                )
-                if ignored_car == 0 or ignored_cyclist == 0 or ignored_pedestrian == 0
-            ]
+            FP_2D = [inf.bboxes_2d[j] for j, fp in enumerate(FP) if fp]
+            FP_3D = [inf.bboxes_3d[j] for j, fp in enumerate(FP) if fp]
+            TP_2D = [inf.bboxes_2d[j] for j, fp in enumerate(TP) if fp]
+            TP_3D = [inf.bboxes_3d[j] for j, fp in enumerate(TP) if fp]
+            FN_2D = [gt.bboxes_2d[j] for j, fn in enumerate(FN) if fn]
+            FN_3D = [gt.bboxes_3d[j] for j, fn in enumerate(FN) if fn]
+            ignored_2D = [inf.bboxes_2d[j] for j, ignore in enumerate(ignored[i]) if ignore]
+            ignored_3D = [inf.bboxes_3d[j] for j, ignore in enumerate(ignored[i]) if ignore]
             sample_metrics.append(
                 (
                     sample,

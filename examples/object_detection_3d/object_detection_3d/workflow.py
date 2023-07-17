@@ -57,9 +57,9 @@ class TestSample(Image):
 
 @dataclass(frozen=True)
 class AnnotatedBoundingBox(LabeledBoundingBox):
-    is_easy: bool
-    is_moderate: bool
-    is_hard: bool
+    ignore_by_easy: bool
+    ignore_by_moderate: bool
+    ignore_by_hard: bool
 
 
 @dataclass(frozen=True)
@@ -88,9 +88,9 @@ class AnnotatedBoundingBox3D(LabeledBoundingBox3D):
     truncated: float
     occluded: int
     alpha: float
-    is_easy: bool
-    is_moderate: bool
-    is_hard: bool
+    ignore_by_easy: bool
+    ignore_by_moderate: bool
+    ignore_by_hard: bool
 
 
 @dataclass(frozen=True)
@@ -102,7 +102,6 @@ class GroundTruth(BaseGroundTruth):
     n_easy: int
     n_moderate: int
     n_hard: int
-    n_unknown: int
     bboxes_2d: List[LabeledBoundingBox]
     bboxes_3d: List[AnnotatedBoundingBox3D]
 
