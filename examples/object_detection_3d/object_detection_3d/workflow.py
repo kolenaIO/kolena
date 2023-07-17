@@ -99,9 +99,9 @@ class GroundTruth(BaseGroundTruth):
     n_pedestrian: int
     n_car: int
     n_cyclist: int
-    n_easy: int
-    n_moderate: int
-    n_hard: int
+    n_ignored_by_easy: int
+    n_ignored_by_moderate: int
+    n_ignored_by_hard: int
     bboxes_2d: List[LabeledBoundingBox]
     bboxes_3d: List[AnnotatedBoundingBox3D]
 

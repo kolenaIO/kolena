@@ -140,9 +140,9 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
             ignore_by_hard=ignore_by_hard,
         )
         counts_by_label[row.type] += 1
-        counts_by_difficulty["easy"] += 1 - int(ignore_by_easy)
-        counts_by_difficulty["moderate"] += 1 - int(ignore_by_moderate)
-        counts_by_difficulty["hard"] += 1 - int(ignore_by_hard)
+        counts_by_difficulty["easy"] += int(ignore_by_easy)
+        counts_by_difficulty["moderate"] += int(ignore_by_moderate)
+        counts_by_difficulty["hard"] += int(ignore_by_hard)
         bboxes_2d.append(bbox_2d)
         bboxes_3d.append(bbox_3d)
 
@@ -151,9 +151,9 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
         n_car=counts_by_label["Car"],
         n_pedestrian=counts_by_label["Pedestrian"],
         n_cyclist=counts_by_label["Cyclist"],
-        n_easy=counts_by_difficulty["easy"],
-        n_moderate=counts_by_difficulty["moderate"],
-        n_hard=counts_by_difficulty["hard"],
+        n_ignored_by_easy=counts_by_difficulty["easy"],
+        n_ignored_by_moderate=counts_by_difficulty["moderate"],
+        n_ignored_by_hard=counts_by_difficulty["hard"],
         bboxes_2d=bboxes_2d,
         bboxes_3d=bboxes_3d,
     )
