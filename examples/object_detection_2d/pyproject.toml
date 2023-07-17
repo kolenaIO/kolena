@@ -1,13 +1,13 @@
 [tool.poetry]
-name = "keypoint_detection"
+name = "object_detection_2d"
 version = "0.1.0"
-description = "Example Kolena integration for keypoint detection"
+description = "Example Kolena integration for 2D object detection"
 authors = ["Kolena Engineering <eng@kolena.io>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-kolena = ">=0.76.0,<1"
+kolena = {extras = ["metrics"], version = ">=0.76.0,<1"}
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
 pandera = ">=0.9.0,<0.16"
