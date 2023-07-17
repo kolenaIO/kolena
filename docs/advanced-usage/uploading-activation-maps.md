@@ -4,12 +4,13 @@ icon: kolena/heatmap-16
 
 # :kolena-heatmap-20: Uploading Activation Maps
 
-As AI models advance and become more complex, humans can no longer understand the reasoning behind the decisions or
-predictions made by the AI. There are many advantages on understanding how our model had predicted a specific output,
-and the process called **Explainable AI** (XAI) can help AI scientists and developers comprehend and trust the model
-results. There are many explanation methods for different types of AI model architecture, and most of the popular
-techniques used in computer vision workflows output a map that highlights regions in an image that are relevant to the
-model output, and this map is called **activation map**.
+As models continue to grow larger and more complex, it is increasingly difficult to understand the reasoning behind
+their decisions or predictions. Understanding why a model produced a specific output is a process called
+**Explainable AI** (XAI) and can help data scientists and engineers comprehend and trust model results.
+
+There are many explanation methods for different model architectures. Most of the popular techniques used in computer
+vision workflows output a map that highlights regions in an image that are relevant to the model output. This map is
+called an **activation map**.
 
 <figure markdown>
   ![activation map](../assets/images/activation-map.png)
@@ -19,18 +20,18 @@ model output, and this map is called **activation map**.
 ## Can I Visualize Activation Maps on Kolena?
 
 Yes! Activation maps can be visualized as an overlay on the corresponding image in
-[:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio) using an
-[`Annotation`][kolena.workflow.annotation.Annotation] type called [`BitmapMask`][kolena.workflow.annotation.BitmapMask]
-which can help us understand the model’s decision — what the model “sees” when it makes its prediction.
+[<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio) using the
+[`BitmapMask`][kolena.workflow.annotation.BitmapMask] annotation type which can help us understand the model’s decision — what
+the model “sees” when it makes its prediction.
 
-In this tutorial, we’ll learn how to upload activation maps on Kolena.
+In this tutorial, we’ll learn how to upload and visualize activation maps as a part of testing models on Kolena.
 
 ## How to Upload Activation Maps on Kolena?
 
 Uploading activation maps to Kolena can be done in three simple steps:
 
 - [**Step 1**](#step-1-creating-png-bitmaps): creating PNG bitmaps from 2D array activation maps
-- [**Step 2**](#step-2-uploading-png-bitmaps-to-cloud-storage): uploading in-memory PNG bitmaps to a cloud storage
+- [**Step 2**](#step-2-uploading-png-bitmaps-to-cloud-storage): uploading PNG bitmaps to cloud storage
 - [**Step 3**](#step-3-updating-inference-and-running-tests): updating inferences and running tests
 
 Let's take a look at each step with example code snippets.
@@ -63,16 +64,16 @@ def create_bitmap(activation_map: np.ndarray) -> io.BytesIO:
 ### Step 2: Uploading PNG Bitmaps to Cloud Storage
 
 In order to visualize the bitmaps on Kolena, these bitmaps must be uploaded to a cloud storage first, and their locators
-are used to create [`BitmapMask`][kolena.workflow.annotation.BitmapMask]s. In this tutorial, we will learn how to upload
-the in-memory bitmaps to a S3 bucket. For any other cloud storage type, please refer to your cloud storage's Python
-API docs.
+are used to create [`BitmapMask`][kolena.workflow.annotation.BitmapMask] annotations. In this section, we will learn
+how to upload the in-memory bitmaps to an S3 bucket. For other cloud storage services, please refer to your cloud
+storage's API docs.
 
 ```python
 import io
 import boto3
 from urllib.parse import urlparse
 
-BUCKET = <YOUR_S3_BUCKET>
+BUCKET = "<YOUR_S3_BUCKET>"
 
 s3 = boto3.client("s3")
 
@@ -131,7 +132,7 @@ class Inference(Inf):
 
 Before you run tests, make sure to update your `infer` function to return an `Inference` with the corresponding
 `BitmapMask` as its `activation_map` field. You are now ready to run tests! Once the tests complete, we can now visit
-[:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio) to visualize activation maps overlaid on your
+[<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio) to visualize activation maps overlaid on your
 [`Image`][kolena.workflow.Image] data.
 
 ## Conclusion
