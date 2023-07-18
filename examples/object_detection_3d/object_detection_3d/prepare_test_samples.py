@@ -14,7 +14,6 @@
 import dataclasses
 import glob
 import json
-import math
 import os
 import posixpath
 from argparse import ArgumentParser
@@ -33,12 +32,12 @@ from object_detection_3d.utils import get_label_path
 from object_detection_3d.utils import get_path_component
 from object_detection_3d.utils import get_velodyne_path
 from object_detection_3d.utils import get_velodyne_pcd_path
-from object_detection_3d.workflow import AnnotatedBoundingBox
 from object_detection_3d.workflow import AnnotatedBoundingBox3D
 from object_detection_3d.workflow import GroundTruth
 from object_detection_3d.workflow import TestSample
 from tqdm import tqdm
 
+from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.asset import ImageAsset
 from kolena.workflow.asset import PointCloudAsset
 
@@ -62,21 +61,6 @@ LABEL_FILE_COLUMNS = [
     "loc_z",
     "rotation_y",
 ]
-
-
-def get_difficulty(truncated: float, occluded: int, height: float):
-    # Easy: Min. bounding box height: 40 Px, Max. occlusion level: Fully visible, Max. truncation: 15 %
-    # Moderate: Min. bounding box height: 25 Px, Max. occlusion level: Partly occluded, Max. truncation: 30 %
-    # Hard: Min. bounding box height: 25 Px, Max. occlusion level: Difficult to see, Max. truncation: 50 %
-
-    if height >= 40 and occluded == 0 and truncated <= 0.15:
-        return "easy"
-    if height >= 25 and occluded <= 1 and truncated <= 0.30:
-        return "moderate"
-    if height >= 25 and occluded <= 2 and truncated <= 0.5:
-        return "hard"
-
-    return "unknown"
 
 
 def calibrate_velo_to_cam(label_filepath: str, calibration: Dict[str, np.ndarray]) -> pd.DataFrame:
@@ -110,17 +94,14 @@ def calibrate_velo_to_cam(label_filepath: str, calibration: Dict[str, np.ndarray
 def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.ndarray]) -> GroundTruth:
     label_filepath = get_label_path(datadir) / f"{label_id}.txt"
     df = calibrate_velo_to_cam(str(label_filepath), calibration)
-    bboxes_2d: List[AnnotatedBoundingBox] = []
+    bboxes_2d: List[LabeledBoundingBox] = []
     bboxes_3d: List[AnnotatedBoundingBox3D] = []
     counts_by_label: Dict[str, int] = defaultdict(int)
-    counts_by_difficulty: Dict[str, int] = defaultdict(int)
     for row in df.itertuples():
-        difficulty = get_difficulty(row.truncated, row.occluded, math.fabs(row.bbox_y1 - row.bbox_y0))
-        bbox_2d = AnnotatedBoundingBox(
+        bbox_2d = LabeledBoundingBox(
             label=row.type,
             top_left=(row.bbox_x0, row.bbox_y0),
             bottom_right=(row.bbox_x1, row.bbox_y1),
-            difficulty=difficulty,
         )
         bbox_3d = AnnotatedBoundingBox3D(
             label=row.type,
@@ -130,10 +111,8 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
             truncated=row.truncated,
             occluded=row.occluded,
             alpha=row.alpha,
-            difficulty=difficulty,
         )
         counts_by_label[row.type] += 1
-        counts_by_difficulty[difficulty] += 1
         bboxes_2d.append(bbox_2d)
         bboxes_3d.append(bbox_3d)
 
@@ -142,10 +121,6 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
         n_car=counts_by_label["Car"],
         n_pedestrian=counts_by_label["Pedestrian"],
         n_cyclist=counts_by_label["Cyclist"],
-        n_easy=counts_by_difficulty["easy"],
-        n_moderate=counts_by_difficulty["moderate"],
-        n_hard=counts_by_difficulty["hard"],
-        n_unknown=counts_by_difficulty["unknown"],
         bboxes_2d=bboxes_2d,
         bboxes_3d=bboxes_3d,
     )
