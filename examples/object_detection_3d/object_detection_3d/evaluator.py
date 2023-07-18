@@ -125,8 +125,6 @@ class MetricsTestSample(BaseMetricsTestSample):
     nMatchedInferences: int
     nMissedObjects: int
     nMismatchedInferences: int
-    valid_2D: List[LabeledBoundingBox]
-    valid_3D: List[LabeledBoundingBox3D]
     FP_2D: List[ScoredLabeledBoundingBox]
     FP_3D: List[UnmatchedScoredBoundingBox3D]
     FN_2D: List[LabeledBoundingBox]
@@ -189,7 +187,6 @@ class KITTI3DEvaluator(Evaluator):
         difficulty = configuration.difficulty.value
         results = [{} for _ in range(len(inferences))]
         overlaps, parted_overlaps, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
-        ignored_dets_combined = [[True] * len(inf.bboxes_2d) for _, _, inf in inferences]
         ignored_gts_combined = [[True] * len(gt.bboxes_2d) for _, gt, inf in inferences]
 
         for current_class in VALID_LABELS:
@@ -215,10 +212,6 @@ class KITTI3DEvaluator(Evaluator):
                 for j, ignore in enumerate(ignored_gt):
                     if ignore == 0:
                         ignored_gts_combined[i][j] = False
-            for i, ignored_det in enumerate(ignored_dets):
-                for j, ignore in enumerate(ignored_det):
-                    if ignore == 0:
-                        ignored_dets_combined[i][j] = False
             for i in range(len(gt_annos)):
                 tp, fp, fn, similarity, thresholds, tps, fps, fns = compute_statistics_jit(
                     overlaps[i],
@@ -237,8 +230,6 @@ class KITTI3DEvaluator(Evaluator):
 
         for i, (sample, gt, inf) in enumerate(inferences):
             result = results[i]
-            valid_2D = [gt.bboxes_2d[j] for j, ignore in enumerate(ignored_gts_combined[i]) if not ignore]
-            valid_3D = [gt.bboxes_3d[j] for j, ignore in enumerate(ignored_gts_combined[i]) if not ignore]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
@@ -261,7 +252,7 @@ class KITTI3DEvaluator(Evaluator):
                     sample,
                     MetricsTestSample(
                         nInferences=len(inf.bboxes_3d),
-                        nValidObjects=len(valid_2D),
+                        nValidObjects=sum(1 for ignore in ignored_gts_combined[i] if not ignore),
                         thresholds=[
                             ScoredClassificationLabel(score=score, label=label)
                             for label, score in sorted(f1_optimal_thresholds.items())
@@ -269,8 +260,6 @@ class KITTI3DEvaluator(Evaluator):
                         nMatchedInferences=len(TP_2D),
                         nMissedObjects=len(FN_2D),
                         nMismatchedInferences=len(FP_2D),
-                        valid_2D=valid_2D,
-                        valid_3D=valid_3D,
                         FP_2D=FP_2D,
                         FP_3D=FP_3D,
                         TP_2D=TP_2D,
