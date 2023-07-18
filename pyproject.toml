@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "kolena"
 version = "0.999.0"  # version is automatically set to latest git tag during release process
-description = "Client for Kolena's machine learning (ML) testing and debugging platform."
+description = "Client for Kolena's machine learning testing platform."
 authors = ["Kolena Engineering <eng@kolena.io>"]
 homepage = "https://kolena.io"
 documentation = "https://docs.kolena.io"
@@ -34,9 +34,9 @@ pandas = [
     { version = ">=1.1,<1.6", python = ">=3.7,<3.11" },
     { version = ">=1.5,<1.6", python = ">=3.11" },
 ]
-pandera = ">=0.9.0"
-pydantic = ">=1.8,<2.0"
-dacite = ">=1.6"
+pandera = ">=0.9.0,<0.16"
+pydantic = ">=1.8,<2"
+dacite = ">=1.6,<2"
 requests = ">=2.20,<2.30" # TODO: revert upper bound when urllib3 situation sorts out: https://github.com/psf/requests/issues/6432
 requests-toolbelt = "*"
 importlib-metadata = { version = "<5.0", python = "<3.8" }
@@ -47,11 +47,11 @@ Shapely = "^1.8.5"
 deprecation = "^2.1.0"
 termcolor = "^1.1.0"
 pyarrow = ">=8"
-typing-extensions = { version = "^4.5.0", python = "< 3.8" }
+typing-extensions = { version = "^4.5.0", python = "<3.8" }
 click = "^8.1.3"
 scikit-learn = [
     { version = ">=1.0,<1.0.3", python = ">=3.7.1,<3.8",  optional = true },
-    { version = ">=1.2", python = ">=3.8",  optional = true },
+    { version = ">=1.2,<2", python = ">=3.8",  optional = true },
 ]
 
 [tool.poetry.extras]

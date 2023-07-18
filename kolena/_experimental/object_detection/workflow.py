@@ -96,9 +96,13 @@ class TestCaseMetricsSingleClass(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
+    TP_labels: List[str]
     TP: List[ScoredLabeledBoundingBox]
+    FP_labels: List[str]
     FP: List[ScoredLabeledBoundingBox]
+    FN_labels: List[str]
     FN: List[LabeledBoundingBox]
+    Confused_labels: List[str]
     Confused: List[ScoredLabeledBoundingBox]
 
     count_TP: int
@@ -114,6 +118,7 @@ class TestSampleMetrics(MetricsTestSample):
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
     thresholds: List[ScoredClassificationLabel]
+    inference_labels: List[str]
 
 
 @dataclass(frozen=True)
@@ -174,8 +179,8 @@ class ThresholdStrategy(str, Enum):
 class ThresholdConfiguration(EvaluatorConfiguration):
     threshold_strategy: ThresholdStrategy
     iou_threshold: float
-    min_confidence_score: Optional[float]
     with_class_level_metrics: bool
+    min_confidence_score: float = 0.0
 
     def display_name(self) -> str:
         confidence_score = self.min_confidence_score if self.min_confidence_score else 0.0
