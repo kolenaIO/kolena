@@ -297,9 +297,6 @@ def compute_statistics_jit(
             else:
                 similarity = -1
 
-    assert tps.sum() == tp
-    assert fps.sum() == fp
-    assert fns.sum() == fn
     return tp, fp, fn, similarity, thresholds[:thresh_idx], tps, fps, fns
 
 

@@ -14,7 +14,6 @@
 import dataclasses
 import glob
 import json
-import math
 import os
 import posixpath
 from argparse import ArgumentParser
@@ -33,12 +32,12 @@ from object_detection_3d.utils import get_label_path
 from object_detection_3d.utils import get_path_component
 from object_detection_3d.utils import get_velodyne_path
 from object_detection_3d.utils import get_velodyne_pcd_path
-from object_detection_3d.workflow import AnnotatedBoundingBox
 from object_detection_3d.workflow import AnnotatedBoundingBox3D
 from object_detection_3d.workflow import GroundTruth
 from object_detection_3d.workflow import TestSample
 from tqdm import tqdm
 
+from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.asset import ImageAsset
 from kolena.workflow.asset import PointCloudAsset
 
@@ -62,21 +61,6 @@ LABEL_FILE_COLUMNS = [
     "loc_z",
     "rotation_y",
 ]
-
-
-# Easy: Min. bounding box height: 40 Px, Max. occlusion level: Fully visible, Max. truncation: 15 %
-# Moderate: Min. bounding box height: 25 Px, Max. occlusion level: Partly occluded, Max. truncation: 30 %
-# Hard: Min. bounding box height: 25 Px, Max. occlusion level: Difficult to see, Max. truncation: 50 %
-def easy_ignore(label: str, truncated: float, occluded: int, height: float) -> bool:
-    return label.lower() == "dontcare" or height <= 40 or occluded > 0 or truncated > 0.15
-
-
-def moderate_ignore(label: str, truncated: float, occluded: int, height: float) -> bool:
-    return label.lower() == "dontcare" or height <= 25 or occluded > 1 or truncated > 0.30
-
-
-def hard_ignore(label: str, truncated: float, occluded: int, height: float) -> bool:
-    return label.lower() == "dontcare" or height <= 25 or occluded > 2 or truncated > 0.5
 
 
 def calibrate_velo_to_cam(label_filepath: str, calibration: Dict[str, np.ndarray]) -> pd.DataFrame:
@@ -110,22 +94,14 @@ def calibrate_velo_to_cam(label_filepath: str, calibration: Dict[str, np.ndarray
 def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.ndarray]) -> GroundTruth:
     label_filepath = get_label_path(datadir) / f"{label_id}.txt"
     df = calibrate_velo_to_cam(str(label_filepath), calibration)
-    bboxes_2d: List[AnnotatedBoundingBox] = []
+    bboxes_2d: List[LabeledBoundingBox] = []
     bboxes_3d: List[AnnotatedBoundingBox3D] = []
     counts_by_label: Dict[str, int] = defaultdict(int)
-    counts_by_difficulty: Dict[str, int] = defaultdict(int)
     for row in df.itertuples():
-        height = math.fabs(row.bbox_y1 - row.bbox_y0)
-        ignore_by_easy = easy_ignore(row.type, row.truncated, row.occluded, height)
-        ignore_by_moderate = moderate_ignore(row.type, row.truncated, row.occluded, height)
-        ignore_by_hard = hard_ignore(row.type, row.truncated, row.occluded, height)
-        bbox_2d = AnnotatedBoundingBox(
+        bbox_2d = LabeledBoundingBox(
             label=row.type,
             top_left=(row.bbox_x0, row.bbox_y0),
             bottom_right=(row.bbox_x1, row.bbox_y1),
-            ignore_by_easy=ignore_by_easy,
-            ignore_by_moderate=ignore_by_moderate,
-            ignore_by_hard=ignore_by_hard,
         )
         bbox_3d = AnnotatedBoundingBox3D(
             label=row.type,
@@ -135,14 +111,8 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
             truncated=row.truncated,
             occluded=row.occluded,
             alpha=row.alpha,
-            ignore_by_easy=ignore_by_easy,
-            ignore_by_moderate=ignore_by_moderate,
-            ignore_by_hard=ignore_by_hard,
         )
         counts_by_label[row.type] += 1
-        counts_by_difficulty["easy"] += int(ignore_by_easy)
-        counts_by_difficulty["moderate"] += int(ignore_by_moderate)
-        counts_by_difficulty["hard"] += int(ignore_by_hard)
         bboxes_2d.append(bbox_2d)
         bboxes_3d.append(bbox_3d)
 
@@ -151,9 +121,6 @@ def gt_from_label_id(datadir: Path, label_id: str, calibration: Dict[str, np.nda
         n_car=counts_by_label["Car"],
         n_pedestrian=counts_by_label["Pedestrian"],
         n_cyclist=counts_by_label["Cyclist"],
-        n_ignored_by_easy=counts_by_difficulty["easy"],
-        n_ignored_by_moderate=counts_by_difficulty["moderate"],
-        n_ignored_by_hard=counts_by_difficulty["hard"],
         bboxes_2d=bboxes_2d,
         bboxes_3d=bboxes_3d,
     )

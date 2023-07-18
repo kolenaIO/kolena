@@ -39,6 +39,7 @@ from kolena.workflow import MetricsTestCase as BaseMetricsTestCase
 from kolena.workflow import MetricsTestSample as BaseMetricsTestSample
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox3D
+from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox3D
 from kolena.workflow.plot import Curve
@@ -86,23 +87,52 @@ class KITTI3DConfig(EvaluatorConfiguration):
 
 
 @dataclass(frozen=True)
+class UnmatchedLabeledBoundingBox3D(LabeledBoundingBox3D):
+    max_overlap: float
+
+    @staticmethod
+    def from_bbox(bbox: LabeledBoundingBox3D, overlap: float) -> "UnmatchedLabeledBoundingBox3D":
+        return UnmatchedLabeledBoundingBox3D(
+            label=bbox.label,
+            center=bbox.center,
+            dimensions=bbox.dimensions,
+            rotations=bbox.rotations,
+            max_overlap=overlap,
+        )
+
+
+@dataclass(frozen=True)
+class UnmatchedScoredBoundingBox3D(ScoredLabeledBoundingBox3D):
+    max_overlap: float
+
+    @staticmethod
+    def from_bbox(bbox: ScoredLabeledBoundingBox3D, overlap: float) -> "UnmatchedScoredBoundingBox3D":
+        return UnmatchedScoredBoundingBox3D(
+            label=bbox.label,
+            score=bbox.score,
+            center=bbox.center,
+            dimensions=bbox.dimensions,
+            rotations=bbox.rotations,
+            max_overlap=overlap,
+        )
+
+
+@dataclass(frozen=True)
 class MetricsTestSample(BaseMetricsTestSample):
     nInferences: int
     nValidObjects: int
-    thresholdCar: float
-    thresholdCyclist: float
-    thresholdPedestrian: float
+    thresholds: List[ScoredClassificationLabel]
     nMatchedInferences: int
     nMissedObjects: int
     nMismatchedInferences: int
+    valid_2D: List[LabeledBoundingBox]
+    valid_3D: List[LabeledBoundingBox3D]
     FP_2D: List[ScoredLabeledBoundingBox]
-    FP_3D: List[ScoredLabeledBoundingBox3D]
+    FP_3D: List[UnmatchedScoredBoundingBox3D]
     FN_2D: List[LabeledBoundingBox]
-    FN_3D: List[LabeledBoundingBox3D]
+    FN_3D: List[UnmatchedLabeledBoundingBox3D]
     TP_2D: List[ScoredLabeledBoundingBox]
     TP_3D: List[ScoredLabeledBoundingBox3D]
-    ignored_2D: List[ScoredLabeledBoundingBox]
-    ignored_3D: List[ScoredLabeledBoundingBox3D]
 
 
 @dataclass(frozen=True)
@@ -148,6 +178,7 @@ class KITTI3DEvaluator(Evaluator):
         if configuration is None:
             raise ValueError(f"{type(self).__name__} must have configuration")
 
+        inferences = sorted(inferences, key=lambda x: x[0].locator)
         test_case_metrics = self.get_test_case_metrics(test_case, inferences)
         f1_optimal_thresholds = {}
         min_overlaps = [0.7, 0.5, 0.5]
@@ -157,8 +188,9 @@ class KITTI3DEvaluator(Evaluator):
         class_name_value = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
         difficulty = configuration.difficulty.value
         results = [{} for _ in range(len(inferences))]
-        ignored = [[False] * len(inf.bboxes_2d) for _, _, inf in inferences]
         overlaps, parted_overlaps, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
+        ignored_dets_combined = [[True] * len(inf.bboxes_2d) for _, _, inf in inferences]
+        ignored_gts_combined = [[True] * len(gt.bboxes_2d) for _, gt, inf in inferences]
 
         for current_class in VALID_LABELS:
             prefix = f"bbox_{current_class}_{difficulty_name[difficulty]}"
@@ -179,10 +211,14 @@ class KITTI3DEvaluator(Evaluator):
                 total_dc_num,
                 total_num_valid_gt,
             ) = rets
+            for i, ignored_gt in enumerate(ignored_gts):
+                for j, ignore in enumerate(ignored_gt):
+                    if ignore == 0:
+                        ignored_gts_combined[i][j] = False
             for i, ignored_det in enumerate(ignored_dets):
                 for j, ignore in enumerate(ignored_det):
                     if ignore == 0:
-                        ignored[i][j] = False
+                        ignored_dets_combined[i][j] = False
             for i in range(len(gt_annos)):
                 tp, fp, fn, similarity, thresholds, tps, fps, fns = compute_statistics_jit(
                     overlaps[i],
@@ -201,40 +237,46 @@ class KITTI3DEvaluator(Evaluator):
 
         for i, (sample, gt, inf) in enumerate(inferences):
             result = results[i]
+            valid_2D = [gt.bboxes_2d[j] for j, ignore in enumerate(ignored_gts_combined[i]) if not ignore]
+            valid_3D = [gt.bboxes_3d[j] for j, ignore in enumerate(ignored_gts_combined[i]) if not ignore]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
-            assert all(x <= 1 for x in TP)
-            assert all(x <= 1 for x in FP)
-            assert all(x <= 1 for x in FN)
             FP_2D = [inf.bboxes_2d[j] for j, fp in enumerate(FP) if fp]
-            FP_3D = [inf.bboxes_3d[j] for j, fp in enumerate(FP) if fp]
-            TP_2D = [inf.bboxes_2d[j] for j, fp in enumerate(TP) if fp]
-            TP_3D = [inf.bboxes_3d[j] for j, fp in enumerate(TP) if fp]
+            FP_3D = [
+                UnmatchedScoredBoundingBox3D.from_bbox(inf.bboxes_3d[j], np.max(overlaps[i][j]))
+                for j, fp in enumerate(FP)
+                if fp
+            ]
+            TP_2D = [inf.bboxes_2d[j] for j, tp in enumerate(TP) if tp]
+            TP_3D = [inf.bboxes_3d[j] for j, tp in enumerate(TP) if tp]
             FN_2D = [gt.bboxes_2d[j] for j, fn in enumerate(FN) if fn]
-            FN_3D = [gt.bboxes_3d[j] for j, fn in enumerate(FN) if fn]
-            ignored_2D = [inf.bboxes_2d[j] for j, ignore in enumerate(ignored[i]) if ignore]
-            ignored_3D = [inf.bboxes_3d[j] for j, ignore in enumerate(ignored[i]) if ignore]
+            FN_3D = [
+                UnmatchedLabeledBoundingBox3D.from_bbox(gt.bboxes_3d[j], np.max(overlaps[i][:, j]))
+                for j, fn in enumerate(FN)
+                if fn
+            ]
             sample_metrics.append(
                 (
                     sample,
                     MetricsTestSample(
                         nInferences=len(inf.bboxes_3d),
-                        nValidObjects=sum(1 for bbox in gt.bboxes_2d if bbox.label in VALID_LABELS),
-                        thresholdCar=f1_optimal_thresholds["Car"],
-                        thresholdCyclist=f1_optimal_thresholds["Cyclist"],
-                        thresholdPedestrian=f1_optimal_thresholds["Pedestrian"],
+                        nValidObjects=len(valid_2D),
+                        thresholds=[
+                            ScoredClassificationLabel(score=score, label=label)
+                            for label, score in sorted(f1_optimal_thresholds.items())
+                        ],
                         nMatchedInferences=len(TP_2D),
                         nMissedObjects=len(FN_2D),
                         nMismatchedInferences=len(FP_2D),
+                        valid_2D=valid_2D,
+                        valid_3D=valid_3D,
                         FP_2D=FP_2D,
                         FP_3D=FP_3D,
                         TP_2D=TP_2D,
                         TP_3D=TP_3D,
                         FN_2D=FN_2D,
                         FN_3D=FN_3D,
-                        ignored_2D=ignored_2D,
-                        ignored_3D=ignored_3D,
                     ),
                 ),
             )

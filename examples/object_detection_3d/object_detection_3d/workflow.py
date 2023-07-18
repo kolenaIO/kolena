@@ -56,13 +56,6 @@ class TestSample(Image):
 
 
 @dataclass(frozen=True)
-class AnnotatedBoundingBox(LabeledBoundingBox):
-    ignore_by_easy: bool
-    ignore_by_moderate: bool
-    ignore_by_hard: bool
-
-
-@dataclass(frozen=True)
 class AnnotatedBoundingBox3D(LabeledBoundingBox3D):
     """
     #Values    Name      Description
@@ -88,9 +81,6 @@ class AnnotatedBoundingBox3D(LabeledBoundingBox3D):
     truncated: float
     occluded: int
     alpha: float
-    ignore_by_easy: bool
-    ignore_by_moderate: bool
-    ignore_by_hard: bool
 
 
 @dataclass(frozen=True)
@@ -99,9 +89,6 @@ class GroundTruth(BaseGroundTruth):
     n_pedestrian: int
     n_car: int
     n_cyclist: int
-    n_ignored_by_easy: int
-    n_ignored_by_moderate: int
-    n_ignored_by_hard: int
     bboxes_2d: List[LabeledBoundingBox]
     bboxes_3d: List[AnnotatedBoundingBox3D]
 

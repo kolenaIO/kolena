@@ -22,13 +22,12 @@ from typing import Tuple
 import pytest
 from object_detection_3d.seed_test_run import seed_test_run
 from object_detection_3d.seed_test_suite import seed_test_suite
-from object_detection_3d.workflow import AnnotatedBoundingBox
 from object_detection_3d.workflow import AnnotatedBoundingBox3D
 from object_detection_3d.workflow import GroundTruth
 from object_detection_3d.workflow import TestSample
+from workflow.annotation import LabeledBoundingBox
 
 from kolena.workflow.asset import PointCloudAsset
-
 
 TEST_SUITE_NAME = "KITTI 3D Object Detection Smoke Test Suite"
 
@@ -48,20 +47,14 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
             ),
             GroundTruth(
                 total_objects=n_gt,
-                n_ignored_by_easy=0,
-                n_ignored_by_moderate=0,
-                n_ignored_by_hard=0,
                 n_car=1,
                 n_cyclist=1,
                 n_pedestrian=0,
                 bboxes_2d=[
-                    AnnotatedBoundingBox(
+                    LabeledBoundingBox(
                         label="Car",
                         top_left=(100 + i * 5, 100 + i * 5),
                         bottom_right=(150 + i * 5, 150 + i * 5),
-                        ignore_by_easy=False,
-                        ignore_by_hard=True,
-                        ignore_by_moderate=False,
                     )
                     for i in range(n_gt)
                 ],
@@ -74,9 +67,6 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
                         center=(100 + i * 10, 100 + i * 10, 50 + i * 10),
                         dimensions=(50, 50, 50),
                         rotations=(0, 0, 0),
-                        ignore_by_easy=False,
-                        ignore_by_hard=True,
-                        ignore_by_moderate=False,
                     )
                     for i in range(n_gt)
                 ],
