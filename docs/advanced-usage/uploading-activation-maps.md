@@ -17,6 +17,14 @@ called an **activation map**.
   <figcaption markdown>Visualization of an activation map overlaid on an image</figcaption>
 </figure>
 
+## Popular Interpretation Methods for Computer Vision
+There are various methodologies that facilitate and aid the interpretation of several computer vision models, and if you
+are interested in learning more about them, here is a list of some of the popular methods:
+
+- [Vanilla Gradient (Saliency Maps)](https://arxiv.org/abs/1312.6034)
+- [Class Activation Mapping (CAM)](https://arxiv.org/abs/1512.04150)
+- [Gradient-weighted Class Activation Mapping (Grad-CAM)](https://arxiv.org/abs/1610.02391) — [PyTorch tutorial](https://jacobgil.github.io/pytorch-gradcam-book/introduction.html)
+
 ## Can I Visualize Activation Maps on Kolena?
 
 Yes! Activation maps can be visualized as an overlay on the corresponding image in
