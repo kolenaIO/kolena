@@ -25,7 +25,7 @@ from object_detection_3d.seed_test_suite import seed_test_suite
 from object_detection_3d.workflow import AnnotatedBoundingBox3D
 from object_detection_3d.workflow import GroundTruth
 from object_detection_3d.workflow import TestSample
-from workflow.annotation import LabeledBoundingBox
+from kolena.workflow.annotation import LabeledBoundingBox
 
 from kolena.workflow.asset import PointCloudAsset
 
