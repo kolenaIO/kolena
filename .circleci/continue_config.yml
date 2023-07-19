@@ -252,6 +252,18 @@ jobs:
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             poetry run pytest -vv tests
+  example-evaluator:
+    docker:
+      - image: cimg/base:2022.06
+    steps:
+      - checkout:
+          path: ~/project
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: Build evaluator
+          command: |
+            examples/text_summarization/docker/build.sh
 
 workflows:
   ci:
@@ -316,3 +328,9 @@ workflows:
               subproject: [ keypoint_detection, age_estimation, object_detection_3d ]
               resource-class: [ small ]
               python-version: [ "3.9" ]
+  example-evaluator:
+    when:
+      condition:
+        equal: [ "trunk", << pipeline.git.branch >> ]
+    jobs:
+      - example-evaluator
