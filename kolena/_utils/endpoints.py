@@ -87,3 +87,12 @@ def get_model_url(model_id: int) -> str:
 def _get_model_url(client_state: _ClientState, model_id: int) -> str:
     platform_url = _get_platform_url(client_state)
     return f"{platform_url}/models?{urlencode(dict(modelIds=model_id))}"
+
+
+def _get_dataset_url(client_state: _ClientState, dataset_id: int) -> str:
+    platform_url = _get_platform_url(client_state)
+    return f"{platform_url}/dataset?{urlencode(dict(datasetId=dataset_id))}"
+
+
+def get_dataset_url(dataset_id: int) -> str:
+    return _get_dataset_url(get_client_state(), dataset_id)

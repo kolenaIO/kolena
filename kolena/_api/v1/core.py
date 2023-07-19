@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dataclasses import field
 from enum import Enum
 from typing import Any
 from typing import Dict
@@ -72,6 +73,7 @@ class TestCase:
     class SingleProcessRequest:
         name: str
         reset: bool = False
+        tags: Optional[Dict[str, str]] = None
 
     @dataclass(frozen=True)
     class SingleProcessResponse:
@@ -113,6 +115,7 @@ class TestCase:
         version: int
         description: str
         workflow: str
+        tags: Dict[str, str] = field(default_factory=dict)
 
     @dataclass(frozen=True)
     class LoadContentsRequest:
@@ -128,6 +131,7 @@ class TestCase:
         current_version: int
         description: str
         reset: bool = False
+        tags: Dict[str, str] = field(default_factory=dict)
 
     @dataclass(frozen=True)
     class CompleteEditRequest(EditRequest, BatchedLoad.WithLoadUUID):
@@ -185,10 +189,69 @@ class TestSuite:
         test_suite_id: int
 
 
-TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()
+TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
 
 
 class TestRun:
     @dataclass(frozen=True)
     class MarkCrashedRequest:
         test_run_id: int
+
+
+class Dataset:
+    @dataclass(frozen=True)
+    class TestCaseData:
+        name: str
+        version: int
+        tags: Dict[str, str]
+
+    @dataclass(frozen=True)
+    class CreateRequest:
+        name: str
+        description: str
+        workflow: str
+        test_cases: List[TestCase.SingleProcessRequest]
+        tags: Optional[List[str]] = None
+        uuid: Optional[str] = None
+        reset: bool = False
+
+    @dataclass(frozen=True)
+    class EditRequest:
+        id: int  # ID of version being edited
+        current_version: int
+        name: str
+        description: str
+        # test_cases: List[TestCase.SingleProcessRequest]
+        tags: Optional[List[str]] = None  # unique set -- list used to preserve ordering
+        uuid: Optional[str] = None
+
+    @dataclass(frozen=True)
+    class LoadByNameRequest:
+        name: str
+        version: Optional[int] = None
+
+    @dataclass(frozen=True)
+    class EntityData:
+        id: int
+        name: str
+        version: int
+        description: str
+        test_cases: List["Dataset.TestCaseData"]
+        tags: List[str]
+        workflow: str
+
+    @dataclass(frozen=True)
+    class LoadAllRequest:
+        workflow: str
+        tags: Optional[List[str]] = None
+
+    @dataclass(frozen=True)
+    class LoadAllResponse:
+        datasets: List["Dataset.EntityData"]
+
+    @dataclass(frozen=True)
+    class DeleteRequest:
+        id: int
+
+
+Dataset.EntityData.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]

@@ -181,3 +181,20 @@ class Search:
 
 Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
 Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()
+Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+
+
+class Dataset:
+    class Path(str, Enum):
+        CREATE = "/generic/dataset/create"
+        LOAD = "/generic/dataset/load"
+        LOAD_ALL = "/generic/dataset/load-all"
+        EDIT = "/generic/dataset/edit"
+        DELETE = "/generic/dataset/delete"
+        INIT_LOAD_TEST_SAMPLES = "/generic/dataset/load-test-samples"
+
+    @dataclass(frozen=True)
+    class LoadTestSamplesRequest(BatchedLoad.BaseInitDownloadRequest):
+        id: int
+        by_test_case: bool = False

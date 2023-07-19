@@ -45,6 +45,7 @@ from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import InputValidationError
 from kolena.errors import WorkflowMismatchError
+from kolena.workflow import Dataset
 from kolena.workflow import Evaluator
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth
@@ -61,6 +62,7 @@ from kolena.workflow._datatypes import MetricsDataFrame
 from kolena.workflow._datatypes import MetricsDataFrameSchema
 from kolena.workflow._datatypes import TestSampleDataFrame
 from kolena.workflow._datatypes import TestSampleDataFrameSchema
+from kolena.workflow._internal import _TestCase as TestCase
 from kolena.workflow.evaluator import _configuration_description
 from kolena.workflow.evaluator import _maybe_display_name
 from kolena.workflow.evaluator import _maybe_evaluator_configuration_to_api
@@ -96,7 +98,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
     def __init__(
         self,
         model: Model,
-        test_suite: TestSuite,
+        test_suite: Union[TestSuite, Dataset],
         evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
         configurations: Optional[List[EvaluatorConfiguration]] = None,
         reset: bool = False,
@@ -301,7 +303,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_suite_metrics: Dict[Optional[EvaluatorConfiguration], Optional[MetricsTestSuite]] = {}
         for configuration in configurations:
             test_case_with_metrics = [
-                (tc, test_case_metrics[tc._id][configuration]) for tc in self.test_suite.test_cases
+                (tc, test_case_metrics[tc._id][configuration]) for tc in self.test_suite.get_test_cases()
             ]
             log.info(f"computing test suite metrics {_configuration_description(configuration)}")
             metrics_test_suite = evaluator.compute_test_suite_metrics(
@@ -314,13 +316,13 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info("uploading test suite metrics")
         self._upload_test_suite_metrics(test_suite_metrics)
 
-    def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> Dict[str, Any]:
+    def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> None:
         test_samples, ground_truths, inferences = [], [], []
         for sample, gt, inf in self._iter_all_inferences():
             test_samples.append(sample)
             ground_truths.append(gt)
             inferences.append(inf)
-        test_case_membership: List[Tuple[TestCase, List[TestSample]]] = self.test_suite.load_test_samples()
+        test_case_membership: List[Tuple[TestCase, List[TestSample]]] = self.test_suite.load_test_samples_by_test_case()
         test_case_test_samples = _TestCases(
             test_case_membership,
             self._id,
@@ -477,7 +479,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 @validate_arguments(config=ValidatorConfig)
 def test(
     model: Model,
-    test_suite: TestSuite,
+    test_suite: Union[TestSuite, Dataset],
     evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
     configurations: Optional[List[EvaluatorConfiguration]] = None,
     reset: bool = False,

@@ -146,7 +146,7 @@ class DataObject(metaclass=ABCMeta):
             )
 
         items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
-        return cls(**items)
+        return cls(**items)  # type: ignore[call-arg]
 
 
 class DataType(str, Enum):
@@ -308,4 +308,36 @@ class MetricsDataFrame(pa.typing.DataFrame[MetricsDataFrameSchema], LoadableData
         if "test_sample" in df.columns:
             df_out["test_sample"] = df_out["test_sample"].apply(serde_function)
         df_out["metrics"] = df_out["metrics"].apply(serde_function)
+        return df_out
+
+
+class DatasetTestSamplesDataFrameSchema(pa.SchemaModel):
+    """Data frame used for loading test samples grouped by test case."""
+
+    test_case_id: Optional[Series[pa.typing.Int64]] = pa.Field(coerce=True)
+    test_sample: Series[JSONObject] = pa.Field(coerce=True)
+
+
+class DatasetTestSamplesDataFrame(
+    pa.typing.DataFrame[DatasetTestSamplesDataFrameSchema],
+    LoadableDataFrame["DatasetTestSamplesDataFrame"],
+):
+    @classmethod
+    def get_schema(cls) -> Type[DatasetTestSamplesDataFrameSchema]:
+        return DatasetTestSamplesDataFrameSchema
+
+    def as_serializable(self) -> pd.DataFrame:
+        return DatasetTestSamplesDataFrame._serde(self, True)
+
+    @classmethod
+    def from_serializable(cls, df: pd.DataFrame) -> "DatasetTestSamplesDataFrame":
+        df_deserialized = DatasetTestSamplesDataFrame._serde(df, False)
+        df_validated = validate_df_schema(df_deserialized, DatasetTestSamplesDataFrameSchema, trusted=True)
+        return cast(DatasetTestSamplesDataFrame, df_validated)
+
+    @staticmethod
+    def _serde(df: pd.DataFrame, serialize: bool) -> pd.DataFrame:
+        serde_function = as_serialized_json if serialize else as_deserialized_json
+        df_out = df.copy()
+        df_out["test_sample"] = df_out["test_sample"].apply(serde_function)
         return df_out

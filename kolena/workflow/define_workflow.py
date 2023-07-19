@@ -18,6 +18,7 @@ from typing import Type
 from pydantic import validate_arguments
 
 from kolena._utils.validators import ValidatorConfig
+from kolena.workflow import Dataset
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
 from kolena.workflow import Model
@@ -84,3 +85,59 @@ def define_workflow(
     model = type("Model", (Model,), {"workflow": workflow})
 
     return workflow, cast(Type[TestCase], test_case), cast(Type[TestSuite], test_suite), cast(Type[Model], model)
+
+
+@validate_arguments(config=ValidatorConfig)
+def define_workflow_dataset(
+    name: str,
+    test_sample_type: Type[TestSample],
+    ground_truth_type: Type[GroundTruth],
+    inference_type: Type[Inference],
+) -> Tuple[Workflow, Type[Dataset], Type[Model]]:
+    """
+    Define a new workflow, specifying its test sample, ground truth, and inference types.
+
+    ```python
+    from kolena.workflow.dataset import define_workflow
+
+    from my_code import MyTestSample, MyGroundTruth, MyInference
+
+    _, Dataset, Model = define_workflow(
+        "My Workflow",
+        MyTestSample,   # extends e.g. kolena.workflow.Image (or uses directly)
+        MyGroundTruth,  # extends kolena.workflow.GroundTruth
+        MyInference,    # extends kolena.workflow.Inference
+    )
+    ```
+
+    `define_workflow` is provided as a convenience method to create the [`Dataset`][kolena.workflow.Dataset],
+    and [`Model`][kolena.workflow.Model] objects for a new workflow. These objects can also be defined manually by
+    subclassing them and binding the `workflow` class variable:
+
+    ```python
+    from kolena.workflow import Dataset
+
+    from my_code import my_workflow
+
+    class MyDataset(Dataset):
+        workflow = my_workflow
+    ```
+
+    :param name: The name of the workflow.
+    :param test_sample_type: The type of the [`TestSample`][kolena.workflow.TestSample] for this workflow.
+    :param ground_truth_type: The type of the [`GroundTruth`][kolena.workflow.GroundTruth] for this workflow.
+    :param inference_type: The type of the [`Inference`][kolena.workflow.Inference] for this workflow.
+    :return: The `Workflow` object for this workflow along with the [`Dataset`][kolena.workflow.Dataset],
+        and [`Model`][kolena.workflow.Model] objects to use when creating and running tests for this workflow.
+    """
+    workflow = Workflow(
+        name=name,
+        test_sample_type=test_sample_type,
+        ground_truth_type=ground_truth_type,
+        inference_type=inference_type,
+    )
+
+    dataset = type("Dataset", (Dataset,), {"workflow": workflow})
+    model = type("Model", (Model,), {"workflow": workflow})
+
+    return workflow, cast(Type[Dataset], dataset), cast(Type[Model], model)

@@ -44,12 +44,13 @@ from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from kolena.workflow import TestSample
 from kolena.workflow._datatypes import TestSuiteTestSamplesDataFrame
+from kolena.workflow._internal import TestRunnable
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.test_case import TestCase
 from kolena.workflow.workflow import Workflow
 
 
-class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
+class TestSuite(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
     """
     A test suite groups together one or more [test cases][kolena.workflow.TestCase]. Typically a test suite represents a
     benchmark test dataset, with test cases representing different meaningful subsets, or slices, or this benchmark.
@@ -339,6 +340,9 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._populate_from_other(self._create_from_data(test_suite_data))
         log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(self._id)})")
 
+    def load_test_samples_by_test_case(self) -> List[Tuple[TestCase, List[TestSample]]]:
+        return self.load_test_samples()
+
     def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
         """
         Load test samples for all test cases within this test suite.
@@ -361,3 +365,6 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         test_case_id_to_test_case = {tc._id: tc for tc in self.test_cases}
         return [(test_case_id_to_test_case[tc_id], samples) for tc_id, samples in test_case_id_to_samples.items()]
+
+    def get_test_cases(self) -> List[TestCase]:
+        return self.test_cases

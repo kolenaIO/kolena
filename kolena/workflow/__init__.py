@@ -30,6 +30,7 @@ from .inference import Inference
 from .workflow import Workflow
 from .test_case import TestCase
 from .test_suite import TestSuite
+from .dataset import Dataset
 from .model import Model
 from .plot import AxisConfig
 from .plot import Plot
@@ -49,6 +50,8 @@ from .evaluator_function import EvaluationResults
 from .test_run import TestRun
 from .test_run import test
 from .define_workflow import define_workflow
+from .define_workflow import define_workflow_dataset
+
 
 __all__ = [
     "DataObject",
@@ -68,6 +71,7 @@ __all__ = [
     "Workflow",
     "TestCase",
     "TestSuite",
+    "Dataset",
     "Model",
     "AxisConfig",
     "Plot",

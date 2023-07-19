@@ -42,9 +42,9 @@ from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
-from kolena.workflow import TestCase
 from kolena.workflow import TestSample as BaseTestSample
 from kolena.workflow._datatypes import TestSampleDataFrame
+from kolena.workflow._internal import _TestCase as TestCase
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.workflow import Workflow
 
