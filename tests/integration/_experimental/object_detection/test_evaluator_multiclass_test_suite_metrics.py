@@ -103,7 +103,7 @@ TEST_CASE_2 = TestCase(with_test_prefix("test_evaluator_multiclass_suite_2"), re
         ),
     ],
 )
-def test__prebuilt__object__detection__multiclass__compute__test__suite__metrics(
+def test__object_detection__multiclass__compute_test_suite_metrics(
     config_name: str,
     test_case_metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],
     expected: TestSuiteMetrics,
@@ -137,7 +137,7 @@ def test__prebuilt__object__detection__multiclass__compute__test__suite__metrics
     assert expected == result
 
 
-def test__prebuilt__object__detection__multiclass__compute__multiple__test__suite__metric() -> None:
+def test__object_detection__multiclass__compute_multiple_test_suite_metric() -> None:
     config_name = "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0"
     test_1 = "multiple bboxes in an image, varied iou"
     test_2 = "large test samples"
@@ -228,7 +228,7 @@ def test__prebuilt__object__detection__multiclass__compute__multiple__test__suit
 
 
 @pytest.mark.metrics
-def test__prebuilt__object__detection__multiclass__compute__multiple__test__suite__metric__by__class() -> None:
+def test__object_detection__multiclass__compute_multiple_test_suite_metric_by_class() -> None:
     config_name = "Threshold: Fixed(0.5) by class, IoU: 0.5, confidence ≥ 0.0"
     test_1 = "multiple bboxes in an image, varied iou"
     test_2 = "large test samples"

@@ -267,7 +267,7 @@ from tests.integration.helper import with_test_prefix
         ),
     ],
 )
-def test__prebuilt__object__detection__single__class__compute__test__case__plots__advanced(
+def test__object_detection__single_class__compute__test_case_plots(
     config_name: str,
     expected: Optional[List[Plot]],
 ) -> None:

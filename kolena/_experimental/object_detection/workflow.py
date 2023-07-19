@@ -183,9 +183,8 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     min_confidence_score: float = 0.0
 
     def display_name(self) -> str:
-        confidence_score = self.min_confidence_score if self.min_confidence_score else 0.0
         return (
             f"Threshold: {self.threshold_strategy.display_name()}"
             f"{' by class' if self.with_class_level_metrics else ''}, "
-            f"IoU: {self.iou_threshold}, confidence ≥ {confidence_score}"
+            f"IoU: {self.iou_threshold}, confidence ≥ {self.min_confidence_score}"
         )

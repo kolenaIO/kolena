@@ -797,7 +797,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], TestCaseMetricsSingleC
     "config_name, test_name",
     TEST_PARAMS,
 )
-def test__prebuilt__object__detection__single__class__compute__test__case__metrics(
+def test__object_detection__single_class__compute_test_case_metrics(
     config_name: str,
     test_name: str,
 ) -> None:
@@ -886,7 +886,7 @@ def test__prebuilt__object__detection__single__class__compute__test__case__metri
         ),
     ],
 )
-def test__prebuilt__object__detection__single__class__compute__test__case__metrics__all(
+def test__object_detection__single_class__compute_test_case_metrics__all(
     config_name: str,
     expected: TestCaseMetricsSingleClass,
 ) -> None:

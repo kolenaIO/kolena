@@ -449,7 +449,7 @@ from tests.integration.helper import with_test_prefix
         ),
     ],
 )
-def test__prebuilt__object__detection__multiclass__compute__test__case__plots__advanced(
+def test__object_detection__multiclass__compute_test_case_plots__advanced(
     config_name: str,
     expected: Optional[List[Plot]],
 ) -> None:

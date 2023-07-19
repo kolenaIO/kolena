@@ -85,7 +85,7 @@ TEST_CASE_2 = TestCase(with_test_prefix("test_evaluator_single_class_suite_2"), 
         ),
     ],
 )
-def test__prebuilt__object__detection__single__class__compute__test__suite__metrics(
+def test__object_detection__single_class__compute_test_suite_metrics(
     config_name: str,
     test_name: str,
     test_case_metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],
@@ -120,7 +120,7 @@ def test__prebuilt__object__detection__single__class__compute__test__suite__metr
 
 
 @pytest.mark.metrics
-def test__prebuilt__object__detection__single__class__compute__multiple__test__suite__metric() -> None:
+def test__object_detection__single_class__compute_multiple_test_suite_metric() -> None:
     config_name = "Threshold: Fixed(0.5), IoU: 0.5, confidence ≥ 0.0"
     test_1 = "multiple bboxes in an image, varied iou"
     test_2 = "nothing"

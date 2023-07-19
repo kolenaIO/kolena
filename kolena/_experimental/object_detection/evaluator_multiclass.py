@@ -15,6 +15,7 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -76,6 +77,53 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     Caches matchings per test case for test case metrics and test case plots.
     """
 
+    def test_sample_metrics(
+        self,
+        bbox_matches: MulticlassInferenceMatches,
+        thresholds: Dict[str, float],
+    ) -> TestSampleMetrics:
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
+        fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
+            gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
+        ]
+        confused = [
+            inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]
+        ]
+        non_ignored_inferences = tp + fp
+        scores = [inf.score for inf in non_ignored_inferences]
+        image_labels = {gt.label for gt, _ in bbox_matches.matched + bbox_matches.unmatched_gt}
+        fields = [
+            ScoredClassificationLabel(label=label, score=thresholds[label])
+            for label in thresholds.keys()
+            if label in image_labels
+        ]
+        inference_labels = {inf.label for _, inf in bbox_matches.matched + bbox_matches.unmatched_gt if inf} | {
+            inf.label for inf in bbox_matches.unmatched_inf
+        }
+        return TestSampleMetrics(
+            TP_labels=sorted({inf.label for inf in tp}),
+            TP=tp,
+            FP_labels=sorted({inf.label for inf in fp}),
+            FP=fp,
+            FN_labels=sorted({inf.label for inf in fn}),
+            FN=fn,
+            Confused_labels=sorted({inf.label for inf in confused}),
+            Confused=confused,
+            count_TP=len(tp),
+            count_FP=len(fp),
+            count_FN=len(fn),
+            count_Confused=len(confused),
+            has_TP=len(tp) > 0,
+            has_FP=len(fp) > 0,
+            has_FN=len(fn) > 0,
+            has_Confused=len(confused) > 0,
+            max_confidence_above_t=max(scores) if len(scores) > 0 else None,
+            min_confidence_above_t=min(scores) if len(scores) > 0 else None,
+            thresholds=fields,
+            inference_labels=sorted(inference_labels),
+        )
+
     def compute_image_metrics(
         self,
         ground_truth: GroundTruth,
@@ -97,44 +145,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             iou_threshold=configuration.iou_threshold,
         )
         self.matchings_by_test_case[test_case_name].append(bbox_matches)
-        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
-        fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
-            gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
-        ]
-        confused = [
-            inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]
-        ]
-        non_ignored_inferences = tp + fp
-        scores = [inf.score for inf in non_ignored_inferences]
-        image_labels = {gt.label for gt in ground_truth.bboxes}
-        fields = [
-            ScoredClassificationLabel(label=label, score=thresholds[label])
-            for label in thresholds.keys()
-            if label in image_labels
-        ]
-        return TestSampleMetrics(
-            TP_labels=sorted({inf.label for inf in tp}),
-            TP=tp,
-            FP_labels=sorted({inf.label for inf in fp}),
-            FP=fp,
-            FN_labels=sorted({inf.label for inf in fn}),
-            FN=fn,
-            Confused_labels=sorted({inf.label for inf in confused}),
-            Confused=confused,
-            count_TP=len(tp),
-            count_FP=len(fp),
-            count_FN=len(fn),
-            count_Confused=len(confused),
-            has_TP=len(tp) > 0,
-            has_FP=len(fp) > 0,
-            has_FN=len(fn) > 0,
-            has_Confused=len(confused) > 0,
-            max_confidence_above_t=max(scores) if len(scores) > 0 else None,
-            min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            thresholds=fields,
-            inference_labels=sorted({inf.label for inf in inference.bboxes}),
-        )
+
+        return self.test_sample_metrics(bbox_matches, thresholds)
 
     def compute_and_cache_f1_optimal_thresholds(
         self,
@@ -174,16 +186,15 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
-    def compute_aggregate_label_metrics(
+    def bbox_matches_for_one_label(
         self,
         matchings: List[MulticlassInferenceMatches],
         label: str,
-        thresholds: Dict[str, float],
-    ) -> ClassMetricsPerTestCase:
+    ) -> Tuple[MulticlassInferenceMatches, int]:
         match_matched = []
         match_unmatched_gt = []
         match_unmatched_inf = []
-        samples_with_label = 0
+        samples_count = 0
         # filter the matching to only consider one class
         for match in matchings:
             sample_flag = False
@@ -200,50 +211,91 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
                     sample_flag = True
                     match_unmatched_inf.append(inf)
             if sample_flag:
-                samples_with_label += 1
+                samples_count += 1
 
-        all_bbox_matches_for_one_label = [
-            MulticlassInferenceMatches(
-                matched=match_matched,
-                unmatched_gt=match_unmatched_gt,
-                unmatched_inf=match_unmatched_inf,
-            ),
-        ]
+        bbox_matches_for_one_label = MulticlassInferenceMatches(
+            matched=match_matched,
+            unmatched_gt=match_unmatched_gt,
+            unmatched_inf=match_unmatched_inf,
+        )
 
-        tp = [inf for _, inf in match_matched if inf.score >= thresholds[inf.label]]
-        fp = [inf for inf in match_unmatched_inf if inf.score >= thresholds[inf.label]]
-        fn = [gt for gt, _ in match_unmatched_gt] + [
-            gt for gt, inf in match_matched if inf.score < thresholds[inf.label]
-        ]
-        confused = [inf for _, inf in match_unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]]
+        return bbox_matches_for_one_label, samples_count
+
+    def class_metrics_per_test_case(
+        self,
+        label: str,
+        thresholds: Dict[str, float],
+        class_matches: MulticlassInferenceMatches,
+        samples_count: int,
+        average_precision: Optional[float],
+    ) -> ClassMetricsPerTestCase:
+        matched = class_matches.matched
+        unmatched_gt = class_matches.unmatched_gt
+        unmatched_inf = class_matches.unmatched_inf
+
+        tp = [inf for _, inf in matched if inf.score >= thresholds[inf.label]]
+        fp = [inf for inf in unmatched_inf if inf.score >= thresholds[inf.label]]
+        fn = [gt for gt, _ in unmatched_gt] + [gt for gt, inf in matched if inf.score < thresholds[inf.label]]
         tp_count = len(tp)
         fp_count = len(fp)
         fn_count = len(fn)
-        confused_count = len(confused)
         precision = compute_precision(tp_count, fp_count)
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-
-        average_precision = compute_average_precision([precision], [recall])
-        if precision > 0:
-            baseline_pr_curve = compute_pr_curve(all_bbox_matches_for_one_label)
-            if baseline_pr_curve is not None:
-                average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+        if average_precision is None:
+            average_precision = compute_average_precision([precision], [recall])
 
         return ClassMetricsPerTestCase(
             Class=label,
-            nImages=samples_with_label,
+            nImages=samples_count,
             Threshold=thresholds[label],
             Objects=tp_count + fn_count,
             Inferences=tp_count + fp_count,
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
-            Confused=confused_count,
             Precision=precision,
             Recall=recall,
             F1=f1_score,
             AP=average_precision,
+        )
+
+    def compute_aggregate_label_metrics(
+        self,
+        matchings: List[MulticlassInferenceMatches],
+        label: str,
+        thresholds: Dict[str, float],
+    ) -> ClassMetricsPerTestCase:
+        match_and_count: Tuple[MulticlassInferenceMatches, int] = self.bbox_matches_for_one_label(matchings, label)
+        class_matches: MulticlassInferenceMatches = match_and_count[0]
+        samples_count: int = match_and_count[1]
+
+        average_precision: Optional[float] = None
+        baseline_pr_curve = compute_pr_curve([class_matches])
+        if baseline_pr_curve is not None:
+            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+
+        return self.class_metrics_per_test_case(label, thresholds, class_matches, samples_count, average_precision)
+
+    def test_case_metrics(
+        self,
+        per_class_metrics: List[ClassMetricsPerTestCase],
+        metrics: List[TestSampleMetrics],
+    ) -> TestCaseMetrics:
+        tp_count = sum(im.count_TP for im in metrics)
+        fp_count = sum(im.count_FP for im in metrics)
+        fn_count = sum(im.count_FN for im in metrics)
+        return TestCaseMetrics(
+            PerClass=per_class_metrics,
+            Objects=tp_count + fn_count,
+            Inferences=tp_count + fp_count,
+            TP=tp_count,
+            FN=fn_count,
+            FP=fp_count,
+            macro_Precision=np.mean([data.Precision for data in per_class_metrics]) if per_class_metrics else 0.0,
+            macro_Recall=np.mean([data.Recall for data in per_class_metrics]) if per_class_metrics else 0.0,
+            macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,
+            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,
         )
 
     def compute_test_case_metrics(
@@ -255,32 +307,17 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     ) -> TestCaseMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         all_bbox_matches = self.matchings_by_test_case[test_case.name]
+        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
         # compute nested metrics per class
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         per_class_metrics: List[ClassMetricsPerTestCase] = []
         for label in sorted(labels):
             metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label, thresholds)
             per_class_metrics.append(metrics_per_class)
 
-        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
-        tp_count = sum(im.count_TP for im in metrics)
-        fp_count = sum(im.count_FP for im in metrics)
-        fn_count = sum(im.count_FN for im in metrics)
-
-        return TestCaseMetrics(
-            PerClass=per_class_metrics,
-            Objects=tp_count + fn_count,
-            Inferences=tp_count + fp_count,
-            TP=tp_count,
-            FN=fn_count,
-            FP=fp_count,
-            macro_Precision=np.mean([class_metrics.Precision for class_metrics in per_class_metrics]),
-            macro_Recall=np.mean([class_metrics.Recall for class_metrics in per_class_metrics]),
-            macro_F1=np.mean([class_metrics.F1 for class_metrics in per_class_metrics]),
-            mean_AP=np.mean([class_metrics.AP for class_metrics in per_class_metrics]),
-        )
+        return self.test_case_metrics(per_class_metrics, metrics)
 
     def compute_test_case_plots(
         self,
@@ -325,6 +362,12 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
 
         return plots
 
+    def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float]) -> TestSuiteMetrics:
+        return TestSuiteMetrics(
+            n_images=len(unique_locators),
+            mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+        )
+
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
@@ -332,10 +375,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
-        return TestSuiteMetrics(
-            n_images=len({locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}),
-            mean_AP=np.average([tcm.mean_AP for _, tcm in metrics]),
-        )
+        unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
+        average_precisions = [tcm.AP for _, tcm in metrics]
+        return self.test_suite_metrics(unique_locators, average_precisions)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_03:

@@ -1887,7 +1887,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[str, Dict[str, List[Tuple[TestSample,
     "config_name, test_name",
     TEST_PARAMS,
 )
-def test__prebuilt__object__detection__single__class__compute__test__sample__metrics(
+def test__object_detection__single_class__compute__test_sample_metrics(
     config_name: str,
     test_name: str,
 ) -> None:
@@ -1902,7 +1902,7 @@ def test__prebuilt__object__detection__single__class__compute__test__sample__met
     assert EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name][test_name] == result
 
 
-def test__prebuilt__object__detection__single__class__compute__test__sample__metrics__all() -> None:
+def test__object_detection__single_class__compute__test_sample_metrics__all() -> None:
     for config_name, config in TEST_CONFIGURATIONS.items():
         if config_name not in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS:
             continue

@@ -29,8 +29,8 @@ from tests.integration.helper import with_test_prefix
 
 
 @pytest.mark.metrics
-def test__multiclass__object__detection__smoke() -> None:
-    name = with_test_prefix(f"{__file__} test__multiclass__object__detection__smoke")
+def test__multiclass__object_detection__smoke() -> None:
+    name = with_test_prefix(f"{__file__} test__multiclass__object_detection__smoke")
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
     ground_truth = GroundTruth(bboxes=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
     test_case = TestCase(f"{name} test case", test_samples=[(test_sample, ground_truth)])

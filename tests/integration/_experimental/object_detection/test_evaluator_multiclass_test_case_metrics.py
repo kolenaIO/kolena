@@ -1838,7 +1838,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS: Dict[Tuple[str, str], Union[TestCaseMetricsS
     "config_name, test_name",
     TEST_PARAMS,
 )
-def test__prebuilt__object__detection__multiclass__compute__test__case__metrics(
+def test__object_detection__multiclass__compute_test_case_metrics(
     config_name: str,
     test_name: str,
 ) -> None:
@@ -1860,8 +1860,6 @@ def test__prebuilt__object__detection__multiclass__compute__test__case__metrics(
     )
 
     expected = EXPECTED_COMPUTE_TEST_CASE_METRICS[config_name, test_name]
-    print(config_name, test_name)
-    print(result)
     assert expected == result
 
 
@@ -2057,7 +2055,7 @@ def test__prebuilt__object__detection__multiclass__compute__test__case__metrics(
         ),
     ],
 )
-def test__prebuilt__object__detection__multiclass__compute__test__case__metrics__all(
+def test__object_detection__multiclass__compute_test_case_metrics__all(
     config_name: str,
     expected: TestCaseMetricsSingleClass,
 ) -> None:
@@ -2081,6 +2079,4 @@ def test__prebuilt__object__detection__multiclass__compute__test__case__metrics_
         ],
         configuration=config,
     )
-    print(config_name)
-    print(result)
     assert expected == result

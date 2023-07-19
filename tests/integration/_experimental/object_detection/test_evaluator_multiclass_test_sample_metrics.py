@@ -2635,7 +2635,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: Dict[Tuple[str, str], List[Tuple[TestSampl
     "config_name, test_name",
     TEST_PARAMS,
 )
-def test__prebuilt__object__detection__multiclass__compute__test__sample__metrics(
+def test__object_detection__multiclass__compute_test_sample_metrics(
     config_name: str,
     test_name: str,
 ) -> None:
@@ -2646,12 +2646,10 @@ def test__prebuilt__object__detection__multiclass__compute__test__sample__metric
         inferences=TEST_DATA[test_name],
         configuration=config,
     )
-    print(config_name, test_name)
-    print(result)
     assert EXPECTED_COMPUTE_TEST_SAMPLE_METRICS[config_name, test_name] == result
 
 
-def test__prebuilt__object__detection__multiclass__compute__test__sample__metrics__all() -> None:
+def test__object_detection__multiclass__compute_test_sample_metrics__all() -> None:
     config_name = "Threshold: Fixed(0.5) by class, IoU: 0.5, confidence ≥ 0.0"
     config = TEST_CONFIGURATIONS[config_name]
     expected_test_sample_metrics = {

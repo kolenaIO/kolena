@@ -94,8 +94,12 @@ def _compute_threshold_curve(
             zero_division=0,
         )
 
-        # avoid curves with one x-value and two 2-values
-        if recall not in recalls:
+        # avoid curves with one x-value and two y-values
+        if recall in recalls:
+            idx = recalls.index(recall)
+            precisions[idx] = max(precisions[idx], precision)
+            recalls[idx] = max(recalls[idx], recall)
+        else:
             precisions.append(precision)
             recalls.append(recall)
         f1s.append(f1)

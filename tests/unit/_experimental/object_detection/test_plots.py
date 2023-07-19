@@ -504,14 +504,13 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
         "zeros, but a is confused with b",
     ],
 )
-def test__none__curve__plot(
+def test__no_curve_plot(
     test_name: str,
 ) -> None:
     from kolena._experimental.object_detection.utils import compute_f1_plot
     from kolena._experimental.object_detection.utils import compute_pr_plot
     from kolena._experimental.object_detection.utils import compute_pr_curve
 
-    print(test_name)
     f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr_curve: Curve = compute_pr_curve(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
@@ -521,7 +520,7 @@ def test__none__curve__plot(
 
 
 @pytest.mark.metrics
-def test__none__curve__plot__only__confusion() -> None:
+def test__no_curve_plot_only_confusion() -> None:
     from kolena._experimental.object_detection.utils import compute_f1_plot
     from kolena._experimental.object_detection.utils import compute_pr_plot
     from kolena._experimental.object_detection.utils import compute_pr_curve
@@ -974,7 +973,7 @@ def test__none__curve__plot__only__confusion() -> None:
         ),
     ],
 )
-def test__curve__plots(
+def test__curve_plots(
     test_name: str,
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
@@ -1351,7 +1350,7 @@ def test__curve__plots(
         ),
     ],
 )
-def test__curve__plots__multiclass(
+def test__curve_plots__multiclass(
     test_name: str,
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,
@@ -1361,8 +1360,6 @@ def test__curve__plots__multiclass(
 
     f1: CurvePlot = compute_f1_plot_multiclass(all_matches=TEST_MATCHING[test_name])
     pr: CurvePlot = compute_pr_plot_multiclass(all_matches=TEST_MATCHING[test_name])
-    print(test_name)
-    print(pr)
     assert f1 == f1_curve
     assert pr == pr_curve
 
@@ -1529,7 +1526,7 @@ def test__curve__plots__multiclass(
         ),
     ],
 )
-def test__confusion__matrix(
+def test__confusion_matrix(
     test_name: str,
     matchings: List[MulticlassInferenceMatches],
     ordered_labels: List[str],
@@ -1585,7 +1582,7 @@ def test__confusion__matrix(
         ),
     ],
 )
-def test__confusion__matrix__fails(
+def test__confusion_matrix_fails(
     test_name: str,
     matchings: List[MulticlassInferenceMatches],
 ) -> None:
