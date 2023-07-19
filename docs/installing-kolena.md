@@ -50,13 +50,13 @@ Certain metrics computation functionality depends on additional packages like
 === "`pip`"
 
     ```shell
-    pip install kolena[metrics]
+    pip install 'kolena[metrics]'
     ```
 
 === "`poetry`"
 
     ```shell
-    poetry add kolena[metrics]
+    poetry add 'kolena[metrics]'
     ```
 
 ## Initialization
