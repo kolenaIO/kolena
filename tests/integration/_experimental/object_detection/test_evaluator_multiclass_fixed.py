@@ -817,6 +817,7 @@ def assert_test_case_plots_equals_expected(
     assert plots[2] == other_plots[2]
 
 
+@pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
     config = ThresholdConfiguration(
         threshold_strategy=ThresholdStrategy.FIXED_05,

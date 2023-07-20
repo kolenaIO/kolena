@@ -394,6 +394,7 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 ]
 
 
+@pytest.mark.metrics
 def assert_test_case_metrics_equals_expected(
     metrics: TestCaseMetricsSingleClass,
     other_metrics: TestCaseMetricsSingleClass,

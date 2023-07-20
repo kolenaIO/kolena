@@ -37,6 +37,7 @@ OD_MULTI = MulticlassObjectDetectionEvaluator()
 OD_SINGLE = SingleClassObjectDetectionEvaluator()
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, bbox_matches, thresholds, expected",
     [
@@ -381,6 +382,7 @@ def test__object_detection__multiclass__test_sample_metrics(
     assert expected == result
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, bbox_matches, thresholds, expected",
     [
@@ -562,6 +564,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
     assert expected == result
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, metrics, average_precision, expected",
     [
@@ -750,6 +753,7 @@ def test__object_detection__single_class__test_case_metrics_single_class(
     assert expected == result
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, matchings, label, expected",
     [
@@ -937,6 +941,7 @@ def test__object_detection__multiclass__bbox_matches_for_one_label(
     assert expected == result
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, label, thresholds, class_matches, samples_count, average_precision, expected",
     [
@@ -1057,6 +1062,7 @@ def test__object_detection__multiclass__class_metrics_per_test_case(
     assert expected == result
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, per_class_metrics, metrics, expected",
     [
