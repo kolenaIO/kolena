@@ -18,7 +18,6 @@ import pytest
 
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
-from kolena._experimental.object_detection import ObjectDetectionEvaluator
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
@@ -819,6 +818,8 @@ def assert_test_case_plots_equals_expected(
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
+    from kolena._experimental.object_detection import ObjectDetectionEvaluator
+
     config = ThresholdConfiguration(
         threshold_strategy=ThresholdStrategy.FIXED_05,
         iou_threshold=0.5,

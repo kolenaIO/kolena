@@ -14,7 +14,8 @@
 from typing import List
 from typing import Tuple
 
-from kolena._experimental.object_detection import ObjectDetectionEvaluator
+import pytest
+
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection import ThresholdStrategy
@@ -239,7 +240,10 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 ]
 
 
+@pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
+    from kolena._experimental.object_detection import ObjectDetectionEvaluator
+
     config = ThresholdConfiguration(
         threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
         iou_threshold=0.5,

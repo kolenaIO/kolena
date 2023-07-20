@@ -19,8 +19,6 @@ from typing import Tuple
 
 import pytest
 
-from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
-from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
 from kolena._experimental.object_detection.workflow import ClassMetricsPerTestCase
 from kolena._experimental.object_detection.workflow import TestCaseMetrics
 from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
@@ -32,9 +30,6 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
-
-OD_MULTI = MulticlassObjectDetectionEvaluator()
-OD_SINGLE = SingleClassObjectDetectionEvaluator()
 
 
 @pytest.mark.metrics
@@ -375,7 +370,10 @@ def test__object_detection__multiclass__test_sample_metrics(
     thresholds: Dict[str, float],
     expected: TestSampleMetrics,
 ) -> None:
-    result = OD_MULTI.test_sample_metrics(
+    from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
+
+    od_multi = MulticlassObjectDetectionEvaluator()
+    result = od_multi.test_sample_metrics(
         bbox_matches=bbox_matches,
         thresholds=thresholds,
     )
@@ -557,7 +555,10 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
     thresholds: float,
     expected: TestSampleMetricsSingleClass,
 ) -> None:
-    result = OD_SINGLE.test_sample_metrics_single_class(
+    from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
+
+    od_single = SingleClassObjectDetectionEvaluator()
+    result = od_single.test_sample_metrics_single_class(
         bbox_matches=bbox_matches,
         thresholds=thresholds,
     )
@@ -746,7 +747,10 @@ def test__object_detection__single_class__test_case_metrics_single_class(
     average_precision: Optional[float],
     expected: TestCaseMetricsSingleClass,
 ) -> None:
-    result = OD_SINGLE.test_case_metrics_single_class(
+    from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
+
+    od_single = SingleClassObjectDetectionEvaluator()
+    result = od_single.test_case_metrics_single_class(
         metrics=metrics,
         average_precision=average_precision,
     )
@@ -934,7 +938,10 @@ def test__object_detection__multiclass__bbox_matches_for_one_label(
     label: str,
     expected: Tuple[MulticlassInferenceMatches, int],
 ) -> None:
-    result = OD_MULTI.bbox_matches_for_one_label(
+    from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
+
+    od_multi = MulticlassObjectDetectionEvaluator()
+    result = od_multi.bbox_matches_for_one_label(
         matchings=matchings,
         label=label,
     )
@@ -1052,7 +1059,10 @@ def test__object_detection__multiclass__class_metrics_per_test_case(
     average_precision: Optional[float],
     expected: ClassMetricsPerTestCase,
 ) -> None:
-    result = OD_MULTI.class_metrics_per_test_case(
+    from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
+
+    od_multi = MulticlassObjectDetectionEvaluator()
+    result = od_multi.class_metrics_per_test_case(
         label=label,
         thresholds=thresholds,
         class_matches=class_matches,
@@ -1338,13 +1348,17 @@ def test__object_detection__multiclass__test_case_metrics(
     metrics: List[TestSampleMetrics],
     expected: TestCaseMetrics,
 ) -> None:
-    result = OD_MULTI.test_case_metrics(
+    from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
+
+    od_multi = MulticlassObjectDetectionEvaluator()
+    result = od_multi.test_case_metrics(
         per_class_metrics=per_class_metrics,
         metrics=metrics,
     )
     assert expected == result
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, locators, aps, expected",
     [
@@ -1386,11 +1400,16 @@ def test__object_detection__test_suite_metrics(
     aps: Optional[float],
     expected: TestSuiteMetrics,
 ) -> None:
-    assert expected == OD_MULTI.test_suite_metrics(
+    from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
+    from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
+
+    od_single = SingleClassObjectDetectionEvaluator()
+    od_multi = MulticlassObjectDetectionEvaluator()
+    assert expected == od_multi.test_suite_metrics(
         unique_locators=locators,
         average_precisions=aps,
     )
-    assert expected == OD_SINGLE.test_suite_metrics(
+    assert expected == od_single.test_suite_metrics(
         unique_locators=locators,
         average_precisions=aps,
     )
