@@ -42,12 +42,12 @@ evaluating threshold; otherwise, it's positive.
 
 | Sample | <nobr>Confidence ↓</nobr> | Inference @ 0.25 | Inference @ 0.5 | Inference @ 0.75 |
 | --- | --- | --- | --- | --- |
-| Positive | 0.9 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> |
-| Positive | 0.8 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> |
-| Positive | 0.7 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> |
-| Negative | 0.4 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> |
-| Positive | 0.35 | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> | <span style="color: red">Negative</span> |
-| Negative | 0.3 | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> | <span style="color: red">Negative</span> |
+| Positive | 0.9 | <span class="md-positive">Positive</span> | <span class="md-positive">Positive</span> | <span class="md-positive">Positive</span> |
+| Positive | 0.8 | <span class="md-positive">Positive</span> | <span class="md-positive">Positive</span> | <span class="md-positive">Positive</span> |
+| Positive | 0.7 | <span class="md-positive">Positive</span> | <span class="md-positive">Positive</span> | <span class="md-negative">Negative</span> |
+| Negative | 0.4 | <span class="md-positive">Positive</span> | <span class="md-positive">Positive</span> | <span class="md-negative">Negative</span> |
+| Positive | 0.35 | <span class="md-positive">Positive</span> | <span class="md-negative">Negative</span> | <span class="md-negative">Negative</span> |
+| Negative | 0.3 | <span class="md-positive">Positive</span> | <span class="md-negative">Negative</span> | <span class="md-negative">Negative</span> |
 
 </center>
 
