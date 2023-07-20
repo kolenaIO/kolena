@@ -16,15 +16,6 @@ from typing import Tuple
 
 import pytest
 
-try:
-    from kolena._experimental.object_detection import TestSample
-    from kolena._experimental.object_detection import ThresholdConfiguration
-    from kolena._experimental.object_detection import ThresholdStrategy
-    from kolena._experimental.object_detection import TestCaseMetricsSingleClass
-    from kolena._experimental.object_detection import TestSampleMetricsSingleClass
-except ImportError:
-    pass
-
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
@@ -39,6 +30,13 @@ from tests.integration._experimental.object_detection.test_evaluator_single_clas
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_CASE
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
+
+object_detection = pytest.importorskip("kolena._experimental.object_detection")
+TestSample = object_detection.TestSample
+ThresholdConfiguration = object_detection.ThresholdConfiguration
+ThresholdStrategy = object_detection.ThresholdStrategy
+TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
+TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSingleClass]] = [

@@ -16,19 +16,6 @@ from typing import Tuple
 
 import pytest
 
-try:
-    from kolena._experimental.object_detection import GroundTruth
-    from kolena._experimental.object_detection import Inference
-    from kolena._experimental.object_detection import TestCase
-    from kolena._experimental.object_detection import TestSample
-    from kolena._experimental.object_detection import TestSuite
-    from kolena._experimental.object_detection import ThresholdConfiguration
-    from kolena._experimental.object_detection import ThresholdStrategy
-    from kolena._experimental.object_detection import TestCaseMetricsSingleClass
-    from kolena._experimental.object_detection import TestSampleMetricsSingleClass
-    from kolena._experimental.object_detection import TestSuiteMetrics
-except ImportError:
-    pass
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
@@ -36,6 +23,19 @@ from kolena.workflow.plot import CurvePlot
 from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
+
+object_detection = pytest.importorskip("kolena._experimental.object_detection")
+GroundTruth = object_detection.GroundTruth
+Inference = object_detection.Inference
+TestCase = object_detection.TestCase
+TestSample = object_detection.TestSample
+TestSuite = object_detection.TestSuite
+ThresholdConfiguration = object_detection.ThresholdConfiguration
+ThresholdStrategy = object_detection.ThresholdStrategy
+TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
+TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
+TestSuiteMetrics = object_detection.TestSuiteMetrics
+
 
 TEST_CASE_NAME = "single class OD test"
 TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))

@@ -16,17 +16,6 @@ from typing import Tuple
 
 import pytest
 
-from kolena._experimental.object_detection import ClassMetricsPerTestCase
-from kolena._experimental.object_detection import GroundTruth
-from kolena._experimental.object_detection import Inference
-from kolena._experimental.object_detection import TestCase
-from kolena._experimental.object_detection import TestCaseMetrics
-from kolena._experimental.object_detection import TestSample
-from kolena._experimental.object_detection import TestSampleMetrics
-from kolena._experimental.object_detection import TestSuite
-from kolena._experimental.object_detection import TestSuiteMetrics
-from kolena._experimental.object_detection import ThresholdConfiguration
-from kolena._experimental.object_detection import ThresholdStrategy
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
@@ -36,6 +25,19 @@ from kolena.workflow.plot import CurvePlot
 from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
+
+object_detection = pytest.importorskip("kolena._experimental.object_detection")
+ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
+GroundTruth = object_detection.GroundTruth
+Inference = object_detection.Inference
+TestCase = object_detection.TestCase
+TestCaseMetrics = object_detection.TestCaseMetrics
+TestSample = object_detection.TestSample
+TestSampleMetrics = object_detection.TestSampleMetrics
+TestSuite = object_detection.TestSuite
+TestSuiteMetrics = object_detection.TestSuiteMetrics
+ThresholdConfiguration = object_detection.ThresholdConfiguration
+ThresholdStrategy = object_detection.ThresholdStrategy
 
 
 TEST_CASE_NAME = "multiclass OD test"

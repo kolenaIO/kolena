@@ -4,6 +4,9 @@ orbs:
   codecov: codecov/codecov@3.2.4
 
 parameters:
+  _experimental:
+    type: boolean
+    default: false
   classification:
     type: boolean
     default: false
@@ -295,7 +298,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ detection, fr, classification, workflow, _experimental ]
               extras: ["none"]
           enabled: true
           parallelism: 4
