@@ -20,6 +20,17 @@ from typing import Tuple
 
 import numpy as np
 
+from kolena._experimental.object_detection import ClassMetricsPerTestCase
+from kolena._experimental.object_detection import GroundTruth
+from kolena._experimental.object_detection import Inference
+from kolena._experimental.object_detection import TestCase
+from kolena._experimental.object_detection import TestCaseMetrics
+from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection import TestSampleMetrics
+from kolena._experimental.object_detection import TestSuite
+from kolena._experimental.object_detection import TestSuiteMetrics
+from kolena._experimental.object_detection import ThresholdConfiguration
+from kolena._experimental.object_detection import ThresholdStrategy
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
 from kolena._experimental.object_detection.utils import compute_f1_plot_multiclass
@@ -27,17 +38,6 @@ from kolena._experimental.object_detection.utils import compute_optimal_f1_thres
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot_multiclass
 from kolena._experimental.object_detection.utils import filter_inferences
-from kolena._experimental.object_detection.workflow import ClassMetricsPerTestCase
-from kolena._experimental.object_detection.workflow import GroundTruth
-from kolena._experimental.object_detection.workflow import Inference
-from kolena._experimental.object_detection.workflow import TestCase
-from kolena._experimental.object_detection.workflow import TestCaseMetrics
-from kolena._experimental.object_detection.workflow import TestSample
-from kolena._experimental.object_detection.workflow import TestSampleMetrics
-from kolena._experimental.object_detection.workflow import TestSuite
-from kolena._experimental.object_detection.workflow import TestSuiteMetrics
-from kolena._experimental.object_detection.workflow import ThresholdConfiguration
-from kolena._experimental.object_detection.workflow import ThresholdStrategy
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
 from kolena.workflow.annotation import ScoredClassificationLabel

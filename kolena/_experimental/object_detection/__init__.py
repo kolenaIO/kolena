@@ -19,6 +19,12 @@ from .workflow import Inference
 from .workflow import TestCase
 from .workflow import TestSuite
 from .workflow import Model
+from .workflow import TestSampleMetricsSingleClass
+from .workflow import TestCaseMetricsSingleClass
+from .workflow import TestSampleMetrics
+from .workflow import ClassMetricsPerTestCase
+from .workflow import TestCaseMetrics
+from .workflow import TestSuiteMetrics
 from .workflow import ThresholdStrategy
 from .workflow import ThresholdConfiguration
 from .evaluator import ObjectDetectionEvaluator
@@ -30,6 +36,12 @@ __all__ = [
     "TestCase",
     "TestSuite",
     "Model",
+    "TestSampleMetricsSingleClass",
+    "TestCaseMetricsSingleClass",
+    "TestSampleMetrics",
+    "ClassMetricsPerTestCase",
+    "TestCaseMetrics",
+    "TestSuiteMetrics",
     "ThresholdStrategy",
     "ThresholdConfiguration",
     "ObjectDetectionEvaluator",

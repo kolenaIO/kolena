@@ -16,11 +16,14 @@ from typing import Tuple
 
 import pytest
 
-from kolena._experimental.object_detection import TestSample
-from kolena._experimental.object_detection import ThresholdConfiguration
-from kolena._experimental.object_detection import ThresholdStrategy
-from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSampleMetricsSingleClass
+try:
+    from kolena._experimental.object_detection import TestSample
+    from kolena._experimental.object_detection import ThresholdConfiguration
+    from kolena._experimental.object_detection import ThresholdStrategy
+    from kolena._experimental.object_detection import TestCaseMetricsSingleClass
+    from kolena._experimental.object_detection import TestSampleMetricsSingleClass
+except ImportError:
+    pass
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
