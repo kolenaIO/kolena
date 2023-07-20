@@ -376,7 +376,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
         unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
-        average_precisions = [tcm.AP for _, tcm in metrics]
+        average_precisions = [tcm.mean_AP for _, tcm in metrics]
         return self.test_suite_metrics(unique_locators, average_precisions)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
