@@ -122,9 +122,9 @@ figcaption {
           mask-image: var(--md-admonition-icon--faq);
 }
 
-.md-positive {
+.cell-color-positive {
   color: var(--md-positive-color);
 }
-.md-negative {
+.cell-color-negative {
   color: var(--md-negative-color);
 }
