@@ -299,7 +299,7 @@ def infer(test_sample: TestSample) -> Inference:
 
 model = Model("example-model-name", infer=infer, metadata=dict(
     description="Any freeform metadata can go here",
-    hint="It may be helpful to include information about the model's framwwork, training methodology, dataset, etc.",
+    hint="It may be helpful to include information about the model's framework, training methodology, dataset, etc.",
 ))
 ```
 

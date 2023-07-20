@@ -22,13 +22,12 @@ from typing import Tuple
 import pytest
 from object_detection_3d.seed_test_run import seed_test_run
 from object_detection_3d.seed_test_suite import seed_test_suite
-from object_detection_3d.workflow import AnnotatedBoundingBox
 from object_detection_3d.workflow import AnnotatedBoundingBox3D
 from object_detection_3d.workflow import GroundTruth
 from object_detection_3d.workflow import TestSample
 
+from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.asset import PointCloudAsset
-
 
 TEST_SUITE_NAME = "KITTI 3D Object Detection Smoke Test Suite"
 
@@ -37,7 +36,6 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
     random_prefix = uuid.uuid4()
     n_samples = 10
     n_gt = 5
-    difficulties = ["easy", "hard", "moderate", "unknown"]
     return [
         (
             TestSample(
@@ -49,19 +47,14 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
             ),
             GroundTruth(
                 total_objects=n_gt,
-                n_easy=1,
-                n_moderate=1,
-                n_hard=1,
-                n_unknown=1,
                 n_car=1,
                 n_cyclist=1,
                 n_pedestrian=0,
                 bboxes_2d=[
-                    AnnotatedBoundingBox(
+                    LabeledBoundingBox(
                         label="Car",
                         top_left=(100 + i * 5, 100 + i * 5),
                         bottom_right=(150 + i * 5, 150 + i * 5),
-                        difficulty=random.choice(difficulties),
                     )
                     for i in range(n_gt)
                 ],
@@ -74,7 +67,6 @@ def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
                         center=(100 + i * 10, 100 + i * 10, 50 + i * 10),
                         dimensions=(50, 50, 50),
                         rotations=(0, 0, 0),
-                        difficulty=random.choice(difficulties),
                     )
                     for i in range(n_gt)
                 ],
