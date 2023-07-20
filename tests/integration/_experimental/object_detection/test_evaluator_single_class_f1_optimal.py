@@ -269,7 +269,6 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         metrics=[pair[1] for pair in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS],
         configuration=config,
     )
-    print(test_case_metrics)
     assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
     assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
@@ -281,7 +280,6 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         metrics=[],
         configuration=config,
     )
-    print(plots)
     assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
 
     # test suite behaviour is consistent with fixed evaluator
