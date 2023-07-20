@@ -23,8 +23,10 @@ try:
     from kolena._experimental.object_detection import ClassMetricsPerTestCase
     from kolena._experimental.object_detection import TestCaseMetrics
     from kolena._experimental.object_detection import TestSampleMetrics
+
+    INVALID_IMPORT = False
 except ImportError:
-    exit(0)
+    INVALID_IMPORT = True
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
@@ -248,6 +250,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             min_confidence_above_t=0.9,
             thresholds=[
                 ScoredClassificationLabel("a", 0.1),
+                ScoredClassificationLabel("b", 0.4),
                 ScoredClassificationLabel("c", 0.1),
             ],
             inference_labels=["a", "b"],
@@ -332,6 +335,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 ScoredClassificationLabel("a", 0.1),
                 ScoredClassificationLabel("b", 0.4),
                 ScoredClassificationLabel("c", 0.1),
+                ScoredClassificationLabel("e", 0.1),
             ],
             inference_labels=["a", "b", "c", "e"],
         ),
@@ -375,7 +379,10 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_Confused=True,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.1,
-            thresholds=[ScoredClassificationLabel("e", 0.1)],
+            thresholds=[
+                ScoredClassificationLabel("b", 0.4),
+                ScoredClassificationLabel("e", 0.1),
+            ],
             inference_labels=["b", "e"],
         ),
     ),
@@ -465,6 +472,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
     macro_F1=23776 / 32775,
     mean_AP=125053 / 214500,
 )
+
 
 EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
     CurvePlot(

@@ -29,7 +29,7 @@ try:
     from kolena._experimental.object_detection import TestSampleMetrics
     from kolena._experimental.object_detection import TestSuiteMetrics
 except ImportError:
-    exit(0)
+    pass
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox

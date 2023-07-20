@@ -26,8 +26,10 @@ try:
     from kolena._experimental.object_detection import TestSampleMetrics
     from kolena._experimental.object_detection import TestSampleMetricsSingleClass
     from kolena._experimental.object_detection import TestSuiteMetrics
+
+    INVALID_IMPORT = False
 except ImportError:
-    exit(0)
+    INVALID_IMPORT = True
 
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
@@ -36,6 +38,7 @@ from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, bbox_matches, thresholds, expected",
@@ -165,7 +168,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                 has_Confused=False,
                 max_confidence_above_t=None,
                 min_confidence_above_t=None,
-                thresholds=[ScoredClassificationLabel("a", 0.5)],
+                thresholds=[],
                 inference_labels=[],
             ),
         ),
@@ -199,7 +202,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                 has_Confused=True,
                 max_confidence_above_t=None,
                 min_confidence_above_t=None,
-                thresholds=[ScoredClassificationLabel("a", 0.5)],
+                thresholds=[ScoredClassificationLabel(label="b", score=0.3)],
                 inference_labels=["b"],
             ),
         ),
@@ -233,7 +236,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                 has_Confused=False,
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
-                thresholds=[],
+                thresholds=[ScoredClassificationLabel(label="a", score=0.5)],
                 inference_labels=["a"],
             ),
         ),
@@ -362,6 +365,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
                     ScoredClassificationLabel(label="a", score=0.5),
                     ScoredClassificationLabel(label="b", score=0.2),
                     ScoredClassificationLabel(label="c", score=0.99),
+                    ScoredClassificationLabel(label="d", score=0.0),
                 ],
                 inference_labels=["a", "b", "c", "d"],
             ),
@@ -381,9 +385,11 @@ def test__object_detection__multiclass__test_sample_metrics(
         bbox_matches=bbox_matches,
         thresholds=thresholds,
     )
+    print("multi", test_name, result)
     assert expected == result
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, bbox_matches, thresholds, expected",
@@ -566,9 +572,11 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
         bbox_matches=bbox_matches,
         thresholds=thresholds,
     )
+    print("single", test_name, result)
     assert expected == result
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, metrics, average_precision, expected",
@@ -761,6 +769,7 @@ def test__object_detection__single_class__test_case_metrics_single_class(
     assert expected == result
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, matchings, label, expected",
@@ -952,6 +961,7 @@ def test__object_detection__multiclass__bbox_matches_for_one_label(
     assert expected == result
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, label, thresholds, class_matches, samples_count, average_precision, expected",
@@ -1076,6 +1086,7 @@ def test__object_detection__multiclass__class_metrics_per_test_case(
     assert expected == result
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, per_class_metrics, metrics, expected",
@@ -1362,6 +1373,7 @@ def test__object_detection__multiclass__test_case_metrics(
     assert expected == result
 
 
+@pytest.mark.skipif(INVALID_IMPORT, reason="metrics extra absent")
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, locators, aps, expected",

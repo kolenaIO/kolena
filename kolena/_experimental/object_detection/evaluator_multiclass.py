@@ -92,15 +92,14 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
-        image_labels = {gt.label for gt, _ in bbox_matches.matched + bbox_matches.unmatched_gt}
-        fields = [
-            ScoredClassificationLabel(label=label, score=thresholds[label])
-            for label in thresholds.keys()
-            if label in image_labels
-        ]
         inference_labels = {inf.label for _, inf in bbox_matches.matched + bbox_matches.unmatched_gt if inf} | {
             inf.label for inf in bbox_matches.unmatched_inf
         }
+        fields = [
+            ScoredClassificationLabel(label=label, score=thresholds[label])
+            for label in sorted(thresholds.keys())
+            if label in inference_labels
+        ]
         return TestSampleMetrics(
             TP_labels=sorted({inf.label for inf in tp}),
             TP=tp,
