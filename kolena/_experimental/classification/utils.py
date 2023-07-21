@@ -172,12 +172,28 @@ def compute_test_case_confusion_matrix(
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
 ) -> Optional[Plot]:
+    if len(ground_truths) != len(metrics):
+        log.warn(
+            f"ground_truths ({len(ground_truths)}) and metrics ({len(metrics)}) ",
+            "differ in length for a confusion matrix",
+        )
+        return None
+
+    if len(ground_truths) == 0:
+        log.warn("no ground_truths provided for a confusion matrix")
+        return None
+
+    # if there are only None classifications in the ground_truths, this leads to a bad confusion matrix
+    if not any(gt.classification for gt in ground_truths):
+        log.warn("no positive class in ground_truths provided for a confusion matrix")
+        return None
+
     labels: Set[str] = set()
     none_label = "None"
     confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
 
     for gt, metric in zip(ground_truths, metrics):
-        actual_label = gt.classification.label
+        actual_label = gt.classification.label if gt.classification else none_label
         predicted_label = metric.classification.label if metric.classification else none_label
         labels.add(actual_label)
         labels.add(predicted_label)
@@ -185,7 +201,7 @@ def compute_test_case_confusion_matrix(
 
     ordered_labels = sorted([label for label in labels if label != none_label])
 
-    # create a 2 by 2 confusion matrix to outline TP, FP, FN, and TN when there is only one class
+    # create a 2 by 2 confusion matrix to outline TP, FP, FN, and TN for binary classification
     if len(ordered_labels) == 1:
         label = ordered_labels[0]
         matrix = [

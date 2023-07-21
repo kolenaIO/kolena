@@ -42,8 +42,8 @@ class TestSample(Image):
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for the pre-built Classification workflow."""
 
-    classification: ClassificationLabel
-    """The classfication label associated with an image."""
+    classification: Optional[ClassificationLabel]
+    """The classfication label associated with an image. For binary classification, the negative class is `None`."""
 
 
 @dataclass(frozen=True)

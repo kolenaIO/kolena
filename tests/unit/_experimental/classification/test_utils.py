@@ -17,20 +17,24 @@ from typing import Tuple
 
 import pytest
 
+from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.plot import BarPlot
+from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Histogram
 
 classification = pytest.importorskip("kolena._experimental.classification")
 classification_utils = pytest.importorskip("kolena._experimental.classification.utils")
 
 ClassMetricsPerTestCase = classification.ClassMetricsPerTestCase
+GroundTruth = classification.GroundTruth
 TestSampleMetrics = classification.TestSampleMetrics
 get_label_confidence = classification_utils.get_label_confidence
 get_histogram_range = classification_utils.get_histogram_range
 create_histogram = classification_utils.create_histogram
 compute_test_case_confidence_histograms = classification_utils.compute_test_case_confidence_histograms
 metric_bar_plot_by_class = classification_utils.metric_bar_plot_by_class
+compute_test_case_confusion_matrix = classification_utils.compute_test_case_confusion_matrix
 
 
 @pytest.mark.metrics
@@ -38,10 +42,10 @@ metric_bar_plot_by_class = classification_utils.metric_bar_plot_by_class
     "test_name, label, inference_labels, expected",
     [
         ("empty", "", [], 0),
-        ("one diff", "a", [ScoredClassificationLabel("b", 0.1)], 0),
+        ("one dif", "a", [ScoredClassificationLabel("b", 0.1)], 0),
         ("one same", "a", [ScoredClassificationLabel("a", 0.1)], 0.1),
         (
-            "many diff",
+            "many dif",
             "a",
             [
                 ScoredClassificationLabel("b", 0.1),
@@ -84,7 +88,7 @@ def test__get_label_confidence(
         ("one", [1.0], (0.98, 1.0, 1)),
         ("zero", [0.0], (0.0, 0.02, 1)),
         ("two", [0.0, 1.0], (0.0, 1.0, 50)),
-        ("half", [0.5, 1.0], (0.5, 1.0, 25)),
+        ("hal", [0.5, 1.0], (0.5, 1.0, 25)),
         ("half unaffected", [0.5, 0.8, 0.9, 1.0], (0.5, 1.0, 25)),
         ("odd", [0.33, 0.67, 0.4, 0.5, 0.6], (0.32, 0.68, 18)),
     ],
@@ -361,7 +365,7 @@ def test__compute_test_case_confidence_histograms(
         ),
         (
             "fake metric",
-            "asdf",
+            "asd",
             [
                 ClassMetricsPerTestCase(
                     label="a",
@@ -513,7 +517,215 @@ def test__metric_bar_plot_by_class(
     test_name: str,
     metric_name: str,
     per_class_metrics: List[ClassMetricsPerTestCase],
-    expected,
-) -> Optional[BarPlot]:
+    expected: Optional[BarPlot],
+) -> None:
     plot = metric_bar_plot_by_class(metric_name, per_class_metrics)
     assert plot == expected
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "test_name, ground_truths, metrics, expected",
+    [
+        (
+            "empty",
+            [],
+            [],
+            None,
+        ),
+        (
+            "different length",
+            [GroundTruth(classification=ClassificationLabel("a"))],
+            [],
+            None,
+        ),
+        (
+            "binary - one tp",
+            [GroundTruth(classification=ClassificationLabel("a"))],
+            [TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True)],
+            ConfusionMatrix(title="Label Confusion Matrix", labels=["a", "Not a"], matrix=[[1, 0], [0, 0]]),
+        ),
+        (
+            "binary - one fp",
+            [GroundTruth(classification=ClassificationLabel("a"))],
+            [TestSampleMetrics(classification=None, margin=None, is_correct=False)],
+            ConfusionMatrix(title="Label Confusion Matrix", labels=["a", "Not a"], matrix=[[0, 1], [0, 0]]),
+        ),
+        (
+            "binary - one fn",
+            [GroundTruth(classification=None)],
+            [TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=False)],
+            None,
+        ),
+        (
+            "binary - one tn",
+            [GroundTruth(classification=None)],
+            [TestSampleMetrics(classification=None, margin=None, is_correct=True)],
+            None,
+        ),
+        (
+            "binary - one valid fn",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=None),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=False),
+            ],
+            ConfusionMatrix(title="Label Confusion Matrix", labels=["a", "Not a"], matrix=[[1, 0], [1, 0]]),
+        ),
+        (
+            "binary - one valid tn",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=None),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=None, margin=None, is_correct=True),
+            ],
+            ConfusionMatrix(title="Label Confusion Matrix", labels=["a", "Not a"], matrix=[[1, 0], [0, 1]]),
+        ),
+        (
+            "binary - complete",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=None),
+                GroundTruth(classification=None),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=None, margin=None, is_correct=False),
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=False),
+                TestSampleMetrics(classification=None, margin=None, is_correct=True),
+            ],
+            ConfusionMatrix(title="Label Confusion Matrix", labels=["a", "Not a"], matrix=[[2, 1], [1, 1]]),
+        ),
+        (
+            "multiclass - tp",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("b")),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("b", 0.9), margin=0, is_correct=True),
+            ],
+            ConfusionMatrix(title="Label Confusion Matrix", labels=["a", "b"], matrix=[[1, 0], [0, 1]]),
+        ),
+        (
+            "multiclass - fp",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=None),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=None, margin=None, is_correct=False),
+                TestSampleMetrics(classification=None, margin=None, is_correct=True),
+            ],
+            ConfusionMatrix(
+                title="Label Confusion Matrix",
+                labels=["a", "b", "None"],
+                matrix=[[1, 0, 0], [0, 0, 1], [0, 0, 1]],
+            ),
+        ),
+        (
+            "multiclass - fn",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=None),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=None, margin=None, is_correct=False),
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=False),
+            ],
+            ConfusionMatrix(
+                title="Label Confusion Matrix",
+                labels=["a", "b", "None"],
+                matrix=[[1, 0, 0], [0, 0, 1], [1, 0, 0]],
+            ),
+        ),
+        (
+            "multiclass - tn",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=None),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=False),
+                TestSampleMetrics(classification=None, margin=0, is_correct=False),
+            ],
+            ConfusionMatrix(
+                title="Label Confusion Matrix",
+                labels=["a", "b", "None"],
+                matrix=[[1, 0, 0], [1, 0, 0], [0, 0, 1]],
+            ),
+        ),
+        (
+            "multiclass - complete",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=ClassificationLabel("c")),
+                GroundTruth(classification=ClassificationLabel("c")),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("b", 0.9), margin=0, is_correct=False),
+                TestSampleMetrics(classification=ScoredClassificationLabel("b", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("c", 0.9), margin=0, is_correct=False),
+                TestSampleMetrics(classification=ScoredClassificationLabel("c", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("d", 0.9), margin=0, is_correct=False),
+            ],
+            ConfusionMatrix(
+                title="Label Confusion Matrix",
+                labels=["a", "b", "c", "d"],
+                matrix=[[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]],
+            ),
+        ),
+        (
+            "multiclass - complete v2",
+            [
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("a")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=ClassificationLabel("b")),
+                GroundTruth(classification=ClassificationLabel("c")),
+                GroundTruth(classification=ClassificationLabel("c")),
+            ],
+            [
+                TestSampleMetrics(classification=ScoredClassificationLabel("a", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("b", 0.9), margin=0, is_correct=False),
+                TestSampleMetrics(classification=ScoredClassificationLabel("b", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=ScoredClassificationLabel("c", 0.9), margin=0, is_correct=False),
+                TestSampleMetrics(classification=ScoredClassificationLabel("c", 0.9), margin=0, is_correct=True),
+                TestSampleMetrics(classification=None, margin=None, is_correct=False),
+            ],
+            ConfusionMatrix(
+                title="Label Confusion Matrix",
+                labels=["a", "b", "c", "None"],
+                matrix=[[1, 1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 1], [0, 0, 0, 0]],
+            ),
+        ),
+    ],
+)
+def test__compute_test_case_confusion_matrix(
+    test_name: str,
+    ground_truths: List[GroundTruth],
+    metrics: List[TestSampleMetrics],
+    expected: ConfusionMatrix,
+) -> None:
+    conf_mat = compute_test_case_confusion_matrix(ground_truths, metrics)
+    assert conf_mat == expected
