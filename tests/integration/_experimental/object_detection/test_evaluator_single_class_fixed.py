@@ -50,7 +50,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
-                LabeledBoundingBox((7, 7), (8, 8), "d"),
+                LabeledBoundingBox((7, 7), (8, 8), "d"),  # single class OD can have 1+ classes (not distinguished)
             ],
         ),
         Inference(
@@ -184,6 +184,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSingleClass]] = [
     (
+        # single class OD can have 1+ classes (not distinguished)
         TestSample(locator=fake_locator(112, "OD"), metadata={}),
         TestSampleMetricsSingleClass(
             TP=[
