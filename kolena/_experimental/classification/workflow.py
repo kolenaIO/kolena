@@ -134,7 +134,7 @@ class ClassMetricsPerTestCase(MetricsTestCase):
     n_incorrect: int
     """Number of incorrect predictions for this class within the test case."""
 
-    accuracy: float
+    Accuracy: float
     """Accuracy for predictions for this class within the test case."""
 
     Precision: float
@@ -188,7 +188,7 @@ class TestCaseMetrics(MetricsTestCase):
     n_incorrect: int
     """Total number of incorrect predictions within this test case."""
 
-    macro_accuracy: float
+    macro_Accuracy: float
     """Macro-averaged accuracy for predictions within this test case."""
 
     macro_Precision: float

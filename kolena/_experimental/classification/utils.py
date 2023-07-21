@@ -11,15 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import defaultdict
+from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 
 import numpy as np
 
+from kolena._experimental.classification.workflow import ClassMetricsPerTestCase
+from kolena._experimental.classification.workflow import GroundTruth
+from kolena._experimental.classification.workflow import Inference
+from kolena._experimental.classification.workflow import TestSampleMetrics
+from kolena._extras.metrics import sklearn_metrics
 from kolena._utils import log
 from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.plot import BarPlot
+from kolena.workflow.plot import ConfusionMatrix
+from kolena.workflow.plot import Curve
+from kolena.workflow.plot import CurvePlot
 from kolena.workflow.plot import Histogram
+from kolena.workflow.plot import Plot
 
 
 def get_label_confidence(label: str, inference_labels: List[ScoredClassificationLabel]) -> float:
@@ -28,9 +41,7 @@ def get_label_confidence(label: str, inference_labels: List[ScoredClassification
 
 def get_histogram_range(values: List[float]) -> Optional[Tuple[float, float, int]]:
     if len(values) == 0:
-        log.warn(
-            "insufficient values provided for confidence histograms",
-        )
+        log.warn("insufficient values provided for confidence histograms")
         return None
 
     NUM002 = 0.02
@@ -75,3 +86,118 @@ def create_histogram(
         buckets=list(buckets),
         frequency=list(frequency),
     )
+
+
+def compute_test_case_confidence_histograms(
+    metrics: List[TestSampleMetrics],
+    range: Tuple[float, float, int],
+) -> List[Histogram]:
+    all = [mts.classification.score for mts in metrics if mts.classification]
+    correct = [mts.classification.score for mts in metrics if mts.classification and mts.is_correct]
+    incorrect = [mts.classification.score for mts in metrics if mts.classification and not mts.is_correct]
+
+    plots = [
+        create_histogram(
+            values=all,
+            range=range,
+            title="Score Distribution (All)",
+            x_label="Confidence",
+            y_label="Count",
+        ),
+        create_histogram(
+            values=correct,
+            range=range,
+            title="Score Distribution (Correct)",
+            x_label="Confidence",
+            y_label="Count",
+        ),
+        create_histogram(
+            values=incorrect,
+            range=range,
+            title="Score Distribution (Incorrect)",
+            x_label="Confidence",
+            y_label="Count",
+        ),
+    ]
+    return plots
+
+
+def metric_bar_plot_by_class(
+    metric_name: str,
+    per_class_metrics: List[ClassMetricsPerTestCase],
+) -> Optional[BarPlot]:
+    valid_metric_names = {"n_correct", "n_incorrect", "Accuracy", "Precision", "Recall", "F1", "FPR"}
+    if metric_name not in valid_metric_names:
+        return None
+    values = [(pcm.label, getattr(pcm, metric_name)) for pcm in per_class_metrics]
+    valid_pairs = [(label, value) for label, value in values if value != 0.0]
+    return (
+        BarPlot(
+            title=f"{metric_name} by Class",
+            x_label="Class",
+            y_label=metric_name,
+            labels=[label for label, _ in valid_pairs],
+            values=[value for _, value in valid_pairs],
+        )
+        if len(valid_pairs) > 0
+        else None
+    )
+
+
+def compute_test_case_roc_curves(
+    labels: List[str],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+) -> Optional[Plot]:
+    curves: List[Curve] = []
+    for label in sorted(labels):
+        y_true = [1 if gt.classification.label == label else 0 for gt in ground_truths]
+        y_score = [get_label_confidence(label, inf.inferences) for inf in inferences]
+        fpr_values, tpr_values, _ = sklearn_metrics.roc_curve(y_true=y_true, y_score=y_score)
+
+        if len(fpr_values) > 0 and len(tpr_values) > 0:
+            curves.append(Curve(x=fpr_values, y=tpr_values, label=label))
+
+    if len(curves) > 0:
+        return CurvePlot(
+            title="Receiver Operating Characteristic (One-vs-Rest)",
+            x_label="False Positive Rate (FPR)",
+            y_label="True Positive Rate (TPR)",
+            curves=curves,
+        )
+    return None
+
+
+def compute_test_case_confusion_matrix(
+    ground_truths: List[GroundTruth],
+    metrics: List[TestSampleMetrics],
+) -> Optional[Plot]:
+    labels: Set[str] = set()
+    none_label = "None"
+    confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
+    for gt, metric in zip(ground_truths, metrics):
+        actual_label = gt.classification.label
+        predicted_label = metric.classification.label if metric.classification else none_label
+        labels.add(actual_label)
+        labels.add(predicted_label)
+        confusion_matrix[actual_label][predicted_label] += 1
+
+    ordered_labels = sorted([label for label in labels if label != none_label])
+
+    # create a 2 by 2 confusion matrix to outline TP, FP, FN, and TN when there is only one class
+    if len(ordered_labels) == 1:
+        label = ordered_labels[0]
+        matrix = [
+            [confusion_matrix[label][label], confusion_matrix[label][none_label]],
+            [confusion_matrix[none_label][label], confusion_matrix[none_label][none_label]],
+        ]
+        return ConfusionMatrix(title="Label Confusion Matrix", labels=[label, f"Not {label}"], matrix=matrix)
+
+    if none_label in labels:
+        ordered_labels.append(none_label)
+
+    matrix = []
+    for actual_label in ordered_labels:
+        matrix.append([confusion_matrix[actual_label][predicted_label] for predicted_label in ordered_labels])
+    return ConfusionMatrix(title="Label Confusion Matrix", labels=ordered_labels, matrix=matrix)
