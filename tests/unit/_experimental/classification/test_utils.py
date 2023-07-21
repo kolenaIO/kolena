@@ -21,6 +21,8 @@ from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.plot import BarPlot
 from kolena.workflow.plot import ConfusionMatrix
+from kolena.workflow.plot import Curve
+from kolena.workflow.plot import CurvePlot
 from kolena.workflow.plot import Histogram
 
 classification = pytest.importorskip("kolena._experimental.classification")
@@ -536,6 +538,194 @@ def test__metric_bar_plot_by_class(
             [],
             None,
         ),
+        (
+            "one",
+            ["cat"],
+            [GroundTruth(classification=ClassificationLabel("cat"))],
+            [Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)])],
+            None,
+        ),
+        (
+            "two",
+            ["cat"],
+            [
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+            ],
+            None,
+        ),
+        (
+            "three",
+            ["cat"],
+            [
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.4), ScoredClassificationLabel("dog", 0.6)]),
+            ],
+            CurvePlot(
+                title="Receiver Operating Characteristic (One-vs-Rest)",
+                x_label="False Positive Rate (FPR)",
+                y_label="True Positive Rate (TPR)",
+                curves=[Curve(x=[0.0, 0.0, 0.0], y=[0.0, 1 / 3, 1.0], label="cat")],
+            ),
+        ),
+        (
+            "animals",
+            ["cat", "dog"],
+            [
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.4), ScoredClassificationLabel("dog", 0.6)]),
+            ],
+            CurvePlot(
+                title="Receiver Operating Characteristic (One-vs-Rest)",
+                x_label="False Positive Rate (FPR)",
+                y_label="True Positive Rate (TPR)",
+                curves=[
+                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 1 / 3, 1.0], label="cat"),
+                    Curve(x=[0.0, 1 / 3, 1.0], y=[0.0, 0.0, 0.0], label="dog"),
+                ],
+            ),
+        ),
+        (
+            "animals mix match",
+            ["cat", "dog"],
+            [
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.4), ScoredClassificationLabel("dog", 0.6)]),
+            ],
+            CurvePlot(
+                title="Receiver Operating Characteristic (One-vs-Rest)",
+                x_label="False Positive Rate (FPR)",
+                y_label="True Positive Rate (TPR)",
+                curves=[
+                    Curve(x=[0.0, 1 / 3, 1.0], y=[0.0, 0.0, 0.0], label="cat"),
+                    Curve(x=[0.0, 0.0, 0.0], y=[0.0, 1 / 3, 1.0], label="dog"),
+                ],
+            ),
+        ),
+        (
+            "animals has fp",
+            ["cat", "dog"],
+            [
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.9), ScoredClassificationLabel("cat", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.4), ScoredClassificationLabel("cat", 0.6)]),
+            ],
+            CurvePlot(
+                title="Receiver Operating Characteristic (One-vs-Rest)",
+                x_label="False Positive Rate (FPR)",
+                y_label="True Positive Rate (TPR)",
+                curves=[
+                    Curve(x=[0.0, 0.0, 0.0, 1.0], y=[0.0, 0.5, 1.0, 1.0], label="cat"),
+                    Curve(x=[0.0, 0.0, 1.0], y=[0.0, 1.0, 1.0], label="dog"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "animals large test",
+            ["cat", "dog"],
+            [
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.9), ScoredClassificationLabel("cat", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.8), ScoredClassificationLabel("cat", 0.2)]),
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.7), ScoredClassificationLabel("cat", 0.3)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.4), ScoredClassificationLabel("dog", 0.6)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.3), ScoredClassificationLabel("dog", 0.7)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.2), ScoredClassificationLabel("dog", 0.8)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.1), ScoredClassificationLabel("dog", 0.9)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)]),
+            ],
+            CurvePlot(
+                title="Receiver Operating Characteristic (One-vs-Rest)",
+                x_label="False Positive Rate (FPR)",
+                y_label="True Positive Rate (TPR)",
+                curves=[
+                    Curve(x=[0, 0, 0.25, 0.25, 1], y=[0, 1 / 6, 1 / 3, 1 / 2, 1], label="cat"),
+                    Curve(x=[0, 1 / 6, 1 / 2, 2 / 3, 5 / 6, 1], y=[0, 0.25, 0.75, 0.75, 1, 1], label="dog"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "animals large test - dog",
+            ["dog"],
+            [
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("dog")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+                GroundTruth(classification=ClassificationLabel("cat")),
+            ],
+            [
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.9), ScoredClassificationLabel("cat", 0.1)]),
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.8), ScoredClassificationLabel("cat", 0.2)]),
+                Inference(inferences=[ScoredClassificationLabel("dog", 0.7), ScoredClassificationLabel("cat", 0.3)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.5), ScoredClassificationLabel("dog", 0.5)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.4), ScoredClassificationLabel("dog", 0.6)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.3), ScoredClassificationLabel("dog", 0.7)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.2), ScoredClassificationLabel("dog", 0.8)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.1), ScoredClassificationLabel("dog", 0.9)]),
+                Inference(inferences=[ScoredClassificationLabel("cat", 0.9), ScoredClassificationLabel("dog", 0.1)]),
+            ],
+            CurvePlot(
+                title="Receiver Operating Characteristic (One-vs-Rest)",
+                x_label="False Positive Rate (FPR)",
+                y_label="True Positive Rate (TPR)",
+                curves=[
+                    Curve(x=[0, 1 / 6, 1 / 2, 2 / 3, 5 / 6, 1], y=[0, 0.25, 0.75, 0.75, 1, 1], label="dog"),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
     ],
 )
 def test__compute_test_case_roc_curves(
@@ -543,7 +733,7 @@ def test__compute_test_case_roc_curves(
     labels: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-    expected: Optional[BarPlot],
+    expected: Optional[CurvePlot],
 ) -> None:
     plot = compute_test_case_roc_curves(labels, ground_truths, inferences)
     assert plot == expected

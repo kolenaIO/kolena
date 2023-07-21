@@ -149,15 +149,28 @@ def compute_test_case_roc_curves(
     labels: List[str],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-) -> Optional[Plot]:
+) -> Optional[CurvePlot]:
+    if len(ground_truths) != len(inferences):
+        log.warn(
+            f"ground_truths ({len(ground_truths)}) and inferences ({len(inferences)}) "
+            "differ in length for a roc_curve",
+        )
+        return None
+
+    if len(ground_truths) <= 2:
+        log.warn("insufficient ground_truths for a roc_curve")
+        return None
+
     curves: List[Curve] = []
     for label in sorted(labels):
         y_true = [1 if gt.classification.label == label else 0 for gt in ground_truths]
         y_score = [get_label_confidence(label, inf.inferences) for inf in inferences]
         fpr_values, tpr_values, _ = sklearn_metrics.roc_curve(y_true=y_true, y_score=y_score)
+        fpr_values = np.nan_to_num(fpr_values, nan=0.0)
+        tpr_values = np.nan_to_num(tpr_values, nan=0.0)
 
         if len(fpr_values) > 0 and len(tpr_values) > 0:
-            curves.append(Curve(x=fpr_values, y=tpr_values, label=label))
+            curves.append(Curve(x=fpr_values.tolist(), y=tpr_values.tolist(), label=label))
 
     if len(curves) > 0:
         return CurvePlot(
