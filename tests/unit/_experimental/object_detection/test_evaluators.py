@@ -383,7 +383,6 @@ def test__object_detection__multiclass__test_sample_metrics(
         bbox_matches=bbox_matches,
         thresholds=thresholds,
     )
-    print("multi", test_name, result)
     assert expected == result
 
 
@@ -569,7 +568,6 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
         bbox_matches=bbox_matches,
         thresholds=thresholds,
     )
-    print("single", test_name, result)
     assert expected == result
 
 

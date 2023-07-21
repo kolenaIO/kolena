@@ -296,12 +296,12 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
         MulticlassInferenceMatches(
             matched=[
                 (
-                    LabeledBoundingBox(top_left=(1, 1.0), bottom_right=(6, 6.0), label="cow"),
-                    ScoredLabeledBoundingBox((1, 1.0), (6, 6.0), "cow", 0.9),
+                    LabeledBoundingBox(top_left=(1, 1), bottom_right=(6, 6), label="cow"),
+                    ScoredLabeledBoundingBox((1, 1), (6, 6), "cow", 0.9),
                 ),
                 (
-                    LabeledBoundingBox(top_left=(10, 10.0), bottom_right=(22, 22.0), label="cow"),
-                    ScoredLabeledBoundingBox((10, 10.0), (20, 20.0), "cow", 0.75),
+                    LabeledBoundingBox(top_left=(10, 10), bottom_right=(22, 22), label="cow"),
+                    ScoredLabeledBoundingBox((10, 10), (20, 20), "cow", 0.75),
                 ),
             ],
             unmatched_gt=[
@@ -328,8 +328,8 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
         MulticlassInferenceMatches(
             matched=[
                 (
-                    LabeledBoundingBox(top_left=(10, 10.0), bottom_right=(22, 22.0), label="cow"),
-                    ScoredLabeledBoundingBox((10, 10.0), (20, 20.0), "cow", 0.77),
+                    LabeledBoundingBox(top_left=(10, 10), bottom_right=(22, 22), label="cow"),
+                    ScoredLabeledBoundingBox((10, 10), (20, 20), "cow", 0.77),
                 ),
             ],
             unmatched_gt=[
@@ -339,7 +339,7 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
                 ),
             ],
             unmatched_inf=[
-                ScoredLabeledBoundingBox((10, 10.0), (22, 22.0), "cat", 0.3),
+                ScoredLabeledBoundingBox((10, 10), (22, 22), "cat", 0.3),
                 ScoredLabeledBoundingBox((10, 10), (20, 20), "dog", 0.5),
             ],
         ),
@@ -347,11 +347,11 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
             matched=[
                 (
                     LabeledPolygon(
-                        points=[(10, 10.0), (10, 22.0), (22, 22.0), (22, 10.0)],
+                        points=[(10, 10), (10, 22), (22, 22), (22, 10)],
                         label="cow",
                     ),
                     ScoredLabeledPolygon(
-                        points=[(10, 10.0), (10, 20.0), (20, 20.0), (20, 10.0)],
+                        points=[(10, 10), (10, 20), (20, 20), (20, 10)],
                         label="cow",
                         score=0.4,
                     ),
@@ -360,7 +360,7 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
             unmatched_gt=[],
             unmatched_inf=[
                 ScoredLabeledPolygon(
-                    points=[(10, 10.0), (10, 22.0), (22, 22.0), (22, 10.0)],
+                    points=[(10, 10), (10, 22), (22, 22), (22, 10)],
                     label="cow",
                     score=0.5,
                 ),
@@ -370,11 +370,11 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
             matched=[
                 (
                     LabeledPolygon(
-                        points=[(10, 10.0), (10, 22.0), (22, 22.0), (22, 10.0)],
+                        points=[(10, 10), (10, 22), (22, 22), (22, 10)],
                         label="cat",
                     ),
                     ScoredLabeledPolygon(
-                        points=[(10, 10.0), (10, 20.0), (20, 20.0), (20, 10.0)],
+                        points=[(10, 10), (10, 20), (20, 20), (20, 10)],
                         label="cat",
                         score=0.2,
                     ),
@@ -383,7 +383,7 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
             unmatched_gt=[],
             unmatched_inf=[
                 ScoredLabeledPolygon(
-                    points=[(10, 10.0), (10, 22.0), (22, 22.0), (22, 10.0)],
+                    points=[(10, 10), (10, 22), (22, 22), (22, 10)],
                     label="dog",
                     score=0.1,
                 ),

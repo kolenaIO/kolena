@@ -243,7 +243,7 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 
 
 @pytest.mark.metrics
-def test__object_detection__multiclass_evaluator__fixed() -> None:
+def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
     from kolena._experimental.object_detection import ObjectDetectionEvaluator
 
     config = ThresholdConfiguration(
