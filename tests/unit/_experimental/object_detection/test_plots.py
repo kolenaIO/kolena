@@ -1039,7 +1039,7 @@ def test__curve_plots(
         ),
     ],
 )
-def test__curve_plots__multiclass__none(
+def test__curve_plots__multiclass__unique(
     test_name: str,
     f1_curve: CurvePlot,
     pr_curve: CurvePlot,

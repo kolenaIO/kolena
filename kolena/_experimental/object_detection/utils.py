@@ -98,7 +98,6 @@ def _compute_threshold_curve(
         if recall in recalls:
             idx = recalls.index(recall)
             precisions[idx] = max(precisions[idx], precision)
-            recalls[idx] = max(recalls[idx], recall)
         else:
             precisions.append(precision)
             recalls.append(recall)
