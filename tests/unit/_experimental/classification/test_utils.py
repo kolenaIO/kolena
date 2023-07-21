@@ -17,13 +17,23 @@ from typing import Tuple
 
 import pytest
 
-from kolena._experimental.classification import ClassMetricsPerTestCase
-from kolena._experimental.classification import TestSampleMetrics
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.plot import BarPlot
 from kolena.workflow.plot import Histogram
 
+classification = pytest.importorskip("kolena._experimental.classification")
+classification_utils = pytest.importorskip("kolena._experimental.classification.utils")
 
+ClassMetricsPerTestCase = classification.ClassMetricsPerTestCase
+TestSampleMetrics = classification.TestSampleMetrics
+get_label_confidence = classification_utils.get_label_confidence
+get_histogram_range = classification_utils.get_histogram_range
+create_histogram = classification_utils.create_histogram
+compute_test_case_confidence_histograms = classification_utils.compute_test_case_confidence_histograms
+metric_bar_plot_by_class = classification_utils.metric_bar_plot_by_class
+
+
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, label, inference_labels, expected",
     [
@@ -60,12 +70,11 @@ def test__get_label_confidence(
     inference_labels: List[ScoredClassificationLabel],
     expected: float,
 ) -> None:
-    from kolena._experimental.classification.utils import get_label_confidence
-
     confidence = get_label_confidence(label, inference_labels)
     assert confidence == expected
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, values, expected",
     [
@@ -85,12 +94,11 @@ def test__get_histogram_range(
     values: List[float],
     expected: Optional[Tuple[float, float, int]],
 ) -> None:
-    from kolena._experimental.classification.utils import get_histogram_range
-
     range = get_histogram_range(values)
     assert range == expected
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, values, range, title, x_label, y_label, expected",
     [
@@ -177,12 +185,11 @@ def test__create_histogram(
     y_label: str,
     expected: Histogram,
 ) -> None:
-    from kolena._experimental.classification.utils import create_histogram
-
     histo = create_histogram(values, range, title, x_label, y_label)
     assert histo == expected
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, metrics, range, expected",
     [
@@ -338,12 +345,11 @@ def test__compute_test_case_confidence_histograms(
     range: Tuple[float, float, int],
     expected: List[Histogram],
 ) -> None:
-    from kolena._experimental.classification.utils import compute_test_case_confidence_histograms
-
     histo = compute_test_case_confidence_histograms(metrics, range)
     assert histo == expected
 
 
+@pytest.mark.metrics
 @pytest.mark.parametrize(
     "test_name, metric_name, per_class_metrics, expected",
     [
@@ -509,7 +515,5 @@ def test__metric_bar_plot_by_class(
     per_class_metrics: List[ClassMetricsPerTestCase],
     expected,
 ) -> Optional[BarPlot]:
-    from kolena._experimental.classification.utils import metric_bar_plot_by_class
-
     plot = metric_bar_plot_by_class(metric_name, per_class_metrics)
     assert plot == expected
