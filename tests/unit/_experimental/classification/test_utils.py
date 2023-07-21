@@ -28,11 +28,13 @@ classification_utils = pytest.importorskip("kolena._experimental.classification.
 
 ClassMetricsPerTestCase = classification.ClassMetricsPerTestCase
 GroundTruth = classification.GroundTruth
+Inference = classification.Inference
 TestSampleMetrics = classification.TestSampleMetrics
 get_label_confidence = classification_utils.get_label_confidence
 get_histogram_range = classification_utils.get_histogram_range
 create_histogram = classification_utils.create_histogram
 compute_test_case_confidence_histograms = classification_utils.compute_test_case_confidence_histograms
+compute_test_case_roc_curves = classification_utils.compute_test_case_roc_curves
 metric_bar_plot_by_class = classification_utils.metric_bar_plot_by_class
 compute_test_case_confusion_matrix = classification_utils.compute_test_case_confusion_matrix
 
@@ -520,6 +522,30 @@ def test__metric_bar_plot_by_class(
     expected: Optional[BarPlot],
 ) -> None:
     plot = metric_bar_plot_by_class(metric_name, per_class_metrics)
+    assert plot == expected
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "test_name, labels, ground_truths, inferences, expected",
+    [
+        (
+            "empty",
+            [],
+            [],
+            [],
+            None,
+        ),
+    ],
+)
+def test__compute_test_case_roc_curves(
+    test_name: str,
+    labels: List[str],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    expected: Optional[BarPlot],
+) -> None:
+    plot = compute_test_case_roc_curves(labels, ground_truths, inferences)
     assert plot == expected
 
 

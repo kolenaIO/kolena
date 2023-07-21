@@ -144,6 +144,7 @@ def metric_bar_plot_by_class(
     )
 
 
+# assuming multiclass, where no classifications are None
 def compute_test_case_roc_curves(
     labels: List[str],
     ground_truths: List[GroundTruth],
@@ -168,13 +169,14 @@ def compute_test_case_roc_curves(
     return None
 
 
+# handles both binary and multi, assumes binary contains None type
 def compute_test_case_confusion_matrix(
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
 ) -> Optional[Plot]:
     if len(ground_truths) != len(metrics):
         log.warn(
-            f"ground_truths ({len(ground_truths)}) and metrics ({len(metrics)}) ",
+            f"ground_truths ({len(ground_truths)}) and metrics ({len(metrics)}) "
             "differ in length for a confusion matrix",
         )
         return None

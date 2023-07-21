@@ -45,6 +45,9 @@ class GroundTruth(BaseGroundTruth):
     classification: Optional[ClassificationLabel]
     """The classfication label associated with an image. For binary classification, the negative class is `None`."""
 
+    # TODO: in the multiclass evaluator, assert that there are no None GT classifications, only okay in bin-class
+    # maybe needs ClassificationLabel adjustment
+
 
 @dataclass(frozen=True)
 class Inference(BaseInference):

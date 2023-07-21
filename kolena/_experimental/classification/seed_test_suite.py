@@ -71,6 +71,11 @@ test_samples = [
 ]
 
 
+# TODO: shrink and filter on classes - make sure seeding by super cat
+# maybe not whole workflow, but examples
+# binary classification evaluator is not implemented
+# test_samples = test_samples[:500]
+
 complete_test_case = TestCase(
     "ImageNet-1k :: complete [Prebuilt Multiclass Classification]",
     test_samples=test_samples,
