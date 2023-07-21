@@ -92,7 +92,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
-        inference_labels = {inf.label for _, inf in bbox_matches.matched + bbox_matches.unmatched_gt if inf} | {
+        inference_labels = {inf.label for _, inf in bbox_matches.matched} | {
             inf.label for inf in bbox_matches.unmatched_inf
         }
         fields = [
