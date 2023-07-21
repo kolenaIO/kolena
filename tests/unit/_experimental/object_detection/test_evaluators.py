@@ -25,7 +25,7 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
-object_detection = pytest.importorskip("kolena._experimental.object_detection")
+object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
 TestCaseMetrics = object_detection.TestCaseMetrics
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass

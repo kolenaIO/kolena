@@ -31,7 +31,7 @@ from tests.integration._experimental.object_detection.test_evaluator_single_clas
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
 
-object_detection = pytest.importorskip("kolena._experimental.object_detection")
+object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 TestSample = object_detection.TestSample
 ThresholdConfiguration = object_detection.ThresholdConfiguration
 ThresholdStrategy = object_detection.ThresholdStrategy

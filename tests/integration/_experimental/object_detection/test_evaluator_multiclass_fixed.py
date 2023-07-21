@@ -26,7 +26,7 @@ from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-object_detection = pytest.importorskip("kolena._experimental.object_detection")
+object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
 GroundTruth = object_detection.GroundTruth
 Inference = object_detection.Inference
