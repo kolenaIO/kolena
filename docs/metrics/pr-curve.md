@@ -42,12 +42,12 @@ evaluating threshold; otherwise, it's positive.
 
 | Sample | <nobr>Confidence ↓</nobr> | Inference @ 0.25 | Inference @ 0.5 | Inference @ 0.75 |
 | --- | --- | --- | --- | --- |
-| Positive | 0.9 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> |
-| Positive | 0.8 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> |
-| Positive | 0.7 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> |
-| Negative | 0.4 | <span style="color: green">Positive</span> | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> |
-| Positive | 0.35 | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> | <span style="color: red">Negative</span> |
-| Negative | 0.3 | <span style="color: green">Positive</span> | <span style="color: red">Negative</span> | <span style="color: red">Negative</span> |
+| Positive | 0.9 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> |
+| Positive | 0.8 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> |
+| Positive | 0.7 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Negative | 0.4 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Positive | 0.35 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Negative | 0.3 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
 
 </center>
 
@@ -71,11 +71,76 @@ Using these precision and recall values, a PR curve can be plotted:
 ![pr.png](../assets/images/metrics-prcurve-example.png)
 </center>
 
-### Multiclass
+### Example: Multiclass Classification
 
-For multiple classes, micro or macro precision and recall can be used instead. It is also useful to plot a curve **per
-class** by binarizing the input so that we only consider the class of interest. This technique is known as
-**one-vs-rest** (OvR). With this strategy, we can have `n` PR curves for `n` unique classes.
+For multiple classes, it is common practice to plot a curve **per class** by treating each class as a binary
+classification problem. This technique is known as [**one-vs-rest**](./tp-fp-fn-tn.md#multiclass) (OvR). With this
+strategy, we can have `n` PR curves for `n` unique classes.
+
+Let's take a look at a multiclass classification example and plot **per class** PR curves for
+the same three thresholds that we used in the example above: 0.25, 0.5, and 0.75. In this example, we have three classes:
+`Airplane`, `Boat`, and `Car`. The multiclass classifier outputs a confidence score for each class:
+
+<center>
+
+| Label | `Airplane` Confidence | `Boat` Confidence | `Car` Confidence |
+| --- | --- | --- | --- |
+| `Airplane` | 0.9 | 0.05 | 0.05 |
+| `Airplane` | 0.7 | 0.1 | 0.2 |
+| `Airplane` | 0.4 | 0.25 | 0.35 |
+| `Boat` | 0.6 | 0.25 | 0.15 |
+| `Boat` | 0.4 | 0.5 | 0.1 |
+| `Car` | 0.25 | 0.25 | 0.5 |
+| `Car` | 0.3 | 0.4 | 0.3 |
+
+</center>
+
+Just like the binary classification example, we are going to determine whether each inference is positive or negative
+depending on the evaluating threshold, so for class `Airplane`:
+
+<center>
+
+| Sample | `Airplane` Confidence | Inference @ 0.25 | Inference @ 0.5 | Inference @ 0.75 |
+| --- | --- | --- | --- | --- |
+| Positive | 0.9 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> |
+| Positive | 0.7 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Positive | 0.4 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Negative | 0.6 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Negative | 0.4 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Negative | 0.25 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Negative | 0.3 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+
+</center>
+
+And the precision and recall values for class `Airplane` can be computed:
+<center>
+
+| Threshold | TP | FP | FN | `Airplane` Precision | `Airplane` Recall |
+| --- | --- | --- | --- | --- | --- |
+| **0.25** | 3 | 4 | 0 | $\frac{3}{7}$ | $\frac{3}{3}$ |
+| **0.5** | 2 | 1 | 1 | $\frac{2}{3}$ | $\frac{2}{3}$ |
+| **0.75** | 1 | 0 | 2 | $\frac{1}{1}$ | $\frac{1}{3}$ |
+
+</center>
+
+We are going to repeat this step to compute precision and recall for class `Boat` and `Car`.
+
+<center>
+
+| Threshold | `Airplane` Precision | `Airplane` Recall | `Boat` Precision | `Boat` Recall | `Car` Precision | `Car` <br> Recall |
+| --- | --- | --- | --- | --- | --- | --- |
+| **0.25** | $\frac{3}{7}$ | $\frac{3}{3}$ | $\frac{2}{4}$ | $\frac{2}{2}$ | $\frac{2}{3}$ | $\frac{2}{2}$ |
+| **0.5** | $\frac{2}{3}$ | $\frac{2}{3}$ | $\frac{1}{1}$ | $\frac{1}{2}$ | $\frac{1}{1}$ | $\frac{1}{2}$ |
+| **0.75** | $\frac{1}{1}$ | $\frac{1}{3}$ | $\frac{0}{0}$ | $\frac{0}{2}$ | $\frac{0}{0}$ | $\frac{0}{2}$ |
+
+</center>
+
+Using these precision and recall values, per class PR curves can be plotted:
+
+<center>
+![pr.png](../assets/images/metrics-prcurve-example-multiclass.png)
+</center>
+
 
 ## Area Under the PR Curve (AUPRC)
 
