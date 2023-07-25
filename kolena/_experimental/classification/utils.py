@@ -83,14 +83,14 @@ def create_histogram(
     y_label: str = "",
 ) -> Histogram:
     """
-    Creates a histogram for the specified range and the number of bins.
+    Creates a [`Histogram`][kolena.workflow.plot.Histogram] for the specified range and the number of bins.
 
     :param values: The list of confidence scores to plot.
     :param range: The min, max and # of bins of the histogram.
     :param title: The title of the plot.
     :param x_label: The label on the x-axis.
     :param y_label: The label on the y-axis.
-    :return: The histogram.
+    :return: The [`Histogram`][kolena.workflow.plot.Histogram].
     """
     min_range, max_range, bins = range
     frequency, buckets = np.histogram(
@@ -123,7 +123,7 @@ def compute_confusion_matrix(
     :param title: The title of confusion matrix.
     :param labels: The list of labels to index the matrix. This may be used to reorder or select a subset of labels.
         By default, labels that appear at least once in `ground_truths` or `inferences` are used in sorted order.
-    :return: The confusion matrix.
+    :return: The [`ConfusionMatrix`][kolena.workflow.plot.ConfusionMatrix].
 
     """
     if len(ground_truths) != len(inferences):
@@ -202,14 +202,16 @@ def compute_roc_curves(
     Computes OvR (one-vs-rest) ROC (receiver operating characteristic) curves for each class appears in `ground_truths`
     if not specified.
 
-    :param ground_truths: The ground truth classification labels. For binary classification, the negative class is
-        `None`.
-    :param inferences: The inferences. For `N`-class problems, `label` is expected to contain `N` entries, one for
-        each class and its associated confidence score.
+    :param ground_truths: The list of ground truth
+        [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]. For binary classification, the negative
+        class is `None`.
+    :param inferences: The list of inference
+        [`ScoredClassificationLabel`][kolena.workflow.annotation.ScoredClassificationLabel]. For `N`-class problems,
+        each inference is expected to contain `N` entries, one for each class and its associated confidence score.
     :param labels: The labels to plot. If not specified, classes appear in `ground_truths` are used. Use `labels` to
         specify the evaluating classes especially if `ground_truths` only have negative classes.
     :param title: The title of the plot.
-    :return: A `CurvePlot` if there is any valid `Curve` computed; otherwise, `None`.
+    :return: A [`CurvePlot`][kolena.workflow.plot.CurvePlot] if there is any valid `Curve` computed; otherwise, `None`.
     """
     if len(ground_truths) != len(inferences):
         log.warn(
