@@ -15,22 +15,24 @@ import random
 
 import pytest
 
-from kolena._experimental.object_detection import GroundTruth
-from kolena._experimental.object_detection import Inference
-from kolena._experimental.object_detection import Model
-from kolena._experimental.object_detection import TestCase
-from kolena._experimental.object_detection import TestSample
-from kolena._experimental.object_detection import TestSuite
 from kolena.workflow import test
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
+object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
+GroundTruth = object_detection.GroundTruth
+Inference = object_detection.Inference
+Model = object_detection.Model
+TestCase = object_detection.TestCase
+TestSample = object_detection.TestSample
+TestSuite = object_detection.TestSuite
+
 
 @pytest.mark.metrics
-def test__multiclass__object__detection__smoke() -> None:
-    name = with_test_prefix(f"{__file__} test__multiclass__object__detection__smoke")
+def test__multiclass__object_detection__smoke() -> None:
+    name = with_test_prefix(f"{__file__} test__multiclass__object_detection__smoke")
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
     ground_truth = GroundTruth(bboxes=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
     test_case = TestCase(f"{name} test case", test_samples=[(test_sample, ground_truth)])

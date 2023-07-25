@@ -26,6 +26,8 @@ jobs:
             tests/integration/fr/.* fr true
             kolena/workflow/.* workflow true
             tests/integration/workflow/.* workflow true
+            kolena/_experimental/.* workflow true
+            tests/integration/_experimental/.* workflow true
             kolena/_(api|utils)/.* all true
             kolena/[^/]*.py all true
             tests/integration/[^/]*.py all true

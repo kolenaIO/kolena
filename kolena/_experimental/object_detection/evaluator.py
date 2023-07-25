@@ -16,19 +16,19 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+from kolena._experimental.object_detection import GroundTruth
+from kolena._experimental.object_detection import Inference
+from kolena._experimental.object_detection import TestCase
+from kolena._experimental.object_detection import TestCaseMetrics
+from kolena._experimental.object_detection import TestCaseMetricsSingleClass
+from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection import TestSampleMetrics
+from kolena._experimental.object_detection import TestSampleMetricsSingleClass
+from kolena._experimental.object_detection import TestSuite
+from kolena._experimental.object_detection import TestSuiteMetrics
+from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
 from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
-from kolena._experimental.object_detection.workflow import GroundTruth
-from kolena._experimental.object_detection.workflow import Inference
-from kolena._experimental.object_detection.workflow import TestCase
-from kolena._experimental.object_detection.workflow import TestCaseMetrics
-from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSample
-from kolena._experimental.object_detection.workflow import TestSampleMetrics
-from kolena._experimental.object_detection.workflow import TestSampleMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSuite
-from kolena._experimental.object_detection.workflow import TestSuiteMetrics
-from kolena._experimental.object_detection.workflow import ThresholdConfiguration
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
 

@@ -15,25 +15,27 @@ from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 
 import numpy as np
 
+from kolena._experimental.object_detection import GroundTruth
+from kolena._experimental.object_detection import Inference
+from kolena._experimental.object_detection import TestCase
+from kolena._experimental.object_detection import TestCaseMetricsSingleClass
+from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection import TestSampleMetricsSingleClass
+from kolena._experimental.object_detection import TestSuite
+from kolena._experimental.object_detection import TestSuiteMetrics
+from kolena._experimental.object_detection import ThresholdConfiguration
+from kolena._experimental.object_detection import ThresholdStrategy
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_f1_plot
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot
-from kolena._experimental.object_detection.workflow import GroundTruth
-from kolena._experimental.object_detection.workflow import Inference
-from kolena._experimental.object_detection.workflow import TestCase
-from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSample
-from kolena._experimental.object_detection.workflow import TestSampleMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSuite
-from kolena._experimental.object_detection.workflow import TestSuiteMetrics
-from kolena._experimental.object_detection.workflow import ThresholdConfiguration
-from kolena._experimental.object_detection.workflow import ThresholdStrategy
+from kolena._experimental.object_detection.utils import filter_inferences
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
 from kolena.workflow.metrics import f1_score as compute_f1_score
@@ -72,23 +74,11 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     Caches matchings per test case for test case metrics and test case plots.
     """
 
-    def compute_image_metrics(
+    def test_sample_metrics_single_class(
         self,
-        ground_truth: GroundTruth,
-        inference: Inference,
-        configuration: ThresholdConfiguration,
-        test_case_name: str,
+        bbox_matches: InferenceMatches,
+        thresholds: float,
     ) -> TestSampleMetricsSingleClass:
-        assert configuration is not None, "must specify configuration"
-        thresholds = self.get_confidence_thresholds(configuration)
-        bbox_matches: InferenceMatches = match_inferences(
-            ground_truth.bboxes,
-            [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
-            ignored_ground_truths=ground_truth.ignored_bboxes,
-            mode="pascal",
-            iou_threshold=configuration.iou_threshold,
-        )
-        self.matchings_by_test_case[test_case_name].append(bbox_matches)
         tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
         fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
         fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
@@ -109,6 +99,26 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             thresholds=thresholds,
         )
 
+    def compute_image_metrics(
+        self,
+        ground_truth: GroundTruth,
+        inference: Inference,
+        configuration: ThresholdConfiguration,
+        test_case_name: str,
+    ) -> TestSampleMetricsSingleClass:
+        assert configuration is not None, "must specify configuration"
+        thresholds = self.get_confidence_thresholds(configuration)
+        bbox_matches: InferenceMatches = match_inferences(
+            ground_truth.bboxes,
+            filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
+            ignored_ground_truths=ground_truth.ignored_bboxes,
+            mode="pascal",
+            iou_threshold=configuration.iou_threshold,
+        )
+        self.matchings_by_test_case[test_case_name].append(bbox_matches)
+
+        return self.test_sample_metrics_single_class(bbox_matches, thresholds)
+
     def compute_and_cache_f1_optimal_thresholds(
         self,
         configuration: ThresholdConfiguration,
@@ -123,7 +133,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         all_bbox_matches = [
             match_inferences(
                 ground_truth.bboxes,
-                [inf for inf in inference.bboxes if inf.score >= configuration.min_confidence_score],
+                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
                 ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
@@ -144,17 +154,11 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
-    def compute_test_case_metrics(
+    def test_case_metrics_single_class(
         self,
-        test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
         metrics: List[TestSampleMetricsSingleClass],
-        configuration: Optional[ThresholdConfiguration] = None,
+        average_precision: float,
     ) -> TestCaseMetricsSingleClass:
-        assert configuration is not None, "must specify configuration"
-        all_bbox_matches = self.matchings_by_test_case[test_case.name]
-
-        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
         tp_count = sum(im.count_TP for im in metrics)
         fp_count = sum(im.count_FP for im in metrics)
         fn_count = sum(im.count_FN for im in metrics)
@@ -162,12 +166,6 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         precision = compute_precision(tp_count, fp_count)
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-
-        average_precision = 0.0
-        if precision > 0:
-            baseline_pr_curve = compute_pr_curve(all_bbox_matches)
-            if baseline_pr_curve is not None:
-                average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
         return TestCaseMetricsSingleClass(
             Objects=tp_count + fn_count,
@@ -180,6 +178,24 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             F1=f1_score,
             AP=average_precision,
         )
+
+    def compute_test_case_metrics(
+        self,
+        test_case: TestCase,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        metrics: List[TestSampleMetricsSingleClass],
+        configuration: Optional[ThresholdConfiguration] = None,
+    ) -> TestCaseMetricsSingleClass:
+        assert configuration is not None, "must specify configuration"
+        all_bbox_matches = self.matchings_by_test_case[test_case.name]
+        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
+
+        average_precision = 0.0
+        baseline_pr_curve = compute_pr_curve(all_bbox_matches)
+        if baseline_pr_curve is not None:
+            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+
+        return self.test_case_metrics_single_class(metrics, average_precision)
 
     def compute_test_case_plots(
         self,
@@ -204,6 +220,12 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
         return plots
 
+    def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float]) -> TestSuiteMetrics:
+        return TestSuiteMetrics(
+            n_images=len(unique_locators),
+            mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+        )
+
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
@@ -211,10 +233,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
-        return TestSuiteMetrics(
-            n_images=len({locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}),
-            mean_AP=np.average([tcm.AP for _, tcm in metrics]),
-        )
+        unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
+        average_precisions = [tcm.AP for _, tcm in metrics]
+        return self.test_suite_metrics(unique_locators, average_precisions)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
         if configuration.threshold_strategy == ThresholdStrategy.FIXED_03:
