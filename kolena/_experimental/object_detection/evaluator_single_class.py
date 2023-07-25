@@ -157,7 +157,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def test_case_metrics_single_class(
         self,
         metrics: List[TestSampleMetricsSingleClass],
-        average_precision: Optional[float],
+        average_precision: float,
     ) -> TestCaseMetricsSingleClass:
         tp_count = sum(im.count_TP for im in metrics)
         fp_count = sum(im.count_FP for im in metrics)
@@ -166,9 +166,6 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         precision = compute_precision(tp_count, fp_count)
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-
-        if average_precision is None:
-            average_precision = compute_average_precision([precision], [recall])
 
         return TestCaseMetricsSingleClass(
             Objects=tp_count + fn_count,
@@ -193,7 +190,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         all_bbox_matches = self.matchings_by_test_case[test_case.name]
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
-        average_precision: Optional[float] = None
+        average_precision = 0.0
         baseline_pr_curve = compute_pr_curve(all_bbox_matches)
         if baseline_pr_curve is not None:
             average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)

@@ -13,7 +13,6 @@
 # limitations under the License.
 from typing import Dict
 from typing import List
-from typing import Optional
 from typing import Set
 from typing import Tuple
 
@@ -578,7 +577,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
         (
             "empty",
             [],
-            None,
+            0.0,
             TestCaseMetricsSingleClass(
                 Objects=0,
                 Inferences=0,
@@ -589,22 +588,6 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
                 Recall=0,
                 F1=0,
                 AP=0,
-            ),
-        ),
-        (
-            "empty, ap behaviour",
-            [],
-            0.5,
-            TestCaseMetricsSingleClass(
-                Objects=0,
-                Inferences=0,
-                TP=0,
-                FN=0,
-                FP=0,
-                Precision=0,
-                Recall=0,
-                F1=0,
-                AP=0.5,
             ),
         ),
         (
@@ -625,7 +608,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
                     thresholds=0,
                 ),
             ],
-            None,
+            0.0,
             TestCaseMetricsSingleClass(
                 Objects=0,
                 Inferences=1,
@@ -656,7 +639,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
                     thresholds=0,
                 ),
             ],
-            None,
+            0.0002,
             TestCaseMetricsSingleClass(
                 Objects=100,
                 Inferences=50,
@@ -667,37 +650,6 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
                 Recall=0.01,
                 F1=0.04 / 3,
                 AP=0.0002,
-            ),
-        ),
-        (
-            "one fake test sample, ap behaviour",
-            [
-                TestSampleMetricsSingleClass(
-                    TP=[],
-                    FP=[],
-                    FN=[],
-                    count_TP=1,
-                    count_FP=0,
-                    count_FN=0,
-                    has_TP=False,
-                    has_FP=False,
-                    has_FN=False,
-                    max_confidence_above_t=None,
-                    min_confidence_above_t=None,
-                    thresholds=0,
-                ),
-            ],
-            0.5,
-            TestCaseMetricsSingleClass(
-                Objects=1,
-                Inferences=1,
-                TP=1,
-                FN=0,
-                FP=0,
-                Precision=1,
-                Recall=1,
-                F1=1,
-                AP=0.5,
             ),
         ),
         (
@@ -750,7 +702,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
 def test__object_detection__single_class__test_case_metrics_single_class(
     test_name: str,
     metrics: List[TestSampleMetricsSingleClass],
-    average_precision: Optional[float],
+    average_precision: float,
     expected: TestCaseMetricsSingleClass,
 ) -> None:
     from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
@@ -1000,7 +952,7 @@ def test__object_detection__multiclass__bbox_matches_for_one_label(
                 ],
             ),
             0,
-            None,
+            0.25,
             ClassMetricsPerTestCase(
                 Class="a",
                 nImages=0,
@@ -1038,7 +990,7 @@ def test__object_detection__multiclass__bbox_matches_for_one_label(
                 ],
             ),
             0,
-            None,
+            4 / 21,
             ClassMetricsPerTestCase(
                 Class="a",
                 nImages=0,
@@ -1062,7 +1014,7 @@ def test__object_detection__multiclass__class_metrics_per_test_case(
     thresholds: Dict[str, float],
     class_matches: MulticlassInferenceMatches,
     samples_count: int,
-    average_precision: Optional[float],
+    average_precision: float,
     expected: ClassMetricsPerTestCase,
 ) -> None:
     from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
@@ -1403,7 +1355,7 @@ def test__object_detection__multiclass__test_case_metrics(
 def test__object_detection__test_suite_metrics(
     test_name: str,
     locators: Set[str],
-    aps: Optional[float],
+    aps: List[float],
     expected: TestSuiteMetrics,
 ) -> None:
     from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator

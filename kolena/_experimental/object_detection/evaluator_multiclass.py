@@ -226,7 +226,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         thresholds: Dict[str, float],
         class_matches: MulticlassInferenceMatches,
         samples_count: int,
-        average_precision: Optional[float],
+        average_precision: float,
     ) -> ClassMetricsPerTestCase:
         matched = class_matches.matched
         unmatched_gt = class_matches.unmatched_gt
@@ -241,8 +241,6 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         precision = compute_precision(tp_count, fp_count)
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-        if average_precision is None:
-            average_precision = compute_average_precision([precision], [recall])
 
         return ClassMetricsPerTestCase(
             Class=label,
@@ -269,7 +267,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         class_matches: MulticlassInferenceMatches = match_and_count[0]
         samples_count: int = match_and_count[1]
 
-        average_precision: Optional[float] = None
+        average_precision = 0.0
         baseline_pr_curve = compute_pr_curve([class_matches])
         if baseline_pr_curve is not None:
             average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)

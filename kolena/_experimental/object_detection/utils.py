@@ -104,7 +104,7 @@ def _compute_threshold_curve(
         f1s.append(f1)
 
     # omit curves with no points
-    if len(f1s) == 0:
+    if len(f1s) == 0 or len(precisions) == 0 or len(recalls) == 0:
         return None
 
     if curve_type == "f1":
