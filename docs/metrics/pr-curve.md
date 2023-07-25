@@ -147,7 +147,7 @@ Using these precision and recall values, per class PR curves can be plotted:
 The area under the PR curve (AUPRC) is a **threshold-independent** metric that summarizes the performance of a model
 depicted by a PR curve. The greater the area, the better a model performs. The
 [average precision](./average-precision.md) is one particular method for calculating the AUPRC. With PR curves, we
-don’t have to go into any math and can visually conclude which curves indicate that a certain class or model has a
+can visually conclude which curves indicate that a certain class or model has a
 better performance.
 
 <center>
