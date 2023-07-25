@@ -317,13 +317,12 @@ def test__roc_curve__invalid() -> None:
     assert np.allclose(tpr, [])
 
 
-def test__compute_roc_curves__invalid() -> None:
-    assert compute_roc_curves([], []) is None
-
-    assert compute_roc_curves([None, None], []) is None
-
-    assert (
-        compute_roc_curves(
+@pytest.mark.parametrize(
+    "gts, infs, labels",
+    [
+        ([], [], None),
+        ([None, None], [], None),
+        (
             [
                 ClassificationLabel(label="a"),
                 ClassificationLabel(label="b"),
@@ -338,12 +337,9 @@ def test__compute_roc_curves__invalid() -> None:
                     ScoredClassificationLabel(label="b", score=1.0),
                 ],
             ],
-        )
-        is None
-    )
-
-    assert (
-        compute_roc_curves(
+            None,
+        ),
+        (
             [
                 ClassificationLabel(label="a"),
                 ClassificationLabel(label="b"),
@@ -358,14 +354,9 @@ def test__compute_roc_curves__invalid() -> None:
                     ScoredClassificationLabel(label="b", score=1.0),
                 ],
             ],
-            labels=["c", "d"],
-        )
-        is None
-    )
-
-    # no negative
-    assert (
-        compute_roc_curves(
+            ["c", "d"],
+        ),
+        (
             [
                 ClassificationLabel(label="a"),
                 ClassificationLabel(label="a"),
@@ -376,13 +367,9 @@ def test__compute_roc_curves__invalid() -> None:
                 [ScoredClassificationLabel(label="a", score=0.0)],
                 [ScoredClassificationLabel(label="a", score=0.0)],
             ],
-        )
-        is None
-    )
-
-    # no positive
-    assert (
-        compute_roc_curves(
+            None,
+        ),
+        (
             [
                 None,
                 None,
@@ -393,9 +380,16 @@ def test__compute_roc_curves__invalid() -> None:
                 [ScoredClassificationLabel(label="a", score=0.0)],
                 [ScoredClassificationLabel(label="a", score=0.0)],
             ],
-        )
-        is None
-    )
+            None,
+        ),
+    ],
+)
+def test__compute_roc_curves__invalid(
+    gts: List[Optional[ClassificationLabel]],
+    infs: List[List[ScoredClassificationLabel]],
+    labels: Optional[List[str]],
+) -> None:
+    assert compute_roc_curves(gts, infs, labels=labels) is None
 
 
 def test__compute_roc_curves__binary() -> None:
