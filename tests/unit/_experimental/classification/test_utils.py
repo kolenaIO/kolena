@@ -15,18 +15,21 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
+import numpy as np
 import pytest
 
+from kolena._experimental.classification.utils import _roc_curve
 from kolena._experimental.classification.utils import compute_confusion_matrix
+from kolena._experimental.classification.utils import compute_roc_curves
 from kolena._experimental.classification.utils import create_histogram
 from kolena._experimental.classification.utils import get_histogram_range
 from kolena._experimental.classification.utils import get_label_confidence
+from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Histogram
 
 
-@pytest.mark.metrics
 @pytest.mark.parametrize(
     "label, inference_labels, expected",
     [
@@ -64,7 +67,6 @@ def test__get_label_confidence(
     assert confidence == expected
 
 
-@pytest.mark.metrics
 @pytest.mark.parametrize(
     "values, expected",
     [
@@ -87,7 +89,6 @@ def test__get_histogram_range(
     assert range == expected
 
 
-@pytest.mark.metrics
 @pytest.mark.parametrize(
     "values, range, title, x_label, y_label, expected",
     [
@@ -169,7 +170,6 @@ def test__create_histogram(
     assert histogram == expected
 
 
-@pytest.mark.metrics
 @pytest.mark.parametrize(
     "gts, infs, labels, expected",
     [
@@ -290,3 +290,146 @@ def test__compute_confusion_matrix__with_title() -> None:
         labels=["a", "not a"],
         matrix=[[1, 0], [1, 0]],
     )
+
+
+def test__roc_curve() -> None:
+    y_true = [1, 1, 0, 1, 0, 0, 1, 0, 1]
+    y_score = [0.3, 0.8, 0.5, 0.7, 0.1, 0.4, 0.9, 0.2, 0.6]
+    fpr, tpr = _roc_curve(y_true, y_score)
+    assert len(fpr) == len(tpr)
+    assert np.allclose(fpr, [0.0, 0.0, 0.0, 0.5, 0.5, 1.0])
+    assert np.allclose(tpr, [0.0, 0.2, 0.8, 0.8, 1.0, 1.0])
+
+
+def test__roc_curve__invalid() -> None:
+    # no negative samples
+    y_true = [1, 1, 1]
+    y_score = [0.1, 0.5, 0.6]
+    fpr, tpr = _roc_curve(y_true, y_score)
+    assert np.allclose(fpr, [])
+    assert np.allclose(tpr, [0.0, 1 / 3, 1.0])
+
+    # no positive samples
+    y_true = [0, 0, 0]
+    y_score = [0.1, 0.5, 0.6]
+    fpr, tpr = _roc_curve(y_true, y_score)
+    assert np.allclose(fpr, [0.0, 1 / 3, 1.0])
+    assert np.allclose(tpr, [])
+
+
+@pytest.mark.parametrize(
+    "gts, infs, labels",
+    [
+        ([], [], None),
+        ([None, None], [], None),
+        (
+            [
+                ClassificationLabel(label="a"),
+                ClassificationLabel(label="b"),
+            ],
+            [
+                [
+                    ScoredClassificationLabel(label="a", score=1.0),
+                    ScoredClassificationLabel(label="b", score=0.0),
+                ],
+                [
+                    ScoredClassificationLabel(label="a", score=0.0),
+                    ScoredClassificationLabel(label="b", score=1.0),
+                ],
+            ],
+            None,
+        ),
+        (
+            [
+                ClassificationLabel(label="a"),
+                ClassificationLabel(label="b"),
+            ],
+            [
+                [
+                    ScoredClassificationLabel(label="a", score=1.0),
+                    ScoredClassificationLabel(label="b", score=0.0),
+                ],
+                [
+                    ScoredClassificationLabel(label="a", score=0.0),
+                    ScoredClassificationLabel(label="b", score=1.0),
+                ],
+            ],
+            ["c", "d"],
+        ),
+        (
+            [
+                ClassificationLabel(label="a"),
+                ClassificationLabel(label="a"),
+                ClassificationLabel(label="a"),
+            ],
+            [
+                [ScoredClassificationLabel(label="a", score=1.0)],
+                [ScoredClassificationLabel(label="a", score=0.0)],
+                [ScoredClassificationLabel(label="a", score=0.0)],
+            ],
+            None,
+        ),
+        (
+            [
+                None,
+                None,
+                None,
+            ],
+            [
+                [ScoredClassificationLabel(label="a", score=1.0)],
+                [ScoredClassificationLabel(label="a", score=0.0)],
+                [ScoredClassificationLabel(label="a", score=0.0)],
+            ],
+            None,
+        ),
+    ],
+)
+def test__compute_roc_curves__invalid(
+    gts: List[Optional[ClassificationLabel]],
+    infs: List[List[ScoredClassificationLabel]],
+    labels: Optional[List[str]],
+) -> None:
+    assert compute_roc_curves(gts, infs, labels=labels) is None
+
+
+def test__compute_roc_curves__binary() -> None:
+    ground_truths = [ClassificationLabel("1") if gt else None for gt in [1, 1, 0, 1, 0, 0, 1, 0, 1]]
+
+    inferences = [
+        [ScoredClassificationLabel(label="1", score=score)] for score in [0.3, 0.8, 0.5, 0.7, 0.1, 0.4, 0.9, 0.2, 0.6]
+    ]
+
+    roc_curves = compute_roc_curves(ground_truths, inferences)
+    assert roc_curves.title == "Receiver Operating Characteristic"
+    assert roc_curves.x_label == "False Positive Rate (FPR)"
+    assert roc_curves.y_label == "True Positive Rate (TPR)"
+    assert len(roc_curves.curves) == 1
+    assert roc_curves.curves[0].label == "1"
+    assert roc_curves.curves[0].x == [0.0, 0.0, 0.0, 0.5, 0.5, 1.0]
+    assert roc_curves.curves[0].y == [0.0, 0.2, 0.8, 0.8, 1.0, 1.0]
+
+
+def test__compute_roc_curves__multiclass() -> None:
+    ground_truths = [
+        ClassificationLabel("a"),
+        ClassificationLabel("b"),
+        ClassificationLabel("b"),
+    ]
+
+    inferences = [
+        [ScoredClassificationLabel(label="a", score=0.9), ScoredClassificationLabel(label="b", score=0.1)],
+        [ScoredClassificationLabel(label="a", score=0.5), ScoredClassificationLabel(label="b", score=0.5)],
+        [ScoredClassificationLabel(label="a", score=0.4), ScoredClassificationLabel(label="b", score=0.6)],
+    ]
+
+    roc_curves = compute_roc_curves(ground_truths, inferences)
+    assert roc_curves.title == "Receiver Operating Characteristic (One-vs-Rest)"
+    assert roc_curves.x_label == "False Positive Rate (FPR)"
+    assert roc_curves.y_label == "True Positive Rate (TPR)"
+    assert len(roc_curves.curves) == 2
+    assert roc_curves.curves[0].label == "a"
+    assert roc_curves.curves[0].x == [0, 0, 1]
+    assert roc_curves.curves[0].y == [0, 1, 1]
+    assert roc_curves.curves[1].label == "b"
+    assert roc_curves.curves[1].x == [0, 0, 0, 1]
+    assert roc_curves.curves[1].y == [0, 0.5, 1, 1]
