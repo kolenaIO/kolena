@@ -77,6 +77,11 @@ class BoundingBox(Annotation):
     def _data_type() -> _AnnotationType:
         return _AnnotationType.BOUNDING_BOX
 
+    def area(self) -> float:
+        width = self.bottom_right[0] - self.top_left[0]
+        height = self.bottom_right[1] - self.top_left[1]
+        return width * height
+
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class LabeledBoundingBox(BoundingBox):
