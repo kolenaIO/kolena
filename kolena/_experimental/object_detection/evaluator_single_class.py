@@ -74,6 +74,26 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     Caches matchings per test case for test case metrics and test case plots.
     """
 
+    def test_sample_metrics_ignored(
+        self,
+        thresholds: float,
+    ) -> TestSampleMetricsSingleClass:
+        return TestSampleMetricsSingleClass(
+            TP=[],
+            FP=[],
+            FN=[],
+            count_TP=0,
+            count_FP=0,
+            count_FN=0,
+            has_TP=False,
+            has_FP=False,
+            has_FN=False,
+            ignored=True,
+            max_confidence_above_t=None,
+            min_confidence_above_t=None,
+            thresholds=thresholds,
+        )
+
     def test_sample_metrics_single_class(
         self,
         bbox_matches: InferenceMatches,
@@ -94,6 +114,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             has_TP=len(tp) > 0,
             has_FP=len(fp) > 0,
             has_FN=len(fn) > 0,
+            ignored=False,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
             thresholds=thresholds,
@@ -108,6 +129,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     ) -> TestSampleMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
+        if inference.ignored:
+            return self.test_sample_metrics_ignored(thresholds)
+
         bbox_matches: InferenceMatches = match_inferences(
             ground_truth.bboxes,
             filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
@@ -162,6 +186,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         tp_count = sum(im.count_TP for im in metrics)
         fp_count = sum(im.count_FP for im in metrics)
         fn_count = sum(im.count_FN for im in metrics)
+        ignored_count = sum(1 if im.ignored else 0 for im in metrics)
 
         precision = compute_precision(tp_count, fp_count)
         recall = compute_recall(tp_count, fn_count)
@@ -173,6 +198,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
+            nIgnored=ignored_count,
             Precision=precision,
             Recall=recall,
             F1=f1_score,

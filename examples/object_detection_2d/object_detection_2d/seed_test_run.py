@@ -73,11 +73,12 @@ def get_stored_inferences(
                     )
                     for record in image_inferences.itertuples()
                 ],
+                ignored=False,
             )
         except Exception as e:
             if e is None:
                 print(e)  # ignored
-            return Inference(bboxes=[])
+            return Inference(bboxes=[], ignored=True)
 
     return infer
 

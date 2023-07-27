@@ -52,6 +52,7 @@ class GroundTruth(BaseGroundTruth):
 @dataclass(frozen=True)
 class Inference(BaseInference):
     bboxes: List[ScoredLabeledBoundingBox]
+    ignored: bool = False
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow(
@@ -75,6 +76,7 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
     has_TP: bool
     has_FP: bool
     has_FN: bool
+    ignored: bool
 
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
@@ -88,6 +90,7 @@ class TestCaseMetricsSingleClass(MetricsTestCase):
     TP: int
     FN: int
     FP: int
+    nIgnored: int
     Precision: float
     Recall: float
     F1: float
@@ -114,6 +117,7 @@ class TestSampleMetrics(MetricsTestSample):
     has_FP: bool
     has_FN: bool
     has_Confused: bool
+    ignored: bool
 
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
@@ -145,6 +149,7 @@ class TestCaseMetrics(MetricsTestCase):
     TP: int
     FN: int
     FP: int
+    nIgnored: int
     macro_Precision: float
     macro_Recall: float
     macro_F1: float

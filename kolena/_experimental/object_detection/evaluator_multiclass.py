@@ -77,6 +77,33 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     Caches matchings per test case for test case metrics and test case plots.
     """
 
+    def test_sample_metrics_ignored(
+        self,
+    ) -> TestSampleMetrics:
+        return TestSampleMetrics(
+            TP_labels=[],
+            TP=[],
+            FP_labels=[],
+            FP=[],
+            FN_labels=[],
+            FN=[],
+            Confused_labels=[],
+            Confused=[],
+            count_TP=0,
+            count_FP=0,
+            count_FN=0,
+            count_Confused=0,
+            has_TP=False,
+            has_FP=False,
+            has_FN=False,
+            has_Confused=False,
+            ignored=True,
+            max_confidence_above_t=None,
+            min_confidence_above_t=None,
+            thresholds=[],
+            inference_labels=[],
+        )
+
     def test_sample_metrics(
         self,
         bbox_matches: MulticlassInferenceMatches,
@@ -117,6 +144,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             has_FP=len(fp) > 0,
             has_FN=len(fn) > 0,
             has_Confused=len(confused) > 0,
+            ignored=False,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
             thresholds=fields,
@@ -132,6 +160,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     ) -> TestSampleMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
+        if inference.ignored:
+            return self.test_sample_metrics_ignored()
+
         filtered_inferences = filter_inferences(
             inferences=inference.bboxes,
             confidence_score=configuration.min_confidence_score,
@@ -167,6 +198,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
                 iou_threshold=configuration.iou_threshold,
             )
             for _, ground_truth, inference in inferences
+            if not inference.ignored
         ]
         optimal_thresholds = compute_optimal_f1_threshold_multiclass(all_bbox_matches)
         self.threshold_cache[configuration.display_name()] = defaultdict(
@@ -282,6 +314,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         tp_count = sum(im.count_TP for im in metrics)
         fp_count = sum(im.count_FP for im in metrics)
         fn_count = sum(im.count_FN for im in metrics)
+        ignored_count = sum(1 if im.ignored else 0 for im in metrics)
         return TestCaseMetrics(
             PerClass=per_class_metrics,
             Objects=tp_count + fn_count,
@@ -289,6 +322,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             TP=tp_count,
             FN=fn_count,
             FP=fp_count,
+            nIgnored=ignored_count,
             macro_Precision=np.mean([data.Precision for data in per_class_metrics]) if per_class_metrics else 0.0,
             macro_Recall=np.mean([data.Recall for data in per_class_metrics]) if per_class_metrics else 0.0,
             macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,

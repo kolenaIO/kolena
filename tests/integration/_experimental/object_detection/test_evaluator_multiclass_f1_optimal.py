@@ -106,6 +106,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=True,
             has_FN=True,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.7,
             thresholds=[
@@ -139,6 +140,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=False,
             has_FN=False,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=0.6,
             min_confidence_above_t=0.1,
             thresholds=[
@@ -177,6 +179,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=True,
             has_FN=False,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.8,
             thresholds=[
@@ -211,6 +214,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=False,
             has_FN=True,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.4,
             thresholds=[
@@ -243,6 +247,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=True,
             has_FN=True,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.9,
             thresholds=[
@@ -275,6 +280,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=False,
             has_FN=False,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.8,
             thresholds=[
@@ -326,6 +332,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=True,
             has_FN=True,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.1,
             thresholds=[
@@ -374,6 +381,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=True,
             has_FN=True,
             has_Confused=True,
+            ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.1,
             thresholds=[
@@ -464,6 +472,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
     TP=35,
     FN=19,
     FP=12,
+    nIgnored=0,
     macro_Precision=881 / 1100,
     macro_Recall=889 / 1300,
     macro_F1=23776 / 32775,
