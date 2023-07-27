@@ -72,7 +72,7 @@ def get_histogram_range(values: List[float]) -> Optional[Tuple[float, float, int
         else:
             min_score = max_score - NUM002
 
-    return min_score, max_score, (max_score - min_score - 1e-9) // NUM002 + 1
+    return min_score, max_score, int((max_score - min_score - 1e-9) // NUM002) + 1
 
 
 def create_histogram(

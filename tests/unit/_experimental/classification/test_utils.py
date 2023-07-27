@@ -87,6 +87,8 @@ def test__get_histogram_range(
 ) -> None:
     range = get_histogram_range(values)
     assert range == expected
+    if expected is not None:
+        assert isinstance(range[2], int)  # making sure the # of bin is integer
 
 
 @pytest.mark.parametrize(
