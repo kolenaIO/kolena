@@ -163,6 +163,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
                 iou_threshold=configuration.iou_threshold,
             )
             for _, ground_truth, inference in inferences
+            if not inference.ignored
         ]
         optimal_thresholds = compute_optimal_f1_threshold(all_bbox_matches)
         self.threshold_cache[configuration.display_name()] = max(configuration.min_confidence_score, optimal_thresholds)
