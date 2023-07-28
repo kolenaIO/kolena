@@ -166,5 +166,18 @@ class Workflow:
         evaluators: List["Workflow.EvaluatorResponse"]
 
 
+class Search:
+    class Path(str, Enum):
+        EMBEDDINGS = "/generic/search/embeddings"
+
+    @dataclass(frozen=True)
+    class UploadEmbeddingsRequest(BatchedLoad.WithLoadUUID):
+        ...
+
+    @dataclass(frozen=True)
+    class UploadEmbeddingsResponse:
+        n_updated: int
+
+
 Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
 Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()
