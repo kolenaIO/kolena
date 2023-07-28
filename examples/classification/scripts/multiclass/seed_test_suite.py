@@ -15,6 +15,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import List
 
 import pandas as pd
 from classification.workflow import GroundTruth
@@ -54,9 +55,45 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
+    # Metadata Test Cases
+    stratification_logic_map = {
+        "light": lambda brightness: brightness >= 190,
+        "dark": lambda brightness: 0 <= brightness < 90,
+    }
+
+    test_cases: List[TestCase] = []
+    for name, fn in stratification_logic_map.items():
+        test_cases.append(
+            TestCase(
+                f"brightness :: {name} :: {DATASET}",
+                description=f"Images in {DATASET} with {name} image brightness",
+                test_samples=[
+                    (ts, gt) for ts, gt in test_samples_and_ground_truths if fn(ts.metadata["image_brightness"])
+                ],
+                reset=True,
+            ),
+        )
+
+    stratification_logic_map = {
+        "high": lambda contrast: contrast >= 75,
+        "low": lambda contrast: 0 <= contrast < 25,
+    }
+
+    for name, fn in stratification_logic_map.items():
+        test_cases.append(
+            TestCase(
+                f"contrast :: {name} :: {DATASET}",
+                description=f"Images in {DATASET} with {name} image contrast",
+                test_samples=[
+                    (ts, gt) for ts, gt in test_samples_and_ground_truths if fn(ts.metadata["image_contrast"])
+                ],
+                reset=True,
+            ),
+        )
+
     test_suite = TestSuite(
-        f"complete {DATASET}",
-        test_cases=[complete_test_case],
+        f"image properties :: {DATASET}",
+        test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
     print(f"created test suite: {test_suite}")
