@@ -21,13 +21,13 @@ import pandas as pd
 from dacite import from_dict
 
 from kolena._api.v1.generic import Search as API
+from kolena._experimental.search._internal.datatypes import LocatorEmbeddingsDataFrameSchema
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
-from kolena.search._internal.datatypes import LocatorEmbeddingsDataFrameSchema
 
 
 def upload_embeddings(embeddings: List[Tuple[str, np.typing.ArrayLike]]) -> None:
