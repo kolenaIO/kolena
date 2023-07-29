@@ -66,7 +66,7 @@ def load_transportation_data() -> Dict[str, List[ExtendedBoundingBox]]:
             bbox = annotation["bbox"]
             top_left = (bbox[0], bbox[1])
             bottom_right = (bbox[0] + bbox[2], bbox[1] + bbox[3])
-            bounding_box = ExtendedBoundingBox(top_left, bottom_right, label, occluded=annotation["ignore"])
+            bounding_box = ExtendedBoundingBox(top_left, bottom_right, label, occluded=False)
             image_to_boxes["COCO_val2014_" + str(image_id).zfill(12) + ".jpg"].append(bounding_box)
     return image_to_boxes
 
