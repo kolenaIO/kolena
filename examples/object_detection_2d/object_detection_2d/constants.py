@@ -14,7 +14,7 @@
 from typing import Dict
 
 DATASET = "coco-2014-val"
-WORKFLOW = "Object Detection Test2"
+WORKFLOW = "Object Detection"
 
 
 S3_PREFIX = "s3://"
