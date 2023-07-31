@@ -23,8 +23,11 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](object_detection_2d_extend/seed_test_suite.py) creates the following test suite:
 
-    - `coco-2014-val :: transportation brightness [Object Detection]`, stratified by `light`, `normal`, and `dark`
+    - `coco-2014-val :: transportation by brightness [Object Detection Extended]`, stratified by `light`, `normal`, and `dark`
         brightness
+    - `coco-2014-val :: transportation by bounding box size [Object Detection Extended]`, stratified by bounding box size:
+        `small`, `medium` and `large`.
+
 
 2. [`seed_test_run.py`](object_detection_2d_extend/seed_test_run.py) tests the following models on the above test suites:
   `yolo_r`, `yolo_x`, `mask_cnn`, `faster_rcnn`, `yolo_v4s`, and `yolo_v3`. Information about these models can be
@@ -49,7 +52,7 @@ optional arguments:
 
 ## Pre-built Workflow Extension
 
-A pre-built workflow can be extended simply by re-defining [`workflow`](object_detection_2d_extend/workflow.py). In
+A pre-built workflow can be extended simply by re-defining the [`workflow`](object_detection_2d_extend/workflow.py). In
 this example, we added a new boolean field `occluded` to each `GroundTruth` `LabeledBoundingBox` by extending it.
 
 ```python
@@ -62,7 +65,7 @@ class GroundTruth(BaseGroundTruth):
     bboxes: List[ExtendedBoundingBox]
 ```
 
-And re-define a workflow with the extended `GroundTruth` class:
+And define a new workflow with the extended `GroundTruth` class:
 
 ```python
 _workflow, TestCase, TestSuite, Model = define_workflow(
@@ -73,5 +76,4 @@ _workflow, TestCase, TestSuite, Model = define_workflow(
 )
 ```
 
-Note that `TestSample`, `TestCase`, `TestSuite`, `Model`, `GroundTruth`, and `Inference` are now imported from
-`workflow.py` instead in both seeding scripts.
+Note that `GroundTruth` and `ExtendedBoundingBox` are now imported from `workflow.py` instead.

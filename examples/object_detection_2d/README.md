@@ -24,8 +24,10 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](object_detection_2d/seed_test_suite.py) creates the following test suite:
 
-    - `coco-2014-val :: transportation brightness [Object Detection]`, stratified by `light`, `normal`, and `dark`
+    - `coco-2014-val :: transportation by brightness [Object Detection]`, stratified by `light`, `normal`, and `dark`
         brightness
+    - `coco-2014-val :: transportation by bounding box size [Object Detection]`, stratified by bounding box size:
+        `small`, `medium` and `large`.
 
 2. [`seed_test_run.py`](object_detection_2d/seed_test_run.py) tests the following models on the above test suites:
   `yolo_r`, `yolo_x`, `mask_cnn`, `faster_rcnn`, `yolo_v4s`, and `yolo_v3`. Information about these models can be

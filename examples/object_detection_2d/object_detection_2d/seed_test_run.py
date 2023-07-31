@@ -47,7 +47,8 @@ MODEL_LIST: Dict[str, str] = {
 
 # list of all test suites to run if a test suite is not specified
 TEST_SUITE_NAMES = [
-    f"{DATASET} :: transportation by brightness [Object Detection]",
+    f"{DATASET} :: transportation by brightness [{WORKFLOW}]",
+    f"{DATASET} :: transportation by bounding box size [{WORKFLOW}]",
 ]
 
 

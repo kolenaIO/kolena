@@ -28,6 +28,7 @@ from constants import S3_ANNOTATION_FILE_PATH
 from constants import S3_IMAGE_LOCATION
 from constants import TEST_SUITE_DESCRIPTION
 from constants import TRANSPORTATION_LABELS
+from constants import WORKFLOW
 
 import kolena
 from kolena._experimental.object_detection import GroundTruth
@@ -186,8 +187,8 @@ def main(args: Namespace) -> None:
 
     # organize test suite names with its generator
     test_suites: List[Tuple[str, Callable[[str, TestCase], TestSuite]]] = [
-        (f"{DATASET} :: transportation by brightness [Object Detection]", seed_test_suite_by_brightness),
-        (f"{DATASET} :: transportation by bounding box size [Object Detection]", seed_test_suite_by_bounding_box_size),
+        (f"{DATASET} :: transportation by brightness [{WORKFLOW}]", seed_test_suite_by_brightness),
+        (f"{DATASET} :: transportation by bounding box size [{WORKFLOW}]", seed_test_suite_by_bounding_box_size),
     ]
 
     # create each test suite using the complete test case
