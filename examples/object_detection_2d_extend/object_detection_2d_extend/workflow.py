@@ -16,8 +16,8 @@ from typing import List
 from pydantic.dataclasses import dataclass
 
 from kolena._experimental.object_detection import GroundTruth as BaseGroundTruth
-from kolena._experimental.object_detection import Inference as BaseInference
-from kolena._experimental.object_detection import TestSample as BaseTestSample
+from kolena._experimental.object_detection import Inference
+from kolena._experimental.object_detection import TestSample
 from kolena.workflow import define_workflow
 from kolena.workflow.annotation import LabeledBoundingBox
 
@@ -30,16 +30,6 @@ class ExtendedBoundingBox(LabeledBoundingBox):
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     bboxes: List[ExtendedBoundingBox]
-
-
-@dataclass(frozen=True)
-class Inference(BaseInference):
-    ...
-
-
-@dataclass(frozen=True)
-class TestSample(BaseTestSample):
-    ...
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow(

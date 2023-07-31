@@ -23,13 +23,13 @@ from constants import MODEL_METADATA
 from constants import S3_MODEL_INFERENCE_PREFIX
 from constants import TRANSPORTATION_LABELS
 from constants import WORKFLOW
-from object_detection_2d_extend.workflow import Inference
-from object_detection_2d_extend.workflow import Model
-from object_detection_2d_extend.workflow import TestSample
-from object_detection_2d_extend.workflow import TestSuite
 
 import kolena
+from kolena._experimental.object_detection import Inference
+from kolena._experimental.object_detection import Model
 from kolena._experimental.object_detection import ObjectDetectionEvaluator
+from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection import ThresholdStrategy
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
