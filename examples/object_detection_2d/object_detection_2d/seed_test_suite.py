@@ -23,12 +23,12 @@ from typing import Tuple
 
 import pandas as pd
 import s3fs
-from constants import DATASET
-from constants import S3_ANNOTATION_FILE_PATH
-from constants import S3_IMAGE_LOCATION
-from constants import TEST_SUITE_DESCRIPTION
-from constants import TRANSPORTATION_LABELS
-from constants import WORKFLOW
+from object_detection_2d.constants import DATASET
+from object_detection_2d.constants import S3_ANNOTATION_FILE_PATH
+from object_detection_2d.constants import S3_IMAGE_LOCATION
+from object_detection_2d.constants import TEST_SUITE_DESCRIPTION
+from object_detection_2d.constants import TRANSPORTATION_LABELS
+from object_detection_2d.constants import WORKFLOW
 
 import kolena
 from kolena._experimental.object_detection import GroundTruth

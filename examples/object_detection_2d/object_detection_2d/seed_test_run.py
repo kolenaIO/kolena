@@ -18,11 +18,11 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
-from constants import DATASET
-from constants import MODEL_METADATA
-from constants import S3_MODEL_INFERENCE_PREFIX
-from constants import TRANSPORTATION_LABELS
-from constants import WORKFLOW
+from object_detection_2d.constants import DATASET
+from object_detection_2d.constants import MODEL_METADATA
+from object_detection_2d.constants import S3_MODEL_INFERENCE_PREFIX
+from object_detection_2d.constants import TRANSPORTATION_LABELS
+from object_detection_2d.constants import WORKFLOW
 
 import kolena
 from kolena._experimental.object_detection import Inference
@@ -56,6 +56,34 @@ def model_alias_to_data_path(alias: str) -> str:
     return S3_MODEL_INFERENCE_PREFIX + alias + "/coco-2014-val_prediction_attribution_2.0_transportation.csv"
 
 
+def load_results(model_alias: str) -> pd.DataFrame:
+    print("loading csv of inferences from S3...")
+
+    try:
+        df_results = pd.read_csv(
+            model_alias_to_data_path(model_alias),
+            dtype={
+                "locator": object,
+                "label": object,
+                "confidence_score": object,
+                "min_x": object,
+                "min_y": object,
+                "max_x": object,
+                "max_y": object,
+            },
+        )
+    except OSError as e:
+        print(e, "\nPlease ensure you have set up AWS credentials.")
+        exit()
+
+    # filter for transportation inferences
+    df_results = df_results[df_results.label.isin(TRANSPORTATION_LABELS)]
+
+    # group image inferences together
+    metadata_by_image = df_results.groupby("locator")
+    return metadata_by_image
+
+
 # transforms test samples into inferences using a dataframe
 def get_stored_inferences(
     metadata_by_image: pd.DataFrame,
@@ -83,17 +111,8 @@ def get_stored_inferences(
     return infer
 
 
-def seed_test_run(
-    model_alias: str,
-    model_full_name: str,
-    test_suite: TestSuite,
-    groups_df: pd.DataFrame,
-) -> None:
-    # create a model
-    model = Model(model_full_name, infer=get_stored_inferences(groups_df), metadata=MODEL_METADATA[model_alias])
-
-    # customizable configurations for the evaluator
-    evaluator = ObjectDetectionEvaluator(
+def setup_evaluator() -> ObjectDetectionEvaluator:
+    return ObjectDetectionEvaluator(
         configurations=[
             ThresholdConfiguration(
                 threshold_strategy=ThresholdStrategy.FIXED_03,
@@ -110,47 +129,38 @@ def seed_test_run(
         ],
     )
 
+
+def seed_test_run(
+    model_alias: str,
+    model_full_name: str,
+    test_suite_name: str,
+    groups_df: pd.DataFrame,
+) -> None:
+    # create a model
+    model = Model(model_full_name, infer=get_stored_inferences(groups_df), metadata=MODEL_METADATA[model_alias])
+
+    # customizable configurations for the evaluator
+    evaluator = setup_evaluator()
+
     # runs the evaluation
+    test_suite = TestSuite(test_suite_name)
     test(model, test_suite, evaluator, reset=True)
 
 
 def main(args: Namespace) -> None:
-    print("loading csv of inferences from S3...")
-
-    try:
-        df_results = pd.read_csv(
-            model_alias_to_data_path(args.model),
-            dtype={
-                "locator": object,
-                "label": object,
-                "confidence_score": object,
-                "min_x": object,
-                "min_y": object,
-                "max_x": object,
-                "max_y": object,
-            },
-        )
-    except OSError as e:
-        print(e, "\nPlease ensure you have set up AWS credentials.")
-        exit()
-
-    # filter for transportation inferences
-    df_results = df_results[df_results.label.isin(TRANSPORTATION_LABELS)]
-
-    # group image inferences together
-    metadata_by_image = df_results.groupby("locator")
-
     model_alias = args.model
     model_full_name = MODEL_LIST[model_alias]
 
     # run evaluation on test suites
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
+    metadata_by_image = load_results(model_alias)
+
     if args.test_suite == "none":
         for name in TEST_SUITE_NAMES:
-            seed_test_run(model_alias, model_full_name, TestSuite(name), metadata_by_image)
+            seed_test_run(model_alias, model_full_name, name, metadata_by_image)
     else:
-        seed_test_run(model_alias, model_full_name, TestSuite(args.test_suite), metadata_by_image)
+        seed_test_run(model_alias, model_full_name, args.test_suite, metadata_by_image)
 
 
 if __name__ == "__main__":

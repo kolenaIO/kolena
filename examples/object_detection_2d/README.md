@@ -76,6 +76,5 @@ _workflow, TestCase, TestSuite, Model = define_workflow(
 )
 ```
 
-Note that `GroundTruth` and `ExtendedBoundingBox` are now imported from `extended/workflow.py` in
-`extended/seed_test_suite.py`. No need to update `seed_test_run.py` because we did not introduce any changes to
-the evaluation logic.
+Note that `GroundTruth`, `ExtendedBoundingBox`, `TestCase`, `TestSuite`, and `Model` are now imported from
+`extended/workflow.py` in `extended/seed_test_suite.py` and `extended/seed_test_run.py`.
