@@ -49,3 +49,33 @@ optional arguments:
   --test-suite TEST_SUITE
                         Optionally specify a test suite to test. Test against all available test suites when unspecified.
 ```
+
+### Pre-built Workflow Extension
+
+A pre-built workflow can be extended simply by re-defining the [`workflow`](object_detection_2d/extended/workflow.py). In
+this example, we added a new boolean field `occluded` to each `GroundTruth` `LabeledBoundingBox` by extending it.
+
+```python
+@dataclass(frozen=True)
+class ExtendedBoundingBox(LabeledBoundingBox):
+    occluded: bool
+
+@dataclass(frozen=True)
+class GroundTruth(BaseGroundTruth):
+    bboxes: List[ExtendedBoundingBox]
+```
+
+And define a new workflow with the extended `GroundTruth` class:
+
+```python
+_workflow, TestCase, TestSuite, Model = define_workflow(
+    "Object Detection Extended",
+    TestSample,
+    GroundTruth,
+    Inference,
+)
+```
+
+Note that `GroundTruth` and `ExtendedBoundingBox` are now imported from `extended/workflow.py` in
+`extended/seed_test_suite.py`. No need to update `seed_test_run.py` because we did not introduce any changes to
+the evaluation logic.
