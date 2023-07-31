@@ -32,7 +32,7 @@ class GroundTruth(BaseGroundTruth):
     bboxes: List[ExtendedBoundingBox]
 
 
-_workflow, TestCase, TestSuite, Model = define_workflow(
+_, TestCase, TestSuite, Model = define_workflow(
     "Object Detection Extend",
     TestSample,
     GroundTruth,
