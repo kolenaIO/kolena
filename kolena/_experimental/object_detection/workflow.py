@@ -34,13 +34,27 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 @dataclass(frozen=True)
 class TestSample(Image):
+    """The [`Image`][kolena.workflow.Image] sample type for the pre-built 2D Object Detection workflow."""
+
     metadata: Metadata = dataclasses.field(default_factory=dict)
+    """The optional [`Metadata`][kolena.workflow.Metadata] dictionary."""
 
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
+    """Ground truth type for the pre-built 2D Object Detection workflow."""
+
     bboxes: List[LabeledBoundingBox]
+    """
+    The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es associated with an image.
+    """
+
     ignored_bboxes: List[LabeledBoundingBox] = dataclasses.field(default_factory=list)
+    """
+    The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es to be ignored in evaluation
+    associated with an image.
+    """
+
     labels: List[str] = dataclasses.field(default_factory=list)
     n_bboxes: int = dataclasses.field(default_factory=lambda: 0)
 
@@ -51,10 +65,16 @@ class GroundTruth(BaseGroundTruth):
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
+    """Inference type for the pre-built 2D Object Detection workflow."""
+
     bboxes: List[ScoredLabeledBoundingBox]
+    """
+    The inference [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox]es associated with
+    an image.
+    """
 
 
-_workflow, TestCase, TestSuite, Model = define_workflow(
+_workflow, _TestCase, _TestSuite, _Model = define_workflow(
     "Object Detection",
     TestSample,
     GroundTruth,
@@ -158,10 +178,19 @@ class TestSuiteMetrics(MetricsTestSuite):
 
 
 class ThresholdStrategy(str, Enum):
+    """
+    Threshold strategy enumerations used in
+    [`ThresholdConfiguration`][kolena._experimental.object_detection.ThresholdConfiguration].
+    """
+
     F1_OPTIMAL = "F1_OPTIMAL"
+    """Confidence threshold that yields the most optimal F1-score."""
     FIXED_03 = "FIXED_03"
+    """Confidence threshold fixed at 0.3."""
     FIXED_05 = "FIXED_05"
+    """Confidence threshold fixed at 0.5."""
     FIXED_075 = "FIXED_075"
+    """Confidence threshold fixed at 0.75."""
 
     def display_name(self) -> str:
         if self is ThresholdStrategy.FIXED_03:
@@ -177,10 +206,28 @@ class ThresholdStrategy(str, Enum):
 
 @dataclass(frozen=True)
 class ThresholdConfiguration(EvaluatorConfiguration):
+    """
+    Confidence and [IoU ↗](../../metrics/iou.md) threshold configuration for the pre-built 2D Object Detection workflow.
+    Specify a confidence and IoU threshold to apply to all classes.
+    """
+
     threshold_strategy: ThresholdStrategy
+    """The confidence threshold strategy."""
+
     iou_threshold: float
+    """The [IoU ↗](../../metrics/iou.md) threshold."""
+
     with_class_level_metrics: bool
+    """
+    The flag that enables multiclass evaluation. If it's set to `False` on a multiclass `TestSuite`, it will only
+    perform localization evaluation by treating it as a binary class problem.
+    """
+
     min_confidence_score: float = 0.0
+    """
+    The minimum confidence score to consider for the evaluation. This is usually set to reduce noise by excluding
+    inferences with low confidence score.
+    """
 
     def display_name(self) -> str:
         return (
