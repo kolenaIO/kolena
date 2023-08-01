@@ -29,17 +29,17 @@ from object_detection_2d.constants import S3_IMAGE_LOCATION
 from object_detection_2d.constants import TEST_SUITE_DESCRIPTION
 from object_detection_2d.constants import TRANSPORTATION_LABELS
 from object_detection_2d.constants import WORKFLOW
+from object_detection_2d.extended.workflow import ExtendedBoundingBox
+from object_detection_2d.extended.workflow import GroundTruth
+from object_detection_2d.extended.workflow import TestCase
+from object_detection_2d.extended.workflow import TestSample
+from object_detection_2d.extended.workflow import TestSuite
 
 import kolena
-from kolena._experimental.object_detection import GroundTruth
-from kolena._experimental.object_detection import TestCase
-from kolena._experimental.object_detection import TestSample
-from kolena._experimental.object_detection import TestSuite
 from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import LabeledBoundingBox
 
 
-def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
+def load_transportation_data() -> Dict[str, List[ExtendedBoundingBox]]:
     s3 = s3fs.S3FileSystem()
 
     try:
@@ -56,7 +56,7 @@ def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
     label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
 
     # cache bounding boxes per image
-    image_to_boxes: Dict[int, List[LabeledBoundingBox]] = defaultdict(lambda: [])
+    image_to_boxes: Dict[int, List[ExtendedBoundingBox]] = defaultdict(lambda: [])
     for annotation in coco_data["annotations"]:
         image_id = annotation["image_id"]
         label = label_map[annotation["category_id"]]
@@ -66,7 +66,7 @@ def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
             bbox = annotation["bbox"]
             top_left = (bbox[0], bbox[1])
             bottom_right = (bbox[0] + bbox[2], bbox[1] + bbox[3])
-            bounding_box = LabeledBoundingBox(top_left, bottom_right, label)
+            bounding_box = ExtendedBoundingBox(top_left, bottom_right, label, occluded=False)
             image_to_boxes["COCO_val2014_" + str(image_id).zfill(12) + ".jpg"].append(bounding_box)
     return image_to_boxes
 
@@ -98,7 +98,7 @@ def create_complete_transportation_case(args: Namespace) -> TestCase:
 
     # create the complete test case, not attached to any test suite
     complete_test_case = TestCase(
-        f"complete transportation :: {DATASET}",
+        f"complete transportation :: {DATASET} [{WORKFLOW}]",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
@@ -120,7 +120,7 @@ def seed_test_suite_by_brightness(test_suite_name: str, complete_test_case: Test
             (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["brightness"])
         ]
         new_test_case = TestCase(
-            f"brightness :: {name} :: {DATASET}",
+            f"brightness :: {name} :: {DATASET} [{WORKFLOW}]",
             test_samples=filtered_test_samples,
             reset=True,
         )
@@ -158,7 +158,7 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
             if filtered_ground_truth.n_bboxes > 0:
                 samples_with_filtered_bboxes.append((ts, filtered_ground_truth))
         new_test_case = TestCase(
-            f"bounding box size :: {name} :: {DATASET}",
+            f"bounding box size :: {name} :: {DATASET} [{WORKFLOW}]",
             test_samples=samples_with_filtered_bboxes,
             reset=True,
         )

@@ -44,6 +44,9 @@ nav:
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
               - <code>visualization</code>: reference/workflow/visualization.md
+      - Pre-built Workflows:
+          - Pre-built Workflows: reference/pre-built/index.md
+          - 2D Object Detection: reference/pre-built/object-detection-2d.md
       - Legacy Modules:
           - Legacy Modules: reference/legacy/index.md
           - Built-in Workflows:
