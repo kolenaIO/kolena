@@ -30,12 +30,15 @@ from typing import Sequence
 from typing import Union
 
 import numpy as np
+from pydantic import validator
 from pydantic.dataclasses import dataclass
 from pydantic.typing import Literal
 
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow._datatypes import DataType
+from kolena.workflow._datatypes import to_nested_sequence
+from kolena.workflow._datatypes import to_sequence
 from kolena.workflow._datatypes import TypedDataObject
 
 NumberSeries = Sequence[Union[float, int]]
@@ -85,6 +88,9 @@ class Curve(DataObject):
     when e.g. there are multiple curves generated per test case.
     """
 
+    __x_to_sequence = validator("x", pre=True, allow_reuse=True)(to_sequence)
+    __y_to_sequence = validator("y", pre=True, allow_reuse=True)(to_sequence)
+
     def __post_init_post_parse__(self) -> None:
         if len(self.x) != len(self.y):
             raise ValueError(
@@ -127,6 +133,8 @@ class CurvePlot(Plot):
     Custom options to allow for control over the display of the plot `y` axis. See
     [`AxisConfig`][kolena.workflow.AxisConfig] for details.
     """
+
+    __curves_to_sequence = validator("curves", pre=True, allow_reuse=True)(to_sequence)
 
     @staticmethod
     def _data_type() -> _PlotType:
@@ -184,6 +192,11 @@ class Histogram(Plot):
     [`AxisConfig`][kolena.workflow.AxisConfig] for details.
     """
 
+    __buckets_to_sequence = validator("buckets", pre=True, allow_reuse=True)(to_sequence)
+    # TODO: will this work for nested sequences?
+    __frequency_to_sequence = validator("frequency", pre=True, allow_reuse=True)(to_sequence)
+    # TODO: labels?
+
     def __post_init_post_parse__(self) -> None:
         n_buckets = len(self.buckets)
         if n_buckets < 2:
@@ -228,6 +241,9 @@ class BarPlot(Plot):
 
     config: Optional[AxisConfig] = None
     """Custom format options to allow for control over the display of the numerical plot axis (`values`)."""
+
+    __values_to_sequence = validator("values", pre=True, allow_reuse=True)(to_sequence)
+    __labels_to_sequence = validator("labels", pre=True, allow_reuse=True)(to_sequence)
 
     def __post_init_post_parse__(self) -> None:
         n_labels, n_values = len(self.labels), len(self.values)
@@ -283,6 +299,9 @@ class ConfusionMatrix(Plot):
 
     y_label: str = "Actual"
     """The label for the `y` axis of the confusion matrix."""
+
+    __labels_to_sequence = validator("labels", pre=True, allow_reuse=True)(to_sequence)
+    __matrix_to_nested_sequence = validator("matrix", pre=True, allow_reuse=True)(to_nested_sequence)
 
     def __post_init_post_parse__(self) -> None:
         n_labels = len(self.labels)

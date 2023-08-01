@@ -11,14 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import itertools
 from dataclasses import dataclass
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Type
+
+import numpy as np
+import pytest
 
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import _AnnotationType
+from kolena.workflow.annotation import Annotation
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import BoundingBox3D
@@ -81,3 +88,20 @@ def test__serialize__nested() -> None:
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
     }
     assert Tester._from_dict(obj_dict) == obj
+
+
+@pytest.mark.parametrize(
+    "annotation,points",
+    itertools.product(
+        [Polygon, Keypoints, Polyline],
+        [
+            zip(range(10), range(10)),
+            np.zeros((10, 2), dtype=np.uint8),
+            iter((0, 0) for _ in range(10)),
+            ((0, 0) for _ in range(10)),
+            [(0, 0), (1, 1), (2, 2)],
+        ],
+    ),
+)
+def test__coerce__points(annotation: Type[Annotation], points: Any) -> None:
+    annotation(points=points)  # type: ignore

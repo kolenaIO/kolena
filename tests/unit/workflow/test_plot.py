@@ -17,6 +17,7 @@ from typing import Optional
 from typing import Sequence
 from typing import Union
 
+import numpy as np
 import pytest
 
 from kolena.workflow import AxisConfig
@@ -252,3 +253,42 @@ def test__import__backcompat() -> None:
     from kolena.workflow.evaluator import Histogram  # noqa: F401
     from kolena.workflow.evaluator import BarPlot  # noqa: F401
     from kolena.workflow.evaluator import ConfusionMatrix  # noqa: F401
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        dict(x=range(10), y=range(10)),
+        dict(x=[1, 2, 3], y=[1, 2, 3]),
+        dict(x=(0 for _ in range(10)), y=(0 for _ in range(10))),
+        dict(x=np.zeros(10), y=np.zeros(10)),
+        dict(x=np.array([1, 2, 3]), y=np.array([1, 2, 3])),
+    ],
+)
+def test__coerce__curve(kwargs: Any) -> None:
+    Curve(**kwargs)  # type: ignore
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        dict(buckets=range(10), frequency=range(9)),
+        dict(buckets=[1, 2, 3], frequency=[1, 2]),
+        dict(buckets=np.linspace(0, 10, 11), frequency=np.zeros(10)),
+        dict(buckets=np.array([1, 2, 3]), frequency=np.array([1, 2])),
+    ],
+)
+def test__coerce__histogram(kwargs: Any) -> None:
+    Histogram(title="A", x_label="x", y_label="y", **kwargs)  # type: ignore
+
+
+@pytest.mark.parametrize(
+    "kwargs",
+    [
+        dict(labels=(str(x) for x in range(3)), matrix=np.zeros((3, 3))),
+        dict(labels="ab", matrix=((0, 0), (0, 0))),
+        dict(labels=["a", "b"], matrix=[(None, None), (0, 0)]),
+    ],
+)
+def test__coerce__confusion_matrix(kwargs: Any) -> None:
+    ConfusionMatrix(title="A", **kwargs)  # type: ignore

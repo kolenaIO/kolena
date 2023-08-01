@@ -20,7 +20,10 @@ from typing import Any
 from typing import cast
 from typing import Dict
 from typing import Generic
+from typing import Iterable
+from typing import List
 from typing import Optional
+from typing import Sequence
 from typing import Tuple
 from typing import Type
 from typing import TypeVar
@@ -309,3 +312,18 @@ class MetricsDataFrame(pa.typing.DataFrame[MetricsDataFrameSchema], LoadableData
             df_out["test_sample"] = df_out["test_sample"].apply(serde_function)
         df_out["metrics"] = df_out["metrics"].apply(serde_function)
         return df_out
+
+
+V = TypeVar("V")
+
+
+def to_list_of_tuples(value: Iterable[Iterable[V]]) -> List[Tuple[V, ...]]:
+    return [tuple(t) for t in value]
+
+
+def to_sequence(value: Iterable[V]) -> Sequence[V]:
+    return list(value)
+
+
+def to_nested_sequence(value: Iterable[Iterable[V]]) -> Sequence[Sequence[V]]:
+    return list(list(v) for v in value)

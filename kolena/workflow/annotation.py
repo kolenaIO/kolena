@@ -36,10 +36,12 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
+from pydantic import validator
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow._datatypes import DataType
+from kolena.workflow._datatypes import to_list_of_tuples
 from kolena.workflow._datatypes import TypedDataObject
 
 
@@ -121,11 +123,13 @@ class Polygon(Annotation):
     points: List[Tuple[float, float]]
     """The sequence of `(x, y)` points comprising the boundary of this polygon."""
 
+    __points_to_list = validator("points", pre=True, allow_reuse=True)(to_list_of_tuples)
+
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.POLYGON
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         if len(self.points) < 3:
             raise ValueError(f"{type(self).__name__} must have at least three points ({len(self.points)} provided)")
 
@@ -168,6 +172,8 @@ class Keypoints(Annotation):
     points: List[Tuple[float, float]]
     """The sequence of discrete `(x, y)` points comprising this keypoints annotation."""
 
+    __points_to_list = validator("points", pre=True, allow_reuse=True)(to_list_of_tuples)
+
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.KEYPOINTS
@@ -179,6 +185,8 @@ class Polyline(Annotation):
 
     points: List[Tuple[float, float]]
     """The sequence of connected `(x, y)` points comprising this polyline."""
+
+    __points_to_list = validator("points", pre=True, allow_reuse=True)(to_list_of_tuples)
 
     @staticmethod
     def _data_type() -> _AnnotationType:
