@@ -1,5 +1,7 @@
 <p align="center">
-  <img src="https://docs.kolena.io/assets/images/kolena-banner.png" width="640" alt="Kolena" />
+  <a href="https://docs.kolena.io">
+    <img src="https://docs.kolena.io/assets/images/kolena-banner.png" width="640" alt="Kolena" />
+  </a>
 </p>
 
 <p align='center'>

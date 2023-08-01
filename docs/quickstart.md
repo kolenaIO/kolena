@@ -33,7 +33,7 @@ and run directly:
 
 <div class="grid cards" markdown>
 
-- [:kolena-age-estimation-20: Example: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
+- [:kolena-age-estimation-20: Example: Age Estimation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
 
     ![Example images from the Labeled Faces in the Wild dataset.](assets/images/LFW.jpg)
 
@@ -41,7 +41,7 @@ and run directly:
 
     Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
 
-- [:kolena-keypoint-detection-20: Example: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
+- [:kolena-keypoint-detection-20: Example: Keypoint Detection ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
 
     ![Example image and five-point facial keypoints array from the 300 Faces in the Wild dataset.](assets/images/300-W.jpg)
 
@@ -50,7 +50,7 @@ and run directly:
     Facial Keypoint Detection using the [300 Faces in the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/)
     dataset
 
-- [:kolena-text-summarization-20: Example: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
+- [:kolena-text-summarization-20: Example: Text Summarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
 
     ![Example articles from the CNN-DailyMail dataset.](assets/images/CNN-DailyMail.jpg)
 
@@ -59,7 +59,7 @@ and run directly:
     Text Summarization using [OpenAI GPT-family models](https://platform.openai.com/docs/guides/gpt) and the
     [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
 
-- [:kolena-detection-20: Example: 2D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
+- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
 
     ![Example 2D bounding boxes from the COCO dataset.](assets/images/COCO-transportation.jpeg)
 
@@ -67,7 +67,7 @@ and run directly:
 
     2D Object Detection using the [COCO](https://cocodataset.org/#overview) dataset
 
-- [:kolena-drive-time-20: Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
+- [:kolena-drive-time-20: Example: Object Detection (3D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
 
     ![Example pointcloud and 3D object bounding boxes from the KITTI dataset.](assets/images/KITTI-pointcloud.png)
 

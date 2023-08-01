@@ -1,12 +1,14 @@
 ---
-icon: kolena/detection-16
+icon: kolena/widget-16
+status: new
 ---
 
-# `kolena._experimental.object_detection`
+# :kolena-widget-20: Object Detection (2D)
 
-!!! warning "Experimental Feature"
-    This pre-built workflow is an experimental feature. We are still actively working on improving it
-    so there may be frequent updates and changes.
+!!! example "Experimental Feature"
+
+    This pre-built workflow is an experimental feature. Experimental features are under active development and may
+    occasionally undergo API-breaking changes.
 
 Object Detection (OD) is a computer vision task that aims to classify and locate objects of interest presented in an
 image. So, it can be viewed as a combination of localization and classification tasks.
@@ -15,7 +17,7 @@ This pre-built workflow is prepared for a 2D Object Detection problem and here i
 on the COCO dataset.
 
 <div class="grid cards" markdown>
-- [:kolena-detection-20: Example: 2D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
+- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
 
     ![Example 2D bounding boxes from the COCO dataset.](../../assets/images/COCO-transportation.jpeg)
 

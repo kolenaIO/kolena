@@ -28,7 +28,7 @@ theme:
 
 extra:
   status:
-    new: Recently Added
+    new: Experimental
 
 plugins:
   social:
