@@ -13,5 +13,5 @@ Ready-to-use workflows built with [`kolena.workflow`](../workflow/index.md).
 
     ---
 
-    2D Object Detection using the [COCO](https://cocodataset.org/#overview) dataset
+    Object Detection on 2D images using axis-aligned bounding boxes.
 </div>
