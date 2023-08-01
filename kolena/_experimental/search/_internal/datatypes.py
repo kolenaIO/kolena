@@ -69,7 +69,7 @@ class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
     locator: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
     """External locator pointing to a sample in bucket."""
 
-    embedding: Series[EmbeddingVector] = pa.Field(coerce=True, _validate_search_embedding_vector=())
+    embedding: Series[pa.typing.String] = pa.Field(coerce=True)
     """
     Embedding vector (`np.ndarray`) corresponding to a searchable representation of the sample.
     """

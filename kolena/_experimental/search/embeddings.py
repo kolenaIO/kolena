@@ -16,6 +16,7 @@ import json
 from typing import List
 from typing import Tuple
 
+import numpy as np
 import numpy.typing as np_typing
 import pandas as pd
 from dacite import from_dict
@@ -28,20 +29,26 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
+from kolena._utils.serde import serialize_embedding_vector
+from kolena.errors import InputValidationError
 
 
 def upload_embeddings(embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None:
     """
     Upload a list of search embeddings corresponding to sample locators.
 
-    :param embeddings: List of locator-embedding pairs, as tuples
+    :param embeddings: List of locator-embedding pairs, as tuples. Locators should be string values, while embeddings
+        should be an `numpy.typing.ArrayLike` of numeric values.
     :raises InputValidationError: The provided embeddings input is not of a valid format
     """
     init_response = init_upload()
     locators, search_embeddings = [], []
     for locator, embedding in embeddings:
+        embedding = embedding if isinstance(embedding, np.ndarray) else np.array(embedding)
+        if not np.issubdtype(embedding.dtype, np.number):
+            raise InputValidationError("unexepected non-numeric embedding dtype")
         locators.append(locator)
-        search_embeddings.append(embedding)
+        search_embeddings.append(serialize_embedding_vector(embedding))
     df_embeddings = pd.DataFrame(dict(locator=locators, embedding=search_embeddings))
     df_validated = validate_df_schema(df_embeddings, LocatorEmbeddingsDataFrameSchema)
 
