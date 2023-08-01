@@ -9,7 +9,7 @@ hide:
 This section contains detailed API reference documentation for `kolena`.
 
 <div class="grid cards" markdown>
-- [`kolena.initialize`](initialize)
+- [`kolena.initialize`](./initialize.md)
 
     ---
 
@@ -23,7 +23,7 @@ This section contains detailed API reference documentation for `kolena`.
 </div>
 
 <div class="grid cards" markdown>
-- [:kolena-cube-16: `kolena.workflow`](workflow)
+- [:kolena-cube-16: `kolena.workflow`](./workflow/index.md)
 
     ---
 
@@ -33,17 +33,17 @@ This section contains detailed API reference documentation for `kolena`.
 ---
 
 <div class="grid cards" markdown>
-- [:kolena-workflow-16: Pre-built Workflows](workflow)
+- [:kolena-workflow-16: Pre-built Workflows](./pre-built/index.md)
 
     ---
 
-    Ready-to-use workflows built with [`kolena.workflow`](../workflow/index.md).
+    Ready-to-use workflows built with [`kolena.workflow`](./workflow/index.md).
 </div>
 
 ---
 
 <div class="grid cards" markdown>
-- [:kolena-archive-16: Legacy Definitions](workflow)
+- [:kolena-archive-16: Legacy Definitions](./legacy/index.md)
 
     ---
 
