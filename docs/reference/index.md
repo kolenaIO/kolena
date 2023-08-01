@@ -33,7 +33,17 @@ This section contains detailed API reference documentation for `kolena`.
 ---
 
 <div class="grid cards" markdown>
-- [:kolena-archive-16: Legacy Modules](workflow)
+- [:kolena-workflow-16: Pre-built Workflows](workflow)
+
+    ---
+
+    Ready-to-use workflows built with [`kolena.workflow`](../workflow/index.md).
+</div>
+
+---
+
+<div class="grid cards" markdown>
+- [:kolena-archive-16: Legacy Definitions](workflow)
 
     ---
 
