@@ -74,7 +74,7 @@ class Inference(BaseInference):
     """
 
 
-_workflow, _TestCase, _TestSuite, _Model = define_workflow(
+_, TestCase, TestSuite, Model = define_workflow(
     "Object Detection",
     TestSample,
     GroundTruth,
