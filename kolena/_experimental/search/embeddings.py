@@ -16,7 +16,7 @@ import json
 from typing import List
 from typing import Tuple
 
-import numpy as np
+import numpy.typing as np_typing
 import pandas as pd
 from dacite import from_dict
 
@@ -30,7 +30,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 
 
-def upload_embeddings(embeddings: List[Tuple[str, np.typing.ArrayLike]]) -> None:
+def upload_embeddings(embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None:
     """
     Upload a list of search embeddings corresponding to sample locators.
 

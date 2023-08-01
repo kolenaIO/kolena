@@ -58,7 +58,7 @@ def _validate_ndarray(series: Series) -> bool:
 
 
 @register_check_method()
-def _validate_embedding_vector(series: Series) -> bool:
+def _validate_search_embedding_vector(series: Series) -> bool:
     def validate_cell(cell: np.ndarray) -> bool:
         return cell.dtype in __ALLOWED_NUMERIC_DTYPES
 
@@ -69,7 +69,7 @@ class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
     locator: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
     """External locator pointing to a sample in bucket."""
 
-    embedding: Series[EmbeddingVector] = pa.Field(coerce=True, _validate_embedding_vector=())
+    embedding: Series[EmbeddingVector] = pa.Field(coerce=True, _validate_search_embedding_vector=())
     """
     Embedding vector (`np.ndarray`) corresponding to a searchable representation of the sample.
     """
