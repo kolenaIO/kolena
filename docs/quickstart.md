@@ -59,7 +59,7 @@ and run directly:
     Text Summarization using [OpenAI GPT-family models](https://platform.openai.com/docs/guides/gpt) and the
     [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
 
-- [:kolena-detection-20: Example: 2D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
+- [:kolena-widget-20: Example: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
 
     ![Example 2D bounding boxes from the COCO dataset.](assets/images/COCO-transportation.jpeg)
 
@@ -67,7 +67,7 @@ and run directly:
 
     2D Object Detection using the [COCO](https://cocodataset.org/#overview) dataset
 
-- [:kolena-drive-time-20: Example: 3D Object Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
+- [:kolena-drive-time-20: Example: Object Detection (3D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
 
     ![Example pointcloud and 3D object bounding boxes from the KITTI dataset.](assets/images/KITTI-pointcloud.png)
 

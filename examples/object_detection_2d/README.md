@@ -1,4 +1,4 @@
-# Example Integration: 2D Object Detection
+# Example Integration: Object Detection (2D)
 
 This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test 2D
 object detection problems on Kolena. Only images with the

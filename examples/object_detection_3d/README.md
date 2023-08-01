@@ -1,4 +1,4 @@
-# Example Integration: KITTI 3D Object Detection
+# Example Integration: Object Detection (3D)
 
 This example integration uses the image and LIDAR data from the KITTI dataset to
 demonstrate how to test 3D Object Detection on Kolena.
