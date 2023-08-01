@@ -279,6 +279,32 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
     ),
+    (
+        TestSample(locator=fake_locator(22, "OD")),
+        GroundTruth(
+            bboxes=[
+                LabeledBoundingBox((60, 60), (61, 61), "a"),
+                LabeledBoundingBox((30, 30), (31, 31), "b"),
+                LabeledBoundingBox((100, 100), (101, 101), "e"),
+            ],
+            ignored_bboxes=[
+                LabeledBoundingBox((102, 102), (103, 103), "e"),
+                LabeledBoundingBox((32, 32), (33, 33), "b"),
+                LabeledBoundingBox((62, 62), (63, 63), "a"),
+            ],
+        ),
+        Inference(
+            bboxes=[
+                ScoredLabeledBoundingBox((60, 60), (61, 61), "a", 0.9),
+                ScoredLabeledBoundingBox((62, 62), (63, 63), "a", 0.8),
+                ScoredLabeledBoundingBox((30, 30), (31, 31), "b", 0.7),
+                ScoredLabeledBoundingBox((32, 32), (33, 33), "b", 0.6),
+                ScoredLabeledBoundingBox((100, 100), (101, 101), "e", 0.5),
+                ScoredLabeledBoundingBox((102, 102), (103, 103), "e", 0.4),
+            ],
+            ignored=True,
+        ),
+    ),
 ]
 
 
@@ -620,6 +646,32 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             inference_labels=["b", "e"],
         ),
     ),
+    (
+        TestSample(locator=fake_locator(22, "OD"), metadata={}),
+        TestSampleMetrics(
+            TP_labels=[],
+            TP=[],
+            FP_labels=[],
+            FP=[],
+            FN_labels=[],
+            FN=[],
+            Confused_labels=[],
+            Confused=[],
+            count_TP=0,
+            count_FP=0,
+            count_FN=0,
+            count_Confused=0,
+            has_TP=False,
+            has_FP=False,
+            has_FN=False,
+            has_Confused=False,
+            ignored=True,
+            max_confidence_above_t=None,
+            min_confidence_above_t=None,
+            thresholds=[],
+            inference_labels=[],
+        ),
+    ),
 ]
 
 
@@ -701,7 +753,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
     TP=26,
     FN=28,
     FP=12,
-    nIgnored=0,
+    nIgnored=1,
     macro_Precision=697 / 900,
     macro_Recall=1603 / 2925,
     macro_F1=851 / 1386,
