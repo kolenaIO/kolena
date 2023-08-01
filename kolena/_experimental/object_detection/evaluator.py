@@ -36,11 +36,7 @@ from kolena.workflow import Plot
 class ObjectDetectionEvaluator(Evaluator):
     """
     This `ObjectDetectionEvaluator` transforms inferences into metrics for the object detection workflow for a
-    single class or multiple classes. The `ObjectDetectionEvaluator` uses the [`SingleClassObjectDetectionEvaluator`]
-    [kolena._experimental.object_detection.evaluator_single_class.SingleClassObjectDetectionEvaluator] for single
-    class evaluation, and [`MulticlassObjectDetectionEvaluator`]
-    [kolena._experimental.object_detection.evaluator_multiclass.MulticlassObjectDetectionEvaluator] for multiclass
-    evaluation.
+    single class or multiple classes.
 
     When a [`ThresholdConfiguration`][kolena._experimental.object_detection.workflow.ThresholdConfiguration] is
     configured to use an F1-Optimal threshold strategy, the evaluator requires that the first test case retrieved for
