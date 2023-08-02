@@ -16,3 +16,5 @@ arbitrary ML problem.
   [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
 - [Mutliclass Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#multiclass-classification-on-cifar-10): Multiclass Classification
   on image data from [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
+- [Binary Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#binary-classification-on-dogs-vs-cats):
+  Binary Classification on image data from [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset

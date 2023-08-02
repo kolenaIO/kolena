@@ -41,6 +41,23 @@ This project defines two scripts that perform the following operations:
     poetry run python3 scripts/multiclass/seed_test_run.py
 
 
+Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
+Run a script using the `--help` flag for more information:
+
+```shell
+$ poetry run python3 scripts/multiclass/seed_test_run.py --help
+usage: seed_test_run.py [-h] [--models MODELS [MODELS ...]]
+                        [--test_suites TEST_SUITES [TEST_SUITES ...]]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --models MODELS [MODELS ...]
+                        Name(s) of model(s) in directory to test
+  --test_suites TEST_SUITES [TEST_SUITES ...]
+                        Name(s) of test suite(s) to test.
+```
+
+
 ### Binary Classification on Dogs vs. Cats
 
 This project defines two scripts that perform the following operations:
@@ -61,6 +78,7 @@ This project defines two scripts that perform the following operations:
     poetry run python3 scripts/binary/seed_test_run.py
     ```
 
+
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
 
@@ -68,6 +86,7 @@ Run a script using the `--help` flag for more information:
 $ poetry run python3 scripts/binary/seed_test_run.py --help
 usage: seed_test_run.py [-h] [--models MODELS [MODELS ...]]
                         [--test_suites TEST_SUITES [TEST_SUITES ...]]
+                        [--multiclass]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -75,4 +94,6 @@ optional arguments:
                         Name(s) of model(s) in directory to test
   --test_suites TEST_SUITES [TEST_SUITES ...]
                         Name(s) of test suite(s) to test.
+  --multiclass          Option to evaluate dogs-vs-cats as multiclass
+                        classification
 ```
