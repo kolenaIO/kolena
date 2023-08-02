@@ -66,6 +66,9 @@ def _validate_search_embedding_vector(series: Series) -> bool:
 
 
 class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
+    key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
+    """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
+
     locator: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
     """External locator pointing to a sample in bucket."""
 

@@ -34,10 +34,12 @@ from kolena._utils.dataframes.validators import validate_df_schema
 from kolena.errors import InputValidationError
 
 
-def upload_embeddings(embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None:
+def upload_embeddings(key: str, embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None:
     """
     Upload a list of search embeddings corresponding to sample locators.
 
+    :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
+        This is typically a locator.
     :param embeddings: List of locator-embedding pairs, as tuples. Locators should be string values, while embeddings
         should be an `numpy.typing.ArrayLike` of numeric values.
     :raises InputValidationError: The provided embeddings input is not of a valid format
@@ -50,7 +52,7 @@ def upload_embeddings(embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None
             raise InputValidationError("unexepected non-numeric embedding dtype")
         locators.append(locator)
         search_embeddings.append(b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8"))
-    df_embeddings = pd.DataFrame(dict(locator=locators, embedding=search_embeddings))
+    df_embeddings = pd.DataFrame(dict(key=[key] * len(embeddings), locator=locators, embedding=search_embeddings))
     df_validated = validate_df_schema(df_embeddings, LocatorEmbeddingsDataFrameSchema)
 
     upload_data_frame(df=df_validated, batch_size=BatchSize.UPLOAD_EMBEDDINGS.value, load_uuid=init_response.uuid)
