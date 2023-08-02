@@ -58,7 +58,12 @@ def validate_df_record_count(df: pd.DataFrame, max_records_allowed: Optional[int
 
 
 def _is_locator_cell_valid(cell: pa.typing.String) -> bool:
-    matcher = re.compile(r"^(s3|gs|http|https)://(.+/)+.+\.(png|jpe?g|gif|tiff?)$")
+    matcher = re.compile(r"^(s3|gs|https)://(.+/)+.+$")
+    return isinstance(cell, str) and bool(matcher.match(cell.lower()))
+
+
+def _is_image_locator_cell_valid(cell: pa.typing.String) -> bool:
+    matcher = re.compile(r"^(s3|gs|https)://(.+/)+.+\.(png|jpe?g|gif|tiff?)$")
     return isinstance(cell, str) and bool(matcher.match(cell.lower()))
 
 
@@ -67,6 +72,16 @@ def _element_wise_validate_locator(cell: pa.typing.String) -> bool:
     return _is_locator_cell_valid(cell)
 
 
+@register_check_method(check_type="element_wise")
+def _element_wise_validate_image_locator(cell: pa.typing.String) -> bool:
+    return _is_image_locator_cell_valid(cell)
+
+
 @register_check_method()
 def _validate_locator(series: Series) -> bool:
     return series.dropna().apply(_is_locator_cell_valid).all()
+
+
+@register_check_method()
+def _validate_image_locator(series: Series) -> bool:
+    return series.dropna().apply(_is_image_locator_cell_valid).all()
