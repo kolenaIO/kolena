@@ -25,5 +25,5 @@ def test__seed_test_suite__smoke() -> None:
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 def test__seed_test_run__smoke() -> None:
-    args = Namespace(models=["inceptionv3"], test_suites=["complete cifar10/test [classification]"])
+    args = Namespace(models=["inceptionv3"], test_suites=["complete cifar10/test"])
     seed_test_run_main(args)
