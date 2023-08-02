@@ -75,7 +75,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--test_suites",
-        default=["image properties :: cifar10/test"],
+        default=[f"image properties :: {DATASET}"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )
