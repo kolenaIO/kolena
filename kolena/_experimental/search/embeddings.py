@@ -13,6 +13,8 @@
 # limitations under the License.
 import dataclasses
 import json
+import pickle
+from base64 import b64encode
 from typing import List
 from typing import Tuple
 
@@ -29,7 +31,6 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
-from kolena._utils.serde import serialize_embedding_vector
 from kolena.errors import InputValidationError
 
 
@@ -48,7 +49,7 @@ def upload_embeddings(embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None
         if not np.issubdtype(embedding.dtype, np.number):
             raise InputValidationError("unexepected non-numeric embedding dtype")
         locators.append(locator)
-        search_embeddings.append(serialize_embedding_vector(embedding))
+        search_embeddings.append(b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8"))
     df_embeddings = pd.DataFrame(dict(locator=locators, embedding=search_embeddings))
     df_validated = validate_df_schema(df_embeddings, LocatorEmbeddingsDataFrameSchema)
 
@@ -62,4 +63,4 @@ def upload_embeddings(embeddings: List[Tuple[str, np_typing.ArrayLike]]) -> None
     )
     krequests.raise_for_status(res)
     data = from_dict(data_class=API.UploadEmbeddingsResponse, data=res.json())
-    log.success(f"uploaded embeddings for {data.n_updated} samples")
+    log.success(f"uploaded embeddings for {data.n_samples} samples")

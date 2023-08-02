@@ -176,7 +176,7 @@ class Search:
 
     @dataclass(frozen=True)
     class UploadEmbeddingsResponse:
-        n_updated: int
+        n_samples: int
 
 
 Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
