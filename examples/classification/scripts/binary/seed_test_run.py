@@ -32,16 +32,29 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 BUCKET = "kolena-public-datasets"
 DATASET = "dogs-vs-cats"
 POSITIVE_LABEL = "dog"
+NEGATIVE_LABEL = "cat"
 
 
-def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
+def seed_test_run(model_name: str, test_suite_names: List[str], multiclass: bool = False) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         sample_result = df_results[df_results["locator"] == test_sample.locator].iloc[0]
 
+        if multiclass:
+            # treating this as multiclass classification problem (i.e. both positive and negative labels are
+            # equally important) — prediction for both labels are required.
+            return Inference(
+                inferences=[
+                    ScoredClassificationLabel(label=POSITIVE_LABEL, score=sample_result["prediction"]),
+                    ScoredClassificationLabel(label=NEGATIVE_LABEL, score=1 - sample_result["prediction"]),
+                ],
+            )
+
         return Inference(
-            inferences=[ScoredClassificationLabel(label=POSITIVE_LABEL, score=sample_result["prediction"])],
+            inferences=[
+                ScoredClassificationLabel(label=POSITIVE_LABEL, score=sample_result["prediction"]),
+            ],
         )
 
     model = Model(f"{model_name} [{DATASET}]", infer=infer)
@@ -55,7 +68,9 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             model,
             test_suite,
             evaluate_classification,
-            configurations=[ThresholdConfiguration(threshold=0.5)],
+            configurations=[
+                ThresholdConfiguration(threshold=0.5),
+            ],
             reset=True,
         )
 
@@ -63,7 +78,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     for model_name in args.models:
-        seed_test_run(model_name, args.test_suites)
+        seed_test_run(model_name, args.test_suites, args.multiclass)
     return 0
 
 
@@ -80,5 +95,10 @@ if __name__ == "__main__":
         default=[f"image size :: {DATASET}"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
+    )
+    ap.add_argument(
+        "--multiclass",
+        action="store_true",
+        help="Option to evaluate dogs-vs-cats as multiclass classification",
     )
     sys.exit(main(ap.parse_args()))

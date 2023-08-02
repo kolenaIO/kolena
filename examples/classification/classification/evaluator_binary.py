@@ -102,7 +102,7 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
             log.warn("skipping test case confidence histograms: unsupported confidence range")
 
         positive_label = next(iter({inf.inferences[0].label for inf in inferences}))
-        negative_label = next(iter(set(gt_labels) - set(positive_label)))
+        negative_label = next(iter(set(gt_labels) - {positive_label}))
 
         plots.append(
             compute_roc_curves(
