@@ -48,7 +48,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         inferences.sort(key=lambda x: x.score, reverse=True)
         return Inference(inferences=inferences)
 
-    model = Model(f"{model_name} [classification]", infer=infer)
+    model = Model(f"{model_name}", infer=infer)
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:
@@ -75,7 +75,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--test_suites",
-        default=["complete cifar10/test [classification]"],
+        default=[f"complete {DATASET}"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )

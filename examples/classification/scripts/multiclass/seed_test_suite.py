@@ -48,14 +48,14 @@ def main(args: Namespace) -> int:
 
     # Basic Test Cases
     complete_test_case = TestCase(
-        f"complete {DATASET} [classification]",
+        f"complete {DATASET}",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
 
     test_suite = TestSuite(
-        f"complete {DATASET} [classification]",
+        f"complete {DATASET}",
         test_cases=[complete_test_case],
         reset=True,
     )

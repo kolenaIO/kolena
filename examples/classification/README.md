@@ -25,9 +25,19 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](scripts/multiclass/seed_test_suite.py) creates the following test suite:
 
-    - `complete cifar10/test [classification]`: complete CIFAR-10
+    - `complete cifar10/test`: complete CIFAR-10
+
+    Run this command to seed the default test suite:
+    ```shell
+    poetry run python3 scripts/multiclass/seed_test_suite.py
+    ```
 
 2. [`seed_test_run.py`](scripts/multiclass/seed_test_run.py) tests a specified model, e.g. `resnet50v2`, on the above test suite.
+
+    Run this command to evaluate the default models on `complete cifar10/test` test suite:
+    ```shell
+    poetry run python3 scripts/multiclass/seed_test_run.py
+    ```
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
