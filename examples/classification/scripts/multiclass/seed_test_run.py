@@ -18,7 +18,7 @@ from argparse import Namespace
 from typing import List
 
 import pandas as pd
-from classification.evaluator_multiclass import evaluate_classification
+from classification.evaluator import evaluate_classification
 from classification.workflow import Inference
 from classification.workflow import Model
 from classification.workflow import TestSample
