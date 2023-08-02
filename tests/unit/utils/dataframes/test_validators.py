@@ -22,13 +22,13 @@ def test__validate_image_locator() -> None:
         "s3://bucket/image with spaces.jpg",  # spaces should be allowed
         "s3://bucket/UPPERCASE.JPG",  # uppercase
         "gs://bucket/lower.jpG",
-        "http://bucket/lower.jpG",
         "https://bucket/lower.jpG",
     ]
     invalid_image_locators = [
         "garbage",
         "closer://but/still/garbage.jpg",
         "s3://image.jpg",  # missing bucket name
+        "http://bucket/lower.jpG",  # non-https scheme
         "s3://bucket/image.txt",  # non-image extension
         "s3:/bucket/image.jpg",  # malformed
     ]
@@ -47,7 +47,6 @@ def test__validate_locator() -> None:
         "s3://bucket/image with spaces.jpg",  # spaces should be allowed
         "s3://bucket/UPPERCASE.JPG",  # uppercase
         "gs://bucket/lower.jpG",
-        "http://bucket/lower.jpG",
         "https://bucket/lower.jpG",
         "s3://bucket/image.txt",  # non-image extension
     ]
@@ -55,6 +54,7 @@ def test__validate_locator() -> None:
         "garbage",
         "closer://but/still/garbage.jpg",
         "s3://image.jpg",  # missing bucket name
+        "http://bucket/lower.jpG",  # non-https scheme
         "s3:/bucket/image.jpg",  # malformed
     ]
 

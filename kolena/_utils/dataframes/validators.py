@@ -58,12 +58,12 @@ def validate_df_record_count(df: pd.DataFrame, max_records_allowed: Optional[int
 
 
 def _is_locator_cell_valid(cell: pa.typing.String) -> bool:
-    matcher = re.compile(r"^(s3|gs|http|https)://(.+/)+.+$")
+    matcher = re.compile(r"^(s3|gs|https)://(.+/)+.+$")
     return isinstance(cell, str) and bool(matcher.match(cell.lower()))
 
 
 def _is_image_locator_cell_valid(cell: pa.typing.String) -> bool:
-    matcher = re.compile(r"^(s3|gs|http|https)://(.+/)+.+\.(png|jpe?g|gif|tiff?)$")
+    matcher = re.compile(r"^(s3|gs|https)://(.+/)+.+\.(png|jpe?g|gif|tiff?)$")
     return isinstance(cell, str) and bool(matcher.match(cell.lower()))
 
 
