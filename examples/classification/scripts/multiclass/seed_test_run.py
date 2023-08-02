@@ -48,7 +48,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         inferences.sort(key=lambda x: x.score, reverse=True)
         return Inference(inferences=inferences)
 
-    model = Model(f"{model_name}", infer=infer)
+    model = Model(f"{model_name} [{DATASET}]", infer=infer)
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:
