@@ -14,8 +14,8 @@
 from argparse import Namespace
 
 import pytest
-from classification.seed_test_run import main as seed_test_run_main
-from classification.seed_test_suite import main as seed_test_suite_main
+from scripts.multiclass.seed_test_run import main as seed_test_run_main
+from scripts.multiclass.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke() -> None:
