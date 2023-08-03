@@ -67,7 +67,11 @@ class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class BoundingBox(Annotation):
-    """Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices."""
+    """
+    Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices.
+
+    The fields `width`, `height`, `area`, and `aspect_ratio` are automatically derived from the provided coordinates.
+    """
 
     top_left: Tuple[float, float]
     """The top left vertex (in `(x, y)` image coordinates) of this bounding box."""
@@ -205,6 +209,8 @@ class BoundingBox3D(Annotation):
 
     Specified by `(x, y, z)` coordinates for the `center` of the cuboid, `(x, y, z)` `dimensions`, and a `rotation`
     parameter specifying the degrees of rotation about each axis `(x, y, z)` ranging `[-π, π]`.
+
+    The field `volume` is automatically derived from the provided `dimensions`.
     """
 
     center: Tuple[float, float, float]
