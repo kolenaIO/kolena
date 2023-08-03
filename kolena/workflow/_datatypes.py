@@ -145,7 +145,7 @@ class DataObject(metaclass=ABCMeta):
                 f"cast=False, not casting field '{field.name}' to type '{field_type}' with value '{field_value}'",
             )
 
-        items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls)}
+        items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
         return cls(**items)
 
 
