@@ -55,6 +55,7 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np_typing.ArrayLike]
     df_embeddings = pd.DataFrame(dict(key=[key] * len(embeddings), locator=locators, embedding=search_embeddings))
     df_validated = validate_df_schema(df_embeddings, LocatorEmbeddingsDataFrameSchema)
 
+    log.info(f"uploading embeddings for key '{key}'")
     upload_data_frame(df=df_validated, batch_size=BatchSize.UPLOAD_EMBEDDINGS.value, load_uuid=init_response.uuid)
     request = API.UploadEmbeddingsRequest(
         uuid=init_response.uuid,
@@ -65,4 +66,4 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np_typing.ArrayLike]
     )
     krequests.raise_for_status(res)
     data = from_dict(data_class=API.UploadEmbeddingsResponse, data=res.json())
-    log.success(f"uploaded embeddings for {data.n_samples} samples")
+    log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
