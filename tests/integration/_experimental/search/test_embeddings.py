@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
-import numpy.typing as np_typing
 import pytest
 
 from kolena._experimental.search import upload_embeddings
@@ -39,15 +38,13 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
 @pytest.mark.parametrize(
     "embedding",
     [
-        [1, 2, 3, 4],
-        [1.1, 2.2, 3.3, 4.4],
         np.array([1, 2, 3, 4], dtype=np.int32),
         np.array([1, 2, 3, 4], dtype=np.float64),
         np.array([1.1, 2.2, 3.3, 4.4], dtype=np.float64),
         np.array([], dtype=np.float16),
     ],
 )
-def test_upload_embeddings(embedding: np_typing.ArrayLike) -> None:
+def test_upload_embeddings(embedding: np.ndarray) -> None:
     test_case_name = with_test_prefix(f"{__file__} test_upload_embeddings")
     locator = fake_random_locator()
     TestCase.create(test_case_name, test_samples=[(Image(locator=locator), GroundTruth())])
@@ -60,12 +57,12 @@ def test_upload_embeddings(embedding: np_typing.ArrayLike) -> None:
 @pytest.mark.parametrize(
     "embedding",
     [
-        ["a"],
-        [b"a"],
         np.array([], dtype=str),
+        np.array([b"1", b"2"]),
+        np.array([1, "2"]),
     ],
 )
-def test_upload_embeddings__bad_embedding(embedding: np_typing.ArrayLike) -> None:
+def test_upload_embeddings__bad_embedding(embedding: np.ndarray) -> None:
     locator = fake_random_locator()
     with pytest.raises(InputValidationError):
         upload_embeddings(
