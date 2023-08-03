@@ -33,6 +33,7 @@ rendered on top of the image.
 """
 import dataclasses
 from abc import ABCMeta
+from functools import reduce
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -74,8 +75,8 @@ class BoundingBox(Annotation):
     bottom_right: Tuple[float, float]
     """The bottom right vertex (in `(x, y)` image coordinates) of this bounding box."""
 
-    height: float = dataclasses.field(init=False)
     width: float = dataclasses.field(init=False)
+    height: float = dataclasses.field(init=False)
     area: float = dataclasses.field(init=False)
     aspect_ratio: float = dataclasses.field(init=False)
 
@@ -87,7 +88,7 @@ class BoundingBox(Annotation):
         object.__setattr__(self, "width", self.bottom_right[0] - self.top_left[0])
         object.__setattr__(self, "height", self.bottom_right[1] - self.top_left[1])
         object.__setattr__(self, "area", self.width * self.height)
-        object.__setattr__(self, "aspect_ratio", self.width / self.height)
+        object.__setattr__(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -215,9 +216,14 @@ class BoundingBox3D(Annotation):
     rotations: Tuple[float, float, float]
     """Rotations in degrees about each `(x, y, z)` axis."""
 
+    volume: float = dataclasses.field(init=False)
+
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.BOUNDING_BOX_3D
+
+    def __post_init__(self) -> None:
+        object.__setattr__(self, "volume", reduce(lambda a, b: a * b, self.dimensions))
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

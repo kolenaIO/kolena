@@ -12,9 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dataclasses import dataclass
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
+
+import pytest
 
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import DataObject
@@ -32,10 +35,10 @@ from kolena.workflow.annotation import SegmentationMask
 
 
 def test__serialize__simple() -> None:
-    assert BoundingBox(top_left=(1, 1), bottom_right=(2, 2))._to_dict() == {
-        "top_left": [1, 1],
-        "bottom_right": [2, 2],
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+    assert LabeledPolygon(points=[(1, 1), (2, 2), (3, 3)], label="test")._to_dict() == {
+        "label": "test",
+        "points": [[1, 1], [2, 2], [3, 3]],
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
     }
 
 
@@ -75,9 +78,41 @@ def test__serialize__nested() -> None:
     )
     obj_dict = obj._to_dict()
 
-    assert obj_dict["b"] == {
-        "top_left": [0, 0],
-        "bottom_right": [1, 1],
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+    assert obj_dict["e"] == {
+        "points": [[0, 0], [1, 1], [2, 2], [0, 0]],
+        "label": "e",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
     }
     assert Tester._from_dict(obj_dict) == obj
+
+
+@pytest.mark.parametrize(
+    "top_left,bottom_right,expected",
+    [
+        ((0, 0), (0, 0), dict(width=0, height=0, area=0, aspect_ratio=0)),
+        ((10, 10), (10, 10), dict(width=0, height=0, area=0, aspect_ratio=0)),
+        ((10, 10), (20, 30), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+    ],
+)
+def test__bounding_box__derived(
+    top_left: Tuple[float, float],
+    bottom_right: Tuple[float, float],
+    expected: Dict[str, float],
+) -> None:
+    bbox = BoundingBox(top_left=top_left, bottom_right=bottom_right)
+    for field, expected_value in expected.items():
+        assert getattr(bbox, field) == expected_value
+
+
+@pytest.mark.parametrize(
+    "dimensions,expected",
+    [
+        ((0, 0, 0), 0),
+        ((10, 10, 10), 1000),
+        ((1, 1, 1), 1),
+        ((1000, 0, 1000), 0),
+    ],
+)
+def test__bounding_box_3d__derived(dimensions: Tuple[float, float, float], expected: float) -> None:
+    bbox = BoundingBox3D(center=(0, 0, 0), dimensions=dimensions, rotations=(0, 0, 0))
+    assert bbox.volume == expected
