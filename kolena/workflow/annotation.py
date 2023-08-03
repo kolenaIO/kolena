@@ -32,8 +32,8 @@ For example, when viewing images in the Studio, any annotations (such as lists o
 rendered on top of the image.
 """
 import dataclasses
+import math
 from abc import ABCMeta
-from functools import reduce
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -229,7 +229,7 @@ class BoundingBox3D(Annotation):
         return _AnnotationType.BOUNDING_BOX_3D
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "volume", reduce(lambda a, b: a * b, self.dimensions))
+        object.__setattr__(self, "volume", math.prod(self.dimensions))
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
