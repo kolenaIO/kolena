@@ -11,12 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 from dataclasses import dataclass
+from typing import Any
+from typing import Callable
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
 
+import pydantic
 import pytest
 
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
@@ -61,6 +65,31 @@ def test__serde__derived() -> None:
     assert BoundingBox._from_dict(obj_dict) == obj
     # deserialization from dict containing only non-derived fields
     assert BoundingBox._from_dict({k: obj_dict[k] for k in ["top_left", "bottom_right", DATA_TYPE_FIELD]}) == obj
+
+
+@pytest.mark.parametrize("dataclass_decorator", [dataclasses.dataclass, pydantic.dataclasses.dataclass])
+def test__serde__derived__extended(dataclass_decorator: Callable[..., Any]) -> None:
+    @dataclass_decorator(frozen=True)
+    class ExtendedBoundingBox(BoundingBox):
+        a: str
+        b: bool = False
+        c: Optional[int] = None
+
+    obj = ExtendedBoundingBox(top_left=(0, 0), bottom_right=(0, 0), a="a", c=0)
+    obj_dict = obj._to_dict()
+    assert obj_dict == {
+        "top_left": [0, 0],
+        "bottom_right": [0, 0],
+        "width": 0,
+        "height": 0,
+        "area": 0,
+        "aspect_ratio": 0,
+        "a": "a",
+        "b": False,
+        "c": 0,
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+    }
+    assert ExtendedBoundingBox._from_dict(obj_dict) == obj
 
 
 def test__serde__nested() -> None:
