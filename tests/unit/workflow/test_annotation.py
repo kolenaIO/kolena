@@ -35,11 +35,29 @@ from kolena.workflow.annotation import SegmentationMask
 
 
 def test__serialize__simple() -> None:
-    assert LabeledPolygon(points=[(1, 1), (2, 2), (3, 3)], label="test")._to_dict() == {
+    obj = LabeledPolygon(points=[(1, 1), (2, 2), (3, 3)], label="test")
+    obj_dict = obj._to_dict()
+    assert obj_dict == {
         "label": "test",
         "points": [[1, 1], [2, 2], [3, 3]],
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
     }
+    assert LabeledPolygon._from_dict(obj_dict) == obj
+
+
+def test__serialize__derived() -> None:
+    obj = BoundingBox(top_left=(0, 0), bottom_right=(0, 0))
+    obj_dict = obj._to_dict()
+    assert obj_dict == {
+        "top_left": [0, 0],
+        "bottom_right": [0, 0],
+        "width": 0,
+        "height": 0,
+        "area": 0,
+        "aspect_ratio": 0,
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+    }
+    assert BoundingBox._from_dict(obj_dict) == obj
 
 
 def test__serialize__nested() -> None:
