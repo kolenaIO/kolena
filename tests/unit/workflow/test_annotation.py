@@ -34,7 +34,7 @@ from kolena.workflow.annotation import Polyline
 from kolena.workflow.annotation import SegmentationMask
 
 
-def test__serialize__simple() -> None:
+def test__serde__simple() -> None:
     obj = LabeledPolygon(points=[(1, 1), (2, 2), (3, 3)], label="test")
     obj_dict = obj._to_dict()
     assert obj_dict == {
@@ -45,7 +45,7 @@ def test__serialize__simple() -> None:
     assert LabeledPolygon._from_dict(obj_dict) == obj
 
 
-def test__serialize__derived() -> None:
+def test__serde__derived() -> None:
     obj = BoundingBox(top_left=(0, 0), bottom_right=(0, 0))
     obj_dict = obj._to_dict()
     assert obj_dict == {
@@ -57,10 +57,13 @@ def test__serialize__derived() -> None:
         "aspect_ratio": 0,
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
     }
+    # deserialization from dict containing all fields, including derived
     assert BoundingBox._from_dict(obj_dict) == obj
+    # deserialization from dict containing only non-derived fields
+    assert BoundingBox._from_dict({k: obj_dict[k] for k in ["top_left", "bottom_right", DATA_TYPE_FIELD]}) == obj
 
 
-def test__serialize__nested() -> None:
+def test__serde__nested() -> None:
     @dataclass(frozen=True)
     class Tester(DataObject):
         b: BoundingBox
