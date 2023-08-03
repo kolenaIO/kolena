@@ -44,7 +44,7 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
         np.array([1, 2, 3, 4], dtype=np.int32),
         np.array([1, 2, 3, 4], dtype=np.float64),
         np.array([1.1, 2.2, 3.3, 4.4], dtype=np.float64),
-        np.array([], dtype=np.float8),
+        np.array([], dtype=np.float16),
     ],
 )
 def test_upload_embeddings(embedding: np_typing.ArrayLike) -> None:
@@ -62,7 +62,7 @@ def test_upload_embeddings(embedding: np_typing.ArrayLike) -> None:
     [
         ["a"],
         [b"a"],
-        np.array([], dtype=np.str),
+        np.array([], dtype=str),
     ],
 )
 def test_upload_embeddings__bad_embedding(embedding: np_typing.ArrayLike) -> None:
