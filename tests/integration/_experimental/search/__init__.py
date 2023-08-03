@@ -11,20 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from enum import Enum
-
-
-class BatchSize(int, Enum):
-    UPLOAD_CHIPS = 1_000
-    UPLOAD_RECORDS = 10_000_000
-    UPLOAD_RESULTS = 1_000_000
-    UPLOAD_EMBEDDINGS = 1_000_000
-
-    LOAD_RECORDS = UPLOAD_RECORDS
-    LOAD_SAMPLES = 1_000_000
-
-
-class FieldName(str, Enum):
-    TEST_CASE_NAME = "Test Case name"
-    TEST_SUITE_NAME = "Test Suite name"
-    MODEL_NAME = "Model name"
