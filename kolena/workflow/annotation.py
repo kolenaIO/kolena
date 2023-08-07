@@ -89,11 +89,10 @@ class BoundingBox(Annotation):
         return _AnnotationType.BOUNDING_BOX
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "width", getattr(self, "width", self.bottom_right[0] - self.top_left[0]))
-        object.__setattr__(self, "height", getattr(self, "height", self.bottom_right[1] - self.top_left[1]))
-        object.__setattr__(self, "area", getattr(self, "area", self.width * self.height))
-        aspect_ratio = getattr(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
-        object.__setattr__(self, "aspect_ratio", aspect_ratio)
+        object.__setattr__(self, "width", self.bottom_right[0] - self.top_left[0])
+        object.__setattr__(self, "height", self.bottom_right[1] - self.top_left[1])
+        object.__setattr__(self, "area", self.width * self.height)
+        object.__setattr__(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -230,7 +229,7 @@ class BoundingBox3D(Annotation):
         return _AnnotationType.BOUNDING_BOX_3D
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "volume", getattr(self, "volume", reduce(lambda a, b: a * b, self.dimensions)))
+        object.__setattr__(self, "volume", reduce(lambda a, b: a * b, self.dimensions))
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
