@@ -80,7 +80,13 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetricsSingleClass(MetricsTestSample):
-    """Image-level metrics for Classification workflow."""
+    """
+    Image-level metrics for Binary Classification workflow.
+
+    It is evaluated as a binary classification workflow when there is only
+    one label's prediction provided as part of `Inference`, and this label is considered
+    to be positive.
+    """
 
     is_correct: bool
     """An indication of the `classification_label` matching the associated ground truth label."""
@@ -111,11 +117,7 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
 
     classification: ScoredClassificationLabel
     """
-    The model classification for this image. Empty when no inferences have a sufficient confidence score determined
-    by the `ThresholdConfiguration`.
-
-    For binary classification, if only one label's confidence score is provided as part of `Inference`, then
-    `classification` will reflect that.
+    The model inference for this image.
     """
 
     threshold: float
@@ -132,7 +134,7 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    """Image-level metrics for Classification workflow."""
+    """Image-level metrics for Multiclass Classification workflow."""
 
     is_correct: bool
     """An indication of the `classification_label` matching the associated ground truth label."""
@@ -164,7 +166,13 @@ class TestSampleMetrics(MetricsTestSample):
 
 @dataclass(frozen=True)
 class TestCaseMetricsSingleClass(MetricsTestCase):
-    """Test-case-level aggregate metrics for Binary Classification workflow."""
+    """
+    Test-case-level aggregate metrics for Binary Classification workflow.
+
+    It is evaluated as a binary classification workflow when there is only
+    one label's prediction provided as part of `Inference`, and this label is considered
+    to be positive.
+    """
 
     TP: int
     """Total number of true positives within this test case."""
@@ -204,7 +212,7 @@ class ClassMetricsPerTestCase(TestCaseMetricsSingleClass):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    """Test-case-level aggregate metrics for Classification workflow."""
+    """Test-case-level aggregate metrics for Multiclass Classification workflow."""
 
     n_labels: int
     """Total number of classes within this test case."""
