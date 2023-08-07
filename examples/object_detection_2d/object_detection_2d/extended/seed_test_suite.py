@@ -36,7 +36,6 @@ from object_detection_2d.extended.workflow import TestSample
 from object_detection_2d.extended.workflow import TestSuite
 
 import kolena
-from kolena.workflow.annotation import BoundingBox
 
 
 def load_transportation_data() -> Dict[str, List[ExtendedBoundingBox]]:
@@ -56,7 +55,7 @@ def load_transportation_data() -> Dict[str, List[ExtendedBoundingBox]]:
     label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
 
     # cache bounding boxes per image
-    image_to_boxes: Dict[int, List[ExtendedBoundingBox]] = defaultdict(lambda: [])
+    image_to_boxes: Dict[str, List[ExtendedBoundingBox]] = defaultdict(lambda: [])
     for annotation in coco_data["annotations"]:
         image_id = annotation["image_id"]
         label = label_map[annotation["category_id"]]
@@ -146,7 +145,7 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
     def filter_gt_bboxes(gt: GroundTruth, filter_fn: Callable[[float], bool]) -> GroundTruth:
         bboxes, ignored_bboxes = [], gt.ignored_bboxes
         for bbox in gt.bboxes:
-            bboxes.append(bbox) if filter_fn(_area(bbox)) else ignored_bboxes.append(bbox)
+            bboxes.append(bbox) if filter_fn(bbox.area) else ignored_bboxes.append(bbox)
         return GroundTruth(bboxes=bboxes, ignored_bboxes=ignored_bboxes)
 
     # create each test case by stratification
@@ -172,12 +171,6 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
         reset=True,
     )
     print(f"created test suite '{test_suite.name}' v{test_suite.version}")
-
-
-def _area(bbox: BoundingBox) -> float:
-    width = bbox.bottom_right[0] - bbox.top_left[0]
-    height = bbox.bottom_right[1] - bbox.top_left[1]
-    return width * height
 
 
 def main(args: Namespace) -> None:
