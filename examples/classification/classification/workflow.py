@@ -42,8 +42,12 @@ class TestSample(Image):
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for Classification workflow."""
 
-    classification: Optional[ClassificationLabel]
-    """The classfication label associated with an image. For binary classification, the negative class is `None`."""
+    classification: ClassificationLabel
+    """
+    The classfication label associated with an image.
+
+    For binary classification, the negative class should also be labeled. (e.g., `dog` vs. `not dog` or `dog` vs. `cat`)
+    """
 
 
 @dataclass(frozen=True)
@@ -54,6 +58,15 @@ class Inference(BaseInference):
     """
     The model inferences for an image. For `N`-class problems, `label` is expected to contain `N` entries, one for
     each class and its associated confidence score.
+
+    For binary classification, only positive class's confidence score is required. `ThresholdConfiguration` will be
+    applied to the positive class only. If inferences for both positive and negative class are provided, then it will
+    be treated as multiclass classification.
+    """
+
+    ignored: bool = False
+    """
+    Whether the image should be ignored in evaluating the results of the model.
     """
 
 
@@ -66,8 +79,65 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
+class TestSampleMetricsSingleClass(MetricsTestSample):
+    """
+    Image-level metrics for Binary Classification workflow.
+
+    It is evaluated as a binary classification workflow when there is only
+    one label's prediction provided as part of `Inference`, and this label is considered
+    to be positive.
+    """
+
+    is_correct: bool
+    """An indication of the `classification_label` matching the associated ground truth label."""
+
+    is_TP: bool
+    """
+    An indication of the `classification_label` correctly matching the associated positive ground
+    truth label.
+    """
+
+    is_FP: bool
+    """
+    An indication of the `classification_label` incorrectly matching the associated negative ground
+    truth label.
+    """
+
+    is_FN: bool
+    """
+    An indication of the `classification_label` incorrectly matching the associated positive ground
+    truth label.
+    """
+
+    is_TN: bool
+    """
+    An indication of the `classification_label` correctly matching the associated negative ground
+    truth label.
+    """
+
+    classification: ScoredClassificationLabel
+    """
+    The model inference for this image.
+    """
+
+    threshold: float
+    """
+    The threshold used in evaluation — specified by the `ThresholdConfiguration`. It is commonly used in a binary
+    classification problem.
+    """
+
+    missing_inference: bool = False
+
+    def __post_init__(self):
+        object.__setattr__(self, "missing_inference", self.classification is None)
+
+
+@dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    """Image-level metrics for Classification workflow."""
+    """Image-level metrics for Multiclass Classification workflow."""
+
+    is_correct: bool
+    """An indication of the `classification_label` matching the associated ground truth label."""
 
     classification: Optional[ScoredClassificationLabel]
     """
@@ -75,14 +145,18 @@ class TestSampleMetrics(MetricsTestSample):
     by the `ThresholdConfiguration`.
     """
 
-    margin: Optional[float]
+    margin: Optional[float] = None
     """
     The difference in confidence scores between the `classification_score` and the inference with the second-highest
-    confidence score. Empty when no prediction with sufficient confidence score is provided.
+    confidence score. Empty when no prediction with sufficient confidence score is provided or when it's a binary
+    classification.
     """
 
-    is_correct: bool
-    """An indication of the `classification_label` matching the associated ground truth label."""
+    threshold: Optional[float] = None
+    """
+    The threshold used in evaluation — specified by the `ThresholdConfiguration`. It is commonly used in a binary
+    classification problem.
+    """
 
     missing_inference: bool = False
 
@@ -92,7 +166,13 @@ class TestSampleMetrics(MetricsTestSample):
 
 @dataclass(frozen=True)
 class TestCaseMetricsSingleClass(MetricsTestCase):
-    """Test-case-level aggregate metrics for the binary Classification workflow."""
+    """
+    Test-case-level aggregate metrics for Binary Classification workflow.
+
+    It is evaluated as a binary classification workflow when there is only
+    one label's prediction provided as part of `Inference`, and this label is considered
+    to be positive.
+    """
 
     TP: int
     """Total number of true positives within this test case."""
@@ -132,7 +212,7 @@ class ClassMetricsPerTestCase(TestCaseMetricsSingleClass):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    """Test-case-level aggregate metrics for Classification workflow."""
+    """Test-case-level aggregate metrics for Multiclass Classification workflow."""
 
     n_labels: int
     """Total number of classes within this test case."""
