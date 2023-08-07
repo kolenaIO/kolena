@@ -25,16 +25,17 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](scripts/multiclass/seed_test_suite.py) creates the following test suite:
 
-    - `complete cifar10/test`: complete CIFAR-10
+    - `image properties :: cifar10/test`, stratified by `image_brightness` and `image_contrast`
 
     Run this command to seed the default test suite:
     ```shell
     poetry run python3 scripts/multiclass/seed_test_suite.py
     ```
 
+
 2. [`seed_test_run.py`](scripts/multiclass/seed_test_run.py) tests a specified model, e.g. `resnet50v2`, on the above test suite.
 
-    Run this command to evaluate the default models on `complete cifar10/test` test suite:
+    Run this command to evaluate the default models on `image properties :: cifar10/test` test suite:
     ```shell
     poetry run python3 scripts/multiclass/seed_test_run.py
     ```

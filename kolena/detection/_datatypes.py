@@ -45,7 +45,7 @@ JSONObject = object
 
 
 class TestImageDataFrameSchema(pa.SchemaModel):
-    locator: Series[pa.typing.String] = pa.Field(coerce=True, _element_wise_validate_locator=())
+    locator: Series[pa.typing.String] = pa.Field(coerce=True, _element_wise_validate_image_locator=())
     dataset: Series[pa.typing.String] = pa.Field(coerce=True)
     ground_truths: Series[object] = pa.Field(coerce=True, nullable=True, _validate_ground_truths=())
     metadata: Series[JSONObject] = pa.Field(coerce=True)
