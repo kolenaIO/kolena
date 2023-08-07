@@ -70,14 +70,15 @@ class BoundingBox(Annotation):
     """
     Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices.
 
-    The fields `width`, `height`, `area`, and `aspect_ratio` are automatically derived from the provided coordinates.
+    The reserved fields `width`, `height`, `area`, and `aspect_ratio` are automatically populated with values derived
+    from the provided coordinates.
     """
 
     top_left: Tuple[float, float]
-    """The top left vertex (in `(x, y)` image coordinates) of this bounding box."""
+    """The top left vertex (in `(x, y)` pixel coordinates) of this bounding box."""
 
     bottom_right: Tuple[float, float]
-    """The bottom right vertex (in `(x, y)` image coordinates) of this bounding box."""
+    """The bottom right vertex (in `(x, y)` pixel coordinates) of this bounding box."""
 
     width: float = dataclasses.field(init=False)
     height: float = dataclasses.field(init=False)
@@ -136,7 +137,7 @@ class Polygon(Annotation):
     """Arbitrary polygon specified by three or more pixel coordinates."""
 
     points: List[Tuple[float, float]]
-    """The sequence of `(x, y)` points comprising the boundary of this polygon."""
+    """The sequence of `(x, y)` pixel coordinates comprising the boundary of this polygon."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -183,7 +184,7 @@ class Keypoints(Annotation):
     """Array of any number of keypoints specified in pixel coordinates."""
 
     points: List[Tuple[float, float]]
-    """The sequence of discrete `(x, y)` points comprising this keypoints annotation."""
+    """The sequence of discrete `(x, y)` pixel coordinates comprising this keypoints annotation."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -195,7 +196,7 @@ class Polyline(Annotation):
     """Polyline with any number of vertices specified in pixel coordinates."""
 
     points: List[Tuple[float, float]]
-    """The sequence of connected `(x, y)` points comprising this polyline."""
+    """The sequence of connected `(x, y)` pixel coordinates comprising this polyline."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -210,7 +211,7 @@ class BoundingBox3D(Annotation):
     Specified by `(x, y, z)` coordinates for the `center` of the cuboid, `(x, y, z)` `dimensions`, and a `rotation`
     parameter specifying the degrees of rotation about each axis `(x, y, z)` ranging `[-π, π]`.
 
-    The field `volume` is automatically derived from the provided `dimensions`.
+    The reserved field `volume` is automatically derived from the provided `dimensions`.
     """
 
     center: Tuple[float, float, float]
