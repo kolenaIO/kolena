@@ -39,7 +39,7 @@ This project defines two scripts that perform the following operations:
     Run this command to evaluate the default models on `image properties :: cifar10/test` test suite:
     ```shell
     poetry run python3 scripts/multiclass/seed_test_run.py
-
+    ```
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
