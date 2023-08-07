@@ -154,6 +154,40 @@ def test__bounding_box__derived(
         assert getattr(bbox, field) == expected_value
 
 
+@pytest.mark.parametrize("dataclass_decorator", [dataclasses.dataclass, pydantic.dataclasses.dataclass])
+def test__bounding_box__derived__override_values(dataclass_decorator: Callable[..., Any]) -> None:
+    @dataclass_decorator(frozen=True)
+    class ExtendedBoundingBox(BoundingBox):
+        area: float
+        aspect_ratio: float = 0.0
+
+    bbox = ExtendedBoundingBox(top_left=(0, 0), bottom_right=(10, 10), area=1.0)
+    assert bbox.width == 10
+    assert bbox.height == 10
+    assert bbox.area == 1.0
+    assert bbox.aspect_ratio == 0.0
+
+
+@pytest.mark.parametrize(
+    "dataclass_decorator",
+    [
+        # dataclasses.dataclass,  # NOTE: overriding with different types only works for pydantic dataclasses
+        pydantic.dataclasses.dataclass,
+    ],
+)
+def test__bounding_box__derived__override_types(dataclass_decorator: Callable[..., Any]) -> None:
+    @dataclass_decorator(frozen=True)
+    class ExtendedBoundingBox(BoundingBox):
+        area: str
+        aspect_ratio: bool = False
+
+    bbox = ExtendedBoundingBox(top_left=(0, 0), bottom_right=(10, 10), area="test")
+    assert bbox.width == 10
+    assert bbox.height == 10
+    assert bbox.area == "test"
+    assert bbox.aspect_ratio is False
+
+
 @pytest.mark.parametrize(
     "dimensions,expected",
     [
