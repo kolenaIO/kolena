@@ -55,12 +55,12 @@ class KeypointsEvaluator(Evaluator):
             inference.face.points[0],
             normalization_factor,
         )
-        Δ_left_ear, norm_Δ_left_ear = compute_distances(
+        Δ_left_eye, norm_Δ_left_eye = compute_distances(
             ground_truth.face.points[1],
             inference.face.points[1],
             normalization_factor,
         )
-        Δ_right_ear, norm_Δ_right_ear = compute_distances(
+        Δ_right_eye, norm_Δ_right_eye = compute_distances(
             ground_truth.face.points[2],
             inference.face.points[2],
             normalization_factor,
@@ -75,18 +75,18 @@ class KeypointsEvaluator(Evaluator):
             inference.face.points[4],
             normalization_factor,
         )
-        distances = np.array([Δ_left_ear, Δ_right_ear, Δ_nose, Δ_left_mouth, Δ_right_mouth])
+        distances = np.array([Δ_left_eye, Δ_right_eye, Δ_nose, Δ_left_mouth, Δ_right_mouth])
         mse, nmse = calculate_mse_nmse(distances, normalization_factor)
         return TestSampleMetrics(
             match_type="failure_to_align" if nmse > configuration.threshold else "success",
-            Δ_left_ear=Δ_left_ear,
-            Δ_right_ear=Δ_right_ear,
+            Δ_left_eye=Δ_left_eye,
+            Δ_right_eye=Δ_right_eye,
             Δ_nose=Δ_nose,
             Δ_left_mouth=Δ_left_mouth,
             Δ_right_mouth=Δ_right_mouth,
             normalization_factor=normalization_factor,
-            norm_Δ_left_ear=norm_Δ_left_ear,
-            norm_Δ_right_ear=norm_Δ_right_ear,
+            norm_Δ_left_eye=norm_Δ_left_eye,
+            norm_Δ_right_eye=norm_Δ_right_eye,
             norm_Δ_nose=norm_Δ_nose,
             norm_Δ_left_mouth=norm_Δ_left_mouth,
             norm_Δ_right_mouth=norm_Δ_right_mouth,
@@ -122,14 +122,14 @@ class KeypointsEvaluator(Evaluator):
         n_fail_total = n_fail_to_align + n_fail_to_detect
 
         return TestCaseMetrics(
-            avg_Δ_left_ear=np.mean([mts.Δ_left_ear for mts in metrics if mts.Δ_left_ear is not None]),
-            avg_Δ_right_ear=np.mean([mts.Δ_right_ear for mts in metrics if mts.Δ_right_ear is not None]),
+            avg_Δ_left_eye=np.mean([mts.Δ_left_eye for mts in metrics if mts.Δ_left_eye is not None]),
+            avg_Δ_right_eye=np.mean([mts.Δ_right_eye for mts in metrics if mts.Δ_right_eye is not None]),
             avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),
             avg_Δ_left_mouth=np.mean([mts.Δ_left_mouth for mts in metrics if mts.Δ_left_mouth is not None]),
             avg_Δ_right_mouth=np.mean([mts.Δ_right_mouth for mts in metrics if mts.Δ_right_mouth is not None]),
-            avg_norm_Δ_left_ear=np.mean([mts.norm_Δ_left_ear for mts in metrics if mts.norm_Δ_left_ear is not None]),
-            avg_norm_Δ_right_ear=np.mean(
-                [mts.norm_Δ_right_ear for mts in metrics if mts.norm_Δ_right_ear is not None],
+            avg_norm_Δ_left_eye=np.mean([mts.norm_Δ_left_eye for mts in metrics if mts.norm_Δ_left_eye is not None]),
+            avg_norm_Δ_right_eye=np.mean(
+                [mts.norm_Δ_right_eye for mts in metrics if mts.norm_Δ_right_eye is not None],
             ),
             avg_norm_Δ_nose=np.mean([mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]),
             avg_norm_Δ_left_mouth=np.mean(
