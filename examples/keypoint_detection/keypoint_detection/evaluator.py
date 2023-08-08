@@ -29,6 +29,7 @@ from keypoint_detection.workflow import TestSampleMetrics
 from keypoint_detection.workflow import TestSuite
 from keypoint_detection.workflow import TestSuiteMetrics
 
+from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Evaluator
@@ -49,17 +50,17 @@ class KeypointsEvaluator(Evaluator):
             return TestSampleMetrics(match_type="failure_to_detect")
 
         normalization_factor = ground_truth.normalization_factor
-        Δ_left_ear, norm_Δ_left_ear = compute_distances(
+        Δ_nose, norm_Δ_nose = compute_distances(
             ground_truth.face.points[0],
             inference.face.points[0],
             normalization_factor,
         )
-        Δ_right_ear, norm_Δ_right_ear = compute_distances(
+        Δ_left_ear, norm_Δ_left_ear = compute_distances(
             ground_truth.face.points[1],
             inference.face.points[1],
             normalization_factor,
         )
-        Δ_nose, norm_Δ_nose = compute_distances(
+        Δ_right_ear, norm_Δ_right_ear = compute_distances(
             ground_truth.face.points[2],
             inference.face.points[2],
             normalization_factor,
@@ -75,7 +76,7 @@ class KeypointsEvaluator(Evaluator):
             normalization_factor,
         )
         distances = np.array([Δ_left_ear, Δ_right_ear, Δ_nose, Δ_left_mouth, Δ_right_mouth])
-        mse, nmse = calculate_mse_nmse(distances)
+        mse, nmse = calculate_mse_nmse(distances, normalization_factor)
         return TestSampleMetrics(
             match_type="failure_to_align" if nmse > configuration.threshold else "success",
             Δ_left_ear=Δ_left_ear,
@@ -159,6 +160,7 @@ class KeypointsEvaluator(Evaluator):
         return CurvePlot(
             title="Alignment Failure Rate vs. NMSE Threshold",
             x_label="NMSE Threshold",
+            x_config=AxisConfig(type="log"),
             y_label="Alignment Failure Rate",
             curves=[Curve(label="NMSE", x=x, y=y)],
         )
