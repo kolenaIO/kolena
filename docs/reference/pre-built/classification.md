@@ -10,7 +10,7 @@ status: new
     This pre-built workflow is an experimental feature. Experimental features are under active development and may
     occasionally undergo API-breaking changes.
 
-Classification is an artificial intelligence algorithm that aims to group objects and ideas into preset categories.
+Classification is a machine learning task aiming to group objects and ideas into preset categories.
 Classification models used in machine learning predict the likelihood or probability that the data will fall into
 one of the predetermined categories.
 
