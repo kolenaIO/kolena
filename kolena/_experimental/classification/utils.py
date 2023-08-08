@@ -22,6 +22,9 @@ import numpy as np
 from kolena._utils import log
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.metrics import f1_score
+from kolena.workflow.metrics import precision
+from kolena.workflow.metrics import recall
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
@@ -251,3 +254,58 @@ def compute_roc_curves(
             curves=curves,
         )
     return None
+
+
+def compute_threshold_curves(
+    ground_truths: List[Optional[ClassificationLabel]],
+    inferences: List[ScoredClassificationLabel],
+    thresholds: Optional[List[float]] = None,
+) -> Optional[List[CurvePlot]]:
+    if len(ground_truths) != len(inferences):
+        log.warn(f"ground_truths ({len(ground_truths)}) and inferences ({len(inferences)}) differ in length")
+        return None
+
+    if len(ground_truths) == 0 or len(inferences) == 0:
+        log.warn(
+            "insufficient # of samples to compute threshold curves — need at least 1 but received "
+            f"{len(ground_truths)}",
+        )
+        return None
+
+    inference_label = {inf.label for inf in inferences}
+    if len(inference_label) > 1:
+        log.warn(
+            f"more than one class passed in as inferences: {inference_label} — expecting inferences belonging to "
+            "a single class",
+        )
+        return None
+
+    inference_label = next(iter(inference_label))
+    y_true = [gt.label == inference_label if gt else False for gt in ground_truths]
+
+    if thresholds is None:
+        unique_scores = list({inf.score for inf in inferences})
+        initial_thresholds = list(np.linspace(0, 1, 11))
+        thresholds = [0.0]
+        for threshold in sorted(set(initial_thresholds + unique_scores)):
+            if abs(threshold - thresholds[-1]) >= 1e-2:
+                thresholds.append(threshold)
+
+    precisions = []
+    recalls = []
+    f1s = []
+    for threshold in thresholds:
+        y_pred = [inf.score >= threshold for inf in inferences]
+        tp = len([True for t, p in zip(y_true, y_pred) if t and p])
+        fp = len([True for t, p in zip(y_true, y_pred) if not t and p])
+        fn = len([True for t, p in zip(y_true, y_pred) if t and not p])
+
+        precisions.append(precision(tp, fp))
+        recalls.append(recall(tp, fn))
+        f1s.append(f1_score(tp, fp, fn))
+
+    return [
+        Curve(x=thresholds, y=precisions, label="Precision"),
+        Curve(x=thresholds, y=recalls, label="Recall"),
+        Curve(x=thresholds, y=f1s, label="F1"),
+    ]

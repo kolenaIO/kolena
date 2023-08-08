@@ -21,6 +21,7 @@ import pytest
 from kolena._experimental.classification.utils import _roc_curve
 from kolena._experimental.classification.utils import compute_confusion_matrix
 from kolena._experimental.classification.utils import compute_roc_curves
+from kolena._experimental.classification.utils import compute_threshold_curves
 from kolena._experimental.classification.utils import create_histogram
 from kolena._experimental.classification.utils import get_histogram_range
 from kolena._experimental.classification.utils import get_label_confidence
@@ -435,3 +436,152 @@ def test__compute_roc_curves__multiclass() -> None:
     assert roc_curves.curves[1].label == "b"
     assert roc_curves.curves[1].x == [0, 0, 0, 1]
     assert roc_curves.curves[1].y == [0, 0.5, 1, 1]
+
+
+@pytest.mark.parametrize(
+    "gts, infs",
+    [
+        ([], []),
+        ([ClassificationLabel(1)], []),
+        (
+            [ClassificationLabel(0), ClassificationLabel(1)],
+            [ScoredClassificationLabel(label=1, score=0.0)],
+        ),
+        (
+            [ClassificationLabel(0), ClassificationLabel(1)],
+            [
+                ScoredClassificationLabel(label=1, score=0.0),
+                ScoredClassificationLabel(label=0, score=1.0),
+            ],
+        ),
+    ],
+)
+def test__compute_threshold_curves__invalid(
+    gts: List[Optional[ClassificationLabel]],
+    infs: List[ScoredClassificationLabel],
+) -> None:
+    assert compute_threshold_curves(gts, infs) is None
+
+
+@pytest.mark.parametrize(
+    "gts, infs, thresholds, precisions, recalls, f1s",
+    [
+        (
+            [ClassificationLabel(0)],
+            [ScoredClassificationLabel(label=0, score=0.0)],
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ),
+        (
+            [ClassificationLabel(0)],
+            [ScoredClassificationLabel(label=0, score=1.0)],
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        ),
+        (
+            [
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+            ],
+            [
+                ScoredClassificationLabel(label=0, score=0.2),
+                ScoredClassificationLabel(label=0, score=0.55),
+                ScoredClassificationLabel(label=0, score=0.6),
+                ScoredClassificationLabel(label=0, score=0.8),
+            ],
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0],
+            [1, 1, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0, 0],
+            [1, 1, 1, 0.75, 0.75, 0.75, 0.75, 0.5, 0.25, 0.25, 0, 0],
+            [1, 1, 1, 6 / 7, 6 / 7, 6 / 7, 6 / 7, 2 / 3, 0.4, 0.4, 0, 0],
+        ),
+        (
+            [
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+            ],
+            [
+                ScoredClassificationLabel(label=1, score=0.2),
+                ScoredClassificationLabel(label=1, score=0.55),
+                ScoredClassificationLabel(label=1, score=0.6),
+                ScoredClassificationLabel(label=1, score=0.8),
+            ],
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ),
+        (
+            [
+                ClassificationLabel(0),
+                ClassificationLabel(0),
+                ClassificationLabel(1),
+                ClassificationLabel(1),
+            ],
+            [
+                ScoredClassificationLabel(label=1, score=0.2),
+                ScoredClassificationLabel(label=1, score=0.55),
+                ScoredClassificationLabel(label=1, score=0.6),
+                ScoredClassificationLabel(label=1, score=0.8),
+            ],
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0],
+            [1 / 2, 1 / 2, 1 / 2, 2 / 3, 2 / 3, 2 / 3, 2 / 3, 1, 1, 1, 0, 0],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1 / 2, 1 / 2, 0, 0],
+            [2 / 3, 2 / 3, 2 / 3, 4 / 5, 4 / 5, 4 / 5, 4 / 5, 1.0, 2 / 3, 2 / 3, 0, 0],
+        ),
+    ],
+)
+def test__compute_threshold_curves(
+    gts: List[Optional[ClassificationLabel]],
+    infs: List[ScoredClassificationLabel],
+    thresholds: List[float],
+    precisions: List[float],
+    recalls: List[float],
+    f1s: List[float],
+) -> None:
+    tol = 1e-9
+    curves = compute_threshold_curves(gts, infs)
+
+    assert len(curves) == 3
+    assert pytest.approx(curves[0].x, tol) == thresholds
+    assert pytest.approx(curves[0].y, tol) == precisions
+    assert pytest.approx(curves[1].x, tol) == thresholds
+    assert pytest.approx(curves[1].y, tol) == recalls
+    assert pytest.approx(curves[2].x, tol) == thresholds
+    assert pytest.approx(curves[2].y, tol) == f1s
+
+
+@pytest.mark.parametrize(
+    "gts, infs, thresholds",
+    [
+        (
+            [ClassificationLabel(0)],
+            [ScoredClassificationLabel(label=0, score=0.0)],
+            [0, 1.0],
+        ),
+        (
+            [ClassificationLabel(0)],
+            [ScoredClassificationLabel(label=0, score=1.0)],
+            [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+        ),
+    ],
+)
+def test__compute_threshold_curves__with_thresholds(
+    gts: List[Optional[ClassificationLabel]],
+    infs: List[ScoredClassificationLabel],
+    thresholds: List[float],
+) -> None:
+    tol = 1e-9
+    curves = compute_threshold_curves(gts, infs, thresholds=thresholds)
+
+    assert len(curves) == 3
+    assert pytest.approx(curves[0].x, tol) == thresholds
+    assert pytest.approx(curves[1].x, tol) == thresholds
+    assert pytest.approx(curves[2].x, tol) == thresholds
