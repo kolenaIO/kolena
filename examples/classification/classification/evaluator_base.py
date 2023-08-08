@@ -48,7 +48,6 @@ class BaseClassificationEvaluator(ABC):
         self,
         ground_truths: List[GroundTruth],
         metrics_test_samples: List[Union[TestSampleMetricsSingleClass, TestSampleMetrics]],
-        labels: Optional[List[str]],
     ) -> Union[TestCaseMetricsSingleClass, TestCaseMetrics]:
         raise NotImplementedError
 

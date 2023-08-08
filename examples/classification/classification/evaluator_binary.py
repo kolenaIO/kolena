@@ -67,7 +67,6 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
         self,
         ground_truths: List[GroundTruth],
         metrics_test_samples: List[TestSampleMetricsSingleClass],
-        labels: Optional[List[str]],
     ) -> TestCaseMetricsSingleClass:
         n_tp = sum([mts.is_TP for mts in metrics_test_samples])
         n_fn = sum([mts.is_FN for mts in metrics_test_samples])
@@ -102,7 +101,12 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
             log.warn("skipping test case confidence histograms: unsupported confidence range")
 
         positive_label = next(iter({inf.inferences[0].label for inf in inferences}))
-        negative_label = next(iter(set(gt_labels) - {positive_label}))
+        negative_label_set = set(gt_labels) - {positive_label}
+        if len(negative_label_set) > 0:
+            negative_label = next(iter(negative_label_set))
+        else:
+            # for a test suite with all positive samples, there is no way to obtain correct negative label.
+            negative_label = "NOT " + positive_label
 
         plots.append(
             compute_roc_curves(
