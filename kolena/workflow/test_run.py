@@ -89,7 +89,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     model: Model
     test_suite: TestSuite
-    evaluator: Union[Evaluator, BasicEvaluatorFunction, None]
+    evaluator: Optional[Union[Evaluator, BasicEvaluatorFunction]]
     configurations: Optional[List[EvaluatorConfiguration]]
 
     @validate_arguments(config=ValidatorConfig)
@@ -97,7 +97,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self,
         model: Model,
         test_suite: TestSuite,
-        evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
+        evaluator: Optional[Union[Evaluator, BasicEvaluatorFunction]] = None,
         configurations: Optional[List[EvaluatorConfiguration]] = None,
         reset: bool = False,
     ):
@@ -478,7 +478,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 def test(
     model: Model,
     test_suite: TestSuite,
-    evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
+    evaluator: Optional[Union[Evaluator, BasicEvaluatorFunction]] = None,
     configurations: Optional[List[EvaluatorConfiguration]] = None,
     reset: bool = False,
 ) -> None:

@@ -162,6 +162,7 @@ plugins:
       python:
         import:
           - https://docs.python.org/3/objects.inv
+          - https://docs.scipy.org/doc/numpy/objects.inv
         options:
           docstring_style: sphinx
           merge_init_into_class: true
