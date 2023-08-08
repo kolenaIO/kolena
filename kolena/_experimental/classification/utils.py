@@ -266,12 +266,15 @@ def compute_threshold_curves(
     and [`F1-score`](kolena.workflow.metrics.f1_score)) vs. threshold curves for a **single** class presented in
     `inferences`.
 
+    Expects `ground_truths` and `inferences` correspond to the same sample for the same given index.
+
     :param ground_truths: The list of ground truth
-        [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]. For binary classification, the negative
-        class can be `None`.
+        [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]s. For binary classification, the
+        negative class can be `None`.
     :param inferences: The list of inference
-        [`ScoredClassificationLabel`][kolena.workflow.annotation.ScoredClassificationLabel]. The list should only
-         include inferences of a specific class to plot the threshold curves for.
+        [`ScoredClassificationLabel`][kolena.workflow.annotation.ScoredClassificationLabel]s. The length of `inferences`
+        must match the length of `ground_truths`. The list should only include inferences of a specific class to plot
+        the threshold curves for.
     :param thresholds: The list of thresholds to plot with. If not specified, all the unique confidence scores are used
         as thresholds, including evenly spaced thresholds from 0 to 1 with 0.1 step.
     :return: A list of [`CurvePlot`][kolena.workflow.plot.CurvePlot]s if there is any valid `Curve` computed;
@@ -289,16 +292,16 @@ def compute_threshold_curves(
         )
         return None
 
-    inference_label = {inf.label for inf in inferences}
-    if len(inference_label) > 1:
+    inference_label_list = list({inf.label for inf in inferences})
+    if len(inference_label_list) > 1:
         log.warn(
-            f"more than one class passed in as inferences: {inference_label} — expecting inferences belonging to "
+            f"more than one class passed in as inferences: {inference_label_list} — expecting inferences belonging to "
             "a single class",
         )
         return None
 
-    inference_label = next(iter(inference_label))
-    y_true = [gt.label == inference_label if gt else False for gt in ground_truths]
+    inference_label = inference_label_list[0]
+    gts = [gt.label == inference_label if gt else False for gt in ground_truths]
 
     if thresholds is None:
         unique_scores = list({inf.score for inf in inferences})
@@ -307,15 +310,17 @@ def compute_threshold_curves(
         for threshold in sorted(set(initial_thresholds + unique_scores)):
             if abs(threshold - thresholds[-1]) >= 1e-2:
                 thresholds.append(threshold)
+    else:
+        thresholds = sorted(set(thresholds))
 
     precisions = []
     recalls = []
     f1s = []
     for threshold in thresholds:
-        y_pred = [inf.score >= threshold for inf in inferences]
-        tp = len([True for t, p in zip(y_true, y_pred) if t and p])
-        fp = len([True for t, p in zip(y_true, y_pred) if not t and p])
-        fn = len([True for t, p in zip(y_true, y_pred) if t and not p])
+        infs = [inf.score >= threshold for inf in inferences]
+        tp = len([True for gt, inf in zip(gts, infs) if gt and inf])
+        fp = len([True for gt, inf in zip(gts, infs) if not gt and inf])
+        fn = len([True for gt, inf in zip(gts, infs) if gt and not inf])
 
         precisions.append(precision(tp, fp))
         recalls.append(recall(tp, fn))

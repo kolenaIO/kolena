@@ -571,6 +571,11 @@ def test__compute_threshold_curves(
             [ScoredClassificationLabel(label=0, score=1.0)],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         ),
+        (
+            [ClassificationLabel(0)],
+            [ScoredClassificationLabel(label=0, score=1.0)],
+            [0, 1.0, 0.8, 0.2],
+        ),
     ],
 )
 def test__compute_threshold_curves__with_thresholds(
@@ -582,6 +587,6 @@ def test__compute_threshold_curves__with_thresholds(
     curves = compute_threshold_curves(gts, infs, thresholds=thresholds)
 
     assert len(curves) == 3
-    assert pytest.approx(curves[0].x, tol) == thresholds
-    assert pytest.approx(curves[1].x, tol) == thresholds
-    assert pytest.approx(curves[2].x, tol) == thresholds
+    assert pytest.approx(curves[0].x, tol) == sorted(thresholds)
+    assert pytest.approx(curves[1].x, tol) == sorted(thresholds)
+    assert pytest.approx(curves[2].x, tol) == sorted(thresholds)
