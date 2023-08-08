@@ -55,6 +55,8 @@ def evaluate_classification(
     ]
     confidence_range = get_histogram_range(confidence_scores)
 
+    gt_labels = sorted({gt.classification.label for gt in ground_truths})
+
     metrics_test_case: List[Tuple[TestCase, TestCaseMetrics]] = []
     plots_test_case: List[Tuple[TestCase, List[Plot]]] = []
     for tc, _, tc_gts, tc_infs, tc_metrics in test_cases.iter(
@@ -63,8 +65,7 @@ def evaluate_classification(
         inferences,
         test_sample_metrics,
     ):
-        gt_labels = sorted({tc_gt.classification.label for tc_gt in tc_gts})
-        test_case_metrics = evaluator.compute_test_case_metrics(tc_gts, tc_metrics, gt_labels)
+        test_case_metrics = evaluator.compute_test_case_metrics(tc_gts, tc_metrics)
         test_case_plots = evaluator.compute_test_case_plots(
             tc_gts,
             tc_infs,

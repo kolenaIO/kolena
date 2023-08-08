@@ -209,6 +209,9 @@ class ClassMetricsPerTestCase(TestCaseMetricsSingleClass):
     label: str
     """Label associated with this class."""
 
+    nImages: int
+    """# of images with this label"""
+
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):

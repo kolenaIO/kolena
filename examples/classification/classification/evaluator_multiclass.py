@@ -69,13 +69,13 @@ class MulticlassClassificationEvaluator(BaseClassificationEvaluator):
         self,
         ground_truths: List[GroundTruth],
         metrics_test_samples: List[TestSampleMetrics],
-        labels: Optional[List[str]],
     ) -> TestCaseMetrics:
         classification_pairs = [
             (gt.classification.label, tsm.classification.label if tsm.classification else None)
             for gt, tsm in zip(ground_truths, metrics_test_samples)
         ]
         n_images = len(classification_pairs)
+        labels = {gt.classification.label for gt in ground_truths}
         class_level_metrics: List[ClassMetricsPerTestCase] = []
         for label in sorted(labels):
             n_tp = len([True for gt, inf in classification_pairs if gt == label and inf == label])
@@ -86,6 +86,7 @@ class MulticlassClassificationEvaluator(BaseClassificationEvaluator):
             class_level_metrics.append(
                 ClassMetricsPerTestCase(
                     label=label,
+                    nImages=n_tp + n_fn,
                     TP=n_tp,
                     FP=n_fp,
                     FN=n_fn,
