@@ -59,6 +59,7 @@ def main(args: Namespace) -> int:
     # Metadata Test Cases
     stratification_logic_map = {
         "small": lambda area: 0 <= area < 80000,
+        "medium": lambda area: 80000 <= area < 160000,
         "large": lambda area: area >= 160000,
     }
 
