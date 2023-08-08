@@ -58,15 +58,15 @@ wf, TestCase, TestSuite, Model = define_workflow(
 class TestSampleMetrics(MetricsTestSample):
     match_type: str  # one of "failure_to_detect", "failure_to_align", "success"
     # if match_type is "failure_to_detect", metrics below are None
-    Δ_left_ear: Optional[float] = None
-    Δ_right_ear: Optional[float] = None
     Δ_nose: Optional[float] = None
+    Δ_left_eye: Optional[float] = None
+    Δ_right_eye: Optional[float] = None
     Δ_left_mouth: Optional[float] = None
     Δ_right_mouth: Optional[float] = None
     normalization_factor: Optional[float] = None
-    norm_Δ_left_ear: Optional[float] = None
-    norm_Δ_right_ear: Optional[float] = None
     norm_Δ_nose: Optional[float] = None
+    norm_Δ_left_eye: Optional[float] = None
+    norm_Δ_right_eye: Optional[float] = None
     norm_Δ_left_mouth: Optional[float] = None
     norm_Δ_right_mouth: Optional[float] = None
     mse: Optional[float] = None
@@ -75,14 +75,14 @@ class TestSampleMetrics(MetricsTestSample):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    avg_Δ_left_ear: float
-    avg_Δ_right_ear: float
     avg_Δ_nose: float
+    avg_Δ_left_eye: float
+    avg_Δ_right_eye: float
     avg_Δ_left_mouth: float
     avg_Δ_right_mouth: float
-    avg_norm_Δ_left_ear: float
-    avg_norm_Δ_right_ear: float
     avg_norm_Δ_nose: float
+    avg_norm_Δ_left_eye: float
+    avg_norm_Δ_right_eye: float
     avg_norm_Δ_left_mouth: float
     avg_norm_Δ_right_mouth: float
     n_fail_to_align: int

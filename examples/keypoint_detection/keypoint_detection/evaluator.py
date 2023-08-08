@@ -79,15 +79,15 @@ class KeypointsEvaluator(Evaluator):
         mse, nmse = calculate_mse_nmse(distances, normalization_factor)
         return TestSampleMetrics(
             match_type="failure_to_align" if nmse > configuration.threshold else "success",
+            Δ_nose=Δ_nose,
             Δ_left_eye=Δ_left_eye,
             Δ_right_eye=Δ_right_eye,
-            Δ_nose=Δ_nose,
             Δ_left_mouth=Δ_left_mouth,
             Δ_right_mouth=Δ_right_mouth,
             normalization_factor=normalization_factor,
+            norm_Δ_nose=norm_Δ_nose,
             norm_Δ_left_eye=norm_Δ_left_eye,
             norm_Δ_right_eye=norm_Δ_right_eye,
-            norm_Δ_nose=norm_Δ_nose,
             norm_Δ_left_mouth=norm_Δ_left_mouth,
             norm_Δ_right_mouth=norm_Δ_right_mouth,
             mse=mse,
@@ -122,16 +122,16 @@ class KeypointsEvaluator(Evaluator):
         n_fail_total = n_fail_to_align + n_fail_to_detect
 
         return TestCaseMetrics(
+            avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),
             avg_Δ_left_eye=np.mean([mts.Δ_left_eye for mts in metrics if mts.Δ_left_eye is not None]),
             avg_Δ_right_eye=np.mean([mts.Δ_right_eye for mts in metrics if mts.Δ_right_eye is not None]),
-            avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),
             avg_Δ_left_mouth=np.mean([mts.Δ_left_mouth for mts in metrics if mts.Δ_left_mouth is not None]),
             avg_Δ_right_mouth=np.mean([mts.Δ_right_mouth for mts in metrics if mts.Δ_right_mouth is not None]),
+            avg_norm_Δ_nose=np.mean([mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]),
             avg_norm_Δ_left_eye=np.mean([mts.norm_Δ_left_eye for mts in metrics if mts.norm_Δ_left_eye is not None]),
             avg_norm_Δ_right_eye=np.mean(
                 [mts.norm_Δ_right_eye for mts in metrics if mts.norm_Δ_right_eye is not None],
             ),
-            avg_norm_Δ_nose=np.mean([mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]),
             avg_norm_Δ_left_mouth=np.mean(
                 [mts.norm_Δ_left_mouth for mts in metrics if mts.norm_Δ_left_mouth is not None],
             ),
