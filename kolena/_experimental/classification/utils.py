@@ -33,7 +33,7 @@ from kolena.workflow.plot import Histogram
 
 def get_label_confidence(label: str, inference_labels: List[ScoredClassificationLabel]) -> float:
     """
-    Returns the confidence score of the specified `label`.
+    Returns the confidence score of the specified `label` from a list of confidence scores for each label.
 
     :param label: The label whose confidence score to return.
     :param inference_labels: The list of confidence scores for each label. For `N`-class problem, expected to have

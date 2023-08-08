@@ -74,6 +74,23 @@ and run directly:
     ---
 
     3D Object Detection using the [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset
+
+- [:classification-20: Example: Binary Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#binary-classification-on-dogs-vs-cats)
+
+    !["Dog" classification example from the Dogs vs. Cats dataset.](assets/images/classification-dog.jpg)
+
+    ---
+
+    Binary Classification of class "Dog" using the [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
+
+- [:classification-20: Example: Multiclass Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#multiclass-classification-on-cifar-10)
+
+    ![Example images from CIFAR-10 dataset.](assets/images/CIFAR-10.jpg)
+
+    ---
+
+    Multiclass Classification using the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
+
 </div>
 
 To get started, clone the `kolena` repository:
