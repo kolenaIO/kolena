@@ -19,7 +19,7 @@ from scripts.binary.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/dogs-vs-cats/test/meta/metadata.tiny5.csv")
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/dogs-vs-cats/meta/metadata.tiny5.csv")
     seed_test_suite_main(args)
 
 
