@@ -262,8 +262,8 @@ def compute_threshold_curves(
     thresholds: Optional[List[float]] = None,
 ) -> Optional[List[CurvePlot]]:
     """
-    Computes scores (i.e. [`Precision`][kolena.workflow.metrics.precision], [`Recall`](kolena.workflow.metrics.recall)
-    and [`F1-score`](kolena.workflow.metrics.f1_score)) vs. threshold curves for a **single** class presented in
+    Computes scores (i.e. [Precision][kolena.workflow.metrics.precision], [Recall][kolena.workflow.metrics.recall]
+    and [F1-score][kolena.workflow.metrics.f1_score]) vs. threshold curves for a **single** class presented in
     `inferences`.
 
     Expects `ground_truths` and `inferences` correspond to the same sample for the same given index.
