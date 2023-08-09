@@ -214,6 +214,20 @@ cases and our models.
 
 ## Appendix
 
+### Testing evaluator locally
+
+You can verify the evaluator Docker image by running it locally:
+
+```
+docker run --rm \
+  -e KOLENA_TEST_SUITE_NAME="my test suite" \
+  -e KOLENA_TEST_SUITE_VERSION=3 \
+  -e KOLENA_MODEL_NAME="keypoint detection model" \
+  -e KOLENA_WORKFLOW="keypoints detection" \
+  -e KOLENA_TOKEN=$KOLENA_TOKEN \
+  <evaluator-docker-image>
+```
+
 ### Using docker.kolena.io
 
 In this tutorial, we published an evaluator container image to `docker.kolena.io`, Kolena's Docker Registry. In this
