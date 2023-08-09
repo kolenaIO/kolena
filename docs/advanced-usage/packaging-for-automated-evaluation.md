@@ -45,6 +45,11 @@ using [`test`][kolena.workflow.test] involves a `model`, a `test_suite`, an `eva
 test(model, test_suite, evaluator, configurations=configurations)
 ```
 
+!!! note "Note: test invocation"
+
+    Ensure that `reset=True` is NOT used in the `test` method. The flag would overwrite existing inference and metrics results of the test suite, therefore requires re-running model `infer` on the test samples. This would cause problem when we only wants to re-evaluate metrics and do not have the model `infer` logic built in the image.
+
+
 When executing `test` locally, the model and test suite can be initiated by user inputs. When Kolena executes `test`
 under automation, this information would have to be obtained through environment variables.
 Kolena sets up following environment variables for evaluator execution:
