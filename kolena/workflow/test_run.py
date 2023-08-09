@@ -100,7 +100,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
         configurations: Optional[List[EvaluatorConfiguration]] = None,
         reset: bool = False,
-        dry_run: bool = False,
     ):
         if configurations is None:
             configurations = []
@@ -120,7 +119,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.evaluator = evaluator
         self.configurations = self.evaluator.configurations if isinstance(evaluator, Evaluator) else configurations
         self.reset = reset
-        self.dry_run = dry_run
 
         evaluator_display_name = (
             None
@@ -164,9 +162,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
             if len(inferences) > 0:
                 log.success(f"performed inference on {len(inferences)} test samples")
-                if not self.dry_run:
-                    log.info("uploading inferences")
-                    self.upload_inferences(inferences)
+                log.info("uploading inferences")
+                self.upload_inferences(inferences)
 
             metrics = self.evaluate()
             return dict(inferences=inferences, metrics=metrics)
@@ -245,7 +242,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         Perform evaluation by computing metrics for individual test samples, in aggregate across test cases, and across
         the complete test suite at each [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
         """
-        if self.evaluator is None and not self.dry_run:
+        if self.evaluator is None:
             log.info("commencing server side metrics evaluation")
             self._start_server_side_evaluation()
             return {}
@@ -283,9 +280,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 log.info(f"computing test sample metrics {configuration_description}")
                 metrics_test_sample = evaluator.compute_test_sample_metrics(test_case, inferences, configuration)
 
-                if not self.dry_run:
-                    log.info(f"uploading test sample metrics {configuration_description}")
-                    self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
+                log.info(f"uploading test sample metrics {configuration_description}")
+                self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
 
                 log.info(f"computing test case metrics {configuration_description}")
                 # TODO: sort? order returned from evaluator may not match inferences order
@@ -300,11 +296,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             test_case_metrics[test_case._id] = test_case_metrics_by_config
             test_case_plots[test_case._id] = test_case_plots_by_config
 
-        if not self.dry_run:
-            log.info("uploading test case metrics")
-            self._upload_test_case_metrics(test_case_metrics)
-            log.info("uploading test case plots")
-            self._upload_test_case_plots(test_case_plots)
+        log.info("uploading test case metrics")
+        self._upload_test_case_metrics(test_case_metrics)
+        log.info("uploading test case plots")
+        self._upload_test_case_plots(test_case_plots)
 
         log.info("computing test suite metrics")
         test_suite_metrics: Dict[Optional[EvaluatorConfiguration], Optional[MetricsTestSuite]] = {}
@@ -320,9 +315,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             )
             test_suite_metrics[configuration] = metrics_test_suite
 
-        if not self.dry_run:
-            log.info("uploading test suite metrics")
-            self._upload_test_suite_metrics(test_suite_metrics)
+        log.info("uploading test suite metrics")
+        self._upload_test_suite_metrics(test_suite_metrics)
 
         return dict(
             test_case_metrics=test_case_metrics,
@@ -352,13 +346,12 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 log.info(f"no results {_configuration_description(config)}")
                 return
 
-            if not self.dry_run:
-                log.info(f"uploading test sample metrics {_configuration_description(config)}")
-                self._upload_test_sample_metrics(
-                    test_case=None,
-                    metrics=results.metrics_test_sample,
-                    configuration=config,
-                )
+            log.info(f"uploading test sample metrics {_configuration_description(config)}")
+            self._upload_test_sample_metrics(
+                test_case=None,
+                metrics=results.metrics_test_sample,
+                configuration=config,
+            )
             for test_case, metrics in results.metrics_test_case:
                 test_case_metrics[test_case._id][config] = metrics
             for test_case, plots in results.plots_test_case:
@@ -382,13 +375,12 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             evaluation_results = evaluator(test_samples, ground_truths, inferences, test_case_test_samples)
             process_results(evaluation_results, None)
 
-        if not self.dry_run:
-            log.info("uploading test case metrics")
-            self._upload_test_case_metrics(test_case_metrics)
-            log.info("uploading test case plots")
-            self._upload_test_case_plots(test_case_plots)
-            log.info("uploading test suite metrics")
-            self._upload_test_suite_metrics(test_suite_metrics)
+        log.info("uploading test case metrics")
+        self._upload_test_case_metrics(test_case_metrics)
+        log.info("uploading test case plots")
+        self._upload_test_case_plots(test_case_plots)
+        log.info("uploading test suite metrics")
+        self._upload_test_suite_metrics(test_suite_metrics)
 
         return dict(
             test_case_metrics=test_case_metrics,
@@ -505,7 +497,6 @@ def test(
     evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
     configurations: Optional[List[EvaluatorConfiguration]] = None,
     reset: bool = False,
-    dry_run: bool = False,
 ) -> Dict[str, Any]:
     """
     Test a [`Model`][kolena.workflow.Model] on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
@@ -526,4 +517,4 @@ def test(
     :param configurations: A list of configurations to use when running the evaluator.
     :param reset: Overwrites existing inferences if set.
     """
-    return TestRun(model, test_suite, evaluator, configurations, reset, dry_run).run()
+    return TestRun(model, test_suite, evaluator, configurations, reset).run()
