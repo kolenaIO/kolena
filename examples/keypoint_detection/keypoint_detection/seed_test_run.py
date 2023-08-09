@@ -45,8 +45,8 @@ def run(args: Namespace) -> None:
     evaluator = KeypointsEvaluator(
         configurations=[
             NmseThreshold(0.01),
+            NmseThreshold(0.02),
             NmseThreshold(0.05),
-            NmseThreshold(0.1),
         ],
     )
     test(model, test_suite, evaluator, reset=True)
@@ -54,7 +54,7 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("model_name", type=str, help="Name of model in directory to test.")
+    ap.add_argument("model_name", type=str, help="Name of model to test.")
     ap.add_argument("test_suite", type=str, default="none", help="Name of the test suite to run.")
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
