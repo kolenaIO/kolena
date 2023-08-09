@@ -2423,6 +2423,8 @@
       
         
       
+        
+      
     
     
       
@@ -2538,6 +2540,51 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../pre-built/classification/" class="md-nav__link">
+        
+  
+    <?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+     viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
+<g id="layout_auto_4_">
+	<g>
+        <path d="M1,3 C1,1.8954305 1.8954305,1 3,1 L7.58425057,1 C8.11468355,1 8.62339137,1.21071368 8.99846413,1.58578644 L14.4111418,6.99846413 C15.1921904,7.77951272 15.1921904,9.04584267 14.4111418,9.82689126 L9.82689126,14.4111418 C9.04584267,15.1921904 7.77951272,15.1921904 6.99846413,14.4111418 L1.58578644,8.99846413 C1.21071368,8.62339137 1,8.11468355 1,7.58425057 L1,3 Z M4.4870223,2.99258417 C3.66166691,2.99258417 2.99258417,3.66166691 2.99258417,4.4870223 C2.99258417,5.31237769 3.66166691,5.98146043 4.4870223,5.98146043 C5.31237769,5.98146043 5.98146043,5.31237769 5.98146043,4.4870223 C5.98146043,3.66166691 5.31237769,2.99258417 4.4870223,2.99258417 Z" />
+	</g>
+</g>
+</svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Classification
+  
+
+    
+  </span>
+  
+  
+    
+  
+  
+    <span class="md-status md-status--new" title="Experimental">
+    </span>
+  
+
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
     
     
       
@@ -2561,7 +2608,7 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5_4" >
         
           
           
@@ -2596,14 +2643,14 @@
 
             </a>
             
-              <label class="md-nav__link " for="__nav_2_5_3">
+              <label class="md-nav__link " for="__nav_2_5_4">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_5_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2_5_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -4025,6 +4072,8 @@ rendered on top of the image.</p>
 
   
       <p>Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices.</p>
+<p>The reserved fields <code>width</code>, <code>height</code>, <code>area</code>, and <code>aspect_ratio</code> are automatically populated with values derived
+from the provided coordinates.</p>
 
 
   
@@ -4054,7 +4103,7 @@ rendered on top of the image.</p>
 
   <div class="doc doc-contents ">
   
-      <p>The top left vertex (in <code>(x, y)</code> image coordinates) of this bounding box.</p>
+      <p>The top left vertex (in <code>(x, y)</code> pixel coordinates) of this bounding box.</p>
   </div>
 
 </div>
@@ -4076,7 +4125,7 @@ rendered on top of the image.</p>
 
   <div class="doc doc-contents ">
   
-      <p>The bottom right vertex (in <code>(x, y)</code> image coordinates) of this bounding box.</p>
+      <p>The bottom right vertex (in <code>(x, y)</code> pixel coordinates) of this bounding box.</p>
   </div>
 
 </div>
@@ -4349,7 +4398,7 @@ label, and a float score.</p>
 
   <div class="doc doc-contents ">
   
-      <p>The sequence of <code>(x, y)</code> points comprising the boundary of this polygon.</p>
+      <p>The sequence of <code>(x, y)</code> pixel coordinates comprising the boundary of this polygon.</p>
   </div>
 
 </div>
@@ -4619,7 +4668,7 @@ label, and a float score.</p>
 
   <div class="doc doc-contents ">
   
-      <p>The sequence of discrete <code>(x, y)</code> points comprising this keypoints annotation.</p>
+      <p>The sequence of discrete <code>(x, y)</code> pixel coordinates comprising this keypoints annotation.</p>
   </div>
 
 </div>
@@ -4681,7 +4730,7 @@ label, and a float score.</p>
 
   <div class="doc doc-contents ">
   
-      <p>The sequence of connected <code>(x, y)</code> points comprising this polyline.</p>
+      <p>The sequence of connected <code>(x, y)</code> pixel coordinates comprising this polyline.</p>
   </div>
 
 </div>
@@ -4716,6 +4765,7 @@ label, and a float score.</p>
       <p>Three-dimensional cuboid bounding box in a right-handed coordinate system.</p>
 <p>Specified by <code>(x, y, z)</code> coordinates for the <code>center</code> of the cuboid, <code>(x, y, z)</code> <code>dimensions</code>, and a <code>rotation</code>
 parameter specifying the degrees of rotation about each axis <code>(x, y, z)</code> ranging <code>[-π, π]</code>.</p>
+<p>The reserved field <code>volume</code> is automatically derived from the provided <code>dimensions</code>.</p>
 
 
   
