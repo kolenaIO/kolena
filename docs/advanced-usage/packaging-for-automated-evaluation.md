@@ -47,7 +47,9 @@ test(model, test_suite, evaluator, configurations=configurations)
 
 !!! note "Note: test invocation"
 
-    Ensure that `reset=True` is NOT used in the `test` method. The flag would overwrite existing inference and metrics results of the test suite, therefore requires re-running model `infer` on the test samples. This would cause problem when we only wants to re-evaluate metrics and do not have the model `infer` logic built in the image.
+    Ensure that `reset=True` is NOT used in the `test` method when you only want to re-evaluate metrics and do not
+    have the model `infer` logic built in the image. The flag would overwrite existing inference and metrics
+    results of the test suite, therefore requires re-running model `infer` on the test samples.
 
 
 When executing `test` locally, the model and test suite can be initiated by user inputs. When Kolena executes `test`
