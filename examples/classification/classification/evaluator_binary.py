@@ -24,12 +24,14 @@ from classification.workflow import ThresholdConfiguration
 
 from kolena._experimental.classification.utils import compute_confusion_matrix
 from kolena._experimental.classification.utils import compute_roc_curves
+from kolena._experimental.classification.utils import compute_threshold_curves
 from kolena._utils import log
 from kolena.workflow import Plot
 from kolena.workflow.metrics import accuracy as compute_accuracy
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
+from kolena.workflow.plot import CurvePlot
 
 
 class BinaryClassificationEvaluator(BaseClassificationEvaluator):
@@ -123,6 +125,21 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
                 labels=[positive_label, negative_label],
             ),
         )
+
+        threshold_curves = compute_threshold_curves(
+            [gt.classification for gt in ground_truths],
+            [inf.inferences[0] for inf in inferences],
+        )
+        if threshold_curves is not None:
+            plots.append(
+                CurvePlot(
+                    title="Scores vs. Confidence Threshold",
+                    x_label="Confidence Threshold",
+                    y_label="Score",
+                    curves=threshold_curves,
+                ),
+            )
+
         plots = list(filter(lambda plot: plot is not None, plots))
 
         return plots
