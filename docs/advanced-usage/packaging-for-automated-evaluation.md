@@ -82,6 +82,12 @@ if __name__ == "__main__":
     main()
 ```
 
+!!! note "Note: Usage of `reset=True` in `test`"
+
+    Please note that we advise against including the `reset=True` flag in the invocation of the `test` method for the automated evaluator.
+    The automated evaluator is typically triggered against test suites where inferences are already evaluated, while the `reset=True` flag
+    will attempt to re-evaluate these inferences.
+
 Now that we have the main script ready, the next step is to package this script into a Docker image.
 
 ```dockerfile title="docker/Dockerfile"
