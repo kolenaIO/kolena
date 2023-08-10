@@ -192,7 +192,7 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         :return: The newly created dataset.
         """
         cls._validate_workflow()
-        validate_name(name, FieldName.TEST_SUITE_NAME)
+        validate_name(name, FieldName.DATASET_NAME)
 
         test_cases: List[TEST_CASE_TYPE] = []
         for name, func, tc_tags in test_case_func or []:
