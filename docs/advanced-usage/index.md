@@ -9,7 +9,7 @@ hide:
 This section contains tutorial documentation for advanced features available in Kolena.
 
 <div class="grid cards" markdown>
-- [:octicons-cloud-16: Connecting Cloud Storage](./connecting-cloud-storage.md)
+- [:octicons-cloud-16: Connecting Cloud Storage](./connecting-cloud-storage/index.md)
 
     ---
 
