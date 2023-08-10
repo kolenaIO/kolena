@@ -1,5 +1,16 @@
 # Contributing to `kolena`
 
+## Development environment setup
+
+### Install pre-commit checks
+
+Pre-commit is used for static analysis and to ensure code style consistency. Please install it so warnings and
+errors can be caught before committing code.
+
+```
+$ poetry run pre-commit install
+```
+
 ## Documentation
 
 The documentation for `kolena`, hosted at [docs.kolena.io](https://docs.kolena.io/), is built out of this repo using
