@@ -9,11 +9,11 @@ hide:
 This section contains tutorial documentation for advanced features available in Kolena.
 
 <div class="grid cards" markdown>
-- [:octicons-container-24: Connecting Cloud Storage](./connecting-cloud-storage.md)
+- [:octicons-cloud-16: Connecting Cloud Storage](./connecting-cloud-storage.md)
 
     ---
 
-    Establish integrations to cloud storage providers to load data on the Kolena platform.
+    Establish integrations to cloud storage providers.
 
 </div>
 
