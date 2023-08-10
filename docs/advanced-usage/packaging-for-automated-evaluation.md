@@ -221,6 +221,11 @@ cases and our models.
 
 ## Appendix
 
+### Evaluator runtime limits
+
+Currently, the environment evaluator runs in does not support GPU. There is a maximum of 6 hours processing time. The
+evaluation job would be terminated when the run time reaches the limit.
+
 ### Testing evaluator locally
 
 You can verify the evaluator Docker image by running it locally:
