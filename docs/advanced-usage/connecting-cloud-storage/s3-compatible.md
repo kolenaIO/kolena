@@ -76,4 +76,3 @@ Fill in the fields for the integration and then click "Save".
 | Endpoint | The hostname or IP address of your S3-compatabile service |
 | Port | The optional port to access your S3-compatabile service |
 | Region | The region your buckets will be accessed from |
-
