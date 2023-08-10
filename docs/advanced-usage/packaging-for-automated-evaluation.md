@@ -45,6 +45,13 @@ using [`test`][kolena.workflow.test] involves a `model`, a `test_suite`, an `eva
 test(model, test_suite, evaluator, configurations=configurations)
 ```
 
+!!! note "Note: test invocation"
+
+    Ensure that `reset=True` is NOT used in the `test` method when you only want to re-evaluate metrics and do not
+    have the model `infer` logic built in the image. The flag would overwrite existing inference and metrics
+    results of the test suite, therefore requires re-running model `infer` on the test samples.
+
+
 When executing `test` locally, the model and test suite can be initiated by user inputs. When Kolena executes `test`
 under automation, this information would have to be obtained through environment variables.
 Kolena sets up following environment variables for evaluator execution:
@@ -213,6 +220,28 @@ why it brings values to model testing and analyzing process. We can use these to
 cases and our models.
 
 ## Appendix
+
+### Evaluator runtime limits
+
+Currently, the environment evaluator runs in does not support GPU. There is a maximum of 6 hours processing time. The
+evaluation job would be terminated when the run time reaches the limit.
+
+### Testing evaluator locally
+
+You can verify the evaluator Docker image by running it locally:
+
+```shell
+docker run --rm \
+  -e KOLENA_TEST_SUITE_NAME="${EXISTING_TEST_SUITE_NAME}" \
+  -e KOLENA_TEST_SUITE_VERSION=3 \
+  -e KOLENA_MODEL_NAME="example keypoint detection model" \
+  -e KOLENA_WORKFLOW="Keypoint Detection" \
+  -e KOLENA_TOKEN=$KOLENA_TOKEN \
+  <evaluator-docker-image>
+```
+
+You can find a test suite's version on the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
+page. By default, the latest version is displayed.
 
 ### Using docker.kolena.io
 
