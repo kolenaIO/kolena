@@ -10,29 +10,29 @@
       
       
       
-        <link rel="canonical" href="https://docs.kolena.io/reference/pre-built/">
+        <link rel="canonical" href="https://docs.kolena.io/advanced-usage/connecting-cloud-storage/s3-compatible/">
       
       
-        <link rel="prev" href="../workflow/visualization/">
+        <link rel="prev" href="../">
       
       
-        <link rel="next" href="object-detection-2d/">
+        <link rel="next" href="../../packaging-for-automated-evaluation/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.1.21+insiders-4.39.0">
     
     
-<title>Pre-built Workflows · Testing with Kolena</title>
+<title>S3-Compatible APIs · Testing with Kolena</title>
 
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.02b45acc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.02b45acc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc776e4.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ecc776e4.min.css">
       
       
 
@@ -48,13 +48,13 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../assets/css/theme.css">
+      <link rel="stylesheet" href="../../../assets/css/theme.css">
     
-      <link rel="stylesheet" href="../../assets/css/mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/css/mkdocstrings.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -87,17 +87,17 @@
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Pre-built Workflows - Testing with Kolena" />
+<meta property="og:title" content="S3-Compatible APIs - Testing with Kolena" />
 <meta property="og:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="og:image" content="https://docs.kolena.io/assets/images/social/reference/pre-built/index.png" />
+<meta property="og:image" content="https://docs.kolena.io/assets/images/social/advanced-usage/connecting-cloud-storage/s3-compatible.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://docs.kolena.io/reference/pre-built/" />
+<meta property="og:url" content="https://docs.kolena.io/advanced-usage/connecting-cloud-storage/s3-compatible/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="Pre-built Workflows - Testing with Kolena" />
+<meta property="twitter:title" content="S3-Compatible APIs - Testing with Kolena" />
 <meta property="twitter:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/reference/pre-built/index.png" />
+<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/advanced-usage/connecting-cloud-storage/s3-compatible.png" />
 </head>
   
   
@@ -117,7 +117,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pre-built-workflows" class="md-skip">
+        <a href="#1-create-a-service-user-for-kolena" class="md-skip">
           Skip to content
         </a>
       
@@ -133,9 +133,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Testing with Kolena" class="md-header__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
+    <a href="../../.." title="Testing with Kolena" class="md-header__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
       
-  <img src="../../assets/images/logo-white.svg" alt="logo">
+  <img src="../../../assets/images/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -151,7 +151,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Pre-built Workflows
+              S3-Compatible APIs
             
           </span>
         </div>
@@ -275,11 +275,13 @@
         
   
   
+    
+  
   
     
     
       <li class="md-tabs__item">
-        <a href="../.." class="md-tabs__link">
+        <a href="../../.." class="md-tabs__link md-tabs__link--active">
           
   
     
@@ -307,13 +309,11 @@
         
   
   
-    
-  
   
     
     
       <li class="md-tabs__item">
-        <a href="../" class="md-tabs__link md-tabs__link--active">
+        <a href="../../../reference/" class="md-tabs__link">
           
   
     
@@ -351,7 +351,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../metrics/" class="md-tabs__link">
+        <a href="../../../metrics/" class="md-tabs__link">
           
   
     
@@ -400,7 +400,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../faq/" class="md-tabs__link">
+        <a href="../../../faq/" class="md-tabs__link">
           
   
     
@@ -472,9 +472,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Testing with Kolena" class="md-nav__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
+    <a href="../../.." title="Testing with Kolena" class="md-nav__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
       
-  <img src="../../assets/images/logo-white.svg" alt="logo">
+  <img src="../../../assets/images/logo-white.svg" alt="logo">
 
     </a>
     Testing with Kolena
@@ -498,6 +498,8 @@
       
   
   
+    
+  
   
     
     
@@ -518,18 +520,18 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../.." class="md-nav__link ">
+            <a href="../../.." class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -563,7 +565,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -582,7 +584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../quickstart/" class="md-nav__link">
+      <a href="../../../quickstart/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -619,7 +621,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../installing-kolena/" class="md-nav__link">
+      <a href="../../../installing-kolena/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -662,7 +664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../building-a-workflow/" class="md-nav__link">
+      <a href="../../../building-a-workflow/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -726,7 +728,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../core-concepts/" class="md-nav__link ">
+            <a href="../../../core-concepts/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -778,7 +780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../core-concepts/workflow/" class="md-nav__link">
+      <a href="../../../core-concepts/workflow/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -815,7 +817,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../core-concepts/test-suite/" class="md-nav__link">
+      <a href="../../../core-concepts/test-suite/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -852,7 +854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../core-concepts/model/" class="md-nav__link">
+      <a href="../../../core-concepts/model/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -901,6 +903,8 @@
                 
   
   
+    
+  
   
     
     
@@ -921,18 +925,18 @@
     
       
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../advanced-usage/" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -965,7 +969,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_1_6_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -982,6 +986,8 @@
                 
   
   
+    
+  
   
     
     
@@ -994,18 +1000,18 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1_6_2" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../advanced-usage/connecting-cloud-storage/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1039,7 +1045,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_6_2_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_1_6_2_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_1_6_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1056,9 +1062,36 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../advanced-usage/connecting-cloud-storage/s3-compatible/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    S3-Compatible APIs
+  
+
+    
+      <br>
+      <small>MinIO, Oracle</small>
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1076,6 +1109,63 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-a-service-user-for-kolena" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          1. Create a Service User for Kolena
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-create-an-access-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          2. Create an Access Policy
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-save-integration-on-kolena" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          3. Save Integration on Kolena
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -1095,7 +1185,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced-usage/packaging-for-automated-evaluation/" class="md-nav__link">
+      <a href="../../packaging-for-automated-evaluation/" class="md-nav__link">
         
   
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="m10.41.24 4.711 2.774c.544.316.878.897.879 1.526v5.01a1.77 1.77 0 0 1-.88 1.53l-7.753 4.521-.002.001a1.769 1.769 0 0 1-1.774 0H5.59L.873 12.85A1.761 1.761 0 0 1 0 11.327V6.292c0-.304.078-.598.22-.855l.004-.005.01-.019c.15-.262.369-.486.64-.643L8.641.239a1.752 1.752 0 0 1 1.765 0l.002.001ZM9.397 1.534l-7.17 4.182 4.116 2.388a.27.27 0 0 0 .269 0l7.152-4.148-4.115-2.422a.252.252 0 0 0-.252 0Zm-7.768 10.02 4.1 2.393V9.474a1.807 1.807 0 0 1-.138-.072L1.5 7.029v4.298c0 .095.05.181.129.227Zm8.6.642 1.521-.887v-4.45l-1.521.882ZM7.365 9.402h.001c-.044.026-.09.049-.136.071v4.472l1.5-.875V8.61Zm5.885 1.032 1.115-.65h.002a.267.267 0 0 0 .133-.232V5.264l-1.25.725Z"/></svg>
@@ -1123,7 +1213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced-usage/nesting-test-case-metrics/" class="md-nav__link">
+      <a href="../../nesting-test-case-metrics/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1158,7 +1248,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced-usage/uploading-activation-maps/" class="md-nav__link">
+      <a href="../../uploading-activation-maps/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1213,8 +1303,6 @@
       
   
   
-    
-  
   
     
     
@@ -1233,18 +1321,18 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../../reference/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1284,7 +1372,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1303,7 +1391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../initialize/" class="md-nav__link">
+      <a href="../../../reference/initialize/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1329,7 +1417,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../errors/" class="md-nav__link">
+      <a href="../../../reference/errors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1394,7 +1482,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../workflow/" class="md-nav__link ">
+            <a href="../../../reference/workflow/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1446,7 +1534,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/test-sample/" class="md-nav__link">
+      <a href="../../../reference/workflow/test-sample/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1472,7 +1560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/ground-truth/" class="md-nav__link">
+      <a href="../../../reference/workflow/ground-truth/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1498,7 +1586,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/inference/" class="md-nav__link">
+      <a href="../../../reference/workflow/inference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1524,7 +1612,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/evaluator/" class="md-nav__link">
+      <a href="../../../reference/workflow/evaluator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1550,7 +1638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/test-case/" class="md-nav__link">
+      <a href="../../../reference/workflow/test-case/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1576,7 +1664,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/test-suite/" class="md-nav__link">
+      <a href="../../../reference/workflow/test-suite/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1602,7 +1690,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/model/" class="md-nav__link">
+      <a href="../../../reference/workflow/model/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1628,7 +1716,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/test-run/" class="md-nav__link">
+      <a href="../../../reference/workflow/test-run/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1712,7 +1800,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/annotation/" class="md-nav__link">
+      <a href="../../../reference/workflow/annotation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1738,7 +1826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/asset/" class="md-nav__link">
+      <a href="../../../reference/workflow/asset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1764,7 +1852,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/plot/" class="md-nav__link">
+      <a href="../../../reference/workflow/plot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1790,7 +1878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/define-workflow/" class="md-nav__link">
+      <a href="../../../reference/workflow/define-workflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1816,7 +1904,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/metrics/" class="md-nav__link">
+      <a href="../../../reference/workflow/metrics/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1842,7 +1930,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../workflow/visualization/" class="md-nav__link">
+      <a href="../../../reference/workflow/visualization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1882,8 +1970,6 @@
                 
   
   
-    
-  
   
     
     
@@ -1902,18 +1988,18 @@
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="./" class="md-nav__link md-nav__link--active">
+            <a href="../../../reference/pre-built/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1940,13 +2026,13 @@
 
             </a>
             
-              <label class="md-nav__link md-nav__link--active" for="__nav_2_5">
+              <label class="md-nav__link " for="__nav_2_5">
                 <span class="md-nav__icon md-icon"></span>
               </label>
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1965,7 +2051,7 @@
   
   
     <li class="md-nav__item">
-      <a href="object-detection-2d/" class="md-nav__link">
+      <a href="../../../reference/pre-built/object-detection-2d/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2014,7 +2100,7 @@
   
   
     <li class="md-nav__item">
-      <a href="classification/" class="md-nav__link">
+      <a href="../../../reference/pre-built/classification/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2086,7 +2172,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../legacy/" class="md-nav__link ">
+            <a href="../../../reference/legacy/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2141,7 +2227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../legacy/built-in/classification/" class="md-nav__link">
+      <a href="../../../reference/legacy/built-in/classification/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2178,7 +2264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../legacy/built-in/detection/" class="md-nav__link">
+      <a href="../../../reference/legacy/built-in/detection/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2221,7 +2307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../legacy/built-in/fr/" class="md-nav__link">
+      <a href="../../../reference/legacy/built-in/fr/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2273,7 +2359,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../legacy/built-in/base/" class="md-nav__link">
+      <a href="../../../reference/legacy/built-in/base/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2357,7 +2443,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../metrics/" class="md-nav__link ">
+            <a href="../../../metrics/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2427,7 +2513,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/accuracy/" class="md-nav__link">
+      <a href="../../../metrics/accuracy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2455,7 +2541,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/averaging-methods/" class="md-nav__link">
+      <a href="../../../metrics/averaging-methods/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2486,7 +2572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/f1-score/" class="md-nav__link">
+      <a href="../../../metrics/f1-score/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2514,7 +2600,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/geometry-matching/" class="md-nav__link">
+      <a href="../../../metrics/geometry-matching/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2542,7 +2628,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/iou/" class="md-nav__link">
+      <a href="../../../metrics/iou/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2570,7 +2656,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/precision/" class="md-nav__link">
+      <a href="../../../metrics/precision/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2598,7 +2684,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/recall/" class="md-nav__link">
+      <a href="../../../metrics/recall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2626,7 +2712,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../metrics/tp-fp-fn-tn/" class="md-nav__link">
+      <a href="../../../metrics/tp-fp-fn-tn/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2680,7 +2766,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../faq/" class="md-nav__link ">
+            <a href="../../../faq/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2774,8 +2860,53 @@
   
   
   
-    
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-create-a-service-user-for-kolena" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          1. Create a Service User for Kolena
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-create-an-access-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          2. Create an Access Policy
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-save-integration-on-kolena" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          3. Save Integration on Kolena
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2800,10 +2931,10 @@
     
     
       <li class="md-path__item">
-        <a href="../" class="md-path__link">
+        <a href="../../.." class="md-path__link">
           
   <span class="md-ellipsis">
-    API Reference
+    Developer Guide
   </span>
 
         </a>
@@ -2817,10 +2948,27 @@
     
     
       <li class="md-path__item">
-        <a href="./" class="md-path__link">
+        <a href="../../" class="md-path__link">
           
   <span class="md-ellipsis">
-    Pre-built Workflows
+    Advanced Usage
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Connecting Cloud Storage
   </span>
 
         </a>
@@ -2838,7 +2986,7 @@
                   
 
   
-    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/reference/pre-built/index.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/advanced-usage/connecting-cloud-storage/s3-compatible.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -2846,42 +2994,99 @@
   
 
 
-<h1 id="pre-built-workflows"><span class="twemoji"><?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-     viewBox="0 0 16 16" enable-background="new 0 0 16 16" xml:space="preserve">
-<g id="layout_auto_4_">
-	<g>
-        <path d="M5.92060936,8.13853452 C6.36045741,7.85736416 6.9263142,8.01776189 7.18448588,8.49679286 L7.18448588,8.49679286 L9.87294507,13.4851604 C9.95613926,13.6395251 10,13.8152733 10,13.9942643 C10,14.5497168 9.58654827,15 9.07652973,15 L9.07652973,15 L3.92364961,15 C3.77092663,15 3.62058774,14.9587486 3.48609611,14.87994 C3.03696116,14.6167587 2.86876472,14.0068775 3.11041885,13.5177323 L3.11041885,13.5177323 L5.57483977,8.52936479 C5.65503309,8.36704116 5.77464506,8.23184136 5.92060936,8.13853452 Z M12,4 C13.6568542,4 15,5.34314575 15,7 C15,8.65685425 13.6568542,10 12,10 C10.3431458,10 9,8.65685425 9,7 C9,5.34314575 10.3431458,4 12,4 Z M6,1 C6.55228475,1 7,1.44771525 7,2 L7,6 C7,6.55228475 6.55228475,7 6,7 L2,7 C1.44771525,7 1,6.55228475 1,6 L1,2 C1,1.44771525 1.44771525,1 2,1 L6,1 Z" />
-	</g>
-</g>
-</svg>
-</span> Pre-built Workflows<a class="headerlink" href="#pre-built-workflows" title="Permanent link">#</a></h1>
-<p>Ready-to-use workflows built with <a href="../workflow/"><code>kolena.workflow</code></a>.</p>
-<div class="grid cards">
-<ul>
-<li>
-<p><a href="object-detection-2d/"><span class="twemoji"><?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 20 20" enable-background="new 0 0 20 20" xml:space="preserve">
-<g id="widget_1_">
-	<g>
-		<path fill-rule="evenodd" clip-rule="evenodd" d="M18,4c1.1,0,2-0.9,2-2c0-1.1-0.9-2-2-2s-2,0.9-2,2C16,3.1,16.9,4,18,4z M2,16
-			c-1.1,0-2,0.9-2,2c0,1.1,0.9,2,2,2s2-0.9,2-2C4,16.9,3.1,16,2,16z M17,15h2V5h-2V15z M3,5H1v10h2V5z M2,0C0.9,0,0,0.9,0,2
-			c0,1.1,0.9,2,2,2s2-0.9,2-2C4,0.9,3.1,0,2,0z M5,3h10V1H5V3z M18,16c-1.1,0-2,0.9-2,2c0,1.1,0.9,2,2,2s2-0.9,2-2
-			C20,16.9,19.1,16,18,16z M5,19h10v-2H5V19z"/>
-	</g>
-</g>
-</svg>
-</span> Object Detection (2D)</a></p>
-<p><img alt="Example 2D bounding boxes from the COCO dataset." src="../../assets/images/COCO-transportation.jpeg" /></p>
-<hr />
-<p>Object Detection on 2D images using axis-aligned bounding boxes.</p>
-</li>
-</ul>
+  <h1>S3-Compatible APIs</h1>
+
+<p>Integrations can be established to S3-compatible systems.
+Supported systems include:
+* <a href="https://min.io/docs">MinIO</a>
+* <a href="https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm">Oracle Object Storage</a></p>
+<p>To get started, ensure you have admin access within Kolena.
+Navigate to your <a href="https://app.kolena.io/redirect/organization?tab=integrations">Organization Settings's Integration Tab</a> and click "Add Integration", then "MinIO".</p>
+<p>Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
+You may need to consult documentation for your provider to perform equivalent steps.</p>
+<h3 id="1-create-a-service-user-for-kolena">1. Create a Service User for Kolena<a class="headerlink" href="#1-create-a-service-user-for-kolena" title="Permanent link">#</a></h3>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:1"><input checked="checked" id="minio" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="minio"><code>MinIO</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>mc<span class="w"> </span>admin<span class="w"> </span>user<span class="w"> </span>add<span class="w"> </span>&lt;deployment_alias&gt;<span class="w"> </span>&lt;kolena_user&gt;<span class="w"> </span>&lt;secret_access_key&gt;
+</span></code></pre></div>
 </div>
+</div>
+</div>
+<h3 id="2-create-an-access-policy">2. Create an Access Policy<a class="headerlink" href="#2-create-an-access-policy" title="Permanent link">#</a></h3>
+<p>Create a policy to allow read access for a bucket or set of buckets.</p>
+<p>Save the following JSON policy to a file called <code>/tmp/kolena-policy.json</code>, replacing <code>s3://share-with-kolena</code> with the appropriate bucket(s):</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[{</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">        </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;S3ListBucket&quot;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">        </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">        </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">            </span><span class="s2">&quot;s3:GetObject&quot;</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">            </span><span class="s2">&quot;s3:ListBucket&quot;</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="p">],</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">        </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">            </span><span class="s2">&quot;arn:aws:s3:::share-with-kolena&quot;</span><span class="p">,</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">            </span><span class="s2">&quot;arn:aws:s3:::share-with-kolena/*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="p">]</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="p">}]</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note: bucket names</p>
+<p>Please note that bucket names must follow <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html">S3 naming rules</a></p>
+</div>
+<p>Next, create the policy and attach the policy to the service user created in <a href="#1-create-a-service-user-for-kolena">step 1</a>:</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:1"><input checked="checked" id="minio_1" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="minio_1"><code>MinIO</code></label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>mc<span class="w"> </span>admin<span class="w"> </span>policy<span class="w"> </span>create<span class="w"> </span>&lt;deployment_alias&gt;<span class="w"> </span>kolenaread<span class="w"> </span>/tmp/kolena-policy.json
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>mc<span class="w"> </span>admin<span class="w"> </span>policy<span class="w"> </span>attach<span class="w"> </span>&lt;deployment_alias&gt;<span class="w"> </span>kolenaread<span class="w"> </span>--user<span class="w"> </span>&lt;kolena_user&gt;
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>​   ​</p>
+<h3 id="3-save-integration-on-kolena">3. Save Integration on Kolena<a class="headerlink" href="#3-save-integration-on-kolena" title="Permanent link">#</a></h3>
+<p>Return to the Kolena platform <a href="https://app.kolena.io/redirect/organization?tab=integrations">Integration Tab</a></p>
+<p>By default, any locators beginning with <code>s3://</code> will be loaded using this integration.</p>
+<div class="admonition note">
+<p class="admonition-title">Note: scoping integrations</p>
+<p>Optionally, each integration can be scoped to a specific bucket such that only locators of the pattern <code>s3://&lt;specific-bucket&gt;/*</code> will be loaded using the integration.
+This can be necessary if multiple integrations are required.
+Unchecking "Apply to all buckets by default?" and specifying a bucket will enable this behavior.</p>
+</div>
+<p>Fill in the fields for the integration and then click "Save".</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access Key Id</td>
+<td>The username (<code>&lt;kolena_user&gt;</code>) of the user created in <a href="#1-create-a-service-user-for-kolena">step 1</a></td>
+</tr>
+<tr>
+<td>Secret Access Key</td>
+<td>The secret key (<code>&lt;secret_access_key&gt;</code>) of the user created in <a href="#1-create-a-service-user-for-kolena">step 1</a></td>
+</tr>
+<tr>
+<td>Endpoint</td>
+<td>The hostname or IP address of your S3-compatabile service</td>
+</tr>
+<tr>
+<td>Port</td>
+<td>The optional port to access your S3-compatabile service</td>
+</tr>
+<tr>
+<td>Region</td>
+<td>The region your buckets will be accessed from</td>
+</tr>
+</tbody>
+</table>
 
   
     
@@ -2895,7 +3100,7 @@
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 1, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 10, 2023</span>
       </span>
     
     
@@ -2908,14 +3113,9 @@
         <span>GitHub</span>
         <nav>
           
-            <a href="https://github.com/gordonhart" class="md-author" title="@gordonhart">
+            <a href="https://github.com/dylangrandmont" class="md-author" title="@dylangrandmont">
               
-              <img src="https://avatars.githubusercontent.com/u/9648886?size=72" alt="gordonhart">
-            </a>
-          
-            <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
-              
-              <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
+              <img src="https://avatars.githubusercontent.com/u/20345725?size=72" alt="dylangrandmont">
             </a>
           
           
@@ -2948,7 +3148,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../workflow/visualization/" class="md-footer__link md-footer__link--prev" aria-label="Previous: &lt;code&gt;visualization&lt;/code&gt;" rel="prev">
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Connecting Cloud Storage" rel="prev">
             <div class="md-footer__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
             </div>
@@ -2957,20 +3157,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                <code>visualization</code>
+                Connecting Cloud Storage
               </div>
             </div>
           </a>
         
         
           
-          <a href="object-detection-2d/" class="md-footer__link md-footer__link--next" aria-label="Next: Object Detection (2D)" rel="next">
+          <a href="../../packaging-for-automated-evaluation/" class="md-footer__link md-footer__link--next" aria-label="Next: Packaging for Automated Evaluation" rel="next">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Object Detection (2D)
+                Packaging for Automated Evaluation
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -3053,13 +3253,13 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.code.copy", "content.tabs.link", "navigation.indexes", "navigation.instant", "navigation.footer", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "search.highlight", "search.suggest", "toc.follow", "navigation.path", "content.tooltips"], "search": "../../assets/javascripts/workers/search.6c7302c4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["announce.dismiss", "content.action.edit", "content.code.copy", "content.tabs.link", "navigation.indexes", "navigation.instant", "navigation.footer", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "search.highlight", "search.suggest", "toc.follow", "navigation.path", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.6c7302c4.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.7c5c0157.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.7c5c0157.min.js"></script>
       
         
-          <script src="../../assets/javascript/mathjax.js"></script>
+          <script src="../../../assets/javascript/mathjax.js"></script>
         
       
         

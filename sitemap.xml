@@ -41,6 +41,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://docs.kolena.io/advanced-usage/connecting-cloud-storage/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://docs.kolena.io/advanced-usage/connecting-cloud-storage/s3-compatible/</loc>
+         <lastmod>2023-08-10</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://docs.kolena.io/core-concepts/</loc>
          <lastmod>2023-08-10</lastmod>
          <changefreq>daily</changefreq>
