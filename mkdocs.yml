@@ -20,7 +20,8 @@ nav:
           - Model: core-concepts/model.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
-          - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
+          - Connecting Cloud Storage:
+              - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
               - S3 Compatible: advanced-usage/connecting-cloud-storage/s3-compatible.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
