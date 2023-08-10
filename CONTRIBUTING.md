@@ -4,15 +4,12 @@
 
 ### Install pre-commit checks
 
-Pre-commit is used to ensure code style consistency. Please install it so warnings and errors can be caught before
-commiting the codes.
+Pre-commit is used for static analysis and to ensure code style consistency. Please install it so warnings and
+errors can be caught before committing code.
 
 ```
 $ poetry run pre-commit install
 ```
-
-This would set up git pre-commit hook to run through all code style and static analysis checks this repository has
-adopted.
 
 ## Documentation
 
