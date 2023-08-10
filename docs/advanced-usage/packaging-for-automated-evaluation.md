@@ -230,17 +230,18 @@ evaluation job would be terminated when the run time reaches the limit.
 
 You can verify the evaluator Docker image by running it locally:
 
-```
+```shell
 docker run --rm \
   -e KOLENA_TEST_SUITE_NAME="${EXISTING_TEST_SUITE_NAME}" \
   -e KOLENA_TEST_SUITE_VERSION=3 \
-  -e KOLENA_MODEL_NAME="keypoint detection model" \
-  -e KOLENA_WORKFLOW="Keypoints Detection" \
+  -e KOLENA_MODEL_NAME="example keypoint detection model" \
+  -e KOLENA_WORKFLOW="Keypoint Detection" \
   -e KOLENA_TOKEN=$KOLENA_TOKEN \
   <evaluator-docker-image>
 ```
 
-You can find the version from the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing) page. By default, the latest version is displayed.
+You can find a test suite's version on the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
+page. By default, the latest version is displayed.
 
 ### Using docker.kolena.io
 
