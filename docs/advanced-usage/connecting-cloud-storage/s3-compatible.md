@@ -48,6 +48,9 @@ Save the following JSON policy to a file called `/tmp/kolena-policy.json`, repla
 }
 ```
 
+!!!note "Note: bucket names"
+
+    Please note that bucket names must follow [S3 naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html)
 
 Next, create the policy and attach the policy to the service user created in [step 1](#1-create-a-service-user-for-kolena):
 
