@@ -1,8 +1,12 @@
 ---
-subtitle: MinIO, Oracle, Hitachi
+subtitle: MinIO, Oracle
 ---
 
-Integrations can be established to S3-compatible systems (for example, MinIO).
+Integrations can be established to S3-compatible systems.
+Supported systems include:
+* [MinIO](https://min.io/docs)
+* [Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
+
 To get started, ensure you have admin access within Kolena.
 Navigate to your [Organization Settings's Integration Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "MinIO".
 
