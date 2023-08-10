@@ -20,6 +20,9 @@ nav:
           - Model: core-concepts/model.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
+          - Connecting Cloud Storage:
+              - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
+              - S3-Compatible APIs: advanced-usage/connecting-cloud-storage/s3-compatible.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
@@ -105,7 +108,7 @@ theme:
     - toc.follow
 
 markdown_extensions:
-  - admonition  # callouts
+  - admonition # callouts
   - footnotes
   - pymdownx.details
   - pymdownx.highlight:
@@ -118,7 +121,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
-      slugify: !!python/object/apply:pymdownx.slugs.slugify  # NOTE: insiders only
+      slugify: !!python/object/apply:pymdownx.slugs.slugify # NOTE: insiders only
         kwds:
           case: lower
   - toc:
@@ -146,9 +149,8 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
-
 plugins:
-  social:  # render social media cards for copy+paste
+  social: # render social media cards for copy+paste
   search:
     lang: en
   git-revision-date-localized:
@@ -160,7 +162,7 @@ plugins:
         options:
           docstring_style: sphinx
           merge_init_into_class: true
-          members_order: source  # sort members in the order they are defined
+          members_order: source # sort members in the order they are defined
           show_docstring_attributes: true
           show_root_toc_entry: false
           show_source: false
