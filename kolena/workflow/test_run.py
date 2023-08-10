@@ -148,7 +148,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._id = response.test_run_id
         self._freeze()
 
-    def run(self) -> Dict[str, Any]:
+    def run(self) -> None:
         """
         Run the testing process, first extracting inferences for all test samples in the test suite then performing
         evaluation.
@@ -165,8 +165,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 log.info("uploading inferences")
                 self.upload_inferences(inferences)
 
-            metrics = self.evaluate()
-            return dict(inferences=inferences, metrics=metrics)
+            self.evaluate()
         except Exception as e:
             report_crash(self._id, API.Path.MARK_CRASHED.value)
             raise e
@@ -237,7 +236,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         )
         krequests.raise_for_status(res)
 
-    def evaluate(self) -> Dict[str, Any]:
+    def evaluate(self) -> None:
         """
         Perform evaluation by computing metrics for individual test samples, in aggregate across test cases, and across
         the complete test suite at each [`EvaluatorConfiguration`][kolena.workflow.EvaluatorConfiguration].
@@ -245,22 +244,19 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if self.evaluator is None:
             log.info("commencing server side metrics evaluation")
             self._start_server_side_evaluation()
-            return {}
 
         # TODO: assert that testing is complete?
         t0 = time.time()
         log.info("commencing evaluation")
         if isinstance(self.evaluator, Evaluator):
-            metrics = self._perform_evaluation(self.evaluator)
+            self._perform_evaluation(self.evaluator)
         else:
-            metrics = self._perform_streamlined_evaluation(self.evaluator)
+            self._perform_streamlined_evaluation(self.evaluator)
 
         log.success(f"completed evaluation in {time.time() - t0:0.1f} seconds")
         log.success(f"results: {get_results_url(self.model.workflow.name, self.model._id, self.test_suite._id)}")
 
-        return metrics
-
-    def _perform_evaluation(self, evaluator: Evaluator) -> Dict[str, Any]:
+    def _perform_evaluation(self, evaluator: Evaluator) -> None:
         configurations: Sequence[Optional[EvaluatorConfiguration]] = (
             cast(Sequence[Optional[EvaluatorConfiguration]], evaluator.configurations)
             if len(evaluator.configurations) > 0
@@ -317,12 +313,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         log.info("uploading test suite metrics")
         self._upload_test_suite_metrics(test_suite_metrics)
-
-        return dict(
-            test_case_metrics=test_case_metrics,
-            test_case_plots=test_case_plots,
-            test_suite_metrics=test_suite_metrics,
-        )
 
     def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> Dict[str, Any]:
         test_samples, ground_truths, inferences = [], [], []
@@ -381,12 +371,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._upload_test_case_plots(test_case_plots)
         log.info("uploading test suite metrics")
         self._upload_test_suite_metrics(test_suite_metrics)
-
-        return dict(
-            test_case_metrics=test_case_metrics,
-            test_case_plots=test_case_plots,
-            test_suite_metrics=test_suite_metrics,
-        )
 
     def _iter_test_samples_batch(
         self,
@@ -497,7 +481,7 @@ def test(
     evaluator: Union[Evaluator, BasicEvaluatorFunction, None] = None,
     configurations: Optional[List[EvaluatorConfiguration]] = None,
     reset: bool = False,
-) -> Dict[str, Any]:
+) -> None:
     """
     Test a [`Model`][kolena.workflow.Model] on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
     [`Evaluator`][kolena.workflow.Evaluator] implementation.
@@ -517,4 +501,4 @@ def test(
     :param configurations: A list of configurations to use when running the evaluator.
     :param reset: Overwrites existing inferences if set.
     """
-    return TestRun(model, test_suite, evaluator, configurations, reset).run()
+    TestRun(model, test_suite, evaluator, configurations, reset).run()
