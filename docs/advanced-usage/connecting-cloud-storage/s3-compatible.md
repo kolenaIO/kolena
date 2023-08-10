@@ -9,17 +9,17 @@ Navigate to your [Organization Settings's Integration Tab](https://app.kolena.io
 Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
 You may need to consult documentation for your provider to perform equivalent steps.
 
-#### 1. Create a Service User for Kolena
+### 1. Create a Service User for Kolena
 
 
-=== "`minIO`"
+=== "`MinIO`"
 
     ```shell
     mc admin user add <deployment_alias> <kolena_user> <secret_access_key>
     ```
 
 
-#### 2. Create an Access Policy
+### 2. Create an Access Policy
 
 Create a policy to allow read access for a bucket or set of buckets.
 
@@ -47,7 +47,7 @@ Save the following JSON policy to a file called `/tmp/kolena-policy.json`, repla
 
 Next, create the policy and attach the policy to the service user created in [step 1](#1-create-a-service-user-for-kolena):
 
-=== "`minIO`"
+=== "`MinIO`"
 
     ```shell
     mc admin policy create <deployment_alias> kolenaread /tmp/kolena-policy.json
@@ -55,7 +55,7 @@ Next, create the policy and attach the policy to the service user created in [st
     ```
 
 ​   ​
-#### 4. Save Integration on Kolena
+### 3. Save Integration on Kolena
 
 Return to the Kolena platform [Integration Tab](https://app.kolena.io/redirect/organization?tab=integrations)
 
