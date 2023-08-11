@@ -15,6 +15,7 @@ import dataclasses
 from abc import abstractmethod
 from typing import Dict
 from typing import List
+from typing import Tuple
 from typing import Union
 
 from pydantic.dataclasses import dataclass
@@ -46,5 +47,5 @@ class TestRunnable(Protocol):
         raise NotImplementedError
 
     @abstractmethod
-    def load_test_samples_by_test_case(self) -> Dict[int, List[TestSample]]:
+    def load_test_samples_by_test_case(self) -> List[Tuple[_TestCase, List[TestSample]]]:
         raise NotImplementedError

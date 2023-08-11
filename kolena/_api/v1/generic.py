@@ -192,9 +192,7 @@ class Dataset:
         LOAD_ALL = "/generic/dataset/load-all"
         EDIT = "/generic/dataset/edit"
         DELETE = "/generic/dataset/delete"
+        MARK_DELETION = "/generic/model/mark-deletion"
         INIT_LOAD_TEST_SAMPLES = "/generic/dataset/load-test-samples"
-
-    @dataclass(frozen=True)
-    class LoadTestSamplesRequest(BatchedLoad.BaseInitDownloadRequest):
-        id: int
-        by_test_case: bool = False
+        INIT_LOAD_TEST_SAMPLE_METRICS = "/generic/dataset/load-test-sample-metrics"
+        LOAD_METRICS = "/generic/dataset/load-metrics"

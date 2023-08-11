@@ -316,6 +316,8 @@ class DatasetTestSamplesDataFrameSchema(pa.SchemaModel):
 
     test_case_id: Optional[Series[pa.typing.Int64]] = pa.Field(coerce=True)
     test_sample: Series[JSONObject] = pa.Field(coerce=True)
+    test_sample_metadata: Optional[Series[JSONObject]] = pa.Field(coerce=True)
+    ground_truth: Optional[Series[JSONObject]] = pa.Field(coerce=True, nullable=True)
 
 
 class DatasetTestSamplesDataFrame(
@@ -340,4 +342,8 @@ class DatasetTestSamplesDataFrame(
         serde_function = as_serialized_json if serialize else as_deserialized_json
         df_out = df.copy()
         df_out["test_sample"] = df_out["test_sample"].apply(serde_function)
+        if "test_sample_metadata" in df.columns:
+            df_out["test_sample_metadata"] = df_out["test_sample_metadata"].apply(serde_function)
+        if "ground_truth" in df.columns:
+            df_out["ground_truth"] = df_out["ground_truth"].apply(serde_function)
         return df_out

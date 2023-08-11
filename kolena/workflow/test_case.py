@@ -67,7 +67,7 @@ def _to_editor_data_frame(
             ground_truth._to_dict() if ground_truth is not None else None,
             remove,
         )
-        for test_sample, ground_truth, remove, in edits
+        for test_sample, ground_truth, remove in edits
     ]
     columns = [
         "test_case_name",

@@ -13,6 +13,7 @@
 # limitations under the License.
 from dataclasses import field
 from typing import Dict
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -29,7 +30,7 @@ DUMMY_WORKFLOW_NAME = "Dummy Workflow 🤖"
 class DummyTestSample(Image):
     value: int
     bbox: BoundingBox
-    metadata: Dict[str, int] = field(default_factory=dict)
+    metadata: Dict[str, Union[int, str]] = field(default_factory=dict)
 
 
 @dataclass(frozen=True, order=True)

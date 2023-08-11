@@ -200,10 +200,20 @@ class TestRun:
 
 class Dataset:
     @dataclass(frozen=True)
+    class IdRequest:
+        id: int
+
+    @dataclass(frozen=True)
+    class LoadByNameRequest:
+        name: str
+        version: Optional[int] = None
+
+    @dataclass(frozen=True)
     class TestCaseData:
+        id: int
         name: str
         version: int
-        tags: Dict[str, str]
+        tags: Dict[str, str] = field(default_factory=dict)
 
     @dataclass(frozen=True)
     class CreateRequest:
@@ -217,18 +227,14 @@ class Dataset:
 
     @dataclass(frozen=True)
     class EditRequest:
-        id: int  # ID of version being edited
+        id: int
         current_version: int
         name: str
         description: str
-        # test_cases: List[TestCase.SingleProcessRequest]
+        test_cases: Optional[List[TestCase.SingleProcessRequest]] = None
         tags: Optional[List[str]] = None  # unique set -- list used to preserve ordering
         uuid: Optional[str] = None
-
-    @dataclass(frozen=True)
-    class LoadByNameRequest:
-        name: str
-        version: Optional[int] = None
+        reset: bool = False
 
     @dataclass(frozen=True)
     class EntityData:
@@ -241,17 +247,26 @@ class Dataset:
         workflow: str
 
     @dataclass(frozen=True)
-    class LoadAllRequest:
-        workflow: str
-        tags: Optional[List[str]] = None
-
-    @dataclass(frozen=True)
-    class LoadAllResponse:
-        datasets: List["Dataset.EntityData"]
-
-    @dataclass(frozen=True)
-    class DeleteRequest:
+    class LoadTestSamplesRequest(BatchedLoad.BaseInitDownloadRequest):
         id: int
+        by_test_case: bool = False
+
+    @dataclass(frozen=True)
+    class LoadTestSampleMetricsRequest(BatchedLoad.BaseInitDownloadRequest):
+        id: int
+        model_id: int
+        evaluator: str
+
+    @dataclass(frozen=True)
+    class LoadMetricsRequest:
+        id: int
+        model_id: int
+        evaluator: str
+
+    @dataclass(frozen=True)
+    class LoadMetricsResponse:
+        id: int
+        metrics: Dict[str, Any]
 
 
 Dataset.EntityData.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]

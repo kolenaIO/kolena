@@ -18,7 +18,6 @@ from collections import defaultdict
 from contextlib import contextmanager
 from typing import Callable
 from typing import Dict
-from typing import Iterable
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -29,11 +28,8 @@ from typing import Union
 import pandas as pd
 from pydantic import validate_arguments
 
-from kolena._api.v1.core import Dataset as CoreAPI
-from kolena._api.v1.core import Dataset as DatasetAPI
-from kolena._api.v1.core import TestCase as TestCaseAPI
-from kolena._api.v1.generic import Dataset as API
-from kolena._api.v1.generic import Dataset as GenericDatasetAPI
+from kolena._api.v1 import core
+from kolena._api.v1 import generic
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -59,14 +55,16 @@ from kolena.workflow._internal import SimpleTestCase as TestCase
 from kolena.workflow._internal import TestRunnable
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.test_case import _to_editor_data_frame
+from kolena.workflow.test_sample import _METADATA_KEY
 
-TEST_CASE_TYPE = Tuple[str, List[Tuple[TestSample, GroundTruth]], Dict[str, str]]
+TEST_CASE_TAG_TYPE = Dict[str, str]
+TEST_CASE_TYPE = Tuple[str, List[Tuple[TestSample, GroundTruth]], TEST_CASE_TAG_TYPE]
 # func() -> bool or func() -> (bool, GroundTruth)
 TEST_CASE_FUNC = Union[
-    Callable[[TestSample, Optional[GroundTruth]], bool],
-    Callable[[TestSample, Optional[GroundTruth]], Tuple[bool, GroundTruth]],
+    Callable[[TestSample, GroundTruth], bool],
+    Callable[[TestSample, GroundTruth], Tuple[bool, GroundTruth]],
 ]
-TEST_CASE_TAG_TYPE = Dict[str, str]
+DATASET_SAMPLE_TYPE = List[Tuple[TestSample, GroundTruth]]
 
 
 class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
@@ -92,7 +90,7 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         name: str,
         version: Optional[int] = None,
         description: Optional[str] = None,
-        test_samples: Optional[List[Tuple[TestSample, GroundTruth]]] = None,
+        test_samples: Optional[DATASET_SAMPLE_TYPE] = None,
         test_cases: Optional[List[TEST_CASE_FUNC]] = None,
         reset: bool = False,
         tags: Optional[Set[str]] = None,
@@ -148,7 +146,7 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
             self.tags = other.tags
 
     @classmethod
-    def _create_from_data(cls, data: CoreAPI.EntityData) -> "Dataset":
+    def _create_from_data(cls, data: core.Dataset.EntityData) -> "Dataset":
         assert_workflows_match(cls.workflow.name, data.workflow)
         obj = cls.__new__(cls)
         obj._id = data.id
@@ -178,8 +176,8 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         cls,
         name: str,
         description: Optional[str] = None,
-        test_samples: Optional[List[Tuple[TestSample, GroundTruth]]] = None,
-        test_case_func: Optional[List[Tuple[str, TEST_CASE_FUNC, Optional[TEST_CASE_TAG_TYPE]]]] = None,
+        test_samples: Optional[DATASET_SAMPLE_TYPE] = None,
+        test_case_funcs: Optional[List[TEST_CASE_TYPE]] = None,
         tags: Optional[Set[str]] = None,
     ) -> "Dataset":
         """
@@ -194,43 +192,48 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         cls._validate_workflow()
         validate_name(name, FieldName.DATASET_NAME)
 
-        test_cases: List[TEST_CASE_TYPE] = []
-        for name, func, tc_tags in test_case_func or []:
-            test_case_samples = []
-            for ts, gt in test_samples:
-                res = func(ts, gt)
-                if isinstance(res, tuple):
-                    if res[0]:
-                        test_case_samples.append((ts, gt))
-                elif res is True:
-                    test_case_samples.append((ts, gt))
+        log.info(f"creating dataset '{name}'")
 
-            test_cases.append((name, test_case_samples, tc_tags))
+        load_uuid = None
+        test_case_funcs = test_case_funcs or []
+        test_cases = [
+            core.TestCase.SingleProcessRequest(name=tc_name, tags=tc_tags)
+            for tc_name, _, tc_tags in test_case_funcs or []
+        ]
 
-        uuid = cls.upload_data(test_cases)
-        request = DatasetAPI.CreateRequest(
+        if test_samples:
+            base = [(ts, gt, False) for ts, gt in test_samples]
+            base_df = _to_editor_data_frame(base).as_serializable()
+            test_case_df = [
+                _to_editor_data_frame([x for x in base if tc_func(x[0], x[1])], tc_name).as_serializable()
+                for tc_name, tc_func, _ in test_case_funcs
+            ]
+            load_uuid = init_upload().uuid
+            upload_data_frame(
+                df=pd.concat([base_df, *test_case_df]),
+                batch_size=BatchSize.UPLOAD_RECORDS.value,
+                load_uuid=load_uuid,
+            )
+
+        request = core.Dataset.CreateRequest(
             name=name,
             description=description or "",
-            test_cases=[TestCaseAPI.SingleProcessRequest(name=name, tags=tags) for name, _, tags in test_cases],
-            tags=list(tags) if tags else tags,
-            uuid=uuid,
             workflow=cls.workflow.name,
-            reset=True,
+            tags=list(tags) if tags else [],
+            test_cases=test_cases,
+            uuid=load_uuid,
         )
-
         response = krequests.post(
-            endpoint_path=GenericDatasetAPI.Path.CREATE.value,
+            endpoint_path=generic.Dataset.Path.CREATE.value,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(response)
-        data = from_dict(data_class=DatasetAPI.EntityData, data=response.json())
+        data = from_dict(data_class=core.Dataset.EntityData, data=response.json())
 
         obj = cls._create_from_data(data)
         log.info(
             f"created dataset '{name}' (v{obj.version}) ({get_dataset_url(obj._id)})",
         )
-        # if test_cases is not None:
-        #     obj._hydrate(test_cases)
         return obj
 
     @classmethod
@@ -244,42 +247,18 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         :return: The loaded dataset.
         """
         cls._validate_workflow()
-        request = CoreAPI.LoadByNameRequest(name=name, version=version)
+        request = core.Dataset.LoadByNameRequest(name=name, version=version)
         res = krequests.put(
-            endpoint_path=API.Path.LOAD,
+            endpoint_path=generic.Dataset.Path.LOAD,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)
-        data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        data = from_dict(data_class=core.Dataset.EntityData, data=res.json())
         obj = cls._create_from_data(data)
         log.info(
             f"loaded dataset '{name}' (v{obj.version}) ({get_dataset_url(obj._id)})",
         )
         return obj
-
-    @classmethod
-    def load_all(cls, *, tags: Optional[Set[str]] = None) -> List["Dataset"]:
-        """
-        Load the latest version of all non-archived datasets with this workflow.
-
-        :param tags: Optionally specify a set of tags to apply as a filter. The loaded datasets will include only
-            datasets with tags matching each of these specified tags, i.e.
-            `dataset.tags.intersection(tags) == tags`.
-        :return: The latest version of all non-archived datasets, with matching tags when specified.
-        """
-        cls._validate_workflow()
-        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
-        res = krequests.put(
-            endpoint_path=API.Path.LOAD_ALL.value,
-            data=json.dumps(dataclasses.asdict(request)),
-        )
-        krequests.raise_for_status(res)
-        data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
-        objs = [cls._create_from_data(dataset) for dataset in data.datasets]
-        tags_quoted = {f"'{t}'" for t in tags or {}}
-        tags_message = f" with tag{'s' if len(tags) > 1 else ''} {', '.join(tags_quoted)}" if tags else ""
-        log.info(f"loaded {len(objs)} '{cls.workflow.name}' datasets{tags_message}")
-        return objs
 
     class Editor:
         _test_samples: List[Tuple[TestSample, GroundTruth]]
@@ -390,7 +369,7 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
             return
 
         log.info(f"editing dataset '{self.name}' (v{self.version})")
-        request = CoreAPI.EditRequest(
+        request = core.Dataset.EditRequest(
             id=self._id,
             current_version=self.version,
             name=self.name,
@@ -399,11 +378,11 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
             tags=list(editor.tags),
         )
         res = krequests.post(
-            endpoint_path=API.Path.EDIT,
+            endpoint_path=generic.Dataset.Path.EDIT,
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)
-        dataset_data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
+        dataset_data = from_dict(data_class=core.Dataset.EntityData, data=res.json())
         self._populate_from_other(self._create_from_data(dataset_data))
         log.success(
             f"edited dataset '{self.name}' (v{self.version}) ({get_dataset_url(self._id)})",
@@ -418,11 +397,12 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         """
         test_case_id_to_samples: Dict[int, List[TestSample]] = defaultdict(list)
         for df_batch in _BatchedLoader.iter_data(
-            init_request=API.LoadTestSamplesRequest(
+            init_request=core.Dataset.LoadTestSamplesRequest(
                 id=self._id,
                 batch_size=BatchSize.LOAD_SAMPLES,
+                by_test_case=True,
             ),
-            endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES,
+            endpoint_path=generic.Dataset.Path.INIT_LOAD_TEST_SAMPLES,
             df_class=DatasetTestSamplesDataFrame,
         ):
             for record in df_batch.itertuples():
@@ -431,58 +411,43 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
                 )
                 test_case_id_to_samples[record.test_case_id].append(test_sample)
 
-        test_case_id_to_test_case = {tc._id: tc for tc in self.test_cases}
-        return [(test_case_id_to_test_case[tc_id], samples) for tc_id, samples in test_case_id_to_samples.items()]
+        test_case_id_to_test_case = {tc.id: tc for tc in self.test_cases}
+        return [
+            (test_case_id_to_test_case[tc_id], samples)
+            if test_case_id_to_test_case in self.test_cases
+            else (
+                TestCase(name="_internal", id=tc_id, version=-1),
+                samples,
+            )
+            for tc_id, samples in test_case_id_to_samples.items()
+        ]
 
-    def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
+    def load_test_samples(self) -> DATASET_SAMPLE_TYPE:
         """
         Load test samples for all test cases within this dataset.
 
         :return: A list of [`TestCase`s][kolena.workflow.TestCase], each paired with the list of
             [`TestSample`s][kolena.workflow.TestSample] it contains.
         """
-        test_samples: List[TestSample] = []
+        test_samples: List[Tuple[TestSample, GroundTruth]] = []
         for df_batch in _BatchedLoader.iter_data(
-            init_request=API.LoadTestSamplesRequest(
+            init_request=core.Dataset.LoadTestSamplesRequest(
                 id=self._id,
                 batch_size=BatchSize.LOAD_SAMPLES,
             ),
-            endpoint_path=API.Path.INIT_LOAD_TEST_SAMPLES,
+            endpoint_path=generic.Dataset.Path.INIT_LOAD_TEST_SAMPLES,
             df_class=DatasetTestSamplesDataFrame,
         ):
             for record in df_batch.itertuples():
-                test_sample = self.workflow.test_sample_type._from_dict(record.test_sample)
-                test_samples.append(test_sample)
+                test_sample = self.workflow.test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
+                ground_truth = (
+                    self.workflow.ground_truth_type._from_dict(record.ground_truth) if record.ground_truth else None
+                )
+                test_samples.append((test_sample, ground_truth))
 
         return test_samples
 
     def get_test_cases(self) -> List[TestCase]:
         return self.test_cases
-
-    @classmethod
-    def upload_data(
-        self,
-        data: Iterable[Tuple[str, List[Tuple[TestSample, GroundTruth]], Dict[str, str]]],
-    ) -> Optional[str]:
-        df_test_samples = [
-            _to_editor_data_frame(
-                [(sample, ground_truth, False) for sample, ground_truth in test_samples],
-                name,
-            ).as_serializable()
-            for name, test_samples, _ in data
-            if test_samples
-        ]
-        df_serialized = pd.concat(df_test_samples) if df_test_samples else pd.DataFrame()
-        # df_serialized.to_json("dataset_test.json", orient="records")
-        # df_serialized = pd.read_json("dataset_test.json")
-        if len(df_serialized):
-            load_uuid = init_upload().uuid
-            upload_data_frame(
-                df=df_serialized,
-                batch_size=BatchSize.UPLOAD_RECORDS.value,
-                load_uuid=load_uuid,
-            )
-        else:
-            load_uuid = None
-
-        return load_uuid
