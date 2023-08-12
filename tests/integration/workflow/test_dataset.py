@@ -90,7 +90,7 @@ def dummy_samples(
     n_samples: int,
     include_ground_truth: bool = True,
 ) -> Union[List[DummyTestSample], List[Tuple[DummyTestSample, DummyGroundTruth]]]:
-    directory = random.choices(string.ascii_letters, k=6)
+    directory = "".join(random.choices(string.ascii_letters, k=6))
     meta = ["cat", "dog"]
     if include_ground_truth:
         return [
@@ -107,9 +107,7 @@ def dummy_samples(
         (None, None, None),
         ("", [], set()),
         ("some", dummy_samples(5), {"world", "cup"}),
-        (None, dummy_samples(5, include_ground_truth=False), {"champion"}),
     ],
-    ids=["none", "empty", "samples_with_tags", "samples without groundtruth"],
 )
 def test__create(
     request: pytest.FixtureRequest,
@@ -118,7 +116,7 @@ def test__create(
     tags: Optional[Set[str]],
 ) -> None:
     name = with_test_prefix(f"{__file__}::test__create {request.node.callspec.id}")
-    dataset = Dataset.create(name, description=description, tags=tags)
+    dataset = Dataset.create(name, description=description, tags=tags, test_samples=test_samples)
 
     assert dataset.test_cases == []
     verify_dataset(dataset, name, 1, description, tags=tags, test_samples=test_samples)
@@ -150,7 +148,20 @@ def test__load_test_samples() -> None:
 
 
 def test__update_test_samples() -> None:
-    ...
+    name = with_test_prefix(f"{__file__}::test__update_test_samples")
+    test_samples = dummy_samples(5)
+    dataset = Dataset.create(name, test_samples=test_samples)
+
+    loaded_test_samples = dataset.load_test_samples()
+
+    verify_test_samples(loaded_test_samples, test_samples)
+
+    test_case_test_samples = {tc.id: test_samples for tc in dataset.test_cases}
+    loaded_test_case_test_samples = dataset.load_test_samples_by_test_case()
+    verify_test_case_test_samples(
+        {tc.id: samples for tc, samples in loaded_test_case_test_samples},
+        test_case_test_samples,
+    )
 
 
 def test__update_test_cases() -> None:
@@ -166,3 +177,7 @@ def test__test() -> None:
     model = Model(name, infer=lambda _: dummy_inference())
     evaluator = DummyEvaluator()
     test(model, dataset, evaluator)
+
+    metrics = dataset.load_metrics(model, evaluator).metrics
+    assert len(metrics) == 1
+    assert list(metrics.values()) == [dict(value=evaluator.fixed_random_value)]

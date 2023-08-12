@@ -48,7 +48,6 @@ from kolena.workflow._internal import _TestCase as TestCase
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.workflow import Workflow
 
-
 TestSample = TypeVar("TestSample", bound=BaseTestSample)
 
 
@@ -165,7 +164,8 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: Iterator exposing the ground truths and inferences for all test samples in the test case.
         """
         log.info(f"loading inferences from model '{self.name}' on test case '{test_case.name}'")
-        assert_workflows_match(self.workflow.name, test_case.workflow.name)
+        if hasattr(test_case, "workflow"):
+            assert_workflows_match(self.workflow.name, test_case.workflow.name)
         for df_batch in _BatchedLoader.iter_data(
             init_request=API.LoadInferencesRequest(
                 model_id=self._id,

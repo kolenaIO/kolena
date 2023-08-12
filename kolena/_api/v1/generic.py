@@ -189,10 +189,8 @@ class Dataset:
     class Path(str, Enum):
         CREATE = "/generic/dataset/create"
         LOAD = "/generic/dataset/load"
-        LOAD_ALL = "/generic/dataset/load-all"
         EDIT = "/generic/dataset/edit"
-        DELETE = "/generic/dataset/delete"
-        MARK_DELETION = "/generic/model/mark-deletion"
         INIT_LOAD_TEST_SAMPLES = "/generic/dataset/load-test-samples"
         INIT_LOAD_TEST_SAMPLE_METRICS = "/generic/dataset/load-test-sample-metrics"
         LOAD_METRICS = "/generic/dataset/load-metrics"
+        LOAD_TEST_CASES = "/generic/dataset/load-test-cases"

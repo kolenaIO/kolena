@@ -46,12 +46,13 @@ from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
+from kolena.workflow import BasicEvaluatorFunction
+from kolena.workflow import Evaluator
 from kolena.workflow import GroundTruth
+from kolena.workflow import Model
 from kolena.workflow import TestSample
 from kolena.workflow import Workflow
 from kolena.workflow._datatypes import DatasetTestSamplesDataFrame
-from kolena.workflow._internal import SimpleTestCase
-from kolena.workflow._internal import SimpleTestCase as TestCase
 from kolena.workflow._internal import TestRunnable
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.test_case import _to_editor_data_frame
@@ -66,6 +67,8 @@ TEST_CASE_FUNC = Union[
 ]
 DATASET_SAMPLE_TYPE = List[Tuple[TestSample, GroundTruth]]
 
+TestCase = core.Dataset.TestCaseData
+
 
 class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
     _id: int
@@ -74,7 +77,7 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
     version: int
     description: str
     tags: Set[str]
-    test_cases: List[SimpleTestCase]
+    test_cases: List[TestCase]
 
     @telemetry
     def __init_subclass__(cls) -> None:
@@ -259,6 +262,28 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
             f"loaded dataset '{name}' (v{obj.version}) ({get_dataset_url(obj._id)})",
         )
         return obj
+
+    def load_metrics(
+        self,
+        model: Model,
+        evaluator: Union[Evaluator, BasicEvaluatorFunction, None],
+    ) -> core.Dataset.LoadMetricsResponse:
+        if evaluator is None:
+            evaluator_display_name = None
+        elif isinstance(evaluator, Evaluator):
+            evaluator_display_name = evaluator.display_name()
+        else:
+            evaluator_display_name = evaluator.__name__
+
+        load_request = core.Dataset.LoadMetricsRequest(
+            id=self._id,
+            model_id=model._id,
+            evaluator=evaluator_display_name,
+        )
+        response = krequests.put(generic.Dataset.Path.LOAD_METRICS, json=dataclasses.asdict(load_request))
+        response.raise_for_status()
+
+        return from_dict(core.Dataset.LoadMetricsResponse, data=response.json())
 
     class Editor:
         _test_samples: List[Tuple[TestSample, GroundTruth]]
@@ -450,4 +475,7 @@ class Dataset(Frozen, WithTelemetry, TestRunnable, metaclass=ABCMeta):
         return test_samples
 
     def get_test_cases(self) -> List[TestCase]:
-        return self.test_cases
+        response = krequests.put(generic.Dataset.Path.LOAD_TEST_CASES, json=dict(id=self._id))
+        krequests.raise_for_status(response)
+
+        return from_dict(core.Dataset.LoadTestCasesResponse, response.json()).test_cases

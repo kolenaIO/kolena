@@ -55,7 +55,6 @@ from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow import Model
 from kolena.workflow import Plot
-from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
 from kolena.workflow._datatypes import MetricsDataFrame
@@ -267,7 +266,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_case_metrics: Dict[int, Dict[Optional[EvaluatorConfiguration], MetricsTestCase]] = {}
         test_case_plots: Dict[int, Dict[Optional[EvaluatorConfiguration], Optional[List[Plot]]]] = {}
 
-        for test_case in self.test_suite.test_cases:
+        for test_case in self.test_suite.get_test_cases():
             log.info(f"evaluating test case '{test_case.name}'")
             test_case_metrics_by_config = {}
             test_case_plots_by_config = {}

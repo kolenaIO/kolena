@@ -11,15 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
 from abc import abstractmethod
-from typing import Dict
 from typing import List
 from typing import Tuple
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-
+from kolena._api.v1.core import Dataset
 from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 
@@ -28,17 +25,7 @@ try:
 except ImportError:
     from typing_extensions import Protocol
 
-
-@dataclass(frozen=True)
-class SimpleTestCase:
-    name: str
-    id: int
-    version: int
-    tags: Dict[str, str] = dataclasses.field(default_factory=dict)
-    # test_samples: List[Tuple[TestSample, GroundTruth]] = dataclasses.field(default_factory=list)
-
-
-_TestCase = Union[TestCase, SimpleTestCase]
+_TestCase = Union[TestCase, Dataset.TestCaseData]
 
 
 class TestRunnable(Protocol):

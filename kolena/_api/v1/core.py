@@ -215,6 +215,10 @@ class Dataset:
         version: int
         tags: Dict[str, str] = field(default_factory=dict)
 
+        @property
+        def _id(self) -> int:
+            return self.id
+
     @dataclass(frozen=True)
     class CreateRequest:
         name: str
@@ -268,5 +272,10 @@ class Dataset:
         id: int
         metrics: Dict[str, Any]
 
+    @dataclass(frozen=True)
+    class LoadTestCasesResponse:
+        test_cases: List["Dataset.TestCaseData"]
+
 
 Dataset.EntityData.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+Dataset.LoadTestCasesResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
