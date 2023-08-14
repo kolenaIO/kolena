@@ -13,7 +13,7 @@
 # limitations under the License.
 import os
 
-from text_summarization.evaluator import evaluate_text_summarization
+from text_summarization.evaluator_fast import evaluate_text_summarization_fast
 from text_summarization.workflow import Model
 from text_summarization.workflow import TestSuite
 
@@ -35,5 +35,5 @@ test_suite = TestSuite.load(test_suite_name, version=test_suite_version)
 print(f"using test_suite: {test_suite}")
 
 print("running evaluation...")
-test(model, test_suite, evaluate_text_summarization)
+test(model, test_suite, evaluate_text_summarization_fast)
 print("finished running evaluation")
