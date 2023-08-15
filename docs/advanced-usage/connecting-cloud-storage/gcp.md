@@ -10,7 +10,7 @@ Upon creation, the integration's `client_email` will be used to provide Kolena p
 
 ### 2. Grant Service Account Read Access
 
-Within your GCP console, naviagate to the bucket that contains your images.
+Within your GCP console, navigate to the bucket that contains your images.
 Click on the permissions tab.
 Click the "Grant Access" button and grant the service account created in [step 1](#1-save-integration-to-create-a-service-account): the `Storage Object viewer` role.
 The Storage Object Viewer role offers the following permissions:
@@ -22,7 +22,7 @@ The Storage Object Viewer role offers the following permissions:
 
 ### 3. Provide CORS Access
 
-Create a json file `cors.json` with the following content. **(Please ensure that you update the origin with your Kolena platform URL)**
+Create a json file `cors.json` with the following content:
 
 ```json
 [

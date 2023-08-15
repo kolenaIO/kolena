@@ -15,3 +15,12 @@ Integrations can be managed by users with admin roles by navigating to your [Org
     Establish integrations to providers with a S3-Compatible API (MinIO, Oracle, Hitachi, etc).
 
 </div>
+
+<div class="grid cards" markdown>
+- [Google Cloud Platform](./gcp.md)
+
+    ---
+
+    Establish an integration to storage on the Google Cloud Platform.
+
+</div>
