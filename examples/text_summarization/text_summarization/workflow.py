@@ -42,13 +42,11 @@ class GroundTruth(BaseGroundTruth):
 @dataclass(frozen=True)
 class Inference(BaseInference):
     summary: str
+    source: str
     word_count: int
     is_failure: bool = False
     inference_time: Optional[float] = None
-    tokens_input_text: Optional[int] = None
-    tokens_ref_summary: Optional[int] = None
-    tokens_pred_summary: Optional[int] = None
-    tokens_prompt: Optional[int] = None
+    tokens_used: Optional[int] = None
     cost: Optional[float] = None
 
 

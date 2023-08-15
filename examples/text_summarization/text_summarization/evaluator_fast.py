@@ -15,6 +15,9 @@ from typing import List
 from typing import Tuple
 
 import pandas as pd
+from text_summarization.evaluator import compute_aggregate_metrics
+from text_summarization.evaluator import compute_plots
+from text_summarization.evaluator import compute_test_suite_metrics
 from text_summarization.workflow import GroundTruth
 from text_summarization.workflow import Inference
 from text_summarization.workflow import TestCase
@@ -22,9 +25,6 @@ from text_summarization.workflow import TestCaseMetric
 from text_summarization.workflow import TestSample
 from text_summarization.workflow import TestSampleMetric
 
-from examples.text_summarization.text_summarization.evaluator import compute_aggregate_metrics
-from examples.text_summarization.text_summarization.evaluator import compute_plots
-from examples.text_summarization.text_summarization.evaluator import compute_test_suite_metrics
 from kolena.workflow import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
@@ -32,7 +32,6 @@ from kolena.workflow.evaluator_function import TestCases
 
 def compute_test_sample_metrics(ts: TestSample, gt: GroundTruth, inf: Inference, df: pd.DataFrame) -> TestSampleMetric:
     record = df.loc[df["article_id"] == ts.id]
-
     return TestSampleMetric(
         BERT_prec=float(record["BERT_prec"].values[0]) if not inf.is_failure else 0.0,
         BERT_rec=float(record["BERT_rec"].values[0]) if not inf.is_failure else 0.0,

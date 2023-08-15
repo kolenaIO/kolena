@@ -37,7 +37,6 @@ MODEL_MAP: Dict[str, Tuple[str, str]] = {
     "turbo": ("gpt-3.5-turbo", f"TURBO (GPT-3.5, {WORKFLOW})"),
 }
 
-
 TEST_SUITE_NAMES = [
     "CNN-DailyMail :: text length",
     "CNN-DailyMail :: news category",
@@ -107,23 +106,23 @@ def seed_test_run(
     mod: Tuple[str, str],
     test_suite: TestSuite,
     infs: pd.DataFrame,
+    data_source: str,
 ) -> None:
     def get_stored_inferences(
         df: pd.DataFrame,
+        data_source: str,
     ) -> Callable[[TestSample], Inference]:
         def infer(sample: TestSample) -> Inference:
             result = df.loc[df["article_id"] == sample.id]
-            summary = result["prediction"].values[0]
+            summary = result["inference"].values[0]
             word_count = len(str(summary).split()) if not pd.isna(summary) else 0
             return Inference(
                 summary=str(summary) if not pd.isna(summary) else "",
+                source=data_source,
                 is_failure=pd.isna(summary) or word_count <= 3,
                 word_count=word_count,
-                inference_time=float(result["prediction_time"].values[0]),
-                tokens_input_text=int(result["tokens_text"].values[0]),
-                tokens_ref_summary=int(result["tokens_summary"].values[0]),
-                tokens_pred_summary=int(result["tokens_generated"].values[0]),
-                tokens_prompt=int(result["tokens_used"].values[0]),
+                inference_time=float(result["inference_time"].values[0]),
+                tokens_used=int(result["tokens_used"].values[0]),
                 cost=float(result["cost"].values[0]),
             )
 
@@ -131,7 +130,7 @@ def seed_test_run(
 
     model_name = mod[0]
     print(f"working on {model_name} and {test_suite.name} v{test_suite.version}")
-    infer = get_stored_inferences(infs)
+    infer = get_stored_inferences(infs, data_source)
     model = Model(f"{mod[1]}", infer=infer, metadata={**MODEL_METADATA[model_name], **COMMON_METADATA})
     print(model)
 
@@ -143,18 +142,16 @@ def main(args: Namespace) -> None:
 
     mod = MODEL_MAP[args.model]
     print("loading inference CSV")
-    s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}/results.csv"
+    s3_path = f"s3://kolena-public-datasets/CNN-DailyMail/results/{mod[0]}.csv"
     csv_to_use = s3_path if args.local_csv is None else args.local_csv
     columns_of_interest = [
         "article_id",
-        "prediction",
-        "prediction_time",
-        "tokens_text",
-        "tokens_summary",
-        "tokens_generated",
+        "inference",
+        "inference_time",
         "tokens_used",
         "cost",
     ]
+
     df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest)
 
     if args.test_suite is None:
@@ -162,11 +159,11 @@ def main(args: Namespace) -> None:
         test_suites = [TestSuite.load(name) for name in TEST_SUITE_NAMES]
         for test_suite in test_suites:
             print(test_suite.name)
-            seed_test_run(mod, test_suite, df_results)
+            seed_test_run(mod, test_suite, df_results, csv_to_use)
     else:
         test_suite = TestSuite.load(args.test_suite)
         print(test_suite.name)
-        seed_test_run(mod, test_suite, df_results)
+        seed_test_run(mod, test_suite, df_results, csv_to_use)
 
 
 if __name__ == "__main__":

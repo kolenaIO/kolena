@@ -16,6 +16,8 @@ from typing import Tuple
 
 import evaluate
 import numpy as np
+from text_summarization.utils import compute_metric_vs_metric_plot
+from text_summarization.utils import compute_score_distribution_plot
 from text_summarization.workflow import GroundTruth
 from text_summarization.workflow import Inference
 from text_summarization.workflow import TestCase
@@ -24,8 +26,6 @@ from text_summarization.workflow import TestSample
 from text_summarization.workflow import TestSampleMetric
 from text_summarization.workflow import TestSuiteMetric
 
-from examples.text_summarization.text_summarization.utils import compute_metric_vs_metric_plot
-from examples.text_summarization.text_summarization.utils import compute_score_distribution_plot
 from kolena.workflow import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
