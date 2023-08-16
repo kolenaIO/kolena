@@ -217,7 +217,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
-    def bbox_matches_for_one_label(
+    def bbox_matches_and_count_for_one_label(
         self,
         matchings: List[MulticlassInferenceMatches],
         label: str,
@@ -239,7 +239,6 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
                     match_unmatched_gt.append((gt, inf))
             for inf in match.unmatched_inf:
                 if inf.label == label:
-                    sample_flag = True
                     match_unmatched_inf.append(inf)
             if sample_flag:
                 samples_count += 1
@@ -295,7 +294,10 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         label: str,
         thresholds: Dict[str, float],
     ) -> ClassMetricsPerTestCase:
-        match_and_count: Tuple[MulticlassInferenceMatches, int] = self.bbox_matches_for_one_label(matchings, label)
+        match_and_count: Tuple[MulticlassInferenceMatches, int] = self.bbox_matches_and_count_for_one_label(
+            matchings,
+            label,
+        )
         class_matches: MulticlassInferenceMatches = match_and_count[0]
         samples_count: int = match_and_count[1]
 
