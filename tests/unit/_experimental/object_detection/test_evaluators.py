@@ -988,12 +988,12 @@ def test__object_detection__single_class__test_case_metrics_single_class(
                         ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.2),
                     ],
                 ),
-                2,
+                1,
             ),
         ),
     ],
 )
-def test__object_detection__multiclass__bbox_matches_for_one_label(
+def test__object_detection__multiclass__bbox_matches_and_count_for_one_label(
     test_name: str,
     matchings: List[MulticlassInferenceMatches],
     label: str,
@@ -1002,7 +1002,7 @@ def test__object_detection__multiclass__bbox_matches_for_one_label(
     from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
 
     od_multi = MulticlassObjectDetectionEvaluator()
-    result = od_multi.bbox_matches_for_one_label(
+    result = od_multi.bbox_matches_and_count_for_one_label(
         matchings=matchings,
         label=label,
     )
