@@ -31,6 +31,7 @@ from kolena.workflow.metrics import accuracy as compute_accuracy
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
+from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
 
 
@@ -130,13 +131,23 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
             [gt.classification for gt in ground_truths],
             [inf.inferences[0] for inf in inferences],
         )
-        if threshold_curves is not None:
+        if threshold_curves is not None and len(threshold_curves) == 3:
             plots.append(
                 CurvePlot(
-                    title="Scores vs. Confidence Threshold",
+                    title="F1-Score vs. Confidence Threshold",
                     x_label="Confidence Threshold",
-                    y_label="Score",
-                    curves=threshold_curves,
+                    y_label="F1-Score",
+                    curves=[threshold_curves[2]],
+                ),
+            )
+            precisions = threshold_curves[0].y
+            recalls = threshold_curves[1].y
+            plots.append(
+                CurvePlot(
+                    title="Precision vs. Recall",
+                    x_label="Recall",
+                    y_label="Precision",
+                    curves=[Curve(x=recalls, y=precisions, label=positive_label)],
                 ),
             )
 

@@ -260,7 +260,7 @@ def compute_threshold_curves(
     ground_truths: List[Optional[ClassificationLabel]],
     inferences: List[ScoredClassificationLabel],
     thresholds: Optional[List[float]] = None,
-) -> Optional[List[CurvePlot]]:
+) -> Optional[List[Curve]]:
     """
     Computes scores (i.e. [Precision][kolena.workflow.metrics.precision], [Recall][kolena.workflow.metrics.recall]
     and [F1-score][kolena.workflow.metrics.f1_score]) vs. threshold curves for a **single** class presented in
@@ -277,7 +277,7 @@ def compute_threshold_curves(
         the threshold curves for.
     :param thresholds: The list of thresholds to plot with. If not specified, all the unique confidence scores are used
         as thresholds, including evenly spaced thresholds from 0 to 1 with 0.1 step.
-    :return: A list of [`CurvePlot`][kolena.workflow.plot.CurvePlot]s if there is any valid `Curve` computed;
+    :return: A list of [`Curve`][kolena.workflow.plot.Curve]s if there is any valid `Curve` computed;
         otherwise, `None`.
 
     """
