@@ -31,9 +31,7 @@ For example, when viewing images in the Studio, any annotations (such as lists o
 [`Inference`][kolena.workflow.Inference], or [`MetricsTestSample`][kolena.workflow.MetricsTestSample] objects are
 rendered on top of the image.
 """
-import dataclasses
 from abc import ABCMeta
-from functools import reduce
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -67,33 +65,17 @@ class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class BoundingBox(Annotation):
-    """
-    Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices.
-
-    The reserved fields `width`, `height`, `area`, and `aspect_ratio` are automatically populated with values derived
-    from the provided coordinates.
-    """
+    """Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices."""
 
     top_left: Tuple[float, float]
-    """The top left vertex (in `(x, y)` pixel coordinates) of this bounding box."""
+    """The top left vertex (in `(x, y)` image coordinates) of this bounding box."""
 
     bottom_right: Tuple[float, float]
-    """The bottom right vertex (in `(x, y)` pixel coordinates) of this bounding box."""
-
-    width: float = dataclasses.field(init=False)
-    height: float = dataclasses.field(init=False)
-    area: float = dataclasses.field(init=False)
-    aspect_ratio: float = dataclasses.field(init=False)
+    """The bottom right vertex (in `(x, y)` image coordinates) of this bounding box."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.BOUNDING_BOX
-
-    def __post_init__(self) -> None:
-        object.__setattr__(self, "width", self.bottom_right[0] - self.top_left[0])
-        object.__setattr__(self, "height", self.bottom_right[1] - self.top_left[1])
-        object.__setattr__(self, "area", self.width * self.height)
-        object.__setattr__(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -137,7 +119,7 @@ class Polygon(Annotation):
     """Arbitrary polygon specified by three or more pixel coordinates."""
 
     points: List[Tuple[float, float]]
-    """The sequence of `(x, y)` pixel coordinates comprising the boundary of this polygon."""
+    """The sequence of `(x, y)` points comprising the boundary of this polygon."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -184,7 +166,7 @@ class Keypoints(Annotation):
     """Array of any number of keypoints specified in pixel coordinates."""
 
     points: List[Tuple[float, float]]
-    """The sequence of discrete `(x, y)` pixel coordinates comprising this keypoints annotation."""
+    """The sequence of discrete `(x, y)` points comprising this keypoints annotation."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -196,7 +178,7 @@ class Polyline(Annotation):
     """Polyline with any number of vertices specified in pixel coordinates."""
 
     points: List[Tuple[float, float]]
-    """The sequence of connected `(x, y)` pixel coordinates comprising this polyline."""
+    """The sequence of connected `(x, y)` points comprising this polyline."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
@@ -210,8 +192,6 @@ class BoundingBox3D(Annotation):
 
     Specified by `(x, y, z)` coordinates for the `center` of the cuboid, `(x, y, z)` `dimensions`, and a `rotation`
     parameter specifying the degrees of rotation about each axis `(x, y, z)` ranging `[-π, π]`.
-
-    The reserved field `volume` is automatically derived from the provided `dimensions`.
     """
 
     center: Tuple[float, float, float]
@@ -223,14 +203,9 @@ class BoundingBox3D(Annotation):
     rotations: Tuple[float, float, float]
     """Rotations in degrees about each `(x, y, z)` axis."""
 
-    volume: float = dataclasses.field(init=False)
-
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.BOUNDING_BOX_3D
-
-    def __post_init__(self) -> None:
-        object.__setattr__(self, "volume", reduce(lambda a, b: a * b, self.dimensions))
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
