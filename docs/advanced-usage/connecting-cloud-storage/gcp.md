@@ -12,8 +12,8 @@ Upon creation, the integration's `client_email` will be used to provide Kolena p
 
 Within your GCP console, navigate to the bucket that contains your images.
 Click on the permissions tab.
-Click the "Grant Access" button and grant the service account created in [step 1](#1-save-integration-to-create-a-service-account): the `Storage Object viewer` role.
-The Storage Object Viewer role offers the following permissions:
+Click the "Grant Access" button and grant the service account created in [step 1](#1-save-integration-to-create-a-service-account) the `Storage Object Viewer` role.
+The `Storage Object Viewer` role offers the following permissions:
 
 - Grants access to view objects and their metadata, excluding ACLs.
 - Grants access to list the objects in a bucket.
