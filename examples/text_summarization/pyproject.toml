@@ -19,7 +19,6 @@ torch = [
     {platform = "linux", url = "https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp39-cp39-linux_x86_64.whl"},
     {platform = "win32", url = "https://download.pytorch.org/whl/cpu/torch-2.0.1%2Bcpu-cp39-cp39-win_amd64.whl"}
 ]
-
 evaluate = "^0.4.0"
 bert-score = "^0.3.13"
 absl-py = "^1.4.0"
