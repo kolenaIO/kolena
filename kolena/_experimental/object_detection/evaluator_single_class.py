@@ -69,9 +69,11 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics).
     """
 
-    matchings_by_test_case: Dict[str, List[InferenceMatches]] = defaultdict(list)
+    matchings_by_test_case: Dict[str, Dict[str, List[InferenceMatches]]] = defaultdict(
+        lambda: defaultdict(list),
+    )
     """
-    Caches matchings per test case for test case metrics and test case plots.
+    Caches matchings per configuration and test case for faster test case metric and plot computation.
     """
 
     def test_sample_metrics_ignored(
@@ -139,7 +141,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        self.matchings_by_test_case[test_case_name].append(bbox_matches)
+        self.matchings_by_test_case[configuration.display_name()][test_case_name].append(bbox_matches)
 
         return self.test_sample_metrics_single_class(bbox_matches, thresholds)
 
@@ -214,7 +216,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestCaseMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
-        all_bbox_matches = self.matchings_by_test_case[test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
         average_precision = 0.0
@@ -232,7 +234,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        all_bbox_matches = self.matchings_by_test_case[test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
 
         plots: Optional[List[Plot]] = []
         plots.extend(

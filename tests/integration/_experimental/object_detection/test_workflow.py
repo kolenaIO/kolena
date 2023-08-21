@@ -28,10 +28,13 @@ Model = object_detection.Model
 TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
+ThresholdStrategy = object_detection.ThresholdStrategy
+ThresholdConfiguration = object_detection.ThresholdConfiguration
+ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 
 
 @pytest.mark.metrics
-def test__multiclass__object_detection__smoke() -> None:
+def test__object_detection__smoke() -> None:
     name = with_test_prefix(f"{__file__} test__multiclass__object_detection__smoke")
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
     ground_truth = GroundTruth(bboxes=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
@@ -40,7 +43,7 @@ def test__multiclass__object_detection__smoke() -> None:
 
     def infer(_: TestSample) -> Inference:
         return Inference(
-            inferences=[
+            bboxes=[
                 ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="b", score=random.random()),
                 ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1.1, 1.1), label="a", score=random.random()),
                 ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1.01, 1.01), label="a", score=0.99),
