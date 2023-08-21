@@ -1,16 +1,16 @@
 Integrations can be established to Google Cloud Storage.
 
 To get started, ensure you have admin access within Kolena.
-Navigate to your [Organization Settings's Integration Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "GCP".
+Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "Google Cloud Storage".
 
 ### 1. Save Integration to Create a Service Account
 
-From the [Integration Tab](https://app.kolena.io/redirect/organization?tab=integrations), saving the GCP integration will create a service account.
-Upon creation, the integration's `client_email` will be used to provide Kolena permission to load data from your GCP buckets.
+From the [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations), saving the Google Cloud Storage integration will create a service account.
+Upon creation, the integration's `client_email` will be used to provide Kolena permission to load data from your Google Cloud Storage buckets.
 
 ### 2. Grant Service Account Read Access
 
-Within your GCP console, navigate to the bucket that contains your images.
+Within your Google Cloud Platform console, navigate to the bucket that contains your images.
 Click on the permissions tab.
 Click the "Grant Access" button and grant the service account created in [step 1](#1-save-integration-to-create-a-service-account) the `Storage Object Viewer` role.
 The `Storage Object Viewer` role offers the following permissions:
