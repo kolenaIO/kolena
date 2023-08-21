@@ -17,7 +17,7 @@ Integrations can be managed by users with admin roles by navigating to your [Org
 </div>
 
 <div class="grid cards" markdown>
-- [Google Cloud Platform](./gcp.md)
+- [Google Cloud Platform](./google-cloud-storage.md)
 
     ---
 
