@@ -1,7 +1,7 @@
 Integrations can be established to Amazon S3.
 
 To get started, ensure you have admin access within Kolena.
-Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "AWS".
+Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "Amazon S3".
 
 ### 1. Allow CORS Access to Bucket
 
@@ -55,7 +55,7 @@ Return to the Kolena platform [Integrations Tab](https://app.kolena.io/redirect/
 
 On the "Create Amazon S3 Integration" page, click "Generate a Principal ARN".
 This will create a Principal which will be referenced in a trust policy.
-If desired, an External Id may also be provided to include within a trust policy.
+Setting an External Id to include within the trust policy is recommended.
 
 Once these steps are complete, copy the JSON which appears on the page.
 This will be of the form

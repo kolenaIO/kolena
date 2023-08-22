@@ -8,7 +8,7 @@ Supported systems include:
 * [Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
 
 To get started, ensure you have admin access within Kolena.
-Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "MinIO".
+Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "MinIO".
 
 Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
 You may need to consult documentation for your provider to perform equivalent steps.
