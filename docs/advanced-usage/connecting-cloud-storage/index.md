@@ -12,7 +12,7 @@ Integrations can be managed by users with admin roles by navigating to your [Org
 
     ---
 
-    Establish an integration with a third-party system implementing an S3-Compatible API (MinIO, Oracle, etc.).
+    Establish an integration with a third-party system implementing an S3-Compatible API (MinIO, Oracle, Hitachi, etc.).
 
 </div>
 

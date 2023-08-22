@@ -1,14 +1,15 @@
 ---
-icon: simple/amazons3
-subtitle: MinIO, Oracle
+icon: simple/minio
+subtitle: MinIO, Oracle, Hitachi
 ---
 
-# :simple-amazons3: S3-Compatible APIs
+# :simple-minio: S3-Compatible APIs
 
 Integrations can be established to S3-compatible systems. Supported systems include:
 
-- [MinIO](https://min.io/docs)
-- [Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
+- [:simple-minio: MinIO](https://min.io)
+- [:simple-oracle: Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
+- [:simple-hitachi: Hitachi Content Platform (HCP) for cloud scale](https://knowledge.hitachivantara.com/Documents/Storage/HCP_for_Cloud_Scale)
 
 To get started, ensure you have admin access within Kolena.
 Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "MinIO".
