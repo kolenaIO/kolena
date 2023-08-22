@@ -1,6 +1,6 @@
 Integrations can be established using HTTP Basic Auth.
 
-To get started, ensure you have admin access within Kolena.
+To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "HTTP Basic".
 
 ### 1. Save Integration on Kolena

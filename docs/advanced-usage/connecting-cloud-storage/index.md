@@ -5,7 +5,7 @@ icon: kolena/cloud-16
 # :octicons-cloud-16: Connecting Cloud Storage
 
 Data from cloud storage providers can be loaded to the Kolena platform by creating integrations.
-Integrations can be managed by users with admin roles by navigating to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page.
+Integrations can be managed by organization administrators by navigating to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page.
 
 <div class="grid cards" markdown>
 - [Amazon S3](./amazon-s3.md)
