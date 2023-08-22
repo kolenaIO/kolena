@@ -1,3 +1,9 @@
+---
+icon: kolena/globe-network-16
+---
+
+# :kolena-globe-network-20: HTTP Basic
+
 Integrations can be established using HTTP Basic Auth.
 
 To get started, ensure you have admin access within Kolena.

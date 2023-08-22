@@ -1,11 +1,14 @@
 ---
+icon: simple/amazons3
 subtitle: MinIO, Oracle
 ---
 
-Integrations can be established to S3-compatible systems.
-Supported systems include:
-* [MinIO](https://min.io/docs)
-* [Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
+# :simple-amazons3: S3-Compatible APIs
+
+Integrations can be established to S3-compatible systems. Supported systems include:
+
+- [MinIO](https://min.io/docs)
+- [Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
 
 To get started, ensure you have admin access within Kolena.
 Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "MinIO".
@@ -21,7 +24,6 @@ You may need to consult documentation for your provider to perform equivalent st
     ```shell
     mc admin user add <deployment_alias> <kolena_user> <secret_access_key>
     ```
-
 
 ### 2. Create an Access Policy
 
@@ -42,7 +44,7 @@ Save the following JSON policy to a file called `/tmp/kolena-policy.json`, repla
         ],
         "Resource": [
             "arn:aws:s3:::share-with-kolena",
-            "arn:aws:s3:::share-with-kolena/*",
+            "arn:aws:s3:::share-with-kolena/*"
         ]
     }]
 }
@@ -61,7 +63,6 @@ Next, create the policy and attach the policy to the service user created in [st
     mc admin policy attach <deployment_alias> kolenaread --user <kolena_user>
     ```
 
-​   ​
 ### 3. Save Integration on Kolena
 
 Return to the Kolena platform [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations)

@@ -1,3 +1,9 @@
+---
+icon: simple/googlecloud
+---
+
+# :simple-googlecloud: Google Cloud Storage
+
 Integrations can be established to Google Cloud Storage.
 
 To get started, ensure you have admin access within Kolena.
