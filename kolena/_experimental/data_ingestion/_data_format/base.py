@@ -14,13 +14,15 @@
 from abc import ABC
 from abc import abstractmethod
 
+from kolena._experimental.data_ingestion._types import DataIngestionConfig
+
 
 class BaseDataFormat(ABC):
-    def __init__(self) -> None:
-        pass
+    def __init__(self, config: DataIngestionConfig) -> None:
+        self.config = config
 
     @abstractmethod
-    def load_data(self, file_path: str) -> None:
+    def load_data(self) -> None:
         """Load data from a file"""
         raise NotImplementedError
 
