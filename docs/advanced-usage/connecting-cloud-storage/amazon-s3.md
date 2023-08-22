@@ -28,7 +28,12 @@ First ensure you have IAM write permissions within your AWS account.
 In your AWS console, navigate to the IAM policies page.
 Click the "Create Policy" button and select the "JSON" tab.
 
-Paste the following JSON policy (please replace the bucket name `share-with-kolena` with the appropriate bucket)
+Copy and paste the following JSON policy:
+
+
+!!!note "Note: Update Resource Name"
+
+    After copying the JSON below, ensure that `share-with-kolena` is replaced with the appropriate bucket you wish to provide access to.
 
 ```json
 {
