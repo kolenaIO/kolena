@@ -72,12 +72,18 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? faq "How can I add new users to my organization?"
 
-    Certain members of each organization have administrator privileges. These administrators can add new users, and
-    grant users administrator privileges, by visiting the
+    Administrators for your organization can add new users and grant users administrator privileges by visiting the
     [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization) page and adding
     entries to the **Authorized Users** table.
 
     Note that this page is only visible for organization administrators.
+
+??? faq "Who are administrators for my organization?"
+
+    Certain members of each organization have administrator privileges. These administrators can manage users access and privileges,
+    as well as configure Integrations.
+
+    You may become an administrator by having an existing administrator grant you privileges using the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=users) page.
 
 ??? faq "I'm new to Kolena — how can I learn more about the platform and how to use it?"
 
