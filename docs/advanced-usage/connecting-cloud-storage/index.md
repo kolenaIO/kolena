@@ -12,15 +12,24 @@ Integrations can be managed by users with admin roles by navigating to your [Org
 
     ---
 
-    Establish integrations to providers with a S3-Compatible API (MinIO, Oracle, Hitachi, etc).
+    Establish an integration with a third-party system implementing an S3-Compatible API (MinIO, Oracle, etc.).
 
 </div>
 
 <div class="grid cards" markdown>
-- [Google Cloud Platform](./google-cloud-storage.md)
+- [Google Cloud Storage](./google-cloud-storage.md)
 
     ---
 
-    Establish an integration to storage on the Google Cloud Platform.
+    Establish an integration with Google Cloud Storage.
+
+</div>
+
+<div class="grid cards" markdown>
+- [HTTP Basic](./http-basic.md)
+
+    ---
+
+    Establish an integration with an internal system using HTTP basic authentication.
 
 </div>
