@@ -18,3 +18,5 @@ arbitrary ML problem.
   on image data from [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
 - [Binary Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#binary-classification-on-dogs-vs-cats):
   Binary Classification on image data from [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
+- [Semantic Textual Similarity](./semantic_textual_similarity): semantic textual similarity using the
+  [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
