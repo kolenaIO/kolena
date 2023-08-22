@@ -16,14 +16,19 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
+from typing import Type
 
 from kolena._experimental.data_ingestion._data_format.base import BaseDataFormat
 from kolena._experimental.data_ingestion._types import DataIngestionConfig
 from kolena._experimental.data_ingestion._utils.io import load_json
 from kolena._experimental.object_detection import GroundTruth
+from kolena._experimental.object_detection import Model
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
+from kolena.workflow import Model as BaseModel
+from kolena.workflow import TestCase as BaseTestCase
+from kolena.workflow import TestSuite as BaseTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 
 
@@ -60,6 +65,9 @@ class CocoDataFormat(BaseDataFormat):
             test_cases=[complete_test_case],
             reset=reset,
         )
+
+    def list_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
+        return TestCase, TestSuite, Model
 
     def _get_image_map(self, raw_data):
         return {int(record["id"]): record for record in raw_data["images"]}

@@ -35,3 +35,8 @@ class BaseDataFormat(ABC):
     def save_data(self) -> None:
         """Save data to Kolena system"""
         raise NotImplementedError
+
+    @abstractmethod
+    def list_workflow(self) -> None:
+        """List workflow related classes"""
+        raise NotImplementedError
