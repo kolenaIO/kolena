@@ -15,14 +15,14 @@ from dataclasses import dataclass
 from uuid import uuid4
 
 
-def _random_name() -> str:
-    return str(uuid4())
+def _random_name(prefix: str) -> str:
+    return f'{prefix}-{uuid4()}'
 
 
 @dataclass
 class DataIngestionConfig:
     data_path: str
     locator_prefix: str = ""
-    test_case_name: str = _random_name()
-    test_suite_name: str = _random_name()
+    test_case_name: str = _random_name('test-case')
+    test_suite_name: str = _random_name('test-suite')
     reset: bool = False
