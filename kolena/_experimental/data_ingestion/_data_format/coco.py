@@ -102,13 +102,11 @@ class CocoDataFormat(BaseDataFormat):
         # create a test sample object and a ground truth object per image
         test_samples_and_ground_truths: List[Tuple[TestSample, GroundTruth]] = []
         for image_id, image_record in image_map.items():
+            metadata = {k: v for k, v in image_record.items()}
             image_name = image_record["file_name"]
             test_sample = TestSample(
                 locator=locator_prefix + image_name,
-                metadata={
-                    "image_width": image_record["width"],
-                    "image_height": image_record["height"],
-                },
+                metadata=metadata,
             )
 
             ground_truth = GroundTruth(
