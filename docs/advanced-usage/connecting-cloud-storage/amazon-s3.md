@@ -37,7 +37,10 @@ Paste the following JSON policy (please replace the bucket name `share-with-kole
     {
       "Sid": "S3ListBucket",
       "Effect": "Allow",
-      "Action": ["s3:GetObject", "s3:ListBucket"],
+      "Action": [
+        "s3:GetObject",
+        "s3:ListBucket"
+      ],
       "Resource": [
         "arn:aws:s3:::share-with-kolena",
         "arn:aws:s3:::share-with-kolena/*"
@@ -51,14 +54,14 @@ Click through the "Next" buttons, adding the desired name, description, and tags
 
 ### 3. Create a Role For Kolena to Assume
 
-Return to the Kolena platform [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations).
+Return to the Kolena platform [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations).
 
 On the "Create Amazon S3 Integration" page, click "Generate a Principal ARN".
 This will create a Principal which will be referenced in a trust policy.
 Setting an External Id to include within the trust policy is recommended.
 
 Once these steps are complete, copy the JSON which appears on the page.
-This will be of the form
+This will be of the form:
 
 ```json
 {
@@ -85,13 +88,13 @@ Navigate to the IAM roles page in your AWS console.
 Click the "Create role" button and select 'Custom trust policy".
 Paste the JSON you copied above and click "Next".
 Search for and select the access policy created in [step 2](#2-create-an-access-policy-in-aws).
-Provide a role name and review the permissions, then click `Create role`.
+Provide a role name and review the permissions, then click "Create role".
 
 Copy the role's ARN for use in the final step.
 
 ### 4. Save Integration
 
-Return to the Kolena platform [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations)
+Return to the Kolena platform [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations).
 
 By default, any locators beginning with `s3://` will be loaded using this integration.
 

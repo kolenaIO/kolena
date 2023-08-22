@@ -5,7 +5,7 @@ Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization
 
 ### 1. Save Integration on Kolena
 
-On the [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations), fill in the fields for the integration and then click "Save".
+On the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), fill in the fields for the integration and then click "Save".
 
 | Field | Description |
 |---|---|

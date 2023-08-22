@@ -5,7 +5,7 @@ Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization
 
 ### 1. Save Integration to Create a Service Account
 
-From the [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations), saving the Google Cloud Storage integration will create a service account.
+From the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), saving the Google Cloud Storage integration will create a service account.
 Upon creation, the integration's `client_email` will be used to provide Kolena permission to load data from your Google Cloud Storage buckets.
 
 ### 2. Grant Service Account Read Access
