@@ -32,7 +32,7 @@ from kolena.workflow import TestSuite as BaseTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 
 
-class CocoDataFormat(BaseDataFormat):
+class CocoJsonDataFormat(BaseDataFormat):
     def __init__(self, config: DataIngestionConfig) -> None:
         super().__init__(config)
         self.raw_data = None
