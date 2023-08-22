@@ -12,25 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
-import requests
-from typing import Dict
+from typing import Any
 
-def load_json(path: str) -> Dict:
-    if path.startswith('http://') or path.startswith('https://'):
+import requests
+
+
+def load_json(path: str) -> Any:
+    if path.startswith("http://") or path.startswith("https://"):
         response = requests.get(path)
         response.raise_for_status()
         data = response.json()
-    elif path.startswith('s3://'):
+    elif path.startswith("s3://"):
         import boto3
 
-        s3_bucket, s3_key = path[5:].split('/', 1)
-        s3 = boto3.client('s3')
+        s3_bucket, s3_key = path[5:].split("/", 1)
+        s3 = boto3.client("s3")
         response = s3.get_object(Bucket=s3_bucket, Key=s3_key)
-        data = json.load(response['Body'])
+        data = json.load(response["Body"])
     else:
-        with open(path, 'r') as file:
+        with open(path) as file:
             data = json.load(file)
-    
+
     return data
 
 

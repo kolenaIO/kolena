@@ -11,21 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import defaultdict
 from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
-from collections import defaultdict
-from kolena._experimental.data_ingestion._types import DataIngestionConfig
 
-from kolena.workflow.annotation import LabeledBoundingBox
 from kolena._experimental.data_ingestion._data_format.base import BaseDataFormat
+from kolena._experimental.data_ingestion._types import DataIngestionConfig
 from kolena._experimental.data_ingestion._utils.io import load_json
-
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
+from kolena.workflow.annotation import LabeledBoundingBox
 
 
 class CocoDataFormat(BaseDataFormat):
@@ -47,9 +46,15 @@ class CocoDataFormat(BaseDataFormat):
         test_suite_name = self.config.test_suite_name
         reset = self.config.reset
 
-        complete_test_case = self._create_complete_test_case(self.bbox_map, self.image_map, reset, test_case_name, locator_prefix)
+        complete_test_case = self._create_complete_test_case(
+            self.bbox_map,
+            self.image_map,
+            reset,
+            test_case_name,
+            locator_prefix,
+        )
         # create the test suite with the complete test case
-        test_suite = TestSuite(
+        _ = TestSuite(
             test_suite_name,
             description="data ingestion via Kolena package",
             test_cases=[complete_test_case],
@@ -78,7 +83,14 @@ class CocoDataFormat(BaseDataFormat):
                 image_to_boxes[image_id].append(bounding_box)
         return image_to_boxes
 
-    def _create_complete_test_case(self, bbox_map, image_map, reset: bool, test_case_name: str, locator_prefix:str) -> TestCase:
+    def _create_complete_test_case(
+        self,
+        bbox_map,
+        image_map,
+        reset: bool,
+        test_case_name: str,
+        locator_prefix: str,
+    ) -> TestCase:
         # create a test sample object and a ground truth object per image
         test_samples_and_ground_truths: List[Tuple[TestSample, GroundTruth]] = []
         for image_id, image_record in image_map.items():
