@@ -1,3 +1,9 @@
+---
+icon: simple/amazons3
+---
+
+# :simple-amazons3: Amazon S3
+
 Integrations can be established to Amazon S3.
 
 To get started, ensure you have administrator access within Kolena.
