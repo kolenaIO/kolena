@@ -22,6 +22,7 @@ nav:
           - Advanced Usage: advanced-usage/index.md
           - Connecting Cloud Storage:
               - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
+              - Amazon S3: advanced-usage/connecting-cloud-storage/amazon-s3.md
               - S3-Compatible APIs: advanced-usage/connecting-cloud-storage/s3-compatible.md
               - Google Cloud Storage: advanced-usage/connecting-cloud-storage/google-cloud-storage.md
               - HTTP Basic: advanced-usage/connecting-cloud-storage/http-basic.md

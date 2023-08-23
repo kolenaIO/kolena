@@ -11,8 +11,8 @@ Integrations can be established to S3-compatible systems. Supported systems incl
 - [:simple-oracle: Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
 - [:simple-hitachi: Hitachi Content Platform (HCP) for cloud scale](https://knowledge.hitachivantara.com/Documents/Storage/HCP_for_Cloud_Scale)
 
-To get started, ensure you have admin access within Kolena.
-Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "MinIO".
+To get started, ensure you have administrator access within Kolena.
+Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "MinIO".
 
 Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
 You may need to consult documentation for your provider to perform equivalent steps.
@@ -66,7 +66,7 @@ Next, create the policy and attach the policy to the service user created in [st
 
 ### 3. Save Integration on Kolena
 
-Return to the Kolena platform [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations)
+Return to the Kolena platform [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations).
 
 By default, any locators beginning with `s3://` will be loaded using this integration.
 

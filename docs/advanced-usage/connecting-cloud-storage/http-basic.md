@@ -6,12 +6,12 @@ icon: kolena/globe-network-16
 
 Integrations can be established using HTTP Basic Auth.
 
-To get started, ensure you have admin access within Kolena.
-Navigate to your [Organization Settings's Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations) and click "Add Integration", then "HTTP Basic".
+To get started, ensure you have administrator access within Kolena.
+Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "HTTP Basic".
 
 ### 1. Save Integration on Kolena
 
-On the [Integrations Tab](https://app.kolena.io/redirect/organization?tab=integrations), fill in the fields for the integration and then click "Save".
+On the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), fill in the fields for the integration and then click "Save".
 
 | Field | Description |
 |---|---|
