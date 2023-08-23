@@ -25,6 +25,7 @@ from urllib3.util import Retry
 from kolena import __name__ as client_name
 from kolena import __version__ as client_version
 from kolena._utils.endpoints import get_endpoint
+from kolena._utils.state import DEFAULT_API_VERSION
 from kolena._utils.state import get_client_state
 from kolena._utils.state import kolena_initialized
 from kolena.errors import IncorrectUsageError
@@ -73,32 +74,49 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
 
 
 @kolena_initialized
-def get(endpoint_path: str, params: Any = None, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def get(
+    endpoint_path: str,
+    params: Any = None,
+    api_version: int = DEFAULT_API_VERSION,
+    **kwargs: Any,
+) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.get(url=url, params=params, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
-def post(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def post(
+    endpoint_path: str,
+    data: Any = None,
+    json: Any = None,
+    api_version: int = DEFAULT_API_VERSION,
+    **kwargs: Any,
+) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.post(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
-def put(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def put(
+    endpoint_path: str,
+    data: Any = None,
+    json: Any = None,
+    api_version: int = DEFAULT_API_VERSION,
+    **kwargs: Any,
+) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.put(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
-def delete(endpoint_path: str, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def delete(endpoint_path: str, api_version: int = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return requests.delete(url=url, **_with_default_kwargs(**kwargs))

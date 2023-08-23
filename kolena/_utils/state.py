@@ -33,7 +33,9 @@ from kolena.errors import InvalidTokenError
 from kolena.errors import UnauthenticatedError
 from kolena.errors import UninitializedError
 
-API_VERSION = "v1"
+API_V1 = "v1"
+API_V2 = "v2"
+DEFAULT_API_VERSION = API_V1
 API_URL = "https://api.kolena.io"
 API_URL_ENV_VAR = "KOLENA_API_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
@@ -133,8 +135,8 @@ def kolena_initialized(func: Callable) -> Callable:
     return wrapper
 
 
-def get_endpoint_with_baseurl(base_url: str, endpoint_path: str) -> str:
-    return f"{base_url}/{API_VERSION}/{endpoint_path.lstrip('/')}"
+def get_endpoint_with_baseurl(base_url: str, endpoint_path: str, api_version: int = DEFAULT_API_VERSION) -> str:
+    return f"{base_url}/{api_version}/{endpoint_path.lstrip('/')}"
 
 
 def get_token(

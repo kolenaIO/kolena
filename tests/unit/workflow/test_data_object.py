@@ -13,9 +13,12 @@
 # limitations under the License.
 import dataclasses
 import sys
+from io import StringIO
 
+import pandas as pd
 import pydantic
 import pytest
+from pandas._testing import assert_frame_equal
 from pydantic import Extra
 from pydantic.dataclasses import dataclass
 
@@ -26,6 +29,10 @@ from kolena.workflow import Document
 from kolena.workflow import Image
 from kolena.workflow import PointCloud
 from kolena.workflow import Text
+from kolena.workflow._datatypes import dataframe_from_csv
+from kolena.workflow._datatypes import dataframe_from_json
+from kolena.workflow._datatypes import dataframe_to_csv
+from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import BoundingBox3D
@@ -234,3 +241,52 @@ def test__data_object__extras_deserialize_builtins(data_object) -> None:
     assert deserialized.a.extra == "foo"
     assert deserialized.b == [data_object, data_object]
     assert deserialized.b[1].extra == "foo"
+
+
+def test__dataframe_json() -> None:
+    df = pd.DataFrame.from_dict(
+        {
+            "id": list(range(10)),
+            "z": [dict(value=i + 0.3) for i in range(10)],
+            "data": [
+                LabeledBoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)
+            ],
+        },
+    )
+    df_expected = pd.DataFrame.from_dict(
+        {
+            "id": list(range(10)),
+            "z": [dict(value=i + 0.3) for i in range(10)],
+            "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
+        },
+    )
+    json_str = df.to_json()
+    df_deserialized = dataframe_from_json(json_str)
+    assert_frame_equal(df_deserialized, df_expected)
+    assert df_deserialized.iloc[0]["data"].label == "foo-0"
+
+
+def test__dataframe_export() -> None:
+    df = pd.DataFrame.from_dict(
+        {
+            "id": list(range(10)),
+            "z": [dict(value=i + 0.3) for i in range(10)],
+            "data": [
+                LabeledBoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)
+            ],
+        },
+    )
+
+    csv_str = dataframe_to_csv(df, index=False)
+    df_deserialized = dataframe_from_csv(StringIO(csv_str))
+
+    df_expected = pd.DataFrame.from_dict(
+        {
+            "id": list(range(10)),
+            "z": [dict(value=i + 0.3) for i in range(10)],
+            "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
+        },
+    )
+    assert_frame_equal(df_deserialized, df_expected)
+    assert df_deserialized.iloc[0]["id"] == 0
+    assert df_deserialized.iloc[0]["data"].label == "foo-0"
