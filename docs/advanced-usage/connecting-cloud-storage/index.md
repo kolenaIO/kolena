@@ -1,44 +1,40 @@
 ---
 icon: kolena/cloud-16
+hide:
+  - toc
 ---
 
 # :octicons-cloud-16: Connecting Cloud Storage
 
-Data from cloud storage providers can be loaded to the Kolena platform by creating integrations.
-Integrations can be managed by organization administrators by navigating to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page.
+Data such as images, videos, and documents hosted internally or with cloud storage providers can be loaded on Kolena by
+creating an integration.
+
+Integrations can be managed by organization administrators by navigating to the "Integrations" tab on the
+[:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page.
 
 <div class="grid cards" markdown>
-- [Amazon S3](./amazon-s3.md)
+- [:simple-amazons3: Amazon S3](./amazon-s3.md)
 
     ---
 
-    Establish integrations to Amazon S3.
+    Integrate with Amazon S3.
 
-</div>
-
-<div class="grid cards" markdown>
-- [S3-Compatible APIs](./s3-compatible.md)
+- [:simple-minio: S3-Compatible APIs](./s3-compatible.md)
 
     ---
 
-    Establish an integration with a third-party system implementing an S3-Compatible API (MinIO, Oracle, Hitachi, etc.).
+    Integrate with a third-party system implementing an S3-Compatible API (MinIO, Oracle, Hitachi, etc.).
 
-</div>
-
-<div class="grid cards" markdown>
-- [Google Cloud Storage](./google-cloud-storage.md)
+- [:simple-googlecloud: Google Cloud Storage](./google-cloud-storage.md)
 
     ---
 
-    Establish an integration with Google Cloud Storage.
+    Integrate with Google Cloud Storage.
 
-</div>
-
-<div class="grid cards" markdown>
-- [HTTP Basic](./http-basic.md)
+- [:kolena-globe-network-16: HTTP Basic](./http-basic.md)
 
     ---
 
-    Establish an integration with an internal system using HTTP basic authentication.
+    Integrate with an internal system using HTTP basic authentication.
 
 </div>
