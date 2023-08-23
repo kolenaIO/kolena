@@ -38,7 +38,7 @@ class CocoJsonDataFormat(BaseDataFormat):
         self.raw_data = None
 
     def load_data(self) -> None:
-        self.raw_data = load_json(self.config.data_path)
+        self.raw_data = load_json(self.config.data_paths[0])
 
     def process_data(self) -> None:
         self.image_map: Dict[int, Any] = self._get_image_map(self.raw_data)

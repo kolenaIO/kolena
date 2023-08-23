@@ -11,18 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from dataclasses import dataclass
 from uuid import uuid4
+
+from pydantic import conlist
+from pydantic import constr
+from pydantic.dataclasses import dataclass
 
 
 def _random_name(prefix: str) -> str:
-    return f'{prefix}-{uuid4()}'
+    return f"{prefix}-{uuid4()}"
 
 
 @dataclass
 class DataIngestionConfig:
-    data_path: str
+    data_paths: conlist(str, min_items=1)
     locator_prefix: str = ""
-    test_case_name: str = _random_name('test-case')
-    test_suite_name: str = _random_name('test-suite')
+    test_case_name: str = _random_name("test-case")
+    test_suite_name: str = _random_name("test-suite")
     reset: bool = False
