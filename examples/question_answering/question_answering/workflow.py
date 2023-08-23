@@ -94,7 +94,7 @@ class Inference(BaseInference):
     """Number of tokens used in total."""
 
     source: str
-    """The location of the stored ground truth data."""
+    """The location of the stored inference data."""
 
 
 workflow, TestCase, TestSuite, Model = define_workflow(

@@ -52,9 +52,7 @@ def create_test_suite_by_question(dataset: TestCase, data: List[Tuple[TestSample
 
     # Create test cases using the organized dictionary
     test_cases = TestCase.init_many(
-        data=[
-            (f"question type :: {name} :: {DATASET}", samples_by_question_type.get(name, [])) for name in question_types
-        ],
+        data=[(f"question type :: {name} :: {DATASET}", samples_by_question_type[name]) for name in question_types],
         reset=True,
     )
 
@@ -79,7 +77,7 @@ def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple
         data=[
             (f"conversation depth :: {number:02d} :: {DATASET}", samples_by_turn[number])
             for number in depths
-            if len(samples_by_turn[number]) > 10
+            if len(samples_by_turn[number]) >= 10  # ignoring test cases with fewer than 10 test samples
         ],
         reset=True,
     )
@@ -98,6 +96,7 @@ def main(args: Namespace) -> int:
     df_metadata = pd.read_csv(args.dataset_csv)
     context_dict = defaultdict(list)
 
+    # Store the conversation context for each story (data_id)
     for index, row in df_metadata.iterrows():
         data_id = row["data_id"]
         question = row["question"]
@@ -116,6 +115,8 @@ def main(args: Namespace) -> int:
         "other_answer_2",
         "other_answer_3",
     }
+
+    # Create a list of every test sample with its ground truth
     test_samples_and_ground_truths = [
         (
             TestSample(
