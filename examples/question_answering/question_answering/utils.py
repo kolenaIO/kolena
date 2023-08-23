@@ -116,7 +116,6 @@ def compute_metric_vs_metric_plot(
 
 
 def compute_metric_bar_plot(
-    test_case_name: str,
     labels: List[str],
     values: List[float],
 ) -> BarPlot:
