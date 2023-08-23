@@ -55,11 +55,9 @@ class GroundTruth(BaseGroundTruth):
     associated with an image.
     """
 
-    labels: List[str] = dataclasses.field(default_factory=list)
     n_bboxes: int = dataclasses.field(default_factory=lambda: 0)
 
     def __post_init__(self):
-        object.__setattr__(self, "labels", sorted({box.label for box in self.bboxes}))
         object.__setattr__(self, "n_bboxes", len(self.bboxes))
 
 
@@ -122,13 +120,9 @@ class TestCaseMetricsSingleClass(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    TP_labels: List[str]
     TP: List[ScoredLabeledBoundingBox]
-    FP_labels: List[str]
     FP: List[ScoredLabeledBoundingBox]
-    FN_labels: List[str]
     FN: List[LabeledBoundingBox]
-    Confused_labels: List[str]
     Confused: List[ScoredLabeledBoundingBox]
 
     count_TP: int
@@ -145,7 +139,6 @@ class TestSampleMetrics(MetricsTestSample):
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
     thresholds: List[ScoredClassificationLabel]
-    inference_labels: List[str]
 
 
 @dataclass(frozen=True)

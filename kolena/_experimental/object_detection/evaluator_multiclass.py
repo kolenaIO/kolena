@@ -83,13 +83,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         self,
     ) -> TestSampleMetrics:
         return TestSampleMetrics(
-            TP_labels=[],
             TP=[],
-            FP_labels=[],
             FP=[],
-            FN_labels=[],
             FN=[],
-            Confused_labels=[],
             Confused=[],
             count_TP=0,
             count_FP=0,
@@ -103,7 +99,6 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             max_confidence_above_t=None,
             min_confidence_above_t=None,
             thresholds=[],
-            inference_labels=[],
         )
 
     def test_sample_metrics(
@@ -130,13 +125,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             if label in inference_labels
         ]
         return TestSampleMetrics(
-            TP_labels=sorted({inf.label for inf in tp}),
             TP=tp,
-            FP_labels=sorted({inf.label for inf in fp}),
             FP=fp,
-            FN_labels=sorted({inf.label for inf in fn}),
             FN=fn,
-            Confused_labels=sorted({inf.label for inf in confused}),
             Confused=confused,
             count_TP=len(tp),
             count_FP=len(fp),
@@ -150,7 +141,6 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
             thresholds=fields,
-            inference_labels=sorted(inference_labels),
         )
 
     def compute_image_metrics(
