@@ -27,7 +27,6 @@ from semantic_textual_similarity.workflow import TestSampleMetric
 
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
-from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
@@ -56,24 +55,6 @@ def compute_aggregate_metrics(
         SpearmanCorr=gts.corr(infs, method="spearman"),
         MAE=abs_errors.mean(),
         RMSE=np.sqrt(abs_errors_squared.mean()),
-    )
-
-
-def compute_score_distribution_plot(
-    score: str,
-    metrics: List[Union[SentencePair, TestSampleMetric]],
-    binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
-) -> Histogram:
-    scores = [getattr(m, score) for m in metrics]
-    bins = np.linspace(*binning_info)
-
-    hist, _ = np.histogram(scores, bins=bins)
-    return Histogram(
-        title=f"Distribution of {score}",
-        x_label=f"{score}",
-        y_label="Count",
-        buckets=list(bins),
-        frequency=list(hist),
     )
 
 
@@ -108,21 +89,6 @@ def compute_plots(
     test_samples: List[SentencePair],
 ) -> List[Plot]:
     return [
-        compute_score_distribution_plot(
-            "error",
-            metrics,
-            (-1.0, 1.0, 21),
-        ),
-        compute_score_distribution_plot(
-            "word_count_diff",
-            test_samples,
-            (0, 20, 21),
-        ),
-        compute_score_distribution_plot(
-            "char_length_diff",
-            test_samples,
-            (0, 140, 71),
-        ),
         compute_metric_vs_metric_plot(
             "Difference in Word Counts",
             "Similarity Absolute Error",
