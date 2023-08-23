@@ -6,8 +6,8 @@ hide:
 
 # :octicons-cloud-16: Connecting Cloud Storage
 
-Data such as images, videos, and documents hosted with cloud service providers can be loaded on Kolena by creating an
-integration.
+Data such as images, videos, and documents hosted internally or with cloud storage providers can be loaded on Kolena by
+creating an integration.
 
 Integrations can be managed by organization administrators by navigating to the "Integrations" tab on the
 [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page.
