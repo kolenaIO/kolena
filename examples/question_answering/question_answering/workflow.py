@@ -75,7 +75,7 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for the Question Answering workflow."""
 
-    answer: str
+    answer: ClassificationLabel
     """The model's generated answer."""
 
     clean_answer: str
@@ -110,7 +110,7 @@ class TestSampleMetrics(MetricsTestSample):
     """Sample-level metrics for the Question Answering workflow."""
 
     is_correct: bool
-    """An indication of the answer being correct or wrong."""
+    """An indication of the answer being correct or wrong based on the score of MEAN_METRIC."""
 
     BERT_prec: float
     """The BERT precision score for this test sample."""
