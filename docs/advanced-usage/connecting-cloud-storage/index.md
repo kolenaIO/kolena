@@ -1,5 +1,7 @@
 ---
 icon: kolena/cloud-16
+hide:
+  - toc
 ---
 
 # :octicons-cloud-16: Connecting Cloud Storage
