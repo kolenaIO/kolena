@@ -11,7 +11,8 @@ Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization
 
 ### 1. Save Integration to Create a Service Account
 
-From the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), saving the Google Cloud Storage integration will create a service account.
+From the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), saving a Google Cloud Storage
+integration will create a service account.
 Upon creation, the integration's `client_email` will be used to provide Kolena permission to load data from your Google Cloud Storage buckets.
 
 ### 2. Grant Service Account Read Access
@@ -23,8 +24,6 @@ The `Storage Object Viewer` role offers the following permissions:
 
 - Grants access to view objects and their metadata, excluding ACLs.
 - Grants access to list the objects in a bucket.
-
-​ ​
 
 ### 3. Provide CORS Access
 
@@ -44,4 +43,6 @@ Create a json file `cors.json` with the following content:
 Ensure you have `gsutil` installed.
 Then provide CORS access to Kolena for your bucket by running the following command:
 
-`gsutil cors set example_cors_file.json gs://<my-bucket>`
+```
+gsutil cors set example_cors_file.json gs://<my-bucket>
+```
