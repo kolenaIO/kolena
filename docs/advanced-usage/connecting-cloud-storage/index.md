@@ -21,7 +21,7 @@ Integrations can be managed by organization administrators by navigating to the 
 
     ---
 
-    Establish integrations to providers with a S3-Compatible API (MinIO, Oracle, Hitachi, etc).
+    Establish an integration with a third-party system implementing an S3-Compatible API (MinIO, Oracle, Hitachi, etc.).
 
 </div>
 
@@ -30,7 +30,7 @@ Integrations can be managed by organization administrators by navigating to the 
 
     ---
 
-    Establish an integration to storage on the Google Cloud Storage.
+    Establish an integration with Google Cloud Storage.
 
 </div>
 
@@ -39,6 +39,6 @@ Integrations can be managed by organization administrators by navigating to the 
 
     ---
 
-    Establish integrations using HTTP Basic Auth.
+    Establish an integration with an internal system using HTTP basic authentication.
 
 </div>
