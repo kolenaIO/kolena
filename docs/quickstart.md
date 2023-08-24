@@ -93,7 +93,7 @@ and run directly:
 
 - [:kolena-comparison-20: Example: Semantic Textual Similarity ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/semantic_textual_similarity)
 
-    ![Example images from STS benchmark dataset.](assets/images/STS-benchmark.jpg)
+    ![Example sentence pairs from STS benchmark dataset.](assets/images/STS-benchmark.jpg)
 
     ---
 
