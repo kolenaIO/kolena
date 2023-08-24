@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Any
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -30,6 +31,25 @@ from kolena.workflow.plot import NullableNumberSeries
 from kolena.workflow.plot import NumberSeries
 
 
+@pytest.mark.parametrize(
+    "params",
+    [
+        dict(x=[1, 2], y=[]),
+        dict(x=[1, 2], y=[1]),
+        dict(x=[1, 2], y=[1, 2], extra="test"),
+        dict(x=[1, 2], y=[1, 2], extra=[1, 2, 3]),
+        dict(x=[1, 2], y=[1, 2], extra=dict(a=[])),
+        dict(x=[1, 2], y=[1, 2], extra=dict(a=[1])),
+        dict(x=[1, 2], y=[1, 2], extra=dict(a=[1, 2, 3])),
+        dict(x=[1, 2], y=[1, 2], label="test", extra=dict(a=[1])),
+        dict(x=[1, 2], y=[1, 2], label="test", extra=dict(a=None)),
+    ],
+)
+def test__curve__validate__invalid(params: Dict[str, Any]) -> None:
+    with pytest.raises(ValueError):
+        Curve(**params)
+
+
 def test__curve_plot__validate() -> None:
     # empty curves is valid configuration
     CurvePlot(title="test", x_label="x", y_label="y", curves=[])
@@ -39,8 +59,8 @@ def test__curve_plot__validate() -> None:
         x_label="x",
         y_label="y",
         curves=[
-            Curve(label="a", x=[1, 2, 3], y=[2, 3, 4]),
-            Curve(label="b", x=[1.0, 2.5, 3], y=[-2, -3.0, -4.5]),
+            Curve(label="a", x=[1, 2, 3], y=[2, 3, 4], extra=dict(a=[1, 2, 3], b=[1, 2, 3])),
+            Curve(label="b", x=[1.0, 2.5, 3], y=[-2, -3.0, -4.5], extra=None),
         ],
     )
 
@@ -76,7 +96,7 @@ def test__curve_plot__serialize() -> None:
         "title": "test",
         "x_label": "x",
         "y_label": "y",
-        "curves": [{"label": "a", "x": [1, 2, 3], "y": [2, 3, 4]}],
+        "curves": [{"label": "a", "x": [1, 2, 3], "y": [2, 3, 4], "extra": None}],
         "data_type": f"{_PlotType._data_category()}/{_PlotType.CURVE.value}",
         "x_config": None,
         "y_config": {"type": "log"},
