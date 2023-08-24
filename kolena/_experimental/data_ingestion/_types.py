@@ -14,7 +14,6 @@
 from uuid import uuid4
 
 from pydantic import conlist
-from pydantic import constr
 from pydantic.dataclasses import dataclass
 
 

@@ -66,7 +66,7 @@ class CocoJsonDataFormat(BaseDataFormat):
             reset=reset,
         )
 
-    def list_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
+    def get_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
         return TestCase, TestSuite, Model
 
     def _get_image_map(self, raw_data):

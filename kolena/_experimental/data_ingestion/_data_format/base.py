@@ -37,6 +37,12 @@ class BaseDataFormat(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def list_workflow(self) -> None:
-        """List workflow related classes"""
+    def get_workflow(self) -> None:
+        """Get workflow related classes"""
         raise NotImplementedError
+
+    def ingest_data(self) -> None:
+        """Entry point to ingest data"""
+        self.load_data()
+        self.process_data()
+        self.save_data()
