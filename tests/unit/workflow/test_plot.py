@@ -36,6 +36,8 @@ from kolena.workflow.plot import NumberSeries
     [
         dict(x=[1, 2], y=[]),
         dict(x=[1, 2], y=[1]),
+        dict(x=[1, 2], y=[1, 2], extra="test"),
+        dict(x=[1, 2], y=[1, 2], extra=[1, 2, 3]),
         dict(x=[1, 2], y=[1, 2], extra=dict(a=[])),
         dict(x=[1, 2], y=[1, 2], extra=dict(a=[1])),
         dict(x=[1, 2], y=[1, 2], extra=dict(a=[1, 2, 3])),
