@@ -407,4 +407,4 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         if configuration.threshold_strategy == "F1-Optimal":
             return self.threshold_cache[configuration.display_name()]
         else:
-            return configuration.threshold_strategy
+            return defaultdict(lambda: configuration.threshold_strategy)
