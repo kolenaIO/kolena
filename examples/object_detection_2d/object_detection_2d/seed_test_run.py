@@ -31,7 +31,6 @@ from kolena._experimental.object_detection import ObjectDetectionEvaluator
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import ThresholdConfiguration
-from kolena._experimental.object_detection import ThresholdStrategy
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.test_run import test
 
@@ -116,15 +115,13 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
     return ObjectDetectionEvaluator(
         configurations=[
             ThresholdConfiguration(
-                threshold_strategy=ThresholdStrategy.FIXED_03,
+                threshold_strategy=0.3,
                 iou_threshold=0.3,
-                with_class_level_metrics=True,
                 min_confidence_score=0.2,
             ),
             ThresholdConfiguration(
-                threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
+                threshold_strategy="F1-Optimal",
                 iou_threshold=0.5,
-                with_class_level_metrics=True,
                 min_confidence_score=0.0,
             ),
         ],
