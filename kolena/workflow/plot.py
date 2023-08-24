@@ -87,6 +87,11 @@ class Curve(DataObject):
     """
 
     extra: Optional[Dict[str, NumberSeries]] = None
+    """
+    Optionally specify additional series shown when hovering over the plot. For example, when plotting a
+    precision-recall curve, it is desirable to include an extra series `threshold` to specify the confidence threshold
+    value at which a given precision-recall point occurs.
+    """
 
     def __post_init_post_parse__(self) -> None:
         if len(self.x) != len(self.y):
