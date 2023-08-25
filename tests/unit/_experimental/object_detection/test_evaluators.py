@@ -75,7 +75,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             ),
             {"a": 0.5},
             TestSampleMetrics(
-                TP_labels=["a"],
                 TP=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)],
                 FP=[],
                 FN=[],
@@ -92,7 +91,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
                 thresholds=[ScoredClassificationLabel("a", 0.5)],
-                inference_labels=["a"],
             ),
         ),
         (
@@ -107,10 +105,8 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             ),
             {"a": 0.5},
             TestSampleMetrics(
-                TP_labels=["a"],
                 TP=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)],
                 FP=[],
-                FN_labels=["a"],
                 FN=[LabeledBoundingBox((2, 2), (3, 3), "a")],
                 Confused=[],
                 count_TP=1,
@@ -125,7 +121,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
                 thresholds=[ScoredClassificationLabel("a", 0.5)],
-                inference_labels=["a"],
             ),
         ),
         (
@@ -139,7 +134,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             TestSampleMetrics(
                 TP=[],
                 FP=[],
-                FN_labels=["a"],
                 FN=[LabeledBoundingBox((1, 1), (2, 2), "a")],
                 Confused=[],
                 count_TP=0,
@@ -172,11 +166,8 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             {"a": 0.5, "b": 0.3},
             TestSampleMetrics(
                 TP=[],
-                FP_labels=["b"],
                 FP=[ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)],
-                FN_labels=["a"],
                 FN=[LabeledBoundingBox((1, 1), (2, 2), "a"), LabeledBoundingBox((2, 2), (3, 3), "a")],
-                Confused_labels=["b"],
                 Confused=[ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8)],
                 count_TP=0,
                 count_FP=1,
@@ -190,7 +181,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
                 thresholds=[ScoredClassificationLabel(label="b", score=0.3)],
-                inference_labels=["b"],
             ),
         ),
         (
@@ -206,7 +196,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             {"a": 0.5},
             TestSampleMetrics(
                 TP=[],
-                FP_labels=["a"],
                 FP=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.8)],
                 FN=[],
                 Confused=[],
@@ -222,7 +211,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
                 thresholds=[ScoredClassificationLabel(label="a", score=0.5)],
-                inference_labels=["a"],
             ),
         ),
         (
@@ -240,11 +228,8 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             ),
             {"a": 0.5},
             TestSampleMetrics(
-                TP_labels=["a"],
                 TP=[ScoredLabeledBoundingBox((1, 2), (3, 3), "a", 0.7)],
-                FP_labels=["a"],
                 FP=[ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.6)],
-                FN_labels=["a"],
                 FN=[LabeledBoundingBox((12, 2), (13, 3), "a"), LabeledBoundingBox((2, 2), (3, 3), "a")],
                 Confused=[],
                 count_TP=1,
@@ -259,7 +244,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 max_confidence_above_t=0.7,
                 min_confidence_above_t=0.6,
                 thresholds=[ScoredClassificationLabel("a", 0.5)],
-                inference_labels=["a"],
             ),
         ),
         (
@@ -299,7 +283,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
             ),
             {"a": 0.5, "b": 0.2, "c": 0.99, "d": 0.0},
             TestSampleMetrics(
-                TP_labels=["a", "b"],
                 TP=[
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.99),
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9),
@@ -307,13 +290,11 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.5),
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.4),
                 ],
-                FP_labels=["b", "d"],
                 FP=[
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.9),
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
                 ],
-                FN_labels=["a", "b", "c", "e"],
                 FN=[
                     LabeledBoundingBox((1, 1), (2, 2), "a"),
                     LabeledBoundingBox((1, 1), (2, 2), "a"),
@@ -330,7 +311,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                     LabeledBoundingBox((1, 1), (2, 2), "c"),
                     LabeledBoundingBox((1, 1), (2, 2), "c"),
                 ],
-                Confused_labels=["b", "d"],
                 Confused=[
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "b", 0.8),
                     ScoredLabeledBoundingBox((1, 1), (2, 2), "d", 0.1),
@@ -353,7 +333,6 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                     ScoredClassificationLabel(label="c", score=0.99),
                     ScoredClassificationLabel(label="d", score=0.0),
                 ],
-                inference_labels=["a", "b", "c", "d"],
             ),
         ),
     ],

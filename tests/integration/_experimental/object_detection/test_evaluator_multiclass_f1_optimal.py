@@ -34,11 +34,12 @@ from tests.integration._experimental.object_detection.test_evaluator_multiclass_
 from tests.integration.helper import fake_locator
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
-TestSample = object_detection.TestSample
-ThresholdConfiguration = object_detection.ThresholdConfiguration
+ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
 TestCaseMetrics = object_detection.TestCaseMetrics
+TestSample = object_detection.TestSample
 TestSampleMetrics = object_detection.TestSampleMetrics
+ThresholdConfiguration = object_detection.ThresholdConfiguration
 
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]] = [
@@ -53,7 +54,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             ],
             FP=[],
             FN=[],
-            Confused_labels=[],
             Confused=[],
             count_TP=4,
             count_FP=0,
@@ -63,6 +63,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             has_FP=False,
             has_FN=False,
             has_Confused=False,
+            ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.7,
             thresholds=[
@@ -88,7 +89,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
                 LabeledBoundingBox((7, 7), (8, 8), "b"),
             ],
-            Confused_labels=[],
             Confused=[],
             count_TP=2,
             count_FP=2,
@@ -118,7 +118,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             ],
             FP=[],
             FN=[],
-            Confused_labels=[],
             Confused=[],
             count_TP=4,
             count_FP=0,
@@ -153,7 +152,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.8),
             ],
             FN=[],
-            Confused_labels=[],
             Confused=[],
             count_TP=4,
             count_FP=4,
@@ -184,7 +182,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 LabeledBoundingBox((3, 3), (4, 4), "b"),
                 LabeledBoundingBox((5, 5), (6, 6), "b"),
             ],
-            Confused_labels=[],
             Confused=[],
             count_TP=2,
             count_FP=0,
@@ -199,7 +196,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             min_confidence_above_t=0.4,
             thresholds=[
                 ScoredClassificationLabel("a", 0.1),
-                ScoredClassificationLabel("b", 0.4),
             ],
         ),
     ),
@@ -213,7 +209,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 LabeledBoundingBox((7, 7), (8, 8), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "c"),
             ],
-            Confused_labels=[],
             Confused=[],
             count_TP=1,
             count_FP=1,
@@ -229,7 +224,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             thresholds=[
                 ScoredClassificationLabel("a", 0.1),
                 ScoredClassificationLabel("b", 0.4),
-                ScoredClassificationLabel("c", 0.1),
             ],
         ),
     ),
@@ -242,7 +236,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             ],
             FP=[],
             FN=[],
-            Confused_labels=[],
             Confused=[],
             count_TP=2,
             count_FP=0,
@@ -290,7 +283,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 LabeledBoundingBox((23, 23), (24, 24), "c"),
                 LabeledBoundingBox((25, 25), (26, 26), "c"),
             ],
-            Confused_labels=[],
             Confused=[],
             count_TP=12,
             count_FP=2,
@@ -333,7 +325,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 LabeledBoundingBox((41, 41), (42, 42), "e"),
                 LabeledBoundingBox((43, 43), (44, 44), "e"),
             ],
-            Confused_labels=["b"],
             Confused=[
                 ScoredLabeledBoundingBox((21, 21), (22, 22), "b", 0.9),
             ],
@@ -352,6 +343,27 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 ScoredClassificationLabel("b", 0.4),
                 ScoredClassificationLabel("e", 0.1),
             ],
+        ),
+    ),
+    (
+        TestSample(locator=fake_locator(22, "OD"), metadata={}),
+        TestSampleMetrics(
+            TP=[],
+            FP=[],
+            FN=[],
+            Confused=[],
+            count_TP=0,
+            count_FP=0,
+            count_FN=0,
+            count_Confused=0,
+            has_TP=False,
+            has_FP=False,
+            has_FN=False,
+            has_Confused=False,
+            ignored=True,
+            max_confidence_above_t=None,
+            min_confidence_above_t=None,
+            thresholds=[],
         ),
     ),
 ]
@@ -375,7 +387,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
         ),
         ClassMetricsPerTestCase(
             Class="b",
-            nImages=8,
+            nImages=6,
             Threshold=0.4,
             Objects=12,
             Inferences=11,
@@ -417,7 +429,7 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
         ),
         ClassMetricsPerTestCase(
             Class="e",
-            nImages=2,
+            nImages=1,
             Threshold=0.1,
             Objects=10,
             Inferences=5,
@@ -440,6 +452,9 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
     macro_Recall=889 / 1300,
     macro_F1=23776 / 32775,
     mean_AP=125053 / 214500,
+    micro_Precision=35 / 47,
+    micro_Recall=35 / 54,
+    micro_F1=70 / 101,
 )
 
 
@@ -503,8 +518,6 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
-    from kolena._experimental.object_detection import ObjectDetectionEvaluator
-
     config = ThresholdConfiguration(
         threshold_strategy="F1-Optimal",
         iou_threshold=0.5,
@@ -522,7 +535,11 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
     assert eval.evaluator.threshold_cache[config.display_name()]["b"] == 0.4
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
-    assert len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name]) == len(TEST_DATA)
+    num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
+    assert (
+        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
+        == len(TEST_DATA) - num_of_ignored
+    )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
     # test case metrics, which will populate the locators cache

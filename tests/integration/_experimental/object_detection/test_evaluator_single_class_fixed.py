@@ -49,7 +49,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
-                LabeledBoundingBox((7, 7), (8, 8), "d"),  # single class OD can have 1+ classes (not distinguished)
+                LabeledBoundingBox((7, 7), (8, 8), "a"),
             ],
         ),
         Inference(
@@ -57,7 +57,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
-                ScoredLabeledBoundingBox((7, 7), (8, 8), "d", 0.7),
+                ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.7),
             ],
         ),
     ),
@@ -216,14 +216,13 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSingleClass]] = [
     (
-        # single class OD can have 1+ classes (not distinguished)
         TestSample(locator=fake_locator(112, "OD"), metadata={}),
         TestSampleMetricsSingleClass(
             TP=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
-                ScoredLabeledBoundingBox((7, 7), (8, 8), "d", 0.7),
+                ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.7),
             ],
             FP=[],
             FN=[],
@@ -536,7 +535,11 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     assert len(eval.evaluator.threshold_cache) == 0  # empty because not f1 optimal config
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
-    assert len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name]) == len(TEST_DATA)
+    num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
+    assert (
+        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
+        == len(TEST_DATA) - num_of_ignored
+    )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
     # test case metrics, which will populate the locators cache
