@@ -77,15 +77,16 @@ def _compute_threshold_curve(
     if len(y_score) < 1:
         return None
 
-    thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
+    potential_thresholds = np.unique(y_score[y_score >= 0.0]).tolist()  # sorts
 
-    if len(thresholds) >= 501:
-        thresholds = list(np.linspace(min(thresholds), max(thresholds), 501))
+    if len(potential_thresholds) >= 501:
+        potential_thresholds = list(np.linspace(min(potential_thresholds), max(potential_thresholds), 501))
 
     precisions: List[float] = []
     recalls: List[float] = []
+    thresholds: List[float] = []
     f1s: List[float] = []
-    for threshold in thresholds:
+    for threshold in potential_thresholds:
         y_pred = [1 if score >= threshold else 0 for score in y_score]
         precision, recall, f1, _ = sklearn_metrics.precision_recall_fscore_support(
             y_true,
@@ -98,24 +99,40 @@ def _compute_threshold_curve(
         if recall in recalls:
             idx = recalls.index(recall)
             precisions[idx] = max(precisions[idx], precision)
+            # if an old point is replaced, replace the f1s and thresholds
+            if precisions[idx] == precision:
+                thresholds[idx] = threshold
+                f1s[idx] = f1
         else:
             precisions.append(precision)
             recalls.append(recall)
-        f1s.append(f1)
+            thresholds.append(threshold)
+            f1s.append(f1)
 
     # omit curves with no points
     if len(f1s) == 0 or len(precisions) == 0 or len(recalls) == 0:
         return None
 
     if curve_type == "f1":
-        return Curve(x=thresholds, y=f1s, label=curve_label) if len(f1s) >= 2 else None
-    else:
-        # add a point to start the PR curve on the vertical axis if needed
-        if 0.0 not in recalls:
-            minpos = recalls.index(min(recalls))
-            precisions.append(precisions[minpos])
-            recalls.append(0.0)
-        return Curve(x=recalls, y=precisions, label=curve_label) if len(recalls) >= 2 else None
+        return (
+            Curve(x=thresholds, y=f1s, label=curve_label, extra=dict(Precision=precisions, Recall=recalls))
+            if len(f1s) >= 2
+            else None
+        )
+
+    # add a point to start the PR curve on the vertical axis if needed
+    if 0.0 not in recalls:
+        minpos = recalls.index(min(recalls))
+        precisions.append(precisions[minpos])
+        recalls.append(0.0)
+        # maintain the same lengths for f1s and thresholds
+        f1s.append(f1s[minpos])
+        thresholds.append(thresholds[minpos])
+    return (
+        Curve(x=recalls, y=precisions, label=curve_label, extra=dict(F1=f1s, Threshold=thresholds))
+        if len(recalls) >= 2
+        else None
+    )
 
 
 def _compute_multiclass_curves(

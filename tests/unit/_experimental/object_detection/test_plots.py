@@ -41,6 +41,8 @@ def assert_curves(
         assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < TOLERANCE
         assert len(curve.y) == len(expectation.y)
         assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < TOLERANCE
+        for extra_key in curve.extra.keys():
+            assert sum(abs(a - b) for a, b in zip(curve.extra[extra_key], expectation.extra[extra_key])) < TOLERANCE
 
 
 def assert_curve_plot_equals_expected(
@@ -527,6 +529,7 @@ TEST_MATCHING: Dict[str, List[Union[MulticlassInferenceMatches, InferenceMatches
         "zeros with two matchings",
         "zeros, but b is confused with a",
         "zeros, but a is confused with b",
+        "only confusion",
     ],
 )
 def test__no_curve_plot(
@@ -555,7 +558,14 @@ def test__no_curve_plot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[1 / 3, 0], y=[1, 1], label="zeros, but one match for label a")],
+                curves=[
+                    Curve(
+                        x=[1 / 3, 0],
+                        y=[1, 1],
+                        label="zeros, but one match for label a",
+                        extra={"F1": [0.5, 0.5], "Threshold": [0.0, 0.0]},
+                    ),
+                ],
                 x_config=None,
                 y_config=None,
             ),
@@ -567,22 +577,55 @@ def test__no_curve_plot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[1 / 3, 0], y=[1, 1], label="zeros, but one match for label b")],
+                curves=[
+                    Curve(
+                        x=[1 / 3, 0],
+                        y=[1, 1],
+                        label="zeros, but one match for label b",
+                        extra={"F1": [0.5, 0.5], "Threshold": [0.0, 0.0]},
+                    ),
+                ],
                 x_config=None,
                 y_config=None,
             ),
         ),
         (
-            "only confusion",
+            "only confusion, one TP for a",
+            None,
             CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[Curve(x=[0.7, 0.8], y=[0, 0], label="only confusion")],
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[1 / 3, 0.0],
+                        y=[1.0, 1.0],
+                        label="only confusion, one TP for a",
+                        extra={"F1": [0.5, 0.5], "Threshold": [0.9, 0.9]},
+                    ),
+                ],
                 x_config=None,
                 y_config=None,
             ),
+        ),
+        (
+            "only confusion, one TP for b",
             None,
+            CurvePlot(
+                title="Precision vs. Recall",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(
+                        x=[1 / 3, 0.0],
+                        y=[1.0, 1.0],
+                        label="only confusion, one TP for b",
+                        extra={"F1": [0.5, 0.5], "Threshold": [0.9, 0.9]},
+                    ),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
         ),
     ],
 )
@@ -598,6 +641,7 @@ def test__no_curve_plot_only_confusion(
     f1: CurvePlot = compute_f1_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     pr: CurvePlot = compute_pr_plot(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
     single_pr_curve: Curve = compute_pr_curve(all_matches=TEST_MATCHING[test_name], curve_label=test_name)
+
     assert f1 == f1_curve
     assert pr == pr_curve
     assert single_pr_curve is None and pr is None or single_pr_curve == pr_curve.curves[0]
@@ -613,67 +657,27 @@ def test__no_curve_plot_only_confusion(
                 title="F1-Score vs. Confidence Threshold",
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
-                curves=[Curve(x=[0.5, 0.6], y=[2 / 3, 0.4], label="no confusion, one TP per label")],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[Curve(x=[0.5, 0.25, 0], y=[1, 1, 1], label="no confusion, one TP per label")],
-                x_config=None,
-                y_config=None,
-            ),
-        ),
-        (
-            "only confusion, one TP for a",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.7, 0.8, 0.9], y=[1 / 3, 0.4, 0.5], label="only confusion, one TP for a"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall",
-                x_label="Recall",
-                y_label="Precision",
                 curves=[
                     Curve(
-                        x=[1 / 3, 0],
-                        y=[1, 1],
-                        label="only confusion, one TP for a",
+                        x=[0.5, 0.6],
+                        y=[2 / 3, 0.4],
+                        label="no confusion, one TP per label",
+                        extra={"Precision": [1.0, 1.0], "Recall": [0.5, 0.25]},
                     ),
                 ],
                 x_config=None,
                 y_config=None,
             ),
-        ),
-        (
-            "only confusion, one TP for b",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.7, 0.8, 0.9], y=[1 / 3, 0.4, 0.5], label="only confusion, one TP for b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
             CurvePlot(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[1 / 3, 0],
-                        y=[1, 1],
-                        label="only confusion, one TP for b",
+                        x=[0.5, 0.25, 0],
+                        y=[1, 1, 1],
+                        label="no confusion, one TP per label",
+                        extra={"F1": [2 / 3, 0.4, 0.4], "Threshold": [0.5, 0.6, 0.6]},
                     ),
                 ],
                 x_config=None,
@@ -687,7 +691,12 @@ def test__no_curve_plot_only_confusion(
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.6, 0.7, 0.8, 0.9], y=[0.5, 4 / 7, 2 / 3, 0.4], label="ones"),
+                    Curve(
+                        x=[0.8, 0.9],
+                        y=[2 / 3, 0.4],
+                        label="ones",
+                        extra={"Precision": [1.0, 1.0], "Recall": [0.5, 0.25]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -696,7 +705,14 @@ def test__no_curve_plot_only_confusion(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0.25, 0], y=[1, 1, 1], label="ones")],
+                curves=[
+                    Curve(
+                        x=[0.5, 0.25, 0.0],
+                        y=[1.0, 1.0, 1.0],
+                        label="ones",
+                        extra={"F1": [2 / 3, 0.4, 0.4], "Threshold": [0.8, 0.9, 0.9]},
+                    ),
+                ],
                 x_config=None,
                 y_config=None,
             ),
@@ -709,9 +725,10 @@ def test__no_curve_plot_only_confusion(
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.6, 0.7, 0.8, 0.9],
-                        y=[0.5, 4 / 7, 2 / 3, 0.4],
+                        x=[0.8, 0.9],
+                        y=[2 / 3, 0.4],
                         label="ones, with two matchings, TPs",
+                        extra={"Precision": [1.0, 1.0], "Recall": [0.5, 0.25]},
                     ),
                 ],
                 x_config=None,
@@ -721,7 +738,14 @@ def test__no_curve_plot_only_confusion(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0.25, 0], y=[1, 1, 1], label="ones, with two matchings, TPs")],
+                curves=[
+                    Curve(
+                        x=[0.5, 0.25, 0.0],
+                        y=[1.0, 1.0, 1.0],
+                        label="ones, with two matchings, TPs",
+                        extra={"F1": [2 / 3, 0.4, 0.4], "Threshold": [0.8, 0.9, 0.9]},
+                    ),
+                ],
                 x_config=None,
                 y_config=None,
             ),
@@ -734,9 +758,10 @@ def test__no_curve_plot_only_confusion(
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.5, 0.6, 0.8, 0.9],
-                        y=[0.5, 4 / 7, 1 / 3, 0.4],
+                        x=[0.6, 0.9],
+                        y=[4 / 7, 0.4],
                         label="ones, with two matchings, mixed",
+                        extra={"Precision": [2 / 3, 1.0], "Recall": [0.5, 0.25]},
                     ),
                 ],
                 x_config=None,
@@ -746,7 +771,14 @@ def test__no_curve_plot_only_confusion(
                 title="Precision vs. Recall",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0.25, 0], y=[2 / 3, 1, 1], label="ones, with two matchings, mixed")],
+                curves=[
+                    Curve(
+                        x=[0.5, 0.25, 0.0],
+                        y=[2 / 3, 1.0, 1.0],
+                        label="ones, with two matchings, mixed",
+                        extra={"F1": [4 / 7, 0.4, 0.4], "Threshold": [0.6, 0.9, 0.9]},
+                    ),
+                ],
                 x_config=None,
                 y_config=None,
             ),
@@ -759,9 +791,10 @@ def test__no_curve_plot_only_confusion(
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.7, 0.8, 0.9],
-                        y=[2 / 3, 8 / 11, 0.5],
+                        x=[0.8, 0.9],
+                        y=[8 / 11, 0.5],
                         label="two single class matchings",
+                        extra={"Precision": [0.8, 1.0], "Recall": [2 / 3, 1 / 3]},
                     ),
                 ],
                 x_config=None,
@@ -773,9 +806,10 @@ def test__no_curve_plot_only_confusion(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[2 / 3, 1 / 3, 0],
-                        y=[0.8, 1, 1],
+                        x=[2 / 3, 1 / 3, 0.0],
+                        y=[0.8, 1.0, 1.0],
                         label="two single class matchings",
+                        extra={"F1": [8 / 11, 0.5, 0.5], "Threshold": [0.8, 0.9, 0.9]},
                     ),
                 ],
                 x_config=None,
@@ -790,9 +824,10 @@ def test__no_curve_plot_only_confusion(
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[0.5, 0.6, 0.7, 0.8, 0.9],
-                        y=[2 / 3, 8 / 11, 0.6, 0.5, 2 / 7],
+                        x=[0.6, 0.7, 0.8, 0.9],
+                        y=[8 / 11, 0.6, 0.5, 2 / 7],
                         label="two single class matchings as IMs",
+                        extra={"Precision": [0.8, 0.75, 1.0, 1.0], "Recall": [2 / 3, 0.5, 1 / 3, 1 / 6]},
                     ),
                 ],
                 x_config=None,
@@ -804,9 +839,10 @@ def test__no_curve_plot_only_confusion(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[2 / 3, 0.5, 1 / 3, 1 / 6, 0],
-                        y=[0.8, 0.75, 1, 1, 1],
+                        x=[2 / 3, 0.5, 1 / 3, 1 / 6, 0.0],
+                        y=[0.8, 0.75, 1.0, 1.0, 1.0],
                         label="two single class matchings as IMs",
+                        extra={"F1": [8 / 11, 0.6, 0.5, 2 / 7, 2 / 7], "Threshold": [0.6, 0.7, 0.8, 0.9, 0.9]},
                     ),
                 ],
                 x_config=None,
@@ -821,31 +857,13 @@ def test__no_curve_plot_only_confusion(
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[
-                            0.1,
-                            0.2,
-                            0.3,
-                            0.4,
-                            0.5,
-                            0.75,
-                            0.77,
-                            0.8,
-                            0.9,
-                            0.99,
-                        ],
-                        y=[
-                            0.5,
-                            10 / 19,
-                            4 / 9,
-                            8 / 17,
-                            3 / 8,
-                            3 / 7,
-                            4 / 13,
-                            1 / 6,
-                            2 / 11,
-                            0,
-                        ],
+                        x=[0.2, 0.4, 0.75, 0.77, 0.9, 0.99],
+                        y=[10 / 19, 8 / 17, 3 / 7, 4 / 13, 2 / 11, 0.0],
                         label="large",
+                        extra={
+                            "Precision": [0.5, 0.5, 0.6, 0.5, 0.5, 0.0],
+                            "Recall": [5 / 9, 4 / 9, 1 / 3, 2 / 9, 1 / 9, 0.0],
+                        },
                     ),
                 ],
                 x_config=None,
@@ -857,16 +875,13 @@ def test__no_curve_plot_only_confusion(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[
-                            5 / 9,
-                            4 / 9,
-                            1 / 3,
-                            2 / 9,
-                            1 / 9,
-                            0,
-                        ],
-                        y=[0.5, 0.5, 0.6, 0.5, 0.5, 0],
+                        x=[5 / 9, 4 / 9, 1 / 3, 2 / 9, 1 / 9, 0.0],
+                        y=[0.5, 0.5, 0.6, 0.5, 0.5, 0.0],
                         label="large",
+                        extra={
+                            "F1": [10 / 19, 8 / 17, 3 / 7, 4 / 13, 2 / 11, 0.0],
+                            "Threshold": [0.2, 0.4, 0.75, 0.77, 0.9, 0.99],
+                        },
                     ),
                 ],
                 x_config=None,
@@ -881,21 +896,13 @@ def test__no_curve_plot_only_confusion(
                 y_label="F1-Score",
                 curves=[
                     Curve(
-                        x=[
-                            0.01,
-                            0.1,
-                            0.2,
-                            0.3,
-                            0.4,
-                            0.5,
-                            0.6,
-                            0.7,
-                            0.8,
-                            0.9,
-                            0.99,
-                        ],
-                        y=[1, 44 / 47, 8 / 9, 36 / 43, 0.75, 28 / 39, 13 / 19, 11 / 18, 9 / 17, 12 / 31, 3 / 14],
+                        x=[0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99],
+                        y=[1.0, 44 / 47, 8 / 9, 36 / 43, 3 / 4, 28 / 39, 13 / 19, 11 / 18, 9 / 17, 12 / 31, 3 / 14],
                         label="only tps",
+                        extra={
+                            "Precision": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                            "Recall": [1.0, 0.88, 0.8, 0.72, 0.6, 0.56, 0.52, 0.44, 0.36, 0.24, 0.12],
+                        },
                     ),
                 ],
                 x_config=None,
@@ -907,9 +914,26 @@ def test__no_curve_plot_only_confusion(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[1, 0.88, 0.8, 0.72, 0.6, 0.56, 0.52, 0.44, 0.36, 0.24, 0.12, 0],
-                        y=[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                        x=[1.0, 0.88, 0.8, 0.72, 0.6, 0.56, 0.52, 0.44, 0.36, 0.24, 0.12, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                         label="only tps",
+                        extra={
+                            "F1": [
+                                1.0,
+                                44 / 47,
+                                8 / 9,
+                                36 / 43,
+                                3 / 4,
+                                28 / 39,
+                                13 / 19,
+                                11 / 18,
+                                9 / 17,
+                                12 / 31,
+                                3 / 14,
+                                0.21428571428571425,
+                            ],
+                            "Threshold": [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99, 0.99],
+                        },
                     ),
                 ],
                 x_config=None,
@@ -951,6 +975,34 @@ def test__no_curve_plot_only_confusion(
                             3 / 19,
                         ],
                         label="tps and fps and fns",
+                        extra={
+                            "Precision": [
+                                25 / 39,
+                                11 / 18,
+                                20 / 27,
+                                0.75,
+                                5 / 7,
+                                7 / 10,
+                                13 / 19,
+                                11 / 17,
+                                9 / 14,
+                                1,
+                                1,
+                            ],
+                            "Recall": [
+                                5 / 7,
+                                22 / 35,
+                                4 / 7,
+                                18 / 35,
+                                3 / 7,
+                                0.4,
+                                13 / 35,
+                                11 / 35,
+                                9 / 35,
+                                6 / 35,
+                                3 / 35,
+                            ],
+                        },
                     ),
                 ],
                 x_config=None,
@@ -991,6 +1043,36 @@ def test__no_curve_plot_only_confusion(
                             1,
                         ],
                         label="tps and fps and fns",
+                        extra={
+                            "F1": [
+                                25 / 37,
+                                44 / 71,
+                                20 / 31,
+                                36 / 59,
+                                15 / 28,
+                                28 / 55,
+                                13 / 27,
+                                11 / 26,
+                                18 / 49,
+                                12 / 41,
+                                3 / 19,
+                                3 / 19,
+                            ],
+                            "Threshold": [
+                                0.01,
+                                0.1,
+                                0.2,
+                                0.3,
+                                0.4,
+                                0.5,
+                                0.6,
+                                0.7,
+                                0.8,
+                                0.9,
+                                0.99,
+                                0.99,
+                            ],
+                        },
                     ),
                 ],
                 x_config=None,
@@ -1027,7 +1109,10 @@ def test__curve_plots(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0], y=[1, 1], label="a"), Curve(x=[0.5, 0], y=[1, 1], label="b")],
+                curves=[
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="a", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.6, 0.6]}),
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="b", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.5, 0.5]}),
+                ],
                 x_config=None,
                 y_config=None,
             ),
@@ -1036,6 +1121,64 @@ def test__curve_plots(
             "only confusion",
             None,
             None,
+        ),
+        (
+            "only confusion, one TP for a",
+            None,
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="a", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.9, 0.9]}),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "only confusion, one TP for b",
+            None,
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="b", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.9, 0.9]}),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "ones",
+            None,
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="a", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.9, 0.9]}),
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="b", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.8, 0.8]}),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
+        ),
+        (
+            "ones, with two matchings, TPs",
+            None,
+            CurvePlot(
+                title="Precision vs. Recall Per Class",
+                x_label="Recall",
+                y_label="Precision",
+                curves=[
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="a", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.9, 0.9]}),
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="b", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.8, 0.8]}),
+                ],
+                x_config=None,
+                y_config=None,
+            ),
         ),
     ],
 )
@@ -1058,100 +1201,13 @@ def test__curve_plots__multiclass__unique(
     "test_name, f1_curve, pr_curve",
     [
         (
-            "only confusion, one TP for a",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold Per Class",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.8, 0.9], y=[0.5, 2 / 3], label="a"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall Per Class",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[Curve(x=[0.5, 0], y=[1, 1], label="a")],
-                x_config=None,
-                y_config=None,
-            ),
-        ),
-        (
-            "only confusion, one TP for b",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold Per Class",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.7, 0.9], y=[0.5, 2 / 3], label="b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall Per Class",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[Curve(x=[0.5, 0], y=[1, 1], label="b")],
-                x_config=None,
-                y_config=None,
-            ),
-        ),
-        (
-            "ones",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold Per Class",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.7, 0.9], y=[0.5, 2 / 3], label="a"),
-                    Curve(x=[0.6, 0.8], y=[0.5, 2 / 3], label="b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall Per Class",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[Curve(x=[0.5, 0], y=[1, 1], label="a"), Curve(x=[0.5, 0], y=[1, 1], label="b")],
-                x_config=None,
-                y_config=None,
-            ),
-        ),
-        (
-            "ones, with two matchings, TPs",
-            CurvePlot(
-                title="F1-Score vs. Confidence Threshold Per Class",
-                x_label="Confidence Threshold",
-                y_label="F1-Score",
-                curves=[
-                    Curve(x=[0.7, 0.9], y=[0.5, 2 / 3], label="a"),
-                    Curve(x=[0.6, 0.8], y=[0.5, 2 / 3], label="b"),
-                ],
-                x_config=None,
-                y_config=None,
-            ),
-            CurvePlot(
-                title="Precision vs. Recall Per Class",
-                x_label="Recall",
-                y_label="Precision",
-                curves=[Curve(x=[0.5, 0], y=[1, 1], label="a"), Curve(x=[0.5, 0], y=[1, 1], label="b")],
-                x_config=None,
-                y_config=None,
-            ),
-        ),
-        (
             "ones, with two matchings, mixed",
             CurvePlot(
                 title="F1-Score vs. Confidence Threshold Per Class",
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.5, 0.9], y=[0.5, 2 / 3], label="a"),
-                    Curve(x=[0.6, 0.8], y=[0.5, 0], label="b"),
+                    Curve(x=[0.6, 0.8], y=[0.5, 0.0], label="b", extra={"Precision": [0.5, 0.0], "Recall": [0.5, 0.0]}),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1160,7 +1216,10 @@ def test__curve_plots__multiclass__unique(
                 title="Precision vs. Recall Per Class",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[Curve(x=[0.5, 0], y=[1, 1], label="a"), Curve(x=[0.5, 0], y=[0.5, 0], label="b")],
+                curves=[
+                    Curve(x=[0.5, 0.0], y=[1.0, 1.0], label="a", extra={"F1": [2 / 3, 2 / 3], "Threshold": [0.9, 0.9]}),
+                    Curve(x=[0.5, 0.0], y=[0.5, 0.0], label="b", extra={"F1": [0.5, 0.0], "Threshold": [0.6, 0.8]}),
+                ],
                 x_config=None,
                 y_config=None,
             ),
@@ -1172,8 +1231,18 @@ def test__curve_plots__multiclass__unique(
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.8, 0.9], y=[2 / 3, 0.5], label="a"),
-                    Curve(x=[0.7, 0.8, 0.9], y=[2 / 3, 0.8, 0.5], label="b"),
+                    Curve(
+                        x=[0.8, 0.9],
+                        y=[2 / 3, 0.5],
+                        label="a",
+                        extra={"Precision": [2 / 3, 1.0], "Recall": [2 / 3, 1 / 3]},
+                    ),
+                    Curve(
+                        x=[0.8, 0.9],
+                        y=[0.8, 0.5],
+                        label="b",
+                        extra={"Precision": [1.0, 1.0], "Recall": [2 / 3, 1 / 3]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1183,8 +1252,18 @@ def test__curve_plots__multiclass__unique(
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[2 / 3, 1 / 3, 0], y=[2 / 3, 1, 1], label="a"),
-                    Curve(x=[2 / 3, 1 / 3, 0], y=[1, 1, 1], label="b"),
+                    Curve(
+                        x=[2 / 3, 1 / 3, 0.0],
+                        y=[2 / 3, 1.0, 1.0],
+                        label="a",
+                        extra={"F1": [2 / 3, 0.5, 0.5], "Threshold": [0.8, 0.9, 0.9]},
+                    ),
+                    Curve(
+                        x=[2 / 3, 1 / 3, 0.0],
+                        y=[1.0, 1.0, 1.0],
+                        label="b",
+                        extra={"F1": [0.8, 0.5, 0.5], "Threshold": [0.8, 0.9, 0.9]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1197,13 +1276,18 @@ def test__curve_plots__multiclass__unique(
                 x_label="Confidence Threshold",
                 y_label="F1-Score",
                 curves=[
-                    Curve(x=[0.2, 0.3], y=[2 / 3, 0], label="cat"),
                     Curve(
-                        x=[0.4, 0.5, 0.75, 0.77, 0.9],
-                        y=[2 / 3, 6 / 11, 0.6, 4 / 9, 0.25],
-                        label="cow",
+                        x=[0.2, 0.3],
+                        y=[2 / 3, 0.0],
+                        label="cat",
+                        extra={"Precision": [0.5, 0.0], "Recall": [1.0, 0.0]},
                     ),
-                    Curve(x=[0.1, 0.5, 0.8, 0.99], y=[0, 0, 0, 0], label="dog"),
+                    Curve(
+                        x=[0.4, 0.75, 0.77, 0.9],
+                        y=[2 / 3, 0.6, 4 / 9, 0.25],
+                        label="cow",
+                        extra={"Precision": [0.8, 1.0, 1.0, 1.0], "Recall": [4 / 7, 3 / 7, 2 / 7, 1 / 7]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1213,11 +1297,12 @@ def test__curve_plots__multiclass__unique(
                 x_label="Recall",
                 y_label="Precision",
                 curves=[
-                    Curve(x=[1, 0], y=[0.5, 0], label="cat"),
+                    Curve(x=[1.0, 0.0], y=[0.5, 0.0], label="cat", extra={"F1": [2 / 3, 0.0], "Threshold": [0.2, 0.3]}),
                     Curve(
-                        x=[4 / 7, 3 / 7, 2 / 7, 1 / 7, 0],
-                        y=[0.8, 1, 1, 1, 1],
+                        x=[4 / 7, 3 / 7, 2 / 7, 1 / 7, 0.0],
+                        y=[0.8, 1.0, 1.0, 1.0, 1.0],
                         label="cow",
+                        extra={"F1": [2 / 3, 0.6, 4 / 9, 0.25, 0.25], "Threshold": [0.4, 0.75, 0.77, 0.9, 0.9]},
                     ),
                 ],
                 x_config=None,
@@ -1233,29 +1318,40 @@ def test__curve_plots__multiclass__unique(
                 curves=[
                     Curve(
                         x=[0.01, 0.1, 0.2, 0.3, 0.8, 0.9, 0.99],
-                        y=[
-                            1,
-                            12 / 13,
-                            5 / 6,
-                            8 / 11,
-                            0.6,
-                            4 / 9,
-                            0.25,
-                        ],
+                        y=[1.0, 12 / 13, 5 / 6, 8 / 11, 0.6, 4 / 9, 0.25],
                         label="a",
+                        extra={
+                            "Precision": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                            "Recall": [1.0, 6 / 7, 5 / 7, 4 / 7, 3 / 7, 2 / 7, 1 / 7],
+                        },
                     ),
                     Curve(
                         x=[0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-                        y=[1, 10 / 11, 0.8, 2 / 3, 0.5, 2 / 7],
+                        y=[1.0, 10 / 11, 0.8, 2 / 3, 0.5, 2 / 7],
                         label="b",
+                        extra={
+                            "Precision": [1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                            "Recall": [1.0, 5 / 6, 2 / 3, 0.5, 1 / 3, 1 / 6],
+                        },
                     ),
-                    Curve(x=[0.01, 0.1, 0.2, 0.3], y=[1, 6 / 7, 2 / 3, 0.4], label="c"),
+                    Curve(
+                        x=[0.01, 0.1, 0.2, 0.3],
+                        y=[1.0, 6 / 7, 2 / 3, 0.4],
+                        label="c",
+                        extra={"Precision": [1.0, 1.0, 1.0, 1.0], "Recall": [1.0, 0.75, 0.5, 0.25]},
+                    ),
                     Curve(
                         x=[0.6, 0.7, 0.8, 0.9, 0.99],
-                        y=[1, 8 / 9, 0.75, 4 / 7, 1 / 3],
+                        y=[1.0, 8 / 9, 0.75, 4 / 7, 1 / 3],
                         label="d",
+                        extra={"Precision": [1.0, 1.0, 1.0, 1.0, 1.0], "Recall": [1.0, 0.8, 0.6, 0.4, 0.2]},
                     ),
-                    Curve(x=[0.01, 0.9, 0.99], y=[1, 0.8, 0.5], label="e"),
+                    Curve(
+                        x=[0.01, 0.9, 0.99],
+                        y=[1.0, 0.8, 0.5],
+                        label="e",
+                        extra={"Precision": [1.0, 1.0, 1.0], "Recall": [1.0, 2 / 3, 1 / 3]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1266,35 +1362,44 @@ def test__curve_plots__multiclass__unique(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[
-                            1,
-                            6 / 7,
-                            5 / 7,
-                            4 / 7,
-                            3 / 7,
-                            2 / 7,
-                            1 / 7,
-                            0,
-                        ],
-                        y=[1, 1, 1, 1, 1, 1, 1, 1],
+                        x=[1.0, 6 / 7, 5 / 7, 4 / 7, 3 / 7, 2 / 7, 1 / 7, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                         label="a",
+                        extra={
+                            "F1": [1.0, 12 / 13, 5 / 6, 8 / 11, 0.6, 4 / 9, 0.25, 0.25],
+                            "Threshold": [0.01, 0.1, 0.2, 0.3, 0.8, 0.9, 0.99, 0.99],
+                        },
                     ),
                     Curve(
-                        x=[
-                            1,
-                            5 / 6,
-                            2 / 3,
-                            0.5,
-                            1 / 3,
-                            1 / 6,
-                            0,
-                        ],
-                        y=[1, 1, 1, 1, 1, 1, 1],
+                        x=[1.0, 5 / 6, 2 / 3, 0.5, 1 / 3, 1 / 6, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
                         label="b",
+                        extra={
+                            "F1": [1.0, 10 / 11, 0.8, 2 / 3, 0.5, 2 / 7, 2 / 7],
+                            "Threshold": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.8],
+                        },
                     ),
-                    Curve(x=[1, 0.75, 0.5, 0.25, 0], y=[1, 1, 1, 1, 1], label="c"),
-                    Curve(x=[1, 0.8, 0.6, 0.4, 0.2, 0], y=[1, 1, 1, 1, 1, 1], label="d"),
-                    Curve(x=[1, 2 / 3, 1 / 3, 0], y=[1, 1, 1, 1], label="e"),
+                    Curve(
+                        x=[1.0, 0.75, 0.5, 0.25, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0],
+                        label="c",
+                        extra={"F1": [1.0, 6 / 7, 2 / 3, 0.4, 0.4], "Threshold": [0.01, 0.1, 0.2, 0.3, 0.3]},
+                    ),
+                    Curve(
+                        x=[1.0, 0.8, 0.6, 0.4, 0.2, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        label="d",
+                        extra={
+                            "F1": [1.0, 8 / 9, 0.75, 4 / 7, 1 / 3, 1 / 3],
+                            "Threshold": [0.6, 0.7, 0.8, 0.9, 0.99, 0.99],
+                        },
+                    ),
+                    Curve(
+                        x=[1.0, 2 / 3, 1 / 3, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0],
+                        label="e",
+                        extra={"F1": [1.0, 0.8, 0.5, 0.5], "Threshold": [0.01, 0.9, 0.99, 0.99]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1309,48 +1414,40 @@ def test__curve_plots__multiclass__unique(
                 curves=[
                     Curve(
                         x=[0.01, 0.1, 0.2, 0.3, 0.8, 0.9, 0.99],
-                        y=[
-                            0.7,
-                            12 / 19,
-                            5 / 9,
-                            8 / 17,
-                            0.375,
-                            4 / 11,
-                            0.2,
-                        ],
+                        y=[0.7, 12 / 19, 5 / 9, 8 / 17, 0.375, 4 / 11, 0.2],
                         label="a",
+                        extra={
+                            "Precision": [7 / 11, 0.6, 5 / 9, 0.5, 3 / 7, 1.0, 1.0],
+                            "Recall": [7 / 9, 2 / 3, 5 / 9, 4 / 9, 1 / 3, 2 / 9, 1 / 9],
+                        },
                     ),
                     Curve(
-                        x=[0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
-                        y=[
-                            0.6,
-                            0.8,
-                            5 / 7,
-                            8 / 13,
-                            0.5,
-                            4 / 11,
-                            0.2,
-                        ],
+                        x=[0.3, 0.4, 0.5, 0.6, 0.7, 0.8],
+                        y=[0.8, 5 / 7, 8 / 13, 0.5, 4 / 11, 0.2],
                         label="b",
+                        extra={
+                            "Precision": [6 / 7, 5 / 6, 0.8, 0.75, 2 / 3, 0.5],
+                            "Recall": [0.75, 0.625, 0.5, 0.375, 0.25, 0.125],
+                        },
                     ),
                     Curve(
                         x=[0.01, 0.1, 0.2, 0.3, 0.7],
-                        y=[2 / 3, 6 / 11, 0.4, 0.25, 0],
+                        y=[2 / 3, 6 / 11, 0.4, 0.25, 0.0],
                         label="c",
+                        extra={"Precision": [2 / 3, 0.6, 0.5, 0.5, 0.0], "Recall": [2 / 3, 0.5, 1 / 3, 1 / 6, 0.0]},
                     ),
                     Curve(
-                        x=[0.1, 0.6, 0.7, 0.8, 0.9, 0.99],
-                        y=[
-                            5 / 6,
-                            1,
-                            8 / 9,
-                            0.75,
-                            4 / 7,
-                            1 / 3,
-                        ],
+                        x=[0.6, 0.7, 0.8, 0.9, 0.99],
+                        y=[1.0, 8 / 9, 0.75, 4 / 7, 1 / 3],
                         label="d",
+                        extra={"Precision": [1.0, 1.0, 1.0, 1.0, 1.0], "Recall": [1.0, 0.8, 0.6, 0.4, 0.2]},
                     ),
-                    Curve(x=[0.01, 0.9, 0.99], y=[0.6, 4 / 9, 0.25], label="e"),
+                    Curve(
+                        x=[0.01, 0.9, 0.99],
+                        y=[0.6, 4 / 9, 0.25],
+                        label="e",
+                        extra={"Precision": [1.0, 1.0, 1.0], "Recall": [3 / 7, 2 / 7, 1 / 7]},
+                    ),
                 ],
                 x_config=None,
                 y_config=None,
@@ -1361,34 +1458,43 @@ def test__curve_plots__multiclass__unique(
                 y_label="Precision",
                 curves=[
                     Curve(
-                        x=[
-                            7 / 9,
-                            2 / 3,
-                            5 / 9,
-                            4 / 9,
-                            1 / 3,
-                            2 / 9,
-                            1 / 9,
-                            0,
-                        ],
-                        y=[7 / 11, 0.6, 5 / 9, 0.5, 3 / 7, 1, 1, 1],
+                        x=[7 / 9, 2 / 3, 5 / 9, 4 / 9, 1 / 3, 2 / 9, 1 / 9, 0.0],
+                        y=[7 / 11, 0.6, 5 / 9, 0.5, 3 / 7, 1.0, 1.0, 1.0],
                         label="a",
+                        extra={
+                            "F1": [0.7, 12 / 19, 5 / 9, 8 / 17, 0.375, 4 / 11, 0.2, 0.2],
+                            "Threshold": [0.01, 0.1, 0.2, 0.3, 0.8, 0.9, 0.99, 0.99],
+                        },
                     ),
                     Curve(
-                        x=[0.75, 0.625, 0.5, 0.375, 0.25, 0.125, 0],
+                        x=[0.75, 0.625, 0.5, 0.375, 0.25, 0.125, 0.0],
                         y=[6 / 7, 5 / 6, 0.8, 0.75, 2 / 3, 0.5, 0.5],
                         label="b",
+                        extra={
+                            "F1": [0.8, 5 / 7, 8 / 13, 0.5, 4 / 11, 0.2, 0.2],
+                            "Threshold": [0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.8],
+                        },
                     ),
                     Curve(
-                        x=[2 / 3, 0.5, 1 / 3, 1 / 6, 0],
-                        y=[2 / 3, 0.6, 0.5, 0.5, 0],
+                        x=[2 / 3, 0.5, 1 / 3, 1 / 6, 0.0],
+                        y=[2 / 3, 0.6, 0.5, 0.5, 0.0],
                         label="c",
+                        extra={"F1": [2 / 3, 6 / 11, 0.4, 0.25, 0.0], "Threshold": [0.01, 0.1, 0.2, 0.3, 0.7]},
                     ),
-                    Curve(x=[1, 0.8, 0.6, 0.4, 0.2, 0], y=[1, 1, 1, 1, 1, 1], label="d"),
                     Curve(
-                        x=[3 / 7, 2 / 7, 1 / 7, 0],
-                        y=[1, 1, 1, 1],
+                        x=[1.0, 0.8, 0.6, 0.4, 0.2, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        label="d",
+                        extra={
+                            "F1": [1.0, 8 / 9, 0.75, 4 / 7, 1 / 3, 1 / 3],
+                            "Threshold": [0.6, 0.7, 0.8, 0.9, 0.99, 0.99],
+                        },
+                    ),
+                    Curve(
+                        x=[3 / 7, 2 / 7, 1 / 7, 0.0],
+                        y=[1.0, 1.0, 1.0, 1.0],
                         label="e",
+                        extra={"F1": [0.6, 4 / 9, 0.25, 0.25], "Threshold": [0.01, 0.9, 0.99, 0.99]},
                     ),
                 ],
                 x_config=None,
