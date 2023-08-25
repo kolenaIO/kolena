@@ -192,3 +192,7 @@ class TestRun:
     @dataclass(frozen=True)
     class MarkCrashedRequest:
         test_run_id: int
+
+
+class Dummy:
+    ...
