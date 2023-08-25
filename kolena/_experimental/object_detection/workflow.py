@@ -13,7 +13,10 @@
 # limitations under the License.
 import dataclasses
 from typing import List
-from typing import Literal
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 from typing import Optional
 from typing import Union
 
