@@ -31,7 +31,6 @@ TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
 ThresholdConfiguration = object_detection.ThresholdConfiguration
-ThresholdStrategy = object_detection.ThresholdStrategy
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 TestSuiteMetrics = object_detection.TestSuiteMetrics
@@ -523,10 +522,9 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     from kolena._experimental.object_detection import ObjectDetectionEvaluator
 
     config = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.FIXED_05,
+        threshold_strategy=0.5,
         iou_threshold=0.5,
         min_confidence_score=0,
-        with_class_level_metrics=False,
     )
     eval = ObjectDetectionEvaluator(configurations=[config])
 

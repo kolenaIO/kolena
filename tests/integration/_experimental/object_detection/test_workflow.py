@@ -28,7 +28,6 @@ Model = object_detection.Model
 TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
-ThresholdStrategy = object_detection.ThresholdStrategy
 ThresholdConfiguration = object_detection.ThresholdConfiguration
 ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 

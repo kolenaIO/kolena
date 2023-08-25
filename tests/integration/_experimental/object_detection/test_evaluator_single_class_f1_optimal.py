@@ -34,7 +34,6 @@ from tests.integration.helper import fake_locator
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 TestSample = object_detection.TestSample
 ThresholdConfiguration = object_detection.ThresholdConfiguration
-ThresholdStrategy = object_detection.ThresholdStrategy
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 
@@ -256,10 +255,9 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
     from kolena._experimental.object_detection import ObjectDetectionEvaluator
 
     config = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
+        threshold_strategy="F1-Optimal",
         iou_threshold=0.5,
         min_confidence_score=0.1,
-        with_class_level_metrics=False,
     )
     eval = ObjectDetectionEvaluator(configurations=[config])
 
