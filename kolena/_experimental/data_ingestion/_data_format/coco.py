@@ -37,15 +37,23 @@ class CocoJsonDataFormat(BaseDataFormat):
         super().__init__(config)
         self.raw_data = None
 
-    def load_data(self) -> None:
+    def ingest_data(self) -> None:
+        self._load_data()
+        self._process_data()
+        self._save_data()
+
+    def get_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
+        return TestCase, TestSuite, Model
+
+    def _load_data(self) -> None:
         self.raw_data = load_json(self.config.data_paths[0])
 
-    def process_data(self) -> None:
+    def _process_data(self) -> None:
         self.image_map: Dict[int, Any] = self._get_image_map(self.raw_data)
         self.label_map: Dict[int, str] = self._get_label_map(self.raw_data)
         self.bbox_map = self._get_bbox_map(self.raw_data, self.image_map, self.label_map)
 
-    def save_data(self) -> None:
+    def _save_data(self) -> None:
         locator_prefix = self.config.locator_prefix
         test_case_name = self.config.test_case_name
         test_suite_name = self.config.test_suite_name
@@ -65,9 +73,6 @@ class CocoJsonDataFormat(BaseDataFormat):
             test_cases=[complete_test_case],
             reset=reset,
         )
-
-    def get_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
-        return TestCase, TestSuite, Model
 
     def _get_image_map(self, raw_data):
         return {int(record["id"]): record for record in raw_data["images"]}

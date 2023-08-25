@@ -22,27 +22,11 @@ class BaseDataFormat(ABC):
         self.config = config
 
     @abstractmethod
-    def load_data(self) -> None:
-        """Load data from a file"""
-        raise NotImplementedError
-
-    @abstractmethod
-    def process_data(self) -> None:
-        """Process the loaded data"""
-        raise NotImplementedError
-
-    @abstractmethod
-    def save_data(self) -> None:
-        """Save data to Kolena system"""
-        raise NotImplementedError
-
-    @abstractmethod
     def get_workflow(self) -> None:
         """Get workflow related classes"""
         raise NotImplementedError
 
+    @abstractmethod
     def ingest_data(self) -> None:
-        """Entry point to ingest data"""
-        self.load_data()
-        self.process_data()
-        self.save_data()
+        """Ingest data into Kolena system"""
+        raise NotImplementedError
