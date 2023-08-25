@@ -28,7 +28,7 @@ def load_json(path: str) -> Any:
         s3_bucket, s3_key = path[5:].split("/", 1)
         s3 = boto3.client("s3")
         response = s3.get_object(Bucket=s3_bucket, Key=s3_key)
-        data = json.load(response["Body"])
+        data = json.load(response["Body"])  # type: ignore
     else:
         with open(path) as file:
             data = json.load(file)
