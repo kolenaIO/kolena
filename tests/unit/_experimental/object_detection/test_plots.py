@@ -38,7 +38,6 @@ def assert_curves(
     for curve, expectation in zip(curves, expected):
         assert curve.label == expectation.label
         assert len(curve.x) == len(expectation.x)
-        print(curve, expectation)
         assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < TOLERANCE
         assert len(curve.y) == len(expectation.y)
         assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < TOLERANCE
@@ -1514,9 +1513,6 @@ def test__curve_plots__multiclass(
 
     f1: CurvePlot = compute_f1_plot_multiclass(all_matches=TEST_MATCHING[test_name])
     pr: CurvePlot = compute_pr_plot_multiclass(all_matches=TEST_MATCHING[test_name])
-
-    print(f1)
-    print(pr)
     assert_curve_plot_equals_expected(f1, f1_curve)
     assert_curve_plot_equals_expected(pr, pr_curve)
 
