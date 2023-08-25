@@ -11,19 +11,19 @@ Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization
 
 ### 1. Select Integration Scope
 
-Amazon S3 Integrations load bucket objects by creating an IAM Role for Kolena to assume.
+Amazon S3 Integrations load bucket objects by creating an IAM role for Kolena to assume.
 
-By default, Kolena will assume this Role when loading objects from any permitted bucket.
-Alternatively, if you wish for Kolena to assume this Role only while loading objects from one bucket, uncheck
+By default, Kolena will assume this role when loading objects from any permitted bucket.
+Alternatively, if you wish for Kolena to assume this role only while loading objects from one bucket, uncheck
 "Use role by default for all permitted buckets?" and specify the S3 bucket name.
 
 Click "Next".
 
 !!!note "Note: scoping Integrations"
 
-    If "Use role by default for all permitted buckets?" is selected, Kolena will load any locators beginning with `s3://` by assuming the Role
+    If "Use role by default for all permitted buckets?" is selected, Kolena will load any locators beginning with `s3://` by assuming the role
     configured for this Integration and generating a presigned URL.
-    Scoping the Integration to one bucket (e.g. `my-bucket`) means Kolena will only assume the Role when generating presigned URLs for locators of the form
+    Scoping the Integration to one bucket (e.g. `my-bucket`) means Kolena will only assume the role when generating presigned URLs for locators of the form
     `s3://my-bucket/*`.
 
 ### 2. Create an Access Policy in AWS
@@ -54,7 +54,7 @@ Paste the "Trust Policy JSON" you copied above and click "Next".
 Search for and select the access policy created in [step 2](#2-create-an-access-policy-in-aws).
 Provide a role name and review the permissions, then click "Create role".
 
-**Copy the Role's ARN for use in the next step.**
+**Copy the role's ARN for use in the next step.**
 
 ### 4. Save Integration
 
