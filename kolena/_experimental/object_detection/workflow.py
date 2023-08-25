@@ -86,6 +86,9 @@ _, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetricsSingleClass(MetricsTestSample):
+    matched: List[float]
+    unmatched_gt: int
+    unmatched_inf: List[float]
     TP: List[ScoredLabeledBoundingBox]
     FP: List[ScoredLabeledBoundingBox]
     FN: List[LabeledBoundingBox]
@@ -120,6 +123,9 @@ class TestCaseMetricsSingleClass(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
+    matched: List[float]
+    unmatched_gt: int
+    unmatched_inf: List[float]
     TP: List[ScoredLabeledBoundingBox]
     FP: List[ScoredLabeledBoundingBox]
     FN: List[LabeledBoundingBox]

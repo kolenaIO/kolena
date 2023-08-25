@@ -81,6 +81,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         thresholds: float,
     ) -> TestSampleMetricsSingleClass:
         return TestSampleMetricsSingleClass(
+            matched=[],
+            unmatched_gt=0,
+            unmatched_inf=[],
             TP=[],
             FP=[],
             FN=[],
@@ -107,6 +110,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
         return TestSampleMetricsSingleClass(
+            matched=[inf.score for _, inf in bbox_matches.matched],
+            unmatched_gt=len(bbox_matches.unmatched_gt),
+            unmatched_inf=[inf.score for inf in bbox_matches.unmatched_inf],
             TP=tp,
             FP=fp,
             FN=fn,
