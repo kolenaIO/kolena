@@ -45,20 +45,22 @@ Copy this JSON.
 
     You will require IAM write permissions within your AWS account to perform the next step.
 
-In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a>.
-Click the "Create Policy" button and select the "JSON" tab.
-Paste the "Access Policy JSON" copied previously.
-Click through the "Next" buttons, adding the desired name, description, and tags.
+In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
+
+1. Click the "Create Policy" button and select the "JSON" tab.
+2. Paste the "Access Policy JSON" copied previously.
+3. Click through the "Next" buttons, adding the desired name, description, and tags.
 
 ### Step 3: Create a Role For Kolena to Assume
 
 Return to Kolena and copy the "Trust Policy JSON".
 
-In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/roles">IAM roles page</a>.
-Click the "Create role" button and select 'Custom trust policy".
-Paste the "Trust Policy JSON" you copied above and click "Next".
-Search for and select the access policy created in [step 2](#step-2-create-an-access-policy-in-aws).
-Provide a role name and review the permissions, then click "Create role".
+In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/roles">IAM roles page</a> and follow these steps:
+
+1. Click the "Create role" button and select "Custom trust policy".
+2. Paste the "Trust Policy JSON" you copied above and click "Next".
+3. Search for and select the access policy created in [step 2](#step-2-create-an-access-policy-in-aws).
+4. Provide a role name and review the permissions, then click "Create role".
 
 **Copy the role's ARN for use in the next step.**
 
@@ -66,11 +68,11 @@ Provide a role name and review the permissions, then click "Create role".
 
 Return to Kolena and fill in the remaining fields for the Integration and then click "Save".
 
-| Field            | Description                                                                                                                                        |
-| ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Role ARN         | The ARN of the role created in [step 3](#step-3-create-a-role-for-kolena-to-assume)                                                                     |
-| Endpoint URL     | The fully qualified endpoint of the webservice. This is only required when using a custom endpoint (for example, when using a local version of S3) |
-| Region           | The region your buckets will be accessed from (e.g. `us-east-1`)                                                                                   |
+| Field            | Description                                                                                                                                            |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Role ARN         | The ARN of the role created in [step 3](#step-3-create-a-role-for-kolena-to-assume)                                                                    |
+| Endpoint URL     | The fully qualified endpoint of the webservice. This is only required when using a custom endpoint (for example, when using a local version of S3)     |
+| Region           | The region your buckets will be accessed from (e.g. `us-east-1`)                                                                                       |
 | Force Path Style | Whether to force path style URLs for S3 objects (e.g., `https://s3.amazonaws.com/<bucket>/<key>` instead of `https://<bucket>.s3.amazonaws.com/<key>`) |
 
 ## Appendix
@@ -79,9 +81,10 @@ Return to Kolena and fill in the remaining fields for the Integration and then c
 
 In some scenarios, CORS permissions are required for Kolena to render content from your bucket.
 
-To configure CORS access, navigate to your S3 bucket inside your AWS console.
-Click on the "Permissions" tab and navigate to the "Cross-origin resource sharing (CORS)" section.
-Click "Edit" and add the following JSON snippet:
+To configure CORS access, navigate to your S3 bucket inside your AWS console and follow these steps:
+
+1. Click on the "Permissions" tab and navigate to the "Cross-origin resource sharing (CORS)" section.
+2. Click "Edit" and add the following JSON snippet:
 
 ```json
 [
