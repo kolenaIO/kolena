@@ -11,15 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 import random
 
 import pytest
 
+import kolena
 from kolena.workflow import test
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
+
+kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth

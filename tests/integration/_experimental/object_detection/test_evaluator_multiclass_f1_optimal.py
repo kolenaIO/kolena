@@ -35,6 +35,8 @@ from tests.integration._experimental.object_detection.test_evaluator_multiclass_
 from tests.integration._experimental.object_detection.test_evaluator_multiclass_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
 
+kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
@@ -520,8 +522,6 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-
     config = ThresholdConfiguration(
         threshold_strategy="F1-Optimal",
         iou_threshold=0.5,

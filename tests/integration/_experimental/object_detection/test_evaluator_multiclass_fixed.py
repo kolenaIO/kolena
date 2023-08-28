@@ -28,6 +28,8 @@ from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
+kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
@@ -838,8 +840,6 @@ def assert_test_case_plots_equals_expected(
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-
     config = ThresholdConfiguration(
         threshold_strategy=0.5,
         iou_threshold=0.5,
