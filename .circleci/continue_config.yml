@@ -216,8 +216,12 @@ jobs:
       - when:
           condition:
             and:
-              equal: [ "metrics", << parameters.extras >> ]
-              equal: [ "workflow", << parameters.pytest-group >> ]
+              - equal:
+                  - metrics
+                  - << parameters.extras >>
+              - equal:
+                  - workflow
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> metrics integration tests
