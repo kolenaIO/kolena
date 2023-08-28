@@ -59,7 +59,7 @@ In your AWS console, navigate to the <a target="_blank" href="https://console.aw
 
 1. Click the "Create role" button and select "Custom trust policy".
 2. Paste the "Trust Policy JSON" you copied above and click "Next".
-3. Search for and select the access policy created in [step 2](#step-2-create-an-access-policy-in-aws).
+3. Search for and select the access policy created in [step 2](#step-2-create-an-access-policy-in-aws). Click "Next".
 4. Provide a role name and review the permissions, then click "Create role".
 
 **Copy the role's ARN for use in the next step.**
