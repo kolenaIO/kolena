@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from typing import List
 from typing import Tuple
 
 import pytest
 
+import kolena
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
@@ -30,6 +32,7 @@ Inference = object_detection.Inference
 TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
+ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ThresholdConfiguration = object_detection.ThresholdConfiguration
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
@@ -518,7 +521,7 @@ def assert_test_case_plots_equals_expected(
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
-    from kolena._experimental.object_detection import ObjectDetectionEvaluator
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
     config = ThresholdConfiguration(
         threshold_strategy=0.5,

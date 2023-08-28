@@ -11,11 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 from typing import List
 from typing import Tuple
 
 import pytest
 
+import kolena
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
@@ -518,6 +520,8 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+
     config = ThresholdConfiguration(
         threshold_strategy="F1-Optimal",
         iou_threshold=0.5,
