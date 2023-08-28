@@ -848,10 +848,6 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         inferences=TEST_DATA,
         configuration=config,
     )
-
-    print(config)
-    print(eval_fixed.configurations)
-    print(eval_fixed.evaluator.threshold_cache)
     assert 0 == 1
 
     assert len(eval_fixed.evaluator.threshold_cache) == 0  # empty because not f1 optimal config

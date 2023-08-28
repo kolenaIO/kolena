@@ -194,21 +194,44 @@ jobs:
       - checkout
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
-      - run:
-          name: Run << parameters.pytest-group >> integration tests
-          command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            TEST_GROUP="<< parameters.pytest-group >>"
-            if [ "$TEST_GROUP" = "misc" ]; then
-              TESTFILES=$(circleci tests glob tests/integration/test_*.py |
-                circleci tests split --split-by=timings --timings-type=filename)
-            else
-              TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
-                circleci tests split --split-by=timings --timings-type=filename)
-            fi
-            poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
-              --junitxml=test-results/result.xml $TESTFILES
+      - when:
+          condition:
+            equal: [ "none", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Run << parameters.pytest-group >> integration tests
+                command: |
+                  export KOLENA_TOKEN=${KOLENA_TOKEN}
+                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+                  TEST_GROUP="<< parameters.pytest-group >>"
+                  if [ "$TEST_GROUP" = "misc" ]; then
+                    TESTFILES=$(circleci tests glob tests/integration/test_*.py |
+                      circleci tests split --split-by=timings --timings-type=filename)
+                  else
+                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                      circleci tests split --split-by=timings --timings-type=filename)
+                  fi
+                  poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
+                    --junitxml=test-results/result.xml $TESTFILES
+      - when:
+          condition:
+            equal: [ "metrics", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Run metrics << parameters.pytest-group >> integration tests
+                command: |
+                  export KOLENA_TOKEN=${KOLENA_TOKEN}
+                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+                  TEST_GROUP="<< parameters.pytest-group >>"
+                  if [ "$TEST_GROUP" = "misc" ]; then
+                    TESTFILES=$(circleci tests glob tests/integration/test_*.py |
+                      circleci tests split --split-by=timings --timings-type=filename)
+                  else
+                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                      circleci tests split --split-by=timings --timings-type=filename)
+                  fi
+                  poetry run pytest -m 'metrics' -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
+                    --junitxml=test-results/result.xml $TESTFILES
       - when:
           # Generate coverage only from one python version
           condition:
@@ -296,7 +319,7 @@ workflows:
             parameters:
               python-version: [ "3.9" ]
               pytest-group: [ detection, fr, classification, workflow ]
-              extras: ["none"]
+              extras: ["none", "metrics"]
           enabled: true
           parallelism: 4
           requires:
