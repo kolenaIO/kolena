@@ -56,7 +56,7 @@ jobs:
             - run:
                 name: Display env info
                 command: |
-                  valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env use python
+                  valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env remove python && poetry install -vv --no-ansi
                   poetry env list && poetry env info
       - when:
           condition:
@@ -70,7 +70,7 @@ jobs:
             - run:
                 name: Display env info
                 command:  |
-                  valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env use python
+                  valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env remove python && poetry install -vv --all-extras --no-ansi
                   poetry env list && poetry env info
       - save_cache:
           key: *ci-base-cache
@@ -106,7 +106,7 @@ jobs:
       - run:
           name: Display env info
           command:  |
-            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env use python
+            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env remove python && poetry install -vv --no-ansi
             poetry env list && poetry env info
       - run:
           name: Build documentation without 'insiders' packages
@@ -139,7 +139,7 @@ jobs:
       - run:
           name: Display env info
           command:  |
-            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env use python
+            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env remove python && poetry install -vv --no-ansi
             poetry env list && poetry env info
       - run: poetry run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
@@ -217,7 +217,7 @@ jobs:
       - run:
           name: Display env info
           command:  |
-            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env use python
+            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env remove python && poetry install -vv --no-ansi
             poetry env list && poetry env info
       - run:
           name: Run << parameters.pytest-group >> integration tests
@@ -270,7 +270,7 @@ jobs:
       - run:
           name: Display env info
           command:  |
-            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env use python
+            valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] && poetry env remove python && poetry install -vv --no-ansi
             poetry env list && poetry env info
       - run:
           name: Run pre-commit checks
