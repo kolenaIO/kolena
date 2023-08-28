@@ -201,7 +201,7 @@ jobs:
                   - "none"
                   - << parameters.extras >>
               - not_equal:
-                  - "_experimental"
+                  - _experimental
                   - << parameters.pytest-group >>
           steps:
             - run:
@@ -226,7 +226,7 @@ jobs:
                   - "metrics"
                   - << parameters.extras >>
               - equal:
-                  - "_experimental"
+                  - _experimental
                   - << parameters.pytest-group >>
           steps:
             - run:
@@ -321,21 +321,21 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ "detection", "fr", "classification", "workflow" ]
+              pytest-group: [ detection, fr, classification, workflow ]
               extras: ["none"]
           enabled: true
           parallelism: 4
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
+          name: integration-test-experimental-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ "_experimental" ]
               extras: ["none", "metrics"]
+          pytest-group: _experimental 
           enabled: true
-          parallelism: 1
+          parallelism: 2
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
