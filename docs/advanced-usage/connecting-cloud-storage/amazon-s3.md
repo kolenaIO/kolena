@@ -4,29 +4,35 @@ icon: simple/amazons3
 
 # :simple-amazons3: Amazon S3
 
-Integrations can be established to Amazon S3.
+Kolena connects with [Amazon S3](https://aws.amazon.com/s3/) to load files (e.g. images, videos, documents) directly
+into your browser for visualization. In this tutorial, we'll learn how to establish an integration between Kolena and
+Amazon S3.
 
 To get started, ensure you have administrator access within Kolena.
-Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "Amazon S3".
+Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
+page and click "Add Integration", then "Amazon S3".
 
-### 1. Select Integration Scope
+### Step 1: Select Integration Scope
 
-Amazon S3 Integrations load bucket objects by creating an IAM role for Kolena to assume.
+Amazon S3 integrations load bucket objects using [pre-signed URLs](https://docs.aws.amazon.com/AmazonS3/latest/userguide/ShareObjectPreSignedURL.html).
+Kolena generates these URLs by temporarily [assuming an IAM role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html)
+that has access to the specified bucket(s).
 
 By default, Kolena will assume this role when loading objects from any permitted bucket.
 Alternatively, if you wish for Kolena to assume this role only while loading objects from one bucket, uncheck
-"Use role by default for all permitted buckets?" and specify the S3 bucket name.
+"Use role by default for all permitted buckets?" and specify the name of an S3 bucket.
 
 Click "Next".
 
-!!!note "Note: scoping Integrations"
+!!! note "Note: Scoping Integrations"
 
-    If "Use role by default for all permitted buckets?" is selected, Kolena will load any locators beginning with `s3://` by assuming the role
-    configured for this Integration and generating a presigned URL.
-    Scoping the Integration to one bucket (e.g. `my-bucket`) means Kolena will only assume the role when generating presigned URLs for locators of the form
-    `s3://my-bucket/*`.
+    If "Use role by default for all permitted buckets?" is selected, Kolena will load any locators beginning with
+    `s3://` by assuming the role configured for this Integration and generating a presigned URL.
 
-### 2. Create an Access Policy in AWS
+    Scoping the Integration to one bucket (e.g. `my-bucket`) means Kolena will only assume the role when generating
+    presigned URLs for locators of the form `s3://my-bucket/*`.
+
+### Step 2: Create an Access Policy in AWS
 
 If you selected "Use role by default for all permitted buckets?" in the previous step, you must now choose which buckets
 Kolena is permitted to load objects from.
@@ -35,7 +41,7 @@ Enter these bucket names.
 When you have entered the bucket names, you will see an "Access Policy JSON" rendered to your page.
 Copy this JSON.
 
-!!!note "Note: IAM Write Permission Required"
+!!! note "Note: IAM Write Permission Required"
 
     You will require IAM write permissions within your AWS account to perform the next step.
 
@@ -44,34 +50,36 @@ Click the "Create Policy" button and select the "JSON" tab.
 Paste the "Access Policy JSON" copied previously.
 Click through the "Next" buttons, adding the desired name, description, and tags.
 
-### 3. Create a Role For Kolena to Assume
+### Step 3: Create a Role For Kolena to Assume
 
 Return to Kolena and copy the "Trust Policy JSON".
 
 In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/roles">IAM roles page</a>.
 Click the "Create role" button and select 'Custom trust policy".
 Paste the "Trust Policy JSON" you copied above and click "Next".
-Search for and select the access policy created in [step 2](#2-create-an-access-policy-in-aws).
+Search for and select the access policy created in [step 2](#step-2-create-an-access-policy-in-aws).
 Provide a role name and review the permissions, then click "Create role".
 
 **Copy the role's ARN for use in the next step.**
 
-### 4. Save Integration
+### Step 4: Save Integration
 
 Return to Kolena and fill in the remaining fields for the Integration and then click "Save".
 
 | Field            | Description                                                                                                                                        |
 | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Role ARN         | The ARN of the role created in [step 3](#3-create-a-role-for-kolena-to-assume)                                                                     |
+| Role ARN         | The ARN of the role created in [step 3](#step-3-create-a-role-for-kolena-to-assume)                                                                     |
 | Endpoint URL     | The fully qualified endpoint of the webservice. This is only required when using a custom endpoint (for example, when using a local version of S3) |
 | Region           | The region your buckets will be accessed from (e.g. `us-east-1`)                                                                                   |
-| Force Path Style | Whether to force path style URLs for S3 objects (e.g., https://s3.amazonaws.com// instead of https://.s3.amazonaws.com/)                           |
+| Force Path Style | Whether to force path style URLs for S3 objects (e.g., `https://s3.amazonaws.com/<bucket>/<key>` instead of `https://<bucket>.s3.amazonaws.com/<key>`) |
 
-### 4. Allow CORS Access to Bucket
+## Appendix
 
-CORS permissions are required for the Kolena domain to render content from your bucket.
+### Allow CORS Access to Bucket
 
-Navigate to your S3 bucket inside your AWS console.
+In some scenarios, CORS permissions are required for Kolena to render content from your bucket.
+
+To configure CORS access, navigate to your S3 bucket inside your AWS console.
 Click on the "Permissions" tab and navigate to the "Cross-origin resource sharing (CORS)" section.
 Click "Edit" and add the following JSON snippet:
 
