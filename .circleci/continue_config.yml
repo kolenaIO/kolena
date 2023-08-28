@@ -186,7 +186,15 @@ jobs:
     steps:
       - when:
           condition:
-            not: << parameters.enabled >>
+            or:
+              not: << parameters.enabled >>
+              and:
+                - equal:
+                  - "metrics"
+                  - << parameters.extras >>
+                - not_equal:
+                  - "_experimental"
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: skip job
