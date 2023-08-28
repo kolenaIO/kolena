@@ -68,12 +68,10 @@ In your AWS console, navigate to the <a target="_blank" href="https://console.aw
 
 Return to Kolena and fill in the remaining fields for the Integration and then click "Save".
 
-| Field            | Description                                                                                                                                            |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Role ARN         | The ARN of the role created in [step 3](#step-3-create-a-role-for-kolena-to-assume)                                                                    |
-| Endpoint URL     | The fully qualified endpoint of the webservice. This is only required when using a custom endpoint (for example, when using a local version of S3)     |
-| Region           | The region your buckets will be accessed from (e.g. `us-east-1`)                                                                                       |
-| Force Path Style | Whether to force path style URLs for S3 objects (e.g., `https://s3.amazonaws.com/<bucket>/<key>` instead of `https://<bucket>.s3.amazonaws.com/<key>`) |
+| Field    | Description                                                                         |
+| -------- | ----------------------------------------------------------------------------------- |
+| Role ARN | The ARN of the role created in [step 3](#step-3-create-a-role-for-kolena-to-assume) |
+| Region   | The region your buckets will be accessed from (e.g. `us-east-1`)                    |
 
 ## Appendix
 
