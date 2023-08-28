@@ -223,22 +223,6 @@ jobs:
           condition:
             and:
               - equal:
-                  - "none"
-                  - << parameters.extras >>
-              - equal:
-                  - _experimental
-                  - << parameters.pytest-group >>
-          steps:
-            - run:
-                name: Run experimental metrics integration tests
-                command: |
-                  export KOLENA_TOKEN=${KOLENA_TOKEN}
-                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-                  poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/integration/_experimental
-      - when:
-          condition:
-            and:
-              - equal:
                   - "metrics"
                   - << parameters.extras >>
               - equal:
@@ -348,10 +332,10 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              extras: ["none", "metrics"]
+              extras: ["metrics"]
           pytest-group: _experimental
           enabled: true
-          parallelism: 2
+          parallelism: 1
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
