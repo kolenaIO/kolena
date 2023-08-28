@@ -25,7 +25,7 @@ parameters:
   example:
     type: boolean
     default: false
-  recreate-cache:
+  recreate_cache:
     type: boolean
     default: false
 
@@ -59,7 +59,7 @@ jobs:
             - run:
                 name: Display env info
                 command: |
-                  recreate=<< parameters.recreate-cache >>
+                  recreate=<< parameters.recreate_cache >>
                   echo $recreate
                   valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] || [ "$recreate" = true ] && poetry env remove python && poetry install -vv --no-ansi
                   poetry env list && poetry env info
@@ -75,7 +75,7 @@ jobs:
             - run:
                 name: Display env info
                 command:  |
-                  recreate=<< parameters.recreate-cache >>
+                  recreate=<< parameters.recreate_cache >>
                   echo $recreate
                   valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] || [ "$recreate" = true ] && poetry env remove python && poetry install -vv --all-extras --no-ansi
                   poetry env list && poetry env info
@@ -262,7 +262,7 @@ jobs:
       - run:
           name: Display env info
           command:  |
-            recreate=<< parameters.recreate-cache >>
+            recreate=<< parameters.recreate_cache >>
             echo $recreate
             valid=$(poetry env info | awk '/Valid:/{print $NF}') && [ "$valid" != "True" ] || [ "$recreate" = true ] && poetry env remove python && poetry install -vv --no-ansi
             poetry env list && poetry env info
