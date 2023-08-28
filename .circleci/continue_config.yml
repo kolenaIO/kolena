@@ -196,7 +196,13 @@ jobs:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
-            equal: [ "none", << parameters.extras >> ]
+            and:
+              - equal:
+                  - "none"
+                  - << parameters.extras >>
+              - not_equal:
+                  - "_experimental"
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
@@ -224,15 +230,11 @@ jobs:
                   - << parameters.pytest-group >>
           steps:
             - run:
-                name: Run << parameters.pytest-group >> metrics integration tests
+                name: Run experimental metrics integration tests
                 command: |
                   export KOLENA_TOKEN=${KOLENA_TOKEN}
                   export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-                  TEST_GROUP="<< parameters.pytest-group >>"
-                  TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
-                    circleci tests split --split-by=timings --timings-type=filename)
-                  poetry run pytest -m 'metrics' -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
-                    --junitxml=test-results/result.xml $TESTFILES
+                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/_experimental
       - when:
           # Generate coverage only from one python version
           condition:
