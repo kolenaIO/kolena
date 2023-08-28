@@ -217,10 +217,10 @@ jobs:
           condition:
             and:
               - equal:
-                  - metrics
+                  - "metrics"
                   - << parameters.extras >>
               - equal:
-                  - _experimental
+                  - "_experimental"
                   - << parameters.pytest-group >>
           steps:
             - run:
@@ -319,7 +319,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ detection, fr, classification, workflow, _experimental]
+              pytest-group: [ "_experimental", "detection", "fr", "classification", "workflow" ]
               extras: ["none", "metrics"]
           enabled: true
           parallelism: 4
