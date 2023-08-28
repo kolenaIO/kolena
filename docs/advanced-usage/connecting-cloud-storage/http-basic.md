@@ -2,14 +2,16 @@
 icon: kolena/globe-network-16
 ---
 
-# :kolena-globe-network-20: HTTP Basic
+# Connecting Cloud Storage: <nobr>:kolena-globe-network-20: HTTP Basic</nobr>
 
-Integrations can be established using HTTP Basic Auth.
+Kolena connects with systems that utilize HTTP basic authentication to load files (e.g. images, videos, documents) directly
+into your browser for visualization. In this tutorial, we'll learn how to establish an integration between Kolena and a
+file-serving system that utilizes HTTP basic authentication.
 
 To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "HTTP Basic".
 
-### 1. Save Integration on Kolena
+### Step 1: Save Integration on Kolena
 
 On the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), fill in the fields for the integration and then click "Save".
 
