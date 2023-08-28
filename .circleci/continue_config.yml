@@ -225,9 +225,9 @@ jobs:
               - equal:
                   - "none"
                   - << parameters.extras >>
-            - equal:
-                - _experimental
-                - << parameters.pytest-group >>
+              - equal:
+                  - _experimental
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run experimental metrics integration tests
@@ -241,9 +241,9 @@ jobs:
               - equal:
                   - "metrics"
                   - << parameters.extras >>
-            - equal:
-                - _experimental
-                - << parameters.pytest-group >>
+              - equal:
+                  - _experimental
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run experimental metrics integration tests
