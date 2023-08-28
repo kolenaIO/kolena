@@ -215,21 +215,18 @@ jobs:
                     --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
-            equal: [ "metrics", << parameters.extras >> ]
+            and:
+              equal: [ "metrics", << parameters.extras >> ]
+              equal: [ "workflow", << parameters.pytest-group >> ]
           steps:
             - run:
-                name: Run metrics << parameters.pytest-group >> integration tests
+                name: Run << parameters.pytest-group >> metrics integration tests
                 command: |
                   export KOLENA_TOKEN=${KOLENA_TOKEN}
                   export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
                   TEST_GROUP="<< parameters.pytest-group >>"
-                  if [ "$TEST_GROUP" = "misc" ]; then
-                    TESTFILES=$(circleci tests glob tests/integration/test_*.py |
-                      circleci tests split --split-by=timings --timings-type=filename)
-                  else
-                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
-                      circleci tests split --split-by=timings --timings-type=filename)
-                  fi
+                  TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                    circleci tests split --split-by=timings --timings-type=filename)
                   poetry run pytest -m 'metrics' -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
                     --junitxml=test-results/result.xml $TESTFILES
       - when:
