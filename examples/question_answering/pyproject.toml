@@ -6,7 +6,7 @@ authors = ["Kolena Engineering <eng@kolena.io>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.10"
+python = ">=3.8,<3.12"
 kolena = ">=0.82.0,<1"
 s3fs = "^2022.7.1"
 evaluate = "^0.4.0"
