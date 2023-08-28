@@ -63,7 +63,7 @@ jobs:
                   echo $recreate
                   valid=$(poetry env info | awk '/Valid:/{print $NF}')
                   echo $valid
-                  [ "$valid" != "True" ] || [ "$recreate" = true ] && rm -rf $(poetry env info -p) && poetry install -vv --no-ansi
+                  [ "$valid" != "True" ] || [ "$recreate" = true ] && rm -rf $(poetry env info -p) && rm poetry.lock && poetry install -vv --no-ansi
                   poetry env list && poetry env info
       - when:
           condition:
@@ -81,7 +81,7 @@ jobs:
                   echo $recreate
                   valid=$(poetry env info | awk '/Valid:/{print $NF}')
                   echo $valid
-                  [ "$valid" != "True" ] || [ "$recreate" = true ] && rm -rf $(poetry env info -p) && poetry install -vv --all-extras --no-ansi
+                  [ "$valid" != "True" ] || [ "$recreate" = true ] && rm -rf $(poetry env info -p) && rm poetry.lock && poetry install -vv --all-extras --no-ansi
                   poetry env list && poetry env info
       - save_cache:
           key: *ci-base-cache
@@ -270,7 +270,7 @@ jobs:
             echo $recreate
             valid=$(poetry env info | awk '/Valid:/{print $NF}')
             echo $valid
-            [ "$valid" != "True" ] || [ "$recreate" = true ] && rm -rf $(poetry env info -p) && poetry install -vv --no-ansi
+            [ "$valid" != "True" ] || [ "$recreate" = true ] && rm -rf $(poetry env info -p) && rm poetry.lock && poetry install -vv --no-ansi
             poetry env list && poetry env info
       - run:
           name: Run pre-commit checks
