@@ -186,15 +186,7 @@ jobs:
     steps:
       - when:
           condition:
-            or:
-              not: << parameters.enabled >>
-              and:
-                - equal:
-                  - "metrics"
-                  - << parameters.extras >>
-                - not_equal:
-                  - "_experimental"
-                  - << parameters.pytest-group >>
+            not: << parameters.enabled >>
           steps:
             - run:
                 name: skip job
@@ -329,10 +321,21 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9" ]
-              pytest-group: [ "_experimental", "detection", "fr", "classification", "workflow" ]
-              extras: ["none", "metrics"]
+              pytest-group: [ "detection", "fr", "classification", "workflow" ]
+              extras: ["none"]
           enabled: true
           parallelism: 4
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              pytest-group: [ "_experimental" ]
+              extras: ["none", "metrics"]
+          enabled: true
+          parallelism: 1
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
