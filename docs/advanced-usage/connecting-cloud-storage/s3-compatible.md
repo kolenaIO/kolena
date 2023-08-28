@@ -3,13 +3,17 @@ icon: simple/minio
 subtitle: MinIO, Oracle, Hitachi
 ---
 
-# :simple-minio: S3-Compatible APIs
+# Connecting Cloud Storage: <nobr>:simple-minio: S3-Compatible APIs</nobr>
 
-Integrations can be established to S3-compatible systems. Supported systems include:
+Kolena connects with any S3-compatible system to load files (e.g. images, videos, documents) directly into your browser
+for visualization. Supported systems include:
 
 - [:simple-minio: MinIO](https://min.io)
 - [:simple-oracle: Oracle Object Storage](https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/s3compatibleapi.htm)
 - [:simple-hitachi: Hitachi Content Platform (HCP) for cloud scale](https://knowledge.hitachivantara.com/Documents/Storage/HCP_for_Cloud_Scale)
+
+In this tutorial, we'll learn how to establish an integration between Kolena and a storage system implementing an
+S3-compatible API.
 
 To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "MinIO".
@@ -17,7 +21,7 @@ Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization
 Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
 You may need to consult documentation for your provider to perform equivalent steps.
 
-### 1. Create a Service User for Kolena
+### Step 1: Create a Service User for Kolena
 
 
 === "`MinIO`"
@@ -26,7 +30,7 @@ You may need to consult documentation for your provider to perform equivalent st
     mc admin user add <deployment_alias> <kolena_user> <secret_access_key>
     ```
 
-### 2. Create an Access Policy
+### Step 2: Create an Access Policy
 
 Create a policy to allow read access for a bucket or set of buckets.
 
@@ -51,11 +55,11 @@ Save the following JSON policy to a file called `/tmp/kolena-policy.json`, repla
 }
 ```
 
-!!!note "Note: bucket names"
+!!!note "Note: Bucket names"
 
     Please note that bucket names must follow [S3 naming rules](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html)
 
-Next, create the policy and attach the policy to the service user created in [step 1](#1-create-a-service-user-for-kolena):
+Next, create the policy and attach the policy to the service user created in [step 1](#step-1-create-a-service-user-for-kolena):
 
 === "`MinIO`"
 
@@ -64,7 +68,7 @@ Next, create the policy and attach the policy to the service user created in [st
     mc admin policy attach <deployment_alias> kolenaread --user <kolena_user>
     ```
 
-### 3. Save Integration on Kolena
+### Step 3: Save Integration on Kolena
 
 Return to the Kolena platform [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations).
 
@@ -80,8 +84,8 @@ Fill in the fields for the integration and then click "Save".
 
 | Field | Description |
 |---|---|
-| Access Key Id | The username (`<kolena_user>`) of the user created in [step 1](#1-create-a-service-user-for-kolena) |
-| Secret Access Key | The secret key (`<secret_access_key>`) of the user created in [step 1](#1-create-a-service-user-for-kolena) |
-| Endpoint | The hostname or IP address of your S3-compatabile service |
-| Port | The optional port to access your S3-compatabile service |
+| Access Key Id | The username (`<kolena_user>`) of the user created in [step 1](#step-1-create-a-service-user-for-kolena) |
+| Secret Access Key | The secret key (`<secret_access_key>`) of the user created in [step 1](#step-1-create-a-service-user-for-kolena) |
+| Endpoint | The hostname or IP address of your S3-compatible service |
+| Port | The optional port to access your S3-compatible service |
 | Region | The region your buckets will be accessed from |

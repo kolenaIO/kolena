@@ -2,7 +2,7 @@
 icon: simple/amazons3
 ---
 
-# :simple-amazons3: Amazon S3
+# Connecting Cloud Storage: <nobr>:simple-amazons3: Amazon S3</nobr>
 
 Kolena connects with [Amazon S3](https://aws.amazon.com/s3/) to load files (e.g. images, videos, documents) directly
 into your browser for visualization. In this tutorial, we'll learn how to establish an integration between Kolena and
