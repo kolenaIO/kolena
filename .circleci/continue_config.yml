@@ -221,20 +221,21 @@ jobs:
                     --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
-            and:
-              - equal:
-                  - "metrics"
-                  - << parameters.extras >>
-              - equal:
-                  - _experimental
-                  - << parameters.pytest-group >>
+            - equal:
+                - _experimental
+                - << parameters.pytest-group >>
           steps:
             - run:
-                name: Run experimental metrics integration tests
+                name: Run experimental-<< parameters.extras >> integration tests
                 command: |
                   export KOLENA_TOKEN=${KOLENA_TOKEN}
                   export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/_experimental
+                  TEST_EXTRA=<< parameters.extras >>
+                  if [ "$TEST_EXTRA" = "none" ]; then
+                    poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/integration/_experimental
+                  else
+                    poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/_experimental
+                  fi
       - when:
           # Generate coverage only from one python version
           condition:
@@ -333,7 +334,7 @@ workflows:
             parameters:
               python-version: [ "3.9" ]
               extras: ["none", "metrics"]
-          pytest-group: _experimental 
+          pytest-group: _experimental
           enabled: true
           parallelism: 2
           requires:
