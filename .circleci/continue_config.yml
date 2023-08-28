@@ -54,8 +54,8 @@ jobs:
                   poetry config installer.max-workers 10
                   poetry install -vv --no-ansi
             - run:
-                name: display env info
-                command: poetry env info
+                name: Display env info
+                command: poetry env list && poetry env info
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
@@ -66,8 +66,8 @@ jobs:
                   poetry config installer.max-workers 10
                   poetry install -vv --all-extras --no-ansi
             - run:
-                name: display env info
-                command: poetry env info
+                name: Display env info
+                command: poetry env list && poetry env info
       - save_cache:
           key: *ci-base-cache
           paths:
@@ -100,8 +100,8 @@ jobs:
           name: Checkout LFS blobs
           command: git lfs pull
       - run:
-          name: display env info
-          command: poetry env info
+          name: Display env info
+          command: poetry env list && poetry env info
       - run:
           name: Build documentation without 'insiders' packages
           command: poetry run mkdocs build
@@ -131,8 +131,8 @@ jobs:
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
-          name: display env info
-          command: poetry env info
+          name: Display env info
+          command: poetry env list && poetry env info
       - run: poetry run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
@@ -207,8 +207,8 @@ jobs:
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - run:
-          name: display env info
-          command: poetry env info
+          name: Display env info
+          command: poetry env list && poetry env info
       - run:
           name: Run << parameters.pytest-group >> integration tests
           command: |
@@ -258,8 +258,8 @@ jobs:
           poetry config installer.max-workers 10
           poetry install -vv --no-ansi
       - run:
-          name: display env info
-          command: poetry env info
+          name: Display env info
+          command: poetry env list && poetry env info
       - run:
           name: Run pre-commit checks
           command: |
