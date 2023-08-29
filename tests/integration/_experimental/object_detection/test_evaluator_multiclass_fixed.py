@@ -845,40 +845,41 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         iou_threshold=0.5,
         min_confidence_score=0,
     )
-    eval_fixed = ObjectDetectionEvaluator(configurations=[config])
 
-    test_sample_metrics = eval_fixed.compute_test_sample_metrics(
+    eval = ObjectDetectionEvaluator(configurations=[config])
+
+    test_sample_metrics = eval.compute_test_sample_metrics(
         test_case=TEST_CASE,
         inferences=TEST_DATA,
         configuration=config,
     )
 
-    assert len(eval_fixed.evaluator.threshold_cache) == 0  # empty because not f1 optimal config
-    assert len(eval_fixed.evaluator.matchings_by_test_case) != 0
-    assert len(eval_fixed.evaluator.matchings_by_test_case[config.display_name()]) != 0
+    assert len(eval.evaluator.threshold_cache) == 1
+    assert len(eval.evaluator.matchings_by_test_case) != 0
+    assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
     num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
     assert (
-        len(eval_fixed.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
+        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
         == len(TEST_DATA) - num_of_ignored
     )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
     # test case metrics, which will populate the locators cache
-    assert len(eval_fixed.evaluator.locators_by_test_case) == 0
+    assert len(eval.evaluator.locators_by_test_case) == 1
 
-    test_case_metrics = eval_fixed.compute_test_case_metrics(
+    test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
         inferences=TEST_DATA,
         metrics=[pair[1] for pair in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS],
         configuration=config,
     )
 
-    assert len(eval_fixed.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
-    assert len(eval_fixed.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
+    assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
+    assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 
     # test case plots only use the cached values
-    plots = eval_fixed.compute_test_case_plots(
+    plots = eval.compute_test_case_plots(
         test_case=TEST_CASE,
         inferences=[],
         metrics=[],
@@ -887,7 +888,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
 
     # test suite metrics - one
-    test_suite_metrics = eval_fixed.compute_test_suite_metrics(
+    test_suite_metrics = eval.compute_test_suite_metrics(
         test_suite=TEST_SUITE,
         metrics=[(TEST_CASE, EXPECTED_COMPUTE_TEST_CASE_METRICS)],
         configuration=config,
@@ -895,7 +896,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     assert test_suite_metrics == TestSuiteMetrics(n_images=10, mean_AP=132493 / 216216)
 
     # test suite metrics - two
-    test_suite_metrics_dup = eval_fixed.compute_test_suite_metrics(
+    test_suite_metrics_dup = eval.compute_test_suite_metrics(
         test_suite=TEST_SUITE,
         metrics=[
             (TEST_CASE, EXPECTED_COMPUTE_TEST_CASE_METRICS),

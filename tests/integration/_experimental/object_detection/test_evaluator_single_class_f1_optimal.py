@@ -297,6 +297,7 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         iou_threshold=0.5,
         min_confidence_score=0.1,
     )
+
     eval = ObjectDetectionEvaluator(configurations=[config])
 
     test_sample_metrics = eval.compute_test_sample_metrics(

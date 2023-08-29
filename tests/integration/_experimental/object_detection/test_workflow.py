@@ -53,6 +53,15 @@ def test__object_detection__smoke() -> None:
             ],
         )
 
-    model = Model(f"{name} model", infer=infer)
+    eval = ObjectDetectionEvaluator(
+        configurations=[
+            ThresholdConfiguration(
+                threshold_strategy="F1-Optimal",
+                iou_threshold=0.5,
+                min_confidence_score=0.0,
+            ),
+        ],
+    )
 
-    test(model, test_suite)
+    model = Model(f"{name} model", infer=infer)
+    test(model, test_suite, eval, reset=True)

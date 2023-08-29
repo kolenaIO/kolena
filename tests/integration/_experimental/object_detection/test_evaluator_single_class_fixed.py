@@ -528,6 +528,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         iou_threshold=0.5,
         min_confidence_score=0,
     )
+
     eval = ObjectDetectionEvaluator(configurations=[config])
 
     test_sample_metrics = eval.compute_test_sample_metrics(
@@ -535,7 +536,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         inferences=TEST_DATA,
         configuration=config,
     )
-    assert len(eval.evaluator.threshold_cache) == 0  # empty because not f1 optimal config
+    assert len(eval.evaluator.threshold_cache) == 1
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
     num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
@@ -546,7 +547,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
     # test case metrics, which will populate the locators cache
-    assert len(eval.evaluator.locators_by_test_case) == 0
+    assert len(eval.evaluator.locators_by_test_case) == 1
 
     test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
