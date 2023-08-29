@@ -25,8 +25,9 @@ from .workflow import TestSampleMetrics
 from .workflow import ClassMetricsPerTestCase
 from .workflow import TestCaseMetrics
 from .workflow import TestSuiteMetrics
-from .workflow import ThresholdStrategy
+from .workflow import F1_OPTIMAL
 from .workflow import ThresholdConfiguration
+
 from .evaluator import ObjectDetectionEvaluator
 
 __all__ = [
@@ -42,7 +43,7 @@ __all__ = [
     "ClassMetricsPerTestCase",
     "TestCaseMetrics",
     "TestSuiteMetrics",
-    "ThresholdStrategy",
+    "F1_OPTIMAL",
     "ThresholdConfiguration",
     "ObjectDetectionEvaluator",
 ]

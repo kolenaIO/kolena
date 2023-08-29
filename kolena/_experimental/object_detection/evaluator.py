@@ -63,7 +63,10 @@ class ObjectDetectionEvaluator(Evaluator):
 
         # Use complete test case to determine workflow, single class or multiclass
         if self.evaluator is None:
-            if configuration.with_class_level_metrics:
+            labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
+                inf.label for _, _, infs in inferences for inf in infs.bboxes
+            }
+            if len(labels) >= 2:
                 self.evaluator = MulticlassObjectDetectionEvaluator()
             else:
                 self.evaluator = SingleClassObjectDetectionEvaluator()
