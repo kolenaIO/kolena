@@ -31,19 +31,21 @@ from kolena.workflow import TestCase as BaseTestCase
 from kolena.workflow import TestSuite as BaseTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 
-
-class CocoJsonDataFormat(BaseDataFormat):
+class _CocoJsonDataFormat(BaseDataFormat):
     def __init__(self, config: DataIngestionConfig) -> None:
         super().__init__(config)
         self.raw_data = None
+    
+    def get_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
+        return TestCase, TestSuite, Model
 
     def ingest_data(self) -> None:
         self._load_data()
         self._process_data()
         self._save_data()
-
-    def get_workflow(self) -> Tuple[Type[BaseTestCase], Type[BaseTestSuite], Type[BaseModel]]:
-        return TestCase, TestSuite, Model
+    
+    def _save_data(self) -> None:
+        raise NotImplementedError()
 
     def _load_data(self) -> None:
         self.raw_data = load_json(self.config.data_paths[0])
@@ -52,28 +54,7 @@ class CocoJsonDataFormat(BaseDataFormat):
         self.image_map: Dict[int, Any] = self._get_image_map(self.raw_data)
         self.label_map: Dict[int, str] = self._get_label_map(self.raw_data)
         self.bbox_map = self._get_bbox_map(self.raw_data, self.image_map, self.label_map)
-
-    def _save_data(self) -> None:
-        locator_prefix = self.config.locator_prefix
-        test_case_name = self.config.test_case_name
-        test_suite_name = self.config.test_suite_name
-        reset = self.config.reset
-
-        complete_test_case = self._create_complete_test_case(
-            self.bbox_map,
-            self.image_map,
-            reset,
-            test_case_name,
-            locator_prefix,
-        )
-        # create the test suite with the complete test case
-        _ = TestSuite(
-            test_suite_name,
-            description="data ingestion via Kolena package",
-            test_cases=[complete_test_case],
-            reset=reset,
-        )
-
+    
     def _get_image_map(self, raw_data):
         return {int(record["id"]): record for record in raw_data["images"]}
 
@@ -95,6 +76,32 @@ class CocoJsonDataFormat(BaseDataFormat):
                 bounding_box = LabeledBoundingBox(top_left, bottom_right, label)
                 image_to_boxes[image_id].append(bounding_box)
         return image_to_boxes
+
+
+class CocoJsonTestSuite(_CocoJsonDataFormat):
+    def __init__(self, config: DataIngestionConfig) -> None:
+        super().__init__(config)
+
+    def _save_data(self) -> None:
+        locator_prefix = self.config.locator_prefix
+        test_case_name = self.config.test_case_name
+        test_suite_name = self.config.test_suite_name
+        reset = self.config.reset
+
+        complete_test_case = self._create_complete_test_case(
+            self.bbox_map,
+            self.image_map,
+            reset,
+            test_case_name,
+            locator_prefix,
+        )
+        # create the test suite with the complete test case
+        _ = TestSuite(
+            test_suite_name,
+            description="data ingestion via Kolena package",
+            test_cases=[complete_test_case],
+            reset=reset,
+        )
 
     def _create_complete_test_case(
         self,
@@ -129,3 +136,10 @@ class CocoJsonDataFormat(BaseDataFormat):
         )
 
         return complete_test_case
+
+class CocoJsonInference(_CocoJsonDataFormat):
+    def __init__(self, config: DataIngestionConfig) -> None:
+        super().__init__(config)
+
+    def _save_data(self) -> None:
+        ... 

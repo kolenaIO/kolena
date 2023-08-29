@@ -27,4 +27,5 @@ class DataIngestionConfig:
     locator_prefix: str = ""
     test_case_name: str = _random_name("test-case")
     test_suite_name: str = _random_name("test-suite")
+    model_name: str = _random_name("model")
     reset: bool = False

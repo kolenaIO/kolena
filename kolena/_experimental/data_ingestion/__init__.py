@@ -14,10 +14,11 @@
 # noreorder
 from ._types import DataIngestionConfig
 from .ingest_data import ingest_data
-from ._data_format.coco import CocoJsonDataFormat
+from ._data_format.coco import CocoJsonTestSuite, CocoJsonInference
 
 __all__ = [
     "DataIngestionConfig",
     "ingest_data",
-    "CocoJsonDataFormat",
+    "CocoJsonTestSuite",
+    "CocoJsonInference",
 ]
