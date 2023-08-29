@@ -82,19 +82,22 @@ theme:
   font:
     text: Inter
   palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+
+    # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      accent: cyan
       toggle:
-        icon: kolena/light-mode-20
-        name: "Switch to dark mode"
+        icon: material/brightness-7
+
+    # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      accent: cyan
       toggle:
-        icon: kolena/dark-mode-20
-        name: "Switch to light mode"
-  # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
+        icon: material/brightness-4
   features:
     - announce.dismiss
     - content.action.edit
