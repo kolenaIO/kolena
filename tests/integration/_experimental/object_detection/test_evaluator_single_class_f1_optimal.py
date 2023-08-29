@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from typing import List
 from typing import Tuple
 
 import pytest
 
-import kolena
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
@@ -29,15 +27,15 @@ from tests.integration._experimental.object_detection.test_evaluator_single_clas
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import (
     assert_test_case_plots_equals_expected,
 )
-from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_CASE
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
+from tests.integration.helper import with_test_prefix
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 TestSample = object_detection.TestSample
+TestCase = object_detection.TestCase
 ThresholdConfiguration = object_detection.ThresholdConfiguration
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
@@ -292,6 +290,9 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
+    TEST_CASE_NAME = "single class OD test fixed"
+    TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
+
     config = ThresholdConfiguration(
         threshold_strategy="F1-Optimal",
         iou_threshold=0.5,

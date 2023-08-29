@@ -11,13 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from typing import List
 from typing import Tuple
 
 import pytest
 
-import kolena
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
@@ -26,7 +24,6 @@ from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth
@@ -39,11 +36,6 @@ ThresholdConfiguration = object_detection.ThresholdConfiguration
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 TestSuiteMetrics = object_detection.TestSuiteMetrics
-
-
-TEST_CASE_NAME = "single class OD test"
-TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
-TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
 
 
 TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
@@ -523,6 +515,9 @@ def assert_test_case_plots_equals_expected(
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
+    TEST_CASE_NAME = "single class OD test fixed"
+    TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
+    TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
     config = ThresholdConfiguration(
         threshold_strategy=0.5,
         iou_threshold=0.5,

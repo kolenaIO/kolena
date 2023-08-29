@@ -86,14 +86,12 @@ def test__object_detection__multiple_configurations__single_class() -> None:
     config_one = ThresholdConfiguration(
         threshold_strategy=0.5,
         iou_threshold=0.5,
-        with_class_level_metrics=False,
         min_confidence_score=0.001,
     )
 
     config_two = ThresholdConfiguration(
         threshold_strategy=0.3,
         iou_threshold=1,
-        with_class_level_metrics=False,
         min_confidence_score=0.0,
     )
 
