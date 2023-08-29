@@ -18,7 +18,6 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
-from kolena._experimental.object_detection import F1_OPTIMAL
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import MODEL_METADATA
 from object_detection_2d.constants import S3_MODEL_INFERENCE_PREFIX
@@ -26,6 +25,7 @@ from object_detection_2d.constants import TRANSPORTATION_LABELS
 from object_detection_2d.constants import WORKFLOW
 
 import kolena
+from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import Model
 from kolena._experimental.object_detection import ObjectDetectionEvaluator

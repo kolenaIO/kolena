@@ -20,8 +20,8 @@ from typing import Tuple
 
 import numpy as np
 
-from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import F1_OPTIMAL
+from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestCaseMetricsSingleClass

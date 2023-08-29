@@ -27,6 +27,7 @@ from .workflow import TestCaseMetrics
 from .workflow import TestSuiteMetrics
 from .workflow import F1_OPTIMAL
 from .workflow import ThresholdConfiguration
+
 from .evaluator import ObjectDetectionEvaluator
 
 __all__ = [
