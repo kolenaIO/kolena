@@ -196,8 +196,8 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     """
 
     threshold_strategy: Union[Literal["F1-Optimal"], float]
-    """The confidence threshold strategy. It can either be `"F1-Optimal"` or a fixed confidence threshold such as `0.3`
-    or `0.75`."""
+    """The confidence threshold strategy. It can either be `F1_OPTIMAL="F1-Optimal"` or a fixed confidence threshold
+    such as `0.3` or `0.75`."""
 
     iou_threshold: float
     """The [IoU ↗](../../metrics/iou.md) threshold."""
