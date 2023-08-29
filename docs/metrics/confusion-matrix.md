@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Confusion Matrix
 
 !!! info inline end "Guide: True Positive / False Positive / False Negative / True Negative"

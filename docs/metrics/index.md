@@ -73,4 +73,11 @@ biases, and its intended uses.
     The counts of TP, FP, FN and TN ground truths and inferences are essential for summarizing model performance. They
     are the building blocks of many other metrics, including [accuracy](accuracy.md), [precision](precision.md),
     and [recall](recall.md).
+
+- [Confusion Matrix](confusion-matrix.md)
+
+    ---
+
+    Confusion matrix is a structured plot describing classification model performance as a table that highlights counts
+    of objects with predicted classes (columns) against the actual classes (rows), indicating how confused a model is.
 </div>

@@ -70,6 +70,7 @@ nav:
       - metrics/precision.md
       - metrics/recall.md
       - metrics/tp-fp-fn-tn.md
+      - metrics/confusion-matrix.md
   - Help & FAQ:
       - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
