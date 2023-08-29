@@ -37,6 +37,7 @@ from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
+F1_OPTIMAL = "F1-Optimal"
 
 @dataclass(frozen=True)
 class TestSample(Image):

@@ -18,6 +18,7 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from kolena._experimental.object_detection import F1_OPTIMAL
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import MODEL_METADATA
 from object_detection_2d.constants import S3_MODEL_INFERENCE_PREFIX
@@ -120,7 +121,7 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
                 min_confidence_score=0.2,
             ),
             ThresholdConfiguration(
-                threshold_strategy="F1-Optimal",
+                threshold_strategy=F1_OPTIMAL,
                 iou_threshold=0.5,
                 min_confidence_score=0.0,
             ),

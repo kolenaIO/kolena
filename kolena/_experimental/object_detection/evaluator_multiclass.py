@@ -22,6 +22,7 @@ import numpy as np
 
 from kolena._experimental.object_detection import ClassMetricsPerTestCase
 from kolena._experimental.object_detection import GroundTruth
+from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestCaseMetrics
@@ -174,7 +175,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         configuration: ThresholdConfiguration,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
     ) -> None:
-        if configuration.threshold_strategy != "F1-Optimal":
+        if configuration.threshold_strategy != F1_OPTIMAL:
             return
 
         if configuration.display_name() in self.threshold_cache.keys():
@@ -404,7 +405,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         return self.test_suite_metrics(unique_locators, average_precisions)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
-        if configuration.threshold_strategy == "F1-Optimal":
+        if configuration.threshold_strategy == F1_OPTIMAL:
             return self.threshold_cache[configuration.display_name()]
         else:
             return defaultdict(lambda: configuration.threshold_strategy)
