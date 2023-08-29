@@ -1,11 +1,28 @@
 INHERIT: mkdocs.yml
 
-strict: false  # allows for missing pages in git-committers (i.e. new or moved pages)
+strict: false # allows for missing pages in git-committers (i.e. new or moved pages)
 watch:
   - kolena
   - mkdocs.yml
 
 theme:
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
   features:
     # copied from mkdocs.yml -- ensure that these are kept in sync
     - announce.dismiss
