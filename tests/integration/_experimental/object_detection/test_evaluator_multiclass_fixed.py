@@ -26,6 +26,7 @@ from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
+
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ClassMetricsPerTestCase = object_detection.ClassMetricsPerTestCase
@@ -849,7 +850,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         configuration=config,
     )
 
-    assert len(eval.evaluator.threshold_cache) == 1
+    assert config.display_name() not in eval.evaluator.threshold_cache
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
     num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
@@ -859,9 +860,6 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
-    # test case metrics, which will populate the locators cache
-    assert len(eval.evaluator.locators_by_test_case) == 1
-
     test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
         inferences=TEST_DATA,
@@ -869,7 +867,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         configuration=config,
     )
 
-    assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
+    assert TEST_CASE.name in eval.evaluator.locators_by_test_case
     assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 

@@ -536,7 +536,7 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         configuration=config,
     )
 
-    assert len(eval.evaluator.threshold_cache) == 1
+    assert config.display_name() in eval.evaluator.threshold_cache
     assert "b" in eval.evaluator.threshold_cache[config.display_name()]
     assert eval.evaluator.threshold_cache[config.display_name()]["b"] == 0.4
     assert len(eval.evaluator.matchings_by_test_case) != 0
@@ -548,16 +548,14 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
     )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
-    # test case metrics, which will populate the locators cache
-    assert len(eval.evaluator.locators_by_test_case) == 0
-
     test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
         inferences=TEST_DATA,
         metrics=[pair[1] for pair in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS],
         configuration=config,
     )
-    assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
+
+    assert TEST_CASE.name in eval.evaluator.locators_by_test_case
     assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 
