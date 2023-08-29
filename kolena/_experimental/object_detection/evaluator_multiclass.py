@@ -21,7 +21,6 @@ from typing import Tuple
 import numpy as np
 
 from kolena._experimental.object_detection import ClassMetricsPerTestCase
-from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import TestCase
@@ -31,6 +30,7 @@ from kolena._experimental.object_detection import TestSampleMetrics
 from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import TestSuiteMetrics
 from kolena._experimental.object_detection import ThresholdConfiguration
+from kolena._experimental.object_detection import ThresholdStrategy
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_confusion_matrix_plot
 from kolena._experimental.object_detection.utils import compute_f1_plot_multiclass
@@ -175,7 +175,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         configuration: ThresholdConfiguration,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
     ) -> None:
-        if configuration.threshold_strategy != F1_OPTIMAL:
+        if configuration.threshold_strategy != ThresholdStrategy.F1_OPTIMAL:
             return
 
         if configuration.display_name() in self.threshold_cache.keys():
@@ -286,7 +286,12 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         label: str,
         thresholds: Dict[str, float],
     ) -> ClassMetricsPerTestCase:
-        class_matches, samples_count = self.bbox_matches_and_count_for_one_label(matchings, label)
+        match_and_count: Tuple[MulticlassInferenceMatches, int] = self.bbox_matches_and_count_for_one_label(
+            matchings,
+            label,
+        )
+        class_matches: MulticlassInferenceMatches = match_and_count[0]
+        samples_count: int = match_and_count[1]
 
         average_precision = 0.0
         baseline_pr_curve = compute_pr_curve([class_matches])
@@ -316,9 +321,6 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             macro_Recall=np.mean([data.Recall for data in per_class_metrics]) if per_class_metrics else 0.0,
             macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,
             mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,
-            micro_Precision=compute_precision(tp_count, fp_count),
-            micro_Recall=compute_recall(tp_count, fn_count),
-            micro_F1=compute_f1_score(tp_count, fp_count, fn_count),
         )
 
     def compute_test_case_metrics(
@@ -334,9 +336,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
         # compute nested metrics per class
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
-            inf.label for _, _, infs in inferences for inf in infs.bboxes
-        }
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes}
         per_class_metrics: List[ClassMetricsPerTestCase] = []
         for label in sorted(labels):
             metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label, thresholds)
@@ -404,8 +404,13 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         average_precisions = [tcm.mean_AP for _, tcm in metrics]
         return self.test_suite_metrics(unique_locators, average_precisions)
 
-    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
-        if configuration.threshold_strategy == F1_OPTIMAL:
+    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_03:
+            return defaultdict(lambda: 0.3)
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_05:
+            return defaultdict(lambda: 0.5)
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_075:
+            return defaultdict(lambda: 0.75)
+        if configuration.threshold_strategy == ThresholdStrategy.F1_OPTIMAL:
             return self.threshold_cache[configuration.display_name()]
-        else:
-            return defaultdict(lambda: configuration.threshold_strategy)
+        raise RuntimeError(f"unrecognized threshold strategy: {configuration.threshold_strategy}")

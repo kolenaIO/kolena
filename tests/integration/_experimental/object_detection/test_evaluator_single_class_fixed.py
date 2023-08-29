@@ -24,18 +24,22 @@ from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth
 Inference = object_detection.Inference
 TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
-ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ThresholdConfiguration = object_detection.ThresholdConfiguration
+ThresholdStrategy = object_detection.ThresholdStrategy
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 TestSuiteMetrics = object_detection.TestSuiteMetrics
+
+
+TEST_CASE_NAME = "single class OD test"
+TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
+TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
 
 
 TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
@@ -46,7 +50,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
-                LabeledBoundingBox((7, 7), (8, 8), "a"),
+                LabeledBoundingBox((7, 7), (8, 8), "d"),  # single class OD can have 1+ classes (not distinguished)
             ],
         ),
         Inference(
@@ -54,7 +58,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
-                ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.7),
+                ScoredLabeledBoundingBox((7, 7), (8, 8), "d", 0.7),
             ],
         ),
     ),
@@ -213,13 +217,14 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSingleClass]] = [
     (
+        # single class OD can have 1+ classes (not distinguished)
         TestSample(locator=fake_locator(112, "OD"), metadata={}),
         TestSampleMetricsSingleClass(
             TP=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
-                ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.7),
+                ScoredLabeledBoundingBox((7, 7), (8, 8), "d", 0.7),
             ],
             FP=[],
             FN=[],
@@ -515,15 +520,14 @@ def assert_test_case_plots_equals_expected(
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
-    TEST_CASE_NAME = "single class OD test fixed"
-    TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
-    TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
+    from kolena._experimental.object_detection import ObjectDetectionEvaluator
+
     config = ThresholdConfiguration(
-        threshold_strategy=0.5,
+        threshold_strategy=ThresholdStrategy.FIXED_05,
         iou_threshold=0.5,
         min_confidence_score=0,
+        with_class_level_metrics=False,
     )
-
     eval = ObjectDetectionEvaluator(configurations=[config])
 
     test_sample_metrics = eval.compute_test_sample_metrics(
@@ -531,16 +535,14 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         inferences=TEST_DATA,
         configuration=config,
     )
-
-    assert config.display_name() not in eval.evaluator.threshold_cache
+    assert len(eval.evaluator.threshold_cache) == 0  # empty because not f1 optimal config
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
-    num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
-    assert (
-        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
-        == len(TEST_DATA) - num_of_ignored
-    )
+    assert len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name]) == len(TEST_DATA)
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
+
+    # test case metrics, which will populate the locators cache
+    assert len(eval.evaluator.locators_by_test_case) == 0
 
     test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
@@ -548,7 +550,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         metrics=[pair[1] for pair in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS],
         configuration=config,
     )
-    assert TEST_CASE.name in eval.evaluator.locators_by_test_case
+    assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
     assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 
