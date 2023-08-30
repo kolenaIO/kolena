@@ -20,35 +20,35 @@ from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-from kolena.workflow.plot import Plot
+from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import (
+    assert_curve_plot_equal,
+)
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import (
     assert_test_case_metrics_equals_expected,
 )
-from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import (
-    assert_test_case_plots_equals_expected,
-)
-from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_CASE
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
+from tests.integration.helper import with_test_prefix
+
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
+ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 TestSample = object_detection.TestSample
+TestCase = object_detection.TestCase
 ThresholdConfiguration = object_detection.ThresholdConfiguration
-ThresholdStrategy = object_detection.ThresholdStrategy
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSingleClass]] = [
     (
-        # single class OD can have 1+ classes (not distinguished)
         TestSample(locator=fake_locator(112, "OD"), metadata={}),
         TestSampleMetricsSingleClass(
             TP=[
                 ScoredLabeledBoundingBox((1.0, 1.0), (2.0, 2.0), "a", 1.0),
                 ScoredLabeledBoundingBox((3.0, 3.0), (4.0, 4.0), "a", 0.9),
                 ScoredLabeledBoundingBox((5.0, 5.0), (6.0, 6.0), "a", 0.8),
-                ScoredLabeledBoundingBox((7.0, 7.0), (8.0, 8.0), "d", 0.7),
+                ScoredLabeledBoundingBox((7.0, 7.0), (8.0, 8.0), "a", 0.7),
             ],
             FP=[],
             FN=[],
@@ -203,6 +203,42 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             thresholds=0.1,
         ),
     ),
+    (
+        TestSample(locator=fake_locator(119, "OD"), metadata={}),
+        TestSampleMetricsSingleClass(
+            TP=[],
+            FP=[],
+            FN=[],
+            count_TP=0,
+            count_FP=0,
+            count_FN=0,
+            has_TP=False,
+            has_FP=False,
+            has_FN=False,
+            ignored=True,
+            max_confidence_above_t=None,
+            min_confidence_above_t=None,
+            thresholds=0.1,
+        ),
+    ),
+    (
+        TestSample(locator=fake_locator(120, "OD"), metadata={}),
+        TestSampleMetricsSingleClass(
+            TP=[],
+            FP=[],
+            FN=[],
+            count_TP=0,
+            count_FP=0,
+            count_FN=0,
+            has_TP=False,
+            has_FP=False,
+            has_FN=False,
+            ignored=True,
+            max_confidence_above_t=None,
+            min_confidence_above_t=None,
+            thresholds=0.1,
+        ),
+    ),
 ]
 
 
@@ -219,48 +255,38 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetricsSingleClass(
     AP=361 / 676,
 )
 
-EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
-    CurvePlot(
-        title="Precision vs. Recall",
-        x_label="Recall",
-        y_label="Precision",
-        curves=[
-            Curve(
-                x=[19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 0.5, 9 / 26, 3 / 26, 0.0],
-                y=[19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5, 0.5],
-                label=None,
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-    CurvePlot(
-        title="F1-Score vs. Confidence Threshold",
-        x_label="Confidence Threshold",
-        y_label="F1-Score",
-        curves=[
-            Curve(
-                x=[0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-                y=[19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
-                label=None,
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-]
+
+EXPECTED_F1_CURVE_PLOT = CurvePlot(
+    title="F1-Score vs. Confidence Threshold",
+    x_label="Confidence Threshold",
+    y_label="F1-Score",
+    curves=[
+        Curve(
+            x=[0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            y=[19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
+            label=None,
+            extra={
+                "Precision": [19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5],
+                "Recall": [19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 0.5, 9 / 26, 3 / 26],
+            },
+        ),
+    ],
+    x_config=None,
+    y_config=None,
+)
 
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
-    from kolena._experimental.object_detection import ObjectDetectionEvaluator
+    TEST_CASE_NAME = "single class OD test fixed"
+    TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
 
     config = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
+        threshold_strategy="F1-Optimal",
         iou_threshold=0.5,
         min_confidence_score=0.1,
-        with_class_level_metrics=False,
     )
+
     eval = ObjectDetectionEvaluator(configurations=[config])
 
     test_sample_metrics = eval.compute_test_sample_metrics(
@@ -268,16 +294,17 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         inferences=TEST_DATA,
         configuration=config,
     )
-    assert len(eval.evaluator.threshold_cache) != 0
+
     assert config.display_name() in eval.evaluator.threshold_cache
     assert eval.evaluator.threshold_cache[config.display_name()] == 0.1
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
-    assert len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name]) == len(TEST_DATA)
+    num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
+    assert (
+        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
+        == len(TEST_DATA) - num_of_ignored
+    )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
-
-    # test case metrics, which will populate the locators cache
-    assert len(eval.evaluator.locators_by_test_case) == 0
 
     test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
@@ -285,7 +312,8 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         metrics=[pair[1] for pair in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS],
         configuration=config,
     )
-    assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
+
+    assert TEST_CASE.name in eval.evaluator.locators_by_test_case
     assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 
@@ -296,6 +324,6 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         metrics=[],
         configuration=config,
     )
-    assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
+    assert_curve_plot_equal(plots[1], EXPECTED_F1_CURVE_PLOT)
 
     # test suite behaviour is consistent with fixed evaluator

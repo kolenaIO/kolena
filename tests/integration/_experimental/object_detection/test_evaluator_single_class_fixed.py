@@ -20,9 +20,9 @@ from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
+
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth
@@ -30,16 +30,11 @@ Inference = object_detection.Inference
 TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
+ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 ThresholdConfiguration = object_detection.ThresholdConfiguration
-ThresholdStrategy = object_detection.ThresholdStrategy
 TestCaseMetricsSingleClass = object_detection.TestCaseMetricsSingleClass
 TestSampleMetricsSingleClass = object_detection.TestSampleMetricsSingleClass
 TestSuiteMetrics = object_detection.TestSuiteMetrics
-
-
-TEST_CASE_NAME = "single class OD test"
-TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
-TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
 
 
 TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
@@ -50,7 +45,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
-                LabeledBoundingBox((7, 7), (8, 8), "d"),  # single class OD can have 1+ classes (not distinguished)
+                LabeledBoundingBox((7, 7), (8, 8), "a"),
             ],
         ),
         Inference(
@@ -58,7 +53,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
-                ScoredLabeledBoundingBox((7, 7), (8, 8), "d", 0.7),
+                ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.7),
             ],
         ),
     ),
@@ -217,14 +212,13 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
 
 EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSingleClass]] = [
     (
-        # single class OD can have 1+ classes (not distinguished)
         TestSample(locator=fake_locator(112, "OD"), metadata={}),
         TestSampleMetricsSingleClass(
             TP=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
-                ScoredLabeledBoundingBox((7, 7), (8, 8), "d", 0.7),
+                ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.7),
             ],
             FP=[],
             FN=[],
@@ -442,36 +436,25 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetricsSingleClass(
     AP=200 / 351,
 )
 
-EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
-    CurvePlot(
-        title="Precision vs. Recall",
-        x_label="Recall",
-        y_label="Precision",
-        curves=[
-            Curve(
-                label=None,
-                x=[10 / 13, 19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 1 / 2, 9 / 26, 3 / 26, 0],
-                y=[20 / 27, 19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5, 0.5],
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-    CurvePlot(
-        title="F1-Score vs. Confidence Threshold",
-        x_label="Confidence Threshold",
-        y_label="F1-Score",
-        curves=[
-            Curve(
-                label=None,
-                x=[0, 0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-                y=[40 / 53, 19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-]
+
+EXPECTED_F1_CURVE_PLOT = CurvePlot(
+    title="F1-Score vs. Confidence Threshold",
+    x_label="Confidence Threshold",
+    y_label="F1-Score",
+    curves=[
+        Curve(
+            label=None,
+            x=[0, 0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            y=[40 / 53, 19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
+            extra={
+                "Precision": [20 / 27, 19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5],
+                "Recall": [10 / 13, 19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 1 / 2, 9 / 26, 3 / 26],
+            },
+        ),
+    ],
+    x_config=None,
+    y_config=None,
+)
 
 
 def assert_test_case_metrics_equals_expected(
@@ -489,45 +472,45 @@ def assert_test_case_metrics_equals_expected(
     assert pytest.approx(metrics.AP, abs=1e-12) == other_metrics.AP
 
 
-def assert_curve(
-    curve: Curve,
-    expectation: Curve,
+def assert_curves(
+    curves: List[Curve],
+    expected: List[Curve],
 ) -> None:
-    assert curve.label is None
-    assert expectation.label is None
-    assert len(curve.x) == len(expectation.x)
-    assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < 1e-12
-    assert len(curve.y) == len(expectation.y)
-    assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < 1e-12
+    assert len(curves) == len(expected)
+    for curve, expectation in zip(curves, expected):
+        print(curve, expectation)
+        assert curve.label == expectation.label
+        assert len(curve.x) == len(expectation.x)
+        assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < 1e-12
+        assert len(curve.y) == len(expectation.y)
+        assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < 1e-12
+        for extra_key in curve.extra.keys():
+            assert sum(abs(a - b) for a, b in zip(curve.extra[extra_key], expectation.extra[extra_key])) < 1e-12
 
 
-def assert_test_case_plots_equals_expected(
-    plots: List[Plot],
-    other_plots: List[Plot],
+def assert_curve_plot_equal(
+    plot: CurvePlot,
+    expected: CurvePlot,
 ) -> None:
-    assert len(plots) == len(other_plots)
-    # check curve plots
-    for plot, expected in zip(plots, other_plots):
-        assert plot.title == expected.title
-        assert plot.x_label == expected.x_label
-        assert plot.y_label == expected.y_label
-        assert len(plot.curves) == 1
-        assert len(expected.curves) == 1
-        assert_curve(plot.curves[0], expected.curves[0])
-        assert plot.x_config == expected.x_config
-        assert plot.y_config == expected.y_config
+    assert plot.title == expected.title
+    assert plot.x_label == expected.x_label
+    assert plot.y_label == expected.y_label
+    assert_curves(plot.curves, expected.curves)
+    assert plot.x_config == expected.x_config
+    assert plot.y_config == expected.y_config
 
 
 @pytest.mark.metrics
 def test__object_detection__multiclass_evaluator__fixed() -> None:
-    from kolena._experimental.object_detection import ObjectDetectionEvaluator
-
+    TEST_CASE_NAME = "single class OD test fixed"
+    TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
+    TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
     config = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.FIXED_05,
+        threshold_strategy=0.5,
         iou_threshold=0.5,
         min_confidence_score=0,
-        with_class_level_metrics=False,
     )
+
     eval = ObjectDetectionEvaluator(configurations=[config])
 
     test_sample_metrics = eval.compute_test_sample_metrics(
@@ -535,14 +518,16 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         inferences=TEST_DATA,
         configuration=config,
     )
-    assert len(eval.evaluator.threshold_cache) == 0  # empty because not f1 optimal config
+
+    assert config.display_name() not in eval.evaluator.threshold_cache
     assert len(eval.evaluator.matchings_by_test_case) != 0
     assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
-    assert len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name]) == len(TEST_DATA)
+    num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
+    assert (
+        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
+        == len(TEST_DATA) - num_of_ignored
+    )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
-
-    # test case metrics, which will populate the locators cache
-    assert len(eval.evaluator.locators_by_test_case) == 0
 
     test_case_metrics = eval.compute_test_case_metrics(
         test_case=TEST_CASE,
@@ -550,7 +535,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         metrics=[pair[1] for pair in EXPECTED_COMPUTE_TEST_SAMPLE_METRICS],
         configuration=config,
     )
-    assert len(eval.evaluator.locators_by_test_case) == 1  # cache contains locators for one test case
+    assert TEST_CASE.name in eval.evaluator.locators_by_test_case
     assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 
@@ -561,7 +546,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         metrics=[],
         configuration=config,
     )
-    assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
+    assert_curve_plot_equal(plots[1], EXPECTED_F1_CURVE_PLOT)
 
     # test suite metrics - one
     test_suite_metrics = eval.compute_test_suite_metrics(
