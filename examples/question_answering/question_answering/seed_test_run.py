@@ -32,7 +32,7 @@ from kolena.workflow.annotation import ClassificationLabel
 MODELS = ["gpt-3.5-turbo-0301", "gpt-3.5-turbo", "gpt-4-0314", "gpt-4"]
 
 
-def seed_test_run(args: Namespace) -> int:
+def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
     inference_mapping = {}
@@ -77,13 +77,9 @@ def seed_test_run(args: Namespace) -> int:
     return 0
 
 
-def main() -> None:
+if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument("test_suite", help="Name of the test suite to test.")
     ap.add_argument("model", type=str, choices=MODELS, help="Name of the model to test.")
 
-    sys.exit(seed_test_run(ap.parse_args()))
-
-
-if __name__ == "__main__":
-    main()
+    sys.exit(main(ap.parse_args()))

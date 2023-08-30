@@ -118,6 +118,9 @@ class QuestionAnswerEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         assert configuration is not None, "must specify configuration"
+        if len(inferences) == 0:
+            return []
+
         self.precomputed_metrics = {}
 
         for ts, _, _ in inferences:
@@ -168,7 +171,7 @@ class QuestionAnswerEvaluator(Evaluator):
         test_samples = [ts for ts, _, _ in inferences]
 
         plots: List[Plot] = [
-            compute_metric_bar_plot(test_case.name, metrics_of_interest, metric_values),
+            compute_metric_bar_plot(metrics_of_interest, metric_values),
             compute_score_distribution_plot("BERT_f1", metrics, (0, 1, 101)),
             compute_score_distribution_plot("ROUGE_1", metrics, (0, 1, 101)),
             compute_score_distribution_plot("ROUGE_L", metrics, (0, 1, 101)),
