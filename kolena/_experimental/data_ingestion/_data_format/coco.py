@@ -223,6 +223,14 @@ class CocoJsonInference(_CocoJsonDataFormat):
         # runs the evaluation
         test_suite = TestSuite(test_suite_name)
         test(model, test_suite, evaluator, reset=reset)
+    
+    def _get_image_id(self, locator: str) -> int:
+        """
+        e.g. s3://kolena-public-datasets/coco-2014-val/imgs/COCO_val2014_000000268396.jpg => 268396 
+        """
+        filename = locator.split("/")[-1]
+        image_id = filename.split(".")[0].split("_")[-1]
+        return int(image_id)
 
     def _get_infer(
         self,
@@ -232,7 +240,8 @@ class CocoJsonInference(_CocoJsonDataFormat):
         def infer(sample: TestSample) -> Inference:
             try:
                 locator = sample.locator
-                image_id = locator.split("/")[-1]
+                # TODO: maybe we should save the id for test samples
+                image_id = self._get_image_id(locator)
                 image_inferences = inf_map[image_id]
                 return Inference(
                     bboxes=image_inferences,
