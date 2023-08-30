@@ -18,8 +18,8 @@ from typing import Tuple
 from typing import Union
 
 import numpy as np
-from workflow import Inference
-from workflow import TestSampleMetrics
+from question_answering.workflow import Inference
+from question_answering.workflow import TestSampleMetrics
 
 from kolena.workflow import AxisConfig
 from kolena.workflow import BarPlot
