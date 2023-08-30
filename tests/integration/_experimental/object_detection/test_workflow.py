@@ -21,7 +21,6 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth
 Inference = object_detection.Inference
@@ -29,6 +28,7 @@ Model = object_detection.Model
 TestCase = object_detection.TestCase
 TestSample = object_detection.TestSample
 TestSuite = object_detection.TestSuite
+ThresholdStrategy = object_detection.ThresholdStrategy
 ThresholdConfiguration = object_detection.ThresholdConfiguration
 ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 
@@ -50,15 +50,6 @@ def test__object_detection__smoke() -> None:
             ],
         )
 
-    eval = ObjectDetectionEvaluator(
-        configurations=[
-            ThresholdConfiguration(
-                threshold_strategy="F1-Optimal",
-                iou_threshold=0.5,
-                min_confidence_score=0.0,
-            ),
-        ],
-    )
-
     model = Model(f"{name} model", infer=infer)
-    test(model, test_suite, eval, reset=True)
+
+    test(model, test_suite)

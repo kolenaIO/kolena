@@ -20,7 +20,6 @@ from typing import Tuple
 
 import numpy as np
 
-from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import TestCase
@@ -30,6 +29,7 @@ from kolena._experimental.object_detection import TestSampleMetricsSingleClass
 from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import TestSuiteMetrics
 from kolena._experimental.object_detection import ThresholdConfiguration
+from kolena._experimental.object_detection import ThresholdStrategy
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_f1_plot
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
@@ -150,7 +150,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: ThresholdConfiguration,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
     ) -> None:
-        if configuration.threshold_strategy != F1_OPTIMAL:
+        if configuration.threshold_strategy != ThresholdStrategy.F1_OPTIMAL:
             return
 
         if configuration.display_name() in self.threshold_cache.keys():
@@ -267,7 +267,12 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         return self.test_suite_metrics(unique_locators, average_precisions)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
-        if configuration.threshold_strategy == F1_OPTIMAL:
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_03:
+            return 0.3
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_05:
+            return 0.5
+        if configuration.threshold_strategy == ThresholdStrategy.FIXED_075:
+            return 0.75
+        if configuration.threshold_strategy == ThresholdStrategy.F1_OPTIMAL:
             return self.threshold_cache[configuration.display_name()]
-        else:
-            return configuration.threshold_strategy
+        raise RuntimeError(f"unrecognized threshold strategy: {configuration.threshold_strategy}")
