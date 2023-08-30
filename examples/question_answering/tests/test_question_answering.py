@@ -18,12 +18,12 @@ from question_answering.seed_test_run import main as seed_test_run_main
 from question_answering.seed_test_suite import main as seed_test_suite_main
 
 
-def test__seed_test_suite__smoke() -> None:
+def test__qa_seed_test_suite__smoke() -> None:
     args = Namespace(dataset_csv="s3://kolena-public-datasets/CoQA/metadata/metadata_head.csv")
     seed_test_suite_main(args)
 
 
-@pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke() -> None:
-    args = Namespace(model="gpt-3.5-turbo_head", test_suites=["question types :: CoQA"])
+@pytest.mark.depends(on=["test__qa_seed_test_suite__smoke"])
+def test__qa_seed_test_run__smoke() -> None:
+    args = Namespace(model="gpt-3.5-turbo_head", test_suite="question types :: CoQA")
     seed_test_run_main(args)
