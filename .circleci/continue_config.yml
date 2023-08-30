@@ -325,7 +325,7 @@ workflows:
       - example-test:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification ]
+              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering ]
               resource-class: [ small ]
               python-version: [ "3.9" ]
   example-evaluator:
