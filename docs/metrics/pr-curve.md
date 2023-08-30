@@ -68,7 +68,8 @@ compute the precision and recall values at each threhold.
 Using these precision and recall values, a PR curve can be plotted:
 
 <center>
-![pr.png](../assets/images/metrics-prcurve-example.png)
+![pr.png](../assets/images/metrics-prcurve-example-light.png#only-light)
+![pr.png](../assets/images/metrics-prcurve-example-dark.png#only-dark)
 </center>
 
 ### Example: Multiclass Classification
@@ -138,27 +139,26 @@ We are going to repeat this step to compute precision and recall for class `Boat
 Using these precision and recall values, per class PR curves can be plotted:
 
 <center>
-![pr.png](../assets/images/metrics-prcurve-example-multiclass.png)
+![pr.png](../assets/images/metrics-prcurve-example-multiclass-light.png#only-light)
+![pr.png](../assets/images/metrics-prcurve-example-multiclass-dark.png#only-dark)
 </center>
 
 
 ## Area Under the PR Curve (AUPRC)
 
-The area under the PR curve (AUPRC) is a **threshold-independent** metric that summarizes the performance of a model
-depicted by a PR curve. The greater the area, the better a model performs. The
+The area under the PR curve (AUPRC), also known as AUC-PR or PR-AUC, is a **threshold-independent** metric that
+summarizes the performance of a model depicted by a PR curve. The greater the area, the better a model performs. The
 [average precision](./average-precision.md) is one particular method for calculating the AUPRC. With PR curves, we
 can visually conclude which curves indicate that a certain class or model has a
 better performance.
 
 <center>
-![pr.png](../assets/images/metrics-prcurve.png)
+![pr.png](../assets/images/metrics-prcurve-light.png#only-light)
+![pr.png](../assets/images/metrics-prcurve-dark.png#only-dark)
 </center>
 
-In the plot above, we see that the blue curve has a higher precision than the orange curve for almost every recall
-value. This means that the model behind the blue curve performs better. There are many factors that might make the
-blue curve more jagged compared to the orange curve, such as having a lower number of thresholds (fewer points), poorly
-chosen thresholds, insufficient amounts of data, or changed model performance for different threshold ranges.
-
+In the plot above, we see that the cyan curve has a higher precision than the purple curve for almost every recall
+value. This means that the model behind the cyan curve performs better.
 
 ## Limitations and Biases
 
