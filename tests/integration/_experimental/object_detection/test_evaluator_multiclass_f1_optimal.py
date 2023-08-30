@@ -22,12 +22,11 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-from kolena.workflow.plot import Plot
 from tests.integration._experimental.object_detection.test_evaluator_multiclass_fixed import (
-    assert_test_case_metrics_equals_expected,
+    assert_curve_plot_equal,
 )
 from tests.integration._experimental.object_detection.test_evaluator_multiclass_fixed import (
-    assert_test_case_plots_equals_expected,
+    assert_test_case_metrics_equals_expected,
 )
 from tests.integration._experimental.object_detection.test_evaluator_multiclass_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
@@ -459,63 +458,56 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetrics(
     micro_F1=70 / 101,
 )
 
+EXPECTED_CONFUSION_MATRIX = ConfusionMatrix(
+    title="Confusion Matrix",
+    labels=["a", "b", "c", "d", "e"],
+    matrix=[[15, 0, 0, 0, 0], [0, 5, 0, 0, 0], [0, 0, 10, 0, 0], [0, 0, 0, 1, 0], [0, 1, 0, 0, 4]],
+    x_label="Predicted",
+    y_label="Actual",
+)
 
-EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
-    CurvePlot(
-        title="F1-Score vs. Confidence Threshold Per Class",
-        x_label="Confidence Threshold",
-        y_label="F1-Score",
-        curves=[
-            Curve(
-                x=[0.1, 0.4, 0.6, 0.8, 0.9, 1.0],
-                y=[15 / 19, 28 / 37, 13 / 18, 12 / 17, 0.6, 0.4],
-                label="a",
-                extra={
-                    "Precision": [0.75, 14 / 19, 13 / 18, 0.75, 0.75, 5 / 7],
-                    "Recall": [5 / 6, 7 / 9, 13 / 18, 6 / 9, 0.5, 5 / 18],
-                },
-            ),
-            Curve(
-                x=[0.4, 0.5, 0.9, 1],
-                y=[10 / 23, 4 / 11, 1 / 3, 0],
-                label="b",
-                extra={
-                    "Precision": [5 / 11, 0.4, 0.5, 0],
-                    "Recall": [5 / 12, 1 / 3, 1 / 4, 0],
-                },
-            ),
-            Curve(
-                x=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9],
-                y=[20 / 23, 16 / 21, 0.7, 12 / 19, 5 / 9, 8 / 17, 0.375, 1 / 7],
-                label="c",
-                extra={
-                    "Precision": [1, 1, 1, 1, 1, 1, 1, 1],
-                    "Recall": [10 / 13, 8 / 13, 7 / 13, 6 / 13, 5 / 13, 4 / 13, 3 / 13, 1 / 13],
-                },
-            ),
-            Curve(
-                x=[0.1, 0.6, 0.7, 0.8],
-                y=[8 / 15, 3 / 7, 4 / 13, 1 / 6],
-                label="e",
-                extra={"Precision": [0.8, 0.75, 6 / 9, 0.5], "Recall": [0.4, 0.3, 0.2, 0.1]},
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-    ConfusionMatrix(
-        title="placeholder",
-        labels=["Cat", "Dog"],
-        matrix=[[90, 10], [5, 95]],
-    ),
-    ConfusionMatrix(
-        title="Confusion Matrix",
-        labels=["a", "b", "c", "d", "e"],
-        matrix=[[15, 0, 0, 0, 0], [0, 5, 0, 0, 0], [0, 0, 10, 0, 0], [0, 0, 0, 1, 0], [0, 1, 0, 0, 4]],
-        x_label="Predicted",
-        y_label="Actual",
-    ),
-]
+EXPECTED_F1_CURVE_PLOT = CurvePlot(
+    title="F1-Score vs. Confidence Threshold Per Class",
+    x_label="Confidence Threshold",
+    y_label="F1-Score",
+    curves=[
+        Curve(
+            x=[0.1, 0.4, 0.6, 0.8, 0.9, 1.0],
+            y=[15 / 19, 28 / 37, 13 / 18, 12 / 17, 0.6, 0.4],
+            label="a",
+            extra={
+                "Precision": [0.75, 14 / 19, 13 / 18, 0.75, 0.75, 5 / 7],
+                "Recall": [5 / 6, 7 / 9, 13 / 18, 6 / 9, 0.5, 5 / 18],
+            },
+        ),
+        Curve(
+            x=[0.4, 0.5, 0.9, 1],
+            y=[10 / 23, 4 / 11, 1 / 3, 0],
+            label="b",
+            extra={
+                "Precision": [5 / 11, 0.4, 0.5, 0],
+                "Recall": [5 / 12, 1 / 3, 1 / 4, 0],
+            },
+        ),
+        Curve(
+            x=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9],
+            y=[20 / 23, 16 / 21, 0.7, 12 / 19, 5 / 9, 8 / 17, 0.375, 1 / 7],
+            label="c",
+            extra={
+                "Precision": [1, 1, 1, 1, 1, 1, 1, 1],
+                "Recall": [10 / 13, 8 / 13, 7 / 13, 6 / 13, 5 / 13, 4 / 13, 3 / 13, 1 / 13],
+            },
+        ),
+        Curve(
+            x=[0.1, 0.6, 0.7, 0.8],
+            y=[8 / 15, 3 / 7, 4 / 13, 1 / 6],
+            label="e",
+            extra={"Precision": [0.8, 0.75, 6 / 9, 0.5], "Recall": [0.4, 0.3, 0.2, 0.1]},
+        ),
+    ],
+    x_config=None,
+    y_config=None,
+)
 
 
 @pytest.mark.metrics
@@ -566,6 +558,7 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         metrics=[],
         configuration=config,
     )
-    assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
+    assert_curve_plot_equal(plots[0], EXPECTED_F1_CURVE_PLOT)
+    assert plots[2] == EXPECTED_CONFUSION_MATRIX
 
     # test suite behaviour is consistent with fixed evaluator

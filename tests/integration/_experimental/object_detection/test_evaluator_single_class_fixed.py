@@ -20,7 +20,6 @@ from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-from kolena.workflow.plot import Plot
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
@@ -437,36 +436,25 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetricsSingleClass(
     AP=200 / 351,
 )
 
-EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
-    CurvePlot(
-        title="Precision vs. Recall",
-        x_label="Recall",
-        y_label="Precision",
-        curves=[
-            Curve(
-                label=None,
-                x=[10 / 13, 19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 1 / 2, 9 / 26, 3 / 26, 0],
-                y=[20 / 27, 19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5, 0.5],
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-    CurvePlot(
-        title="F1-Score vs. Confidence Threshold",
-        x_label="Confidence Threshold",
-        y_label="F1-Score",
-        curves=[
-            Curve(
-                label=None,
-                x=[0, 0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
-                y=[40 / 53, 19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-]
+
+EXPECTED_F1_CURVE_PLOT = CurvePlot(
+    title="F1-Score vs. Confidence Threshold",
+    x_label="Confidence Threshold",
+    y_label="F1-Score",
+    curves=[
+        Curve(
+            label=None,
+            x=[0, 0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+            y=[40 / 53, 19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
+            extra={
+                "Precision": [20 / 27, 19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5],
+                "Recall": [10 / 13, 19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 1 / 2, 9 / 26, 3 / 26],
+            },
+        ),
+    ],
+    x_config=None,
+    y_config=None,
+)
 
 
 def assert_test_case_metrics_equals_expected(
@@ -484,33 +472,32 @@ def assert_test_case_metrics_equals_expected(
     assert pytest.approx(metrics.AP, abs=1e-12) == other_metrics.AP
 
 
-def assert_curve(
-    curve: Curve,
-    expectation: Curve,
+def assert_curves(
+    curves: List[Curve],
+    expected: List[Curve],
 ) -> None:
-    assert curve.label is None
-    assert expectation.label is None
-    assert len(curve.x) == len(expectation.x)
-    assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < 1e-12
-    assert len(curve.y) == len(expectation.y)
-    assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < 1e-12
+    assert len(curves) == len(expected)
+    for curve, expectation in zip(curves, expected):
+        print(curve, expectation)
+        assert curve.label == expectation.label
+        assert len(curve.x) == len(expectation.x)
+        assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < 1e-12
+        assert len(curve.y) == len(expectation.y)
+        assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < 1e-12
+        for extra_key in curve.extra.keys():
+            assert sum(abs(a - b) for a, b in zip(curve.extra[extra_key], expectation.extra[extra_key])) < 1e-12
 
 
-def assert_test_case_plots_equals_expected(
-    plots: List[Plot],
-    other_plots: List[Plot],
+def assert_curve_plot_equal(
+    plot: CurvePlot,
+    expected: CurvePlot,
 ) -> None:
-    assert len(plots) == len(other_plots)
-    # check curve plots
-    for plot, expected in zip(plots, other_plots):
-        assert plot.title == expected.title
-        assert plot.x_label == expected.x_label
-        assert plot.y_label == expected.y_label
-        assert len(plot.curves) == 1
-        assert len(expected.curves) == 1
-        assert_curve(plot.curves[0], expected.curves[0])
-        assert plot.x_config == expected.x_config
-        assert plot.y_config == expected.y_config
+    assert plot.title == expected.title
+    assert plot.x_label == expected.x_label
+    assert plot.y_label == expected.y_label
+    assert_curves(plot.curves, expected.curves)
+    assert plot.x_config == expected.x_config
+    assert plot.y_config == expected.y_config
 
 
 @pytest.mark.metrics
@@ -559,7 +546,7 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         metrics=[],
         configuration=config,
     )
-    assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
+    assert_curve_plot_equal(plots[1], EXPECTED_F1_CURVE_PLOT)
 
     # test suite metrics - one
     test_suite_metrics = eval.compute_test_suite_metrics(

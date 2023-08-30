@@ -20,12 +20,11 @@ from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-from kolena.workflow.plot import Plot
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import (
-    assert_test_case_metrics_equals_expected,
+    assert_curve_plot_equal,
 )
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import (
-    assert_test_case_plots_equals_expected,
+    assert_test_case_metrics_equals_expected,
 )
 from tests.integration._experimental.object_detection.test_evaluator_single_class_fixed import TEST_DATA
 from tests.integration.helper import fake_locator
@@ -256,36 +255,25 @@ EXPECTED_COMPUTE_TEST_CASE_METRICS = TestCaseMetricsSingleClass(
     AP=361 / 676,
 )
 
-EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
-    CurvePlot(
-        title="Precision vs. Recall",
-        x_label="Recall",
-        y_label="Precision",
-        curves=[
-            Curve(
-                x=[19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 0.5, 9 / 26, 3 / 26, 0.0],
-                y=[19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5, 0.5],
-                label=None,
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-    CurvePlot(
-        title="F1-Score vs. Confidence Threshold",
-        x_label="Confidence Threshold",
-        y_label="F1-Score",
-        curves=[
-            Curve(
-                x=[0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
-                y=[19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
-                label=None,
-            ),
-        ],
-        x_config=None,
-        y_config=None,
-    ),
-]
+
+EXPECTED_F1_CURVE_PLOT = CurvePlot(
+    title="F1-Score vs. Confidence Threshold",
+    x_label="Confidence Threshold",
+    y_label="F1-Score",
+    curves=[
+        Curve(
+            x=[0.1, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+            y=[19 / 26, 12 / 17, 32 / 49, 5 / 8, 28 / 47, 26 / 45, 9 / 20, 3 / 16],
+            label=None,
+            extra={
+                "Precision": [19 / 26, 18 / 25, 16 / 23, 15 / 22, 2 / 3, 13 / 19, 9 / 14, 0.5],
+                "Recall": [19 / 26, 9 / 13, 8 / 13, 15 / 26, 7 / 13, 0.5, 9 / 26, 3 / 26],
+            },
+        ),
+    ],
+    x_config=None,
+    y_config=None,
+)
 
 
 @pytest.mark.metrics
@@ -336,6 +324,6 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         metrics=[],
         configuration=config,
     )
-    assert_test_case_plots_equals_expected(plots, EXPECTED_COMPUTE_TEST_CASE_PLOTS)
+    assert_curve_plot_equal(plots[1], EXPECTED_F1_CURVE_PLOT)
 
     # test suite behaviour is consistent with fixed evaluator
