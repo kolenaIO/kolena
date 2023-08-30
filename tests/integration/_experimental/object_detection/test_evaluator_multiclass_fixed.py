@@ -718,46 +718,49 @@ EXPECTED_COMPUTE_TEST_CASE_PLOTS: List[Plot] = [
         y_label="F1-Score",
         curves=[
             Curve(
-                x=[0, 0.1, 0.4, 0.6, 0.7, 0.8, 0.9, 1],
-                y=[32 / 39, 15 / 19, 28 / 37, 13 / 18, 24 / 35, 12 / 17, 0.6, 0.4],
+                x=[0, 0.1, 0.4, 0.6, 0.8, 0.9, 1],
+                y=[32 / 39, 15 / 19, 28 / 37, 13 / 18, 12 / 17, 0.6, 0.4],
                 label="a",
+                extra={
+                    "Precision": [16 / 21, 0.75, 14 / 19, 13 / 18, 0.75, 0.75, 5 / 7],
+                    "Recall": [8 / 9, 5 / 6, 7 / 9, 13 / 18, 6 / 9, 0.5, 5 / 18],
+                },
             ),
             Curve(
-                x=[0, 0.1, 0.3, 0.4, 0.5, 0.6, 0.7, 0.9, 1],
-                y=[10 / 27, 5 / 13, 5 / 12, 10 / 23, 4 / 11, 0.3, 6 / 19, 1 / 3, 0],
+                x=[0.4, 0.5, 0.9, 1],
+                y=[10 / 23, 4 / 11, 1 / 3, 0],
                 label="b",
+                extra={
+                    "Precision": [5 / 11, 0.4, 0.5, 0],
+                    "Recall": [5 / 12, 1 / 3, 0.25, 0],
+                },
             ),
             Curve(
                 x=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 0.9],
                 y=[20 / 23, 16 / 21, 14 / 20, 12 / 19, 5 / 9, 8 / 17, 3 / 8, 1 / 7],
                 label="c",
+                extra={
+                    "Precision": [1, 1, 1, 1, 1, 1, 1, 1],
+                    "Recall": [10 / 13, 8 / 13, 7 / 13, 6 / 13, 5 / 13, 4 / 13, 3 / 13, 1 / 13],
+                },
             ),
-            Curve(x=[0, 0.1, 0.6, 0.7, 0.8], y=[5 / 8, 8 / 15, 3 / 7, 4 / 13, 1 / 6], label="e"),
+            Curve(
+                x=[0, 0.1, 0.6, 0.7, 0.8],
+                y=[5 / 8, 8 / 15, 3 / 7, 4 / 13, 1 / 6],
+                label="e",
+                extra={
+                    "Precision": [5 / 6, 0.8, 0.75, 6 / 9, 0.5],
+                    "Recall": [0.5, 0.4, 0.3, 0.2, 0.1],
+                },
+            ),
         ],
         x_config=None,
         y_config=None,
     ),
-    CurvePlot(
-        title="Precision vs. Recall Per Class",
-        x_label="Recall",
-        y_label="Precision",
-        curves=[
-            Curve(
-                x=[8 / 9, 5 / 6, 7 / 9, 13 / 18, 6 / 9, 0.5, 5 / 18, 0],
-                y=[16 / 21, 0.75, 14 / 19, 13 / 18, 0.75, 0.75, 5 / 7, 5 / 7],
-                label="a",
-            ),
-            Curve(x=[5 / 12, 1 / 3, 0.25, 0], y=[5 / 11, 0.4, 0.5, 0], label="b"),
-            Curve(
-                x=[10 / 13, 8 / 13, 7 / 13, 6 / 13, 5 / 13, 4 / 13, 3 / 13, 1 / 13, 0],
-                y=[1, 1, 1, 1, 1, 1, 1, 1, 1],
-                label="c",
-            ),
-            Curve(x=[1, 0], y=[1, 1], label="d"),
-            Curve(x=[0.5, 0.4, 0.3, 0.2, 0.1, 0], y=[5 / 6, 0.8, 0.75, 6 / 9, 0.5, 0.5], label="e"),
-        ],
-        x_config=None,
-        y_config=None,
+    ConfusionMatrix(
+        title="placeholder",
+        labels=["Cat", "Dog"],
+        matrix=[[90, 10], [5, 95]],
     ),
     ConfusionMatrix(
         title="Confusion Matrix",
@@ -810,6 +813,8 @@ def assert_curves(
         assert sum(abs(a - b) for a, b in zip(curve.x, expectation.x)) < 1e-12
         assert len(curve.y) == len(expectation.y)
         assert sum(abs(a - b) for a, b in zip(curve.y, expectation.y)) < 1e-12
+        for extra_key in curve.extra.keys():
+            assert sum(abs(a - b) for a, b in zip(curve.extra[extra_key], expectation.extra[extra_key])) < 1e-12
 
 
 def assert_test_case_plots_equals_expected(
@@ -817,14 +822,15 @@ def assert_test_case_plots_equals_expected(
     other_plots: List[Plot],
 ) -> None:
     assert len(plots) == len(other_plots)
-    # check curve plots
-    for plot, expected in zip(plots[:2], other_plots[:2]):
-        assert plot.title == expected.title
-        assert plot.x_label == expected.x_label
-        assert plot.y_label == expected.y_label
-        assert_curves(plot.curves, expected.curves)
-        assert plot.x_config == expected.x_config
-        assert plot.y_config == expected.y_config
+    # check one plot (curve.extra contains other plot)
+    plot = plots[0]
+    expected = other_plots[0]
+    assert plot.title == expected.title
+    assert plot.x_label == expected.x_label
+    assert plot.y_label == expected.y_label
+    assert_curves(plot.curves, expected.curves)
+    assert plot.x_config == expected.x_config
+    assert plot.y_config == expected.y_config
 
     # check confusion matrix
     assert plots[2] == other_plots[2]
