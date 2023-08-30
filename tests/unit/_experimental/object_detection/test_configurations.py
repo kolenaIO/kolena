@@ -21,7 +21,6 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth
 Inference = object_detection.Inference
-ThresholdStrategy = object_detection.ThresholdStrategy
 ThresholdConfiguration = object_detection.ThresholdConfiguration
 
 evaluator_multiclass = pytest.importorskip(
@@ -45,16 +44,14 @@ def test__object_detection__multiple_configurations__multiclass() -> None:
     )
 
     config_one = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.FIXED_05,
+        threshold_strategy=0.5,
         iou_threshold=0.5,
-        with_class_level_metrics=True,
         min_confidence_score=0.001,
     )
 
     config_two = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.FIXED_03,
+        threshold_strategy=0.3,
         iou_threshold=1,
-        with_class_level_metrics=True,
         min_confidence_score=0.0,
     )
 
@@ -87,16 +84,14 @@ def test__object_detection__multiple_configurations__single_class() -> None:
     )
 
     config_one = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.FIXED_05,
+        threshold_strategy=0.5,
         iou_threshold=0.5,
-        with_class_level_metrics=False,
         min_confidence_score=0.001,
     )
 
     config_two = ThresholdConfiguration(
-        threshold_strategy=ThresholdStrategy.FIXED_03,
+        threshold_strategy=0.3,
         iou_threshold=1,
-        with_class_level_metrics=False,
         min_confidence_score=0.0,
     )
 

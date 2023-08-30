@@ -12,9 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
-from enum import Enum
 from typing import List
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 from typing import Optional
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -30,6 +36,9 @@ from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
+
+
+F1_OPTIMAL = "F1-Optimal"
 
 
 @dataclass(frozen=True)
@@ -170,39 +179,15 @@ class TestCaseMetrics(MetricsTestCase):
     macro_Recall: float
     macro_F1: float
     mean_AP: float
+    micro_Precision: float
+    micro_Recall: float
+    micro_F1: float
 
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     mean_AP: float
-
-
-class ThresholdStrategy(str, Enum):
-    """
-    Threshold strategy enumerations used in
-    [`ThresholdConfiguration`][kolena._experimental.object_detection.ThresholdConfiguration].
-    """
-
-    F1_OPTIMAL = "F1_OPTIMAL"
-    """Confidence threshold that yields the most optimal F1-score."""
-    FIXED_03 = "FIXED_03"
-    """Confidence threshold fixed at 0.3."""
-    FIXED_05 = "FIXED_05"
-    """Confidence threshold fixed at 0.5."""
-    FIXED_075 = "FIXED_075"
-    """Confidence threshold fixed at 0.75."""
-
-    def display_name(self) -> str:
-        if self is ThresholdStrategy.FIXED_03:
-            return "Fixed(0.3)"
-        if self is ThresholdStrategy.FIXED_05:
-            return "Fixed(0.5)"
-        if self is ThresholdStrategy.FIXED_075:
-            return "Fixed(0.75)"
-        if self is ThresholdStrategy.F1_OPTIMAL:
-            return "F1-Optimal"
-        raise RuntimeError(f"unrecognized threshold strategy: {self}")
 
 
 @dataclass(frozen=True)
@@ -212,17 +197,12 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Specify a confidence and IoU threshold to apply to all classes.
     """
 
-    threshold_strategy: ThresholdStrategy
-    """The confidence threshold strategy."""
+    threshold_strategy: Union[Literal["F1-Optimal"], float]
+    """The confidence threshold strategy. It can either be `F1_OPTIMAL="F1-Optimal"` or a fixed confidence threshold
+    such as `0.3` or `0.75`."""
 
     iou_threshold: float
     """The [IoU ↗](../../metrics/iou.md) threshold."""
-
-    with_class_level_metrics: bool
-    """
-    The flag that enables multiclass evaluation. If it's set to `False` on a multiclass `TestSuite`, it will only
-    perform localization evaluation by treating it as a binary class problem.
-    """
 
     min_confidence_score: float = 0.0
     """
@@ -232,7 +212,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
 
     def display_name(self) -> str:
         return (
-            f"Threshold: {self.threshold_strategy.display_name()}"
-            f"{' by class' if self.with_class_level_metrics else ''}, "
-            f"IoU: {self.iou_threshold}, confidence ≥ {self.min_confidence_score}"
+            f"Confidence Threshold: {self.threshold_strategy}, "
+            f"IoU: {self.iou_threshold}, "
+            f"min confidence ≥ {self.min_confidence_score}"
         )
