@@ -22,6 +22,7 @@ from typing import Type
 from kolena._experimental.data_ingestion._data_format.base import BaseDataFormat
 from kolena._experimental.data_ingestion._types import DataIngestionConfig
 from kolena._experimental.data_ingestion._utils.io import load_json
+from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import Model
@@ -30,7 +31,6 @@ from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import ThresholdConfiguration
-from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena.workflow import Model as BaseModel
 from kolena.workflow import TestCase as BaseTestCase
 from kolena.workflow import TestSuite as BaseTestSuite
