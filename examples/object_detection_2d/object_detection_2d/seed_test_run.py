@@ -25,7 +25,6 @@ from object_detection_2d.constants import TRANSPORTATION_LABELS
 from object_detection_2d.constants import WORKFLOW
 
 import kolena
-from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import Model
 from kolena._experimental.object_detection import ObjectDetectionEvaluator
@@ -121,7 +120,6 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
                 min_confidence_score=0.2,
             ),
             ThresholdConfiguration(
-                threshold_strategy=F1_OPTIMAL,
                 iou_threshold=0.5,
                 min_confidence_score=0.0,
             ),

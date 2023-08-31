@@ -515,7 +515,6 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
     TEST_CASE_NAME = "multiclass OD test"
     TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
     config = ThresholdConfiguration(
-        threshold_strategy="F1-Optimal",
         iou_threshold=0.5,
         min_confidence_score=0.1,
     )

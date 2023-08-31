@@ -13,14 +13,7 @@
 # limitations under the License.
 import dataclasses
 from typing import List
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
 from typing import Optional
-from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -36,9 +29,6 @@ from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
-
-
-F1_OPTIMAL = "F1-Optimal"
 
 
 @dataclass(frozen=True)
@@ -197,9 +187,9 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Specify a confidence and IoU threshold to apply to all classes.
     """
 
-    threshold_strategy: Union[Literal["F1-Optimal"], float]
-    """The confidence threshold strategy. It can either be `F1_OPTIMAL="F1-Optimal"` or a fixed confidence threshold
-    such as `0.3` or `0.75`."""
+    threshold_strategy: Optional[float] = None
+    """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
+    the F1-optimal threshold by default."""
 
     iou_threshold: float
     """The [IoU ↗](../../metrics/iou.md) threshold."""
@@ -212,7 +202,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
 
     def display_name(self) -> str:
         return (
-            f"Confidence Threshold: {self.threshold_strategy}, "
+            f"Confidence Threshold: {'F1-Optimal' if self.threshold_strategy is None else ''}, "
             f"IoU: {self.iou_threshold}, "
             f"min confidence ≥ {self.min_confidence_score}"
         )
