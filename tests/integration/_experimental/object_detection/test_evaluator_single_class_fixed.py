@@ -506,8 +506,8 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
     TEST_CASE = TestCase(with_test_prefix(TEST_CASE_NAME + " case"))
     TEST_SUITE = TestSuite(with_test_prefix(TEST_CASE_NAME + " suite"))
     config = ThresholdConfiguration(
-        threshold_strategy=0.5,
         iou_threshold=0.5,
+        threshold_strategy=0.5,
         min_confidence_score=0,
     )
 

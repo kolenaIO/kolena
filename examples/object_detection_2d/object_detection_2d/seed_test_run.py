@@ -115,8 +115,8 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
     return ObjectDetectionEvaluator(
         configurations=[
             ThresholdConfiguration(
-                threshold_strategy=0.3,
                 iou_threshold=0.3,
+                threshold_strategy=0.3,
                 min_confidence_score=0.2,
             ),
             ThresholdConfiguration(
