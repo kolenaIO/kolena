@@ -51,12 +51,7 @@ def test__object_detection__smoke() -> None:
         )
 
     eval = ObjectDetectionEvaluator(
-        configurations=[
-            ThresholdConfiguration(
-                iou_threshold=0.5,
-                min_confidence_score=0.0,
-            ),
-        ],
+        configurations=[ThresholdConfiguration()],
     )
 
     model = Model(f"{name} model", infer=infer)

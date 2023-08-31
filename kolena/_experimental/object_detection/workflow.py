@@ -13,7 +13,14 @@
 # limitations under the License.
 import dataclasses
 from typing import List
+
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
+
 from typing import Optional
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -187,12 +194,12 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Specify a confidence and IoU threshold to apply to all classes.
     """
 
-    threshold_strategy: Optional[float] = None
+    threshold_strategy: Union[Literal["F1-optimal"], float] = "F1-optimal"
     """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
     the F1-optimal threshold by default."""
 
-    iou_threshold: float
-    """The [IoU ↗](../../metrics/iou.md) threshold."""
+    iou_threshold: float = 0.5
+    """The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`."""
 
     min_confidence_score: float = 0.0
     """
@@ -202,7 +209,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
 
     def display_name(self) -> str:
         return (
-            f"Confidence Threshold: {'F1-Optimal' if self.threshold_strategy is None else ''}, "
+            f"Confidence Threshold: {self.threshold_strategy}, "
             f"IoU: {self.iou_threshold}, "
             f"min confidence ≥ {self.min_confidence_score}"
         )

@@ -174,7 +174,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         configuration: ThresholdConfiguration,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
     ) -> None:
-        if configuration.threshold_strategy is not None:
+        if configuration.threshold_strategy != "F1-optimal":
             return
 
         if configuration.display_name() in self.threshold_cache.keys():
@@ -404,7 +404,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         return self.test_suite_metrics(unique_locators, average_precisions)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
-        if configuration.threshold_strategy is None:
+        if configuration.threshold_strategy == "F1-optimal":
             return self.threshold_cache[configuration.display_name()]
         else:
             return defaultdict(lambda: configuration.threshold_strategy)
