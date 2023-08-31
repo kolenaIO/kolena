@@ -38,9 +38,6 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 
-F1_OPTIMAL = "F1-Optimal"
-
-
 @dataclass(frozen=True)
 class TestSample(Image):
     """The [`Image`][kolena.workflow.Image] sample type for the pre-built 2D Object Detection workflow."""
@@ -197,12 +194,12 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Specify a confidence and IoU threshold to apply to all classes.
     """
 
-    threshold_strategy: Union[Literal["F1-Optimal"], float]
-    """The confidence threshold strategy. It can either be `F1_OPTIMAL="F1-Optimal"` or a fixed confidence threshold
-    such as `0.3` or `0.75`."""
+    threshold_strategy: Union[Literal["F1-Optimal"], float] = "F1-Optimal"
+    """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
+    the F1-optimal threshold by default."""
 
-    iou_threshold: float
-    """The [IoU ↗](../../metrics/iou.md) threshold."""
+    iou_threshold: float = 0.5
+    """The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`."""
 
     min_confidence_score: float = 0.0
     """
