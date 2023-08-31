@@ -194,7 +194,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Specify a confidence and IoU threshold to apply to all classes.
     """
 
-    threshold_strategy: Union[Literal["F1-optimal"], float] = "F1-optimal"
+    threshold_strategy: Union[Literal["F1-Optimal"], float] = "F1-Optimal"
     """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
     the F1-optimal threshold by default."""
 

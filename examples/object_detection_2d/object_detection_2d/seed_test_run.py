@@ -120,6 +120,7 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
                 min_confidence_score=0.2,
             ),
             ThresholdConfiguration(
+                threshold_strategy="F1-Optimal",
                 iou_threshold=0.5,
                 min_confidence_score=0.0,
             ),
