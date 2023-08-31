@@ -30,7 +30,7 @@ from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestSample
 from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import ThresholdConfiguration
-from kolena._experimental.object_detection import ThresholdStrategy
+from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena.workflow import Model as BaseModel
 from kolena.workflow import TestCase as BaseTestCase
 from kolena.workflow import TestSuite as BaseTestSuite
@@ -196,13 +196,13 @@ class CocoJsonInference(_CocoJsonDataFormat):
         return ObjectDetectionEvaluator(
             configurations=[
                 ThresholdConfiguration(
-                    threshold_strategy=ThresholdStrategy.FIXED_03,
+                    threshold_strategy=0.3,
                     iou_threshold=0.3,
                     with_class_level_metrics=True,
                     min_confidence_score=0.2,
                 ),
                 ThresholdConfiguration(
-                    threshold_strategy=ThresholdStrategy.F1_OPTIMAL,
+                    threshold_strategy=F1_OPTIMAL,
                     iou_threshold=0.5,
                     with_class_level_metrics=True,
                     min_confidence_score=0.0,
