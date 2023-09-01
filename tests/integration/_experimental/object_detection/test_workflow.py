@@ -37,13 +37,13 @@ ObjectDetectionEvaluator = object_detection.ObjectDetectionEvaluator
 def test__object_detection__smoke() -> None:
     name = with_test_prefix(f"{__file__} test__multiclass__object_detection__smoke")
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
-    ground_truth = GroundTruth(bboxes=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
+    ground_truth = GroundTruth(objects=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
     test_case = TestCase(f"{name} test case", test_samples=[(test_sample, ground_truth)])
     test_suite = TestSuite(f"{name} test suite", test_cases=[test_case])
 
     def infer(_: TestSample) -> Inference:
         return Inference(
-            bboxes=[
+            objects=[
                 ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="b", score=random.random()),
                 ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1.1, 1.1), label="a", score=random.random()),
                 ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1.01, 1.01), label="a", score=0.99),
