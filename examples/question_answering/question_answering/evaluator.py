@@ -17,7 +17,6 @@ from typing import Optional
 from typing import Tuple
 
 import evaluate
-import pandas as pd
 from question_answering.utils import compute_metric_bar_plot
 from question_answering.utils import compute_metric_vs_metric_plot
 from question_answering.utils import compute_score_distribution_plot
@@ -49,20 +48,6 @@ class QuestionAnswerEvaluator(Evaluator):
     test_samples_by_test_case: Dict[str, Dict[str, List[int]]] = {}  # test_case -> data_id -> turns
     """The cache for all test samples by test case."""
 
-    precomputed_metrics: Dict[str, Dict[int, Dict[str, float]]] = {}  # data_id -> turn -> dict of metrics
-    """The cache for all precomputed metrics."""
-
-    def populate_cache(self, file_path: str) -> None:
-        df = pd.read_csv(file_path)
-        metrics = ["BERT_prec", "BERT_rec", "BERT_f1", "ROUGE_1", "ROUGE_2", "ROUGE_L"]
-
-        for _, row in df.iterrows():
-            data_id = row["data_id"]
-            turn = row["turn"]
-            values_dict = {col: round(row[col], 6) for col in metrics}
-
-            self.precomputed_metrics.setdefault(data_id, {})[turn] = values_dict
-
     def compute_metrics(self, norm_gt_answer: str, norm_inf_answer: str) -> Dict[str, float]:
         bertscore_results = bertscore.compute(
             predictions=[norm_inf_answer],
@@ -92,12 +77,8 @@ class QuestionAnswerEvaluator(Evaluator):
         gt: GroundTruth,
         inf: Inference,
         configuration: ThresholdConfiguration,
-        is_cached: bool,
     ):
-        if is_cached:
-            results = self.precomputed_metrics[ts.data_id][ts.turn]
-        else:
-            results = self.compute_metrics(gt.clean_answer, inf.clean_answer)
+        results = self.compute_metrics(gt.clean_answer, inf.clean_answer)
 
         custom_metric = round((results["BERT_f1"] + results["ROUGE_1"]) / 2, 3)
         return TestSampleMetrics(
@@ -121,20 +102,10 @@ class QuestionAnswerEvaluator(Evaluator):
         if len(inferences) == 0:
             return []
 
-        self.precomputed_metrics = {}
-
         for ts, _, _ in inferences:
             self.test_samples_by_test_case.setdefault(test_case.name, {}).setdefault(ts.data_id, []).append(ts.turn)
 
-        # use precomputed metrics if possible
-        first_inference_src = inferences[0][2].source
-        is_cached = first_inference_src.startswith("s3://")
-        if is_cached:
-            self.populate_cache(first_inference_src.replace("results", "metrics"))
-
-        return [
-            (ts, self.compute_test_sample_metric(ts, gt, inf, configuration, is_cached)) for ts, gt, inf in inferences
-        ]
+        return [(ts, self.compute_test_sample_metric(ts, gt, inf, configuration)) for ts, gt, inf in inferences]
 
     def compute_test_case_metrics(
         self,
