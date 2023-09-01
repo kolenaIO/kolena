@@ -2,7 +2,7 @@
 icon: simple/microsoftazure
 ---
 
-# Connecting Cloud Storage: <nobr>:simple-amazons3: Azure Blob Storage</nobr>
+# Connecting Cloud Storage: <nobr>:simple-microsoftazure: Azure Blob Storage</nobr>
 
 Kolena connects with [Azure Blob Storage](https://azure.microsoft.com/en-ca/products/storage/blobs) to load files (e.g. images, videos, documents) directly
 into your browser for visualization. In this tutorial, we'll learn how to establish an integration between Kolena and
@@ -12,85 +12,71 @@ To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
 page and click "Add Integration", then "Azure Blob Storage".
 
-### Step 1: Select Integration Scope
+### Step 1: Create Azure App Registration for Kolena
 
 Azure Blob Storage integrations load resources using [shared access signatures](https://learn.microsoft.com/en-us/azure/storage/common/storage-sas-overview).
-Kolena generates these signatures by temporarily [assuming an IAM role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use.html)
-that has access to the specified bucket(s).
+Kolena generates these signatures using delegated access to these resources.
+We will generate an App registration for Kolena in Azure and then grant permissions to this registration:
 
-By default, Kolena will assume this role when loading objects from any permitted bucket.
-Alternatively, if you wish for Kolena to assume this role only while loading objects from one bucket, uncheck
-"Use role by default for all permitted buckets?" and specify the name of an S3 bucket.
+1. From the [Azure portal](https://portal.azure.com/#home), search for "App registrations" and navigate to this page
+1. Click "New Registration"
+    1. Under "Supported account types", select "Accounts in any organizational directory"
+    1. Click "Register" to save the App registration
+1. Click on the App registration you have created
+1. Note the "Tenant ID" and "Application (client) ID"
+1. Click "Certificates & secrets", then "New client secret"
+    1. Click "Add" to save this secret and note the key value
 
-Click "Next".
+### Step 2: Grant Permissions to App Reigration
 
-!!! note "Note: Scoping Integrations"
+We will grant two permissions to the App registration created above:
 
-    If "Use role by default for all permitted buckets?" is selected, Kolena will load any locators beginning with
-    `s3://` by assuming the role configured for this Integration and generating a presigned URL.
+1. Storage Blob Delegator permission at the storage account level
+1. Storage Blob Data Reader at the container level
 
-    Scoping the Integration to one bucket (e.g. `my-bucket`) means Kolena will only assume the role when generating
-    presigned URLs for locators of the form `s3://my-bucket/*`.
+First we will grant Storage Blob Delegator permission:
 
-### Step 2: Create an Access Policy in AWS
+1. Navigate to the storage account containing your blobs
+1. Click "Access Control (IAM)"
+1. Click the "Role assignments" tab
+    1. Click "Add", then "Add role assignment"
+1. Search for and select "Storage Blob Delegator"
+1. Click on the "Members" tab, then click "Select members"
+    1. Search for the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)
+    1. Click "Select"
+1. Click "Review + assign" to save
 
-If you selected "Use role by default for all permitted buckets?" in the previous step, you must now choose which buckets
-Kolena is permitted to load objects from.
-Enter these bucket names.
+Next, we will grant Storage Blob Data Reader permission:
 
-When you have entered the bucket names, you will see an "Access Policy JSON" rendered to your page.
-Copy this JSON.
+1. From the storage account, click "Containers" under "Data Storage" and click on the container containing your blobs
+1. Click "Access Control (IAM)"
+1. Click the "Role assignments" tab
+    1. Click "Add", then "Add role assignment"
+1. Search for and select "Storage Blob Data Reader"
+1. Click on the "Members" tab, then click "Select members"
+    1. Search for the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)
+    1. Click "Select"
+1. Click "Review + assign" to save
 
-!!! note "Note: IAM Write Permission Required"
+### Step 3: Save Integration in Kolena
 
-    You will require IAM write permissions within your AWS account to perform the next step.
+Return to Kolena and fill in the fields for the Integration and then click "Save".
 
-In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
-
-1. Click the "Create Policy" button and select the "JSON" tab.
-2. Paste the "Access Policy JSON" copied previously.
-3. Click through the "Next" buttons, adding the desired name, description, and tags.
-
-### Step 3: Create a Role For Kolena to Assume
-
-Return to Kolena and copy the "Trust Policy JSON".
-
-In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/roles">IAM roles page</a> and follow these steps:
-
-1. Click the "Create role" button and select "Custom trust policy".
-2. Paste the "Trust Policy JSON" you copied above and click "Next".
-3. Search for and select the access policy created in [step 2](#step-2-create-an-access-policy-in-aws). Click "Next".
-4. Provide a role name and review the permissions, then click "Create role".
-
-**Copy the role's ARN for use in the next step.**
-
-### Step 4: Save Integration
-
-Return to Kolena and fill in the remaining fields for the Integration and then click "Save".
-
-| Field    | Description                                                                         |
-| -------- | ----------------------------------------------------------------------------------- |
-| Role ARN | The ARN of the role created in [step 3](#step-3-create-a-role-for-kolena-to-assume) |
-| Region   | The region your buckets will be accessed from (e.g. `us-east-1`)                    |
+| Field                    | Description                                                                                                                                                                                        |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tenant ID                | The Tenant ID of the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                                        |
+| Client ID                | The Application (client) ID of the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                          |
+| Client Secret            | The secret key for the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                                      |
+| Storage Account Name     | The storage account in Azure you wish to connect to                                                                                                                                                |
+| Storage Blob EndpointURL | The endpoint for accessing the storage account. Can be found in "Endpoints" under "Settings" for your storage account. Usually of the form `https://<storage-account-name>.blob.core.windows.net/` |
 
 ## Appendix
 
-### Allow CORS Access to Bucket
+### Provide CORS access to Kolena
 
 In some scenarios, CORS permissions are required for Kolena to render content from your bucket.
 
-To configure CORS access, navigate to your S3 bucket inside your AWS console and follow these steps:
+To configure CORS access, navigate to your storage account in the Azure portal and follow these steps:
 
-1. Click on the "Permissions" tab and navigate to the "Cross-origin resource sharing (CORS)" section.
-2. Click "Edit" and add the following JSON snippet:
-
-```json
-[
-  {
-    "AllowedHeaders": ["*"],
-    "AllowedMethods": ["GET"],
-    "AllowedOrigins": ["https://app.kolena.io"],
-    "ExposeHeaders": []
-  }
-]
-```
+1. Click "Resource Sharing (CORS)" under "Settings"
+1. Add `https://app.kolena.io` as an allowed origin with `GET` as an allowed method
