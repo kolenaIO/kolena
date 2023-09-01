@@ -19,24 +19,40 @@ from typing import List
 from typing import Tuple
 from typing import Type
 
+from pydantic.dataclasses import dataclass
+
 from kolena._experimental.data_ingestion._data_format.base import BaseDataFormat
 from kolena._experimental.data_ingestion._types import DataIngestionConfig
 from kolena._experimental.data_ingestion._utils.io import load_json
 from kolena._experimental.object_detection import F1_OPTIMAL
 from kolena._experimental.object_detection import GroundTruth
 from kolena._experimental.object_detection import Inference
-from kolena._experimental.object_detection import Model
 from kolena._experimental.object_detection import ObjectDetectionEvaluator
-from kolena._experimental.object_detection import TestCase
-from kolena._experimental.object_detection import TestSample
-from kolena._experimental.object_detection import TestSuite
+from kolena._experimental.object_detection import TestSample as BaseTestSample
 from kolena._experimental.object_detection import ThresholdConfiguration
+from kolena.workflow import define_workflow
 from kolena.workflow import Model as BaseModel
 from kolena.workflow import TestCase as BaseTestCase
 from kolena.workflow import TestSuite as BaseTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.test_run import test
+
+
+@dataclass(frozen=True)
+class TestSample(BaseTestSample):
+    """Extended sample type based on the pre-built 2D Object Detection workflow."""
+
+    image_id: int = 0
+    """The image id."""
+
+
+_, TestCase, TestSuite, Model = define_workflow(
+    "Object Detection",
+    TestSample,
+    GroundTruth,
+    Inference,
+)
 
 
 class _CocoJsonDataFormat(BaseDataFormat):
@@ -124,6 +140,7 @@ class CocoJsonTestSuite(_CocoJsonDataFormat):
             test_sample = TestSample(
                 locator=locator_prefix + image_name,
                 metadata=metadata,
+                image_id=image_id,
             )
 
             ground_truth = GroundTruth(
@@ -224,14 +241,6 @@ class CocoJsonInference(_CocoJsonDataFormat):
         test_suite = TestSuite(test_suite_name)
         test(model, test_suite, evaluator, reset=reset)
 
-    def _get_image_id(self, locator: str) -> int:
-        """
-        e.g. s3://kolena-public-datasets/coco-2014-val/imgs/COCO_val2014_000000268396.jpg => 268396
-        """
-        filename = locator.split("/")[-1]
-        image_id = filename.split(".")[0].split("_")[-1]
-        return int(image_id)
-
     def _get_infer(
         self,
         inf_map: Dict[int, List[ScoredLabeledBoundingBox]],
@@ -239,9 +248,7 @@ class CocoJsonInference(_CocoJsonDataFormat):
         # a function that creates an inference from a test sample
         def infer(sample: TestSample) -> Inference:
             try:
-                locator = sample.locator
-                # TODO: maybe we should save the id for test samples
-                image_id = self._get_image_id(locator)
+                image_id = sample.image_id
                 image_inferences = inf_map[image_id]
                 return Inference(
                     bboxes=image_inferences,
