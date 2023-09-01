@@ -134,9 +134,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             return self.test_sample_metrics_ignored(thresholds)
 
         bbox_matches: InferenceMatches = match_inferences(
-            ground_truth.bboxes,
-            filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
-            ignored_ground_truths=ground_truth.ignored_bboxes,
+            ground_truth.objects,
+            filter_inferences(inferences=inference.objects, confidence_score=configuration.min_confidence_score),
+            ignored_ground_truths=ground_truth.ignored_objects,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
@@ -157,9 +157,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
         all_bbox_matches = [
             match_inferences(
-                ground_truth.bboxes,
-                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
-                ignored_ground_truths=ground_truth.ignored_bboxes,
+                ground_truth.objects,
+                filter_inferences(inferences=inference.objects, confidence_score=configuration.min_confidence_score),
+                ignored_ground_truths=ground_truth.ignored_objects,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
             )

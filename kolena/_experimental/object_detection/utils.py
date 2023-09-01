@@ -20,6 +20,7 @@ from typing import Tuple
 from typing import Union
 
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
+from kolena.workflow.annotation import ScoredLabeledPolygon
 
 try:
     from typing import Literal
@@ -38,10 +39,10 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def filter_inferences(
-    inferences: List[ScoredLabeledBoundingBox],
+    inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
     confidence_score: Optional[float] = None,
     labels: Optional[Set[str]] = None,
-) -> List[ScoredLabeledBoundingBox]:
+) -> List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]:
     filtered_by_confidence = (
         [inf for inf in inferences if inf.score >= confidence_score] if confidence_score else inferences
     )

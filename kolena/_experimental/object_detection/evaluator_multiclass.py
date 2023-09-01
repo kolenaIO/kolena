@@ -155,13 +155,13 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             return self.test_sample_metrics_ignored()
 
         filtered_inferences = filter_inferences(
-            inferences=inference.bboxes,
+            inferences=inference.objects,
             confidence_score=configuration.min_confidence_score,
         )
         bbox_matches: MulticlassInferenceMatches = match_inferences_multiclass(
-            ground_truth.bboxes,
+            ground_truth.objects,
             filtered_inferences,
-            ignored_ground_truths=ground_truth.ignored_bboxes,
+            ignored_ground_truths=ground_truth.ignored_objects,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
@@ -182,9 +182,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
 
         all_bbox_matches = [
             match_inferences_multiclass(
-                ground_truth.bboxes,
-                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
-                ignored_ground_truths=ground_truth.ignored_bboxes,
+                ground_truth.objects,
+                filter_inferences(inferences=inference.objects, confidence_score=configuration.min_confidence_score),
+                ignored_ground_truths=ground_truth.ignored_objects,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
             )
@@ -333,8 +333,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
         # compute nested metrics per class
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
-            inf.label for _, _, infs in inferences for inf in infs.bboxes
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.objects} | {
+            inf.label for _, _, infs in inferences for inf in infs.objects
         }
         per_class_metrics: List[ClassMetricsPerTestCase] = []
         for label in sorted(labels):
