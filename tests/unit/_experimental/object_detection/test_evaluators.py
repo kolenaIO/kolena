@@ -35,7 +35,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
 
 @pytest.mark.metrics
 @pytest.mark.parametrize(
-    "test_name, bbox_matches, thresholds, expected",
+    "test_name, object_matches, thresholds, expected",
     [
         (
             "empty",
@@ -339,7 +339,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
 )
 def test__object_detection__multiclass__test_sample_metrics(
     test_name: str,
-    bbox_matches: MulticlassInferenceMatches,
+    object_matches: MulticlassInferenceMatches,
     thresholds: Dict[str, float],
     expected: TestSampleMetrics,
 ) -> None:
@@ -347,7 +347,7 @@ def test__object_detection__multiclass__test_sample_metrics(
 
     od_multi = MulticlassObjectDetectionEvaluator()
     result = od_multi.test_sample_metrics(
-        bbox_matches=bbox_matches,
+        object_matches=object_matches,
         thresholds=thresholds,
     )
     assert expected == result
@@ -355,7 +355,7 @@ def test__object_detection__multiclass__test_sample_metrics(
 
 @pytest.mark.metrics
 @pytest.mark.parametrize(
-    "test_name, bbox_matches, thresholds, expected",
+    "test_name, object_matches, thresholds, expected",
     [
         (
             "empty",
@@ -530,7 +530,7 @@ def test__object_detection__multiclass__test_sample_metrics(
 )
 def test__object_detection__single_class__test_sample_metrics_single_class(
     test_name: str,
-    bbox_matches: InferenceMatches,
+    object_matches: InferenceMatches,
     thresholds: float,
     expected: TestSampleMetricsSingleClass,
 ) -> None:
@@ -538,7 +538,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
 
     od_single = SingleClassObjectDetectionEvaluator()
     result = od_single.test_sample_metrics_single_class(
-        bbox_matches=bbox_matches,
+        object_matches=object_matches,
         thresholds=thresholds,
     )
     assert expected == result
