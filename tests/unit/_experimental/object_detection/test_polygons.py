@@ -69,20 +69,18 @@ def test__object_detection__multiple_configurations__multiclass__polygon() -> No
         ground_truth=ground_truth,
         inference=inference,
         configuration=config_one,
-        test_case_name="one",
+        test_case_name="one_polygon",
     )
     evaluator.compute_image_metrics(
         ground_truth=ground_truth,
         inference=inference,
         configuration=config_two,
-        test_case_name="two",
+        test_case_name="two_polygon",
     )
 
     assert len(evaluator.matchings_by_test_case) == 2
-    assert len(evaluator.matchings_by_test_case[config_one.display_name()]) == 1
-    assert len(evaluator.matchings_by_test_case[config_one.display_name()]["one"]) == 1
-    assert len(evaluator.matchings_by_test_case[config_two.display_name()]) == 1
-    assert len(evaluator.matchings_by_test_case[config_two.display_name()]["two"]) == 1
+    assert len(evaluator.matchings_by_test_case[config_one.display_name()]["one_polygon"]) == 1
+    assert len(evaluator.matchings_by_test_case[config_two.display_name()]["two_polygon"]) == 1
 
 
 @pytest.mark.metrics
@@ -111,20 +109,18 @@ def test__object_detection__multiple_configurations__single_class__polygon() -> 
         ground_truth=ground_truth,
         inference=inference,
         configuration=config_one,
-        test_case_name="one",
+        test_case_name="one_polygon",
     )
     evaluator.compute_image_metrics(
         ground_truth=ground_truth,
         inference=inference,
         configuration=config_two,
-        test_case_name="two",
+        test_case_name="two_polygon",
     )
 
     assert len(evaluator.matchings_by_test_case) == 2
-    assert len(evaluator.matchings_by_test_case[config_one.display_name()]) == 1
-    assert len(evaluator.matchings_by_test_case[config_one.display_name()]["one"]) == 1
-    assert len(evaluator.matchings_by_test_case[config_two.display_name()]) == 1
-    assert len(evaluator.matchings_by_test_case[config_two.display_name()]["two"]) == 1
+    assert len(evaluator.matchings_by_test_case[config_one.display_name()]["one_polygon"]) == 1
+    assert len(evaluator.matchings_by_test_case[config_two.display_name()]["two_polygon"]) == 1
 
 
 @pytest.mark.metrics
