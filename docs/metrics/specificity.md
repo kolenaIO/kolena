@@ -117,7 +117,7 @@ methods in the [Averaging Methods](./averaging-methods.md) guide.
 While specificity is a valuable metric for evaluating the performance of classification models, it does have limitations
 and potential biases that should be considered when interpreting results:
 
-1. **Dependence on Class Imbalance**: Specificity is sensitive to class imbalance in dataset. If one class significantly
+1. **Sensitivity to Class Imbalance**: Specificity is sensitive to class imbalance in dataset. If one class significantly
 outnumbers the other, a high specificity can be achieved simply by predicting the majority class most of the time. This
 can lead to a misleadingly high specificity score while neglecting the model's ability to correctly classify the
 minority class.
@@ -130,10 +130,10 @@ missing positive cases is costly or has severe consequences.
 3. **Incomplete Context**: Specificity alone does not provide a complete picture of a model's performance. It is often
 used in conjunction with other metrics like sensitivity (recall), precision, and F<sub>1</sub>-score to provide a more
 comprehensive assessment. Depending solely on specificity might hide issues related to other aspects of classification,
-such as false positives or the models' ability to identify true positives.
+such as the models' ability to identify true positives.
 
-4. **Not Considering Probability Scores**: Specificity is a binary metric that doesn't take into account the probability
+4. **Threshold Dependence**: Specificity is a binary metric that doesn't take into account the probability
 or confidence levels associated with predictions. Models with different probability distributions might achieve the
 same specificity score, but their operational characteristics can vary significantly. To address this limitation,
 consider using threshold-independent metrics like the area under the receiver operating characteristic curve (AUC-ROC)
-which can provide a more nuanced view of model performance.
+which can provide a more comprehensive understanding of model performance.
