@@ -16,7 +16,7 @@ page and click "Add Integration", then "Azure Blob Storage".
 
 Azure Blob Storage integrations load resources using [shared access signatures](https://learn.microsoft.com/en-us/azure/storage/common/storage-sas-overview).
 Kolena generates these signatures using delegated access to these resources.
-We will generate an App registration for Kolena in Azure and then grant permissions to this registration:
+We will generate an App registration for Kolena in Azure and then assign roles to this registration:
 
 1. From the [Azure portal](https://portal.azure.com/#home), search for "App registrations" and navigate to this page
 1. Click "New Registration"
@@ -27,14 +27,14 @@ We will generate an App registration for Kolena in Azure and then grant permissi
 1. Click "Certificates & secrets", then "New client secret"
     1. Click "Add" to save this secret and note the key value
 
-### Step 2: Grant Permissions to App Reigration
+### Step 2: Assign Roles to App Registration
 
-We will grant two permissions to the App registration created above:
+We will assign two roles to the App registration created above:
 
-1. Storage Blob Delegator permission at the storage account level
-1. Storage Blob Data Reader at the container level
+1. [Storage Blob Delegator](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-delegator) at the storage account level
+1. [Storage Blob Data Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader) at the container level
 
-First we will grant Storage Blob Delegator permission:
+First we will assign the Storage Blob Delegator role:
 
 1. Navigate to the storage account containing your blobs
 1. Click "Access Control (IAM)"
@@ -46,7 +46,7 @@ First we will grant Storage Blob Delegator permission:
     1. Click "Select"
 1. Click "Review + assign" to save
 
-Next, we will grant Storage Blob Data Reader permission:
+Next, we will assign the Storage Blob Data Reader role:
 
 1. From the storage account, click "Containers" under "Data Storage" and click on the container containing your blobs
 1. Click "Access Control (IAM)"
@@ -62,13 +62,13 @@ Next, we will grant Storage Blob Data Reader permission:
 
 Return to Kolena and fill in the fields for the Integration and then click "Save".
 
-| Field                    | Description                                                                                                                                                                                        |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tenant ID                | The Tenant ID of the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                                        |
-| Client ID                | The Application (client) ID of the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                          |
-| Client Secret            | The secret key for the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                                      |
-| Storage Account Name     | The storage account in Azure you wish to connect to                                                                                                                                                |
-| Storage Blob EndpointURL | The endpoint for accessing the storage account. Can be found in "Endpoints" under "Settings" for your storage account. Usually of the form `https://<storage-account-name>.blob.core.windows.net/` |
+| Field                    | Description                                                                                                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tenant ID                | The Tenant ID of the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                                       |
+| Client ID                | The Application (client) ID of the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                         |
+| Client Secret            | The secret key for the App registration created in [step 1](#step-1-create-azure-app-registration-for-kolena)                                                                                     |
+| Storage Account Name     | The storage account in Azure you wish to connect to                                                                                                                                               |
+| Storage Blob EndpointURL | The endpoint for accessing the storage account. Can be found in "Endpoints" under "Settings" for your storage account. Usually of the form `https://<storage-account-name>.blob.core.windows.net` |
 
 ## Appendix
 
