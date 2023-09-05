@@ -31,10 +31,10 @@ We will generate an App registration for Kolena in Azure and then assign roles t
 
 We will assign two roles to the App registration created above:
 
-1. [Storage Blob Delegator](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-delegator) at the storage account level
-1. [Storage Blob Data Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader) at the container level
+- [Storage Blob Delegator](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-delegator) at the storage account level
+- [Storage Blob Data Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader) at the container level
 
-First we will assign the Storage Blob Delegator role:
+#### Assign Storage Blob Delegator Role
 
 1. Navigate to the storage account containing your blobs
 1. Click "Access Control (IAM)"
@@ -46,7 +46,7 @@ First we will assign the Storage Blob Delegator role:
     1. Click "Select"
 1. Click "Review + assign" to save
 
-Next, we will assign the Storage Blob Data Reader role:
+#### Assign Storage Blob Data Reader role
 
 1. From the storage account, click "Containers" under "Data Storage" and click on the container containing your blobs
 1. Click "Access Control (IAM)"
