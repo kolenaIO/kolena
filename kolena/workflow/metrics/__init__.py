@@ -13,8 +13,10 @@
 # limitations under the License.
 from ._formula import accuracy
 from ._formula import f1_score
+from ._formula import fpr
 from ._formula import precision
 from ._formula import recall
+from ._formula import specificity
 from ._geometry import InferenceMatches
 from ._geometry import iou
 from ._geometry import match_inferences
@@ -26,6 +28,8 @@ __all__ = [
     "precision",
     "recall",
     "f1_score",
+    "fpr",
+    "specificity",
     "iou",
     "InferenceMatches",
     "match_inferences",
