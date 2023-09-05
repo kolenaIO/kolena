@@ -983,6 +983,8 @@
       
         
       
+        
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -1117,6 +1119,34 @@
     
   
     Google Cloud Storage
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced-usage/connecting-cloud-storage/azure-blob-storage/" class="md-nav__link">
+        
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.379 23.343a1.62 1.62 0 0 0 1.536-2.14v.002L17.35 1.76A1.62 1.62 0 0 0 15.816.657H8.184A1.62 1.62 0 0 0 6.65 1.76L.086 21.204a1.62 1.62 0 0 0 1.536 2.139h4.741a1.62 1.62 0 0 0 1.535-1.103l.977-2.892 4.947 3.675c.28.208.618.32.966.32m-3.084-12.531 3.624 10.739a.54.54 0 0 1-.51.713v-.001h-.03a.54.54 0 0 1-.322-.106l-9.287-6.9h4.853m6.313 7.006c.116-.326.13-.694.007-1.058L9.79 1.76a1.722 1.722 0 0 0-.007-.02h6.034a.54.54 0 0 1 .512.366l6.562 19.445a.54.54 0 0 1-.338.684"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure Blob Storage
   
 
     
@@ -3115,7 +3145,8 @@ compute the precision and recall values at each threhold.</p>
 <p></center></p>
 <p>Using these precision and recall values, a PR curve can be plotted:</p>
 <p><center>
-<img alt="pr.png" src="../../assets/images/metrics-prcurve-example.png" />
+<img alt="pr.png" src="../../assets/images/metrics-prcurve-example-light.png#only-light" />
+<img alt="pr.png" src="../../assets/images/metrics-prcurve-example-dark.png#only-dark" />
 </center></p>
 <h3 id="example-multiclass-classification">Example: Multiclass Classification<a class="headerlink" href="#example-multiclass-classification" title="Permanent link">#</a></h3>
 <p>For multiple classes, it is common practice to plot a curve <strong>per class</strong> by treating each class as a binary
@@ -3334,21 +3365,21 @@ depending on the evaluating threshold, so for class <code>Airplane</code>:</p>
 <p></center></p>
 <p>Using these precision and recall values, per class PR curves can be plotted:</p>
 <p><center>
-<img alt="pr.png" src="../../assets/images/metrics-prcurve-example-multiclass.png" />
+<img alt="pr.png" src="../../assets/images/metrics-prcurve-example-multiclass-light.png#only-light" />
+<img alt="pr.png" src="../../assets/images/metrics-prcurve-example-multiclass-dark.png#only-dark" />
 </center></p>
 <h2 id="area-under-the-pr-curve-auprc">Area Under the PR Curve (AUPRC)<a class="headerlink" href="#area-under-the-pr-curve-auprc" title="Permanent link">#</a></h2>
-<p>The area under the PR curve (AUPRC) is a <strong>threshold-independent</strong> metric that summarizes the performance of a model
-depicted by a PR curve. The greater the area, the better a model performs. The
+<p>The area under the PR curve (AUPRC), also known as AUC-PR or PR-AUC, is a <strong>threshold-independent</strong> metric that
+summarizes the performance of a model depicted by a PR curve. The greater the area, the better a model performs. The
 <a href="../average-precision/">average precision</a> is one particular method for calculating the AUPRC. With PR curves, we
 can visually conclude which curves indicate that a certain class or model has a
 better performance.</p>
 <p><center>
-<img alt="pr.png" src="../../assets/images/metrics-prcurve.png" />
+<img alt="pr.png" src="../../assets/images/metrics-prcurve-light.png#only-light" />
+<img alt="pr.png" src="../../assets/images/metrics-prcurve-dark.png#only-dark" />
 </center></p>
-<p>In the plot above, we see that the blue curve has a higher precision than the orange curve for almost every recall
-value. This means that the model behind the blue curve performs better. There are many factors that might make the
-blue curve more jagged compared to the orange curve, such as having a lower number of thresholds (fewer points), poorly
-chosen thresholds, insufficient amounts of data, or changed model performance for different threshold ranges.</p>
+<p>In the plot above, we see that the cyan curve has a higher precision than the purple curve for almost every recall
+value. This means that the model behind the cyan curve performs better.</p>
 <h2 id="limitations-and-biases">Limitations and Biases<a class="headerlink" href="#limitations-and-biases" title="Permanent link">#</a></h2>
 <p>PR curves are a very common plot used in practice to evaluate model performance in terms of precision and recall. There
 are some pitfalls that might be overlooked: class imbalance, source of error, and poor threshold choices.</p>
@@ -3373,7 +3404,7 @@ different number of thresholds, or having different threshold values, make PR cu
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">August 30, 2023</span>
       </span>
     
     
