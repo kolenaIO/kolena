@@ -2,14 +2,15 @@
 
 !!! info inline end "Guide: True Positive / False Positive / False Negative / True Negative"
 
-    You can find more info on true positive, false positive, false negative, true negative in [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide.
+    You can find more info on true positive, false positive, false negative, and true negative in the
+    [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide.
 
 A confusion matrix is a structured plot describing classification model performance as a table that highlights counts
 of objects with predicted classes (columns) against the actual classes (rows). Each cell has a count of the number of
 objects that have its correct class and predicted class, which indicates how confused a model is. A model is confused
 when a predicted class does not match the actual class. When they do match, this is considered a true positive (TP). In
-general, a model resulting in more TPs/true negatives (TNs) with fewer false positives (FPs)/false negatives (FNs) is
-better.
+general, a model resulting in more true positives (TPs) / true negatives (TNs) with fewer false positives (FPs) /
+false negatives (FNs) is better.
 
 ![Confusion Matrix Image](../assets/images/metrics-confusion-matrix-light.png#only-light)
 ![Confusion Matrix Image](../assets/images/metrics-confusion-matrix-dark.png#only-dark)
@@ -124,7 +125,7 @@ In a different case, these counts may be much higher:
 
 </center>
 
-This confusion matrix reveals that a model is very good at identifying `Boat`: 8,800 of 9,500 `Boat` were correctly
+This confusion matrix reveals that a model is very good at identifying the `Boat` class: 8,800 of 9,500 `Boat`s were correctly
 predicted. Of the 700 incorrect `Boat` predictions, 600 were predicted as `Car`, and 100 were predicted as `Airplane`.
 
 This confusion matrix indicates that when a model makes a `Airplane` inference, the model is correct half the time. If
