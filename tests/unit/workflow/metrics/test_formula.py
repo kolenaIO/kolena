@@ -14,8 +14,10 @@
 import pytest
 
 from kolena.workflow.metrics import f1_score
+from kolena.workflow.metrics import fpr
 from kolena.workflow.metrics import precision
 from kolena.workflow.metrics import recall
+from kolena.workflow.metrics import specificity
 
 
 @pytest.mark.parametrize(
@@ -47,6 +49,17 @@ def test__recall(true_positives: int, false_negatives: int, expected: float) -> 
 
 
 # formula is the same as precision, only semantics differ
+@pytest.mark.parametrize("true_negatives, false_positives, expected", test__precision.pytestmark[0].args[1])
+def test__specificity(true_negatives: int, false_positives: int, expected: float) -> None:
+    assert specificity(true_negatives, false_positives) == pytest.approx(expected)
+
+
+# formula is the same as precision, only semantics differ
+@pytest.mark.parametrize("false_positives, true_negatives, expected", test__precision.pytestmark[0].args[1])
+def test__fpr(true_negatives: int, false_positives: int, expected: float) -> None:
+    assert fpr(true_negatives, false_positives) == pytest.approx(expected)
+
+
 @pytest.mark.parametrize(
     "true_positives, false_positives, false_negatives, expected",
     [
