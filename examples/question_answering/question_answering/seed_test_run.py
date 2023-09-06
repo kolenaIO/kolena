@@ -17,7 +17,7 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-from question_answering.evaluator import QuestionAnswerEvaluator
+from question_answering.evaluator import evaluate_question_answering
 from question_answering.utils import normalize_string
 from question_answering.workflow import Inference
 from question_answering.workflow import Model
@@ -66,14 +66,12 @@ def main(args: Namespace) -> int:
 
     # define configurations
     configurations = [
-        ThresholdConfiguration(threshold=0.75),
         ThresholdConfiguration(threshold=0.5),
     ]
 
     model = Model(args.model, infer=infer)
     test_suite = TestSuite.load(args.test_suite)
-    evaluator = QuestionAnswerEvaluator(configurations)
-    test(model, test_suite, evaluator, reset=True)
+    test(model, test_suite, evaluate_question_answering, configurations, reset=True)
     return 0
 
 
