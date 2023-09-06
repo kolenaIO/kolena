@@ -20,3 +20,5 @@ arbitrary ML problem.
   Binary Classification on image data from [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
 - [Semantic Textual Similarity](./semantic_textual_similarity): semantic textual similarity using the
   [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
+- [Question Answering](./question_answering): question answering using the
+  [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset

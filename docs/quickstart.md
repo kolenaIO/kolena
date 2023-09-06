@@ -99,6 +99,15 @@ and run directly:
 
     Semantic Textual Similarity using the [STS benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
 
+- [:kolena-chat-20: Example: Question Answering ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/question_answering)
+
+    ![Example questions from CoQA dataset.](assets/images/CoQA.jpg)
+
+    ---
+
+    Question Answering using the
+    [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
+
 </div>
 
 To get started, clone the `kolena` repository:
