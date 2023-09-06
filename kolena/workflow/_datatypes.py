@@ -30,6 +30,7 @@ import numpy as np
 import pandas as pd
 import pandera as pa
 from pandera.typing import Series
+from pydantic import Extra
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.dataframes.validators import validate_df_schema
@@ -42,6 +43,16 @@ from kolena._utils.serde import with_serialized_columns
 from kolena._utils.validators import ValidatorConfig
 
 T = TypeVar("T", bound="DataObject")
+
+
+def _double_under(input: str) -> bool:
+    return input.startswith("__") and input.endswith("__")
+
+
+def allow_extra(cls: Type[T]) -> bool:
+    # `pydantic.dataclasses.is_built_in_dataclass` would have false-positive when a stdlib-dataclass decorated
+    # class extends a pydantic dataclass
+    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -65,6 +76,11 @@ class DataObject(metaclass=ABCMeta):
             raise ValueError(f"unsupported value type: '{type(value).__name__}' (value: {value})")
 
         items = [(field.name, getattr(self, field.name)) for field in dataclasses.fields(type(self))]
+        field_names = {field.name for field in dataclasses.fields(type(self))}
+        if allow_extra(type(self)):
+            for key, val in vars(self).items():
+                if key not in field_names and not _double_under(key):
+                    items.append((key, val))
         return OrderedDict([(key, serialize_value(value)) for key, value in items])
 
     @classmethod
@@ -146,6 +162,11 @@ class DataObject(metaclass=ABCMeta):
             )
 
         items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
+        field_names = {f.name for f in dataclasses.fields(cls)}
+        if allow_extra(cls):
+            for key, val in obj_dict.items():
+                if key not in field_names:
+                    items[key] = val
         return cls(**items)
 
 
