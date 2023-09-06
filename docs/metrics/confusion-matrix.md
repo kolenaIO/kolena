@@ -147,7 +147,8 @@ Each type of normalization surfaces a view sharing different information, which 
 ??? info "Normalizing by `row`"
 
     For an actual class, this normalization allows us to see the proportion of correctly or incorrectly predicted
-    objects for each predicted class. To normalize by `row`, divide each entry in that `row` by the sum of values within
+    objects for each predicted class. Notice that the diagonal values from this normalization match the
+    [recall](./recall.md) per class. To normalize by `row`, divide each entry in that `row` by the sum of values within
     it. If we normalize the multiclass example by `row`, we get:
 
     <center>
@@ -163,7 +164,8 @@ Each type of normalization surfaces a view sharing different information, which 
 ??? info "Normalizing by `column`"
 
     For a predicted class, this normalization allows us to see the proportion of instances predicted as a certain class
-    that actually belong to each true class. To normalize by `column`, divide each entry in a `column` by the sum of
+    that actually belong to each true class. Notice that the diagonal values from this normalization match the
+    [precision](./precision.md) per class. To normalize by `column`, divide each entry in a `column` by the sum of
     values within that `column`. If we normalize the multiclass example by `column`, we get:
 
     <center>
