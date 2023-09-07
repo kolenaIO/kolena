@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 import math
 from typing import Any
 from typing import List
@@ -23,6 +24,7 @@ import pytest
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as TestRunAPI
+from kolena._utils import krequests
 from kolena.errors import RemoteError
 from kolena.workflow import define_workflow
 from kolena.workflow import Evaluator
@@ -348,10 +350,29 @@ def test__test__remote_evaluator(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
 ) -> None:
-    with patch.object(TestRun, "_start_server_side_evaluation") as remote_patched:
-        with patch.object(TestRun, "_perform_evaluation") as eval_patched:
-            with patch.object(TestRun, "_perform_streamlined_evaluation") as streamlined_eval_patched:
-                test(dummy_model, dummy_test_suites[0])
+    class MockResponse:
+        def __init__(self, json_data: Any, status_code: int):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self) -> Any:
+            return self.json_data
+
+        def raise_for_status(self) -> None:
+            if self.status_code >= 400:
+                raise RuntimeError(f"bad status code: {self.status_code}")
+
+    def mock_put(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> Any:
+        if endpoint_path == TestRunAPI.Path.CREATE_OR_RETRIEVE.value:
+            response = TestRunAPI.CreateOrRetrieveResponse(test_run_id=1000)
+            return MockResponse(dataclasses.asdict(response), 200)
+        return krequests.put(endpoint_path, data, json, **kwargs)
+
+    with patch("kolena._utils.krequests.put", new=mock_put):
+        with patch.object(TestRun, "_start_server_side_evaluation") as remote_patched:
+            with patch.object(TestRun, "_perform_evaluation") as eval_patched:
+                with patch.object(TestRun, "_perform_streamlined_evaluation") as streamlined_eval_patched:
+                    TestRun(dummy_model, dummy_test_suites[0], evaluator=None).evaluate()
     remote_patched.assert_called_once()
     eval_patched.assert_not_called()
     streamlined_eval_patched.assert_not_called()
