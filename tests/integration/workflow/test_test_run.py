@@ -343,10 +343,15 @@ def test__test__function_evaluator__with_skip(
     TestRun(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)
 
 
+@pytest.mark.depends(on=["test__test"])
 def test__test__remote_evaluator(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
 ) -> None:
-    with patch("kolena.workflow.test_run.TestRun._start_server_side_evaluation") as patched:
-        test(dummy_model, dummy_test_suites[0])
-    patched.assert_called_once()
+    with patch.object(TestRun, "_start_server_side_evaluation") as remote_patched:
+        with patch.object(TestRun, "_perform_evaluation") as eval_patched:
+            with patch.object(TestRun, "_perform_streamlined_evaluation") as streamlined_eval_patched:
+                test(dummy_model, dummy_test_suites[0])
+    remote_patched.assert_called_once()
+    eval_patched.assert_not_called()
+    streamlined_eval_patched.assert_not_called()
