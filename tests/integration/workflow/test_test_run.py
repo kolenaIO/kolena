@@ -341,3 +341,12 @@ def test__test__function_evaluator__with_skip(
     config = [DummyConfiguration(value="skip")]
     test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)
     TestRun(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)
+
+
+def test__test__remote_evaluator(
+    dummy_model: Model,
+    dummy_test_suites: List[TestSuite],
+) -> None:
+    with patch("kolena.workflow.test_run.TestRun._start_server_side_evaluation") as patched:
+        test(dummy_model, dummy_test_suites[0])
+    patched.assert_called_once()
