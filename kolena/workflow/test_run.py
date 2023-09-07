@@ -244,6 +244,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if self.evaluator is None:
             log.info("commencing server side metrics evaluation")
             self._start_server_side_evaluation()
+            return
 
         # TODO: assert that testing is complete?
         t0 = time.time()
