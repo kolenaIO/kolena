@@ -68,6 +68,7 @@ from kolena.workflow.evaluator_function import _is_configured
 from kolena.workflow.evaluator_function import _TestCases
 from kolena.workflow.evaluator_function import BasicEvaluatorFunction
 from kolena.workflow.evaluator_function import EvaluationResults
+from kolena.workflow.test_sample import _METADATA_KEY
 
 
 class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
@@ -187,7 +188,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_sample_type = self.model.workflow.test_sample_type
         for df_batch in self._iter_test_samples_batch():
             for record in df_batch.itertuples():
-                yield test_sample_type._from_dict(record.test_sample)
+                test_sample = test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
+                yield test_sample
 
     def _iter_all_inferences(self) -> Iterator[Tuple[TestSample, GroundTruth, Inference]]:
         """
@@ -205,7 +209,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSampleDataFrame,
         ):
             for record in df_batch.itertuples():
-                test_sample = self.test_suite.workflow.test_sample_type._from_dict(record.test_sample)
+                test_sample = self.test_suite.workflow.test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
                 ground_truth = self.test_suite.workflow.ground_truth_type._from_dict(record.ground_truth)
                 inference = self.test_suite.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference

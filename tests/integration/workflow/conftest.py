@@ -70,7 +70,7 @@ def dummy_ground_truth(index: int) -> DummyGroundTruth:
 @pytest.fixture(scope="package")
 def dummy_test_samples() -> List[DummyTestSample]:
     directory = str(uuid.uuid4())
-    return [dummy_test_sample(i, directory) for i in range(N_DUMMY)]
+    return [dummy_test_sample(i, directory, {"extra": i}) for i in range(N_DUMMY)]
 
 
 @pytest.fixture(scope="package")
