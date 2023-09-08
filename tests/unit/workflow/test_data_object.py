@@ -92,7 +92,6 @@ def test__data_object__extras_allow() -> None:
         a: str
         z: bool
 
-    # bbox = BoundingBox(top_left=(1, 1), bottom_right=(10, 10))
     bbox = LabeledBoundingBox(top_left=(1, 1), bottom_right=(10, 10), label="bus")
     tester = DataclassesTester(z=False, a="foobar", b=0.3, y=["hello"], x=bbox)
     serialized = tester._to_dict()
