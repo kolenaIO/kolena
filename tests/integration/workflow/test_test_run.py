@@ -424,19 +424,7 @@ def test__dataobject_schema_mismatch() -> None:
 
     loaded_test_samples = test_case.load_test_samples()
 
-    expected = [
-        (
-            GrabbagTestSample(
-                locator=test_sample.locator,
-                value=test_sample.value,
-                bbox=test_sample.bbox._to_dict(),
-            ),
-            GrabbagGroundTruth(label=ground_truth.label, value=ground_truth.value, license=ground_truth.license),
-        )
-        for test_sample, ground_truth in test_samples
-    ]
-
-    assert sorted(loaded_test_samples) == sorted(expected)
+    assert sorted(loaded_test_samples) == sorted(test_samples)
 
     # dataclass without `extra = allow` should also work
     expected_alt_format = [
