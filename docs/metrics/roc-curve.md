@@ -203,7 +203,8 @@ majority class.
 2. **Partial Insight to Model Performance**: ROC curves only gauge TPR and FPR based on classifications, they do not
 surface misclassification patterns or reasons for different types of errors. AUC ROC treats false positives and
 false negatives equally which may not be appropriate in situations where one type of error is more costly or impactful
-than the other. In such cases, other evaluation metrics like [precision](./precision.md) or [PR curve](./pr-curve.md).
+than the other. In such cases, other evaluation metrics like [precision](./precision.md) or [PR curve](./pr-curve.md)
+can be used.
 3. **Dependence on Threshold**: The values of the thresholds affect the shape of ROC curves, which can affect how they
 are interpreted. Having a different number of thresholds, or having different threshold values, make ROC curve
 comparisons difficult.
