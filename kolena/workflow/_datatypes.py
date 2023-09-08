@@ -84,6 +84,8 @@ def _deserialize_typed_dataobject(value: Dict[Any, Any]) -> Any:
     return data_type._from_dict(value)
 
 
+# best effort to deserialize typed data objects in dataclass extra fields
+# note: since a "data_type" string could map to multiple classes through inheritance, only base case would be used.
 def _try_deserialize_typed_dataobject(value: Any) -> Any:
     if isinstance(value, list):
         # only attempt deserialization when it is likely this is a list of typed data objects
