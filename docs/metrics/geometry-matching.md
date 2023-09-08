@@ -331,3 +331,13 @@ Another behavior to note here is that it is possible to get different matching r
 	before $\text{B}$, inference $\text{b}$ is matched with $\text{A}$, and $\text{a}$ can be matched with $\text{B}$.
     However, if $\text{B}$ comes before $\text{A}$, inference $\text{b}$ is matched with $\text{B}$ instead, leaving
     inference $\text{a}$ with no match.
+
+As discussed earlier, the standard matching algorithm compares model inferences with annotated ground truths in two
+fundamental aspects: localization and classification. The comparison generates results, which entail matched pairs,
+unmatched ground truths, and unmatched inferences; however, these results do not reveal why certain matches were
+unsuccessful. A myriad of reasons can lead to a failed match, such as poor localization due to insufficient overlap
+(IoU), or good localization but poor classification. Surfacing these types of errors is profoundly useful during model
+debugging. For instance, **confused matches** where localization succeeded (i.e. IoU above the IoU threshold) but
+classification failed (i.e. mismatching label values) can be identified by matching unmatched inferences with unmatched
+ground truths once more after the initial matching. Confusion matches are useful for creating a
+[confusion matrix](./confusion-matrix.md) to focus on detection model's classification performance.
