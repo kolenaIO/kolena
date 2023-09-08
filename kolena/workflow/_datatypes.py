@@ -81,6 +81,8 @@ def _deserialize_typed_dataobject(value: Dict[Any, Any]) -> Any:
     if data_type is None:
         return value
 
+    # 'data_type' is not a real member
+    value.pop(DATA_TYPE_FIELD)
     return data_type._from_dict(value)
 
 
@@ -101,6 +103,23 @@ def _try_deserialize_typed_dataobject(value: Any) -> Any:
 @dataclass(frozen=True, config=ValidatorConfig)
 class DataObject(metaclass=ABCMeta):
     """The base for various objects in `kolena.workflow`."""
+
+    def __str__(self):
+        if not _allow_extra(type(self)):
+            return self.__repr__()
+
+        # emulate stdlib dataclass _repr_fn implementation, extending extra fields
+        fields = [f.name for f in dataclasses.fields(self)]
+        extras = [f for f in vars(self) if f not in fields and not _double_under(f)]
+
+        # caveat: dataclass generate `__repr__` for decorated classes, as such calls `__str__` for `DataObject` instead.
+        value_str = ", ".join(
+            [
+                f"{f}={getattr(self, f)}" if isinstance(getattr(self, f), DataObject) else f"{f}={getattr(self, f)!r}"
+                for f in fields + extras
+            ],
+        )
+        return f"""{self.__class__.__qualname__}({value_str})"""
 
     def _to_dict(self) -> Dict[str, Any]:
         def serialize_value(value: Any) -> Any:

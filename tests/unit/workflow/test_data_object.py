@@ -92,16 +92,35 @@ def test__data_object__extras_allow() -> None:
         a: str
         z: bool
 
-    bbox = LabeledBoundingBox(top_left=(1, 1), bottom_right=(10, 10), label="bus")
+    bbox = LabeledBoundingBox(top_left=(1, 1), bottom_right=(10, 10), label="bus", extra=[1, 2, 3])
     tester = DataclassesTester(z=False, a="foobar", b=0.3, y=["hello"], x=bbox)
     serialized = tester._to_dict()
     assert list(serialized.keys()) == ["b", "a", "z", "y", "x"]
 
+    bbox_str = str(bbox)
+    assert bbox_str == (
+        "LabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(10.0, 10.0), width=9.0, height=9.0, area=81.0, "
+        "aspect_ratio=1.0, label='bus', extra=[1, 2, 3])"
+    )
+    assert str(tester) == (
+        f"test__data_object__extras_allow.<locals>.DataclassesTester(b=0.3, a='foobar', z=False, y=['hello'], "
+        f"x={bbox_str})"
+    )
+
     # pydantic dataclass with `extra = allow` should have additional fields
     deserialized = DataclassesTester._from_dict(serialized)
+    # Note/caveat: dataclass equality check does not include extras, as __eq__ etc. methods are generated
+    expected_bbox = BoundingBox(top_left=bbox.top_left, bottom_right=bbox.bottom_right, label="bus", extra=[1, 2, 3])
     assert deserialized == tester
-    assert deserialized.x == BoundingBox(top_left=bbox.top_left, bottom_right=bbox.bottom_right)
+    assert deserialized.x == expected_bbox
     assert deserialized.y == ["hello"]
+    assert deserialized.x.label == "bus"
+    assert deserialized.x.extra == [1, 2, 3]
+
+    assert str(deserialized) == (
+        f"test__data_object__extras_allow.<locals>.DataclassesTester(b=0.3, a='foobar', z=False, y=['hello'], "
+        f"x={expected_bbox})"
+    )
 
 
 def test__data_object__extras_allow_invalid() -> None:
@@ -137,6 +156,10 @@ def test__data_object__extras_stdlib() -> None:
     stdlib_deserialized = StdlibDataclassesTester._from_dict(serialized)
     assert stdlib_deserialized == stdlib_tester
 
+    assert str(stdlib_tester) == (
+        "test__data_object__extras_stdlib.<locals>.StdlibDataclassesTester(a='foobar', b=0.3, z=False)"
+    )
+
 
 def test__data_object__extras_strict() -> None:
     @dataclass(frozen=True)
@@ -151,6 +174,10 @@ def test__data_object__extras_strict() -> None:
     strict_tester = StrictDataclassesTester(z=False, a="foobar", b=0.3)
     strict_deserialized = StrictDataclassesTester._from_dict(serialized)
     assert strict_deserialized == strict_tester
+
+    assert str(strict_tester) == (
+        "test__data_object__extras_strict.<locals>.StrictDataclassesTester(b=0.3, a='foobar', z=False)"
+    )
 
 
 def test__data_object__extras_ignore() -> None:
@@ -167,8 +194,9 @@ def test__data_object__extras_ignore() -> None:
     deserialized = IgnoreExtraTester._from_dict(serialized)
     assert deserialized == tester
 
+    assert str(tester) == "test__data_object__extras_ignore.<locals>.IgnoreExtraTester(b=0.3, a='foobar', z=False)"
 
-#
+
 @pytest.mark.parametrize(
     "data_object",
     [
