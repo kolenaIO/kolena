@@ -47,8 +47,8 @@ from pydantic import StrictInt
 from pydantic import StrictStr
 
 from kolena._utils.validators import ValidatorConfig
-from kolena.workflow._datatypes import dataclass
 from kolena.workflow._datatypes import _register_data_type
+from kolena.workflow._datatypes import dataclass
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._validators import get_data_object_field_types
