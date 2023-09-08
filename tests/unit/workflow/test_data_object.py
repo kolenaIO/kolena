@@ -17,7 +17,6 @@ import sys
 import pydantic
 import pytest
 from pydantic import Extra
-from pydantic.dataclasses import dataclass
 
 from kolena.workflow import BaseVideo
 from kolena.workflow import Composite
@@ -25,6 +24,7 @@ from kolena.workflow import Document
 from kolena.workflow import Image
 from kolena.workflow import PointCloud
 from kolena.workflow import Text
+from kolena.workflow._datatypes import dataclass
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
@@ -97,6 +97,16 @@ def test__data_object__extras_allow() -> None:
     serialized = tester._to_dict()
     assert list(serialized.keys()) == ["b", "a", "z", "y", "x"]
 
+    bbox_str = repr(bbox)
+    assert bbox_str == (
+        "LabeledBoundingBox(top_left=(1.0, 1.0), bottom_right=(10.0, 10.0), width=9.0, height=9.0, "
+        "area=81.0, aspect_ratio=1.0, label='bus')"
+    )
+    assert repr(tester) == (
+        "test__data_object__extras_allow.<locals>.DataclassesTester(b=0.3, a='foobar', z=False, y=['hello'], "
+        f"x={bbox_str})"
+    )
+
     # pydantic dataclass with `extra = allow` should have additional fields
     deserialized = DataclassesTester._from_dict(serialized)
     assert deserialized == tester
@@ -137,6 +147,10 @@ def test__data_object__extras_stdlib() -> None:
     stdlib_deserialized = StdlibDataclassesTester._from_dict(serialized)
     assert stdlib_deserialized == stdlib_tester
 
+    assert repr(stdlib_tester) == (
+        "test__data_object__extras_stdlib.<locals>.StdlibDataclassesTester(a='foobar', b=0.3, z=False)"
+    )
+
 
 def test__data_object__extras_strict() -> None:
     @dataclass(frozen=True)
@@ -152,6 +166,10 @@ def test__data_object__extras_strict() -> None:
     strict_deserialized = StrictDataclassesTester._from_dict(serialized)
     assert strict_deserialized == strict_tester
 
+    assert repr(strict_tester) == (
+        "test__data_object__extras_strict.<locals>.StrictDataclassesTester(b=0.3, a='foobar', z=False)"
+    )
+
 
 def test__data_object__extras_ignore() -> None:
     @dataclass(frozen=True, config={"extra": "ignore"})
@@ -166,6 +184,8 @@ def test__data_object__extras_ignore() -> None:
     tester = IgnoreExtraTester(z=False, a="foobar", b=0.3)
     deserialized = IgnoreExtraTester._from_dict(serialized)
     assert deserialized == tester
+
+    assert repr(tester) == "test__data_object__extras_ignore.<locals>.IgnoreExtraTester(b=0.3, a='foobar', z=False)"
 
 
 #

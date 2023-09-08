@@ -31,7 +31,7 @@ import pandas as pd
 import pandera as pa
 from pandera.typing import Series
 from pydantic import Extra
-from pydantic.dataclasses import dataclass
+from pydantic.dataclasses import dataclass as pydantic_dataclass
 
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.datatypes import get_args
@@ -96,6 +96,41 @@ def _try_deserialize_typed_dataobject(value: Any) -> Any:
             return _deserialize_typed_dataobject(value)
 
     return value
+
+
+def dataclass(*dargs, **dkwargs):
+    def wrap(cls):
+        new_cls = pydantic_dataclass(cls, *dargs, **dkwargs)
+
+        fields = dataclasses.fields(new_cls)
+        field_names = [f.name for f in fields]
+
+        def _repr_(self) -> str:
+            extra_fields = [name for name in self.__dict__ if name not in field_names and not name.startswith("__")]
+            return (
+                self.__class__.__qualname__
+                + "("
+                + ", ".join(
+                    [f"{f.name}={getattr(self, f.name)!r}" for f in fields],
+                )
+                + (
+                    (
+                        (", " if fields else "")
+                        + ", ".join(
+                            [f"{name}={getattr(self, name)!r}" for name in extra_fields],
+                        )
+                    )
+                    if extra_fields
+                    else ""
+                )
+                + ")"
+            )
+
+        setattr(new_cls, "__repr__", dataclasses._recursive_repr(_repr_))
+
+        return new_cls
+
+    return wrap
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

@@ -28,9 +28,8 @@ The following asset types are available:
 from abc import ABCMeta
 from typing import Optional
 
-from pydantic.dataclasses import dataclass
-
 from kolena._utils.validators import ValidatorConfig
+from kolena.workflow._datatypes import dataclass
 from kolena.workflow._datatypes import _register_data_type
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
