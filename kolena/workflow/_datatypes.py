@@ -49,10 +49,51 @@ def _double_under(input: str) -> bool:
     return input.startswith("__") and input.endswith("__")
 
 
-def allow_extra(cls: Type[T]) -> bool:
+def _allow_extra(cls: Type[T]) -> bool:
     # `pydantic.dataclasses.is_built_in_dataclass` would have false-positive when a stdlib-dataclass decorated
     # class extends a pydantic dataclass
     return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow
+
+
+# used to track data_type string -> TypedDataObject
+_DATA_TYPE_MAP = {}
+
+
+def get_full_type(obj: "TypedDataObject") -> str:
+    data_type = obj._data_type()
+    return f"{data_type._data_category()}/{data_type.value}"
+
+
+def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
+    return _DATA_TYPE_MAP.get(name, None)
+
+
+# used for TypedBaseDataObject to register themselves to be used in dataclass extra fields deserialization
+def _register_data_type(cls) -> None:
+    full_name = get_full_type(cls)
+    # leverage class inheritance order, only keep base classes of a datatype
+    if full_name not in _DATA_TYPE_MAP:
+        _DATA_TYPE_MAP[full_name] = cls
+
+
+def _deserialize_typed_dataobject(value: Dict[Any, Any]) -> Any:
+    data_type = _get_data_type(value[DATA_TYPE_FIELD])
+    if data_type is None:
+        return value
+
+    return data_type._from_dict(value)
+
+
+def _try_deserialize_typed_dataobject(value: Any) -> Any:
+    if isinstance(value, list):
+        # only attempt deserialization when it is likely this is a list of typed data objects
+        if value and isinstance(value[0], dict) and DATA_TYPE_FIELD in value[0]:
+            return [_try_deserialize_typed_dataobject(val) for val in value]
+    elif isinstance(value, dict):
+        if DATA_TYPE_FIELD in value:
+            return _deserialize_typed_dataobject(value)
+
+    return value
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -77,7 +118,7 @@ class DataObject(metaclass=ABCMeta):
 
         items = [(field.name, getattr(self, field.name)) for field in dataclasses.fields(type(self))]
         field_names = {field.name for field in dataclasses.fields(type(self))}
-        if allow_extra(type(self)):
+        if _allow_extra(type(self)):
             for key, val in vars(self).items():
                 if key not in field_names and not _double_under(key):
                     items.append((key, val))
@@ -163,10 +204,10 @@ class DataObject(metaclass=ABCMeta):
 
         items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
         field_names = {f.name for f in dataclasses.fields(cls)}
-        if allow_extra(cls):
+        if _allow_extra(cls):
             for key, val in obj_dict.items():
                 if key not in field_names:
-                    items[key] = val
+                    items[key] = _try_deserialize_typed_dataobject(val)
         return cls(**items)
 
 

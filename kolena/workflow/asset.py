@@ -31,6 +31,7 @@ from typing import Optional
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.validators import ValidatorConfig
+from kolena.workflow._datatypes import _register_data_type
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 
@@ -50,6 +51,9 @@ class _AssetType(DataType):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Asset(TypedDataObject[_AssetType], metaclass=ABCMeta):
     """Base class for all asset types."""
+
+    def __init_subclass__(cls, **kwargs):
+        _register_data_type(cls)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

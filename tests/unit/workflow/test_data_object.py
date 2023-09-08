@@ -19,7 +19,27 @@ import pytest
 from pydantic import Extra
 from pydantic.dataclasses import dataclass
 
+from kolena.workflow import BaseVideo
+from kolena.workflow import Composite
+from kolena.workflow import Document
+from kolena.workflow import Image
+from kolena.workflow import PointCloud
+from kolena.workflow import Text
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow.annotation import BitmapMask
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import BoundingBox3D
+from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import Keypoints
+from kolena.workflow.annotation import LabeledBoundingBox
+from kolena.workflow.annotation import Polygon
+from kolena.workflow.annotation import Polyline
+from kolena.workflow.annotation import SegmentationMask
+from kolena.workflow.asset import BaseVideoAsset
+from kolena.workflow.asset import BinaryAsset
+from kolena.workflow.asset import ImageAsset
+from kolena.workflow.asset import PlainTextAsset
+from kolena.workflow.asset import PointCloudAsset
 
 
 # extensions must be frozen
@@ -72,14 +92,16 @@ def test__data_object__extras_allow() -> None:
         a: str
         z: bool
 
-    tester = DataclassesTester(z=False, a="foobar", b=0.3, y=["hello"], x="world")
+    # bbox = BoundingBox(top_left=(1, 1), bottom_right=(10, 10))
+    bbox = LabeledBoundingBox(top_left=(1, 1), bottom_right=(10, 10), label="bus")
+    tester = DataclassesTester(z=False, a="foobar", b=0.3, y=["hello"], x=bbox)
     serialized = tester._to_dict()
     assert list(serialized.keys()) == ["b", "a", "z", "y", "x"]
 
     # pydantic dataclass with `extra = allow` should have additional fields
     deserialized = DataclassesTester._from_dict(serialized)
     assert deserialized == tester
-    assert deserialized.x == "world"
+    assert deserialized.x == BoundingBox(top_left=bbox.top_left, bottom_right=bbox.bottom_right)
     assert deserialized.y == ["hello"]
 
 
@@ -145,3 +167,43 @@ def test__data_object__extras_ignore() -> None:
     tester = IgnoreExtraTester(z=False, a="foobar", b=0.3)
     deserialized = IgnoreExtraTester._from_dict(serialized)
     assert deserialized == tester
+
+
+#
+@pytest.mark.parametrize(
+    "data_object",
+    [
+        BoundingBox(top_left=(1, 1), bottom_right=(11, 11), extra="foo"),
+        Polygon(points=[(1, 1), (2, 2), (3, 3)], extra="foo"),
+        Keypoints(points=[(i, i) for i in range(3)], extra="foo"),
+        Polyline(points=[(i, i) for i in range(3)], extra="foo"),
+        BoundingBox3D(center=(1, 1, 1), dimensions=(5, 5, 5), rotations=(0.1, 0.2, 0.3), extra="foo"),
+        SegmentationMask(labels={1: "cat", 2: "dog"}, locator="s3://bbb.jpg", extra="foo"),
+        BitmapMask(locator="s3://test.png", extra="foo"),
+        ClassificationLabel(label="bus", extra="foo"),
+        ImageAsset(locator="s3://test.jpg", extra="foo"),
+        PlainTextAsset(locator="http://test.csv", extra="foo"),
+        BinaryAsset(locator="http://test.bin", extra="foo"),
+        PointCloudAsset(locator="https://test.pcd", extra="foo"),
+        BaseVideoAsset(locator="https://test.mp4", extra="foo"),
+        Composite(extra="foo"),
+        Image(locator="s3//img1.png", extra="foo"),
+        Text(text="foo bar", extra="foo"),
+        BaseVideo(locator="https://test.mp4", extra="foo"),
+        Document(locator="s3://test.pdf", extra="foo"),
+        PointCloud(locator="s3://test.pcd", extra="foo"),
+    ],
+)
+def test__data_object__extras_deserialize_builtins(data_object) -> None:
+    @dataclass(frozen=True, config={"extra": "allow"})
+    class Tester(DataObject):
+        ...
+
+    tester = Tester(a=data_object, b=[data_object, data_object])
+    serialized = tester._to_dict()
+    deserialized = Tester._from_dict(serialized)
+    assert deserialized == tester
+    assert deserialized.a == data_object
+    assert deserialized.a.extra == "foo"
+    assert deserialized.b == [data_object, data_object]
+    assert deserialized.b[1].extra == "foo"

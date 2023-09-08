@@ -48,6 +48,7 @@ from pydantic import StrictStr
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.validators import ValidatorConfig
+from kolena.workflow._datatypes import _register_data_type
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._validators import get_data_object_field_types
@@ -60,12 +61,14 @@ Metadata = Dict[
     str,
     Union[
         None,
-        # prevent coercion of values in metadata -- see: https://pydantic-docs.helpmanual.io/usage/types/#strict-types
+        # prevent coercion of values in metadata -- see:
+        # https://pydantic-docs.helpmanual.io/usage/types/#strict-types
         StrictStr,
         StrictFloat,
         StrictInt,
         StrictBool,
-        # Pydantic's StrictX doesn't play nicely with deserialization (e.g. isinstance("a string", StrictStr) => False)
+        # Pydantic's StrictX doesn't play nicely with deserialization (e.g. isinstance("a string", StrictStr) =>
+        # False)
         #  -- include base scalar types as fallbacks for this purpose
         str,
         float,
@@ -135,6 +138,9 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     [`Model`][kolena.workflow.Model] computes inferences, or when an implementation of
     [`Evaluator`][kolena.workflow.Evaluator] evaluates metrics.
     """
+
+    def __init_subclass__(cls, **kwargs):
+        _register_data_type(cls)
 
     @staticmethod
     def _data_type() -> _TestSampleType:
