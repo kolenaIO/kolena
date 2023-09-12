@@ -188,3 +188,4 @@ class Search:
 
 Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
 Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()
+Model.LoadMetricsRequest.__pydantic_model__.update_forward_refs()

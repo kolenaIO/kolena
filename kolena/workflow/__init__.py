@@ -30,7 +30,6 @@ from .inference import Inference
 from .workflow import Workflow
 from .test_case import TestCase
 from .test_suite import TestSuite
-from .model import Model
 from .plot import AxisConfig
 from .plot import Plot
 from .plot import Curve
@@ -43,6 +42,7 @@ from .evaluator import MetricsTestSample
 from .evaluator import MetricsTestSuite
 from .evaluator import Evaluator
 from .evaluator import EvaluatorConfiguration
+from .model import Model
 from .evaluator_function import BasicEvaluatorFunction
 from .evaluator_function import TestCases
 from .evaluator_function import EvaluationResults
@@ -68,7 +68,6 @@ __all__ = [
     "Workflow",
     "TestCase",
     "TestSuite",
-    "Model",
     "AxisConfig",
     "Plot",
     "Curve",
@@ -82,6 +81,7 @@ __all__ = [
     "Evaluator",
     "EvaluatorConfiguration",
     "BasicEvaluatorFunction",
+    "Model",
     "TestCases",
     "EvaluationResults",
     "TestRun",
