@@ -28,11 +28,18 @@ class Model:
         LOAD = "/generic/model/load"
         DELETE = "/generic/model/delete"
         LOAD_INFERENCES = "/generic/model/load-inferences"
+        LOAD_METRICS = "/generic/model/load-metrics"
 
     @dataclass(frozen=True)
     class LoadInferencesRequest(BatchedLoad.BaseInitDownloadRequest):
         model_id: int
         test_case_id: int
+
+    @dataclass(frozen=True)
+    class LoadMetricsRequest(BatchedLoad.BaseInitDownloadRequest):
+        model_id: int
+        test_case_id: int
+        configuration: Optional["TestRun.EvaluatorConfiguration"]
 
 
 class TestCase:

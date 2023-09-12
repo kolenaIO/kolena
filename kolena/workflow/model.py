@@ -27,6 +27,7 @@ from pydantic import validate_arguments
 
 from kolena._api.v1.core import Model as CoreAPI
 from kolena._api.v1.generic import Model as API
+from kolena._api.v1.generic import TestRun as TestRunAPI
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -40,10 +41,13 @@ from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import NotFoundError
+from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
+from kolena.workflow import MetricsTestSample
 from kolena.workflow import TestCase
 from kolena.workflow import TestSample as BaseTestSample
+from kolena.workflow._datatypes import MetricsDataFrame
 from kolena.workflow._datatypes import TestSampleDataFrame
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.workflow import Workflow
@@ -182,6 +186,52 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
                 yield test_sample, ground_truth, inference
         log.info(f"loaded inferences from model '{self.name}' on test case '{test_case.name}'")
 
+    @validate_arguments(config=ValidatorConfig)
+    def load_metrics(
+        self,
+        test_case: TestCase,
+        configuration: Optional[EvaluatorConfiguration],
+    ) -> List[Tuple[TestSample, MetricsTestSample]]:
+        """
+        Load all inferences stored for this model on the provided test case.
+
+        :param test_case: The test case for which to load inferences.
+        :param configuration: The (optional) configuration for which to retrieve metric results.
+        :return: The ground truths and inferences for all test samples in the test case.
+        """
+        return list(self.iter_metrics(test_case, configuration))
+
+    @validate_arguments(config=ValidatorConfig)
+    def iter_metrics(
+        self,
+        test_case: TestCase,
+        configuration: Optional[EvaluatorConfiguration],
+    ) -> Iterator[Tuple[TestSample, MetricsTestSample]]:
+        """
+        Iterate over all inferences stored for this model on the provided test case.
+
+        :param test_case: The test case over which to iterate inferences.
+        :param configuration: The (optional) configuration for which to retrieve metric results.
+        :return: Iterator exposing the ground truths and inferences for all test samples in the test case.
+        """
+        log.info(f"loading test sample metrics from model '{self.name}' on test case '{test_case.name}'")
+        assert_workflows_match(self.workflow.name, test_case.workflow.name)
+        for df_batch in _BatchedLoader.iter_data(
+            init_request=API.LoadMetricsRequest(
+                model_id=self._id,
+                test_case_id=test_case._id,
+                batch_size=BatchSize.LOAD_SAMPLES.value,
+                configuration=_maybe_evaluator_configuration_to_api(configuration),
+            ),
+            endpoint_path=API.Path.LOAD_METRICS.value,
+            df_class=MetricsDataFrame,
+        ):
+            for record in df_batch.itertuples():
+                test_sample = self.workflow.test_sample_type._from_dict(record.test_sample)
+                metrics = MetricsTestSample._from_dict(record.metrics)
+                yield test_sample, metrics
+        log.info(f"loaded metrics from model '{self.name}' on test case '{test_case.name}'")
+
     def _populate_from_other(self, other: "Model") -> None:
         with self._unfrozen():
             self._id = other._id
@@ -204,3 +254,14 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj.infer = infer
         obj._freeze()
         return obj
+
+
+def _maybe_evaluator_configuration_to_api(
+    configuration: Optional[EvaluatorConfiguration],
+) -> Optional[TestRunAPI.EvaluatorConfiguration]:
+    if configuration is None:
+        return None
+    return TestRunAPI.EvaluatorConfiguration(
+        display_name=configuration.display_name(),
+        configuration=configuration._to_dict(),
+    )
