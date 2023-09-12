@@ -42,7 +42,7 @@ from tests.integration.workflow.dummy import Model
 from tests.integration.workflow.dummy import TestCase
 from tests.integration.workflow.dummy import TestSuite
 
-N_DUMMY = 10
+N_DUMMY = 5
 
 
 def dummy_test_sample(
