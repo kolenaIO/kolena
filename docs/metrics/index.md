@@ -21,12 +21,26 @@ biases, and its intended uses.
     Accuracy measures how well a model predicts correctly. It's a good metric for assessing model performance in simple
     cases with balanced data.
 
+- [Average Precision (AP)](average-precision.md)
+
+    ---
+
+    Average precision summarizes a precision-recall (PR) curve into a single threshold-independent value
+    representing model's performance across all thresholds.
+
 - [Averaging Methods: Macro, Micro, Weighted](averaging-methods.md)
 
     ---
 
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
+
+- [Confusion Matrix](confusion-matrix.md)
+
+    ---
+
+    Confusion matrix is a structured plot describing classification model performance as a table that highlights counts
+    of objects with predicted classes (columns) against the actual classes (rows), indicating how confused a model is.
 
 - [F<sub>1</sub>-score](f1-score.md)
 
@@ -58,6 +72,14 @@ biases, and its intended uses.
     Precision measures the proportion of positive inferences from a model that are correct. It is useful when the
     objective is to measure and reduce false positive inferences.
 
+- [Precision-Recall (PR) Curve](pr-curve.md)
+
+    ---
+
+    Precision-recall curve is a plot that gauges machine learning model performance by using [precision](precision.md)
+    and [recall](recall.md). It is built with precision on the y-axis and recall on the x-axis computed across many
+    thresholds.
+
 - [Recall (TPR, Sensitivity)](recall.md)
 
     ---
@@ -74,10 +96,4 @@ biases, and its intended uses.
     are the building blocks of many other metrics, including [accuracy](accuracy.md), [precision](precision.md),
     and [recall](recall.md).
 
-- [Confusion Matrix](confusion-matrix.md)
-
-    ---
-
-    Confusion matrix is a structured plot describing classification model performance as a table that highlights counts
-    of objects with predicted classes (columns) against the actual classes (rows), indicating how confused a model is.
 </div>

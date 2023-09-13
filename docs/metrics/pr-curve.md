@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Precision-Recall (PR) Curve
 
 !!! info inline end "Guides: Precision and Recall"
