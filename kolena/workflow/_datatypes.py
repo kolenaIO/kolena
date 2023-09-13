@@ -222,6 +222,7 @@ class TestSuiteTestSamplesDataFrameSchema(pa.SchemaModel):
 
     test_case_id: Optional[Series[pa.typing.Int64]] = pa.Field(coerce=True)
     test_sample: Series[JSONObject] = pa.Field(coerce=True)
+    test_sample_metadata: Series[JSONObject] = pa.Field(coerce=True)
 
 
 class TestSuiteTestSamplesDataFrame(
@@ -246,6 +247,7 @@ class TestSuiteTestSamplesDataFrame(
         serde_function = as_serialized_json if serialize else as_deserialized_json
         df_out = df.copy()
         df_out["test_sample"] = df_out["test_sample"].apply(serde_function)
+        df_out["test_sample_metadata"] = df_out["test_sample_metadata"].apply(serde_function)
         return df_out
 
 

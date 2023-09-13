@@ -46,6 +46,7 @@ from kolena.workflow import TestSample
 from kolena.workflow._datatypes import TestSuiteTestSamplesDataFrame
 from kolena.workflow._validators import assert_workflows_match
 from kolena.workflow.test_case import TestCase
+from kolena.workflow.test_sample import _METADATA_KEY
 from kolena.workflow.workflow import Workflow
 
 
@@ -356,7 +357,9 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSuiteTestSamplesDataFrame,
         ):
             for record in df_batch.itertuples():
-                test_sample = self.workflow.test_sample_type._from_dict(record.test_sample)
+                test_sample = self.workflow.test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
                 test_case_id_to_samples[record.test_case_id].append(test_sample)
 
         test_case_id_to_test_case = {tc._id: tc for tc in self.test_cases}
