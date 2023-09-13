@@ -146,7 +146,7 @@ class TestImageDataFrameSchema(pa.SchemaModel):
     image_id: Series[pa.typing.Int64] = pa.Field(coerce=True)
     """Internal ID corresponding to this image."""
 
-    locator: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
+    locator: Series[pa.typing.String] = pa.Field(coerce=True, _validate_image_locator=())
     """External locator pointing to image in bucket."""
 
     data_source: Series[pa.typing.String] = pa.Field(coerce=True, nullable=True)
@@ -158,7 +158,7 @@ class TestImageDataFrameSchema(pa.SchemaModel):
     height: Series[pa.typing.Int64] = pa.Field(coerce=True, _validate_optional_dimension=())
     """Height of the image, in pixels. The value `-1` is used to specify "unspecified"."""
 
-    original_locator: Series[pa.typing.String] = pa.Field(coerce=True, nullable=True, _validate_locator=())
+    original_locator: Series[pa.typing.String] = pa.Field(coerce=True, nullable=True, _validate_image_locator=())
     """Specify that this image is an augmented version of another (registered) image."""
 
     augmentation_spec: Series[JSONObject] = pa.Field(coerce=True, nullable=True, _validate_json_object=())
@@ -205,8 +205,8 @@ TEST_IMAGE_COLUMNS = [
 
 
 class TestCaseDataFrameSchema(pa.SchemaModel):
-    locator_a: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
-    locator_b: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
+    locator_a: Series[pa.typing.String] = pa.Field(coerce=True, _validate_image_locator=())
+    locator_b: Series[pa.typing.String] = pa.Field(coerce=True, _validate_image_locator=())
     is_same: Series[pa.typing.Bool] = pa.Field(coerce=True)
 
 

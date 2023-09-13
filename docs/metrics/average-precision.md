@@ -5,7 +5,7 @@ search:
 
 # Average Precision
 
-Average precision (AP) summarizes a precision-recall (PR) curve into a single value representing the average of all
+Average precision (AP) summarizes a [precision-recall (PR) curve](./pr-curve.md) into a single value representing the average of all
 precisions. It is generally understood as the approximation of the area under the PR curve. AP ranges between 0 and 1,
 where a perfect model has [precision](./precision.md), [recall](./recall.md), and AP scores of 1. The larger the metric,
 the better a model performs across different thresholds.

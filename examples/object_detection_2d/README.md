@@ -1,4 +1,4 @@
-# Example Integration: 2D Object Detection
+# Example Integration: Object Detection (2D)
 
 This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test 2D
 object detection problems on Kolena. Only images with the
@@ -24,8 +24,10 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](object_detection_2d/seed_test_suite.py) creates the following test suite:
 
-    - `coco-2014-val :: transportation brightness [Object Detection]`, stratified by `light`, `normal`, and `dark`
+    - `coco-2014-val :: transportation by brightness [Object Detection]`, stratified by `light`, `normal`, and `dark`
         brightness
+    - `coco-2014-val :: transportation by bounding box size [Object Detection]`, stratified by bounding box size:
+        `small`, `medium` and `large`.
 
 2. [`seed_test_run.py`](object_detection_2d/seed_test_run.py) tests the following models on the above test suites:
   `yolo_r`, `yolo_x`, `mask_cnn`, `faster_rcnn`, `yolo_v4s`, and `yolo_v3`. Information about these models can be
@@ -47,3 +49,32 @@ optional arguments:
   --test-suite TEST_SUITE
                         Optionally specify a test suite to test. Test against all available test suites when unspecified.
 ```
+
+### Pre-built Workflow Extension
+
+A pre-built workflow can be extended simply by re-defining the [`workflow`](object_detection_2d/extended/workflow.py). In
+this example, we added a new boolean field `occluded` to each `GroundTruth` `LabeledBoundingBox` by extending it.
+
+```python
+@dataclass(frozen=True)
+class ExtendedBoundingBox(LabeledBoundingBox):
+    occluded: bool
+
+@dataclass(frozen=True)
+class GroundTruth(BaseGroundTruth):
+    bboxes: List[ExtendedBoundingBox]
+```
+
+And define a new workflow with the extended `GroundTruth` class:
+
+```python
+_workflow, TestCase, TestSuite, Model = define_workflow(
+    "Object Detection Extended",
+    TestSample,
+    GroundTruth,
+    Inference,
+)
+```
+
+Note that `GroundTruth`, `ExtendedBoundingBox`, `TestCase`, `TestSuite`, and `Model` are now imported from
+`extended/workflow.py` in `extended/seed_test_suite.py` and `extended/seed_test_run.py`.

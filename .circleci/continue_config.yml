@@ -194,21 +194,41 @@ jobs:
       - checkout
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
-      - run:
-          name: Run << parameters.pytest-group >> integration tests
-          command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-            TEST_GROUP="<< parameters.pytest-group >>"
-            if [ "$TEST_GROUP" = "misc" ]; then
-              TESTFILES=$(circleci tests glob tests/integration/test_*.py |
-                circleci tests split --split-by=timings --timings-type=filename)
-            else
-              TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
-                circleci tests split --split-by=timings --timings-type=filename)
-            fi
-            poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
-              --junitxml=test-results/result.xml $TESTFILES
+      - when:
+          condition:
+            and:
+              - equal:
+                  - "none"
+                  - << parameters.extras >>
+              - not_equal:
+                  - _experimental
+                  - << parameters.pytest-group >>
+          steps:
+            - run:
+                name: Run << parameters.pytest-group >> integration tests
+                command: |
+                  export KOLENA_TOKEN=${KOLENA_TOKEN}
+                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+                  TEST_GROUP="<< parameters.pytest-group >>"
+                  if [ "$TEST_GROUP" = "misc" ]; then
+                    TESTFILES=$(circleci tests glob tests/integration/test_*.py |
+                      circleci tests split --split-by=timings --timings-type=filename)
+                  else
+                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                      circleci tests split --split-by=timings --timings-type=filename)
+                  fi
+                  poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
+                    --junitxml=test-results/result.xml $TESTFILES
+      - when:
+          condition:
+            equal: [ "metrics", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Run experimental metrics integration tests
+                command: |
+                  export KOLENA_TOKEN=${KOLENA_TOKEN}
+                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
           condition:
@@ -252,6 +272,18 @@ jobs:
             export KOLENA_TOKEN=${KOLENA_TOKEN}
             export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             poetry run pytest -vv tests
+  example-evaluator:
+    docker:
+      - image: cimg/base:2022.06
+    steps:
+      - checkout:
+          path: ~/project
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: Build evaluator
+          command: |
+            examples/text_summarization/docker/build.sh
 
 workflows:
   ci:
@@ -290,6 +322,17 @@ workflows:
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
+          name: integration-test-experimental-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9" ]
+              extras: ["metrics"]
+          pytest-group: _experimental
+          enabled: true
+          parallelism: 1
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
           name: integration-test-misc-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
@@ -313,6 +356,12 @@ workflows:
       - example-test:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d ]
+              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering ]
               resource-class: [ small ]
               python-version: [ "3.9" ]
+  example-evaluator:
+    when:
+      condition:
+        equal: [ "trunk", << pipeline.git.branch >> ]
+    jobs:
+      - example-evaluator

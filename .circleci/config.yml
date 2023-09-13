@@ -18,6 +18,8 @@ jobs:
       - path-filtering/set-parameters:
           base-revision: ${BASE_REVISION}
           mapping: |
+            kolena/_experimental/.* workflow true
+            tests/integration/_experimental/.* workflow true
             kolena/classification/.* classification true
             tests/integration/classification/.* classification true
             kolena/detection/.* detection true
@@ -37,7 +39,8 @@ jobs:
       - run:
           name: Generate config
           command: |
-            export INT_MATRIX=$(jq -c 'if (.all) then (["detection", "fr", "classification", "workflow"])
+            export INT_MATRIX=$(jq -c 'if (.all) then
+              (["detection", "fr", "classification", "workflow"])
               else (to_entries | map(select((.value) and (.key | contains("example") | not)) | .key)) end' \
               /tmp/pipeline-parameters.json)
             yq '(.workflows.ci.jobs[] | select(."integration-test".matrix.parameters."pytest-group")

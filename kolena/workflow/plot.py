@@ -24,6 +24,7 @@ The following plot types are available:
 - [`ConfusionMatrix`][kolena.workflow.ConfusionMatrix]
 """
 from abc import ABCMeta
+from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Sequence
@@ -85,11 +86,23 @@ class Curve(DataObject):
     when e.g. there are multiple curves generated per test case.
     """
 
+    extra: Optional[Dict[str, NumberSeries]] = None
+    """
+    Optionally specify additional series shown when hovering over the plot. For example, when plotting a
+    precision-recall curve, it is desirable to include an extra series `threshold` to specify the confidence threshold
+    value at which a given precision-recall point occurs.
+    """
+
     def __post_init_post_parse__(self) -> None:
         if len(self.x) != len(self.y):
             raise ValueError(
                 f"Series 'x' (length: {len(self.x)}) and 'y' (length: {len(self.y)}) have different lengths",
             )
+        for key, series in (self.extra or {}).items():
+            if len(series) != len(self.x):
+                raise ValueError(
+                    f"Series '{key}' (length: {len(series)}) must match length of 'x' and 'y' (length: {len(self.x)})",
+                )
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

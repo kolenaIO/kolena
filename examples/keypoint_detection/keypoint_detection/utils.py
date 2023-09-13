@@ -36,9 +36,7 @@ def compute_distances(
     return distance, distance / normalization_factor
 
 
-def calculate_mse_nmse(distances: np.ndarray) -> Tuple[float, float]:
+def calculate_mse_nmse(distances: np.ndarray, normalization_factor: float) -> Tuple[float, float]:
     mse = np.mean(distances**2)
-    squared_diff_sum = np.sum((distances - np.mean(distances)) ** 2)
-    true_squared_sum = np.sum(distances**2)
-    nmse = squared_diff_sum / (mse * true_squared_sum)
+    nmse = math.sqrt(np.mean((distances / normalization_factor) ** 2))
     return mse, nmse

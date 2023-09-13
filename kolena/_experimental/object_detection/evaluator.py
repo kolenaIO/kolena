@@ -16,19 +16,19 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
+from kolena._experimental.object_detection import GroundTruth
+from kolena._experimental.object_detection import Inference
+from kolena._experimental.object_detection import TestCase
+from kolena._experimental.object_detection import TestCaseMetrics
+from kolena._experimental.object_detection import TestCaseMetricsSingleClass
+from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection import TestSampleMetrics
+from kolena._experimental.object_detection import TestSampleMetricsSingleClass
+from kolena._experimental.object_detection import TestSuite
+from kolena._experimental.object_detection import TestSuiteMetrics
+from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
 from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
-from kolena._experimental.object_detection.workflow import GroundTruth
-from kolena._experimental.object_detection.workflow import Inference
-from kolena._experimental.object_detection.workflow import TestCase
-from kolena._experimental.object_detection.workflow import TestCaseMetrics
-from kolena._experimental.object_detection.workflow import TestCaseMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSample
-from kolena._experimental.object_detection.workflow import TestSampleMetrics
-from kolena._experimental.object_detection.workflow import TestSampleMetricsSingleClass
-from kolena._experimental.object_detection.workflow import TestSuite
-from kolena._experimental.object_detection.workflow import TestSuiteMetrics
-from kolena._experimental.object_detection.workflow import ThresholdConfiguration
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
 
@@ -36,11 +36,7 @@ from kolena.workflow import Plot
 class ObjectDetectionEvaluator(Evaluator):
     """
     This `ObjectDetectionEvaluator` transforms inferences into metrics for the object detection workflow for a
-    single class or multiple classes. The `ObjectDetectionEvaluator` uses the [`SingleClassObjectDetectionEvaluator`]
-    [kolena._experimental.object_detection.evaluator_single_class.SingleClassObjectDetectionEvaluator] for single
-    class evaluation, and [`MulticlassObjectDetectionEvaluator`]
-    [kolena._experimental.object_detection.evaluator_multiclass.MulticlassObjectDetectionEvaluator] for multiclass
-    evaluation.
+    single class or multiple classes.
 
     When a [`ThresholdConfiguration`][kolena._experimental.object_detection.workflow.ThresholdConfiguration] is
     configured to use an F1-Optimal threshold strategy, the evaluator requires that the first test case retrieved for
@@ -67,7 +63,10 @@ class ObjectDetectionEvaluator(Evaluator):
 
         # Use complete test case to determine workflow, single class or multiclass
         if self.evaluator is None:
-            if configuration.with_class_level_metrics:
+            labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
+                inf.label for _, _, infs in inferences for inf in infs.bboxes
+            }
+            if len(labels) >= 2:
                 self.evaluator = MulticlassObjectDetectionEvaluator()
             else:
                 self.evaluator = SingleClassObjectDetectionEvaluator()

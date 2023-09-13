@@ -20,6 +20,13 @@ nav:
           - Model: core-concepts/model.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
+          - Connecting Cloud Storage:
+              - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
+              - Amazon S3: advanced-usage/connecting-cloud-storage/amazon-s3.md
+              - S3-Compatible APIs: advanced-usage/connecting-cloud-storage/s3-compatible.md
+              - Google Cloud Storage: advanced-usage/connecting-cloud-storage/google-cloud-storage.md
+              - Azure Blob Storage: advanced-usage/connecting-cloud-storage/azure-blob-storage.md
+              - HTTP Basic: advanced-usage/connecting-cloud-storage/http-basic.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
@@ -44,9 +51,12 @@ nav:
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
               - <code>visualization</code>: reference/workflow/visualization.md
-      - Legacy Modules:
-          - Legacy Modules: reference/legacy/index.md
-          - Built-in Workflows:
+      - Pre-built Workflows:
+          - Pre-built Workflows: reference/pre-built/index.md
+          - Object Detection (2D): reference/pre-built/object-detection-2d.md
+          - Classification: reference/pre-built/classification.md
+          - Legacy Definitions:
+              - Legacy Definitions: reference/legacy/index.md
               - <code>classification</code>: reference/legacy/built-in/classification.md
               - <code>detection</code>: reference/legacy/built-in/detection.md
               - <code>fr</code>: reference/legacy/built-in/fr.md
@@ -61,6 +71,7 @@ nav:
       - metrics/precision.md
       - metrics/recall.md
       - metrics/tp-fp-fn-tn.md
+      - metrics/confusion-matrix.md
   - Help & FAQ:
       - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
@@ -73,19 +84,22 @@ theme:
   font:
     text: Inter
   palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+
+    # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      accent: cyan
       toggle:
-        icon: kolena/light-mode-20
-        name: "Switch to dark mode"
+        icon: material/brightness-7
+
+    # Palette toggle for dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      accent: cyan
       toggle:
-        icon: kolena/dark-mode-20
-        name: "Switch to light mode"
-  # NOTE: this list is duplicated in mkdocs.insiders.yml. Any changes must also be made there
+        icon: material/brightness-4
   features:
     - announce.dismiss
     - content.action.edit
@@ -102,7 +116,7 @@ theme:
     - toc.follow
 
 markdown_extensions:
-  - admonition  # callouts
+  - admonition # callouts
   - footnotes
   - pymdownx.details
   - pymdownx.highlight:
@@ -115,7 +129,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
-      slugify: !!python/object/apply:pymdownx.slugs.slugify  # NOTE: insiders only
+      slugify: !!python/object/apply:pymdownx.slugs.slugify # NOTE: insiders only
         kwds:
           case: lower
   - toc:
@@ -143,9 +157,8 @@ extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
-
 plugins:
-  social:  # render social media cards for copy+paste
+  social: # render social media cards for copy+paste
   search:
     lang: en
   git-revision-date-localized:
@@ -154,10 +167,11 @@ plugins:
       python:
         import:
           - https://docs.python.org/3/objects.inv
+          - https://docs.scipy.org/doc/numpy/objects.inv
         options:
           docstring_style: sphinx
           merge_init_into_class: true
-          members_order: source  # sort members in the order they are defined
+          members_order: source # sort members in the order they are defined
           show_docstring_attributes: true
           show_root_toc_entry: false
           show_source: false

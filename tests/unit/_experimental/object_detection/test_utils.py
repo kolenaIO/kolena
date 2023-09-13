@@ -13,6 +13,8 @@
 # limitations under the License.
 from typing import Dict
 from typing import List
+from typing import Optional
+from typing import Set
 from typing import Union
 
 import pytest
@@ -20,8 +22,78 @@ import pytest
 from .test_plots import TEST_MATCHING
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ScoredBoundingBox
+from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
+
+
+@pytest.mark.metrics
+@pytest.mark.parametrize(
+    "test_name, inferences, confidence_score, labels, expected",
+    [
+        (
+            "empty",
+            [],
+            None,
+            None,
+            [],
+        ),
+        (
+            "one fit confidence",
+            [ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.5)],
+            0.5,
+            None,
+            [ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.5)],
+        ),
+        (
+            "one unfit confidence",
+            [ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.5)],
+            0.51,
+            None,
+            [],
+        ),
+        (
+            "one fit label",
+            [ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.5)],
+            None,
+            {"a"},
+            [ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.5)],
+        ),
+        (
+            "one unfit label",
+            [ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.5)],
+            None,
+            {"b"},
+            [],
+        ),
+        (
+            "combination",
+            [
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.9),
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "c", 0.1),
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "c", 0.9),
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "b", 0.4),
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "b", 0.6),
+            ],
+            0.5,
+            {"b", "c"},
+            [
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "c", 0.9),
+                ScoredLabeledBoundingBox((0, 0), (1, 1), "b", 0.6),
+            ],
+        ),
+    ],
+)
+def test__filter_inferences(
+    test_name: str,
+    inferences: List[ScoredLabeledBoundingBox],
+    confidence_score: Optional[float],
+    labels: Optional[Set[str]],
+    expected: List[ScoredLabeledBoundingBox],
+) -> None:
+    from kolena._experimental.object_detection.utils import filter_inferences
+
+    assert expected == filter_inferences(inferences, confidence_score, labels)
 
 
 @pytest.mark.metrics
@@ -180,7 +252,7 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
         ),
     ],
 )
-def test__metrics__f1__optimal(
+def test__metrics__f1_optimal(
     test_name: str,
     matchings: List[Union[MulticlassInferenceMatches, InferenceMatches]],
     expected: Union[float, Dict[str, float]],
@@ -257,7 +329,7 @@ def test__metrics__f1__optimal(
         ),
     ],
 )
-def test__metrics__f1__optimal__multiclass(
+def test__metrics__f1_optimal_multiclass(
     test_name: str,
     matchings: List[MulticlassInferenceMatches],
     expected: Dict[str, float],
@@ -338,14 +410,14 @@ def test__metrics__f1__optimal__multiclass(
         ),
     ],
 )
-def test__compute__average__precision(precisions: List[float], recalls: List[float], expected: float) -> None:
+def test__compute_average_precision(precisions: List[float], recalls: List[float], expected: float) -> None:
     from kolena._experimental.object_detection.utils import compute_average_precision
 
     assert pytest.approx(compute_average_precision(precisions, recalls), 1e-12) == expected
 
 
 @pytest.mark.metrics
-def test__compute__average__precision__raises__exception() -> None:
+def test__compute_average_precision__raises_exception() -> None:
     from kolena._experimental.object_detection.utils import compute_average_precision
 
     with pytest.raises(ValueError):

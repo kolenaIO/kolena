@@ -65,6 +65,9 @@ figcaption {
   --md-primary-fg-color--light: #835dcd;
 
   --md-typeset-a-color: #4051b5; /* manually set link color to indigo */
+
+  --md-mg-positive-color: #008e10;
+  --md-mg-negative-color: #ac0000;
 }
 
 /* Apply Kolena branding on top of 'slate' (dark) scheme */
@@ -95,6 +98,9 @@ figcaption {
 
     --md-footer-bg-color:              hsla(var(--md-hue), 7%, 10%, 0.87);
     --md-footer-bg-color--dark:        hsla(var(--md-hue), 7%, 8%, 1);
+
+    --md-mg-positive-color: #b6ffc4;
+    --md-mg-negative-color: #ffbcbf;
   }
 }
 
@@ -115,4 +121,10 @@ figcaption {
   background-color: var(--md-accent-fg-color);
   -webkit-mask-image: var(--md-admonition-icon--faq);
           mask-image: var(--md-admonition-icon--faq);
+}
+.mg-cell-color-positive {
+  color: var(--md-mg-positive-color);
+}
+.mg-cell-color-negative {
+  color: var(--md-mg-negative-color);
 }

@@ -23,11 +23,12 @@ from typing import Tuple
 
 import pandas as pd
 import s3fs
-from constants import DATASET
-from constants import S3_ANNOTATION_FILE_PATH
-from constants import S3_IMAGE_LOCATION
-from constants import TEST_SUITE_DESCRIPTION
-from constants import TRANSPORTATION_LABELS
+from object_detection_2d.constants import DATASET
+from object_detection_2d.constants import S3_ANNOTATION_FILE_PATH
+from object_detection_2d.constants import S3_IMAGE_LOCATION
+from object_detection_2d.constants import TEST_SUITE_DESCRIPTION
+from object_detection_2d.constants import TRANSPORTATION_LABELS
+from object_detection_2d.constants import WORKFLOW
 
 import kolena
 from kolena._experimental.object_detection import GroundTruth
@@ -54,7 +55,7 @@ def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
     label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
 
     # cache bounding boxes per image
-    image_to_boxes: Dict[int, List[LabeledBoundingBox]] = defaultdict(lambda: [])
+    image_to_boxes: Dict[str, List[LabeledBoundingBox]] = defaultdict(lambda: [])
     for annotation in coco_data["annotations"]:
         image_id = annotation["image_id"]
         label = label_map[annotation["category_id"]]
@@ -134,6 +135,44 @@ def seed_test_suite_by_brightness(test_suite_name: str, complete_test_case: Test
     print(f"created test suite '{test_suite.name}' v{test_suite.version}")
 
 
+def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_case: TestCase) -> None:
+    stratification_logic_map = {
+        "small": lambda area: area < 10_000,
+        "medium": lambda area: 10_000 <= area < 60_000,
+        "large": lambda area: 60_000 <= area,
+    }
+
+    def filter_gt_bboxes(gt: GroundTruth, filter_fn: Callable[[float], bool]) -> GroundTruth:
+        bboxes, ignored_bboxes = [], gt.ignored_bboxes
+        for bbox in gt.bboxes:
+            bboxes.append(bbox) if filter_fn(bbox.area) else ignored_bboxes.append(bbox)
+        return GroundTruth(bboxes=bboxes, ignored_bboxes=ignored_bboxes)
+
+    # create each test case by stratification
+    test_cases: List[TestCase] = []
+    for name, fn in stratification_logic_map.items():
+        samples_with_filtered_bboxes = []
+        for ts, gt in complete_test_case.iter_test_samples():
+            filtered_ground_truth = filter_gt_bboxes(gt, fn)
+            if filtered_ground_truth.n_bboxes > 0:
+                samples_with_filtered_bboxes.append((ts, filtered_ground_truth))
+        new_test_case = TestCase(
+            f"bounding box size :: {name} :: {DATASET}",
+            test_samples=samples_with_filtered_bboxes,
+            reset=True,
+        )
+        test_cases.append(new_test_case)
+
+    # create the test suite with the complete test case and new test cases
+    test_suite = TestSuite(
+        test_suite_name,
+        description=f"{TEST_SUITE_DESCRIPTION}, stratified by `small`, `medium`, and `large` sized bounding boxes",
+        test_cases=[complete_test_case, *test_cases],
+        reset=True,
+    )
+    print(f"created test suite '{test_suite.name}' v{test_suite.version}")
+
+
 def main(args: Namespace) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
@@ -141,7 +180,8 @@ def main(args: Namespace) -> None:
 
     # organize test suite names with its generator
     test_suites: List[Tuple[str, Callable[[str, TestCase], TestSuite]]] = [
-        (f"{DATASET} :: transportation brightness [Object Detection]", seed_test_suite_by_brightness),
+        (f"{DATASET} :: transportation by brightness [{WORKFLOW}]", seed_test_suite_by_brightness),
+        (f"{DATASET} :: transportation by bounding box size [{WORKFLOW}]", seed_test_suite_by_bounding_box_size),
     ]
 
     # create each test suite using the complete test case
