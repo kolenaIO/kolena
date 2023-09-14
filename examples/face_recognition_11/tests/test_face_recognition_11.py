@@ -19,11 +19,14 @@ from scripts.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/")
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/...")
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 def test__seed_test_run__smoke() -> None:
-    args = Namespace(models=["Paravision"], test_suites=["image size :: dogs-vs-cats"], multiclass=False)
+    args = Namespace(
+        models=["Paravision"],
+        test_suites=["fr 1:1 :: labeled-faces-in-the-wild"],
+    )
     seed_test_run_main(args)

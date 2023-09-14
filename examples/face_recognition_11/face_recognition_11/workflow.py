@@ -60,7 +60,7 @@ class Inference(BaseInference):
     right: Tuple[BoundingBox, Keypoints]
     """The bounding box and keypoints associated with the right image to be used for face recognition."""
 
-    similarity: float
+    similarity: Optional[float]
     """
     The similarity score computed between the two embeddings in this image pair. Should be left empty when either
     image in the pair is a failure to enroll.
@@ -74,4 +74,82 @@ workflow, TestCase, TestSuite, Model = define_workflow(
     Inference,
 )
 
-# TODO: implement Metric Classes
+
+@dataclass(frozen=True)
+class TestSampleMetrics(MetricsTestSample):
+    """Image-pair-level metrics for Face Recognition 1:1 workflow."""
+
+    ignore: bool
+
+    is_false_match: Optional[bool]
+    """An indication of whether the model incorrectly classified an imposter pair as a genuine pair."""
+
+    is_false_non_match: Optional[bool]
+    """An indication of whether the model incorrectly classified an genuine pair as a imposter pair."""
+
+    is_match: Optional[bool]
+    """An indication of whether the image pair form a genuine pair (True) or an imposter pair (False)."""
+
+    threshold: Optional[float]
+    """
+    The threshold used in evaluation - specified by the `FMRThresholdConfiguration`.
+    """
+
+
+@dataclass(frozen=True)
+class TestCaseMetrics(MetricsTestCase):
+    """Test-case-level aggregate metrics for Face Recognition 1:1 workflow."""
+
+    n_samples: int
+    """Total number of samples (pair of source and target images) within this test case."""
+
+    n_images: int
+    """Total number of source and target images within this test case."""
+
+    n_tp: int
+    """Total number of true positives within in this test case."""
+
+    n_tn: int
+    """Total number of true negatives within in this test case."""
+
+    n_fp: int
+    """Total number of false positives within in this test case."""
+
+    n_fn: int
+    """Total number of false negatives within in this test case."""
+
+    n_imposter_pairs: int
+    """Total number of imposter pairs within in this test case."""
+
+    n_ignored_pairs: int
+    """Total number of ignored pairs within in this test case."""
+
+    n_genuine_pairs: int
+    """Total number of genuine pairs within in this test case."""
+
+    auc: float
+    correct_rate: float
+    incorrect_rate: float
+    fmr: float
+    Δ_fmr: float
+    fnmr: float
+    Δ_fnmr: float
+    recall: float
+
+
+@dataclass(frozen=True)
+class TestSuiteMetrics(MetricsTestSuite):
+    """Test-suite-level metrics for Face Recognition 1:1 workflow."""
+
+
+@dataclass(frozen=True)
+class FMRThresholdConfiguration(EvaluatorConfiguration):
+    """
+    False Match Rate (FMR) threshold configuration for Face Recognition 1:1 workflow.
+    Specify a minimum
+    """
+
+    threshold: Optional[float] = None
+    """
+    FMR threshold to apply for predictions.
+    """
