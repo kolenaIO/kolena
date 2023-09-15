@@ -42,14 +42,14 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
 2. **Track Trends Over Time**: Rising scores signal improvements in models, while drops could hint at issues or changes in your dataset.
 
-3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuancies like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like BertScore may help in quantifying your model's performance from other perspectives.
+3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuancies like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like [BertScore](bertscore.md) may help in quantifying your model's performance from other perspectives.
 
 ## Example
 
 **Generated Sentence**: Kolena is an ML testing and debugging platform to find hidden model behaviors and demystify model development <br>
 **Reference Sentence**: Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and take the mystery out of model development
 
-??? info "Step 1: Tokenization & n-Grams"
+??? example "Step 1: Tokenization & n-Grams"
     Splitting our sentences up into 1-, ..., 4-grams, we get:
 
     **Generated Sentence**:
@@ -69,7 +69,7 @@ A known fact about BLEU scores is that they are not to be compared between diffe
     |...|
     | 4 | ["kolena is a comprehensive", "is a comprehensive machine", "a comprehensive machine learning", "comprehensive machine learning testing", "machine learning testing and", "learning testing and debugging", "testing and debugging platform", "and debugging platform to", "debugging platform to surface", "platform to surface hidden", "to surface hidden model", "surface hidden model behaviors", "hidden model behaviors and", "model behaviors and take", "behaviors and take the", "and take the mystery", "take the mystery out", "the mystery out of", "mystery out of model", "out of model development"]  |
 
-??? info "Step 2: Calculate n-Gram Overlap"
+??? example "Step 2: Calculate n-Gram Overlap"
     Next, lets calculate the clipped precision scores for each of the n-Grams. Recall that the precision formula is:
 
     $$
@@ -93,7 +93,7 @@ A known fact about BLEU scores is that they are not to be compared between diffe
     0.824^{0.25}\cdot0.625^{0.25}\cdot0.400^{0.25}\cdot0.214^{0.25} = 0.458
     $$
 
-??? info "Step 3: Calculate Brevity Penalty"
+??? example "Step 3: Calculate Brevity Penalty"
     We apply a brevity penalty to prevent the BLEU score from giving undeservingly high scores for short generated texts. Recall that our formula is:
 
     $$
@@ -102,7 +102,7 @@ A known fact about BLEU scores is that they are not to be compared between diffe
     = 0.703
     $$
 
-??? info "Step 4: Calculate BLEU"
+??? example "Step 4: Calculate BLEU"
     Combining our n-Gram overlap and Brevity Penalty, our final BLEU score is:
 
     $$
@@ -120,4 +120,4 @@ Though BLEU is a popular metric in NLP workflows, it comes with its limitations.
 
 That being said, the metric still has its advantages. It is quick and easy to compute, as opposed to other metrics like BertScore which would take significantly longer to compute and is not easy to justify. Furthermore, it is relatively similar to human judgement (as seen in the [figure below](https://aclanthology.org/P02-1040.pdf)), and is commonly used within NLP which allows you to easily benchmark your models with others and identify pain points.
 
-![BLEU Judgement Image](../assets/images/bleu-judgement.png)
+[![BLEU Judgement Image](../assets/images/bleu-judgement.png)](https://aclanthology.org/P02-1040.pdf)

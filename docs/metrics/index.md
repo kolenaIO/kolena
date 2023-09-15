@@ -81,10 +81,4 @@ biases, and its intended uses.
     Confusion matrix is a structured plot describing classification model performance as a table that highlights counts
     of objects with predicted classes (columns) against the actual classes (rows), indicating how confused a model is.
 
-
-- [BLEU Score](bleu.md)
-
-    ---
-
-    The BLEU score is a commonly used metric in NLP workflows to quantify the quality of machine-generated text with respect to reference texts.
 </div>

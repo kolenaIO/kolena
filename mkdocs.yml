@@ -72,7 +72,6 @@ nav:
       - metrics/recall.md
       - metrics/tp-fp-fn-tn.md
       - metrics/confusion-matrix.md
-      - metrics/bleu.md
   - Help & FAQ:
       - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
