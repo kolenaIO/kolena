@@ -42,17 +42,18 @@ class FaceRecognition11(Evaluator):
         inference: Inference,
         configuration: FMRThresholdConfiguration,
     ) -> TestSampleMetrics:
-        if inference.similarity is None:
-            return TestCaseMetrics(ignore=True)
+        is_match, is_false_match, is_false_non_match = False, False, False
 
-        return TestSampleMetrics(
-            ignore=True,
-            # TODO: FM,FNM
-            is_false_match=None,
-            is_false_non_match=None,
-            is_match=ground_truth.is_same,
-            threshold=configuration.threshold,
-        )
+        if inference.similarity is None:
+            return TestCaseMetrics(is_match, is_false_match, is_false_non_match)
+
+        if inference.similarity > configuration.threshold:  # match
+            is_match = True
+        else:  # no match
+            is_false_match = not ground_truth.is_same
+            is_false_non_match = ground_truth.is_same
+
+        return TestCaseMetrics(is_match, is_false_match, is_false_non_match)
 
     def compute_test_sample_metrics(
         self,
@@ -69,12 +70,25 @@ class FaceRecognition11(Evaluator):
 
     def compute_test_case_metrics(
         self,
-        test_case: TestCase,
+        test_case: TestCase,  # NOTE: What is TestCase?
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
         metrics: List[TestSampleMetrics],
         configuration: Optional[FMRThresholdConfiguration] = None,
     ) -> TestCaseMetrics:
-        return TestCaseMetrics
+        n_genuine_pairs = np.sum([gt.is_same for _, gt, _ in inferences])
+        n_imposter_pairs = np.sum([not gt.is_same for _, gt, _ in inferences])
+        n_fm = np.sum([metric.is_false_match for metric in metrics])
+        n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
+
+        return TestCaseMetrics(
+            n_images=len(metrics),
+            n_genuine_pairs=n_genuine_pairs,
+            n_imposter_pairs=n_imposter_pairs,
+            n_fm=n_fm,
+            fmr=n_fm / n_imposter_pairs,
+            n_fnm=n_fnm,
+            fnmr=n_fnm / n_genuine_pairs,
+        )
 
     def compute_test_case_plots(
         self,
@@ -84,15 +98,5 @@ class FaceRecognition11(Evaluator):
         configuration: Optional[FMRThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         plots = []
-        # ROC curve
-
-        # Test Case FNMR vs Baseline FMR
+        # TODO: existing plots depend on baseline - add in baseline fmr
         return plots
-
-    def compute_test_suite_metrics(
-        self,
-        test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetrics]],
-        configuration: Optional[FMRThresholdConfiguration] = None,
-    ) -> Optional[TestSuiteMetrics]:
-        return TestSuiteMetrics

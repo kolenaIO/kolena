@@ -19,7 +19,9 @@ from scripts.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/...")
+    args = Namespace(
+        dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.tiny5.csv"
+    )  # metadata.csv, pairs.csv.gz
     seed_test_suite_main(args)
 
 
