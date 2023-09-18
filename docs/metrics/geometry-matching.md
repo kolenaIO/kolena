@@ -339,5 +339,5 @@ unsuccessful. A myriad of reasons can lead to a failed match, such as poor local
 (IoU), or good localization but poor classification. Surfacing these types of errors is profoundly useful during model
 debugging. For instance, **confused matches** where localization succeeded (i.e. IoU above the IoU threshold) but
 classification failed (i.e. mismatching label values) can be identified by matching unmatched inferences with unmatched
-ground truths once more after the initial matching. Confusion matches are useful for creating a
-[confusion matrix](./confusion-matrix.md) to focus on detection model's classification performance.
+ground truths once more after the initial matching. Confused matches are useful for creating a
+[confusion matrix](./confusion-matrix.md) to focus on a detection model's classification performance.
