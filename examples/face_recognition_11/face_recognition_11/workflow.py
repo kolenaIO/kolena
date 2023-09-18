@@ -35,10 +35,10 @@ from kolena.workflow.annotation import BoundingBox, Keypoints
 class TestSample(ImagePair):
     """Test sample type for Face Recognition 1:1 workflow."""
 
-    left: Metadata = dataclasses.field(default_factory=dict)
+    a_metadata: Metadata = dataclasses.field(default_factory=dict)
     """The metadata associated with the left image in the test sample."""
 
-    right: Metadata = dataclasses.field(default_factory=dict)
+    b_metadata: Metadata = dataclasses.field(default_factory=dict)
     """The metadata associated with the right image in the test sample."""
 
 
@@ -54,10 +54,10 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for Face Recognition 1:1 workflow."""
 
-    left: Tuple[BoundingBox, Keypoints]
+    # left: Tuple[BoundingBox, Keypoints]
     """The bounding box and keypoints associated with the left image to be used for face recognition."""
 
-    right: Tuple[BoundingBox, Keypoints]
+    # right: Tuple[BoundingBox, Keypoints]
     """The bounding box and keypoints associated with the right image to be used for face recognition."""
 
     similarity: Optional[float]

@@ -14,8 +14,8 @@
 from argparse import Namespace
 
 import pytest
-from scripts.seed_test_run import main as seed_test_run_main
-from scripts.seed_test_suite import main as seed_test_suite_main
+from face_recognition_11.seed_test_run import main as seed_test_run_main
+from face_recognition_11.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke() -> None:

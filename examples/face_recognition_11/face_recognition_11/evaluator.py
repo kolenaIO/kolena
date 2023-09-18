@@ -99,4 +99,9 @@ class FaceRecognition11(Evaluator):
     ) -> Optional[List[Plot]]:
         plots = []
         # TODO: existing plots depend on baseline - add in baseline fmr
+
+        # set Test Sample as the first baseline to compute remaining metrics
+
+        # AUC and ROC plots
+
         return plots
