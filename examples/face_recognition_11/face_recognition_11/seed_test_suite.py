@@ -39,19 +39,17 @@ def main(args: Namespace) -> int:
 
     df = pd.read_csv(args.dataset_csv)
 
-    non_metadata_fields = {"locator"}  # NOTE: remove person from metadata?
-    df_metadata = df.drop(non_metadata_fields)
-
-    print(df.columns)
+    non_metadata_fields = ["locator"]  # NOTE: remove person from metadata?
+    df_metadata = df.drop(non_metadata_fields, axis=1)
 
     # form pairs from image locators & metadata
     image_pairs = list(
-        itertools.combinations([(locator, df_metadata.iloc[i]) for i, locator in enumerate(df["locator"])])
+        itertools.combinations([(locator, df_metadata.iloc[i]) for i, locator in enumerate(df["locator"])], 2)
     )
 
     # an image pair will contain a left and right tuple with the respective locator & metadata
-    test_samples = [TestSample(a=a[0], b=b[0], a_metadata=a[1], b_metadata=b[1]) for a, b in image_pairs]
-    ground_truths = [GroundTruth(is_same=(a[1]["person"] == b[1]["person"])) for a, b in image_pairs]
+    test_samples = [TestSample(a=a[0], b=b[0], metadata={"a": a[1], "b": b[1]}) for a, b in image_pairs]
+    ground_truths = [GroundTruth(is_same=(a["metadata"]["person"] == b["metadata"]["person"])) for a, b in image_pairs]
 
     test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
     test_cases = TestCase(f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
