@@ -119,7 +119,7 @@ class DataObject(metaclass=ABCMeta):
                 for f in fields + extras
             ],
         )
-        return f"""{self.__class__.__qualname__}({value_str})"""
+        return f"{self.__class__.__qualname__}({value_str})"
 
     def _to_dict(self) -> Dict[str, Any]:
         def serialize_value(value: Any) -> Any:
