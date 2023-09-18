@@ -46,8 +46,8 @@ from kolena.workflow import TestCase
 from kolena.workflow import TestSample as BaseTestSample
 from kolena.workflow._datatypes import TestSampleDataFrame
 from kolena.workflow._validators import assert_workflows_match
+from kolena.workflow.test_sample import _METADATA_KEY
 from kolena.workflow.workflow import Workflow
-
 
 TestSample = TypeVar("TestSample", bound=BaseTestSample)
 
@@ -176,7 +176,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSampleDataFrame,
         ):
             for record in df_batch.itertuples():
-                test_sample = self.workflow.test_sample_type._from_dict(record.test_sample)
+                test_sample = self.workflow.test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
                 ground_truth = self.workflow.ground_truth_type._from_dict(record.ground_truth)
                 inference = self.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference
