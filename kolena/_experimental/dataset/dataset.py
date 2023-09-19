@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import mimetypes
 from dataclasses import asdict
 from typing import Iterator
 from typing import Optional
@@ -29,10 +30,40 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
 from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_series
-from kolena.workflow._datatypes import _infer_datatype
 from kolena.workflow._datatypes import _serialize_series
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
-from kolena.workflow._datatypes import TEST_SAMPLE_TYPE
+from kolena.workflow._datatypes import TypedDataObject
+
+TEST_SAMPLE_TYPE = "TEST_SAMPLE"
+
+_DATAPOINT_TYPE_MAP = {
+    "image": f"{TEST_SAMPLE_TYPE}/IMAGE",
+    "application/pdf": f"{TEST_SAMPLE_TYPE}/DOCUMENT",
+    "text": f"{TEST_SAMPLE_TYPE}/DOCUMENT",
+    "video": f"{TEST_SAMPLE_TYPE}/VIDEO",
+}
+
+
+def _dataobject_type(obj: TypedDataObject) -> str:
+    obj_type = obj._data_type()
+    return f"{obj_type._data_category()}/{obj_type.value}"
+
+
+def _get_datapoint_type(mimetype_str: str) -> str:
+    main_type, sub_type = mimetype_str.split("/")
+    return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
+
+
+def _infer_datatype(x: str) -> str:
+    mtype, _ = mimetypes.guess_type(x)
+    if mtype:
+        datatype = _get_datapoint_type(mtype)
+        if datatype is not None:
+            return datatype
+    elif x.endswith(".pcd"):
+        return f"{TEST_SAMPLE_TYPE}/POINT_CLOUD"
+
+    return f"{TEST_SAMPLE_TYPE}/CUSTOM"
 
 
 def _to_serialized_data_frame(df: pd.DataFrame) -> pd.DataFrame:
