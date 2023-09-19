@@ -280,6 +280,13 @@ def _deserialize_json(x: Any) -> Any:
 
 
 def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
+    """
+    Helper function to export pandas DataFrame containing annotation or asset to CSV format.
+
+    :param args: positional arguments to `pandas.DataFrame.to_csv`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.to_csv`.
+    :return: None or str.
+    """
     columns = list(df.select_dtypes(include="object").columns)
     df_post = df.select_dtypes(exclude="object")
     df_post[columns] = df[columns].apply(_serialize_series)
@@ -288,6 +295,13 @@ def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
 
 
 def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
+    """
+    Helper function to load pandas DataFrame exported to CSV with `dataframe_to_csv`.
+
+    :param args: positional arguments to `pandas.DataFrame.read_csv`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.read_csv`.
+    :return: DataFrame.
+    """
     df = pd.read_csv(*args, **kwargs)
     columns = list(df.select_dtypes(include="object").columns)
     df_post = df.select_dtypes(exclude="object")
@@ -298,6 +312,13 @@ def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
 
 
 def dataframe_from_json(*args, **kwargs) -> pd.DataFrame:
+    """
+    Helper function to load pandas DataFrame containing annotation or asset from JSON file or string.
+
+    :param args: positional arguments to `pandas.DataFrame.read_json`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.read_json`.
+    :return: DataFrame.
+    """
     df = pd.read_json(*args, **kwargs)
     columns = list(df.select_dtypes(include="object").columns)
     df_post = df.select_dtypes(exclude="object")
