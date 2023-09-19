@@ -13,13 +13,17 @@
         <link rel="canonical" href="https://docs.kolena.io/metrics/average-precision/">
       
       
+        <link rel="prev" href="../accuracy/">
+      
+      
+        <link rel="next" href="../averaging-methods/">
       
       
         
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.5.2, mkdocs-material-9.2.3+insiders-4.39.1">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.3+insiders-4.39.1">
     
     
 <title>Average Precision · Testing with Kolena</title>
@@ -332,10 +336,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../" class="md-tabs__link">
           
   
@@ -2432,6 +2438,8 @@
       
   
   
+    
+  
   
     
     
@@ -2458,15 +2466,19 @@
       
         
       
+        
+      
+        
+      
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           
@@ -2522,7 +2534,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2567,6 +2579,172 @@
                 
   
   
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Average Precision
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Average Precision
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Implementation Details
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#object-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Object Detection
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Object Detection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-point-interpolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          11-point Interpolation
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#information-retrieval" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Information Retrieval
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mean-average-precision-map" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Mean Average Precision (mAP)
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-biases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Limitations and Biases
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
     <li class="md-nav__item">
       <a href="../averaging-methods/" class="md-nav__link">
@@ -2583,6 +2761,34 @@
     
       <br>
       <small>Macro, Micro, Weighted</small>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../confusion-matrix/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Confusion Matrix
+    </span>
+  
+
     
   </span>
   
@@ -2712,6 +2918,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../pr-curve/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Precision-Recall (PR) Curve
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../recall/" class="md-nav__link">
         
   
@@ -2748,34 +2982,6 @@
   
     <span class="md-typeset">
       TP / FP / FN / TN
-    </span>
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../confusion-matrix/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    
-  
-    <span class="md-typeset">
-      Confusion Matrix
     </span>
   
 
@@ -3064,8 +3270,8 @@ metric used across popular object detection benchmarks such as <a href="http://h
 <a href="https://cocodataset.org/#detection-2015">COCO</a>, and
 <a href="https://storage.googleapis.com/openimages/web/evaluation.html">Open Images V7</a>.</p>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">#</a></h2>
-<p>The general definition of AP is finding the approximation of the area under the PR curve. The actual area under the
-curve, where <span class="arithmatex">\(p(r)\)</span> is the precision at recall <span class="arithmatex">\(r\)</span>, can be defined:</p>
+<p>The general definition of AP is finding the approximation of the area under the <a href="../pr-curve/">PR curve</a>. The actual
+area under the curve, where <span class="arithmatex">\(p(r)\)</span> is the precision at recall <span class="arithmatex">\(r\)</span>, can be defined:</p>
 <div class="arithmatex">\[
 \text{AP} = \int_{0}^{1} p(r)dr
 \]</div>
@@ -3088,7 +3294,8 @@ slightly differently for both.</p>
 <p>Let’s consider the following simple example:</p>
 <p><img alt="example legends" src="../../assets/images/metrics-bbox-legend-light.svg#only-light" />
 <img alt="example legends" src="../../assets/images/metrics-bbox-legend-dark.svg#only-dark" /></p>
-<p><img alt="object detection example" src="../../assets/images/metrics-ap-od-example.png" /></p>
+<p><img alt="object detection example" src="../../assets/images/metrics-ap-od-example-light.svg#only-light" />
+<img alt="object detection example" src="../../assets/images/metrics-ap-od-example-dark.svg#only-dark" /></p>
 <p>The above three images show a total of four ground truth objects, all of which are matched with an inference bounding box
 based on the <a href="../iou/">Intersection over Union (IoU)</a> scores. Let’s look at each inference bounding box and sort them
 by their confidence score in descending order.</p>
@@ -3214,7 +3421,8 @@ can be defined at each threshold. We are using the cumulative sum because once a
 threshold equal to its confidence score, so only the upper rows and the current row (i.e., inference with score
 greater than or equal to the threshold) count as positive inferences.</p>
 <p>Now that we have the precision and recall defined at each threshold, let’s plot the PR curve:</p>
-<p><img alt="object detection example - PR curve" src="../../assets/images/metrics-ap-od-pr.png" /></p>
+<p><img alt="object detection example - PR curve" src="../../assets/images/metrics-ap-od-pr-light.svg#only-light" />
+<img alt="object detection example - PR curve" src="../../assets/images/metrics-ap-od-pr-dark.svg#only-dark" /></p>
 <p>Notice the zigzag pattern, often referred to as “<strong>wiggles</strong>” — the precision goes down with FPs and goes up again with TPs as the
 recall increases. It is a common practice to first smooth out the wiggles before calculating the AP metric by taking the
 maximum precision value to its graphical right side of each recall value. This is why AP is called the <strong>approximation</strong>
@@ -3223,7 +3431,8 @@ of the area under the PR curve. The interpolated precision at each recall is def
 p_{interp}(r) = \max_{\hat{r} \geq r}p(\hat{r})
 \]</div>
 <p>The PR curve is re-plotted using the interpolated precisions (see orange line in the plot below).</p>
-<p><img alt="object detection example - PR curve with interpolation" src="../../assets/images/metrics-ap-od-pr-interpolation.png" /></p>
+<p><img alt="object detection example - PR curve with interpolation" src="../../assets/images/metrics-ap-od-pr-interpolation-light.svg#only-light" />
+<img alt="object detection example - PR curve with interpolation" src="../../assets/images/metrics-ap-od-pr-interpolation-dark.svg#only-dark" /></p>
 <div class="grid">
 <p>The precisions (y-values) of the smoothed out curve, the orange line on the plot above, are
 <strong>monotonically decreasing</strong>. We’re now ready to calculate AP, which is simply the <strong>area under the smoothed out curve</strong>:</p>
@@ -3257,7 +3466,8 @@ spaced recall values</strong> from 0.0 to 1.0 were used instead of all unique re
 <p>The 11-point interpolated AP was used in the PASCAL VOC until a new AP calculation, what's considered as the standard
 now, which was adopted in 2010. This interpolation uses the average of the maximum precision values for 11 linearly spaced
 recall values from 0.0 to 1.0:</p>
-<p><img alt="object detection example — 11 interpolation" src="../../assets/images/metrics-ap-od-pr-11.png" /></p>
+<p><img alt="object detection example — 11 interpolation" src="../../assets/images/metrics-ap-od-pr-11-light.svg#only-light" />
+<img alt="object detection example — 11 interpolation" src="../../assets/images/metrics-ap-od-pr-11-dark.svg#only-dark" /></p>
 <p>When the precisions at certain recall values become extremely small, they are exempted from the AP calculation.
 The intention of using this 11-point interpolation, according to the
 <a href="http://host.robots.ox.ac.uk/pascal/VOC/pubs/everingham15.pdf">original paper</a>, is as follows:</p>
@@ -3286,7 +3496,8 @@ the section above. The formula of the metric is defined:</p>
 </ul>
 <p>Let’s consider the following example of retrieving similar images to the query from a database of images with different
 shapes and colors:</p>
-<p><img alt="information retrieval example" src="../../assets/images/metrics-ap-ir-example.png" /></p>
+<p><img alt="information retrieval example" src="../../assets/images/metrics-ap-ir-example-light.svg#only-light" />
+<img alt="information retrieval example" src="../../assets/images/metrics-ap-ir-example-dark.svg#only-dark" /></p>
 <p>The retrieved images are the complete list of images from the database that are ranked by their similarity scores,
 which are predicted from the model, where the left-most image is the most similar to the query image.</p>
 <p>From the retrieved images, the ones with a circle are the TPs, where <span class="arithmatex">\(rel(k) = 1\)</span>, and any other shapes are labeled as
@@ -3314,7 +3525,8 @@ of the plot. By doing so, it overestimates the area under the curve.</p>
 <details class="info">
 <summary>AP cannot distinguish between very different-looking PR curves.</summary>
 <p>Consider the following three plots:</p>
-<p><img alt="limitation #2 example" src="../../assets/images/metrics-ap-limitation2.png" /></p>
+<p><img alt="limitation #2 example" src="../../assets/images/metrics-ap-limitation2-light.svg#only-light" />
+<img alt="limitation #2 example" src="../../assets/images/metrics-ap-limitation2-dark.svg#only-dark" /></p>
 <p>These three plots show very different characteristic, but their APs are exactly the same for all of them.
 Thus, relying solely on the AP metric is not enough. We recommend plotting the PR curve along with the AP metric
 to better understand the behavior of your model.</p>
@@ -3337,7 +3549,8 @@ it is calculated using the same interpolation method.</p>
 <p>It is pretty common for object detectors to filter out predictions with very small confidence scores. In such a
 scenario, the curve will be missing the tail part, but because the metric considers the entire recall domain, any
 curves that end early will result in a lower average precision score.</p>
-<p><img alt="limitation #5 example" src="../../assets/images/metrics-ap-limitation5.png" /></p>
+<p><img alt="limitation #5 example" src="../../assets/images/metrics-ap-limitation5-light.svg#only-light" />
+<img alt="limitation #5 example" src="../../assets/images/metrics-ap-limitation5-dark.svg#only-dark" /></p>
 <p>The plot above shows PR curves of two models: one extending to the recall value of <code>1.0</code> and the other one extending
 only to <code>0.6</code>. Since a large portion of the area under the curve corresponds to the tail of the curve, model 2
 scores a higher AP than model 1.</p>
@@ -3355,7 +3568,7 @@ scores a higher AP than model 1.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">July 25, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2023</span>
       </span>
     
     
@@ -3371,6 +3584,11 @@ scores a higher AP than model 1.</p>
             <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
               
               <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
+            </a>
+          
+            <a href="https://github.com/pvanburen" class="md-author" title="@pvanburen">
+              
+              <img src="https://avatars.githubusercontent.com/u/114251869?size=72" alt="pvanburen">
             </a>
           
           
@@ -3398,6 +3616,44 @@ scores a higher AP than model 1.</p>
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../accuracy/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Accuracy" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Accuracy
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../averaging-methods/" class="md-footer__link md-footer__link--next" aria-label="Next: Averaging Methods" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Averaging Methods
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
