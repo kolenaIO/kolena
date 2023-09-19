@@ -41,6 +41,7 @@ from typing import Tuple
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.validators import ValidatorConfig
+from kolena.workflow._datatypes import _register_data_type
 from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 
@@ -63,6 +64,9 @@ class _AnnotationType(DataType):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """The base class for all annotation types."""
+
+    def __init_subclass__(cls, **kwargs):
+        _register_data_type(cls)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
