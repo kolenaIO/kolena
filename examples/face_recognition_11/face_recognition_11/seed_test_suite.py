@@ -16,7 +16,6 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import List
 
 import pandas as pd
 
@@ -24,11 +23,9 @@ from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
+from face_recognition_11.workflow import ImageWithMetadata
 
 import kolena
-from kolena.fr import InferenceModel
-from kolena.fr import Model
-from kolena.fr import TestSuite
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
@@ -39,24 +36,33 @@ def main(args: Namespace) -> int:
 
     df = pd.read_csv(args.dataset_csv)
 
-    non_metadata_fields = ["locator"]  # NOTE: remove person from metadata?
+    non_metadata_fields = ["locator"]
     df_metadata = df.drop(non_metadata_fields, axis=1)
+    metadata_by_person = {
+        record.person: {f: getattr(record, f) for f in set(record._fields)}
+        for record in df_metadata.itertuples(index=False)
+    }
 
     # form pairs from image locators & metadata
     image_pairs = list(
-        itertools.combinations([(locator, df_metadata.iloc[i]) for i, locator in enumerate(df["locator"])], 2)
+        itertools.combinations(
+            [(locator, metadata_by_person[person]) for person, locator in zip(df["person"], df["locator"])], 2
+        )
     )
 
     # an image pair will contain a left and right tuple with the respective locator & metadata
-    test_samples = [TestSample(a=a[0], b=b[0], metadata={"a": a[1], "b": b[1]}) for a, b in image_pairs]
-    ground_truths = [GroundTruth(is_same=(a["metadata"]["person"] == b["metadata"]["person"])) for a, b in image_pairs]
+    test_samples = [
+        TestSample(a=ImageWithMetadata(locator=a[0], metadata=a[1]), b=ImageWithMetadata(locator=b[0], metadata=b[1]))
+        for a, b in image_pairs
+    ]
+    ground_truths = [GroundTruth(is_same=(ts.a.metadata["person"] == ts.a.metadata["person"])) for ts in test_samples]
 
     test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
-    test_cases = TestCase(f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
+    test_case = TestCase(name=f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
 
     test_suite = TestSuite(
-        f"fr 1:1 :: {DATASET}",
-        test_cases=[test_cases],
+        name=f"fr 1:1 :: {DATASET}",
+        test_cases=[test_case],
         reset=True,
     )
     print(f"created test suite: {test_suite}")
