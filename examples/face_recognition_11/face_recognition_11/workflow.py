@@ -22,7 +22,7 @@ from pydantic.dataclasses import dataclass
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
-from kolena.workflow import ImagePair
+from kolena.workflow import ImagePair, Image
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
@@ -32,11 +32,25 @@ from kolena.workflow.annotation import BoundingBox, Keypoints
 
 
 @dataclass(frozen=True)
+class ImageWithMetadata(Image):
+    """
+    An image belonging to an Image Pair containing the locator and metadata
+    for the Face Recognition 1:1 workflow.
+    """
+
+    metadata: Metadata = dataclasses.field(default_factory=dict)
+    """The metadata associated with an image in the image pair."""
+
+
+@dataclass(frozen=True)
 class TestSample(ImagePair):
     """Test sample type for Face Recognition 1:1 workflow."""
 
-    metadata: Metadata = dataclasses.field(default_factory=dict)
-    """The metadata associated with the image pairs in the test sample."""
+    a: ImageWithMetadata
+    """The locator and metadata associated with image A in the test sample."""
+
+    b: ImageWithMetadata
+    """The locator and metadata associated with image B in the test sample."""
 
 
 @dataclass(frozen=True)
