@@ -6,7 +6,7 @@ BERTScore is a metric used in NLP workflows to measure textual similarity betwee
     <center>![Embedding Space Image](../assets/images/bert_vector_space.png){: style="height:20em;width:auto"}</center>
 
 ## Implementation Details
-BERTScore is a collection of three metrics - BERT-Precision, BERT-Recall, and BERT-F1.
+BERTScore is a collection of three metrics - BERT-Precision, BERT-Recall, and BERT-F1. As the names imply, BERT-Precision measures how well the candidate texts avoid introducing irrelevant content. BERT-Recall measures how well the candidate texts avoid omitting relevant content. BERT-F1 is a combination of both Precision and Recall to measure how well the candidate texts capture and retain relevant information from the reference texts.
 
 ### Calculating BERTScore
 Given a reference sentence, $x = \langle x_1, x_2, ..., x_n \rangle$, and machine-generated sentence, $\hat{x} = \langle\hat{x}_1, \hat{x}_2, ..., \hat{x}_m\rangle$, we first use BERT to generate a sequence of word embeddings for both reference and candidate sentences.
@@ -112,6 +112,6 @@ BERTScore, originally designed to be a replacement to the BLEU score, is a power
 
 1. BERTScore is computationally expensive. The default model (```roberta-large```) used to calculate BERTScore requires 1.4GB of weights to be stored, and requires a forward pass through the model in order to calculate the score. This may be computationally expensive for large datasets, compared to BLEU which is straightforward and easy to compute. However, smaller distilled models like ```distilbert-base-uncased``` can be used instead to reduce the computational cost, at the cost of reduced alignment with human judgement.
 
-2. BERTScore is calculated using a black-box pretrained model. The score can not be easily explained, as the embedding space of BERT is a dense and complex representation that is only understood by the model. Though the metric provides a numerical score, it does not explain how or why the particular score was assigned. In contrast, n-gram-based metrics can easily be calculated by hand.
+2. BERTScore is calculated using a black-box pretrained model. The score can not be easily explained, as the embedding space of BERT is a dense and complex representation that is only understood by the model. Though the metric provides a numerical score, it does not explain how or why the particular score was assigned. In contrast, n-gram-based metrics can easily be calculated by inspection.
 
-Limitations aside, BERTScore is still a powerful metric that can be included in NLP workflows to quantify the quality of machine-generated texts. It has been shown to have a pearson correlation of 0.77 with human judgement in tests, and is overall better than BLEU in judgement. Furthermore, unlike BLEU, BERTScore's use of embeddings allows it to factor in context, semantics, and order into its score. This allows it to avoid the pitfalls of BLEU.
+Limitations aside, BERTScore is still a powerful metric that can be included in NLP workflows to quantify the quality of machine-generated texts. It has been shown to have a high correlation with human judgement in tests, and is overall a better judge of similarity than BLEU. Furthermore, unlike BLEU, BERTScore's use of embeddings allows it to factor in context, semantics, and order into its score - which allows it to avoid the pitfalls of BLEU.
