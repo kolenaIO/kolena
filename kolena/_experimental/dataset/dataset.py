@@ -15,7 +15,6 @@ import json
 import mimetypes
 from dataclasses import asdict
 from typing import Iterator
-from typing import Optional
 
 import pandas as pd
 
@@ -105,9 +104,8 @@ def register_dataset(name: str, df: pd.DataFrame) -> None:
     krequests.raise_for_status(response)
 
 
-def fetch_dataset(
+def iter_dataset(
     name: str,
-    version: Optional[int] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
@@ -117,7 +115,6 @@ def fetch_dataset(
         raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
     init_request = LoadDatapointsRequest(
         name=name,
-        version=version,
         batch_size=batch_size,
     )
     for df_batch in _BatchedLoader.iter_data(
@@ -127,3 +124,11 @@ def fetch_dataset(
         endpoint_api_version=API_V2,
     ):
         yield _to_deserialized_data_frame(df_batch)
+
+
+def fetch_dataset(
+    name: str,
+    batch_size: int = BatchSize.LOAD_SAMPLES.value,
+) -> pd.DataFrame:
+    df_batches = list(iter_dataset(name, batch_size))
+    return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()

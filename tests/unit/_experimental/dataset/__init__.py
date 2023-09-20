@@ -11,24 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from enum import Enum
-
-from pydantic.dataclasses import dataclass
-
-from kolena._api.v1.batched_load import BatchedLoad
-
-
-class Path(str, Enum):
-    REGISTER = "/dataset/register"
-    LOAD_DATAPOINTS = "/dataset/load-datapoints"
-
-
-@dataclass(frozen=True)
-class RegisterRequest:
-    name: str
-    uuid: str
-
-
-@dataclass(frozen=True)
-class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
-    name: str
