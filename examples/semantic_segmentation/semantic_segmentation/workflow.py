@@ -16,6 +16,7 @@ import dataclasses
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
+from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Image
 from kolena.workflow import Inference as BaseInference
@@ -65,3 +66,11 @@ class TestCaseMetric(MetricsTestCase):
     Recall: float
     F1: float
     AP: float
+
+
+@dataclass(frozen=True)
+class SemanticSegmentationConfiguration(EvaluatorConfiguration):
+    model_name: str
+
+    def display_name(self) -> str:
+        return "Semantic Segmentation Configuration"

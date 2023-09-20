@@ -21,6 +21,7 @@ from semantic_segmentation.utils import download_mask
 from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
+from semantic_segmentation.workflow import SemanticSegmentationConfiguration
 from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestCaseMetric
 from semantic_segmentation.workflow import TestSample
@@ -42,10 +43,16 @@ def compute_test_sample_metrics(
     gt: GroundTruth,
     inf: Inference,
     ts: TestSample,
+    configuration: SemanticSegmentationConfiguration,
 ):
     gt_mask = download_mask(gt.mask.locator)
     inf_mask = download_mask(inf.mask.locator)
-    tp, fp, fn = _load_sample_result_masks(test_sample=ts, gt_mask=gt_mask, inf_mask=inf_mask)
+    tp, fp, fn = _load_sample_result_masks(
+        test_sample=ts,
+        gt_mask=gt_mask,
+        inf_mask=inf_mask,
+        model_name=configuration.model_name,
+    )
 
     count_tps = 0
     count_fps = 0
@@ -113,9 +120,9 @@ def _load_sample_result_masks(
     test_sample: TestSample,
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
+    model_name: str,
 ) -> ResultMasks:
     def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
-        model_name = "pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512"
         locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{category}/{test_sample.metadata['basename']}.png"
         upload_image(locator, mask)
         return SegmentationMask(locator=locator, labels={1: "person"})
@@ -131,9 +138,11 @@ def evaluate_semantic_segmentation(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
+    configuration: SemanticSegmentationConfiguration,
 ) -> EvaluationResults:
     test_sample_metrics = [
-        compute_test_sample_metrics(gt, inf, ts) for gt, inf, ts in zip(ground_truths, inferences, test_samples)
+        compute_test_sample_metrics(gt, inf, ts, configuration)
+        for gt, inf, ts in zip(ground_truths, inferences, test_samples)
     ]
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
