@@ -17,71 +17,19 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
 
-from semantic_segmentation.workflow import GroundTruth
+from semantic_segmentation.evaluator import evaluate_semantic_segmentation
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Model
-from semantic_segmentation.workflow import TestCaseMetric
 from semantic_segmentation.workflow import TestSample
-from semantic_segmentation.workflow import TestSampleMetric
 from semantic_segmentation.workflow import TestSuite
 
 import kolena
-from kolena.workflow import EvaluationResults
-from kolena.workflow import TestCases
 from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.test_run import test
 
 
 BUCKET = "kolena-public-datasets"
 DATASET = "coco-stuff-10k"
-
-
-def evaluate(
-    test_samples: List[TestSample],
-    ground_truths: List[GroundTruth],
-    inferences: List[Inference],
-    test_cases: TestCases,
-) -> EvaluationResults:
-    fake_locator = (
-        "s3://kolena-public-datasets/coco-stuff-10k/annotations/COCO_train2014_000000484108_labelTrainIds.png"
-    )
-    test_sample_metrics = [
-        TestSampleMetric(
-            TP=SegmentationMask(
-                locator=fake_locator,
-                labels={0: "person"},
-            ),
-            FP=SegmentationMask(
-                locator=fake_locator,
-                labels={0: "person"},
-            ),
-            FN=SegmentationMask(
-                locator=fake_locator,
-                labels={0: "person"},
-            ),
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-            CountTP=0,
-            CountFP=0,
-            CountFN=0,
-        )
-        for _ in test_samples
-    ]
-
-    test_case_metrics = []
-    for test_case, *s in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        test_case_metric = TestCaseMetric(
-            Precision=0.0,
-            Recall=0.0,
-            F1=0.0,
-        )
-        test_case_metrics.append((test_case, test_case_metric))
-
-    return EvaluationResults(
-        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=test_case_metrics,
-    )
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
@@ -99,7 +47,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         test(
             model,
             test_suite,
-            evaluate,
+            evaluate_semantic_segmentation,
             reset=True,
         )
 

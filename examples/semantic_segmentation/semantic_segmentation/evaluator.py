@@ -1,0 +1,135 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+from typing import List
+from typing import Optional
+from typing import Tuple
+
+from semantic_segmentation.utils import compute_score_distribution_plot
+from semantic_segmentation.utils import download_mask
+from semantic_segmentation.workflow import GroundTruth
+from semantic_segmentation.workflow import Inference
+from semantic_segmentation.workflow import TestCase
+from semantic_segmentation.workflow import TestCaseMetric
+from semantic_segmentation.workflow import TestSample
+from semantic_segmentation.workflow import TestSampleMetric
+
+from kolena.workflow import EvaluationResults
+from kolena.workflow import Plot
+from kolena.workflow import TestCases
+from kolena.workflow.annotation import SegmentationMask
+
+
+def compute_test_sample_metrics(
+    gt: GroundTruth,
+    inf: Inference,
+):
+    fake_locator = (
+        "s3://kolena-public-datasets/coco-stuff-10k/annotations/COCO_train2014_000000484108_labelTrainIds.png"
+    )
+
+    gt_mask = download_mask(gt.mask.locator)
+    inf_mask = download_mask(inf.mask.locator)
+
+    count_tps = 0
+    count_fps = 0
+    count_fns = 0
+    rows, cols = gt_mask.shape
+    inf_val = 1
+    for x in range(0, rows):
+        for y in range(0, cols):
+            if gt_mask[x, y] == 1 and inf_mask[x, y] == inf_val:
+                count_tps += 1
+
+            if gt_mask[x, y] != 1 and inf_mask[x, y] == inf_val:
+                count_fps += 1
+
+            if gt_mask[x, y] == 1 and inf_mask[x, y] != inf_val:
+                count_fns += 1
+
+    precision = count_tps / (count_tps + count_fps) if (count_tps + count_fps) > 0 else 0
+    recall = count_tps / (count_tps + count_fns) if (count_tps + count_fns) > 0 else 0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+
+    return TestSampleMetric(
+        TP=SegmentationMask(
+            locator=fake_locator,
+            labels={0: "person"},
+        ),
+        FP=SegmentationMask(
+            locator=fake_locator,
+            labels={0: "person"},
+        ),
+        FN=SegmentationMask(
+            locator=fake_locator,
+            labels={0: "person"},
+        ),
+        Precision=precision,
+        Recall=recall,
+        F1=f1,
+        CountTP=count_tps,
+        CountFP=count_fps,
+        CountFN=count_fns,
+    )
+
+
+def compute_test_case_metrics(
+    metrics: List[TestSampleMetric],
+) -> TestCaseMetric:
+    count_tps = sum(metric.CountTP for metric in metrics)
+    count_fps = sum(metric.CountFP for metric in metrics)
+    count_fns = sum(metric.CountFN for metric in metrics)
+    precision = count_tps / (count_tps + count_fps) if (count_tps + count_fps) > 0 else 0
+    recall = count_tps / (count_tps + count_fns) if (count_tps + count_fns) > 0 else 0
+    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+
+    return TestCaseMetric(
+        Precision=precision,
+        Recall=recall,
+        F1=f1,
+    )
+
+
+def compute_test_case_plots(
+    test_samples: List[TestSample],
+    inferences: List[Inference],
+    metrics: List[TestSampleMetric],
+) -> Optional[List[Plot]]:
+    plots: List[Plot] = [
+        compute_score_distribution_plot("F1", metrics, (0, 1, 101)),
+    ]
+
+    return [plot for plot in plots if plot is not None]
+
+
+def evaluate_semantic_segmentation(
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    test_cases: TestCases,
+) -> EvaluationResults:
+    test_sample_metrics = [compute_test_sample_metrics(gt, inf) for gt, inf in zip(ground_truths, inferences)]
+
+    # compute aggregate metrics across all test cases using `test_cases.iter(...)`
+    all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
+    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
+    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(tsm)))
+        all_test_case_plots.append((test_case, compute_test_case_plots(ts, inf, tsm)))
+
+    # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
+    return EvaluationResults(
+        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
+        metrics_test_case=all_test_case_metrics,
+        plots_test_case=all_test_case_plots,
+    )
