@@ -22,6 +22,7 @@ from kolena.workflow.io import dataframe_from_csv
 from kolena.workflow.io import dataframe_from_json
 from kolena.workflow.io import dataframe_to_csv
 
+NAN = float("nan")
 DF_TEST = pd.DataFrame.from_dict(
     {
         "id": list(range(10)),
@@ -30,6 +31,17 @@ DF_TEST = pd.DataFrame.from_dict(
         "data": [
             LabeledBoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)
         ],
+        "bad actor": [
+            "{",
+            dict(value="box"),
+            15,
+            None,
+            "foo",
+            [1, "3", "5"],
+            LabeledBoundingBox(label="cat", top_left=[3, 5], bottom_right=[10, 15]),
+            "",
+        ]
+        + ["car"] * 2,
     },
 )
 
@@ -44,6 +56,17 @@ def test__dataframe_json() -> None:
             "z": [dict(value=i + 0.3) for i in range(10)],
             "partial": [None, ""] + ["fan"] * 8,
             "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
+            "bad actor": [
+                "{",
+                dict(value="box"),
+                15,
+                None,
+                "foo",
+                [1, "3", "5"],
+                BoundingBox(label="cat", top_left=[3, 5], bottom_right=[10, 15]),
+                "",
+            ]
+            + ["car"] * 2,
         },
     )
     assert_frame_equal(df_deserialized, df_expected)
@@ -58,8 +81,19 @@ def test__dataframe_csv() -> None:
         {
             "id": list(range(10)),
             "z": [dict(value=i + 0.3) for i in range(10)],
-            "partial": [float("nan"), float("nan")] + ["fan"] * 8,
+            "partial": [NAN, NAN] + ["fan"] * 8,
             "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
+            "bad actor": [
+                "{",
+                dict(value="box"),
+                15,
+                NAN,
+                "foo",
+                [1, "3", "5"],
+                BoundingBox(label="cat", top_left=[3, 5], bottom_right=[10, 15]),
+                NAN,
+            ]
+            + ["car"] * 2,
         },
     )
 
