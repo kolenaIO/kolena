@@ -100,3 +100,17 @@ def test__dataframe_csv() -> None:
     assert_frame_equal(df_deserialized, df_expected)
     assert df_deserialized.iloc[0]["id"] == 0
     assert df_deserialized.iloc[0]["data"].label == "foo-0"
+
+
+def test__dataframe_csv__malformed_input() -> None:
+    input_str = "A,B,C,D\n" """1,"foo","[""a"",""b"",""c""]",false\n""" """2,"{bar}","[1,2,3",tru\n""" """,,,\n"""
+    df = dataframe_from_csv(StringIO(input_str))
+    df_expected = pd.DataFrame(
+        dict(
+            A=[1, 2, NAN],
+            B=["foo", "{bar}", NAN],
+            C=[["a", "b", "c"], "[1,2,3", NAN],
+            D=[False, "tru", NAN],
+        ),
+    )
+    assert_frame_equal(df, df_expected)
