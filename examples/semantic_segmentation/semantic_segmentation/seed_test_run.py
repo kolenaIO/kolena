@@ -49,15 +49,15 @@ def evaluate(
         TestSampleMetric(
             TP=SegmentationMask(
                 locator=fake_locator,
-                labels={0: "person"},
+                labels={1: "person"},
             ),
             FP=SegmentationMask(
                 locator=fake_locator,
-                labels={0: "person"},
+                labels={1: "person"},
             ),
             FN=SegmentationMask(
                 locator=fake_locator,
-                labels={0: "person"},
+                labels={1: "person"},
             ),
             Precision=0.0,
             Recall=0.0,
@@ -87,7 +87,7 @@ def evaluate(
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     def infer(test_sample: TestSample) -> Inference:
         locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{test_sample.metadata['basename']}.png"
-        return Inference(mask=SegmentationMask(locator=locator, labels={0: "person"}))
+        return Inference(mask=SegmentationMask(locator=locator, labels={1: "person"}))
 
     model = Model(f"{model_name}", infer=infer)
     print(f"Model: {model}")
