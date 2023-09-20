@@ -15,8 +15,10 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
+import numpy as np
 from semantic_segmentation.utils import compute_score_distribution_plot
 from semantic_segmentation.utils import download_mask
+from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import TestCase
@@ -30,16 +32,20 @@ from kolena.workflow import TestCases
 from kolena.workflow.annotation import SegmentationMask
 
 
+ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
+
+BUCKET = "kolena-public-datasets"
+DATASET = "coco-stuff-10k"
+
+
 def compute_test_sample_metrics(
     gt: GroundTruth,
     inf: Inference,
+    ts: TestSample,
 ):
-    fake_locator = (
-        "s3://kolena-public-datasets/coco-stuff-10k/annotations/COCO_train2014_000000484108_labelTrainIds.png"
-    )
-
     gt_mask = download_mask(gt.mask.locator)
     inf_mask = download_mask(inf.mask.locator)
+    tp, fp, fn = _load_sample_result_masks(test_sample=ts, gt_mask=gt_mask, inf_mask=inf_mask)
 
     count_tps = 0
     count_fps = 0
@@ -62,18 +68,9 @@ def compute_test_sample_metrics(
     f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
 
     return TestSampleMetric(
-        TP=SegmentationMask(
-            locator=fake_locator,
-            labels={0: "person"},
-        ),
-        FP=SegmentationMask(
-            locator=fake_locator,
-            labels={0: "person"},
-        ),
-        FN=SegmentationMask(
-            locator=fake_locator,
-            labels={0: "person"},
-        ),
+        TP=tp,
+        FP=fp,
+        FN=fn,
         Precision=precision,
         Recall=recall,
         F1=f1,
@@ -112,13 +109,32 @@ def compute_test_case_plots(
     return [plot for plot in plots if plot is not None]
 
 
+def _load_sample_result_masks(
+    test_sample: TestSample,
+    gt_mask: np.ndarray,
+    inf_mask: np.ndarray,
+) -> ResultMasks:
+    def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
+        model_name = "pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512"
+        locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{category}/{test_sample.metadata['basename']}.png"
+        upload_image(locator, mask)
+        return SegmentationMask(locator=locator, labels={1: "person"})
+
+    tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
+    fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))
+    fn = upload_result_mask("FN", np.where(gt_mask == inf_mask, 0, gt_mask))
+    return tp, fp, fn
+
+
 def evaluate_semantic_segmentation(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
 ) -> EvaluationResults:
-    test_sample_metrics = [compute_test_sample_metrics(gt, inf) for gt, inf in zip(ground_truths, inferences)]
+    test_sample_metrics = [
+        compute_test_sample_metrics(gt, inf, ts) for gt, inf, ts in zip(ground_truths, inferences, test_samples)
+    ]
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []

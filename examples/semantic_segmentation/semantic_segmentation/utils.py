@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import tempfile
+from io import BytesIO
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -19,6 +20,7 @@ from typing import Union
 from urllib.parse import urlparse
 
 import boto3
+import cv2
 import numpy as np
 import skimage
 from semantic_segmentation.workflow import Inference
@@ -49,6 +51,16 @@ def download_mask(locator: str) -> np.ndarray:
         s3.download_fileobj(bucket, key, f)
         data = skimage.io.imread(f)
         return data
+
+
+def upload_image(locator: str, image: np.ndarray) -> None:
+    bucket, key = parse_s3_path(locator)
+    success, buf = cv2.imencode(".png", image)
+    if not success:
+        raise RuntimeError("failed to encode image as PNG")
+
+    io_buf = BytesIO(buf)
+    s3.upload_fileobj(io_buf, bucket, key)
 
 
 def compute_score_distribution_plot(
