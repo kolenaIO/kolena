@@ -29,6 +29,7 @@ import kolena
 from kolena.workflow import EvaluationResults
 from kolena.workflow import TestCases
 from kolena.workflow.annotation import SegmentationMask
+from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
 
 
@@ -75,6 +76,7 @@ def evaluate(
             Precision=0.0,
             Recall=0.0,
             F1=0.0,
+            AP=0.0,
         )
         test_case_metrics.append((test_case, test_case_metric))
 
@@ -86,8 +88,9 @@ def evaluate(
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     def infer(test_sample: TestSample) -> Inference:
-        locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{test_sample.metadata['basename']}.png"
-        return Inference(mask=SegmentationMask(locator=locator, labels={1: "person"}))
+        basename = test_sample.metadata["basename"]
+        locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{basename}_person.npy"
+        return Inference(prob=BinaryAsset(locator))
 
     model = Model(f"{model_name}", infer=infer)
     print(f"Model: {model}")
