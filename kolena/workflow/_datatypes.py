@@ -232,6 +232,7 @@ class DataObject(metaclass=ABCMeta):
         return cls(**items)
 
     # integrate with pandas json deserialization
+    # https://pandas.pydata.org/docs/user_guide/io.html#fallback-behavior
     def toDict(self) -> Dict:
         return self._to_dict()
 
