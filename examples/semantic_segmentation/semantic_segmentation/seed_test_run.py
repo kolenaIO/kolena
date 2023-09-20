@@ -24,7 +24,7 @@ from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSuite
 
 import kolena
-from kolena.workflow.annotation import SegmentationMask
+from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
 
 
@@ -34,8 +34,9 @@ DATASET = "coco-stuff-10k"
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     def infer(test_sample: TestSample) -> Inference:
-        locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{test_sample.metadata['basename']}.png"
-        return Inference(mask=SegmentationMask(locator=locator, labels={0: "person"}))
+        basename = test_sample.metadata["basename"]
+        locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{basename}_person.npy"
+        return Inference(prob=BinaryAsset(locator))
 
     model = Model(f"{model_name}", infer=infer)
     print(f"Model: {model}")

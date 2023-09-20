@@ -23,6 +23,7 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow.annotation import SegmentationMask
+from kolena.workflow.asset import BinaryAsset
 
 
 @dataclass(frozen=True)
@@ -37,7 +38,7 @@ class GroundTruth(BaseGroundTruth):
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    mask: SegmentationMask
+    prob: BinaryAsset
 
 
 _, TestCase, TestSuite, Model = define_workflow("Semantic Segmentation", TestSample, GroundTruth, Inference)
@@ -63,3 +64,4 @@ class TestCaseMetric(MetricsTestCase):
     Precision: float
     Recall: float
     F1: float
+    AP: float
