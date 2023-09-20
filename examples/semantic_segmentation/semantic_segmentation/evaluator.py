@@ -16,6 +16,8 @@ from typing import Optional
 from typing import Tuple
 
 import numpy as np
+from semantic_segmentation.constants import BUCKET
+from semantic_segmentation.constants import DATASET
 from semantic_segmentation.utils import compute_score_distribution_plot
 from semantic_segmentation.utils import download_mask
 from semantic_segmentation.utils import upload_image
@@ -34,9 +36,6 @@ from kolena.workflow.annotation import SegmentationMask
 
 
 ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
-
-BUCKET = "kolena-public-datasets"
-DATASET = "coco-stuff-10k"
 
 
 def compute_test_sample_metrics(

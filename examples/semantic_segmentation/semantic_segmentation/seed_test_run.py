@@ -17,6 +17,8 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
 
+from semantic_segmentation.constants import BUCKET
+from semantic_segmentation.constants import DATASET
 from semantic_segmentation.evaluator import evaluate_semantic_segmentation
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Model
@@ -27,10 +29,6 @@ from semantic_segmentation.workflow import TestSuite
 import kolena
 from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
-
-
-BUCKET = "kolena-public-datasets"
-DATASET = "coco-stuff-10k"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
