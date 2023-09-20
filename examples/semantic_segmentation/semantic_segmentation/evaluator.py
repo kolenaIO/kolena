@@ -18,6 +18,7 @@ from typing import Tuple
 import numpy as np
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
+from semantic_segmentation.constants import PERSON_LABEL
 from semantic_segmentation.utils import compute_score_distribution_plot
 from semantic_segmentation.utils import download_mask
 from semantic_segmentation.utils import upload_image
@@ -33,6 +34,9 @@ from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
 from kolena.workflow.annotation import SegmentationMask
+from kolena.workflow.metrics import f1_score as compute_f1_score
+from kolena.workflow.metrics import precision as compute_precision
+from kolena.workflow.metrics import recall as compute_recall
 
 
 ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
@@ -57,21 +61,20 @@ def compute_test_sample_metrics(
     count_fps = 0
     count_fns = 0
     rows, cols = gt_mask.shape
-    inf_val = 1
     for x in range(0, rows):
         for y in range(0, cols):
-            if gt_mask[x, y] == 1 and inf_mask[x, y] == inf_val:
+            if gt_mask[x, y] == 1 and inf_mask[x, y] == PERSON_LABEL:
                 count_tps += 1
 
-            if gt_mask[x, y] != 1 and inf_mask[x, y] == inf_val:
+            if gt_mask[x, y] != 1 and inf_mask[x, y] == PERSON_LABEL:
                 count_fps += 1
 
-            if gt_mask[x, y] == 1 and inf_mask[x, y] != inf_val:
+            if gt_mask[x, y] == 1 and inf_mask[x, y] != PERSON_LABEL:
                 count_fns += 1
 
-    precision = count_tps / (count_tps + count_fps) if (count_tps + count_fps) > 0 else 0
-    recall = count_tps / (count_tps + count_fns) if (count_tps + count_fns) > 0 else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+    precision = compute_precision(count_tps, count_fps)
+    recall = compute_recall(count_tps, count_fns)
+    f1 = compute_f1_score(count_tps, count_fps, count_fns)
 
     return TestSampleMetric(
         TP=tp,
@@ -92,9 +95,9 @@ def compute_test_case_metrics(
     count_tps = sum(metric.CountTP for metric in metrics)
     count_fps = sum(metric.CountFP for metric in metrics)
     count_fns = sum(metric.CountFN for metric in metrics)
-    precision = count_tps / (count_tps + count_fps) if (count_tps + count_fps) > 0 else 0
-    recall = count_tps / (count_tps + count_fns) if (count_tps + count_fns) > 0 else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+    precision = compute_precision(count_tps, count_fps)
+    recall = compute_recall(count_tps, count_fns)
+    f1 = compute_f1_score(count_tps, count_fps, count_fns)
 
     return TestCaseMetric(
         Precision=precision,
@@ -124,7 +127,7 @@ def _load_sample_result_masks(
     def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
         locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{category}/{test_sample.metadata['basename']}.png"
         upload_image(locator, mask)
-        return SegmentationMask(locator=locator, labels={1: "person"})
+        return SegmentationMask(locator=locator, labels={PERSON_LABEL: "person"})
 
     tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
     fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))
