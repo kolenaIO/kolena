@@ -20,6 +20,7 @@ from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.constants import PERSON_LABEL
 from semantic_segmentation.utils import compute_score_distribution_plot
+from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import download_mask
 from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
@@ -42,6 +43,10 @@ from kolena.workflow.metrics import recall as compute_recall
 ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
 
 
+def process_prob(prob: np.ndarray) -> np.ndarray:
+    return prob
+
+
 def compute_test_sample_metrics(
     gt: GroundTruth,
     inf: Inference,
@@ -49,7 +54,7 @@ def compute_test_sample_metrics(
     configuration: SemanticSegmentationConfiguration,
 ):
     gt_mask = download_mask(gt.mask.locator)
-    inf_mask = download_mask(inf.mask.locator)
+    inf_mask = process_prob(download_binary_array(inf.prob.locator))
     tp, fp, fn = _load_sample_result_masks(
         test_sample=ts,
         gt_mask=gt_mask,

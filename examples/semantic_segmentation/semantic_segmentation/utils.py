@@ -53,6 +53,13 @@ def download_mask(locator: str) -> np.ndarray:
         return data
 
 
+def download_binary_array(locator: str) -> np.ndarray:
+    bucket, key = parse_s3_path(locator)
+    with tempfile.NamedTemporaryFile() as f:
+        s3.download_fileobj(bucket, key, f)
+        return np.load(f.name, allow_pickle=True)
+
+
 def upload_image(locator: str, image: np.ndarray) -> None:
     bucket, key = parse_s3_path(locator)
     success, buf = cv2.imencode(".png", image)
