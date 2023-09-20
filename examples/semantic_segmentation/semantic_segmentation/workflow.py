@@ -34,12 +34,22 @@ class TestSample(Image):
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
+    """Ground truth type for the Semantic Segmentation workflow."""
+
     mask: SegmentationMask
+    """
+    The ground truth [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask] associated with an image.
+    """
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
+    """Inference type for the Semantic Segmentation workflow."""
+
     prob: BinaryAsset
+    """
+    The [`BinaryAsset`][kolena.workflow.annotation.BinaryAsset] produced by the model.
+    """
 
 
 _, TestCase, TestSuite, Model = define_workflow("Semantic Segmentation", TestSample, GroundTruth, Inference)
@@ -47,6 +57,8 @@ _, TestCase, TestSuite, Model = define_workflow("Semantic Segmentation", TestSam
 
 @dataclass(frozen=True)
 class TestSampleMetric(MetricsTestSample):
+    """Sample-level metrics for the Semantic Segmentation workflow."""
+
     TP: SegmentationMask
     FP: SegmentationMask
     FN: SegmentationMask
@@ -62,6 +74,8 @@ class TestSampleMetric(MetricsTestSample):
 
 @dataclass(frozen=True)
 class TestCaseMetric(MetricsTestCase):
+    """Test-case-level aggregate metrics for the Semantic Segmentation workflow."""
+
     Precision: float
     Recall: float
     F1: float
