@@ -15,6 +15,7 @@ import json
 import mimetypes
 from dataclasses import asdict
 from typing import Iterator
+from typing import Union
 
 import pandas as pd
 
@@ -28,12 +29,15 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
 from kolena.errors import InputValidationError
-from kolena.workflow._datatypes import _deserialize_series
-from kolena.workflow._datatypes import _serialize_series
+from kolena.workflow._datatypes import _deserialize_dataobject
+from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 
+COL_DATAPOINT = "datapoint"
 TEST_SAMPLE_TYPE = "TEST_SAMPLE"
+FIELD_LOCATOR = "locator"
+FIELD_TEXT = "text"
 
 _DATAPOINT_TYPE_MAP = {
     "image": f"{TEST_SAMPLE_TYPE}/IMAGE",
@@ -53,7 +57,7 @@ def _get_datapoint_type(mimetype_str: str) -> str:
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
 
-def _infer_datatype(x: str) -> str:
+def _infer_datatype_value(x: str) -> str:
     mtype, _ = mimetypes.guess_type(x)
     if mtype:
         datatype = _get_datapoint_type(mtype)
@@ -65,28 +69,32 @@ def _infer_datatype(x: str) -> str:
     return f"{TEST_SAMPLE_TYPE}/CUSTOM"
 
 
-def _to_serialized_data_frame(df: pd.DataFrame) -> pd.DataFrame:
+def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
+    if FIELD_LOCATOR in df.columns:
+        return df[FIELD_LOCATOR].apply(_infer_datatype_value)
+    elif FIELD_TEXT in df.columns:
+        return f"{TEST_SAMPLE_TYPE}/TEXT"
+
+    return f"{TEST_SAMPLE_TYPE}/CUSTOM"
+
+
+def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     object_columns = list(df.select_dtypes(include="object").columns)
     result = df.select_dtypes(exclude="object")
-    result[object_columns] = df[object_columns].apply(_serialize_series)
+    result[object_columns] = df[object_columns].applymap(_serialize_dataobject)
+    result[DATA_TYPE_FIELD] = _infer_datatype(df)
+    result[COL_DATAPOINT] = result.to_dict("records")
+    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x, sort_keys=True))
 
-    if "locator" in df.columns:
-        result[DATA_TYPE_FIELD] = df["locator"].apply(_infer_datatype)
-    elif "text" in df.columns:
-        result[DATA_TYPE_FIELD] = f"{TEST_SAMPLE_TYPE}/TEXT"
-
-    result["datapoint"] = result.to_dict("records")
-    result["datapoint"] = result["datapoint"].apply(json.dumps)
-
-    return result[["datapoint"]]
+    return result[[COL_DATAPOINT]]
 
 
-def _to_deserialized_data_frame(df: pd.DataFrame) -> pd.DataFrame:
-    flattened = pd.json_normalize([json.loads(r["datapoint"]) for r in df.to_dict("records")], max_level=1)
+def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    flattened = pd.json_normalize([json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")], max_level=1)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     object_columns = list(flattened.select_dtypes(include="object").columns)
     result = flattened.select_dtypes(exclude="object")
-    result[object_columns] = flattened[object_columns].apply(_deserialize_series)
+    result[object_columns] = flattened[object_columns].applymap(_deserialize_dataobject)
 
     return result
 
@@ -97,7 +105,7 @@ def register_dataset(name: str, df: pd.DataFrame) -> None:
     """
     load_uuid = init_upload().uuid
 
-    df_serialized = _to_serialized_data_frame(df)
+    df_serialized = _to_serialized_dataframe(df)
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
     request = RegisterRequest(name=name, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
@@ -123,7 +131,7 @@ def iter_dataset(
         df_class=None,
         endpoint_api_version=API_V2,
     ):
-        yield _to_deserialized_data_frame(df_batch)
+        yield _to_deserialized_dataframe(df_batch)
 
 
 def fetch_dataset(
