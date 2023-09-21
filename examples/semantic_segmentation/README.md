@@ -1,6 +1,7 @@
 # Example Integration: Semantic Segmentation
 
-This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset to demonstrate how to test single class semantic segmentation problems on Kolena.
+This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset, specificially
+5,520 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena.
 
 ## Setup
 
