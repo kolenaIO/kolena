@@ -28,6 +28,6 @@ def test__semantic_segmentation_seed_test_run__smoke() -> None:
     args = Namespace(
         out_bucket="kolena-public-datasets",
         model="pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512",
-        test_suites=["coco-stuff-10k [person]"],
+        test_suites=["image size :: coco-stuff-10k [person]"],
     )
     seed_test_run_main(args)

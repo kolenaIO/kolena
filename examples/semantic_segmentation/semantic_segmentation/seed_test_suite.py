@@ -15,9 +15,12 @@ import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from ast import literal_eval
+from typing import List
+from typing import Tuple
 
 import pandas as pd
 from semantic_segmentation.constants import DATASET
+from semantic_segmentation.constants import SIZE_MAPPING_IMAGES
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestCase
@@ -27,6 +30,27 @@ from tqdm import tqdm
 
 import kolena
 from kolena.workflow.annotation import SegmentationMask
+
+
+def within_range(area: int, range: Tuple[int, int]) -> bool:
+    return range[0] <= area < range[1]
+
+
+def seed_stratified_test_cases(complete_test_case: TestCase, test_suite_name) -> List[TestCase]:
+    test_samples = complete_test_case.load_test_samples()
+    test_cases = []
+    for size_name, area_range in SIZE_MAPPING_IMAGES.items():
+        samples = []
+        for ts, gt in test_samples:
+            image_size = ts.metadata["width"] * ts.metadata["height"]
+            if within_range(image_size, area_range):
+                samples.append((ts, gt))
+
+        if len(samples) > 0:
+            test_cases.append(
+                TestCase(f"{size_name} image :: {test_suite_name}", test_samples=samples, reset=True),
+            )
+    return test_cases
 
 
 def seed_complete_test_case(args: Namespace) -> TestCase:
@@ -40,6 +64,8 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
                 annotation_file=record.annotation_file,
                 captions=literal_eval(record.captions),
                 has_person=record.has_person,
+                width=record.image_width,
+                height=record.image_height,
             ),
         )
         ground_truth = GroundTruth(mask=SegmentationMask(locator=record.mask, labels=Label.as_label_map()))
@@ -51,10 +77,12 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 def main(args: Namespace) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    test_suite_name = f"image size :: {DATASET} [person]"
     complete_test_case = seed_complete_test_case(args)
+    stratified_test_cases = seed_stratified_test_cases(complete_test_case, test_suite_name)
     TestSuite(
-        f"{DATASET} [person]",
-        test_cases=[complete_test_case],
+        test_suite_name,
+        test_cases=[complete_test_case] + stratified_test_cases,
         reset=True,
     )
 
