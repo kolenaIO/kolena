@@ -35,77 +35,60 @@ from kolena.workflow import TestCases
 from kolena.workflow import EvaluationResults
 
 
-class FaceRecognition11(Evaluator):
-    @staticmethod
-    def compute_test_sample_metrics_single(
-        test_sample: TestSample,
-        ground_truth: GroundTruth,
-        inference: Inference,
-        configuration: ThresholdConfiguration,
-    ) -> TestSampleMetrics:
-        is_match, is_false_match, is_false_non_match = False, False, False
+def compute_test_sample_metrics(
+    ground_truth: GroundTruth,
+    inference: Inference,
+    configuration: ThresholdConfiguration,
+) -> List[Tuple[TestSample, TestSampleMetrics]]:
+    is_match, is_false_match, is_false_non_match = False, False, False
 
-        if inference.similarity is None:
-            return TestCaseMetrics(is_match, is_false_match, is_false_non_match)
+    if inference.similarity is None:
+        return TestSampleMetrics(is_match, is_false_match, is_false_non_match)
 
-        if inference.similarity > configuration.threshold:  # match
-            is_match = True
-        else:  # no match
-            is_false_match = not ground_truth.is_same
-            is_false_non_match = ground_truth.is_same
+    if inference.similarity > configuration.threshold:  # match
+        is_match = True
+    else:  # no match
+        is_false_match = not ground_truth.is_same
+        is_false_non_match = ground_truth.is_same
 
-        return TestCaseMetrics(is_match, is_false_match, is_false_non_match)
+    return TestSampleMetrics(is_match, is_false_match, is_false_non_match)
 
-    def compute_test_sample_metrics(
-        self,
-        test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[ThresholdConfiguration] = None,
-    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
-        if configuration is None:  # TODO(gh): this is annoying for users to have to deal with
-            raise ValueError(f"{type(self).__name__} must have configuration")
-        return [
-            (test_sample, self.compute_test_sample_metrics_single(test_sample, ground_truth, inference, configuration))
-            for test_sample, ground_truth, inference in inferences
-        ]
 
-    def compute_test_case_metrics(
-        self,
-        test_case: TestCase,  # NOTE: What is TestCase?
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[ThresholdConfiguration] = None,
-    ) -> TestCaseMetrics:
-        n_genuine_pairs = np.sum([gt.is_same for _, gt, _ in inferences])
-        n_imposter_pairs = np.sum([not gt.is_same for _, gt, _ in inferences])
-        n_fm = np.sum([metric.is_false_match for metric in metrics])
-        n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
+def compute_test_case_metrics(
+    ground_truths: List[GroundTruth],
+    metrics: List[TestSampleMetrics],
+) -> TestCaseMetrics:
+    n_genuine_pairs = np.sum([gt.is_same for gt in ground_truths])
+    n_imposter_pairs = np.sum([not gt.is_same for gt in ground_truths])
+    n_fm = np.sum([metric.is_false_match for metric in metrics])
+    n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
 
-        return TestCaseMetrics(
-            n_images=len(metrics),
-            n_genuine_pairs=n_genuine_pairs,
-            n_imposter_pairs=n_imposter_pairs,
-            n_fm=n_fm,
-            fmr=n_fm / n_imposter_pairs,
-            n_fnm=n_fnm,
-            fnmr=n_fnm / n_genuine_pairs,
-        )
+    return TestCaseMetrics(
+        n_images=len(metrics),
+        n_genuine_pairs=n_genuine_pairs,
+        n_imposter_pairs=n_imposter_pairs,
+        n_fm=n_fm,
+        fmr=n_fm / n_imposter_pairs,
+        n_fnm=n_fnm,
+        fnmr=n_fnm / n_genuine_pairs,
+    )
 
-    def compute_test_case_plots(
-        self,
-        test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[ThresholdConfiguration] = None,
-    ) -> Optional[List[Plot]]:
-        plots = []
-        # TODO: existing plots depend on baseline - add in baseline fmr
 
-        # set Test Sample as the first baseline to compute remaining metrics
+def compute_test_case_plots(
+    self,
+    test_case: TestCase,
+    inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+    metrics: List[TestSampleMetrics],
+    configuration: Optional[ThresholdConfiguration] = None,
+) -> Optional[List[Plot]]:
+    plots = []
+    # TODO: existing plots depend on baseline - add in baseline fmr
 
-        # AUC and ROC plots
+    # set Test Sample as the first baseline to compute remaining metrics
 
-        return plots
+    # AUC and ROC plots
+
+    return plots
 
 
 # TODO: change to using evaluate function()
@@ -116,4 +99,21 @@ def evaluate_face_recognition_11(
     test_cases: TestCases,
     configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
-    return None
+    # compute sample-level metrics for each sample
+    test_sample_metrics = [
+        compute_test_sample_metrics(gt, inf, configuration) for gt, inf in zip(ground_truths, inferences)
+    ]
+
+    # compute aggregate metrics across all test cases using `test_cases.iter(...)`
+    all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
+    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
+
+    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, tsm)))
+        # all_test_case_plots.append((test_case, compute_test_case_plots(test_case, inferences, gt, inf)))
+
+    return EvaluationResults(
+        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
+        metrics_test_case=all_test_case_metrics,
+        plots_test_case=all_test_case_plots,
+    )

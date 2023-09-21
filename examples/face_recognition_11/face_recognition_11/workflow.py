@@ -156,5 +156,5 @@ class ThresholdConfiguration(EvaluatorConfiguration):
 
     def display_name(self) -> str:
         if self.threshold is not None:
-            return f"Confidence Above Threshold (threshold={self.threshold})"
-        return "Max Confidence"
+            return f"False Match Rate (threshold={self.threshold})"
+        return "Max FMR threshold"
