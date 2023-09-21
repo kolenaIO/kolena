@@ -69,7 +69,7 @@ def upload_image(locator: str, image: np.ndarray) -> None:
     s3.upload_fileobj(io_buf, bucket, key)
 
 
-def sanitize_model_name(model_name: str):
+def sanitize_model_name(model_name: str) -> str:
     """
     See https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html for object-key name recomandations
     Safe characters are alphanumeric or a set of some special characters.
@@ -79,7 +79,6 @@ def sanitize_model_name(model_name: str):
     for character in model_name:
         if character.isalnum() or character in special_chars:
             output_string += character
-    print(output_string)
     return output_string
 
 
