@@ -18,11 +18,11 @@ import pandas as pd
 import pytest
 from pandas._testing import assert_frame_equal
 
-from kolena._experimental.dataset.dataset import _infer_datatype
-from kolena._experimental.dataset.dataset import _infer_datatype_value
-from kolena._experimental.dataset.dataset import _to_deserialized_dataframe
-from kolena._experimental.dataset.dataset import _to_serialized_dataframe
-from kolena._experimental.dataset.dataset import TEST_SAMPLE_TYPE
+from kolena._experimental.dataset._dataset import _infer_datatype
+from kolena._experimental.dataset._dataset import _infer_datatype_value
+from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
+from kolena._experimental.dataset._dataset import _to_serialized_dataframe
+from kolena._experimental.dataset._dataset import TEST_SAMPLE_TYPE
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
 

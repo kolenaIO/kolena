@@ -17,8 +17,8 @@ import pandas as pd
 import pytest
 from pandas._testing import assert_frame_equal
 
-from kolena._experimental.dataset.dataset import fetch_dataset
-from kolena._experimental.dataset.dataset import register_dataset
+from kolena._experimental.dataset import fetch_dataset
+from kolena._experimental.dataset import register_dataset
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
