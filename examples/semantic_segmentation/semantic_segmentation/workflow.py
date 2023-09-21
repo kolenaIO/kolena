@@ -87,19 +87,19 @@ class TestCaseMetric(MetricsTestCase):
     AP: float
 
 
+@dataclass(frozen=True)
+class TestSuiteMetric(MetricsTestSuite):
+    """Test-suite-level aggregate metrics for the Semantic Segmentation workflow."""
+
+    threshold: float
+
+
 class Label(Enum):
     PERSON = 1
 
     @classmethod
     def as_label_map(cls) -> Dict[int, str]:
         return {option.value: option.name for option in cls}
-
-
-@dataclass(frozen=True)
-class TestSuiteMetric(MetricsTestSuite):
-    """Test-suite-level aggregate metrics for the Semantic Segmentation workflow."""
-
-    threshold: float
 
 
 class SegmentationConfiguration(EvaluatorConfiguration):
