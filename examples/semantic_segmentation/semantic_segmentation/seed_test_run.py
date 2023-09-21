@@ -17,20 +17,18 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
 
+from semantic_segmentation.constants import BUCKET
+from semantic_segmentation.constants import DATASET
 from semantic_segmentation.evaluator import evaluate_semantic_segmentation
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Model
+from semantic_segmentation.workflow import SegmentationConfiguration
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSuite
-from semantic_segmentation.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
-
-
-BUCKET = "kolena-public-datasets"
-DATASET = "coco-stuff-10k"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
@@ -45,12 +43,13 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
+        configurations = [SegmentationConfiguration(threshold=0.5, model_name=model_name)]
 
         test(
             model,
             test_suite,
             evaluate_semantic_segmentation,
-            configurations=[ThresholdConfiguration(threshold=0.5)],
+            configurations,
             reset=True,
         )
 

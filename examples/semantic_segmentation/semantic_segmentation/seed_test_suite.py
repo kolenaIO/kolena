@@ -17,6 +17,7 @@ from argparse import Namespace
 from ast import literal_eval
 
 import pandas as pd
+from semantic_segmentation.constants import DATASET
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestCase
@@ -26,8 +27,6 @@ from tqdm import tqdm
 
 import kolena
 from kolena.workflow.annotation import SegmentationMask
-
-DATASET = "coco-stuff-10k"
 
 
 def seed_complete_test_case(args: Namespace) -> TestCase:

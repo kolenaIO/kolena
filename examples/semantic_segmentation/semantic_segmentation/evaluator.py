@@ -17,34 +17,37 @@ from typing import Optional
 from typing import Tuple
 
 import numpy as np
+from semantic_segmentation.constants import BUCKET
+from semantic_segmentation.constants import DATASET
 from semantic_segmentation.data_loader import DataLoader
 from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Label
+from semantic_segmentation.workflow import SegmentationConfiguration
 from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestCaseMetric
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSampleMetric
-from semantic_segmentation.workflow import ThresholdConfiguration
 
 from kolena._utils.log import progress_bar
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
 from kolena.workflow.annotation import SegmentationMask
+from kolena.workflow.metrics import f1_score as compute_f1_score
+from kolena.workflow.metrics import precision as compute_precision
+from kolena.workflow.metrics import recall as compute_recall
 
 
 ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
-
-BUCKET = "kolena-public-datasets"
-DATASET = "coco-stuff-10k"
 
 
 def _upload_sample_result_masks(
     test_sample: TestSample,
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
+    model_name: str,
 ) -> ResultMasks:
     # TODO: change the directory to include threshold
     def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
@@ -85,8 +88,14 @@ def compute_test_sample_metrics(
     ts: TestSample,
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
+    configuration: SegmentationConfiguration,
 ):
-    tp, fp, fn = _upload_sample_result_masks(test_sample=ts, gt_mask=gt_mask, inf_mask=inf_mask)
+    tp, fp, fn = _upload_sample_result_masks(
+        test_sample=ts,
+        gt_mask=gt_mask,
+        inf_mask=inf_mask,
+        model_name=configuration.model_name,
+    )
 
     count_tps = 0
     count_fps = 0
@@ -103,9 +112,9 @@ def compute_test_sample_metrics(
             if gt_mask[x, y] == 1 and inf_mask[x, y] != 1:
                 count_fns += 1
 
-    precision = count_tps / (count_tps + count_fps) if (count_tps + count_fps) > 0 else 0
-    recall = count_tps / (count_tps + count_fns) if (count_tps + count_fns) > 0 else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+    precision = compute_precision(count_tps, count_fps)
+    recall = compute_recall(count_tps, count_fns)
+    f1 = compute_f1_score(count_tps, count_fps, count_fns)
 
     return TestSampleMetric(
         TP=tp,
@@ -126,9 +135,9 @@ def compute_test_case_metrics(
     count_tps = sum(metric.CountTP for metric in metrics)
     count_fps = sum(metric.CountFP for metric in metrics)
     count_fns = sum(metric.CountFN for metric in metrics)
-    precision = count_tps / (count_tps + count_fps) if (count_tps + count_fps) > 0 else 0
-    recall = count_tps / (count_tps + count_fns) if (count_tps + count_fns) > 0 else 0
-    f1 = 2 * precision * recall / (precision + recall) if (precision + recall) > 0 else 0
+    precision = compute_precision(count_tps, count_fps)
+    recall = compute_recall(count_tps, count_fns)
+    f1 = compute_f1_score(count_tps, count_fps, count_fns)
 
     return TestCaseMetric(
         Precision=precision,
@@ -158,7 +167,7 @@ def compute_f1_optimal_threshold(
 
 
 def compute_threshold(
-    configuration: ThresholdConfiguration,
+    configuration: SegmentationConfiguration,
     gt_masks: List[np.ndarray],
     inf_probs: List[np.ndarray],
 ) -> float:
@@ -186,14 +195,15 @@ def evaluate_semantic_segmentation(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
-    configuration: ThresholdConfiguration,
+    configuration: SegmentationConfiguration,
 ) -> EvaluationResults:
     gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
     threshold = compute_threshold(configuration, gt_masks, inf_probs)
     inf_masks = apply_threshold(inf_probs, threshold)
 
     test_sample_metrics = [
-        compute_test_sample_metrics(ts, gt, inf) for ts, gt, inf in zip(test_samples, gt_masks, inf_masks)
+        compute_test_sample_metrics(ts, gt, inf, configuration)
+        for ts, gt, inf in zip(test_samples, gt_masks, inf_masks)
     ]
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
