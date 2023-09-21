@@ -48,7 +48,7 @@ def seed_stratified_test_cases(complete_test_case: TestCase, test_suite_name) ->
 
         if len(samples) > 0:
             test_cases.append(
-                TestCase(f"{size_name} x image :: {test_suite_name}", test_samples=samples, reset=True),
+                TestCase(f"{size_name} image :: {test_suite_name}", test_samples=samples, reset=True),
             )
     return test_cases
 
@@ -77,7 +77,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 def main(args: Namespace) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    test_suite_name = f"{DATASET} [person]"
+    test_suite_name = f"image size :: {DATASET} [person]"
     complete_test_case = seed_complete_test_case(args)
     stratified_test_cases = seed_stratified_test_cases(complete_test_case, test_suite_name)
     TestSuite(
