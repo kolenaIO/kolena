@@ -27,7 +27,7 @@ This project defines two scripts that perform the following operations:
 
 2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model,
 e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, `pspnet_r50-d8_4xb4-20k_coco-stuff10k-512x512`, on the above
-test suites
+test suite.
 
     As part of the evaluation, result masks (i.e. TP/FP/FN masks) are computed and uploaded to a cloud storage for
     better visualization experience on our webapp. Please use `--out_bucket` argument to provide your AWS S3 bucket

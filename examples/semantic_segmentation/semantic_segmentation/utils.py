@@ -71,7 +71,7 @@ def upload_image(locator: str, image: np.ndarray) -> None:
 
 def sanitize_model_name(model_name: str) -> str:
     """
-    See https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html for object-key name recomandations
+    See https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html for object-key name recommendations
     Safe characters are alphanumeric or a set of some special characters.
     """
     special_chars = {"!", "-", "_", ".", "*", "(", ")"}
