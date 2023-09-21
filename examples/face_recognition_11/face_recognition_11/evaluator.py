@@ -76,11 +76,12 @@ def compute_test_case_metrics(
 
 def compute_test_case_plots(
     self,
-    test_case: TestCase,
-    inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
     metrics: List[TestSampleMetrics],
-    configuration: Optional[ThresholdConfiguration] = None,
-) -> Optional[List[Plot]]:
+    gt_labels: List[str],
+    confidence_range: Optional[Tuple[float, float, int]],
+) -> List[Plot]:
     plots = []
     # TODO: existing plots depend on baseline - add in baseline fmr
 
@@ -105,15 +106,15 @@ def evaluate_face_recognition_11(
     ]
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
-    all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
-    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
+    test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
+    test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
 
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, tsm)))
-        # all_test_case_plots.append((test_case, compute_test_case_plots(test_case, inferences, gt, inf)))
+        test_case_metrics.append((test_case, compute_test_case_metrics(gt, tsm)))
+        test_case_plots.append((test_case, compute_test_case_plots(test_case, inferences, gt, inf)))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
-        plots_test_case=all_test_case_plots,
+        metrics_test_case=test_case_metrics,
+        plots_test_case=test_case_plots,
     )

@@ -34,7 +34,7 @@ DATASET = "labeled-faces-in-the-wild"
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
-    df = pd.read_csv(args.dataset_csv, nrows=args.n_pairs, compression="gzip")
+    df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
 
     # TODO: remove locator from metadata
@@ -67,14 +67,13 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.csv.gz",
+        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.tiny10.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
     )
-    ap.add_argument("--n_pairs", type=int, default=10, help="Number of pairs to use from the dataset.")
     ap.add_argument(
         "--metadata_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/me    ta/metadata.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file containing the metadata of each image. See default CSV for details.",
     )
     sys.exit(main(ap.parse_args()))
