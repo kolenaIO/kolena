@@ -146,6 +146,7 @@ def compute_test_sample_metrics(
         result_masks_batch = data_loader.upload_batch(locator_prefix, batch)
         result_masks.extend(result_masks_batch)
 
+    print(f"finished uploading result masks for {len(test_samples)} samples")
     return [compute_image_metrics(gt, inf, result) for gt, inf, result in zip(gt_masks, inf_masks, result_masks)]
 
 

@@ -1,6 +1,7 @@
 # Example Integration: Semantic Segmentation
 
-This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset to demonstrate how to test single class semantic segmentation problems on Kolena.
+This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset, specificially
+5,520 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena.
 
 ## Setup
 
@@ -24,7 +25,9 @@ This project defines two scripts that perform the following operations:
 
     - `"coco-stuff-10k"`, containing samples of COCO-Stuff 10K data
 
-2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model, e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, `pspnet_r50-d8_4xb4-20k_coco-stuff10k-512x512`, on the above test suites
+2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model,
+e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, `pspnet_r50-d8_4xb4-20k_coco-stuff10k-512x512`, on the above
+test suites
 
     As part of the evaluation, result masks (i.e. TP/FP/FN masks) are computed and uploaded to a cloud storage for
     better visualization experience on our webapp. Please use `--out_bucket` argument to provide your AWS S3 bucket
