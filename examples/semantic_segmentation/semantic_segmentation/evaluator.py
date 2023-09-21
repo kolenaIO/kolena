@@ -100,45 +100,19 @@ def apply_threshold(
     return inf_masks
 
 
-def compute_test_sample_metrics(
-    ts: TestSample,
-    gt_mask: np.ndarray,
-    inf_mask: np.ndarray,
-    threshold: float,
-):
-    out_bucket = os.environ["KOLENA_OUT_BUCKET"]
-    model_name = os.environ["KOLENA_MODEL_NAME"]
-    locator_prefix = f"s3://{out_bucket}/{DATASET}/results/{model_name}/{threshold:.2f}"
-    tp, fp, fn = _upload_sample_result_masks(
-        test_sample=ts,
-        gt_mask=gt_mask,
-        inf_mask=inf_mask,
-        locator_prefix=locator_prefix,
-    )
-
-    count_tps = 0
-    count_fps = 0
-    count_fns = 0
-    rows, cols = gt_mask.shape
-    for x in range(0, rows):
-        for y in range(0, cols):
-            if gt_mask[x, y] == 1 and inf_mask[x, y] == 1:
-                count_tps += 1
-
-            if gt_mask[x, y] != 1 and inf_mask[x, y] == 1:
-                count_fps += 1
-
-            if gt_mask[x, y] == 1 and inf_mask[x, y] != 1:
-                count_fns += 1
+def compute_image_metrics(gt_mask: np.ndarray, inf_mask: np.ndarray, result_masks: ResultMasks) -> TestSampleMetric:
+    count_tps = np.sum(np.logical_and(gt_mask == 1, inf_mask == 1))
+    count_fps = np.sum(np.logical_and(gt_mask != 1, inf_mask == 1))
+    count_fns = np.sum(np.logical_and(gt_mask == 1, inf_mask != 1))
 
     precision = compute_precision(count_tps, count_fps)
     recall = compute_recall(count_tps, count_fns)
     f1 = compute_f1_score(count_tps, count_fps, count_fns)
 
     return TestSampleMetric(
-        TP=tp,
-        FP=fp,
-        FN=fn,
+        TP=result_masks[0],
+        FP=result_masks[1],
+        FN=result_masks[2],
         Precision=precision,
         Recall=recall,
         F1=f1,
@@ -146,6 +120,33 @@ def compute_test_sample_metrics(
         CountFP=count_fps,
         CountFN=count_fns,
     )
+
+
+def compute_test_sample_metrics(
+    test_samples: List[TestSample],
+    gt_masks: List[np.ndarray],
+    inf_masks: List[np.ndarray],
+    threshold: float,
+) -> List[TestSampleMetric]:
+    out_bucket = os.environ["KOLENA_OUT_BUCKET"]
+    model_name = os.environ["KOLENA_MODEL_NAME"]
+    locator_prefix = f"s3://{out_bucket}/{DATASET}/results/{model_name}/{threshold:.2f}"
+
+    data_loader = DataLoader()
+
+    batch_size = 32
+    n_batches = math.ceil(len(test_samples) / batch_size)
+    print(f"computing {len(test_samples)} sample metrics in {n_batches} batches...")
+
+    result_masks = []
+    zipped_data = list(zip(test_samples, gt_masks, inf_masks))
+
+    for start_index in progress_bar(range(0, len(test_samples), batch_size)):
+        batch = zipped_data[start_index : min(len(test_samples), start_index + batch_size)]
+        result_masks_batch = data_loader.upload_batch(locator_prefix, batch)
+        result_masks.extend(result_masks_batch)
+
+    return [compute_image_metrics(gt, inf, result) for gt, inf, result in zip(gt_masks, inf_masks, result_masks)]
 
 
 def compute_test_case_metrics(
@@ -208,10 +209,7 @@ def evaluate_semantic_segmentation(
     gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
     inf_masks = apply_threshold(inf_probs, configuration.threshold)
 
-    test_sample_metrics = [
-        compute_test_sample_metrics(ts, gt, inf, configuration.threshold)
-        for ts, gt, inf in zip(test_samples, gt_masks, inf_masks)
-    ]
+    test_sample_metrics = compute_test_sample_metrics(test_samples, gt_masks, inf_masks, configuration.threshold)
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
