@@ -37,11 +37,15 @@ def main(args: Namespace) -> int:
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
 
-    # TODO: remove locator from metadata
-    metadata_by_locator = {
-        record.locator: {f: getattr(record, f) for f in set(record._fields)}
-        for record in df_metadata.itertuples(index=False)
-    }
+    metadata_by_locator = {}
+    for record in df_metadata.itertuples(index=False):
+        fields = set(record._fields)
+        fields.remove("locator")
+        attributes = {}
+        for f in fields:
+            attributes[f] = getattr(record, f)
+        metadata_by_locator[record.locator] = attributes
+
     test_samples = [
         TestSample(
             a=ImageWithMetadata(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
