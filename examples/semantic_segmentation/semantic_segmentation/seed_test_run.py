@@ -22,6 +22,7 @@ from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Model
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSuite
+from semantic_segmentation.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow.asset import BinaryAsset
@@ -49,6 +50,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             model,
             test_suite,
             evaluate_semantic_segmentation,
+            configurations=[ThresholdConfiguration(threshold=0.5)],
             reset=True,
         )
 

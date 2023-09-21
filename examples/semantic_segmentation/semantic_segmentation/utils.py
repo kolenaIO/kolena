@@ -14,20 +14,14 @@
 import tempfile
 from io import BytesIO
 from typing import List
-from typing import Optional
 from typing import Tuple
-from typing import Union
 from urllib.parse import urlparse
 
 import boto3
+import botocore
 import cv2
 import numpy as np
 import skimage
-from semantic_segmentation.workflow import Inference
-from semantic_segmentation.workflow import TestSampleMetric
-
-from kolena.workflow import AxisConfig
-from kolena.workflow import Histogram
 
 s3 = boto3.client("s3")
 
@@ -53,6 +47,16 @@ def download_mask(locator: str) -> np.ndarray:
         return data
 
 
+def download_binary_array(locator: str) -> np.ndarray:
+    bucket, key = parse_s3_path(locator)
+    with tempfile.NamedTemporaryFile() as f:
+        try:
+            s3.download_fileobj(bucket, key, f)
+        except botocore.exceptions.ClientError:
+            raise ValueError(f"Failed to load s3://{bucket}/{key}")
+        return np.load(f.name, allow_pickle=True)
+
+
 def upload_image(locator: str, image: np.ndarray) -> None:
     bucket, key = parse_s3_path(locator)
     success, buf = cv2.imencode(".png", image)
@@ -63,24 +67,16 @@ def upload_image(locator: str, image: np.ndarray) -> None:
     s3.upload_fileobj(io_buf, bucket, key)
 
 
-def compute_score_distribution_plot(
-    score: str,
-    metrics: List[Union[TestSampleMetric, Inference]],
-    binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
-    logarithmic: bool = False,
-) -> Histogram:
-    scores = [getattr(m, score) for m in metrics]
-    if logarithmic:
-        bins = np.logspace(*binning_info, base=2)
-    else:
-        bins = np.linspace(*binning_info)
+def resize(mask: np.ndarray, shape: Tuple[int, int], order: int, preserve_range: bool) -> np.ndarray:
+    return skimage.transform.resize(
+        mask,
+        (shape[0], shape[1]),
+        order=order,
+        mode="constant",
+        anti_aliasing=False,
+        preserve_range=preserve_range,
+    ).astype(np.float32)
 
-    hist, _ = np.histogram(scores, bins=bins)
-    return Histogram(
-        title=f"Distribution of {score}",
-        x_label=f"{score}",
-        y_label="Count",
-        buckets=list(bins),
-        frequency=list(hist),
-        x_config=AxisConfig(type="log") if logarithmic else None,
-    )
+
+def compute_sklearn_arrays(gt_masks: List[np.ndarray], inf_probs: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
+    return np.array(gt_masks).ravel(), np.array(inf_probs).ravel()  # AKA (y_true, y_pred)

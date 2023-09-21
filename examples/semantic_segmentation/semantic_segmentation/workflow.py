@@ -12,10 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+from enum import Enum
+from typing import Dict
+from typing import Literal
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
+from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Image
 from kolena.workflow import Inference as BaseInference
@@ -65,3 +70,20 @@ class TestCaseMetric(MetricsTestCase):
     Recall: float
     F1: float
     AP: float
+
+
+class Label(Enum):
+    PERSON = 1
+
+    @classmethod
+    def as_label_map(cls) -> Dict[int, str]:
+        return {option.value: option.name for option in cls}
+
+
+class ThresholdConfiguration(EvaluatorConfiguration):
+    threshold: Union[Literal["F1-Optimal"], float] = "F1-Optimal"
+    """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
+    the F1-optimal threshold by default."""
+
+    def display_name(self) -> str:
+        return f"T={self.threshold}"

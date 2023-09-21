@@ -18,6 +18,7 @@ from ast import literal_eval
 
 import pandas as pd
 from semantic_segmentation.workflow import GroundTruth
+from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSuite
@@ -42,7 +43,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
                 has_person=record.has_person,
             ),
         )
-        ground_truth = GroundTruth(mask=SegmentationMask(locator=record.mask, labels={1: "person"}))
+        ground_truth = GroundTruth(mask=SegmentationMask(locator=record.mask, labels=Label.as_label_map()))
         test_samples.append((test_sample, ground_truth))
 
     test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
