@@ -14,8 +14,6 @@
 import dataclasses
 from enum import Enum
 from typing import Dict
-from typing import Literal
-from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -27,7 +25,6 @@ from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
-from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.asset import BinaryAsset
 
@@ -53,7 +50,7 @@ class Inference(BaseInference):
 
     prob: BinaryAsset
     """
-    The [`BinaryAsset`][kolena.workflow.annotation.BinaryAsset] produced by the model.
+    The numpy array of probabilities produced by model stored in `.npy` file.
     """
 
 
@@ -87,13 +84,6 @@ class TestCaseMetric(MetricsTestCase):
     AP: float
 
 
-@dataclass(frozen=True)
-class TestSuiteMetric(MetricsTestSuite):
-    """Test-suite-level aggregate metrics for the Semantic Segmentation workflow."""
-
-    threshold: float
-
-
 class Label(Enum):
     PERSON = 1
 
@@ -103,11 +93,7 @@ class Label(Enum):
 
 
 class SegmentationConfiguration(EvaluatorConfiguration):
-    threshold: Union[Literal["F1-Optimal"], float] = "F1-Optimal"
-    """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
-    the F1-optimal threshold by default."""
-
-    model_name: str
+    threshold: float
 
     def display_name(self) -> str:
         return f"T={self.threshold}"

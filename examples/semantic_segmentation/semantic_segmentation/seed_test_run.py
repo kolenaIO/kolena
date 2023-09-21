@@ -38,16 +38,10 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         return Inference(prob=BinaryAsset(locator))
 
     model = Model(f"{model_name}", infer=infer)
-    print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
-        print(f"Test Suite: {test_suite}")
-
-        configurations = [
-            SegmentationConfiguration(threshold=0.5, model_name=model_name),
-            SegmentationConfiguration(threshold="F1-Optimal", model_name=model_name),
-        ]
+        configurations = [SegmentationConfiguration(threshold=0.5)]
 
         test(
             model,
@@ -60,18 +54,18 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    for model_name in args.models:
-        seed_test_run(model_name, args.test_suites)
+    os.environ["KOLENA_MODEL_NAME"] = str(args.model)
+    os.environ["KOLENA_OUT_BUCKET"] = str(args.out_bucket)
+    seed_test_run(args.model, args.test_suites)
     return 0
 
 
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--models",
-        default=["pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512"],
-        nargs="+",
-        help="Name(s) of model(s) in directory to test",
+        "--model",
+        default="pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512",
+        help="Name of model in directory to test",
     )
     ap.add_argument(
         "--test_suites",
@@ -79,4 +73,10 @@ if __name__ == "__main__":
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )
+    ap.add_argument(
+        "--out_bucket",
+        required=True,
+        help="Name of AWS S3 bucket with write access to upload result masks to.",
+    )
+
     sys.exit(main(ap.parse_args()))

@@ -18,7 +18,6 @@ from typing import Tuple
 from urllib.parse import urlparse
 
 import boto3
-import botocore
 import cv2
 import numpy as np
 import skimage
@@ -48,13 +47,16 @@ def download_mask(locator: str) -> np.ndarray:
 
 
 def download_binary_array(locator: str) -> np.ndarray:
+    """
+    Download a .npy stored on s3 and return it as a np array
+    NOTE: couldn't use `download_fileobj` as it was raising 'ValueError: cannot reshape array of size ... into
+    shape (..., ...)' — seems like the download was incomplete
+    """
     bucket, key = parse_s3_path(locator)
-    with tempfile.NamedTemporaryFile() as f:
-        try:
-            s3.download_fileobj(bucket, key, f)
-        except botocore.exceptions.ClientError:
-            raise ValueError(f"Failed to load s3://{bucket}/{key}")
-        return np.load(f.name, allow_pickle=True)
+    obj = boto3.resource("s3").Object(bucket, key)
+    with BytesIO(obj.get()["Body"].read()) as f:
+        f.seek(0)
+        return np.load(f)
 
 
 def upload_image(locator: str, image: np.ndarray) -> None:
@@ -65,17 +67,6 @@ def upload_image(locator: str, image: np.ndarray) -> None:
 
     io_buf = BytesIO(buf)
     s3.upload_fileobj(io_buf, bucket, key)
-
-
-def resize(mask: np.ndarray, shape: Tuple[int, int], order: int, preserve_range: bool) -> np.ndarray:
-    return skimage.transform.resize(
-        mask,
-        (shape[0], shape[1]),
-        order=order,
-        mode="constant",
-        anti_aliasing=False,
-        preserve_range=preserve_range,
-    ).astype(np.float32)
 
 
 def compute_sklearn_arrays(gt_masks: List[np.ndarray], inf_probs: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:

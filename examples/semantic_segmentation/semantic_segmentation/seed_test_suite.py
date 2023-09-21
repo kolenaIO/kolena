@@ -46,20 +46,17 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         test_samples.append((test_sample, ground_truth))
 
     test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
-    print(f"Created test case: {test_case}")
-
     return test_case
 
 
 def main(args: Namespace) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     complete_test_case = seed_complete_test_case(args)
-    test_suite = TestSuite(
+    TestSuite(
         f"{DATASET}",
         test_cases=[complete_test_case],
         reset=True,
     )
-    print(f"Created test suite: {test_suite}")
 
 
 if __name__ == "__main__":

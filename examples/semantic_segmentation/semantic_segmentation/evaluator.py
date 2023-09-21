@@ -12,12 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import math
+import os
 from typing import List
 from typing import Optional
 from typing import Tuple
 
 import numpy as np
-from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.data_loader import DataLoader
 from semantic_segmentation.utils import compute_precision_recall_f1
@@ -31,7 +31,6 @@ from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestCaseMetric
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSampleMetric
-from semantic_segmentation.workflow import TestSuiteMetric
 from sklearn.metrics import average_precision_score
 
 from kolena._utils.log import progress_bar
@@ -52,13 +51,10 @@ def _upload_sample_result_masks(
     test_sample: TestSample,
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
-    model_name: str,
-    threshold: float,
+    locator_prefix: str,
 ) -> ResultMasks:
     def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
-        model_name = "pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512"
-        locator = f"s3://{BUCKET}/{DATASET}/results/"
-        f"{model_name}/{threshold:.2f}/{category}/{test_sample.metadata['basename']}.png"
+        locator = f"{locator_prefix}/{category}/{test_sample.metadata['basename']}.png"
         upload_image(locator, mask)
         return SegmentationMask(locator=locator, labels=Label.as_label_map())
 
@@ -87,32 +83,8 @@ def load_data(
         gt_masks.extend(gt_masks_batch)
         inf_probs.extend(inf_probs_batch)
 
+    print(f"finished loading {len(inferences)} ground truth masks and inferences")
     return gt_masks, inf_probs
-
-
-def compute_f1_optimal_threshold(
-    gt_masks: List[np.ndarray],
-    inf_probs: List[np.ndarray],
-) -> float:
-    y_true, y_pred = compute_sklearn_arrays(gt_masks, inf_probs)
-    thresholds = list(np.linspace(0.0, 1.0, 41))
-    *_, f1s = zip(*[compute_precision_recall_f1(y_true, y_pred, t) for t in thresholds])
-    max_f1_index = np.argmax(f1s)
-    if f1s[max_f1_index] == 0:
-        return 0.0
-    else:
-        return float(thresholds[max_f1_index])
-
-
-def compute_threshold(
-    gt_masks: List[np.ndarray],
-    inf_probs: List[np.ndarray],
-    configuration: SegmentationConfiguration,
-) -> float:
-    if configuration.threshold == "F1-Optimal":
-        return compute_f1_optimal_threshold(gt_masks, inf_probs)
-    else:
-        return configuration.threshold
 
 
 def apply_threshold(
@@ -132,15 +104,16 @@ def compute_test_sample_metrics(
     ts: TestSample,
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
-    configuration: SegmentationConfiguration,
     threshold: float,
 ):
+    out_bucket = os.environ["KOLENA_OUT_BUCKET"]
+    model_name = os.environ["KOLENA_MODEL_NAME"]
+    locator_prefix = f"s3://{out_bucket}/{DATASET}/results/{model_name}/{threshold:.2f}"
     tp, fp, fn = _upload_sample_result_masks(
         test_sample=ts,
         gt_mask=gt_mask,
         inf_mask=inf_mask,
-        model_name=configuration.model_name,
-        threshold=threshold,
+        locator_prefix=locator_prefix,
     )
 
     count_tps = 0
@@ -233,11 +206,10 @@ def evaluate_semantic_segmentation(
     configuration: SegmentationConfiguration,
 ) -> EvaluationResults:
     gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
-    threshold = compute_threshold(gt_masks, inf_probs, configuration)
-    inf_masks = apply_threshold(inf_probs, threshold)
+    inf_masks = apply_threshold(inf_probs, configuration.threshold)
 
     test_sample_metrics = [
-        compute_test_sample_metrics(ts, gt, inf, configuration, threshold)
+        compute_test_sample_metrics(ts, gt, inf, configuration.threshold)
         for ts, gt, inf in zip(test_samples, gt_masks, inf_masks)
     ]
 
@@ -253,5 +225,4 @@ def evaluate_semantic_segmentation(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
         plots_test_case=all_test_case_plots,
-        metrics_test_suite=TestSuiteMetric(threshold=threshold),
     )
