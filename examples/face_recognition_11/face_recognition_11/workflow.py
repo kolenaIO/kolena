@@ -143,7 +143,7 @@ class TestCaseMetrics(MetricsTestCase):
 
 
 @dataclass(frozen=True)
-class FMRThresholdConfiguration(EvaluatorConfiguration):
+class ThresholdConfiguration(EvaluatorConfiguration):
     """
     False Match Rate (FMR) threshold configuration for Face Recognition 1:1 workflow.
     Specify a minimum
@@ -153,3 +153,8 @@ class FMRThresholdConfiguration(EvaluatorConfiguration):
     """
     FMR threshold to apply for predictions.
     """
+
+    def display_name(self) -> str:
+        if self.threshold is not None:
+            return f"Confidence Above Threshold (threshold={self.threshold})"
+        return "Max Confidence"

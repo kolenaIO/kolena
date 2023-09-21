@@ -34,28 +34,22 @@ DATASET = "labeled-faces-in-the-wild"
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
-    df = pd.read_csv(args.dataset_csv)
+    df = pd.read_csv(args.dataset_csv, nrows=args.n_pairs, compression="gzip")
+    df_metadata = pd.read_csv(args.metadata_csv)
 
-    non_metadata_fields = ["locator"]
-    df_metadata = df.drop(non_metadata_fields, axis=1)
-    metadata_by_person = {
-        record.person: {f: getattr(record, f) for f in set(record._fields)}
+    # TODO: remove locator from metadata
+    metadata_by_locator = {
+        record.locator: {f: getattr(record, f) for f in set(record._fields)}
         for record in df_metadata.itertuples(index=False)
     }
-
-    # form pairs from image locators & metadata
-    image_pairs = list(
-        itertools.combinations(
-            [(locator, metadata_by_person[person]) for person, locator in zip(df["person"], df["locator"])], 2
-        )
-    )
-
-    # an image pair will contain a left and right tuple with the respective locator & metadata
     test_samples = [
-        TestSample(a=ImageWithMetadata(locator=a[0], metadata=a[1]), b=ImageWithMetadata(locator=b[0], metadata=b[1]))
-        for a, b in image_pairs
+        TestSample(
+            a=ImageWithMetadata(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
+            b=ImageWithMetadata(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
+        )
+        for idx, row in df[["locator_a", "locator_b"]].iterrows()
     ]
-    ground_truths = [GroundTruth(is_same=(ts.a.metadata["person"] == ts.a.metadata["person"])) for ts in test_samples]
+    ground_truths = [GroundTruth(is_same=(ts.a.metadata["person"] == ts.b.metadata["person"])) for ts in test_samples]
 
     test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
     test_case = TestCase(name=f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
@@ -73,7 +67,14 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/metadata.tiny5.csv",
-        help="CSV file with a list of image `locator` and its `label`. See default CSV for details",
+        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.csv.gz",
+        help="CSV file containing image pairs to be tested. See default CSV for details.",
+    )
+    ap.add_argument("--n_pairs", type=int, default=10, help="Number of pairs to use from the dataset.")
+    ap.add_argument(
+        "--metadata_csv",
+        type=str,
+        default=f"s3://{BUCKET}/{DATASET}/me    ta/metadata.csv",
+        help="CSV file containing the metadata of each image. See default CSV for details.",
     )
     sys.exit(main(ap.parse_args()))

@@ -27,13 +27,41 @@ from face_recognition_11.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow import test
+from kolena.workflow.annotation import BoundingBox, Keypoints
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    return
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.csv")
+
+    def infer(test_sample: TestSample) -> Inference:
+        # TODO: Dummy inferences -- fix
+        return Inference(
+            left_bbox=BoundingBox((0, 0), (0, 0)),
+            left_keypoints=Keypoints([(0, 0)]),
+            right_bbox=BoundingBox((0, 0), (0, 0)),
+            right_keypoints=Keypoints([(0, 0)]),
+            similarity=0.9,
+        )
+
+    model = Model(f"{model_name} [{DATASET}]", infer=infer)
+    print(f"Model: {model}")
+
+    for test_suite_name in test_suite_names:
+        test_suite = TestSuite.load(test_suite_name)
+        print(f"Test Suite: {test_suite}")
+
+        test(
+            model,
+            test_suite,
+            evaluate_face_recognition_11,
+            configurations=[
+                ThresholdConfiguration(threshold=0.3),
+            ],
+            reset=True,
+        )
 
 
 def main(args: Namespace) -> int:
@@ -47,14 +75,13 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["Paravision"],
-        nargs="+",
+        # default=["Paravision"],
+        default=["deepface"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--test_suites",
-        default=[f" :: {DATASET}"],
-        nargs="+",
+        default=[f"fr 1:1 :: {DATASET}"],
         help="Name(s) of test suite(s) to test.",
     )
     sys.exit(main(ap.parse_args()))

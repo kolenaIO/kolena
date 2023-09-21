@@ -45,7 +45,7 @@ usage: seed_test_run.py [-h] model_name test_suite
 
 positional arguments:
   model_name  Name of the model to test.
-  test_suite  Name of the test suite to run.
+  test_suites  Name of the test suite(s) to run.
 
 optional arguments:
   -h, --help  show this help message and exit

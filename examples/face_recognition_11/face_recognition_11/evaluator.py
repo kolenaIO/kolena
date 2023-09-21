@@ -19,19 +19,20 @@ from typing import Tuple
 import numpy as np
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
-from face_recognition_11.workflow import FMRThresholdConfiguration
+from face_recognition_11.workflow import ThresholdConfiguration
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestCaseMetrics
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSampleMetrics
 from face_recognition_11.workflow import TestSuite
-from face_recognition_11.workflow import TestSuiteMetrics
 
 from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
+from kolena.workflow import TestCases
+from kolena.workflow import EvaluationResults
 
 
 class FaceRecognition11(Evaluator):
@@ -40,7 +41,7 @@ class FaceRecognition11(Evaluator):
         test_sample: TestSample,
         ground_truth: GroundTruth,
         inference: Inference,
-        configuration: FMRThresholdConfiguration,
+        configuration: ThresholdConfiguration,
     ) -> TestSampleMetrics:
         is_match, is_false_match, is_false_non_match = False, False, False
 
@@ -59,7 +60,7 @@ class FaceRecognition11(Evaluator):
         self,
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[FMRThresholdConfiguration] = None,
+        configuration: Optional[ThresholdConfiguration] = None,
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         if configuration is None:  # TODO(gh): this is annoying for users to have to deal with
             raise ValueError(f"{type(self).__name__} must have configuration")
@@ -73,7 +74,7 @@ class FaceRecognition11(Evaluator):
         test_case: TestCase,  # NOTE: What is TestCase?
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
         metrics: List[TestSampleMetrics],
-        configuration: Optional[FMRThresholdConfiguration] = None,
+        configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestCaseMetrics:
         n_genuine_pairs = np.sum([gt.is_same for _, gt, _ in inferences])
         n_imposter_pairs = np.sum([not gt.is_same for _, gt, _ in inferences])
@@ -95,7 +96,7 @@ class FaceRecognition11(Evaluator):
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
         metrics: List[TestSampleMetrics],
-        configuration: Optional[FMRThresholdConfiguration] = None,
+        configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         plots = []
         # TODO: existing plots depend on baseline - add in baseline fmr
@@ -105,3 +106,14 @@ class FaceRecognition11(Evaluator):
         # AUC and ROC plots
 
         return plots
+
+
+# TODO: change to using evaluate function()
+def evaluate_face_recognition_11(
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    test_cases: TestCases,
+    configuration: ThresholdConfiguration,
+) -> EvaluationResults:
+    return None
