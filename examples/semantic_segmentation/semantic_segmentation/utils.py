@@ -69,6 +69,20 @@ def upload_image(locator: str, image: np.ndarray) -> None:
     s3.upload_fileobj(io_buf, bucket, key)
 
 
+def sanitize_model_name(model_name: str):
+    """
+    See https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html for object-key name recomandations
+    Safe characters are alphanumeric or a set of some special characters.
+    """
+    special_chars = {"!", "-", "_", ".", "*", "(", ")"}
+    output_string = ""
+    for character in model_name:
+        if character.isalnum() or character in special_chars:
+            output_string += character
+    print(output_string)
+    return output_string
+
+
 def compute_sklearn_arrays(gt_masks: List[np.ndarray], inf_probs: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
     y_true = np.concatenate([gt_mask.ravel() for gt_mask in gt_masks])
     y_pred = np.concatenate([inf_prob.ravel() for inf_prob in inf_probs])
