@@ -14,3 +14,9 @@
 
 BUCKET = "kolena-public-datasets"
 DATASET = "coco-stuff-10k"
+
+SIZE_MAPPING_IMAGES = {
+    "small": (0, 270000),
+    "medium": (270000, 300000),
+    "large": (300000, 10000000),
+}
