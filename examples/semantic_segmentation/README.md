@@ -1,0 +1,59 @@
+# Example Integration: Semantic Segmentation
+
+This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset, specificially
+5,520 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena.
+
+## Setup
+
+This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
+
+```shell
+poetry update && poetry install
+```
+
+## Usage
+
+The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
+
+First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
+[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+
+This project defines two scripts that perform the following operations:
+
+1. [`seed_test_suite.py`](semantic_segmentation/seed_test_suite.py) creates the following test suites:
+
+    - `"coco-stuff-10k"`, containing samples of COCO-Stuff 10K data
+
+2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model,
+e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, `pspnet_r50-d8_4xb4-20k_coco-stuff10k-512x512`, on the above
+test suite.
+
+    As part of the evaluation, result masks (i.e. TP/FP/FN masks) are computed and uploaded to a cloud storage for
+    better visualization experience on our webapp. Please use `--out_bucket` argument to provide your AWS S3 bucket
+    with write access where these result masks are going to be uploaded to. Also, follow the
+    [instructions](https://docs.kolena.io/advanced-usage/connecting-cloud-storage/amazon-s3/) to connect
+    your bucket to Kolena.
+
+    The result masks will be stored under s3://{args.out_bucket}/coco-stuff-10k/results/{args.model} directory in
+    your bucket.
+
+
+Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
+Run a script using the `--help` flag for more information:
+
+```shell
+$ poetry run python3 semantic_segmentation/seed_test_run.py --help
+usage: seed_test_run.py [-h] [--model MODEL]
+                        [--test_suites TEST_SUITES [TEST_SUITES ...]]
+                        --out_bucket OUT_BUCKET
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --model MODEL         Name of model in directory to test
+  --test_suites TEST_SUITES [TEST_SUITES ...]
+                        Name(s) of test suite(s) to test.
+  --out_bucket OUT_BUCKET
+                        Name of AWS S3 bucket with write access to
+                        upload result masks to.
+```
