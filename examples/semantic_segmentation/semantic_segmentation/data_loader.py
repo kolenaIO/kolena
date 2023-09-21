@@ -18,6 +18,7 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
+from pydantic.dataclasses import dataclass
 from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import download_mask
 from semantic_segmentation.utils import upload_image
@@ -28,8 +29,16 @@ from semantic_segmentation.workflow import TestSample
 
 from kolena.workflow.annotation import SegmentationMask
 
-ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
-ResultMasksByLocator = Tuple[str, SegmentationMask, SegmentationMask, SegmentationMask]
+
+@dataclass(frozen=True)
+class ResultMask:
+    type: str  # "TP", "FP", "FN"
+    mask: SegmentationMask
+    count: int
+
+
+ResultMasks = Tuple[ResultMask, ResultMask, ResultMask]
+ResultMasksByLocator = Tuple[str, ResultMask, ResultMask, ResultMask]
 
 
 class DataLoader:
@@ -62,10 +71,14 @@ class DataLoader:
         batch: List[Tuple[TestSample, np.ndarray, np.ndarray]],
     ) -> List[ResultMasks]:
         def upload(ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray) -> ResultMasksByLocator:
-            def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
+            def upload_result_mask(category: str, mask: np.ndarray) -> ResultMask:
                 locator = f"{locator_prefix}/{category}/{ts.metadata['basename']}.png"
                 upload_image(locator, mask)
-                return SegmentationMask(locator=locator, labels=Label.as_label_map())
+                return ResultMask(
+                    type=category,
+                    mask=SegmentationMask(locator=locator, labels=Label.as_label_map()),
+                    count=np.sum(mask),
+                )
 
             tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
             fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))

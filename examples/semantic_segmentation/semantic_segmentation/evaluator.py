@@ -20,6 +20,7 @@ from typing import Tuple
 import numpy as np
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.data_loader import DataLoader
+from semantic_segmentation.data_loader import ResultMasks
 from semantic_segmentation.utils import compute_precision_recall_f1
 from semantic_segmentation.utils import compute_sklearn_arrays
 from semantic_segmentation.utils import upload_image
@@ -43,8 +44,6 @@ from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-
-ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
 
 
 def _upload_sample_result_masks(
@@ -101,18 +100,20 @@ def apply_threshold(
 
 
 def compute_image_metrics(gt_mask: np.ndarray, inf_mask: np.ndarray, result_masks: ResultMasks) -> TestSampleMetric:
-    count_tps = np.sum(np.logical_and(gt_mask == 1, inf_mask == 1))
-    count_fps = np.sum(np.logical_and(gt_mask != 1, inf_mask == 1))
-    count_fns = np.sum(np.logical_and(gt_mask == 1, inf_mask != 1))
+    tp_result_mask, fp_result_mask, fn_result_mask = result_masks
+
+    count_tps = tp_result_mask.count
+    count_fps = fp_result_mask.count
+    count_fns = fn_result_mask.count
 
     precision = compute_precision(count_tps, count_fps)
     recall = compute_recall(count_tps, count_fns)
     f1 = compute_f1_score(count_tps, count_fps, count_fns)
 
     return TestSampleMetric(
-        TP=result_masks[0],
-        FP=result_masks[1],
-        FN=result_masks[2],
+        TP=tp_result_mask.mask,
+        FP=fp_result_mask.mask,
+        FN=fn_result_mask.mask,
         Precision=precision,
         Recall=recall,
         F1=f1,
@@ -216,6 +217,7 @@ def evaluate_semantic_segmentation(
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
+        print(f"computing {test_case.name} test case metrics")
         all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, inf, tsm)))
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
 
