@@ -20,6 +20,8 @@ import numpy as np
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.data_loader import DataLoader
+from semantic_segmentation.utils import compute_precision_recall_f1
+from semantic_segmentation.utils import compute_sklearn_arrays
 from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
@@ -29,6 +31,8 @@ from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestCaseMetric
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSampleMetric
+from semantic_segmentation.workflow import TestSuiteMetric
+from sklearn.metrics import average_precision_score
 
 from kolena._utils.log import progress_bar
 from kolena.workflow import EvaluationResults
@@ -38,7 +42,8 @@ from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
-
+from kolena.workflow.plot import Curve
+from kolena.workflow.plot import CurvePlot
 
 ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
 
@@ -48,11 +53,12 @@ def _upload_sample_result_masks(
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
     model_name: str,
+    threshold: float,
 ) -> ResultMasks:
-    # TODO: change the directory to include threshold
     def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
         model_name = "pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512"
-        locator = f"s3://{BUCKET}/{DATASET}/results/{model_name}/{category}/{test_sample.metadata['basename']}.png"
+        locator = f"s3://{BUCKET}/{DATASET}/results/"
+        f"{model_name}/{threshold:.2f}/{category}/{test_sample.metadata['basename']}.png"
         upload_image(locator, mask)
         return SegmentationMask(locator=locator, labels=Label.as_label_map())
 
@@ -84,17 +90,57 @@ def load_data(
     return gt_masks, inf_probs
 
 
+def compute_f1_optimal_threshold(
+    gt_masks: List[np.ndarray],
+    inf_probs: List[np.ndarray],
+) -> float:
+    y_true, y_pred = compute_sklearn_arrays(gt_masks, inf_probs)
+    thresholds = list(np.linspace(0.0, 1.0, 41))
+    *_, f1s = zip(*[compute_precision_recall_f1(y_true, y_pred, t) for t in thresholds])
+    max_f1_index = np.argmax(f1s)
+    if f1s[max_f1_index] == 0:
+        return 0.0
+    else:
+        return float(thresholds[max_f1_index])
+
+
+def compute_threshold(
+    gt_masks: List[np.ndarray],
+    inf_probs: List[np.ndarray],
+    configuration: SegmentationConfiguration,
+) -> float:
+    if configuration.threshold == "F1-Optimal":
+        return compute_f1_optimal_threshold(gt_masks, inf_probs)
+    else:
+        return configuration.threshold
+
+
+def apply_threshold(
+    inf_probs: List[np.ndarray],
+    threshold: float,
+) -> List[np.ndarray]:
+    inf_masks = []
+    for inf_prob in inf_probs:
+        inf_mask = np.zeros_like(inf_prob)
+        inf_mask[inf_prob >= threshold] = 1
+        inf_masks.append(inf_mask)
+
+    return inf_masks
+
+
 def compute_test_sample_metrics(
     ts: TestSample,
     gt_mask: np.ndarray,
     inf_mask: np.ndarray,
     configuration: SegmentationConfiguration,
+    threshold: float,
 ):
     tp, fp, fn = _upload_sample_result_masks(
         test_sample=ts,
         gt_mask=gt_mask,
         inf_mask=inf_mask,
         model_name=configuration.model_name,
+        threshold=threshold,
     )
 
     count_tps = 0
@@ -130,6 +176,8 @@ def compute_test_sample_metrics(
 
 
 def compute_test_case_metrics(
+    gt_masks: List[np.ndarray],
+    inf_probs: List[np.ndarray],
     metrics: List[TestSampleMetric],
 ) -> TestCaseMetric:
     count_tps = sum(metric.CountTP for metric in metrics)
@@ -138,56 +186,43 @@ def compute_test_case_metrics(
     precision = compute_precision(count_tps, count_fps)
     recall = compute_recall(count_tps, count_fns)
     f1 = compute_f1_score(count_tps, count_fps, count_fns)
+    y_true, y_pred = compute_sklearn_arrays(gt_masks, inf_probs)
 
     return TestCaseMetric(
         Precision=precision,
         Recall=recall,
         F1=f1,
-        AP=0.0,  # TODO: compute AP
+        AP=average_precision_score(y_true, y_pred),
     )
 
 
 def compute_test_case_plots(
-    test_samples: List[TestSample],
-    inferences: List[Inference],
-    metrics: List[TestSampleMetric],
+    gt_masks: List[np.ndarray],
+    inf_probs: List[np.ndarray],
 ) -> Optional[List[Plot]]:
-    # TODO: complete this function
-    plots: List[Plot] = []
+    y_true, y_pred = compute_sklearn_arrays(gt_masks, inf_probs)
+    thresholds = list(np.linspace(0.0, 1.0, 41))
 
-    return [plot for plot in plots if plot is not None]
+    precisions = []
+    recalls = []
+    f1s = []
+    for t in thresholds:
+        precision, recall, f1 = compute_precision_recall_f1(y_true, y_pred, t)
+        precisions.append(precision)
+        recalls.append(recall)
+        f1s.append(f1)
 
-
-def compute_f1_optimal_threshold(
-    gt_masks: List[np.ndarray],
-    inf_probs: List[np.ndarray],
-) -> float:
-    # TODO complete this function
-    return 0.5
-
-
-def compute_threshold(
-    configuration: SegmentationConfiguration,
-    gt_masks: List[np.ndarray],
-    inf_probs: List[np.ndarray],
-) -> float:
-    if configuration.threshold == "F1-Optimal":
-        return compute_f1_optimal_threshold(gt_masks, inf_probs)
-    else:
-        return configuration.threshold
-
-
-def apply_threshold(
-    inf_probs: List[np.ndarray],
-    threshold: float,
-) -> List[np.ndarray]:
-    inf_masks = []
-    for inf_prob in inf_probs:
-        inf_mask = np.zeros_like(inf_prob)
-        inf_mask[inf_prob >= threshold] = 1
-        inf_masks.append(inf_mask)
-
-    return inf_masks
+    f1_curve = Curve(x=thresholds, y=f1s, extra=dict(Precision=precisions, Recall=recalls))
+    pr_curve = Curve(x=recalls[1:-1], y=precisions[1:-1], extra=dict(F1=f1s[1:-1], Threshold=thresholds[1:-1]))
+    return [
+        CurvePlot(
+            title="F1 vs. Confidence Threshold",
+            x_label="Confidence Threshold",
+            y_label="F1",
+            curves=[f1_curve],
+        ),
+        CurvePlot(title="Precision vs. Recall", x_label="Recall", y_label="Precision", curves=[pr_curve]),
+    ]
 
 
 def evaluate_semantic_segmentation(
@@ -198,26 +233,25 @@ def evaluate_semantic_segmentation(
     configuration: SegmentationConfiguration,
 ) -> EvaluationResults:
     gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
-    threshold = compute_threshold(configuration, gt_masks, inf_probs)
+    threshold = compute_threshold(gt_masks, inf_probs, configuration)
     inf_masks = apply_threshold(inf_probs, threshold)
 
     test_sample_metrics = [
-        compute_test_sample_metrics(ts, gt, inf, configuration)
+        compute_test_sample_metrics(ts, gt, inf, configuration, threshold)
         for ts, gt, inf in zip(test_samples, gt_masks, inf_masks)
     ]
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_masks, test_sample_metrics):
-        # compute_sklearn_arrays(gt_masks, inf_probs)
-        # TODO: figure out a way to extract test case level masks
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(tsm)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(ts, inf, tsm)))
+    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, inf, tsm)))
+        all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
         plots_test_case=all_test_case_plots,
+        metrics_test_suite=TestSuiteMetric(threshold=threshold),
     )

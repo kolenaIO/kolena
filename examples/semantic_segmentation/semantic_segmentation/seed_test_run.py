@@ -43,13 +43,17 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
-        configurations = [SegmentationConfiguration(threshold=0.5, model_name=model_name)]
+
+        configurations = [
+            SegmentationConfiguration(threshold=0.5, model_name=model_name),
+            SegmentationConfiguration(threshold="F1-Optimal", model_name=model_name),
+        ]
 
         test(
             model,
             test_suite,
             evaluate_semantic_segmentation,
-            configurations,
+            configurations=configurations,
             reset=True,
         )
 

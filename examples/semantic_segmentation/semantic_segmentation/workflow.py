@@ -27,6 +27,7 @@ from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
+from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.asset import BinaryAsset
 
@@ -92,6 +93,13 @@ class Label(Enum):
     @classmethod
     def as_label_map(cls) -> Dict[int, str]:
         return {option.value: option.name for option in cls}
+
+
+@dataclass(frozen=True)
+class TestSuiteMetric(MetricsTestSuite):
+    """Test-suite-level aggregate metrics for the Semantic Segmentation workflow."""
+
+    threshold: float
 
 
 class SegmentationConfiguration(EvaluatorConfiguration):

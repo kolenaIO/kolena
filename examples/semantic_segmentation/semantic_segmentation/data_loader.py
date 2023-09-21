@@ -36,6 +36,7 @@ class DataLoader:
         def load(ts: TestSample, gt: GroundTruth, inf: Inference) -> Tuple[str, np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)
+            # assert gt_mask.shape == inf_prob.shape
             # downscale gt mask to match the inference mask
             # _, h, w = np.shape(inf_prob)
             # gt_mask = resize(gt_mask, (h, w), order=0, preserve_range=True)

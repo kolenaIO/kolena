@@ -1,6 +1,6 @@
 # Example Integration: Semantic Segmentation
 
-This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test Semantic Segmentation problems on Kolena.
+This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset to demonstrate how to test single class semantic segmentation problems on Kolena.
 
 ## Setup
 
@@ -22,8 +22,8 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](semantic_segmentation/seed_test_suite.py) creates the following test suites:
 
-    - `"coco-stuff-10k"`, containing 10k samples of coco data
-    -
+    - `"coco-stuff-10k"`, containing samples of COCO-Stuff 10K data
+
 2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model, e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, on the above test suites
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.

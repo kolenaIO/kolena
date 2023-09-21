@@ -79,4 +79,19 @@ def resize(mask: np.ndarray, shape: Tuple[int, int], order: int, preserve_range:
 
 
 def compute_sklearn_arrays(gt_masks: List[np.ndarray], inf_probs: List[np.ndarray]) -> Tuple[np.ndarray, np.ndarray]:
-    return np.array(gt_masks).ravel(), np.array(inf_probs).ravel()  # AKA (y_true, y_pred)
+    y_true = np.concatenate([gt_mask.ravel() for gt_mask in gt_masks])
+    y_pred = np.concatenate([inf_prob.ravel() for inf_prob in inf_probs])
+    y_true[y_true != 1] = 0  # binarize gt_mask
+    return y_true, y_pred
+
+
+def compute_precision_recall_f1(y_true: np.ndarray, y_pred: np.ndarray, threshold: float) -> Tuple[float, float, float]:
+    tp = np.sum(np.logical_and(y_true == 1, y_pred >= threshold))
+    fp = np.sum(np.logical_and(y_true == 0, y_pred >= threshold))
+    fn = np.sum(np.logical_and(y_true == 1, y_pred < threshold))
+
+    precision = tp / float(tp + fp) if tp + fp > 0 else 0.0
+    recall = tp / float(tp + fn) if tp + fn > 0 else 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0.0 else 0.0
+
+    return precision, recall, f1
