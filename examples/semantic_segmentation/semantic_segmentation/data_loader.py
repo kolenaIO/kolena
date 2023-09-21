@@ -20,9 +20,16 @@ from typing import Tuple
 import numpy as np
 from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import download_mask
+from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
+from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestSample
+
+from kolena.workflow.annotation import SegmentationMask
+
+ResultMasks = Tuple[SegmentationMask, SegmentationMask, SegmentationMask]
+ResultMasksByLocator = Tuple[str, SegmentationMask, SegmentationMask, SegmentationMask]
 
 
 class DataLoader:
@@ -48,3 +55,29 @@ class DataLoader:
         gt_by_locator = {result[0]: result[1] for result in [f.result() for f in successes]}
         inf_by_locator = {result[0]: result[2] for result in [f.result() for f in successes]}
         return [gt_by_locator[ts.locator] for ts, _, _ in batch], [inf_by_locator[ts.locator] for ts, _, _ in batch]
+
+    def upload_batch(
+        self,
+        locator_prefix: str,
+        batch: List[Tuple[TestSample, np.ndarray, np.ndarray]],
+    ) -> List[ResultMasks]:
+        def upload(ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray) -> ResultMasksByLocator:
+            def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
+                locator = f"{locator_prefix}/{category}/{ts.metadata['basename']}.png"
+                upload_image(locator, mask)
+                return SegmentationMask(locator=locator, labels=Label.as_label_map())
+
+            tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
+            fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))
+            fn = upload_result_mask("FN", np.where(gt_mask == inf_mask, 0, gt_mask))
+            return ts.locator, tp, fp, fn
+
+        futures = [self.pool.submit(functools.partial(upload, *item)) for item in batch]
+        successes, failures = wait(futures)
+        if len(failures) != 0:
+            exceptions = ", ".join([str(failure.exception()) for failure in failures])
+            raise RuntimeError(f"failed to upload {len(failures)} samples: {exceptions}")
+
+        # splice together correct ordering
+        result_masks_by_locator = {result[0]: tuple(result[1:]) for result in [f.result() for f in successes]}
+        return [result_masks_by_locator[ts.locator] for ts, _, _ in batch]

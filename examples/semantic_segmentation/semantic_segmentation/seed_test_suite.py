@@ -45,7 +45,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(mask=SegmentationMask(locator=record.mask, labels=Label.as_label_map()))
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET} [person]", test_samples=test_samples, reset=True)
     return test_case
 
 
@@ -53,7 +53,7 @@ def main(args: Namespace) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     complete_test_case = seed_complete_test_case(args)
     TestSuite(
-        f"{DATASET}",
+        f"{DATASET} [person]",
         test_cases=[complete_test_case],
         reset=True,
     )
@@ -64,7 +64,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://kolena-public-datasets/{DATASET}/annotations/annotations.csv",
+        default=f"s3://kolena-public-datasets/{DATASET}/annotations/annotations_person.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
 
