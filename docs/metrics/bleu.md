@@ -1,6 +1,15 @@
-# BLEU (**B**i**L**ingual **E**valuation **U**nderstudy) Score
+---
+search:
+  exclude: true
+---
 
-The BLEU score is a metric commonly used in a variety of NLP tasks ranging from Machine Translation to Text Summarization, to evaluate the quality of machine-generated text. It quantifies the similarity between the generated text and ground truth text as a score between 0 and 1 — 0 meaning there is no overlap with the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic nature for measuring textual similarity.
+# BLEU (**B**i**L**ingual **E**valuation **U**nderstudy)
+
+!!! info inline end "BLEU vs. Precision"
+
+    BLEU can be thought of as an analog to [precision](precision.md) for text comparisons.
+
+The BLEU score is a metric commonly used in a variety of NLP tasks ranging from Machine Translation to Text Summarization, to evaluate the quality of candidate texts. It quantifies the similarity between the candidate text and reference text as a score between 0 and 1 — 0 meaning there is no overlap with the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic nature for measuring textual similarity.
 
 ## Implementation Details
 ### Definition
@@ -13,18 +22,18 @@ $$\begin{align*} \text{BLEU} &= \text{Brevity Penalty} \times \text{n-Gram Overl
 where the i-Gram precision is calculated as:
 
 $$
-p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated text}^1}{\text{Total number of i-grams in machine-generated text}}
+p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1}{\text{Total number of i-grams in candidate text}}
 $$
 
 Below, we explain the significance of the two components in the BLEU formula.
 ??? info "n-Gram Overlap"
-    The **n-Gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the generated text is coherent.
+    The **n-Gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.
 ??? info "Brevity Penalty"
-    The **Brevity Penalty** is also applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-Gram Overlap precision tends to give disproportionately high values to generated texts that are very short in length, but contain most of the n-grams in the reference text.
+    The **Brevity Penalty** is also applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-Gram Overlap precision tends to give disproportionately high values to candidate texts that are very short in length, but contain most of the n-grams in the reference text.
 
 <div class="footnote-content">
     <p style="font-size: smaller;">
-        <sup>1</sup> The <i>clipped count of matching i-grams in machine-generated text</i> is the minimum between the count of i-grams in the machine-generated text and the maximum count of i-grams in any of the reference texts for a given i-gram.
+        <sup>1</sup> The <i>clipped count of matching i-grams in candidate text</i> is the minimum between the count of i-grams in the candidate text and the maximum count of i-grams in any of the reference texts for a given i-gram.
     </p>
 </div>
 
@@ -42,7 +51,7 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
 2. **Track Trends Over Time**: Rising scores signal improvements in models, while drops could hint at issues or changes in your dataset.
 
-3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuancies like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like [BertScore](bertscore.md) may help in quantifying your model's performance from other perspectives.
+3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuancies like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like [BertScore]() may help in quantifying your model's performance from other perspectives.
 
 ## Example
 
@@ -115,8 +124,8 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 ## Advantages and Limitations
 Though BLEU is a popular metric in NLP workflows, it comes with its limitations.
 
-1. BLEU fails to consider the semantics of texts. As seen in the example, simply changing "take the mystery out of" to "demistify" — while the text still retains the exact same meaning — yields a much better score, going from 0.3 to 0.6. In contrast with embeddings-based metrics like BertScore, n-gram-based metrics like BLEU only consider the words in the generated text, rather than the meaning. However, this is addressed by providing multiple possible reference texts when calculating the BLEU score.
-2. BLEU does not consider the order of words. Comparing "The quick brown fox jumps over the lazy dog" with "Brown jumps the dog over quick the fox lazy" would yield a perfect score of 1.0 despite the generated-text having zero meaning. Similarly, BLEU does not consider the importance of words in a sentence either. It weighs unimportant words like "the", "an", "too", as much as it would the nouns and verbs in the sentence. Once again, these pitfalls are addressed by embeddings-based metrics like BertScore.
+1. BLEU fails to consider the semantics of texts. As seen in the example, simply changing "take the mystery out of" to "demistify" — while the text still retains the exact same meaning — yields a much better score, going from 0.3 to 0.6. In contrast with embeddings-based metrics like BertScore, n-gram-based metrics like BLEU only consider the words in the candidate text, rather than the meaning. However, this is addressed by providing multiple possible reference texts when calculating the BLEU score.
+2. BLEU does not consider the order of words. Comparing "The quick brown fox jumps over the lazy dog" with "Brown jumps the dog over quick the fox lazy" would yield a perfect score of 1.0 despite the candidate text having zero meaning. Similarly, BLEU does not consider the importance of words in a sentence either. It weighs unimportant words like "the", "an", "too", as much as it would the nouns and verbs in the sentence. Once again, these pitfalls are addressed by embeddings-based metrics like BertScore.
 
 That being said, the metric still has its advantages. It is quick and easy to compute, as opposed to other metrics like BertScore which would take significantly longer to compute and is not easy to justify. Furthermore, it is relatively similar to human judgement (as seen in the [figure below](https://aclanthology.org/P02-1040.pdf)), and is commonly used within NLP which allows you to easily benchmark your models with others and identify pain points.
 
