@@ -1,15 +1,20 @@
+---
+search:
+  exclude: true
+---
+
 # BERTScore
-BERTScore is a metric used in NLP workflows to measure textual similarity between machine-generated text and reference text. Unlike [BLEU](bleu.md), it leverages pretrained BERT embeddings to capture the semantic and contextual information of words and phrases in both the generated and reference texts. This approach makes BERTScore more effective at assessing the quality of generated text because it considers not only exact word matches but also the overall meaning, fluency, and order of the output.
+BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference texts. Unlike [BLEU](bleu.md), ROUGE, and traditional n-gram similarity measures, it leverages pretrained BERT embeddings to capture the semantic and contextual information of words and phrases in both the candidate and reference texts. This approach makes BERTScore more effective at assessing the quality of candidate text because it considers not only exact word matches but also the overall meaning, fluency, and order of the output.
 
 ??? question "Recall: BERT & Textual Embeddings"
-    BERT (**B**idirectional **E**ncoder **R**epresentations from **T**ransformers) is a popular language model used to generate embeddings from words and phrases. Textual embeddings are learned dense token representations that capture the semantic and contextual information of words and phrases in a continuous vector space. In a perfect embedding space, similar words are grouped together while words that share little relationship are distanced. For a deeper dive into BERT and textual embeddings, feel free to refer to the [original paper](https://arxiv.org/pdf/1810.04805.pdf).
+    BERT (**B**idirectional **E**ncoder **R**epresentations from **T**ransformers) is a popular language model used to generate embeddings from words and phrases. Textual embeddings are learned dense token representations that capture the semantic and contextual information of words and phrases in a continuous vector space. In a perfect embedding space, similar words are grouped together while words that are semantically different are distanced. For a deeper dive into BERT and textual embeddings, feel free to refer to the [original paper](https://arxiv.org/pdf/1810.04805.pdf).
     <center>![Embedding Space Image](../assets/images/bert_vector_space.png){: style="height:20em;width:auto"}</center>
 
 ## Implementation Details
 BERTScore is a collection of three metrics - BERT-Precision, BERT-Recall, and BERT-F1. As the names imply, BERT-Precision measures how well the candidate texts avoid introducing irrelevant content. BERT-Recall measures how well the candidate texts avoid omitting relevant content. BERT-F1 is a combination of both Precision and Recall to measure how well the candidate texts capture and retain relevant information from the reference texts.
 
 ### Calculating BERTScore
-Given a reference sentence, $x = \langle x_1, x_2, ..., x_n \rangle$, and machine-generated sentence, $\hat{x} = \langle\hat{x}_1, \hat{x}_2, ..., \hat{x}_m\rangle$, we first use BERT to generate a sequence of word embeddings for both reference and candidate sentences.
+Given a reference sentence, $x = \langle x_1, x_2, ..., x_n \rangle$, and candidate sentence, $\hat{x} = \langle\hat{x}_1, \hat{x}_2, ..., \hat{x}_m\rangle$, we first use BERT to generate a sequence of word embeddings for both reference and candidate sentences.
 
 $$
 \begin{align}
@@ -60,7 +65,7 @@ In a more advanced implementation of BERTScore, extra steps are taken to finetun
 [![Bert Computation](../assets/images/bert_computation.png)](https://arxiv.org/pdf/1810.04805.pdf)
 
 ### Interpretation
-BERTScore (Precision, Recall, F1) scores lie between the range of 0 and 1, with 0 representing no semantic similarity, and 1 representing a perfect semantic match between candidate and reference texts. However, interpreting the metric is completely subjective based on your task. On some tasks, a BERT-F1 of 0.9 may be excellent, whereas a BERT-F1 of 0.8 may be excellent for another. Generally speaking however, a higher BERTScore is desirable.
+BERTScore (Precision, Recall, F1) scores lie between the range of 0 and 1, with 0 representing no semantic similarity, and 1 representing a perfect semantic match between candidate and reference texts. However, interpreting the metric is completely subjective based on your task. On some tasks, a BERT-F1 of 0.9 may be excellent, whereas a BERT-F1 of 0.8 may be excellent for another. Generally speaking, a higher BERTScore is desirable.
 
 ## Example
 To showcase the value of BERTScore, lets consider the following candidate and reference texts:
@@ -89,7 +94,7 @@ To showcase the value of BERTScore, lets consider the following candidate and re
 
     We get the following BertScores: $P_\text{BERT} = 0.9526, R_\text{BERT} = 0.9480, F_\text{BERT} = 0.9503$. This is in-line with human judgement, as the reference and candidate texts are semantically very similar.
 
-    However, if we were to calculate the BLEU score given these candidates and references, BLEU would yield a sub-optimal score of $\text{BLEU} = 0.2403$, despite the sentences being the same, semantically. This shows an advantage of embeddings-based metrics over n-gram based metrics like BLEU.
+    However, if we were to calculate the BLEU score given these candidates and references, BLEU would yield a sub-optimal score of $\text{BLEU} = 0.2403$, despite the sentences being the same, semantically. This shows an advantage of embeddings-based metrics over n-gram-based metrics like BLEU.
 
 ??? example "Semantically Different Texts"
 
@@ -108,10 +113,10 @@ To showcase the value of BERTScore, lets consider the following candidate and re
 
 ## Advantages and Limitations
 
-BERTScore, originally designed to be a replacement to the BLEU score, is a powerful metric that closely aligns with human judgement. However, it comes with limitations.
+BERTScore, originally designed to be a replacement to the BLEU score and other n-gram similarity metrics, is a powerful metric that closely aligns with human judgement. However, it comes with limitations.
 
-1. BERTScore is computationally expensive. The default model (```roberta-large```) used to calculate BERTScore requires 1.4GB of weights to be stored, and requires a forward pass through the model in order to calculate the score. This may be computationally expensive for large datasets, compared to BLEU which is straightforward and easy to compute. However, smaller distilled models like ```distilbert-base-uncased``` can be used instead to reduce the computational cost, at the cost of reduced alignment with human judgement.
+1. BERTScore is computationally expensive. The default model (```roberta-large```) used to calculate BERTScore requires 1.4GB of weights to be stored, and requires a forward pass through the model in order to calculate the score. This may be computationally expensive for large datasets, compared to n-gram-based metrics which are straightforward and easy to compute. However, smaller distilled models like ```distilbert-base-uncased``` can be used instead to reduce the computational cost, at the cost of reduced alignment with human judgement.
 
 2. BERTScore is calculated using a black-box pretrained model. The score can not be easily explained, as the embedding space of BERT is a dense and complex representation that is only understood by the model. Though the metric provides a numerical score, it does not explain how or why the particular score was assigned. In contrast, n-gram-based metrics can easily be calculated by inspection.
 
-Limitations aside, BERTScore is still a powerful metric that can be included in NLP workflows to quantify the quality of machine-generated texts. It has been shown to have a high correlation with human judgement in tests, and is overall a better judge of similarity than BLEU. Furthermore, unlike BLEU, BERTScore's use of embeddings allows it to factor in context, semantics, and order into its score - which allows it to avoid the pitfalls of BLEU.
+Limitations aside, BERTScore is still a powerful metric that can be included in NLP workflows to quantify the quality of machine-generated texts. It has been shown to have a high correlation with human judgement in tests, and is overall a better judge of similarity than BLEU, ROUGE, and traditional n-gram-based metrics. Furthermore, unlike traditional metrics, BERTScore's use of embeddings allows it to factor in context, semantics, and order into its score - which allows it to avoid the pitfalls of the traditional metrics it was designed to replace.
