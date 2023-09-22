@@ -93,11 +93,11 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
-class TestSampleMetrics(MetricsTestSample):
+class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
     """
     Image-pair-level metrics for Face Recognition 1:1 workflow.
     A test sample is can only be true for one of the following: match, false match (FM), or false non-match (FNM).
-    If all categories are false then the sample is counted as a failure to enroll.
+    If all categories are false then the sample is a true non-match.
     """
 
     is_match: bool

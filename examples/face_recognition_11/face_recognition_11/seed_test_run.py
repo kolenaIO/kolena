@@ -34,16 +34,41 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.tiny5.csv")
 
     def infer(test_sample: TestSample) -> Inference:
-        # TODO: Dummy inferences -- fix
+        sample_results = df_results[
+            (df_results["locator_a"] == test_sample.a.locator) & (df_results["locator_b"] == test_sample.b.locator)
+        ].iloc[0]
+
         return Inference(
-            left_bbox=BoundingBox((0, 0), (0, 0)),
-            left_keypoints=Keypoints([(0, 0)]),
-            right_bbox=BoundingBox((0, 0), (0, 0)),
-            right_keypoints=Keypoints([(0, 0)]),
-            similarity=0.9,
+            left_bbox=BoundingBox(
+                (sample_results["a_min_x"], sample_results["a_min_y"]),
+                (sample_results["a_max_x"], sample_results["a_max_y"]),
+            ),
+            left_keypoints=Keypoints(
+                [
+                    (sample_results["a_right_eye_x"], sample_results["a_right_eye_y"]),
+                    (sample_results["a_left_eye_x"], sample_results["a_left_eye_y"]),
+                    (sample_results["a_nose_x"], sample_results["a_nose_y"]),
+                    (sample_results["a_mouth_right_x"], sample_results["a_mouth_right_y"]),
+                    (sample_results["a_mouth_left_x"], sample_results["a_mouth_left_y"]),
+                ]
+            ),
+            right_bbox=BoundingBox(
+                (sample_results["b_min_x"], sample_results["b_min_y"]),
+                (sample_results["b_max_x"], sample_results["b_max_y"]),
+            ),
+            right_keypoints=Keypoints(
+                [
+                    (sample_results["b_right_eye_x"], sample_results["b_right_eye_y"]),
+                    (sample_results["b_left_eye_x"], sample_results["b_left_eye_y"]),
+                    (sample_results["b_nose_x"], sample_results["b_nose_y"]),
+                    (sample_results["b_mouth_right_x"], sample_results["b_mouth_right_y"]),
+                    (sample_results["b_mouth_left_x"], sample_results["b_mouth_left_y"]),
+                ]
+            ),
+            similarity=sample_results["similarity"],
         )
 
     model = Model(f"{model_name} [{DATASET}]", infer=infer)

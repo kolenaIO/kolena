@@ -46,10 +46,13 @@ def compute_test_sample_metrics(
         return TestSampleMetrics(is_match, is_false_match, is_false_non_match)
 
     if inference.similarity > configuration.threshold:  # match
-        is_match = True
+        if ground_truth.is_same:
+            is_match = True
+        else:
+            is_false_match = True
     else:  # no match
-        is_false_match = not ground_truth.is_same
-        is_false_non_match = ground_truth.is_same
+        if ground_truth.is_same:
+            is_false_non_match = False
 
     return TestSampleMetrics(is_match, is_false_match, is_false_non_match)
 
@@ -64,7 +67,7 @@ def compute_test_case_metrics(
     n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
 
     return TestCaseMetrics(
-        n_images=len(metrics),
+        n_images=len(metrics) * 2,
         n_genuine_pairs=n_genuine_pairs,
         n_imposter_pairs=n_imposter_pairs,
         n_fm=n_fm,
@@ -89,7 +92,44 @@ def compute_test_case_plots(
 
     # AUC and ROC plots
 
+    # baseline =
+
     return plots
+
+
+# def compute_test_case_plots(
+#     ground_truths: List[GroundTruth],
+#     test_sample_metrics: List[TestSampleMetrics],
+# ) -> List[Plot]:
+#     baseline = test_sample_metrics[0]
+
+
+#     data = [mts.error for mts in test_sample_metrics if mts.error is not None]
+#     hist, bins = np.histogram(data, bins=100, range=(0, 10))
+#     histogram_absolute_error = Histogram(
+#         title="Distribution of Absolute Error",
+#         x_label="Absolute Error",
+#         y_label="Count",
+#         buckets=list(bins),
+#         frequency=list(hist),
+#     )
+
+#     mae_data = defaultdict(list)
+#     for gt, mts in zip(ground_truths, test_sample_metrics):
+#         if mts.error is not None:
+#             mae_data[gt.age].append(mts.error)
+
+#     sorted_data = dict(sorted(mae_data.items()))
+#     x = list(sorted_data.keys())
+#     y = [sum(sorted_data[age]) / float(len(sorted_data[age])) for age in x]
+#     curve_target_age = CurvePlot(
+#         title="Mean Absolute Error vs. Target Age",
+#         x_label="Target Age",
+#         y_label="Mean Absolute Error",
+#         curves=[Curve(x=x, y=y)],
+#     )
+
+#     return [histogram_absolute_error, curve_target_age]
 
 
 # TODO: change to using evaluate function()
@@ -111,7 +151,7 @@ def evaluate_face_recognition_11(
 
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
         test_case_metrics.append((test_case, compute_test_case_metrics(gt, tsm)))
-        test_case_plots.append((test_case, compute_test_case_plots(test_case, inferences, gt, inf)))
+        # test_case_plots.append((test_case, compute_test_case_plots(test_case)))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),

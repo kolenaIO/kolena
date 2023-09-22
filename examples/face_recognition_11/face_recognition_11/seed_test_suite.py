@@ -41,10 +41,7 @@ def main(args: Namespace) -> int:
     for record in df_metadata.itertuples(index=False):
         fields = set(record._fields)
         fields.remove("locator")
-        attributes = {}
-        for f in fields:
-            attributes[f] = getattr(record, f)
-        metadata_by_locator[record.locator] = attributes
+        metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
 
     test_samples = [
         TestSample(
@@ -71,7 +68,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.tiny10.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.tiny5.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
     )
     ap.add_argument(
