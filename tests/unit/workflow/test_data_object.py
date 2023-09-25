@@ -32,7 +32,6 @@ from kolena.workflow import Text
 from kolena.workflow._datatypes import dataframe_from_csv
 from kolena.workflow._datatypes import dataframe_from_json
 from kolena.workflow._datatypes import dataframe_to_csv
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import BoundingBox3D
