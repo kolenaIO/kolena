@@ -231,6 +231,11 @@ class DataObject(metaclass=ABCMeta):
                     items[key] = _try_deserialize_typed_dataobject(val)
         return cls(**items)
 
+    # integrate with pandas json deserialization
+    # https://pandas.pydata.org/docs/user_guide/io.html#fallback-behavior
+    def toDict(self) -> Dict:
+        return self._to_dict()
+
 
 class DataType(str, Enum):
     @staticmethod

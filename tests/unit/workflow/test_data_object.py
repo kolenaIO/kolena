@@ -21,11 +21,11 @@ from pydantic.dataclasses import dataclass
 
 from kolena.workflow import BaseVideo
 from kolena.workflow import Composite
+from kolena.workflow import DataObject
 from kolena.workflow import Document
 from kolena.workflow import Image
 from kolena.workflow import PointCloud
 from kolena.workflow import Text
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import BoundingBox3D

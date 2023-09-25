@@ -50,6 +50,7 @@ nav:
               - Plots: reference/workflow/plot.md
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
+              - <code>io-tools</code>: reference/workflow/io-tools.md
               - <code>visualization</code>: reference/workflow/visualization.md
       - Pre-built Workflows:
           - Pre-built Workflows: reference/pre-built/index.md
@@ -196,5 +197,5 @@ extra:
       link: https://app.kolena.io
       name: Kolena Platform
   dd_rum:
-    client_token: !ENV [DD_RUM_CLIENT_TOKEN, blank]
-    application_id: !ENV [DD_RUM_APPLICATION_ID, blank]
+    client_token: !ENV [ DD_RUM_CLIENT_TOKEN, blank ]
+    application_id: !ENV [ DD_RUM_APPLICATION_ID, blank ]
