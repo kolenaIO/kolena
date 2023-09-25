@@ -5,11 +5,11 @@ search:
 
 # METEOR
 
-METEOR (**M**etric for **E**valuation of **T**ranslation with **E**xplicit **OR**dering) is a widely recognized and vital metric used in natural language processing. Originally developed for machine translation workflows, it is used to measure the quality of candidate texts against reference texts for many different workflows. Though it is an n-gram based metric, it goes beyond traditional methods by incorporating elements such as precision, recall, and order to provide a comprehensive measure of text quality. For an in-depth justification behind METEOR's design choices, feel free to check out the [original paper](https://www.cs.cmu.edu/~alavie/METEOR/pdf/Banerjee-Lavie-2005-METEOR.pdf).
+METEOR (**M**etric for **E**valuation of **T**ranslation with **E**xplicit **OR**dering) is a widely recognized and vital metric used in natural language processing. Originally developed for machine translation workflows, it is used to measure the quality of candidate texts against reference texts for many different workflows. Though it is an n-gram based metric, it goes beyond traditional methods by factoring in elements such as precision, recall, and order to provide a comprehensive measure of text quality. For an in-depth justification behind METEOR's design choices, feel free to check out the [original paper](https://www.cs.cmu.edu/~alavie/METEOR/pdf/Banerjee-Lavie-2005-METEOR.pdf).
 
 ## Implementation Details
 
-We define METEOR as the product of two components - the Unigram Precision/Recall Harmonic Mean, and World Order Penalty. That is,
+We define METEOR as the product of two components - the Unigram Precision/Recall Harmonic Mean, and Word Order Penalty. That is,
 
 $$
 \text{METEOR} = \underbrace{\text{FMean}}_{\text{Harmonic Mean of Unigram Precision/Recall}} * \underbrace{(1 - \text{Penalty})}_{\text{Word Order Penalty}}
@@ -98,4 +98,4 @@ Although METEOR was created to address some of the major limitations of BLEU, it
 
 2. METEOR can fail on context. If we have two sentences "I am a big fan of Taylor Swift" (Reference) and "Fan of Taylor Swift I am big" (Candidate), METEOR would yield a good score. However, the candidate sentence makes little sense and intuitively shouldn't be given a good score. This is a limitation with all n-gram metrics, and not specific to METEOR.
 
-Limitations aside, METEOR is still a great metric to include in NLP workflows for measuring text similarity. Like other n-gram metrics, it is easy to compute and doesn't require extra hardware for inference. Furthermore, it is a noticible improvement over BLEU, and even ROUGE, in many ways - it places weight on *both* precision and recall, factors in word order, and generally does a better job at filtering out bad candidate texts, as seen in example 2. Furthermore, it is generally a better judge of global coherence than BLEU and ROUGE, since it greedily looks for the largest chunks to penalize the score, rather than a sliding context window of n-grams. METEOR is a powerful metric, and should be included in every NLP toolbox to give a holistic view of model performance.
+Limitations aside, METEOR is still a great metric to include in NLP workflows for measuring text similarity. Like other n-gram metrics, it is easy to compute and doesn't require extra hardware for inference. Furthermore, it is a noticible improvement over BLEU, and even ROUGE, in many ways - it places weight on *both* precision and recall, factors in word order, and generally does a better job at filtering out bad candidate texts, as seen in example 2. It is also a better judge of global coherence than BLEU and ROUGE, since it greedily looks for the largest chunks to calculate its penalty factor, rather than using a sliding context window of n-grams. METEOR is a powerful metric, and should be included in every NLP toolbox to give a holistic view of model performance.
