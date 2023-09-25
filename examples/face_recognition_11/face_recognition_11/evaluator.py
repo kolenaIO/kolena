@@ -42,9 +42,6 @@ class FaceRecognition11Evaluator(Evaluator):
         similarity_scores = similarity_scores[~np.isnan(similarity_scores)]  # filter out nans
         threshold = np.quantile(similarity_scores, 1.0 - fmr)  # Threshold = Q(1 - FMR)
 
-        # print(f"threshold: {threshold} or scores: {similarity_scores}")
-        # for i in inferences:
-        #     print(i.similarity)
         return threshold
 
     @staticmethod
