@@ -16,6 +16,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import List
 
 import pandas as pd
 
@@ -53,11 +54,38 @@ def main(args: Namespace) -> int:
     ground_truths = [GroundTruth(is_same=(ts.a.metadata["person"] == ts.b.metadata["person"])) for ts in test_samples]
 
     test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
-    test_case = TestCase(name=f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
+
+    complete_test_case = TestCase(
+        f"fr 1:1 complete :: {DATASET}",
+        description=f"All images in {DATASET} dataset",
+        test_samples=test_samples_and_ground_truths,
+        reset=True,
+    )
+
+    # test_case = TestCase(name=f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
+
+    section_size = 2500
+    splits = [
+        test_samples_and_ground_truths[:section_size],
+        test_samples_and_ground_truths[section_size : 2 * section_size],
+        test_samples_and_ground_truths[2 * section_size : 3 * section_size],
+        test_samples_and_ground_truths[3 * section_size :],
+    ]
+
+    test_cases: List[TestCase] = []
+    for idx, split in enumerate(splits):
+        test_cases.append(
+            TestCase(
+                f"fr 1:1 :: split {idx} :: {DATASET}",
+                description=f"Images in {DATASET} in split {idx}",
+                test_samples=[(ts, gt) for ts, gt in split],
+                reset=True,
+            ),
+        )
 
     test_suite = TestSuite(
         name=f"fr 1:1 :: {DATASET}",
-        test_cases=[test_case],
+        test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
     print(f"created test suite: {test_suite}")
@@ -68,7 +96,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.tiny5.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
     )
     ap.add_argument(

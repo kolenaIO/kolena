@@ -65,19 +65,19 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for Face Recognition 1:1 workflow."""
 
-    left_bbox: BoundingBox
+    left_bbox: Optional[BoundingBox] = None
     """The bounding box associated with the left image to be used for face recognition."""
 
-    left_keypoints: Keypoints
+    left_keypoints: Optional[Keypoints] = None
     """The keypoints associated with the left image to be used for face recognition."""
 
-    right_bbox: BoundingBox
+    right_bbox: Optional[BoundingBox] = None
     """The bounding box associated with the right image to be used for face recognition."""
 
-    right_keypoints: Keypoints
+    right_keypoints: Optional[Keypoints] = None
     """The keypoints associated with the right image to be used for face recognition."""
 
-    similarity: Optional[float]
+    similarity: Optional[float] = None
     """
     The similarity score computed between the two embeddings in this image pair. Should be left empty when either
     image in the pair is a failure to enroll.
@@ -108,6 +108,8 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
 
     is_false_non_match: bool
     """An indication of whether the model incorrectly classified an genuine pair as a imposter pair."""
+
+    failure_to_enroll: bool
 
 
 @dataclass(frozen=True)
@@ -143,18 +145,18 @@ class TestCaseMetrics(MetricsTestCase):
 
 
 @dataclass(frozen=True)
-class ThresholdConfiguration(EvaluatorConfiguration):
+class FMRConfiguration(EvaluatorConfiguration):
     """
-    False Match Rate (FMR) threshold configuration for Face Recognition 1:1 workflow.
+    False Match Rate (FMR) configuration for Face Recognition 1:1 workflow.
     Specify a minimum
     """
 
-    threshold: Optional[float] = None
+    false_match_rate: Optional[float] = None
     """
     FMR threshold to apply for predictions.
     """
 
     def display_name(self) -> str:
-        if self.threshold is not None:
-            return f"False Match Rate (threshold={self.threshold})"
-        return "Max FMR threshold"
+        if self.false_match_rate is not None:
+            return f"False Match Rate: {self.false_match_rate}"
+        return "Max False Match Rate"

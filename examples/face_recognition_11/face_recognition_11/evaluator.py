@@ -19,7 +19,7 @@ from typing import Tuple
 import numpy as np
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
-from face_recognition_11.workflow import ThresholdConfiguration
+from face_recognition_11.workflow import FMRConfiguration
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestCaseMetrics
 from face_recognition_11.workflow import TestSample
@@ -35,126 +35,116 @@ from kolena.workflow import TestCases
 from kolena.workflow import EvaluationResults
 
 
-def compute_test_sample_metrics(
-    ground_truth: GroundTruth,
-    inference: Inference,
-    configuration: ThresholdConfiguration,
-) -> List[Tuple[TestSample, TestSampleMetrics]]:
-    is_match, is_false_match, is_false_non_match = False, False, False
+class FaceRecognition11Evaluator(Evaluator):
+    @staticmethod
+    def compute_threshold(inferences: List[Inference], fmr: float) -> float:
+        similarity_scores = np.array([inf.similarity for inf in inferences])
+        similarity_scores = similarity_scores[~np.isnan(similarity_scores)]  # filter out nans
+        threshold = np.quantile(similarity_scores, 1.0 - fmr)  # Threshold = Q(1 - FMR)
 
-    if inference.similarity is None:
-        return TestSampleMetrics(is_match, is_false_match, is_false_non_match)
+        # print(f"threshold: {threshold} or scores: {similarity_scores}")
+        # for i in inferences:
+        #     print(i.similarity)
+        return threshold
 
-    if inference.similarity > configuration.threshold:  # match
-        if ground_truth.is_same:
-            is_match = True
-        else:
-            is_false_match = True
-    else:  # no match
-        if ground_truth.is_same:
-            is_false_non_match = False
+    @staticmethod
+    def compute_test_sample_metrics_single(
+        ground_truth: GroundTruth,
+        inference: Inference,
+        threshold: float,
+    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
+        is_match, is_false_match, is_false_non_match = False, False, False
 
-    return TestSampleMetrics(is_match, is_false_match, is_false_non_match)
+        if inference.similarity is None:
+            return TestSampleMetrics(
+                is_match=is_match,
+                is_false_match=is_false_match,
+                is_false_non_match=is_false_non_match,
+                failure_to_enroll=True,
+            )
 
+        if inference.similarity > threshold:  # match
+            if ground_truth.is_same:
+                is_match = True
+            else:
+                is_false_match = True
+        else:  # no match
+            if ground_truth.is_same:
+                is_false_non_match = False
 
-def compute_test_case_metrics(
-    ground_truths: List[GroundTruth],
-    metrics: List[TestSampleMetrics],
-) -> TestCaseMetrics:
-    n_genuine_pairs = np.sum([gt.is_same for gt in ground_truths])
-    n_imposter_pairs = np.sum([not gt.is_same for gt in ground_truths])
-    n_fm = np.sum([metric.is_false_match for metric in metrics])
-    n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
+        return TestSampleMetrics(
+            is_match=is_match,
+            is_false_match=is_false_match,
+            is_false_non_match=is_false_non_match,
+            failure_to_enroll=False,
+        )
 
-    return TestCaseMetrics(
-        n_images=len(metrics) * 2,
-        n_genuine_pairs=n_genuine_pairs,
-        n_imposter_pairs=n_imposter_pairs,
-        n_fm=n_fm,
-        fmr=n_fm / n_imposter_pairs,
-        n_fnm=n_fnm,
-        fnmr=n_fnm / n_genuine_pairs,
-    )
+    def compute_test_sample_metrics(
+        self,
+        test_case: TestCase,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        configuration: Optional[FMRConfiguration] = None,
+    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
+        threshold = self.compute_threshold([inf for ts, gt, inf in inferences], configuration.false_match_rate)
 
+        return [
+            (
+                test_sample,
+                self.compute_test_sample_metrics_single(ground_truth, inference, threshold),
+            )
+            for test_sample, ground_truth, inference in inferences
+        ]
 
-def compute_test_case_plots(
-    self,
-    ground_truths: List[GroundTruth],
-    inferences: List[Inference],
-    metrics: List[TestSampleMetrics],
-    gt_labels: List[str],
-    confidence_range: Optional[Tuple[float, float, int]],
-) -> List[Plot]:
-    plots = []
-    # TODO: existing plots depend on baseline - add in baseline fmr
+    def compute_test_case_metrics(
+        self,
+        test_case: TestCase,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        metrics: List[TestSampleMetrics],
+        configuration: Optional[FMRConfiguration] = None,
+    ) -> TestCaseMetrics:
+        n_genuine_pairs = np.sum([gt.is_same for ts, gt, inf in inferences])
+        n_imposter_pairs = np.sum([not gt.is_same for ts, gt, inf in inferences])
 
-    # set Test Sample as the first baseline to compute remaining metrics
+        # do not count FTE as belonging to FM or FNM
+        n_fm = np.sum([metric.is_false_match and not metric.failure_to_enroll for metric in metrics])
+        n_fnm = np.sum([metric.is_false_non_match and not metric.failure_to_enroll for metric in metrics])
 
-    # AUC and ROC plots
+        return TestCaseMetrics(
+            n_images=len(metrics) * 2,
+            n_genuine_pairs=n_genuine_pairs,
+            n_imposter_pairs=n_imposter_pairs,
+            n_fm=n_fm,
+            fmr=n_fm / n_imposter_pairs,
+            n_fnm=n_fnm,
+            fnmr=n_fnm / n_genuine_pairs,
+        )
 
-    # baseline =
+    def compute_test_case_plots(
+        self,
+        test_case: TestCase,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        metrics: List[TestSampleMetrics],
+        configuration: Optional[FMRConfiguration] = None,
+    ) -> Optional[List[Plot]]:
+        predictions = [inf for ts, gt, inf in inferences]
+        baseline_fmr_x = list(np.linspace(2.2e-6, 8.200e-1, 50, dtype=float))
 
-    return plots
+        fnmr_y = list([self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x])
 
+        curve_test_case_fnmr = CurvePlot(
+            title="Test Case FNMR vs. Baseline FMR",
+            x_label="Baseline False Match Rate",
+            y_label="Test Case False Non-Match Rate (%)",
+            curves=[Curve(x=baseline_fmr_x, y=fnmr_y)],
+        )
 
-# def compute_test_case_plots(
-#     ground_truths: List[GroundTruth],
-#     test_sample_metrics: List[TestSampleMetrics],
-# ) -> List[Plot]:
-#     baseline = test_sample_metrics[0]
+        # TODO: update FMR graph
+        fmr_y = list([self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x])
+        curve_test_case_fmr = CurvePlot(
+            title="Test Case FMR vs. Baseline FMR",
+            x_label="Baseline False Match Rate",
+            y_label="Test Case False Match Rate",
+            curves=[Curve(x=baseline_fmr_x, y=fmr_y)],
+        )
 
-
-#     data = [mts.error for mts in test_sample_metrics if mts.error is not None]
-#     hist, bins = np.histogram(data, bins=100, range=(0, 10))
-#     histogram_absolute_error = Histogram(
-#         title="Distribution of Absolute Error",
-#         x_label="Absolute Error",
-#         y_label="Count",
-#         buckets=list(bins),
-#         frequency=list(hist),
-#     )
-
-#     mae_data = defaultdict(list)
-#     for gt, mts in zip(ground_truths, test_sample_metrics):
-#         if mts.error is not None:
-#             mae_data[gt.age].append(mts.error)
-
-#     sorted_data = dict(sorted(mae_data.items()))
-#     x = list(sorted_data.keys())
-#     y = [sum(sorted_data[age]) / float(len(sorted_data[age])) for age in x]
-#     curve_target_age = CurvePlot(
-#         title="Mean Absolute Error vs. Target Age",
-#         x_label="Target Age",
-#         y_label="Mean Absolute Error",
-#         curves=[Curve(x=x, y=y)],
-#     )
-
-#     return [histogram_absolute_error, curve_target_age]
-
-
-# TODO: change to using evaluate function()
-def evaluate_face_recognition_11(
-    test_samples: List[TestSample],
-    ground_truths: List[GroundTruth],
-    inferences: List[Inference],
-    test_cases: TestCases,
-    configuration: ThresholdConfiguration,
-) -> EvaluationResults:
-    # compute sample-level metrics for each sample
-    test_sample_metrics = [
-        compute_test_sample_metrics(gt, inf, configuration) for gt, inf in zip(ground_truths, inferences)
-    ]
-
-    # compute aggregate metrics across all test cases using `test_cases.iter(...)`
-    test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
-    test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-
-    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        test_case_metrics.append((test_case, compute_test_case_metrics(gt, tsm)))
-        # test_case_plots.append((test_case, compute_test_case_plots(test_case)))
-
-    return EvaluationResults(
-        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=test_case_metrics,
-        plots_test_case=test_case_plots,
-    )
+        return [curve_test_case_fnmr, curve_test_case_fmr]

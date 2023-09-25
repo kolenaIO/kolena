@@ -18,12 +18,12 @@ from argparse import Namespace
 from typing import List
 
 import pandas as pd
-from face_recognition_11.evaluator import evaluate_face_recognition_11
+from face_recognition_11.evaluator import FaceRecognition11Evaluator
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import Model
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
-from face_recognition_11.workflow import ThresholdConfiguration
+from face_recognition_11.workflow import FMRConfiguration
 
 import kolena
 from kolena.workflow import test
@@ -34,12 +34,15 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.tiny5.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.sample.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         sample_results = df_results[
             (df_results["locator_a"] == test_sample.a.locator) & (df_results["locator_b"] == test_sample.b.locator)
         ].iloc[0]
+
+        if sample_results["failure"] == True:  # failure to enroll
+            return Inference()
 
         return Inference(
             left_bbox=BoundingBox(
@@ -74,19 +77,13 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     model = Model(f"{model_name} [{DATASET}]", infer=infer)
     print(f"Model: {model}")
 
+    evaluator = FaceRecognition11Evaluator(configurations=[FMRConfiguration(false_match_rate=1e-6)])
+
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
 
-        test(
-            model,
-            test_suite,
-            evaluate_face_recognition_11,
-            configurations=[
-                ThresholdConfiguration(threshold=0.3),
-            ],
-            reset=True,
-        )
+        test(model, test_suite, evaluator, reset=True)
 
 
 def main(args: Namespace) -> int:
@@ -100,7 +97,6 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        # default=["Paravision"],
         default=["deepface"],
         help="Name(s) of model(s) in directory to test",
     )
