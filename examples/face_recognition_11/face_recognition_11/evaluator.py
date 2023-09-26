@@ -40,7 +40,7 @@ class FaceRecognition11Evaluator(Evaluator):
     def compute_threshold(inferences: List[Inference], fmr: float) -> float:
         similarity_scores = np.array([inf.similarity for inf in inferences])
         similarity_scores = similarity_scores[~np.isnan(similarity_scores)]  # filter out nans
-        threshold = np.quantile(similarity_scores, 1.0 - fmr)  # Threshold = Q(1 - FMR)
+        threshold = np.quantile(similarity_scores, fmr)  # Threshold = Q(1 - FMR)
 
         return threshold
 
@@ -52,7 +52,7 @@ class FaceRecognition11Evaluator(Evaluator):
     ) -> TestSampleMetrics:
         is_match, is_false_match, is_false_non_match = False, False, False
 
-        if inference.similarity is None:
+        if inference.similarity is None or np.isnan(inference.similarity):
             return TestSampleMetrics(
                 is_match=is_match,
                 is_false_match=is_false_match,
@@ -67,7 +67,7 @@ class FaceRecognition11Evaluator(Evaluator):
                 is_false_match = True
         else:  # no match
             if ground_truth.is_same:
-                is_false_non_match = False
+                is_false_non_match = True
 
         return TestSampleMetrics(
             is_match=is_match,
@@ -124,7 +124,9 @@ class FaceRecognition11Evaluator(Evaluator):
         configuration: Optional[FMRConfiguration] = None,
     ) -> Optional[List[Plot]]:
         predictions = [inf for ts, gt, inf in inferences]
-        baseline_fmr_x = list(np.linspace(2.2e-6, 8.200e-1, 100))
+        FMR_lower = np.log(2.2e-6)
+        FMR_upper = np.log(8.2e-1)
+        baseline_fmr_x = list(np.exp(np.linspace(FMR_lower, FMR_upper, 100)))
         thresholds = [self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x]
 
         n_genuine_pairs = np.sum([gt.is_same for ts, gt, inf in inferences])
