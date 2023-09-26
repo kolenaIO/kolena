@@ -330,7 +330,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: Clear any and all test samples currently in the test case.
+        :param reset: Clear all existing test samples in the test case.
         """
         editor = self.Editor(self.description, reset)
 

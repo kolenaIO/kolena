@@ -1,20 +1,21 @@
 [tool.poetry]
-name = "object_detection_3d"
+name = "semantic_segmentation"
 version = "0.1.0"
-description = "Example Kolena integration for KITTI 3D object detection"
+description = "Example Kolena integration for semantic segmentation"
 authors = ["Kolena Engineering <eng@kolena.io>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-kolena = ">=0.76.0,<1"
-pydantic = ">=1.10,<2.0"
-openmim = "^0.3.9"
-mmcv-lite = ">=2.0.0rc4"
-mmdet = ">=3.0.0"
-mmdet3d = ">=1.1.0"
-dacite = "^1.8.1"
+opencv-python-headless = ">=4.6.0.66,<4.7"
+kolena = ">=0.87.0,<1"
+s3fs = "^2023.5.0"
+fsspec = "^2023.5.0"
 pandera = ">=0.9.0,<0.16"
+boto3 = "^1.25"
+scikit-learn = "^1.1.2"
+scikit-image = "^0.19.3"
+
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"

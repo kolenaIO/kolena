@@ -316,7 +316,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: Clear any and all test cases currently in the test suite.
+        :param reset: Clear all existing test cases in the test suite.
         """
         editor = self.Editor(self.test_cases, self.description, self.tags, reset)
 

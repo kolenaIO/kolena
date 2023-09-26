@@ -283,7 +283,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
 
         Changes are committed to Kolena when the context is exited.
 
-        :param reset: Clear any and all test cases currently in the test suite.
+        :param reset: Clear all existing test cases in the test suite.
         :return: Context-managed [`TestSuite.Editor`][kolena.detection._internal.test_suite.BaseTestSuite.Editor]
             instance exposing editing functionality for this test suite.
         """

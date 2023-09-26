@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Average Precision
 
 Average precision (AP) summarizes a [precision-recall (PR) curve](./pr-curve.md) into a single value representing the average of all
@@ -27,8 +22,8 @@ metric used across popular object detection benchmarks such as [PASCAL VOC 2012]
 
 ## Implementation Details
 
-The general definition of AP is finding the approximation of the area under the PR curve. The actual area under the
-curve, where $p(r)$ is the precision at recall $r$, can be defined:
+The general definition of AP is finding the approximation of the area under the [PR curve](./pr-curve.md). The actual
+area under the curve, where $p(r)$ is the precision at recall $r$, can be defined:
 
 $$
 \text{AP} = \int_{0}^{1} p(r)dr
