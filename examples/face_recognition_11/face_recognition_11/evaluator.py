@@ -49,7 +49,7 @@ class FaceRecognition11Evaluator(Evaluator):
         ground_truth: GroundTruth,
         inference: Inference,
         threshold: float,
-    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
+    ) -> TestSampleMetrics:
         is_match, is_false_match, is_false_non_match = False, False, False
 
         if inference.similarity is None:
@@ -124,9 +124,32 @@ class FaceRecognition11Evaluator(Evaluator):
         configuration: Optional[FMRConfiguration] = None,
     ) -> Optional[List[Plot]]:
         predictions = [inf for ts, gt, inf in inferences]
-        baseline_fmr_x = list(np.linspace(2.2e-6, 8.200e-1, 50, dtype=float))
+        baseline_fmr_x = list(np.linspace(2.2e-6, 8.200e-1, 100))
+        thresholds = [self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x]
 
-        fnmr_y = list([self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x])
+        n_genuine_pairs = np.sum([gt.is_same for ts, gt, inf in inferences])
+        n_imposter_pairs = np.sum([not gt.is_same for ts, gt, inf in inferences])
+
+        fnmr_y = list()
+        fmr_y = list()
+
+        for threshold in thresholds:
+            tsm_for_one_threshold = [
+                self.compute_test_sample_metrics_single(gt, inf, threshold) for ts, gt, inf in inferences
+            ]
+            n_fm = np.sum([metric.is_false_match and not metric.failure_to_enroll for metric in tsm_for_one_threshold])
+            n_fnm = np.sum(
+                [metric.is_false_non_match and not metric.failure_to_enroll for metric in tsm_for_one_threshold]
+            )
+            fnmr_y.append(n_fnm / n_genuine_pairs)
+            fmr_y.append(n_fm / n_imposter_pairs)
+
+        curve_test_case_fmr = CurvePlot(
+            title="Test Case FMR vs. Baseline FMR",
+            x_label="Baseline False Match Rate",
+            y_label="Test Case False Match Rate",
+            curves=[Curve(x=baseline_fmr_x, y=fmr_y)],
+        )
 
         curve_test_case_fnmr = CurvePlot(
             title="Test Case FNMR vs. Baseline FMR",
@@ -135,13 +158,4 @@ class FaceRecognition11Evaluator(Evaluator):
             curves=[Curve(x=baseline_fmr_x, y=fnmr_y)],
         )
 
-        # TODO: update FMR graph
-        fmr_y = list([self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x])
-        curve_test_case_fmr = CurvePlot(
-            title="Test Case FMR vs. Baseline FMR",
-            x_label="Baseline False Match Rate",
-            y_label="Test Case False Match Rate",
-            curves=[Curve(x=baseline_fmr_x, y=fmr_y)],
-        )
-
-        return [curve_test_case_fnmr, curve_test_case_fmr]
+        return [curve_test_case_fmr, curve_test_case_fnmr]
