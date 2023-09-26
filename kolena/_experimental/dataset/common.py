@@ -11,13 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# noreorder
-from kolena._experimental.dataset._dataset import fetch_dataset
-from kolena._experimental.dataset._dataset import register_dataset
-from kolena._experimental.dataset._evaluation import test
+from kolena.errors import InputValidationError
 
-__all__ = [
-    "register_dataset",
-    "fetch_dataset",
-    "test",
-]
+
+def validate_batch_size(batch_size: int) -> None:
+    if batch_size <= 0:
+        raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
+
+
+COL_DATAPOINT = "datapoint"
+COL_INFERENCE = "inference"
+COL_METRICS = "metrics"
+COL_EVAL_CONFIG = "eval_config"
