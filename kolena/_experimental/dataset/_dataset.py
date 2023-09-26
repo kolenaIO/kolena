@@ -14,6 +14,7 @@
 import json
 import mimetypes
 from dataclasses import asdict
+from enum import Enum
 from typing import Iterator
 from typing import Union
 
@@ -39,11 +40,21 @@ TEST_SAMPLE_TYPE = "TEST_SAMPLE"
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
 
+
+class TestSampleType(str, Enum):
+    CUSTOM = "TEST_SAMPLE/CUSTOM"
+    DOCUMENT = "TEST_SAMPLE/DOCUMENT"
+    IMAGE = "TEST_SAMPLE/IMAGE"
+    POINT_CLOUD = "TEST_SAMPLE/POINT_CLOUD"
+    TEXT = "TEST_SAMPLE/TEXT"
+    VIDEO = "TEST_SAMPLE/VIDEO"
+
+
 _DATAPOINT_TYPE_MAP = {
-    "image": f"{TEST_SAMPLE_TYPE}/IMAGE",
-    "application/pdf": f"{TEST_SAMPLE_TYPE}/DOCUMENT",
-    "text": f"{TEST_SAMPLE_TYPE}/DOCUMENT",
-    "video": f"{TEST_SAMPLE_TYPE}/VIDEO",
+    "image": TestSampleType.IMAGE.value,
+    "application/pdf": TestSampleType.DOCUMENT.value,
+    "text": TestSampleType.DOCUMENT.value,
+    "video": TestSampleType.VIDEO.value,
 }
 
 
@@ -64,18 +75,18 @@ def _infer_datatype_value(x: str) -> str:
         if datatype is not None:
             return datatype
     elif x.endswith(".pcd"):
-        return f"{TEST_SAMPLE_TYPE}/POINT_CLOUD"
+        return TestSampleType.POINT_CLOUD.value
 
-    return f"{TEST_SAMPLE_TYPE}/CUSTOM"
+    return TestSampleType.CUSTOM.value
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if FIELD_LOCATOR in df.columns:
         return df[FIELD_LOCATOR].apply(_infer_datatype_value)
     elif FIELD_TEXT in df.columns:
-        return f"{TEST_SAMPLE_TYPE}/TEXT"
+        return TestSampleType.TEXT.value
 
-    return f"{TEST_SAMPLE_TYPE}/CUSTOM"
+    return TestSampleType.CUSTOM.value
 
 
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:

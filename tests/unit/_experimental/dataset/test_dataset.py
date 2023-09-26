@@ -23,28 +23,21 @@ from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import COL_DATAPOINT
-from kolena._experimental.dataset._dataset import TEST_SAMPLE_TYPE
+from kolena._experimental.dataset._dataset import TestSampleType
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
-
-CUSTOM = f"{TEST_SAMPLE_TYPE}/CUSTOM"
-IMAGE = f"{TEST_SAMPLE_TYPE}/IMAGE"
-VIDEO = f"{TEST_SAMPLE_TYPE}/VIDEO"
-DOCUMENT = f"{TEST_SAMPLE_TYPE}/DOCUMENT"
-TEXT = f"{TEST_SAMPLE_TYPE}/TEXT"
-POINT_CLOUD = f"{TEST_SAMPLE_TYPE}/POINT_CLOUD"
 
 
 @pytest.mark.parametrize(
     "uri,expected",
     [
-        ("s3://public/png", CUSTOM),
-        ("/opt/test.png", IMAGE),
-        ("https://kolena.io/demo.mp4", VIDEO),
-        ("file:///var/mime.csv", DOCUMENT),
-        ("test.pcd", POINT_CLOUD),
-        ("gcp://summary.pdf", DOCUMENT),
-        ("//my.mp3", CUSTOM),
+        ("s3://public/png", TestSampleType.CUSTOM),
+        ("/opt/test.png", TestSampleType.IMAGE),
+        ("https://kolena.io/demo.mp4", TestSampleType.VIDEO),
+        ("file:///var/mime.csv", TestSampleType.DOCUMENT),
+        ("test.pcd", TestSampleType.POINT_CLOUD),
+        ("gcp://summary.pdf", TestSampleType.DOCUMENT),
+        ("//my.mp3", TestSampleType.CUSTOM),
     ],
 )
 def test__infer_datatype_value(uri: str, expected: str) -> None:
@@ -58,7 +51,9 @@ def test__infer_datatype() -> None:
                 locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
             ),
         ),
-    ).equals(pd.Series([DOCUMENT, IMAGE, VIDEO, POINT_CLOUD]))
+    ).equals(
+        pd.Series([TestSampleType.DOCUMENT, TestSampleType.IMAGE, TestSampleType.VIDEO, TestSampleType.POINT_CLOUD]),
+    )
     assert _infer_datatype(
         pd.DataFrame(
             dict(
@@ -66,7 +61,9 @@ def test__infer_datatype() -> None:
                 text=["a", "b", "c", "d"],
             ),
         ),
-    ).equals(pd.Series([DOCUMENT, IMAGE, VIDEO, POINT_CLOUD]))
+    ).equals(
+        pd.Series([TestSampleType.DOCUMENT, TestSampleType.IMAGE, TestSampleType.VIDEO, TestSampleType.POINT_CLOUD]),
+    )
     assert (
         _infer_datatype(
             pd.DataFrame(
@@ -75,7 +72,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == TEXT
+        == TestSampleType.TEXT
     )
     assert (
         _infer_datatype(
@@ -85,7 +82,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == CUSTOM
+        == TestSampleType.CUSTOM
     )
 
 
@@ -113,7 +110,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     height=dp["height"],
                     category=dp["category"],
                     bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
-                    data_type=IMAGE,
+                    data_type=TestSampleType.IMAGE,
                 )
                 for dp in datapoints
             ],
@@ -155,7 +152,9 @@ def test__datapoint_dataframe__serde_text() -> None:
     df = pd.DataFrame(datapoints)
     df_expected = pd.DataFrame(
         dict(
-            datapoint=[dict(text=dp["text"], category=dp["category"], data_type=TEXT) for dp in datapoints],
+            datapoint=[
+                dict(text=dp["text"], category=dp["category"], data_type=TestSampleType.TEXT) for dp in datapoints
+            ],
         ),
     )
     df_serialized = _to_serialized_dataframe(df)
