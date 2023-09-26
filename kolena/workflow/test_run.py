@@ -322,7 +322,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info("uploading test suite metrics")
         self._upload_test_suite_metrics(test_suite_metrics)
 
-    def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> Dict[str, Any]:
+    def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> None:
         test_samples, ground_truths, inferences = [], [], []
         for sample, gt, inf in self._iter_all_inferences():
             test_samples.append(sample)
