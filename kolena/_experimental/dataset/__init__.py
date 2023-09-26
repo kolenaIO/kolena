@@ -14,10 +14,14 @@
 # noreorder
 from kolena._experimental.dataset._dataset import fetch_dataset
 from kolena._experimental.dataset._dataset import register_dataset
+from kolena._experimental.dataset._evaluation import fetch_evaluation_results
+from kolena._experimental.dataset._evaluation import fetch_inferences
 from kolena._experimental.dataset._evaluation import test
 
 __all__ = [
     "register_dataset",
     "fetch_dataset",
+    "fetch_inferences",
+    "fetch_evaluation_results",
     "test",
 ]
