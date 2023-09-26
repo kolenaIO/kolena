@@ -95,15 +95,15 @@ thresholds that we used in the example above: 0.25, 0.5, and 0.75. In this examp
 
 <center>
 
-| Label | `Airplane` Confidence | `Boat` Confidence | `Car` Confidence |
-| --- | --- | --- | --- |
-| `Airplane` | 0.9 | 0.05 | 0.05 |
-| `Airplane` | 0.7 | 0.05 | 0.25 |
-| `Airplane` | 0.25 | 0.25 | 0.5 |
-| `Boat` | 0.6 | 0.25 | 0.15 |
-| `Boat` | 0.4 | 0.5 | 0.1 |
-| `Car` | 0.25 | 0.25 | 0.5 |
-| `Car` | 0.05 | 0.7 | 0.25 |
+| Sample # | Label | `Airplane` Confidence | `Boat` Confidence | `Car` Confidence |
+| --- | --- | --- | --- | --- |
+| 1 | `Airplane` | 0.9 | 0.05 | 0.05 |
+| 2 | `Airplane` | 0.7 | 0.05 | 0.25 |
+| 3 | `Airplane` | 0.25 | 0.25 | 0.5 |
+| 4 | `Boat` | 0.6 | 0.25 | 0.15 |
+| 5 | `Boat` | 0.4 | 0.5 | 0.1 |
+| 6 | `Car` | 0.25 | 0.25 | 0.5 |
+| 7 | `Car` | 0.05 | 0.7 | 0.25 |
 
 </center>
 
@@ -112,15 +112,15 @@ depending on the evaluating threshold, so for class `Airplane`:
 
 <center>
 
-| Sample | `Airplane` Confidence ↓ | Inference @ 0.25 | Inference @ 0.5 | Inference @ 0.75 |
-| --- | --- | --- | --- | --- |
-| <span class="mg-cell-color-positive">Positive</span> | 0.9 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> |
-| <span class="mg-cell-color-positive">Positive</span> | 0.7 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
-| <span class="mg-cell-color-negative">Negative</span> | 0.6 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
-| <span class="mg-cell-color-negative">Negative</span> | 0.4 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
-| <span class="mg-cell-color-positive">Positive</span> | 0.25 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
-| <span class="mg-cell-color-negative">Negative</span> | 0.25 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
-| <span class="mg-cell-color-negative">Negative</span> | 0.05 | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| Sample # | Sample | `Airplane` Confidence ↓ | Inference @ 0.25 | Inference @ 0.5 | Inference @ 0.75 |
+| --- | --- | --- | --- | --- | --- |
+| 1 | <span class="mg-cell-color-positive">Positive</span> | 0.9 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> |
+| 2 | <span class="mg-cell-color-positive">Positive</span> | 0.7 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
+| 4 | <span class="mg-cell-color-negative">Negative</span> | 0.6 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> |
+| 5 | <span class="mg-cell-color-negative">Negative</span> | 0.4 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| 3 | <span class="mg-cell-color-positive">Positive</span> | 0.25 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| 6 | <span class="mg-cell-color-negative">Negative</span> | 0.25 | <span class="mg-cell-color-positive">Positive</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
+| 7 | <span class="mg-cell-color-negative">Negative</span> | 0.05 | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> | <span class="mg-cell-color-negative">Negative</span> |
 
 </center>
 
@@ -163,7 +163,8 @@ model performs at classifying the positive and negative instances. Using AUC ROC
 metrics, we can assess and compare the performance of different models and choose the one that best suits their
 specific problem.
 
-Let's take a look at the above example again. Given the following TPR and FPR values, the AUC ROC can be computed:
+Let's take a look at the binary classification example again. Given the following TPR and FPR values, the AUC ROC can be
+computed:
 
 <center>
 
