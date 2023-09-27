@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import json
 from abc import ABCMeta
 from abc import abstractmethod
 from collections import OrderedDict
@@ -235,6 +236,75 @@ class DataObject(metaclass=ABCMeta):
     # https://pandas.pydata.org/docs/user_guide/io.html#fallback-behavior
     def toDict(self) -> Dict:
         return self._to_dict()
+
+
+def _serialize_dataobject(x: Any) -> Any:
+    if isinstance(x, list):
+        return [item._to_dict() if isinstance(item, DataObject) else item for item in x]
+
+    return x._to_dict() if isinstance(x, DataObject) else x
+
+
+def _deserialize_dataobject(x: Any) -> Any:
+    if isinstance(x, list):
+        return [_deserialize_dataobject(item) for item in x]
+
+    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
+        data = {**x}
+        data_type = data.pop(DATA_TYPE_FIELD)
+        typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
+        if typed_dataobject:
+            return typed_dataobject._from_dict(data)
+
+    return x
+
+
+_serialize_series = np.vectorize(_serialize_dataobject)
+_deserialize_series = np.vectorize(_deserialize_dataobject)
+
+
+def _serialize_json(x: Any) -> Any:
+    if isinstance(x, list) or isinstance(x, dict):
+        return json.dumps(x)
+
+    return x
+
+
+def _deserialize_json(x: Any) -> Any:
+    if isinstance(x, str):
+        try:
+            return json.loads(x)
+        except Exception:
+            ...
+
+    return x
+
+
+def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
+    columns = list(df.select_dtypes(include="object").columns)
+    df_post = df.select_dtypes(exclude="object")
+    df_post[columns] = df[columns].apply(_serialize_series)
+    df_post[columns] = df_post[columns].apply(np.vectorize(_serialize_json))
+    return df_post.to_csv(*args, **kwargs)
+
+
+def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
+    df = pd.read_csv(*args, **kwargs)
+    columns = list(df.select_dtypes(include="object").columns)
+    df_post = df.select_dtypes(exclude="object")
+    df_post[columns] = df[columns].apply(np.vectorize(_deserialize_json))
+    df_post[columns] = df_post[columns].apply(_deserialize_series)
+
+    return df_post
+
+
+def dataframe_from_json(*args, **kwargs) -> pd.DataFrame:
+    df = pd.read_json(*args, **kwargs)
+    columns = list(df.select_dtypes(include="object").columns)
+    df_post = df.select_dtypes(exclude="object")
+    df_post[columns] = df[columns].apply(_deserialize_series)
+
+    return df_post
 
 
 class DataType(str, Enum):

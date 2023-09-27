@@ -22,11 +22,11 @@ from kolena._utils.state import get_endpoint_with_baseurl
 from kolena.errors import InvalidClientStateError
 
 
-def get_endpoint(endpoint_path: str) -> str:
+def get_endpoint(endpoint_path: str, api_version: int) -> str:
     client_state = get_client_state()
     if client_state.base_url is None:
         raise InvalidClientStateError("missing base_url")
-    return get_endpoint_with_baseurl(client_state.base_url, endpoint_path)
+    return get_endpoint_with_baseurl(client_state.base_url, endpoint_path, api_version)
 
 
 def get_platform_url() -> str:
