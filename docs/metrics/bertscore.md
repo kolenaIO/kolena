@@ -31,31 +31,31 @@ $$
 \text{similarity}(\mathbf{x_i}, \mathbf{\hat{x}_j}) = \frac{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}{||\mathbf{x_i}||\space||\mathbf{\hat{x}_j}||}
 $$
 
-which simply reduces to $\mathbf{x_i}^\top \mathbf{\hat{x}_j}$ since both $\mathbf{x_i}$ and $\mathbf{\hat{x}_j}$ are pre-normalized. With these definitions, we can now calculate the BERT precision, recall, and f1-score.
+which simply reduces to $\mathbf{x_i}^\top \mathbf{\hat{x}_j}$ since both $\mathbf{x_i}$ and $\mathbf{\hat{x}_j}$ are pre-normalized. With these definitions, we can now calculate the BERT-precision, BERT-recall, and BERT-F1.
 
-#### BERT Precision
+#### BERT-Precision
 
 $$
 P_\text{BERT} = \frac{1}{|\hat{x}|} \sum_{\mathbf{\hat{x}_j} \in \hat{x}} \underbrace{\max_{\mathbf{x_i} \in x}\overbrace{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}^\text{cosine similarity}}_\text{greedy matching}
 $$
 
-Though the formula may seem intimidating, the BERT precision is conceptually similar to the [precision formula](precision.md), but uses greedy matching to maximize the similarity score between a reference word and the current candidate word. This is because the language domain can have multiple words that are similar in context to the ground truth, and the words of a sentence can be arranged in different ways while preserving the same meaning - thus, why we use greedy matching.
+Though the formula may seem intimidating, BERT-precision is conceptually similar to the [precision formula](precision.md), but uses greedy matching to maximize the similarity score between a reference word and the current candidate word. This is because the language domain can have multiple words that are similar in context to the ground truth, and the words of a sentence can be arranged in different ways while preserving the same meaning - thus, why we use greedy matching.
 
-#### BERT Recall
+#### BERT-Recall
 
 $$
 R_\text{BERT} = \frac{1}{|x|} \sum_{\mathbf{x_i} \in x} \underbrace{\max_{\mathbf{\hat{x}_j} \in \hat{x}}\overbrace{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}^\text{cosine similarity}}_\text{greedy matching}
 $$
 
-Once again, the BERT recall is conceptually similar to the [recall formula](recall.md). Note that we flip $\hat{x}$ with $x$ when calculating recall.
+Once again, the BERT-recall is conceptually similar to the [recall formula](recall.md). Note that we flip $\hat{x}$ with $x$ when calculating recall.
 
-#### BERT F1-Score
+#### BERT-F1
 
 $$
 F_\text{BERT} = 2 \times \frac{P_\text{BERT} \times R_\text{BERT}}{P_\text{BERT} + R_\text{BERT}}
 $$
 
-The formula is the same as the [F1-score formula](f1-score.md), replacing the precision and recall components with BERT precision and recall.
+The formula is the same as the [F1-score formula](f1-score.md), replacing the precision and recall components with BERT-precision and BERT-recall.
 
 In a more advanced implementation of BERTScore, extra steps are taken to finetune the metric. These include:
 
@@ -68,7 +68,7 @@ In a more advanced implementation of BERTScore, extra steps are taken to finetun
 BERTScore (Precision, Recall, F1) scores lie between the range of 0 and 1, with 0 representing no semantic similarity, and 1 representing a perfect semantic match between candidate and reference texts. However, interpreting the metric is completely subjective based on your task. On some tasks, a BERT-F1 of 0.9 may be excellent, whereas a BERT-F1 of 0.8 may be excellent for another. Generally speaking, a higher BERTScore is desirable.
 
 ## Example
-To showcase the value of BERTScore, lets consider the following candidate and reference texts:
+To showcase the value of BERTScore, let's consider the following candidate and reference texts:
 
 ??? example "Semantically Similar Texts"
 
@@ -83,11 +83,12 @@ To showcase the value of BERTScore, lets consider the following candidate and re
     Using the following code:
 
     ```python
+    !pip install bert-score
     from bert_score import score
 
     candidates = [...]
     references = [...]
-    precision, recall, f1 = score(c, r, lang='en')
+    precision, recall, f1 = score(c, r, lang='en') # using the default `roberta-large` BERT model
 
     precision, recall, f1 = precision.mean(), recall.mean(), f1.mean()
     ```
@@ -109,7 +110,7 @@ To showcase the value of BERTScore, lets consider the following candidate and re
     | The detective examined the clues carefully. | Wrong answer |
 
     This yields BERTScores of: $P_\text{BERT} = 0.8328, R_\text{BERT} = 0.8428, F_\text{BERT} = 0.8377$.
-    Between different tasks, the baseline for a "good" BERTScore may vary based on different factors, like text length.
+    Between different tasks, the baseline for a "good" BERTScore may vary based on different factors, like text length and BERT model type.
 
 ## Advantages and Limitations
 
