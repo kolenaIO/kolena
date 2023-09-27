@@ -15,21 +15,21 @@ The BLEU score is a metric commonly used in a variety of NLP tasks ranging from 
 ### Definition
 The BLEU score is mathematically defined as:
 
-$$\begin{align*} \text{BLEU} &= \text{Brevity Penalty} \times \text{n-Gram Overlap} \\
-&= \min\left(1, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \left(\prod_{i=1}^{4}\text{i-Gram Precision}^{1/4}\right)
+$$\begin{align*} \text{BLEU} &= \text{Brevity Penalty} \times \text{n-gram Overlap} \\
+&= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \left(\prod_{i=1}^{4}\text{i-gram Precision}^{1/4}\right)
 \end{align*}$$
 
-where the i-Gram precision is calculated as:
+where the i-gram precision is calculated as:
 
 $$
 p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1}{\text{Total number of i-grams in candidate text}}
 $$
 
 Below, we explain the significance of the two components in the BLEU formula.
-??? info "n-Gram Overlap"
-    The **n-Gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.
+??? info "n-gram Overlap"
+    The **n-gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.
 ??? info "Brevity Penalty"
-    The **Brevity Penalty** is also applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-Gram Overlap precision tends to give disproportionately high values to candidate texts that are very short in length, but contain most of the n-grams in the reference text.
+    The **Brevity Penalty** is also applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-gram Overlap precision tends to give disproportionately high values to candidate texts that are very short in length, but contain most of the n-grams in the reference text.
 
 <div class="footnote-content">
     <p style="font-size: smaller;">
@@ -51,35 +51,36 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
 2. **Track Trends Over Time**: Rising scores signal improvements in models, while drops could hint at issues or changes in your dataset.
 
-3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuancies like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like [BertScore](bertscore.md) may help in quantifying your model's performance from other perspectives.
+3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuances like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like [BertScore](bertscore.md) may help in quantifying your model's performance from other perspectives.
 
 ## Example
 
-**Generated Sentence**: Kolena is an ML testing and debugging platform to find hidden model behaviors and demystify model development <br>
-**Reference Sentence**: Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and take the mystery out of model development
+| Generated | Reference |
+| --- | --- |
+| `Kolena is an ML testing and debugging platform to find hidden model behaviors and demystify model development` | `Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and take the mystery out of model development` |
 
-??? example "Step 1: Tokenization & n-Grams"
+??? example "Step 1: Tokenization & n-grams"
     Splitting our sentences up into 1-, ..., 4-grams, we get:
 
     **Generated Sentence**:
 
-    | n | n-Grams |
+    | n | n-grams |
     | ---   | ---                        |
-    | 1 | ["kolena", "is", "an", "ml", "testing", "and", "debugging", "platform", "to", "find", "hidden", "model", "behaviors", "and", "demystify", "model", "development"]|
-    | 2 | ["kolena is", "is an", "an ml", "ml testing", "testing and", "and debugging", "debugging platform", "platform to", "to find", "find hidden", "hidden model", "model behaviors", "behaviors and", "and demystify", "demystify model", "model development"]|
-    | 3 | ["kolena is an", "is an ml", "an ml testing", "ml testing and", "testing and debugging", "and debugging platform", "debugging platform to", "platform to find", "to find hidden", "find hidden model", "hidden model behaviors", "model behaviors and", "behaviors and demystify", "and demystify model", "demystify model development"] |
-    | 4 | ["kolena is an ml", "is an ml testing", "an ml testing and", "ml testing and debugging", "testing and debugging platform", "and debugging platform to", "debugging platform to find", "platform to find hidden", "to find hidden model", "find hidden model behaviors", "hidden model behaviors and", "model behaviors and demystify", "behaviors and demystify model", "and demystify model development"]  |
+    | 1 | [`kolena`**,** `is`**,** `an`**,** `ml`**,** `testing`**,** `and`**,** `debugging`**,** `platform`**,** `to`**,** `find`**,** `hidden`**,** `model`**,** `behaviors`**,** `and`**,** `demystify`**,** `model`**,** `development`]|
+    | 2 | [`kolena is`**,** `is an`**,** `an ml`**,** `ml testing`**,** `testing and`**,** `and debugging`**,** `debugging platform`**,** `platform to`**,** `to find`**,** `find hidden`**,** `hidden model`**,** `model behaviors`**,** `behaviors and`**,** `and demystify`**,** `demystify model`**,** `model development`]|
+    | 3 | [`kolena is an`**,** `is an ml`**,** `an ml testing`**,** `ml testing and`**,** `testing and debugging`**,** `and debugging platform`**,** `debugging platform to`**,** `platform to find`**,** `to find hidden`**,** `find hidden model`**,** `hidden model behaviors`**,** `model behaviors and`**,** `behaviors and demystify`**,** `and demystify model`**,** `demystify model development`] |
+    | 4 | [`kolena is an ml`**,** `is an ml testing`**,** `an ml testing and`**,** `ml testing and debugging`**,** `testing and debugging platform`**,** `and debugging platform to`**,** `debugging platform to find`**,** `platform to find hidden`**,** `to find hidden model`**,** `find hidden model behaviors`**,** `hidden model behaviors and`**,** `model behaviors and demystify`**,** `behaviors and demystify model`**,** `and demystify model development`]  |
 
     **Reference Sentence**:
 
-    | n | n-Grams |
+    | n | n-grams |
     | ---   | ---                        |
-    | 1 | ["kolena", "is", "a", "comprehensive", "machine", "learning", "testing", "and", "debugging", "platform", "to", "surface", "hidden", "model", "behaviors", "and", "take", "the", "mystery", "out"]|
+    | 1 | [`kolena`**,** `is`**,** `a`**,** `comprehensive`**,** `machine`**,** `learning`**,** `testing`**,** `and`**,** `debugging`**,** `platform`**,** `to`**,** `surface`**,** `hidden`**,** `model`**,** `behaviors`**,** `and`**,** `take`**,** `the`**,** `mystery`**,** `out`]|
     |...|
-    | 4 | ["kolena is a comprehensive", "is a comprehensive machine", "a comprehensive machine learning", "comprehensive machine learning testing", "machine learning testing and", "learning testing and debugging", "testing and debugging platform", "and debugging platform to", "debugging platform to surface", "platform to surface hidden", "to surface hidden model", "surface hidden model behaviors", "hidden model behaviors and", "model behaviors and take", "behaviors and take the", "and take the mystery", "take the mystery out", "the mystery out of", "mystery out of model", "out of model development"]  |
+    | 4 | [`kolena is a comprehensive`**,** `is a comprehensive machine`**,** `a comprehensive machine learning`**,** `comprehensive machine learning testing`**,** `machine learning testing and`**,** `learning testing and debugging`**,** `testing and debugging platform`**,** `and debugging platform to`**,** `debugging platform to surface`**,** `platform to surface hidden`**,** `to surface hidden model`**,** `surface hidden model behaviors`**,** `hidden model behaviors and`**,** `model behaviors and take`**,** `behaviors and take the`**,** `and take the mystery`**,** `take the mystery out`**,**` the mystery out of`**,** `mystery out of model`**,** `out of model development`]  |
 
-??? example "Step 2: Calculate n-Gram Overlap"
-    Next, lets calculate the clipped precision scores for each of the n-Grams. Recall that the precision formula is:
+??? example "Step 2: Calculate n-gram Overlap"
+    Next, let's calculate the clipped precision scores for each of the n-grams. Recall that the precision formula is:
 
     $$
     p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated text}^1}{\text{Total number of i-grams in machine-generated text}}
@@ -89,17 +90,17 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
     | n | Clipped Precision  |
     | --- | --- |
-    | 1 | 14 / 17 = 0.824 |
-    | 2 | 10 / 16 = 0.625 |
-    | 3 | 6 / 15 = 0.400 |
+    | 1 | 13 / 17 = 0.764 |
+    | 2 | 9 / 16 = 0.563 |
+    | 3 | 5 / 15 = 0.333 |
     | 4 | 3 / 14 = 0.214 |
 
     </center>
 
-    So, our n-Gram overlap is:
+    So, our n-gram overlap is:
 
     $$
-    0.824^{0.25}\cdot0.625^{0.25}\cdot0.400^{0.25}\cdot0.214^{0.25} = 0.458
+    0.764^{0.25}\cdot0.563^{0.25}\cdot0.333^{0.25}\cdot0.214^{0.25} = 0.418
     $$
 
 ??? example "Step 3: Calculate Brevity Penalty"
@@ -112,13 +113,13 @@ A known fact about BLEU scores is that they are not to be compared between diffe
     $$
 
 ??? example "Step 4: Calculate BLEU"
-    Combining our n-Gram overlap and Brevity Penalty, our final BLEU score is:
+    Combining our n-gram overlap and Brevity Penalty, our final BLEU score is:
 
     $$
-    \text{BLEU} = \text{Brevity Penalty} \times \text{n-Gram Overlap} = 0.458 \times 0.703 = 0.322
+    \text{BLEU} = \text{Brevity Penalty} \times \text{n-gram Overlap} = 0.418 \times 0.703 = 0.294
     $$
 
-    Note that in most cases, we may take the average of the BLEU score with respect to multiple reference texts - since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score with the reference text being "Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and demystify model development", our BLEU score would be 0.571 - a much higher score from a small semantic change.
+    Note that in most cases, we may take the average of the BLEU score with respect to multiple reference texts — since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score with the reference text being `"Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and demystify model development"`, our BLEU score would be 0.701 - a much higher score from a small semantic change.
 
 
 ## Advantages and Limitations
@@ -127,6 +128,4 @@ Though BLEU is a popular metric in NLP workflows, it comes with its limitations.
 1. BLEU fails to consider the semantics of texts. As seen in the example, simply changing "take the mystery out of" to "demistify" — while the text still retains the exact same meaning — yields a much better score, going from 0.3 to 0.6. In contrast with embeddings-based metrics like BertScore, n-gram-based metrics like BLEU only consider the words in the candidate text, rather than the meaning. However, this is addressed by providing multiple possible reference texts when calculating the BLEU score.
 2. BLEU does not consider the order of words. Across a large candidate/reference, BLEU is unable to consider to order and fluency of the sentences due to its short context window of 4-grams. Although BLEU can be extended to include larger n-gram clipped precisions, it would negatively affect shorter texts. Similarly, BLEU does not consider the importance of words in a sentence either. It weighs unimportant words like "the", "an", "too", as much as it would the nouns and verbs in the sentence. Once again, these pitfalls are addressed by embeddings-based metrics like BertScore.
 
-That being said, the metric still has its advantages. It is quick and easy to compute, as opposed to other metrics like BertScore which would take significantly longer to compute and is not easy to justify. Furthermore, it is relatively similar to human judgement (as seen in the [figure below](https://aclanthology.org/P02-1040.pdf)), and is commonly used within NLP which allows you to easily benchmark your models with others and identify pain points.
-
-[![BLEU Judgement Image](../assets/images/bleu-judgement.png)](https://aclanthology.org/P02-1040.pdf)
+That being said, the metric still has its advantages. It is quick and easy to compute, as opposed to other metrics like BertScore which would take significantly longer to compute and is not easy to justify. Furthermore, it is relatively similar to human judgement, and is commonly used within NLP which allows you to easily benchmark your models with others and identify pain points.
