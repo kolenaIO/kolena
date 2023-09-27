@@ -15,8 +15,9 @@
 BUCKET = "kolena-public-datasets"
 DATASET = "coco-stuff-10k"
 
-SIZE_MAPPING_IMAGES = {
-    "small": (0, 270000),
-    "medium": (270000, 300000),
-    "large": (300000, 10000000),
+PERSON_COUNT_MAPPING_IMAGES = {
+    "single person": (1, 2),
+    "two people": (2, 3),
+    "some people": (3, 6),
+    "many people": (6, 100),
 }
