@@ -11,25 +11,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from argparse import Namespace
-
 import pytest
-from face_recognition_11.seed_test_run import main as seed_test_run_main
-from face_recognition_11.seed_test_suite import main as seed_test_suite_main
+import numpy as np
+
+from face_recognition_11.evaluator import FaceRecognition11Evaluator
 
 
-def test__seed_test_suite__smoke() -> None:
-    args = Namespace(
-        dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/pairs.sample.csv",
-        metadata_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.csv",
-    )
-    seed_test_suite_main(args)
-
-
-@pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke() -> None:
-    args = Namespace(
-        models=["Paravision"],
-        test_suites=["fr 1:1 :: labeled-faces-in-the-wild"],
-    )
-    seed_test_run_main(args)
+@pytest.mark.parametrize(
+    "data, threshold, expected",
+    [
+        (np.array([1, 2, 3, 4, 5]), 0.5, np.array([0, 0, 0, 4, 5])),
+        (np.array([1, 2, 3, 4, 5]), 0.2, np.array([0, 0, 0, 0, 5])),
+        (np.array([10, 20, 30, 40, 50]), 0.8, np.array([0, 0, 0, 0, 50])),
+    ],
+)
+def test_compute_threshold(data, threshold, expected):
+    result = FaceRecognition11Evaluator.compute_threshold(data, threshold)
+    np.testing.assert_array_equal(result, expected)

@@ -40,8 +40,7 @@ class FaceRecognition11Evaluator(Evaluator):
     def compute_threshold(inferences: List[Inference], fmr: float) -> float:
         similarity_scores = np.array([inf.similarity for inf in inferences])
         similarity_scores = similarity_scores[~np.isnan(similarity_scores)]  # filter out nans
-        threshold = np.quantile(similarity_scores, fmr)  # Threshold = Q(1 - FMR)
-
+        threshold = np.quantile(similarity_scores, 1 - fmr)  # Threshold = Q(1 - FMR)
         return threshold
 
     @staticmethod
@@ -60,7 +59,7 @@ class FaceRecognition11Evaluator(Evaluator):
                 failure_to_enroll=True,
             )
 
-        if inference.similarity > threshold:  # match
+        if inference.similarity >= threshold:  # match
             if ground_truth.is_same:
                 is_match = True
             else:
@@ -124,9 +123,11 @@ class FaceRecognition11Evaluator(Evaluator):
         configuration: Optional[FMRConfiguration] = None,
     ) -> Optional[List[Plot]]:
         predictions = [inf for ts, gt, inf in inferences]
-        FMR_lower = np.log(2.2e-6)
-        FMR_upper = np.log(8.2e-1)
-        baseline_fmr_x = list(np.exp(np.linspace(FMR_lower, FMR_upper, 100)))
+        FMR_lower = -6
+        FMR_upper = -1
+        baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 12))
+
+        # print(baseline_fmr_x)
         thresholds = [self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x]
 
         n_genuine_pairs = np.sum([gt.is_same for ts, gt, inf in inferences])
@@ -146,18 +147,21 @@ class FaceRecognition11Evaluator(Evaluator):
             fnmr_y.append(n_fnm / n_genuine_pairs)
             fmr_y.append(n_fm / n_imposter_pairs)
 
-        curve_test_case_fmr = CurvePlot(
-            title="Test Case FMR vs. Baseline FMR",
-            x_label="Baseline False Match Rate",
-            y_label="Test Case False Match Rate",
-            curves=[Curve(x=baseline_fmr_x, y=fmr_y)],
-        )
-
         curve_test_case_fnmr = CurvePlot(
             title="Test Case FNMR vs. Baseline FMR",
             x_label="Baseline False Match Rate",
             y_label="Test Case False Non-Match Rate (%)",
+            x_config=AxisConfig(type="log"),
             curves=[Curve(x=baseline_fmr_x, y=fnmr_y)],
         )
 
-        return [curve_test_case_fmr, curve_test_case_fnmr]
+        curve_test_case_fmr = CurvePlot(
+            title="Test Case FMR vs. Baseline FMR",
+            x_label="Baseline False Match Rate",
+            y_label="Test Case False Match Rate",
+            x_config=AxisConfig(type="log"),
+            y_config=AxisConfig(type="log"),
+            curves=[Curve(x=baseline_fmr_x, y=fmr_y)],
+        )
+
+        return [curve_test_case_fnmr, curve_test_case_fmr]
