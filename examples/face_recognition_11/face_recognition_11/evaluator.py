@@ -38,9 +38,14 @@ from kolena.workflow import EvaluationResults
 class FaceRecognition11Evaluator(Evaluator):
     @staticmethod
     def compute_threshold(inferences: List[Inference], fmr: float) -> float:
+        """
+        The threhsold is calculated as Threshold = Quantile_v(1 - FMR) where the quantiles are of the observed
+        IMPOSTER scores, v.
+
+        For more details on how threshold is used see https://pages.nist.gov/frvt/reports/11/frvt_11_report.pdf
+        """
         similarity_scores = np.array([inf.similarity for inf in inferences])
-        similarity_scores = similarity_scores[~np.isnan(similarity_scores)]  # filter out nans
-        threshold = np.quantile(similarity_scores, 1 - fmr)  # Threshold = Q(1 - FMR)
+        threshold = np.quantile(similarity_scores, 1 - fmr)
         return threshold
 
     @staticmethod
@@ -51,7 +56,7 @@ class FaceRecognition11Evaluator(Evaluator):
     ) -> TestSampleMetrics:
         is_match, is_false_match, is_false_non_match = False, False, False
 
-        if inference.similarity is None or np.isnan(inference.similarity):
+        if inference.similarity is None:
             return TestSampleMetrics(
                 is_match=is_match,
                 is_false_match=is_false_match,
@@ -59,7 +64,7 @@ class FaceRecognition11Evaluator(Evaluator):
                 failure_to_enroll=True,
             )
 
-        if inference.similarity >= threshold:  # match
+        if inference.similarity < threshold:  # match
             if ground_truth.is_same:
                 is_match = True
             else:
@@ -81,7 +86,10 @@ class FaceRecognition11Evaluator(Evaluator):
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
         configuration: Optional[FMRConfiguration] = None,
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
-        threshold = self.compute_threshold([inf for ts, gt, inf in inferences], configuration.false_match_rate)
+        inferences_of_genuine_pairs = [
+            inf for ts, gt, inf in inferences if (not gt.is_same) and (inf.similarity is not None)
+        ]
+        threshold = self.compute_threshold(inferences_of_genuine_pairs, configuration.false_match_rate)
 
         return [
             (
@@ -122,12 +130,11 @@ class FaceRecognition11Evaluator(Evaluator):
         metrics: List[TestSampleMetrics],
         configuration: Optional[FMRConfiguration] = None,
     ) -> Optional[List[Plot]]:
-        predictions = [inf for ts, gt, inf in inferences]
+        predictions = [inf for ts, gt, inf in inferences if (not gt.is_same) and (inf.similarity is not None)]
         FMR_lower = -6
         FMR_upper = -1
-        baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 12))
+        baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 10))
 
-        # print(baseline_fmr_x)
         thresholds = [self.compute_threshold(predictions, fmr) for fmr in baseline_fmr_x]
 
         n_genuine_pairs = np.sum([gt.is_same for ts, gt, inf in inferences])

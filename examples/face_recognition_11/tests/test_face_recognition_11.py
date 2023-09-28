@@ -15,16 +15,40 @@ import pytest
 import numpy as np
 
 from face_recognition_11.evaluator import FaceRecognition11Evaluator
+from face_recognition_11.workflow import Inference
+
+MOCK_SCORES = np.array(
+    [
+        0.05385406,
+        0.16723002,
+        0.25111065,
+        0.28177444,
+        0.42642674,
+        0.59722537,
+        0.74354211,
+        0.78708682,
+        0.81465805,
+        0.87341382,
+    ]
+)
+MOCK_MATCH_1 = np.array(
+    [0.16723002, 0.25111065, 0.28177444, 0.42642674, 0.59722537, 0.74354211, 0.78708682, 0.81465805, 0.87341382]
+)
+MOCK_MATCH_2 = np.array([0.59722537, 0.74354211, 0.78708682, 0.81465805, 0.87341382])
+MOCK_MATCH_3 = np.array([0.87341382])
+
+
+@pytest.fixture
+def mock_inferences():
+    inferences = list([Inference(similarity=s) for s in MOCK_SCORES])
+    return inferences
 
 
 @pytest.mark.parametrize(
-    "data, threshold, expected",
-    [
-        (np.array([1, 2, 3, 4, 5]), 0.5, np.array([0, 0, 0, 4, 5])),
-        (np.array([1, 2, 3, 4, 5]), 0.2, np.array([0, 0, 0, 0, 5])),
-        (np.array([10, 20, 30, 40, 50]), 0.8, np.array([0, 0, 0, 0, 50])),
-    ],
+    "fmr, expected",
+    [(0.1, MOCK_MATCH_1), (0.5, MOCK_MATCH_2), (0.90, MOCK_MATCH_3)],
 )
-def test_compute_threshold(data, threshold, expected):
-    result = FaceRecognition11Evaluator.compute_threshold(data, threshold)
-    np.testing.assert_array_equal(result, expected)
+def test_compute_threshold(fmr, expected, mock_inferences):
+    threshold = FaceRecognition11Evaluator.compute_threshold(mock_inferences, fmr)
+    genuine_pairs = np.array([inf.similarity for inf in mock_inferences if inf.similarity > threshold])
+    np.testing.assert_array_equal(genuine_pairs, expected)
