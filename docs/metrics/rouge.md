@@ -9,7 +9,7 @@ search:
 
     Complimentary to BLEU, ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
 
-ROUGE-N (**R**ecall-**O**riented **U**nderstudy for **G**isting **E**valuation), a metric within the broader ROUGE metric collection, is a vital metric in the field of natural language processing and text evaluation. It assesses the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts. ROUGE-N provides insights into the ability of a system to capture essential content and linguistic nuances, making it an important and versatile tool used in many NLP workflows. As the name implies, it is a recall-based metric - a complement to the precision-based BLEU score.
+ROUGE-N (**R**ecall-**O**riented **U**nderstudy for **G**isting **E**valuation), a metric within the broader ROUGE metric collection, is a vital metric in the field of natural language processing and text evaluation. It assesses the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts. ROUGE-N provides insights into the ability of a system to capture essential content and linguistic nuances, making it an important and versatile tool used in many NLP workflows. As the name implies, it is a recall-based metric — a complement to the precision-based BLEU score.
 
 ## Implementation Details
 Formally, ROUGE-N is an n-gram recall between a candidate and a set of reference texts. That is, ROUGE-N calculates the number of overlapping n-grams between the generated and reference texts divided by the total number of n-grams in the reference texts.
@@ -36,7 +36,7 @@ $$
 The decision to use classic $\text{ROUGE-N}$ or $\text{ROUGE-N}_\text{multi}$ is up to the user.
 
 ### Interpretation
-When using ROUGE-N, it is important to consider the metric for multiple values of N (n-gram length). For smaller values of N, like ROUGE-1, it places more focus on capturing the presence of keywords or content terms in the candidate text. For larger values of N, like ROUGE-3, it places focus on syntatic structure and replicating linguistic patterns. In other words, ROUGE-1 and small values of N are suitable for tasks where the primary concern is to assess whether the candidate text contains essnetial vocabulary, while ROUGE-3 and larger values of N are used in tasks where sentence structure and fluency are important.
+When using ROUGE-N, it is important to consider the metric for multiple values of N (n-gram length). For smaller values of N, like ROUGE-1, it places more focus on capturing the presence of keywords or content terms in the candidate text. For larger values of N, like ROUGE-3, it places focus on syntactic structure and replicating linguistic patterns. In other words, ROUGE-1 and small values of N are suitable for tasks where the primary concern is to assess whether the candidate text contains essential vocabulary, while ROUGE-3 and larger values of N are used in tasks where sentence structure and fluency are important.
 
 Generally speaking, a higher ROUGE-N score is desirable. However, the score varies among different tasks and values of N, so it is a good idea to benchmark your model's ROUGE-N score against other models trained on the same data, or previous iterations of your model.
 
@@ -52,7 +52,7 @@ Assume we have the following candidate and reference texts:
 | **Candidate** | `The quick brown fox jumps over the lazy dog` |
 
 ??? example "Step 1: Tokenization & n-Grams"
-    Splitting our candidate and reference texts into n-grams, we get the following:
+    Splitting our candidate and reference texts into unigrams, we get the following:
 
     | | |
     | --- | --- |
@@ -76,7 +76,7 @@ Assume we have the same following candidate and reference texts:
 | **Candidate** | `The quick brown fox jumps over the lazy dog` |
 
 ??? example "Step 1: Tokenization & n-Grams"
-    Splitting our candidate and reference texts into n-grams, we get the following:
+    Splitting our candidate and reference texts into bigrams, we get the following:
 
     | | |
     | --- | --- |
@@ -87,8 +87,8 @@ Assume we have the same following candidate and reference texts:
 ??? example "Step 2: Calculate ROUGE"
     Recall that our ROUGE-N formula is: $\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}$
 
-    There is 1 overlapping bigram in the first reference and 2 in the second reference, and 8 total bigrams in the first reference and 7 in the second.
-    Thus our calculated ROUGE-2 score is $\frac{3}{15} = 0.2$
+    There is 1 overlapping bigram in the first reference and 3 in the second reference, and 8 total bigrams in the first reference and 7 in the second.
+    Thus our calculated ROUGE-2 score is $\frac{4}{15} = 0.267$
 
     Note that our ROUGE-2 score is significantly lower than our ROUGE-1 score on the given candidate and reference texts. It is always important to consider multiple n-grams when using ROUGE-N, as one value of N does not give a holistic view of candidate text quality.
 
@@ -100,4 +100,4 @@ ROUGE-N, like any other n-gram based metric, suffers from the following limitati
 
 2. ROUGE-N can not capture global coherence. Given a long paragraph, realistically, having too large of a value for N would not return a meaningful score for two sentences, but having a reasonable number like N = 3 wouldn't be able to capture the flow of the text. The score might yield good results, but the entire paragraph might not flow smoothly at all. This is a weakness of n-gram based metrics, as they are limited to short context windows.
 
-That being said, ROUGE-N has some advantages over embeddings-based metrics. First of all, it is very simple and easy to compute - it is able to calculate scores for large corpuses efficiently with no specialized hardware. ROUGE-N is also relatively easy to interpret. The N value can be adjusted to measure the granularity of measurements, and higher scores indicate greater overlap with the reference text. In fact, ROUGE is very widely used in NLP which allows engineers to benchmark their models against others on most open source NLP datasets. Lastly, it can be used in complement with other n-gram based metrics like BLEU to provide a more holistic view of test results - since BLEU provides a precision-related score, and ROUGE provides a recall-related score, it makes it easier to pinpoint potential failure cases.
+That being said, ROUGE-N has some advantages over embeddings-based metrics. First of all, it is very simple and easy to compute — it is able to calculate scores for large corpuses efficiently with no specialized hardware. ROUGE-N is also relatively easy to interpret. The N value can be adjusted to measure the granularity of measurements, and higher scores indicate greater overlap with the reference text. In fact, ROUGE is very widely used in NLP which allows engineers to benchmark their models against others on most open source NLP datasets. Lastly, it can be used in complement with other n-gram based metrics like BLEU to provide a more holistic view of test results — since BLEU provides a precision-related score, and ROUGE provides a recall-related score, it makes it easier to pinpoint potential failure cases.
