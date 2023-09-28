@@ -57,7 +57,7 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
 | Generated | Reference |
 | --- | --- |
-| `Kolena is an ML testing and debugging platform to find hidden model behaviors and demystify model development` | `Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and take the mystery out of model development` |
+| `Fall leaves rustled softly beneath our weary feet` | `Crisp autumn leaves rustled softly beneath our weary feet` |
 
 ??? example "Step 1: Tokenization & n-grams"
     Splitting our sentences up into 1-, ..., 4-grams, we get:
@@ -66,18 +66,19 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
     | n | n-grams |
     | ---   | ---                        |
-    | 1 | [`kolena`**,** `is`**,** `an`**,** `ml`**,** `testing`**,** `and`**,** `debugging`**,** `platform`**,** `to`**,** `find`**,** `hidden`**,** `model`**,** `behaviors`**,** `and`**,** `demystify`**,** `model`**,** `development`]|
-    | 2 | [`kolena is`**,** `is an`**,** `an ml`**,** `ml testing`**,** `testing and`**,** `and debugging`**,** `debugging platform`**,** `platform to`**,** `to find`**,** `find hidden`**,** `hidden model`**,** `model behaviors`**,** `behaviors and`**,** `and demystify`**,** `demystify model`**,** `model development`]|
-    | 3 | [`kolena is an`**,** `is an ml`**,** `an ml testing`**,** `ml testing and`**,** `testing and debugging`**,** `and debugging platform`**,** `debugging platform to`**,** `platform to find`**,** `to find hidden`**,** `find hidden model`**,** `hidden model behaviors`**,** `model behaviors and`**,** `behaviors and demystify`**,** `and demystify model`**,** `demystify model development`] |
-    | 4 | [`kolena is an ml`**,** `is an ml testing`**,** `an ml testing and`**,** `ml testing and debugging`**,** `testing and debugging platform`**,** `and debugging platform to`**,** `debugging platform to find`**,** `platform to find hidden`**,** `to find hidden model`**,** `find hidden model behaviors`**,** `hidden model behaviors and`**,** `model behaviors and demystify`**,** `behaviors and demystify model`**,** `and demystify model development`]  |
+    | 1 | [`Fall`, `leaves`, `rustled`, `softly`, `beneath`, `our`, `weary`, `feet`]|
+    | 2 | [`Fall leaves`, `leaves rustled`, `rustled softly`, `softly beneath`, `beneath our`, `our weary`, `weary feet`]|
+    | 3 | [`Fall leaves rustled`, `leaves rustled softly`, `rustled softly beneath`, `softly beneath our`, `beneath our weary`, `our weary feet`] |
+    | 4 | [`Fall leaves rustled softly`, `leaves rustled softly beneath`, `rustled softly beneath our`, `softly beneath our weary`, `beneath our weary feet`]  |
 
     **Reference Sentence**:
 
     | n | n-grams |
-    | ---   | ---                        |
-    | 1 | [`kolena`**,** `is`**,** `a`**,** `comprehensive`**,** `machine`**,** `learning`**,** `testing`**,** `and`**,** `debugging`**,** `platform`**,** `to`**,** `surface`**,** `hidden`**,** `model`**,** `behaviors`**,** `and`**,** `take`**,** `the`**,** `mystery`**,** `out`]|
-    |...|
-    | 4 | [`kolena is a comprehensive`**,** `is a comprehensive machine`**,** `a comprehensive machine learning`**,** `comprehensive machine learning testing`**,** `machine learning testing and`**,** `learning testing and debugging`**,** `testing and debugging platform`**,** `and debugging platform to`**,** `debugging platform to surface`**,** `platform to surface hidden`**,** `to surface hidden model`**,** `surface hidden model behaviors`**,** `hidden model behaviors and`**,** `model behaviors and take`**,** `behaviors and take the`**,** `and take the mystery`**,** `take the mystery out`**,**` the mystery out of`**,** `mystery out of model`**,** `out of model development`]  |
+    | --- | --- |
+    | 1 | [`Crisp`, `autumn`, `leaves`, `rustled`, `softly`, `beneath`, `our`, `weary`, `feet`]|
+    | 2 | [`Crisp autumn`, `autumn leaves`, `leaves rustled`, `rustled softly`, `softly beneath`, `beneath our`, `our weary`, `weary feet`]|
+    | 3 | [`Crisp autumn leaves`, `autumn leaves rustled`, `leaves rustled softly`, `rustled softly beneath`, `softly beneath our`, `beneath our weary`, `our weary feet`]|
+    | 4 | [`Crisp autumn leaves rustled`, `autumn leaves rustled softly`, `leaves rustled softly beneath`, `rustled softly beneath our`, `softly beneath our weary`, `beneath our weary feet`]|
 
 ??? example "Step 2: Calculate n-gram Overlap"
     Next, let's calculate the clipped precision scores for each of the n-grams. Recall that the precision formula is:
@@ -90,17 +91,17 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
     | n | Clipped Precision  |
     | --- | --- |
-    | 1 | 13 / 17 = 0.764 |
-    | 2 | 9 / 16 = 0.563 |
-    | 3 | 5 / 15 = 0.333 |
-    | 4 | 3 / 14 = 0.214 |
+    | 1 | 7 / 8 = 0.875 |
+    | 2 | 6 / 7 = 0.857 |
+    | 3 | 5 / 6 = 0.833 |
+    | 4 | 4 / 5 = 0.800 |
 
     </center>
 
     So, our n-gram overlap is:
 
     $$
-    0.764^{0.25}\cdot0.563^{0.25}\cdot0.333^{0.25}\cdot0.214^{0.25} = 0.418
+    0.875^{0.25}\cdot0.857^{0.25}\cdot0.833^{0.25}\cdot0.800^{0.25} = 0.841
     $$
 
 ??? example "Step 3: Calculate Brevity Penalty"
@@ -108,18 +109,18 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
     $$
     \min\left(1, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right)
-    = \min\left(1, \exp\left(1 - \frac{\text{23}}{\text{17}}\right)\right)
-    = 0.703
+    = \min\left(1, \exp\left(1 - \frac{\text{9}}{\text{8}}\right)\right)
+    = 0.882
     $$
 
 ??? example "Step 4: Calculate BLEU"
     Combining our n-gram overlap and Brevity Penalty, our final BLEU score is:
 
     $$
-    \text{BLEU} = \text{Brevity Penalty} \times \text{n-gram Overlap} = 0.418 \times 0.703 = 0.294
+    \text{BLEU} = \text{Brevity Penalty} \times \text{n-gram Overlap} = 0.882 \times 0.841 = 0.742
     $$
 
-    Note that in most cases, we may take the average of the BLEU score with respect to multiple reference texts — since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score with the reference text being `"Kolena is a comprehensive machine learning testing and debugging platform to surface hidden model behaviors and demystify model development"`, our BLEU score would be 0.701 - a much higher score from a small semantic change.
+    Note that in most cases, we may take the average or max of the BLEU score with respect to multiple reference texts — since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score with the reference text being `"Crisp autumn leaves rustled softly beneath our exhausted feet"`, our BLEU score would be 0.478 - a much lower score from a small semantic change.
 
 
 ## Advantages and Limitations
