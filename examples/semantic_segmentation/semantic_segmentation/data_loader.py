@@ -52,6 +52,7 @@ class DataLoader:
         def load(ts: TestSample, gt: GroundTruth, inf: Inference) -> Tuple[str, np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)
+            gt_mask[gt_mask != 1] = 0  # binarize gt_mask
             return ts.locator, gt_mask, inf_prob
 
         futures = [self.pool.submit(functools.partial(load, *item)) for item in batch]
