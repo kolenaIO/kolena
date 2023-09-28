@@ -17,20 +17,9 @@ import numpy as np
 from face_recognition_11.evaluator import FaceRecognition11Evaluator
 from face_recognition_11.workflow import Inference
 
-MOCK_SCORES = np.array(
-    [
-        0.05385406,
-        0.16723002,
-        0.25111065,
-        0.28177444,
-        0.42642674,
-        0.59722537,
-        0.74354211,
-        0.78708682,
-        0.81465805,
-        0.87341382,
-    ]
-)
+# TODO: create better test case
+
+MOCK_SCORES = np.array([0.1, 0.11, 0.23, 0.37, 0.44, 0.67, 0.67, 0.68, 0.70, 0.71])
 MOCK_MATCH_1 = np.array(
     [0.16723002, 0.25111065, 0.28177444, 0.42642674, 0.59722537, 0.74354211, 0.78708682, 0.81465805, 0.87341382]
 )
