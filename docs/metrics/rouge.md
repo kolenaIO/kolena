@@ -45,15 +45,20 @@ Generally speaking, a higher ROUGE-N score is desirable. However, the score vari
 ### ROUGE-1 (Unigrams)
 Assume we have the following candidate and reference texts:
 
-**Candidate Sentence**: The quick brown fox jumps over the lazy dog <br>
-**Reference Sentences**: A fast brown dog jumps over a sleeping fox | A quick brown dog jumps over the fox
+| | |
+| --- | --- |
+| **Reference #1** | `A fast brown dog jumps over a sleeping fox` |
+| **Reference #2** | `A quick brown dog jumps over the fox` |
+| **Candidate** | `The quick brown fox jumps over the lazy dog` |
 
 ??? example "Step 1: Tokenization & n-Grams"
     Splitting our candidate and reference texts into n-grams, we get the following:
 
-    **Candidate**: [`The`, `quick`, `brown`, `fox`, `jumps`, `over`, `the`, `lazy`, `dog`] <br>
-    **References**: [`A`, `fast`, `brown`, `dog`, `jumps`, `over`, `a`, `sleeping`, `fox`],
-    [`A`, `quick`, `brown`, `dog`, `jumps`, `over`, `the`, `fox`]
+    | | |
+    | --- | --- |
+    | **Reference #1** | [`A`, `fast`, `brown`, `dog`, `jumps`, `over`, `a`, `sleeping`, `fox`] |
+    | **Reference #2** | [`A`, `quick`, `brown`, `dog`, `jumps`, `over`, `the`, `fox`] |
+    | **Candidate** | [`The`, `quick`, `brown`, `fox`, `jumps`, `over`, `the`, `lazy`, `dog`] |
 
 ??? example "Step 2: Calculate ROUGE"
     Recall that our ROUGE-N formula is: $\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}$
@@ -64,15 +69,20 @@ Assume we have the following candidate and reference texts:
 ### ROUGE-2 (Bigrams)
 Assume we have the same following candidate and reference texts:
 
-**Candidate Sentence**: The quick brown fox jumps over the lazy dog <br>
-**Reference Sentences**: A fast brown dog jumps over a sleeping fox | A quick brown dog jumps over the fox
+| | |
+| --- | --- |
+| **Reference #1** | `A fast brown dog jumps over a sleeping fox` |
+| **Reference #2** | `A quick brown dog jumps over the fox` |
+| **Candidate** | `The quick brown fox jumps over the lazy dog` |
 
 ??? example "Step 1: Tokenization & n-Grams"
     Splitting our candidate and reference texts into n-grams, we get the following:
 
-    **Candidate**: [`The quick`, `quick brown`, `brown fox`, `fox jumps`, `jumps over`, `over the`, `the lazy`, `lazy dog`] <br>
-    **References**: [`A fast`, `fast brown`, `brown dog`, `dog jumps`, `jumps over`, `over a`, `a sleeping`, `sleeping fox`],
-    [`A quick`, `quick brown`, `brown dog`, `dog jumps`, `jumps over`, `over the`, `the fox`]
+    | | |
+    | --- | --- |
+    | <nobr>**Reference #1**</nobr> | [`A fast`, `fast brown`, `brown dog`, `dog jumps`, `jumps over`, `over a`, `a sleeping`, `sleeping fox`] |
+    | <nobr>**Reference #2**</nobr> | [`A quick`, `quick brown`, `brown dog`, `dog jumps`, `jumps over`, `over the`, `the fox`] |
+    | **Candidate** | [`The quick`, `quick brown`, `brown fox`, `fox jumps`, `jumps over`, `over the`, `the lazy`, `lazy dog`] |
 
 ??? example "Step 2: Calculate ROUGE"
     Recall that our ROUGE-N formula is: $\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}$
