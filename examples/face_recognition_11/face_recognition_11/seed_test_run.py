@@ -19,15 +19,16 @@ from typing import List
 
 import pandas as pd
 from face_recognition_11.evaluator import FaceRecognition11Evaluator
+from face_recognition_11.workflow import FMRConfiguration
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import Model
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
-from face_recognition_11.workflow import FMRConfiguration
 
 import kolena
 from kolena.workflow import test
-from kolena.workflow.annotation import BoundingBox, Keypoints
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import Keypoints
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
@@ -41,7 +42,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             (df_results["locator_a"] == test_sample.a.locator) & (df_results["locator_b"] == test_sample.b.locator)
         ].iloc[0]
 
-        if sample_results["failure"] == True:  # failure to enroll
+        if sample_results["failure"]:  # failure to enroll
             return Inference()
 
         return Inference(
@@ -56,7 +57,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
                     (sample_results["a_nose_x"], sample_results["a_nose_y"]),
                     (sample_results["a_mouth_right_x"], sample_results["a_mouth_right_y"]),
                     (sample_results["a_mouth_left_x"], sample_results["a_mouth_left_y"]),
-                ]
+                ],
             ),
             right_bbox=BoundingBox(
                 (sample_results["b_min_x"], sample_results["b_min_y"]),
@@ -69,7 +70,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
                     (sample_results["b_nose_x"], sample_results["b_nose_y"]),
                     (sample_results["b_mouth_right_x"], sample_results["b_mouth_right_y"]),
                     (sample_results["b_mouth_left_x"], sample_results["b_mouth_left_y"]),
-                ]
+                ],
             ),
             similarity=sample_results["similarity"],
         )
@@ -85,7 +86,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             FMRConfiguration(false_match_rate=1e-4),
             FMRConfiguration(false_match_rate=1e-5),
             FMRConfiguration(false_match_rate=1e-6),
-        ]
+        ],
     )
 
     for test_suite_name in test_suite_names:

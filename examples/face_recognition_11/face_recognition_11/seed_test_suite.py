@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import itertools
 import os
 import sys
 from argparse import ArgumentParser
@@ -19,12 +18,11 @@ from argparse import Namespace
 from typing import List
 
 import pandas as pd
-
 from face_recognition_11.workflow import GroundTruth
+from face_recognition_11.workflow import ImageWithMetadata
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
-from face_recognition_11.workflow import ImageWithMetadata
 
 import kolena
 
@@ -51,8 +49,7 @@ def main(args: Namespace) -> int:
         )
         for idx, row in df[["locator_a", "locator_b"]].iterrows()
     ]
-    ground_truths = [GroundTruth(is_same=(ts.a.metadata["person"] == ts.b.metadata["person"])) for ts in test_samples]
-
+    ground_truths = [GroundTruth(is_same=ts.a.metadata["person"] == ts.b.metadata["person"]) for ts in test_samples]
     test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
 
     complete_test_case = TestCase(
@@ -61,8 +58,6 @@ def main(args: Namespace) -> int:
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
-
-    # test_case = TestCase(name=f"fr 1:1 :: {DATASET} test case", test_samples=test_samples_and_ground_truths, reset=True)
 
     section_size = 2500
     splits = [

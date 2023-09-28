@@ -11,28 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
 
 import numpy as np
+from face_recognition_11.workflow import FMRConfiguration
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
-from face_recognition_11.workflow import FMRConfiguration
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestCaseMetrics
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSampleMetrics
-from face_recognition_11.workflow import TestSuite
 
 from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
-from kolena.workflow import TestCases
-from kolena.workflow import EvaluationResults
 
 
 class FaceRecognition11Evaluator(Evaluator):
@@ -151,7 +147,7 @@ class FaceRecognition11Evaluator(Evaluator):
             ]
             n_fm = np.sum([metric.is_false_match and not metric.failure_to_enroll for metric in tsm_for_one_threshold])
             n_fnm = np.sum(
-                [metric.is_false_non_match and not metric.failure_to_enroll for metric in tsm_for_one_threshold]
+                [metric.is_false_non_match and not metric.failure_to_enroll for metric in tsm_for_one_threshold],
             )
             fnmr_y.append(n_fnm / n_genuine_pairs)
             fmr_y.append(n_fm / n_imposter_pairs)

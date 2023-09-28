@@ -1,5 +1,4 @@
 # build out the workflow for the FR problem which is already supported in kolena.fr as a pre-built workflow.
-
 # Copyright 2021-2023 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
-from typing import List, Tuple
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
@@ -22,13 +20,14 @@ from pydantic.dataclasses import dataclass
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
-from kolena.workflow import ImagePair, Image
+from kolena.workflow import Image
+from kolena.workflow import ImagePair
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
-from kolena.workflow import MetricsTestSuite
-from kolena.workflow.annotation import BoundingBox, Keypoints
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import Keypoints
 
 
 @dataclass(frozen=True)
@@ -101,7 +100,10 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
     """
 
     is_match: bool
-    """An indication of whether the model correct classified an imposter pair as an imposter pair or a genuine pair as a genuine pair."""
+    """
+    An indication of whether the model correct classified an imposter pair as an imposter pair or
+    a genuine pair as a genuine pair.
+    """
 
     is_false_match: bool
     """An indication of whether the model incorrectly classified an imposter pair as a genuine pair."""
