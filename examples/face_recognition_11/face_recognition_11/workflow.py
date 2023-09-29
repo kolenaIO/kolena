@@ -112,6 +112,7 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
     """An indication of whether the model incorrectly classified an genuine pair as a imposter pair."""
 
     failure_to_enroll: bool
+    """An indication of whether the model failed to detect a face."""
 
 
 @dataclass(frozen=True)
@@ -155,7 +156,7 @@ class FMRConfiguration(EvaluatorConfiguration):
 
     false_match_rate: Optional[float] = None
     """
-    FMR threshold to apply for predictions.
+    FMR to apply for predictions.
     """
 
     def display_name(self) -> str:
