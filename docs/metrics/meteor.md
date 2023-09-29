@@ -9,7 +9,7 @@ METEOR (**M**etric for **E**valuation of **T**ranslation with **E**xplicit **OR*
 
 ## Implementation Details
 
-We define METEOR as the product of two components - the Unigram Precision/Recall Harmonic Mean, and Word Order Penalty. That is,
+We define METEOR as the product of two components - the Unigram Precision / Recall Harmonic Mean, and Word Order Penalty. That is,
 
 $$
 \text{METEOR} = \underbrace{\text{FMean}}_{\text{Harmonic Mean of Unigram Precision/Recall}} * \underbrace{(1 - \text{Penalty})}_{\text{Word Order Penalty}}
@@ -25,7 +25,7 @@ To understand the formula, let's break down each component into their respective
     FMean = \frac{10PR}{R + 9P}
     $$
 
-    where P represents the unigram precision, and R represents the unigram recall. Here's a recap of [precision](precision.md) and [recall](recall.md). Notice that most of the weight is placed on the Recall component by design - this allows METEOR to prioritize the coverage of essential keywords in the candidate text.
+    where P represents the unigram precision, and R represents the unigram recall. Here's a recap of [precision](precision.md) and [recall](recall.md). Notice that most of the weight is placed on the recall component by design – this allows METEOR to prioritize the coverage of essential keywords in the candidate text.
 
 ??? info "Penalty: Word Order Penalty"
     Since the FMean is based on unigram precision and recall, to take into account longer sequences, METEOR has a penalty factor to alleviate this weakness and enforce an order on the candidate sentence.
@@ -36,7 +36,7 @@ To understand the formula, let's break down each component into their respective
     Penalty = 0.5 \times \frac{\text{# of Chunks}}{\text{# of Unigrams Matched}}
     $$
 
-    For example, if our candidate sentence was "the president spoke to the audience" and our reference sentence was "the president *then* spoke to the audience", there would be two chunks - "the president" and "spoke to the audience" - and 6 unigrams matched. Notice that as the chunks decrease, so does the penalty, which results in a higher METEOR score. This is quite intuitive as a lower number of chunks translates to an enforced order and better alignment with the reference text.
+    For example, if our candidate sentence was "the president spoke to the audience" and our reference sentence was "the president *then* spoke to the audience", there would be two chunks – "the president" and "spoke to the audience" – and 6 unigrams matched. Notice that as the chunks decrease, so does the penalty, which results in a higher METEOR score. This is quite intuitive as a lower number of chunks translates to an enforced order and better alignment with the reference text.
 
 ## Examples
 
@@ -48,7 +48,7 @@ To understand the formula, let's break down each component into their respective
     As a result, our FMean is $\frac{10 \times 1.0 \times 1.0}{1.0 + 9 \times 1.0} = 1$
 
 ??? example "Step 2: Calculate Word Order Penalty"
-    We can break up our candidate sentence into two chunks to map it to our refernece sentence.
+    We can break up our candidate sentence into two chunks to map it to our reference sentence.
 
     Candidate: $\underbrace{\text{joe likes to eat apples}}_{\text{Chunk 2}} \space \underbrace{\text{for lunch}}_{\text{Chunk 1}}$ <br>
     Reference: $\underbrace{\text{for lunch}}_{\text{Chunk 1}} \space \underbrace{\text{joe likes to eat apples}}_{\text{Chunk 2}}$
@@ -98,4 +98,4 @@ Although METEOR was created to address some of the major limitations of BLEU, it
 
 2. METEOR can fail on context. If we have two sentences "I am a big fan of Taylor Swift" (Reference) and "Fan of Taylor Swift I am big" (Candidate), METEOR would yield a good score. However, the candidate sentence makes little sense and intuitively shouldn't be given a good score. This is a limitation with all n-gram metrics, and not specific to METEOR.
 
-Limitations aside, METEOR is still a great metric to include in NLP workflows for measuring text similarity. Like other n-gram metrics, it is easy to compute and doesn't require extra hardware for inference. Furthermore, it is a noticible improvement over BLEU, and even ROUGE, in many ways - it places weight on *both* precision and recall, factors in word order, and generally does a better job at filtering out bad candidate texts, as seen in example 2. It is also a better judge of global coherence than BLEU and ROUGE, since it greedily looks for the largest chunks to calculate its penalty factor, rather than using a sliding context window of n-grams. METEOR is a powerful metric, and should be included in every NLP toolbox to give a holistic view of model performance.
+Limitations aside, METEOR is still a great metric to include in NLP workflows for measuring text similarity. Like other n-gram metrics, it is easy to compute and doesn't require extra hardware for inference. Furthermore, it is a noticeable improvement over BLEU, and even ROUGE, in many ways – it places weight on *both* precision and recall, factors in word order, and generally does a better job at filtering out bad candidate texts, as seen in example 2. It is also a better judge of global coherence than BLEU and ROUGE, since it greedily looks for the largest chunks to calculate its penalty factor, rather than using a sliding context window of n-grams. METEOR is a powerful metric, and should be included in every NLP toolbox to give a holistic view of model performance.
