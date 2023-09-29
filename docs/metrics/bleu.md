@@ -3,13 +3,13 @@ search:
   exclude: true
 ---
 
-# BLEU (**B**i**L**ingual **E**valuation **U**nderstudy)
+# BLEU
 
 !!! info inline end "BLEU vs. Precision"
 
     BLEU can be thought of as an analog to [precision](precision.md) for text comparisons.
 
-The BLEU score is a metric commonly used in a variety of NLP tasks ranging from Machine Translation to Text Summarization, to evaluate the quality of candidate texts. It quantifies the similarity between the candidate text and reference text as a score between 0 and 1 — 0 meaning there is no overlap with the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic nature for measuring textual similarity.
+The BLEU (**B**i**L**ingual **E**valuation **U**nderstudy) score is a metric commonly used in a variety of NLP tasks ranging from Machine Translation to Text Summarization, to evaluate the quality of candidate texts. It quantifies the similarity between the candidate text and reference text as a score between 0 and 1 — 0 meaning there is no overlap with the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic nature for measuring textual similarity.
 
 ## Implementation Details
 
