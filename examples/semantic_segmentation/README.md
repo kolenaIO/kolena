@@ -1,7 +1,10 @@
 # Example Integration: Semantic Segmentation
 
 This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset, specifically
-5,520 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena.
+1,789 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena. Only
+images with the [Attribution License](http://creativecommons.org/licenses/by/2.0/),
+[Attribution-ShareAlike License](http://creativecommons.org/licenses/by-sa/2.0/),
+[Attribution-NoDerivs License](http://creativecommons.org/licenses/by-nd/2.0/) are included.
 
 ## Setup
 
@@ -23,7 +26,7 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](semantic_segmentation/seed_test_suite.py) creates the following test suites:
 
-    - `"# of people :: coco-stuff-10k [person]"`, containing samples of COCO-Stuff 10K data, specifically 5,520 images
+    - `"# of people :: coco-stuff-10k [person]"`, containing samples of COCO-Stuff 10K data, specifically 1,789 images
     with person label, stratified by # of people in the image.
 
 2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model,

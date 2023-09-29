@@ -23,10 +23,8 @@ from semantic_segmentation.data_loader import DataLoader
 from semantic_segmentation.data_loader import ResultMasks
 from semantic_segmentation.utils import compute_precision_recall_f1
 from semantic_segmentation.utils import compute_sklearn_arrays
-from semantic_segmentation.utils import upload_image
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
-from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import SegmentationConfiguration
 from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestCaseMetric
@@ -38,29 +36,11 @@ from kolena._utils.log import progress_bar
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
-from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-
-
-def _upload_sample_result_masks(
-    test_sample: TestSample,
-    gt_mask: np.ndarray,
-    inf_mask: np.ndarray,
-    locator_prefix: str,
-) -> ResultMasks:
-    def upload_result_mask(category: str, mask: np.ndarray) -> SegmentationMask:
-        locator = f"{locator_prefix}/{category}/{test_sample.metadata['basename']}.png"
-        upload_image(locator, mask)
-        return SegmentationMask(locator=locator, labels=Label.as_label_map())
-
-    tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
-    fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))
-    fn = upload_result_mask("FN", np.where(gt_mask == inf_mask, 0, gt_mask))
-    return tp, fp, fn
 
 
 def load_data(
