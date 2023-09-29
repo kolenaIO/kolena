@@ -12,6 +12,14 @@ search:
 The BLEU score is a metric commonly used in a variety of NLP tasks ranging from Machine Translation to Text Summarization, to evaluate the quality of candidate texts. It quantifies the similarity between the candidate text and reference text as a score between 0 and 1 — 0 meaning there is no overlap with the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic nature for measuring textual similarity.
 
 ## Implementation Details
+
+### Background
+The BLEU score consists of two components — the Brevity Penalty and the n-gram Overlap.
+
+1. The **n-gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.
+2. The **Brevity Penalty** is applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-gram Overlap precision tends to give disproportionately high values to candidate texts that are very short in length, but mostly contain n-grams in the reference text.
+
+
 ### Definition
 The BLEU score is mathematically defined as:
 
@@ -24,12 +32,6 @@ where the i-gram precision is calculated as:
 $$
 p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1}{\text{Total number of i-grams in candidate text}}
 $$
-
-Below, we explain the significance of the two components in the BLEU formula.
-??? info "n-gram Overlap"
-    The **n-gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.
-??? info "Brevity Penalty"
-    The **Brevity Penalty** is also applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-gram Overlap precision tends to give disproportionately high values to candidate texts that are very short in length, but contain most of the n-grams in the reference text.
 
 <div class="footnote-content">
     <p style="font-size: smaller;">
