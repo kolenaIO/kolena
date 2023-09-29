@@ -131,7 +131,7 @@ class FaceRecognition11Evaluator(Evaluator):
         ]
         FMR_lower = -6
         FMR_upper = -1
-        baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 10))
+        baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 50))
 
         thresholds = [self.compute_threshold(inferences_of_imposter_pairs, fmr) for fmr in baseline_fmr_x]
 

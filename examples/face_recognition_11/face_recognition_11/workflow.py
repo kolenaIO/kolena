@@ -76,7 +76,7 @@ class Inference(BaseInference):
     right_keypoints: Optional[Keypoints] = None
     """The keypoints associated with the right image to be used for face recognition."""
 
-    similarity: Optional[float] = None
+    similarity: float = None
     """
     The similarity score computed between the two embeddings in this image pair. Should be left empty when either
     image in the pair is a failure to enroll.
