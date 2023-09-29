@@ -40,8 +40,9 @@ To understand the formula, let's break down each component into their respective
 
 ## Examples
 
-**Candidate**: Joe likes to eat apples for lunch. <br>
-**Reference**: For lunch, joe likes to eat apples. <br>
+| Candidate | Reference |
+| --- | --- |
+| `Under the starry night, we danced with joy.` | `We danced with joy under the starry night.` |
 
 ??? example "Step 1: Calculate FMean"
     Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both 1.0
@@ -50,37 +51,38 @@ To understand the formula, let's break down each component into their respective
 ??? example "Step 2: Calculate Word Order Penalty"
     We can break up our candidate sentence into two chunks to map it to our reference sentence.
 
-    Candidate: $\underbrace{\text{joe likes to eat apples}}_{\text{Chunk 2}} \space \underbrace{\text{for lunch}}_{\text{Chunk 1}}$ <br>
-    Reference: $\underbrace{\text{for lunch}}_{\text{Chunk 1}} \space \underbrace{\text{joe likes to eat apples}}_{\text{Chunk 2}}$
+    Candidate: $\underbrace{\text{Under the starry night}}_{\text{Chunk 2}} \space \underbrace{\text{we danced with joy}}_{\text{Chunk 1}}$ <br>
+    Reference: $\underbrace{\text{We danced with joy}}_{\text{Chunk 1}} \space \underbrace{\text{under the starry night}}_{\text{Chunk 2}}$
 
-    Between the two chunks, we have matched 7 unigrams. This gives us a penalty score of $0.5 \times \frac{2}{7} = 0.143$.
+    Between the two chunks, we have matched 8 unigrams. This gives us a penalty score of $0.5 \times \frac{2}{8} = 0.125$.
 
 ??? example "Step 3: Calculate METEOR"
     With our Penalty and FMean calculated, we can proceed with calculating the METEOR score.
 
     $$
-    \text{METEOR} = 1 * (1 - 0.143) = 0.857.
+    \text{METEOR} = 1 * (1 - 0.125) = 0.875.
     $$
 
     Not bad! We have a pretty high score for two sentences that are semantically the same but have different orders.
 
 Lets try the same reference example with a slightly different candidate.
 
-**Candidate**: Lunch for likes eat joe to apples. <br>
-**Reference**: For lunch, joe likes to eat apples. <br>
+| Candidate | Reference |
+| --- | --- |
+| `Danced we with under joy the night starry.` | `We danced with joy under the starry night.` |
 
 ??? example "Step 1: Calculate FMean"
     Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both 1.0
     As a result, our FMean is $\frac{10 \times 1.0 \times 1.0}{1.0 + 9 \times 1.0} = 1$
 
 ??? example "Step 2: Calculate Word Order Penalty"
-    Our penalty is different from the first example, due to the jumbled up order. We split our candidate sentence into 7 chunks, since no adjacent words can be mapped to the reference sentence.
+    Our penalty is different from the first example, due to the jumbled up order. We split our candidate sentence into 8 chunks, since no adjacent words can be mapped to the reference sentence.
 
-    Candidate: $\underbrace{\text{lunch}}_\text{Chunk 1}\space\underbrace{\text{for}}_\text{Chunk 2}\space\underbrace{\text{likes}}_\text{Chunk 3}\space\underbrace{\text{eat}}_\text{Chunk 4}\space\underbrace{\text{joe}}_\text{Chunk 5}\space\underbrace{\text{to}}_\text{Chunk 6}\space\underbrace{\text{apples}}_\text{Chunk 7}\space$
+    Candidate: $\underbrace{\text{Danced}}_\text{Chunk 2}\space\underbrace{\text{we}}_\text{Chunk 1}\space\underbrace{\text{with}}_\text{Chunk 3}\space\underbrace{\text{under}}_\text{Chunk 5}\space\underbrace{\text{joy}}_\text{Chunk 4}\space\underbrace{\text{the}}_\text{Chunk 6}\space\underbrace{\text{night}}_\text{Chunk 8}\space\underbrace{\text{starry}}_\text{Chunk 7}\space$
 
-    Reference: $\underbrace{\text{for}}_\text{Chunk 2}\space\underbrace{\text{lunch}}_\text{Chunk 1}\space\underbrace{\text{joe}}_\text{Chunk 5}\space\underbrace{\text{likes}}_\text{Chunk 3}\space\underbrace{\text{to}}_\text{Chunk 6}\space\underbrace{\text{eat}}_\text{Chunk 4}\space\underbrace{\text{apples}}_\text{Chunk 7}\space$
+    Reference: $\underbrace{\text{We}}_\text{Chunk 1}\space\underbrace{\text{danced}}_\text{Chunk 2}\space\underbrace{\text{with}}_\text{Chunk 3}\space\underbrace{\text{joy}}_\text{Chunk 4}\space\underbrace{\text{under}}_\text{Chunk 5}\space\underbrace{\text{the}}_\text{Chunk 6}\space\underbrace{\text{starry}}_\text{Chunk 7}\space\underbrace{\text{night}}_\text{Chunk 8}\space$
 
-    Between the two chunks, we have matched 7 unigrams. This gives us a penalty score of $0.5 \times \frac{7}{7} = 0.5$.
+    Between the eight chunks, we have matched 8 unigrams. This gives us a penalty score of $0.5 \times \frac{8}{8} = 0.5$.
 
 ??? example "Step 3: Calculate METEOR"
     With our Penalty and FMean calculated, we can proceed with calculating the METEOR score.
