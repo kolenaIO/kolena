@@ -108,6 +108,42 @@ def test__validate_field__list_of_list__invalid() -> None:
         validate_data_object_type(Tester)
 
 
+def test__validate_field__dict() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Tester(DataObject):
+        a: Dict[str, int]
+        b: Dict[int, str]
+        c: Dict[str, BoundingBox]
+
+    validate_data_object_type(Tester)
+
+def test__validate_field__dict_wrong_value_type_invalid() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Tester(DataObject):
+        a: Dict[str, Any]
+
+    with pytest.raises(ValueError):
+        validate_data_object_type(Tester)
+
+
+def test__validate_field__dict_wrong_key_type_invalid() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Tester(DataObject):
+        b: Dict[Any, str]
+
+    with pytest.raises(ValueError):
+        validate_data_object_type(Tester)
+
+
+def test__validate_field__dict_nested_value_invalid() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Tester(DataObject):
+        c: Dict[str, List[str]]
+
+    with pytest.raises(ValueError):
+        validate_data_object_type(Tester)
+
+
 def test__validate_field__optional() -> None:
     @dataclasses.dataclass(frozen=True)
     class Tester(DataObject):

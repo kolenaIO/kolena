@@ -242,3 +242,40 @@ def test__validate__metrics_test_case__invalid_nested__doubly_nested() -> None:
         @dataclasses.dataclass(frozen=True)
         class Nested2DTester(MetricsTestCase):
             a: List[NestedNested]  # only one layer of nesting allowed
+
+def test__validate__metrics_test_case__valid_dict() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class DictTester(MetricsTestCase):
+        a: Dict[float, MetricsTestCase]
+
+
+def test__validate__metrics_test_case__invalid_dict_key() -> None:
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class InvalidDictKeyTester(MetricsTestCase):
+            a: Dict[str, MetricsTestCase]  # str key is unsupported
+
+
+def test__validate__metrics_test_case__invalid_dict_value() -> None:
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class InvalidDictValueTester(MetricsTestCase):
+            a: Dict[float, DataObject]  # DataObject value is unsupported
+
+
+def test__validate__metrics_test_case__invalid_optional_dict_value() -> None:
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class OptionalDictValueTester(MetricsTestCase):
+            a: Dict[float, Optional[MetricsTestCase]]  # Optional value is unsupported
+
+
+def test__validate__metrics_test_case__invalid_nested_value() -> None:
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class OptionalDictValueTester(MetricsTestCase):
+            a: Dict[float, Nested]  # Nested not supported
