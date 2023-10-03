@@ -243,6 +243,7 @@ def test__validate__metrics_test_case__invalid_nested__doubly_nested() -> None:
         class Nested2DTester(MetricsTestCase):
             a: List[NestedNested]  # only one layer of nesting allowed
 
+
 def test__validate__metrics_test_case__valid_dict() -> None:
     @dataclasses.dataclass(frozen=True)
     class DictTester(MetricsTestCase):
