@@ -112,10 +112,15 @@ def test__validate_field__dict() -> None:
     @dataclasses.dataclass(frozen=True)
     class Tester(DataObject):
         a: Dict[str, int]
-        b: Dict[int, str]
-        c: Dict[str, BoundingBox]
+        b: Dict[float, str]
+        c: Dict[float, BoundingBox]
 
-    validate_data_object_type(Tester)
+    validate_data_object_type(
+        Tester,
+        supported_dict_key_types=[float, str],
+        supported_dict_value_types=[int, str, BoundingBox],
+    )
+
 
 def test__validate_field__dict_wrong_value_type_invalid() -> None:
     @dataclasses.dataclass(frozen=True)
