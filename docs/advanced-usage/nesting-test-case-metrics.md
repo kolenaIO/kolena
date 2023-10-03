@@ -16,11 +16,11 @@ metrics within a given test case.
 
 Here are a few examples of scenarios where this pattern might be warranted:
 
-| Use Case | Description |
-| --- | --- |
-| Multiclass workflows | For ML tasks with multiple classes, a given test case may contain samples from more than one class. While it's useful to report metrics aggregated across all classes using an [averaging method](../metrics/averaging-methods.md), it's also useful to see aggregate metrics computed for each of the classes. |
-| Ensembles of models | When testing an ensemble containing multiple models, it can be useful to see metrics from the output of the complete ensemble as well as metrics computed for each of the constituent models. |
-| Model pipelines | When testing a pipeline of models, in which one model's output is used as an input for the next model, it can be difficult to understand _where_ along the pipeline performance broke down. Reporting overall metrics as well as per-model metrics for each model in the pipeline (the metrics used can differ from one model to the next!) can help pinpoint the cause of failures within a pipeline. |
+| Use Case             | Description                                                                                                                                                                                                                                                                                                                                                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Multiclass workflows | For ML tasks with multiple classes, a given test case may contain samples from more than one class. While it's useful to report metrics aggregated across all classes using an [averaging method](../metrics/averaging-methods.md), it's also useful to see aggregate metrics computed for each of the classes.                                                                                        |
+| Ensembles of models  | When testing an ensemble containing multiple models, it can be useful to see metrics from the output of the complete ensemble as well as metrics computed for each of the constituent models.                                                                                                                                                                                                          |
+| Model pipelines      | When testing a pipeline of models, in which one model's output is used as an input for the next model, it can be difficult to understand _where_ along the pipeline performance broke down. Reporting overall metrics as well as per-model metrics for each model in the pipeline (the metrics used can differ from one model to the next!) can help pinpoint the cause of failures within a pipeline. |
 
 In these cases, Kolena provides the API to nest additional aggregate metrics records within a
 [`MetricsTestCase`][kolena.workflow.MetricsTestCase] object returned from an evaluator. In this tutorial, we'll learn
@@ -36,10 +36,10 @@ When a test case contains images with each of these three classes, test-case-lev
 For this workflow, we may consider using [macro-averaged](../metrics/averaging-methods.md#macro-average) precision,
 recall, and F1 score, and mean average precision score (mAP) across all images as our metrics:
 
-| Test Case | # Images | <nobr>`macro_Precision`</nobr> | <nobr>`macro_Recall`</nobr> | <nobr>`macro_F1`</nobr> | <nobr>`mAP`</nobr> |
-| --- | --- | --- | --- | --- | --- |
-| Scenario A | 2,500 | 0.91 | 0.99 | 0.95 | 0.97 |
-| Scenario B | 1,500 | 0.83 | 0.96 | 0.89 | 0.91 |
+| Test Case  | # Images | <nobr>`macro_Precision`</nobr> | <nobr>`macro_Recall`</nobr> | <nobr>`macro_F1`</nobr> | <nobr>`mAP`</nobr> |
+| ---------- | -------- | ------------------------------ | --------------------------- | ----------------------- | ------------------ |
+| Scenario A | 2,500    | 0.91                           | 0.99                        | 0.95                    | 0.97               |
+| Scenario B | 1,500    | 0.83                           | 0.96                        | 0.89                    | 0.91               |
 
 At the API level, these metrics would be defined:
 
@@ -61,11 +61,11 @@ These metrics tell us how well the model performs in "Scenario A" and "Scenario 
 anything about per-class model performance. Within each test case, we'd also like to see precision, recall, F1, and AP
 scores:
 
-| `Class` | `N` | `Precision` | `Recall` | `F1` | `AP` |
-| --- | --- | --- | --- | --- | --- |
-| `Airplane` | 1,000 | 0.5 | 0.5 | 0.5 | 0.5 |
-| `Boat` | 500 | 0.5 | 0.5 | 0.5 | 0.5 |
-| `Car` | 2,000 | 0.5 | 0.5 | 0.5 | 0.5 |
+| `Class`    | `N`   | `Precision` | `Recall` | `F1` | `AP` |
+| ---------- | ----- | ----------- | -------- | ---- | ---- |
+| `Airplane` | 1,000 | 0.5         | 0.5      | 0.5  | 0.5  |
+| `Boat`     | 500   | 0.5         | 0.5      | 0.5  | 0.5  |
+| `Car`      | 2,000 | 0.5         | 0.5      | 0.5  | 0.5  |
 
 We can report these class-level metrics alongside the macro-averaged overall metrics by nesting
 [`MetricsTestCase`][kolena.workflow.MetricsTestCase] definitions:
@@ -93,6 +93,7 @@ class AggregateMetrics(MetricsTestCase):
     macro_F1: float
     mAP: float
     PerClass: List[PerClassMetrics]
+    ThresholdMetrics: Dict[float, PerClassMetrics]
 ```
 
 Now we have the definitions to tell us everything we need to know about model performance within a test case:
