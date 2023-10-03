@@ -269,7 +269,6 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-
     supported_dict_key_types = [float]
     supported_dict_value_types = [MetricsTestCase]
 

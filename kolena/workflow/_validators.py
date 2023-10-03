@@ -79,7 +79,6 @@ def validate_scalar_data_object_type(
         data_object_type,
         supported_field_types=_SCALAR_TYPES,
         supported_list_types=supported_list_types or [],  # default to supporting no list types
-
         # default to supporting no dict types
         supported_dict_key_types=supported_dict_key_types or [],
         supported_dict_value_types=supported_dict_value_types or [],
@@ -133,21 +132,21 @@ def validate_list(field_name: str, field_type: Type, supported_field_types: List
 
 
 def validate_dict(
-        field_name: str,
-        field_type: Type,
-        supported_dict_key_types: List[Type],
-        supported_dict_value_types: List[Type],
+    field_name: str,
+    field_type: Type,
+    supported_dict_key_types: List[Type],
+    supported_dict_value_types: List[Type],
 ) -> None:
     key_type, value_type = get_args(field_type)
 
     if key_type not in supported_dict_key_types:
         raise ValueError(
-            f"Unsupported field type: field '{field_name}', unsupported Dict key type '{key_type}'"
+            f"Unsupported field type: field '{field_name}', unsupported Dict key type '{key_type}'",
         )
 
     if value_type not in supported_dict_value_types:
         raise ValueError(
-            f"Unsupported field type: field '{field_name}', unsupported Dict value type '{value_type}'"
+            f"Unsupported field type: field '{field_name}', unsupported Dict value type '{value_type}'",
         )
 
 
