@@ -4,7 +4,7 @@ search:
 ---
 
 # BERTScore
-BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference texts. Unlike [BLEU](bleu.md), ROUGE, and traditional n-gram similarity measures, it leverages pretrained BERT embeddings to capture the semantic and contextual information of words and phrases in both the candidate and reference texts. This approach makes BERTScore more effective at assessing the quality of candidate text because it considers not only exact word matches but also the overall meaning, fluency, and order of the output.
+BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference texts. Unlike [BLEU](bleu.md), [ROUGE](rouge.md), and traditional n-gram similarity measures, it leverages pretrained BERT embeddings to capture the semantic and contextual information of words and phrases in both the candidate and reference texts. This approach makes BERTScore more effective at assessing the quality of candidate text because it considers not only exact word matches but also the overall meaning, fluency, and order of the output.
 
 ??? question "Recall: BERT & Textual Embeddings"
     BERT (**B**idirectional **E**ncoder **R**epresentations from **T**ransformers) is a popular language model used to generate embeddings from words and phrases. Textual embeddings are learned dense token representations that capture the semantic and contextual information of words and phrases in a continuous vector space. In a perfect embedding space, similar words are grouped together while words that are semantically different are distanced. For a deeper dive into BERT and textual embeddings, feel free to refer to the [original paper](https://arxiv.org/pdf/1810.04805.pdf).
