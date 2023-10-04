@@ -53,7 +53,7 @@ A known fact about BLEU scores is that they are not to be compared between diffe
 
 2. **Track Trends Over Time**: Rising scores signal improvements in models, while drops could hint at issues or changes in your dataset.
 
-3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuances like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like BertScore may help in quantifying your model's performance from other perspectives.
+3. **Combine It With Other Metrics**: BLEU primarily measures n-gram overlap, overlooking some nuances like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like [BertScore](bertscore.md) may help in quantifying your model's performance from other perspectives.
 
 ## Example
 

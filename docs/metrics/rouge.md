@@ -7,7 +7,7 @@ search:
 
 !!! info inline end "ROUGE vs. Recall"
 
-    Complimentary to BLEU, ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
+    Complimentary to [BLEU](bleu.md), ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
 
 ROUGE-N (**R**ecall-**O**riented **U**nderstudy for **G**isting **E**valuation), a metric within the broader ROUGE metric collection, is a vital metric in the field of natural language processing and text evaluation. It assesses the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts. ROUGE-N provides insights into the ability of a system to capture essential content and linguistic nuances, making it an important and versatile tool used in many NLP workflows. As the name implies, it is a recall-based metric — a complement to the precision-based BLEU score.
 
@@ -96,7 +96,7 @@ Assume we have the same following candidate and reference texts:
 ## Limitations and Advantages
 ROUGE-N, like any other n-gram based metric, suffers from the following limitations:
 
-1. Unlike BERTScore, ROUGE-N is not able to consider order, context, or semantics when calculating a score. Since it only relies on overlapping n-grams, it can not tell when a synonym is being used or if the placement of two matching n-grams have any meaning on the overall sentence. As a result, the metric may not be a perfect representation of the quality of the text, but rather the "likeness" of the n-grams in two sentences. Take for example, the ROUGE-2 score of "This is an example of text" and "Is an example of text this". Both ROUGE-1 and ROUGE-2 would give this a (nearly) perfect score, but the second sentence makes absolutely no sense!
+1. Unlike [BERTScore](bertscore.md), ROUGE-N is not able to consider order, context, or semantics when calculating a score. Since it only relies on overlapping n-grams, it can not tell when a synonym is being used or if the placement of two matching n-grams have any meaning on the overall sentence. As a result, the metric may not be a perfect representation of the quality of the text, but rather the "likeness" of the n-grams in two sentences. Take for example, the ROUGE-2 score of "This is an example of text" and "Is an example of text this". Both ROUGE-1 and ROUGE-2 would give this a (nearly) perfect score, but the second sentence makes absolutely no sense!
 
 2. ROUGE-N can not capture global coherence. Given a long paragraph, realistically, having too large of a value for N would not return a meaningful score for two sentences, but having a reasonable number like N = 3 wouldn't be able to capture the flow of the text. The score might yield good results, but the entire paragraph might not flow smoothly at all. This is a weakness of n-gram based metrics, as they are limited to short context windows.
 

@@ -91,12 +91,12 @@ Lets try the same reference example with a slightly different candidate.
     \text{METEOR} = 1 * (1 - 0.5) = 0.5.
     $$
 
-    Despite having all the keywords of the reference sentence, our candidate had the wrong order and meaning! This is a massive improvement over something like ROUGE-1 which would not have considered the orders of the sentences, and given a perfect score of 1.0.
+    Despite having all the keywords of the reference sentence, our candidate had the wrong order and meaning! This is a massive improvement over something like [ROUGE-1](rouge.md) which would not have considered the orders of the sentences, and given a perfect score of 1.0.
 
 ## Limitations and Advantages
-Although METEOR was created to address some of the major limitations of BLEU, it still comes with its own limitations.
+Although METEOR was created to address some of the major limitations of [BLEU](bleu.md), it still comes with its own limitations.
 
-1. METEOR does not consider synonyms. Unlike embeddings-based metrics like BERTScore, it does not have a mechanism to quantify the similarity of words within the candidate and reference sentences. Thus, having two sentences like "She looked extremely happy at the surprise party." and "She appeared exceptionally joyful during the unexpected celebration." would yield a subobtimal score despite being very similar in meaning. That being said, METEOR has shown to have a higher correlation with human judgement than both BLEU and ROUGE, making it *generally* better than the two.
+1. METEOR does not consider synonyms. Unlike embeddings-based metrics like [BERTScore](bertscore.md), it does not have a mechanism to quantify the similarity of words within the candidate and reference sentences. Thus, having two sentences like "She looked extremely happy at the surprise party." and "She appeared exceptionally joyful during the unexpected celebration." would yield a subobtimal score despite being very similar in meaning. That being said, METEOR has shown to have a higher correlation with human judgement than both BLEU and ROUGE, making it *generally* better than the two.
 
 2. METEOR can fail on context. If we have two sentences "I am a big fan of Taylor Swift" (Reference) and "Fan of Taylor Swift I am big" (Candidate), METEOR would yield a good score. However, the candidate sentence makes little sense and intuitively shouldn't be given a good score. This is a limitation with all n-gram metrics, and not specific to METEOR.
 
