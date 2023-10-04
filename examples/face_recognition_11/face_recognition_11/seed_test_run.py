@@ -16,6 +16,7 @@ import sys
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
+from collections import defaultdict
 
 import pandas as pd
 from face_recognition_11.evaluator import FaceRecognition11Evaluator
@@ -44,6 +45,8 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
         if sample_results["failure"]:  # failure to enroll
             return Inference()
+
+        sample_results = defaultdict(None, sample_results)
 
         return Inference(
             left_bbox=BoundingBox(
