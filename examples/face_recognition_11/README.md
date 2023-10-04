@@ -1,7 +1,6 @@
 # Example Integration: Face Recognition (1:1)
 
-This example integration uses the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset and
-the Deepface Face Recognition (FR) pipeline to demonstrate how to test and evaluate FR (1:1) systems on Kolena.
+This example integration uses the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset and Face Recognition (FR) workflow to demonstrate how to test and evaluate FR (1:1) systems on Kolena.
 
 ## Setup
 
@@ -30,10 +29,11 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 face_recognition_11/seed_test_suite.py --help
-usage: seed_test_suite.py [-h] test_suite
+usage: seed_test_suite.py [-h] dataset_csv metadata_csv
 
 positional arguments:
-  test_suite  Name of the test suite to make.
+  dataset_csv  CSV file containing image pairs to be tested.
+  metadata_csv CSV file containing the metadata of each image.
 
 optional arguments:
   -h, --help  show this help message and exit
@@ -41,10 +41,10 @@ optional arguments:
 
 ```shell
 $ poetry run python3 face_recognition_11/seed_test_run.py --help
-usage: seed_test_run.py [-h] model_name test_suite
+usage: seed_test_run.py [-h] models test_suite
 
 positional arguments:
-  model_name  Name of the model to test.
+  models  Name of the model(s) to test.
   test_suites  Name of the test suite(s) to run.
 
 optional arguments:
