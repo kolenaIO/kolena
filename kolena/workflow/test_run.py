@@ -508,4 +508,6 @@ def test(
     :param configurations: A list of configurations to use when running the evaluator.
     :param reset: Overwrites existing inferences if set.
     """
+    if not test_suite.test_cases:
+        raise ValueError(f"test suite '{test_suite.name}' has no test cases, please add test cases to the test suite")
     TestRun(model, test_suite, evaluator, configurations, reset).run()
