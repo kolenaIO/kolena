@@ -71,7 +71,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"image size :: {DATASET} [person]"],
+        default=[f"# of people :: {DATASET} [person]"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )

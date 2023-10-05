@@ -20,7 +20,7 @@ from typing import Tuple
 
 import pandas as pd
 from semantic_segmentation.constants import DATASET
-from semantic_segmentation.constants import SIZE_MAPPING_IMAGES
+from semantic_segmentation.constants import PERSON_COUNT_MAPPING_IMAGES
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestCase
@@ -39,16 +39,16 @@ def within_range(area: int, range: Tuple[int, int]) -> bool:
 def seed_stratified_test_cases(complete_test_case: TestCase, test_suite_name) -> List[TestCase]:
     test_samples = complete_test_case.load_test_samples()
     test_cases = []
-    for size_name, area_range in SIZE_MAPPING_IMAGES.items():
+    for name, count_range in PERSON_COUNT_MAPPING_IMAGES.items():
         samples = []
         for ts, gt in test_samples:
-            image_size = ts.metadata["width"] * ts.metadata["height"]
-            if within_range(image_size, area_range):
+            person_count = ts.metadata["person_count"]
+            if within_range(person_count, count_range):
                 samples.append((ts, gt))
 
         if len(samples) > 0:
             test_cases.append(
-                TestCase(f"{size_name} image :: {test_suite_name}", test_samples=samples, reset=True),
+                TestCase(f"{name} :: {test_suite_name}", test_samples=samples, reset=True),
             )
     return test_cases
 
@@ -66,6 +66,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
                 has_person=record.has_person,
                 width=record.image_width,
                 height=record.image_height,
+                person_count=record.person_count,
             ),
         )
         ground_truth = GroundTruth(mask=SegmentationMask(locator=record.mask, labels=Label.as_label_map()))
@@ -77,7 +78,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 def main(args: Namespace) -> None:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    test_suite_name = f"image size :: {DATASET} [person]"
+    test_suite_name = f"# of people :: {DATASET} [person]"
     complete_test_case = seed_complete_test_case(args)
     stratified_test_cases = seed_stratified_test_cases(complete_test_case, test_suite_name)
     TestSuite(

@@ -1,7 +1,10 @@
 # Example Integration: Semantic Segmentation
 
-This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset, specificially
-5,520 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena.
+This example integration uses the [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset, specifically
+1,789 images with person label, to demonstrate how to test single class semantic segmentation problems on Kolena. Only
+images with the [Attribution License](http://creativecommons.org/licenses/by/2.0/),
+[Attribution-ShareAlike License](http://creativecommons.org/licenses/by-sa/2.0/),
+[Attribution-NoDerivs License](http://creativecommons.org/licenses/by-nd/2.0/) are included.
 
 ## Setup
 
@@ -23,7 +26,8 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](semantic_segmentation/seed_test_suite.py) creates the following test suites:
 
-    - `"coco-stuff-10k"`, containing samples of COCO-Stuff 10K data
+    - `"# of people :: coco-stuff-10k [person]"`, containing samples of COCO-Stuff 10K data, specifically 1,789 images
+    with person label, stratified by # of people in the image.
 
 2. [`seed_test_run.py`](semantic_segmentation/seed_test_run.py) tests a specified model,
 e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, `pspnet_r50-d8_4xb4-20k_coco-stuff10k-512x512`, on the above
@@ -35,7 +39,7 @@ test suite.
     [instructions](https://docs.kolena.io/advanced-usage/connecting-cloud-storage/amazon-s3/) to connect
     your bucket to Kolena.
 
-    The result masks will be stored under s3://{args.out_bucket}/coco-stuff-10k/results/{args.model} directory in
+    The result masks will be stored under `s3://{args.out_bucket}/coco-stuff-10k/results/{args.model}` directory in
     your bucket.
 
 

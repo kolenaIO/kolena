@@ -11,13 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-BUCKET = "kolena-public-datasets"
-DATASET = "coco-stuff-10k"
-
-PERSON_COUNT_MAPPING_IMAGES = {
-    "single person": (1, 2),
-    "two people": (2, 3),
-    "some people": (3, 6),
-    "many people": (6, 100),
-}
