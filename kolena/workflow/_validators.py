@@ -146,7 +146,8 @@ def validate_dict(
             f"Unsupported field type: field '{field_name}', unsupported Dict key type '{key_type}'",
         )
 
-    if value_type not in supported_dict_value_types:
+    value_type_origin = get_origin(value_type)
+    if value_type_origin is not None or not issubclass(value_type, tuple(supported_dict_value_types)):
         raise ValueError(
             f"Unsupported field type: field '{field_name}', unsupported Dict value type '{value_type}'",
         )

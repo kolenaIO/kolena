@@ -30,6 +30,11 @@ from kolena.workflow.evaluator import MetricsTestSample
 from kolena.workflow.evaluator import MetricsTestSuite
 
 
+@dataclasses.dataclass(frozen=True)
+class NestedMetricsTestSample(MetricsTestSample):
+    a: float
+
+
 def test__validate__metrics_test_sample() -> None:
     @dataclasses.dataclass(frozen=True)
     class Tester(MetricsTestSample):
@@ -38,6 +43,7 @@ def test__validate__metrics_test_sample() -> None:
         c: Union[bool, int]
         d: List[float]
         e: BoundingBox
+        f: Dict[float, NestedMetricsTestSample]
 
 
 def test__validate__metrics_test_sample__invalid__bytes() -> None:
@@ -46,14 +52,6 @@ def test__validate__metrics_test_sample__invalid__bytes() -> None:
         @dataclasses.dataclass(frozen=True)
         class BytesTester(MetricsTestSample):
             a: Optional[bytes]
-
-
-def test__validate__metrics_test_sample__invalid__dict() -> None:
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class DictTester(MetricsTestSample):
-            a: Dict[str, Any]
 
 
 def test__validate__metrics_test_sample__invalid__nested() -> None:
@@ -100,6 +98,58 @@ def test__validate__metrics_test_sample__image_pair__invalid() -> None:
         @dataclasses.dataclass(frozen=True)
         class Tester(MetricsTestSample):
             a: Inner
+
+
+def test__validate__metrics_test_sample__invalid__dict_key() -> None:
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class DictTester(MetricsTestSample):
+            a: Dict[str, Any]  # str is not supported, only single Dict[float, MetricsTestSample] is allowed
+
+
+def test__validate__metrics_test_sample__invalid_dict_nested() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Inner(DataObject):
+        a: Dict[float, NestedMetricsTestSample]
+
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class Tester(MetricsTestSample):
+            a: Inner  # only single Dict[float, MetricsTestSample] is allowed
+
+
+def test__validate__metrics_test_sample__invalid_dict_double_nested() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Inner(DataObject):
+        a: Dict[float, Dict[float, NestedMetricsTestSample]]
+
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class Tester(MetricsTestSample):
+            a: Inner  # only single Dict[float, MetricsTestSample] is allowed
+
+
+def test__validate__metrics_test_sample__invalid_nested__optional_dict() -> None:
+    with pytest.raises(ValueError):
+
+        @pydantic.dataclasses.dataclass(frozen=True)
+        class Tester(MetricsTestSample):
+            a: Optional[Dict[float, NestedMetricsTestSample]]  # only single Dict[float, MetricsTestSample] is allowed
+
+
+def test__validate__metrics_test_sample__invalid_nested__doubly_nested() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class NestedNested(MetricsTestSample):
+        a: Dict[float, NestedMetricsTestSample]
+
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class Tester(MetricsTestSample):
+            a: Dict[float, NestedNested]  # only one layer of nesting allowed
 
 
 @pytest.mark.parametrize("base", [MetricsTestCase, MetricsTestSuite])
@@ -272,11 +322,3 @@ def test__validate__metrics_test_case__invalid_optional_dict_value() -> None:
         @dataclasses.dataclass(frozen=True)
         class OptionalDictValueTester(MetricsTestCase):
             a: Dict[float, Optional[MetricsTestCase]]  # Optional value is unsupported
-
-
-def test__validate__metrics_test_case__invalid_nested_value() -> None:
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class OptionalDictValueTester(MetricsTestCase):
-            a: Dict[float, Nested]  # Nested not supported

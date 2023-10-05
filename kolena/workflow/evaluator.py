@@ -264,8 +264,31 @@ class Evaluator(metaclass=ABCMeta):
 
 
 def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTestSample]) -> None:
+    supported_dict_key_types = [float]
+    supported_dict_value_types = [MetricsTestSample]
+
     # TODO: support special structure for ImagePair test sample types?
-    validate_data_object_type(metrics_test_sample_type)
+    validate_data_object_type(
+        metrics_test_sample_type,
+        supported_dict_key_types=supported_dict_key_types,
+        supported_dict_value_types=supported_dict_value_types,
+    )
+
+    # validate that there is only one level of nesting
+    for field_name, field_type in get_data_object_field_types(metrics_test_sample_type).items():
+        origin = get_origin(field_type)
+
+        if origin is dict:
+            key_type, value_type = get_args(field_type)
+            if key_type not in supported_dict_key_types:
+                raise ValueError(f"Unsupported dict key type in field '{field_name}'")
+
+            dict_value_types = [t for arg_type in [value_type] for t in get_args(arg_type) or [arg_type]]
+            for arg_type in dict_value_types:
+                try:
+                    validate_scalar_data_object_type(arg_type)
+                except ValueError:
+                    raise ValueError(f"Unsupported doubly-nested object in field '{field_name}'")
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
