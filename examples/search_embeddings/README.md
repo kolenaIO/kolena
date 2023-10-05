@@ -4,12 +4,13 @@
 > Please message your point of contact for the latest relevant extractor package.
 
 This example runs against data from the [`age_estimation`](../age_estimation) example workflow, and assumes this
-data has already been uploaded to your platform.
+data has already been uploaded to your Kolena platform.
 
 ## Setup
 
-1. Ensure that data for the [`age_estimation`](../age_estimation) workflow has been seeded.
-2. Copy the `kolena_studio_client_api.tar.gz` file (provided by your Kolena contact) to the `./local_packages` directory.
+1. Ensure that data for the [`age_estimation`](../age_estimation) workflow has been seeded through calling the
+[`seed_test_suite.py`](../age_estimation/age_estimation/seed_test_suite.py) script.
+2. Copy the `kolena_embeddings.tar.gz` file (provided by your Kolena contact) to the `./local_packages` directory.
 3. This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. Install project
 dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 

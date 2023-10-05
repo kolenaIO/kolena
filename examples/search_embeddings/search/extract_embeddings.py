@@ -78,7 +78,6 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     local_path: str = args.local_path
-
     if local_path is None or local_path == "":
         print(
             "local-path argument is unset. Please note that pre-downloading all images in batch and later "
@@ -86,7 +85,6 @@ if __name__ == "__main__":
             "extraction.",
         )
 
-    s3_path = f"s3://{BUCKET}/{DATASET}/imgs/"
     locators_and_filepaths = image_locators_from_s3_path(s3_path, local_path)
     if len(locators_and_filepaths) == 0:
         raise ValueError(f"invalid input path: {s3_path}")
