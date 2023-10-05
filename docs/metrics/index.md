@@ -35,6 +35,20 @@ biases, and its intended uses.
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
 
+- [BERTScore](bertscore.md)
+
+    ---
+
+    BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference
+    texts.
+
+- [BLEU](bleu.md)
+
+    ---
+
+    BLEU is a metric commonly used in a variety of NLP workflows to evaluate the quality of candidate texts. BLEU can be
+    thought of as an analog to [precision](precision.md) for text comparisons.
+
 - [Confusion Matrix](confusion-matrix.md)
 
     ---
@@ -48,6 +62,13 @@ biases, and its intended uses.
 
     F<sub>1</sub>-score is a metric that combines two competing metrics, [precision](precision.md) and
     [recall](recall.md) with an equal weight. It symmetrically represents both precision and recall as one metric.
+
+- [False Positive Rate (FPR)](fpr.md)
+
+    ---
+
+    False positive rate (FPR) measures the proportion of negative ground truths that a model incorrectly predicts as
+    positive, ranging from 0 to 1. It is useful when the objective is to measure and reduce false positive inferences.
 
 - [Geometry Matching](geometry-matching.md)
 
@@ -64,6 +85,14 @@ biases, and its intended uses.
 
     IoU measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
     Also known as Jaccard index in classification workflow.
+
+- [METEOR](meteor.md)
+
+    ---
+
+    METEOR is a widely recognized and vital metric used in NLP. It is used to measure the quality of candidate texts
+    against reference texts. Though it is an n-gram based metric, it goes beyond traditional methods by factoring in
+    elements such as precision, recall, and order to provide a comprehensive measure of text quality.
 
 - [Precision](precision.md)
 
@@ -87,6 +116,30 @@ biases, and its intended uses.
     Recall, also known as true positive rate (TPR) and sensitivity, measures the proportion of all positive ground
     truths that a model correctly predicts. It is useful when the objective is to measure and reduce false negative
     ground truths, i.e. model misses.
+
+- [Receiver Operating Characteristic (ROC) Curve](roc-curve.md)
+
+    ---
+
+    A receiver operating characteristic (ROC) curve is a plot that is used to evaluate the performance of binary
+    classification models by using the [true positive rate (TPR)](./recall.md) and the
+    [false positive rate (FPR)](./fpr.md).
+
+- [ROUGE-N](rouge-n.md)
+
+    ---
+
+    ROUGE-N, a metric within the broader ROUGE metric collection, is a vital metric in the field of NLP. It assesses
+    the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
+    ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
+
+- [Specificity (TNR)](specificity.md)
+
+    ---
+
+    Specificity, also known as true negative rate (TNR), measures the proportion of negative ground truths that a
+    model correctly predicts, ranging from 0 to 1. It is useful when the objective is to measure the model's ability to
+    correctly identify the negative class instances.
 
 - [TP / FP / FN / TN](tp-fp-fn-tn.md)
 
