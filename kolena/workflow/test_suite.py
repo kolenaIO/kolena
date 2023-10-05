@@ -107,6 +107,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         reset: bool = False,
         tags: Optional[Set[str]] = None,
     ):
+        self.test_cases = []
         validate_name(name, FieldName.TEST_SUITE_NAME)
         self._validate_workflow()
         self._validate_test_cases(test_cases)
@@ -117,6 +118,9 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             other = self.create(name, description, test_cases, tags)
         self._populate_from_other(other)
 
+        if not test_cases and not self.test_cases:
+            raise IncorrectUsageError(f"test suite '{name}' has no test cases,"
+                                      f" please add test cases to the test suite")
         should_update_test_cases = test_cases is not None and test_cases != self.test_cases
         can_update_test_cases = reset or self.version == 0
         if should_update_test_cases and not can_update_test_cases:

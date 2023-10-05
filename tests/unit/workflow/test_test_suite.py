@@ -11,11 +11,27 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from unittest import mock
+
 import pytest
 
+from kolena.errors import IncorrectUsageError
 from kolena.workflow.test_suite import TestSuite
 
 
 def test__init__validate_name() -> None:
     with pytest.raises(ValueError):
         TestSuite("", test_cases=[])
+
+
+def test__init__no_test_cases() -> None:
+    with mock.patch("kolena.workflow.test_suite.TestSuite.load", return_value=None):
+        with mock.patch("kolena.workflow.test_suite.TestSuite._validate_workflow", return_value=None):
+            with mock.patch("kolena.workflow.test_suite.TestSuite._validate_test_cases", return_value=None):
+                with mock.patch("kolena.workflow.test_suite.TestSuite._populate_from_other", return_value=None):
+                    try:
+                        TestSuite("test-suite", test_cases=[])
+                    except Exception as e:
+                        assert e.__class__.__name__ == "IncorrectUsageError"
+                        assert str(e) == ("test suite 'test-suite' has no test cases,"
+                                          " please add test cases to the test suite")
