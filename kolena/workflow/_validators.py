@@ -52,8 +52,8 @@ def validate_data_object_type(
     data_object_type: Type[DataObject],
     supported_field_types: Optional[List[Type]] = None,
     supported_list_types: Optional[List[Type]] = None,
-    supported_dict_key_types: Optional[List[Type]] = [],
-    supported_dict_value_types: Optional[List[Type]] = [],
+    supported_dict_key_types: Optional[List[Type]] = None,
+    supported_dict_value_types: Optional[List[Type]] = None,
 ) -> None:
     if not issubclass(data_object_type, DataObject):
         raise ValueError(f"'{data_object_type.__name__}' must extend {DataObject.__name__}")
@@ -90,14 +90,16 @@ def validate_field(
     field_type: Type,
     supported_field_types: Optional[List[Type]] = None,
     supported_list_types: Optional[List[Type]] = None,
-    supported_dict_key_types: Optional[List[Type]] = [],
-    supported_dict_value_types: Optional[List[Type]] = [],
+    supported_dict_key_types: Optional[List[Type]] = None,
+    supported_dict_value_types: Optional[List[Type]] = None,
 ) -> None:
     if field_name == DATA_TYPE_FIELD:
         raise ValueError(f"Unsupported field name: '{DATA_TYPE_FIELD}' is reserved")
 
     supported_field_types = supported_field_types or _SUPPORTED_FIELD_TYPES
     supported_list_types = supported_field_types if supported_list_types is None else supported_list_types
+    supported_dict_key_types = supported_dict_key_types or []
+    supported_dict_value_types = supported_dict_value_types or []
     supported_bases = ", ".join(t.__name__ for t in supported_field_types)
 
     origin = get_origin(field_type)
