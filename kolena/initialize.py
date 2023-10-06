@@ -25,7 +25,8 @@ from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.endpoints import get_platform_url
 from kolena._utils.instrumentation import upload_log
 from kolena._utils.state import _client_state
-from kolena.errors import InputValidationError, MissingTokenError
+from kolena.errors import InputValidationError
+from kolena.errors import MissingTokenError
 
 
 def initialize(
@@ -54,8 +55,8 @@ def initialize(
         As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
         has been deprecated and replaced by `initialize(api_token)`.
 
-    :param api_token: Optionally provide an API token, otherwise attempt to use `KOLENA_TOKEN` environment variable.
-        This token is a secret and should be treated with caution.
+    :param api_token: Optionally provide an API token, otherwise attempts to use the `KOLENA_TOKEN`
+        environment variable. This token is a secret and should be treated with caution.
     :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
         logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
@@ -64,12 +65,13 @@ def initialize(
         [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
     :raises InvalidTokenError: The provided `api_token` is not valid.
     :raises InputValidationError: The provided combination or number of args is not valid.
+    :raises MissingTokenError: The `KOLENA_TOKEN` environment variable is not populated.
     """
     used_deprecated_signature = False
 
     if len(args) > 1:
         raise InputValidationError(
-            f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage."
+            f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage.",
         )
 
     if len(args) == 1 or "entity" in kwargs:
