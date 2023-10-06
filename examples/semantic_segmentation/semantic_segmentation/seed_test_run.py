@@ -19,11 +19,9 @@ from typing import List
 
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
+from semantic_segmentation.data_loader import ActivationMapUploader
 from semantic_segmentation.evaluator import evaluate_semantic_segmentation
-from semantic_segmentation.utils import create_bitmap
-from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import sanitize_model_name
-from semantic_segmentation.utils import upload_image_buffer
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Model
 from semantic_segmentation.workflow import SegmentationConfiguration
@@ -37,20 +35,18 @@ from kolena.workflow.test_run import test
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str) -> None:
-    inference_locator_prefix = f"s3://{out_bucket}/{DATASET}/inferences"
     sanitized_model_name = sanitize_model_name(model_name)
+    inference_locator_prefix = f"s3://{out_bucket}/{DATASET}/inferences/{sanitized_model_name}"
+    uploader = ActivationMapUploader()  # asynchronously batch and upload activation maps
 
     def infer(test_sample: TestSample) -> Inference:
         basename = test_sample.metadata["basename"]
-        prob_locator = f"s3://{BUCKET}/{DATASET}/results/{sanitized_model_name}/{basename}_person.npy"
-
-        prob = download_binary_array(prob_locator)
-        activation_map = create_bitmap(prob)
-        activation_map_locator = f"{inference_locator_prefix}/activation/{test_sample.metadata['basename']}.png"
-        upload_image_buffer(activation_map_locator, activation_map)
+        prob_array_locator = f"s3://{BUCKET}/{DATASET}/results/{sanitized_model_name}/{basename}_person.npy"
+        activation_map_locator = f"{inference_locator_prefix}/activation/{basename}.png"
+        uploader.submit(prob_array_locator, activation_map_locator)
 
         return Inference(
-            prob=BinaryAsset(prob_locator),
+            prob=BinaryAsset(prob_array_locator),
             activation_map=BitmapMask(locator=activation_map_locator),
         )
 
@@ -66,6 +62,8 @@ def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str)
             configurations=configurations,
             reset=True,
         )
+
+    uploader.wait()
 
 
 def main(args: Namespace) -> int:
