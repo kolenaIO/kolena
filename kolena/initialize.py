@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
 import warnings
 from typing import Any
 from typing import Dict
@@ -20,14 +21,15 @@ import pandas as pd
 
 from kolena._utils import log
 from kolena._utils import state
+from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.endpoints import get_platform_url
 from kolena._utils.instrumentation import upload_log
 from kolena._utils.state import _client_state
-from kolena.errors import InputValidationError
+from kolena.errors import InputValidationError, MissingTokenError
 
 
 def initialize(
-    api_token: str,
+    api_token: Optional[str] = None,
     *args: Any,
     verbose: bool = False,
     proxies: Optional[Dict[str, str]] = None,
@@ -52,7 +54,8 @@ def initialize(
         As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
         has been deprecated and replaced by `initialize(api_token)`.
 
-    :param api_token: Provided API token. This token is a secret and should be treated with caution.
+    :param api_token: Optionally provide an API token, otherwise attempt to use `KOLENA_TOKEN` environment variable.
+        This token is a secret and should be treated with caution.
     :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
         logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
@@ -65,17 +68,24 @@ def initialize(
     used_deprecated_signature = False
 
     if len(args) > 1:
-        raise InputValidationError(f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage.")
-    elif len(args) == 1:
+        raise InputValidationError(
+            f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage."
+        )
+
+    if len(args) == 1 or "entity" in kwargs:
         # overwrite the originally passed api_token since we are supporting backward compatability with entity
         api_token = args[0]
-    if len(args) == 1 or "entity" in kwargs:
         used_deprecated_signature = True
         warnings.warn(
             "The signature initialize(entity, token) is deprecated. Please update to initialize(token).",
             category=DeprecationWarning,
             stacklevel=2,
         )
+    elif not api_token:
+        try:
+            api_token = os.environ[KOLENA_TOKEN_ENV]
+        except KeyError as e:
+            raise MissingTokenError("Kolena token environment variable is not set.", e)
 
     init_response = state.get_token(api_token, proxies=proxies)
     derived_telemetry = init_response.tenant_telemetry

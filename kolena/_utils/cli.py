@@ -21,11 +21,11 @@ import click
 
 import kolena.workflow
 from kolena._utils import repository
+from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.state import _client_state
 from kolena.errors import NotFoundError
 
 KOLENA_COMMAND = "kolena"
-KOLENA_TOKEN_ENV = "KOLENA_TOKEN"
 CONTEXT_SETTINGS = dict(help_option_names=["--help", "-h"])
 
 _shared_options = [

@@ -13,6 +13,7 @@
 # limitations under the License.
 from enum import Enum
 
+KOLENA_TOKEN_ENV = "KOLENA_TOKEN"
 
 class BatchSize(int, Enum):
     UPLOAD_CHIPS = 1_000
