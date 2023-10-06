@@ -73,17 +73,18 @@ def initialize(
         raise InputValidationError(
             f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage.",
         )
-
-    if len(args) == 1 or "entity" in kwargs:
+    elif len(args) == 1:
         # overwrite the originally passed api_token since we are supporting backward compatability with entity
         api_token = args[0]
+    if len(args) == 1 or "entity" in kwargs:
         used_deprecated_signature = True
         warnings.warn(
             "The signature initialize(entity, token) is deprecated. Please update to initialize(token).",
             category=DeprecationWarning,
             stacklevel=2,
         )
-    elif not api_token:
+
+    if not api_token:
         try:
             api_token = os.environ[KOLENA_TOKEN_ENV]
         except KeyError as e:

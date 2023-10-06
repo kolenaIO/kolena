@@ -11,16 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from typing import Iterator
 
 import pytest
 import requests
 
 import kolena
-from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.state import _client_state
-from kolena.errors import InvalidTokenError, MissingTokenError
+from kolena.errors import InvalidTokenError
 from kolena.errors import RemoteError
 
 
@@ -37,20 +35,6 @@ def test__initialize(clean_client_state: None, kolena_token: str) -> None:
     assert _client_state.api_token == kolena_token
     assert _client_state.jwt_token is not None
 
-
-def test__initialize__no_token_passed(clean_client_state: None, kolena_token: str) -> None:
-    os.environ[KOLENA_TOKEN_ENV] = kolena_token
-    kolena.initialize()
-    assert _client_state.api_token == kolena_token
-    assert _client_state.jwt_token is not None
-
-
-def test__initialize__token_missing(clean_client_state: None) -> None:
-    if KOLENA_TOKEN_ENV in os.environ:
-        del os.environ[KOLENA_TOKEN_ENV]
-
-    with pytest.raises(MissingTokenError):
-        kolena.initialize()
 
 def test__initialize__deprecated_old_client(clean_client_state: None, kolena_token: str) -> None:
     """Manually test acceptance of 'entity' with raw request for client versions prior to 0.29.0"""

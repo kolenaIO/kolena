@@ -15,6 +15,7 @@ import concurrent.futures
 import dataclasses
 import hashlib
 import json
+import os
 import time
 from typing import Any
 from typing import Dict
@@ -27,6 +28,7 @@ from requests import Response
 
 import kolena
 from kolena._api.v1.token import ValidateResponse
+from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.state import _client_state
 from kolena._utils.state import _get_api_base_url
 from kolena._utils.state import API_URL
@@ -34,6 +36,7 @@ from kolena._utils.state import API_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
+from kolena.errors import MissingTokenError
 from kolena.errors import UninitializedError
 
 
@@ -117,6 +120,22 @@ def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
         kolena.initialize(entity="test entity", api_token="abc")
         assert _client_state.api_token == "abc"
         assert _client_state.jwt_token is not None
+
+
+def test__initialize__no_token_passed(clean_client_state: None) -> None:
+    with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
+        os.environ[KOLENA_TOKEN_ENV] = "abc"
+        kolena.initialize()
+        assert _client_state.api_token == "abc"
+        assert _client_state.jwt_token is not None
+
+
+def test__initialize__token_missing(clean_client_state: None) -> None:
+    if KOLENA_TOKEN_ENV in os.environ:
+        del os.environ[KOLENA_TOKEN_ENV]
+
+    with pytest.raises(MissingTokenError):
+        kolena.initialize()
 
 
 def test__uninitialized_usage(clean_client_state: None) -> None:
