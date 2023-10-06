@@ -15,7 +15,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import List
+from typing import List, Tuple
 
 import pandas as pd
 from face_recognition_11.workflow import GroundTruth
@@ -30,6 +30,29 @@ BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
 
 
+def create_test_case_for_tag(
+    test_samples_and_ground_truths: List[Tuple[TestCase, GroundTruth]], category: str, value: str
+) -> TestCase:
+    name = f"{category} :: {value} :: {DATASET}"
+    description = f"demographic subset of {DATASET} with source data labeled as {category}={value}"
+
+    # filter down to only test samples matching this demographic
+    test_samples = [
+        (ts, gt)
+        for ts, gt in test_samples_and_ground_truths
+        if ts.a.metadata[category] == value or ts.b.metadata[category] == value
+    ]
+
+    test_case = TestCase(
+        name=name,
+        description=description,
+        test_samples=test_samples,
+        reset=True,
+    )
+
+    return test_case
+
+
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
@@ -42,48 +65,44 @@ def main(args: Namespace) -> int:
         fields.remove("locator")
         metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
 
-    test_samples = [
-        TestSample(
-            a=ImageWithMetadata(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
-            b=ImageWithMetadata(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
+    test_samples_and_ground_truths = [
+        (
+            TestSample(
+                a=ImageWithMetadata(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
+                b=ImageWithMetadata(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
+            ),
+            GroundTruth(is_same=row["is_same"]),
         )
-        for idx, row in df[["locator_a", "locator_b"]].iterrows()
+        for idx, row in df.iterrows()
     ]
-    ground_truths = [GroundTruth(is_same=ts.a.metadata["person"] == ts.b.metadata["person"]) for ts in test_samples]
-    test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
 
     complete_test_case = TestCase(
-        f"fr 1:1 complete :: {DATASET}",
+        name=f"fr 1:1 complete :: {DATASET}",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
+    print(f"created baseline test case '{complete_test_case.name}'")
 
-    section_size = 2500
-    splits = [
-        test_samples_and_ground_truths[:section_size],
-        test_samples_and_ground_truths[section_size : 2 * section_size],
-        test_samples_and_ground_truths[2 * section_size : 3 * section_size],
-        test_samples_and_ground_truths[3 * section_size :],
-    ]
+    # Metadata Test Cases
+    demographic_subsets = dict(
+        race=["asian", "black", "indian", "middle eastern", "latino hispanic", "white"],  # ignore "unknown"
+        gender=["man", "woman"],  # ignore "unknown"
+    )
 
     test_cases: List[TestCase] = []
-    for idx, split in enumerate(splits):
-        test_cases.append(
-            TestCase(
-                f"fr 1:1 :: split {idx} :: {DATASET}",
-                description=f"Images in {DATASET} in split {idx}",
-                test_samples=[(ts, gt) for ts, gt in split],
-                reset=True,
-            ),
-        )
+    for category, tags in demographic_subsets.items():
+        for tag in tags:
+            test_case = create_test_case_for_tag(test_samples_and_ground_truths, category, tag)
+            test_cases.append(test_case)
+            print(f"created test case '{test_case.name}'")
 
     test_suite = TestSuite(
         name=f"fr 1:1 :: {DATASET}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
-    print(f"created test suite: {test_suite}")
+    print(f"created test suite '{test_suite}'")
 
 
 if __name__ == "__main__":
