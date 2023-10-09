@@ -36,25 +36,25 @@ from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 
 COL_DATAPOINT = "datapoint"
-TEST_SAMPLE_TYPE = "TEST_SAMPLE"
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
+DATAPOINT_TYPE = "DATA_POINT"
 
 
-class TestSampleType(str, Enum):
-    CUSTOM = "TEST_SAMPLE/CUSTOM"
-    DOCUMENT = "TEST_SAMPLE/DOCUMENT"
-    IMAGE = "TEST_SAMPLE/IMAGE"
-    POINT_CLOUD = "TEST_SAMPLE/POINT_CLOUD"
-    TEXT = "TEST_SAMPLE/TEXT"
-    VIDEO = "TEST_SAMPLE/VIDEO"
+class DataPointType(str, Enum):
+    CUSTOM = "DATA_POINT/CUSTOM"
+    DOCUMENT = "DATA_POINT/DOCUMENT"
+    IMAGE = "DATA_POINT/IMAGE"
+    POINT_CLOUD = "DATA_POINT/POINT_CLOUD"
+    TEXT = "DATA_POINT/TEXT"
+    VIDEO = "DATA_POINT/VIDEO"
 
 
 _DATAPOINT_TYPE_MAP = {
-    "image": TestSampleType.IMAGE.value,
-    "application/pdf": TestSampleType.DOCUMENT.value,
-    "text": TestSampleType.DOCUMENT.value,
-    "video": TestSampleType.VIDEO.value,
+    "image": DataPointType.IMAGE.value,
+    "application/pdf": DataPointType.DOCUMENT.value,
+    "text": DataPointType.DOCUMENT.value,
+    "video": DataPointType.VIDEO.value,
 }
 
 
@@ -75,18 +75,18 @@ def _infer_datatype_value(x: str) -> str:
         if datatype is not None:
             return datatype
     elif x.endswith(".pcd"):
-        return TestSampleType.POINT_CLOUD.value
+        return DataPointType.POINT_CLOUD.value
 
-    return TestSampleType.CUSTOM.value
+    return DataPointType.CUSTOM.value
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if FIELD_LOCATOR in df.columns:
         return df[FIELD_LOCATOR].apply(_infer_datatype_value)
     elif FIELD_TEXT in df.columns:
-        return TestSampleType.TEXT.value
+        return DataPointType.TEXT.value
 
-    return TestSampleType.CUSTOM.value
+    return DataPointType.CUSTOM.value
 
 
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
