@@ -20,6 +20,7 @@ from typing import Any
 from typing import Dict
 from typing import Iterator
 from typing import Optional
+from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
@@ -129,18 +130,19 @@ def test__initialize__token_fallback_environ(clean_client_state: None) -> None:
         assert _client_state.jwt_token is not None
 
 
+@patch("netrc.netrc")
 @patch.dict("os.environ", clear=True)
-def test__initialize__token_fallback_netrc(clean_client_state: None) -> None:
-    with patch("netrc.netrc.authenticators", return_value=(None, None, "abc")):
-        with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
-            kolena.initialize()
-            assert _client_state.api_token == "abc"
-            assert _client_state.jwt_token is not None
+def test__initialize__token_fallback_netrc(mock_netrc: Mock, clean_client_state: None) -> None:
+    with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
+        mock_netrc.return_value.authenticators.return_value = None, None, "abc"
+        kolena.initialize()
+        assert _client_state.api_token == "abc"
+        assert _client_state.jwt_token is not None
 
 
 @patch.dict("os.environ", clear=True)
 def test__initialize__token_missing(clean_client_state: None) -> None:
-    with patch("netrc.netrc.authenticators", return_value=None):
+    with patch("netrc.netrc", side_effect=MissingTokenError):
         with pytest.raises(MissingTokenError):
             kolena.initialize()
 

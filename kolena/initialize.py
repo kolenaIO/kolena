@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import netrc
 import os
 import warnings
-from netrc import netrc
 from typing import Any
 from typing import Dict
 from typing import Optional
-from urllib import parse
+from urllib.parse import urlparse
 
 import pandas as pd
 
@@ -142,9 +142,9 @@ def _find_token() -> str:
     if KOLENA_TOKEN_ENV in os.environ:
         return os.environ[KOLENA_TOKEN_ENV]
 
-    hostname = parse.urlparse(state._get_api_base_url()).hostname
+    hostname = urlparse(state._get_api_base_url()).hostname
     try:
-        netrc_file = netrc()
+        netrc_file = netrc.netrc()
         record = netrc_file.authenticators(hostname)
         if record and record[2]:
             return record[2]
