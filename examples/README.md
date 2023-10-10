@@ -22,3 +22,5 @@ arbitrary ML problem.
   [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
 - [Question Answering](./question_answering): question answering using the
   [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
+- [Semantic Segmentation](./semantic_segmentation): semantic segmentation using the
+  [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset

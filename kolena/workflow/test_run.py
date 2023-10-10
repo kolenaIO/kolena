@@ -43,6 +43,7 @@ from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
+from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import Evaluator
@@ -68,6 +69,7 @@ from kolena.workflow.evaluator_function import _is_configured
 from kolena.workflow.evaluator_function import _TestCases
 from kolena.workflow.evaluator_function import BasicEvaluatorFunction
 from kolena.workflow.evaluator_function import EvaluationResults
+from kolena.workflow.test_sample import _METADATA_KEY
 
 
 class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
@@ -187,7 +189,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_sample_type = self.model.workflow.test_sample_type
         for df_batch in self._iter_test_samples_batch():
             for record in df_batch.itertuples():
-                yield test_sample_type._from_dict(record.test_sample)
+                test_sample = test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
+                yield test_sample
 
     def _iter_all_inferences(self) -> Iterator[Tuple[TestSample, GroundTruth, Inference]]:
         """
@@ -205,7 +210,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSampleDataFrame,
         ):
             for record in df_batch.itertuples():
-                test_sample = self.test_suite.workflow.test_sample_type._from_dict(record.test_sample)
+                test_sample = self.test_suite.workflow.test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
                 ground_truth = self.test_suite.workflow.ground_truth_type._from_dict(record.ground_truth)
                 inference = self.test_suite.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference
@@ -244,6 +251,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if self.evaluator is None:
             log.info("commencing server side metrics evaluation")
             self._start_server_side_evaluation()
+            return
 
         # TODO: assert that testing is complete?
         t0 = time.time()
@@ -501,4 +509,8 @@ def test(
     :param configurations: A list of configurations to use when running the evaluator.
     :param reset: Overwrites existing inferences if set.
     """
+    if not test_suite.test_cases:
+        raise IncorrectUsageError(
+            f"test suite '{test_suite.name}' has no test cases, please add test cases" f" to the test suite",
+        )
     TestRun(model, test_suite, evaluator, configurations, reset).run()

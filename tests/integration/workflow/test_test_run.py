@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 import math
+import random
 from typing import Any
 from typing import List
 from typing import Optional
@@ -23,8 +25,10 @@ import pytest
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as TestRunAPI
+from kolena._utils import krequests
 from kolena.errors import RemoteError
 from kolena.workflow import define_workflow
+from kolena.workflow import EvaluationResults
 from kolena.workflow import Evaluator
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth
@@ -33,18 +37,30 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import test
 from kolena.workflow import TestCase
+from kolena.workflow import TestCases
 from kolena.workflow import TestRun
 from kolena.workflow import TestSample
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import ClassificationLabel
 from tests.integration.helper import assert_sorted_list_equal
+from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 from tests.integration.workflow.conftest import dummy_evaluator_function
 from tests.integration.workflow.conftest import dummy_evaluator_function_with_config
 from tests.integration.workflow.conftest import DummyConfiguration
 from tests.integration.workflow.conftest import DummyEvaluator
+from tests.integration.workflow.conftest import DummyMetricsTestCase
+from tests.integration.workflow.conftest import DummyMetricsTestSample
 from tests.integration.workflow.conftest import DummyTestSample
 from tests.integration.workflow.conftest import Model
+from tests.integration.workflow.conftest import TestCase as DummyTestCase
 from tests.integration.workflow.conftest import TestSuite
+from tests.integration.workflow.dummy import DUMMY_WORKFLOW
+from tests.integration.workflow.dummy import DummyGroundTruth
 from tests.integration.workflow.dummy import DummyInference
+from tests.integration.workflow.dummy import GrabbagGroundTruth
+from tests.integration.workflow.dummy import GrabbagInference
+from tests.integration.workflow.dummy import GrabbagTestSample
 
 
 def test__init(
@@ -341,3 +357,124 @@ def test__test__function_evaluator__with_skip(
     config = [DummyConfiguration(value="skip")]
     test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)
     TestRun(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)
+
+
+@pytest.mark.depends(on=["test__test"])
+def test__test__remote_evaluator(
+    dummy_model: Model,
+    dummy_test_suites: List[TestSuite],
+) -> None:
+    class MockResponse:
+        def __init__(self, json_data: Any, status_code: int):
+            self.json_data = json_data
+            self.status_code = status_code
+
+        def json(self) -> Any:
+            return self.json_data
+
+        def raise_for_status(self) -> None:
+            if self.status_code >= 400:
+                raise RuntimeError(f"bad status code: {self.status_code}")
+
+    def mock_put(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> Any:
+        if endpoint_path == TestRunAPI.Path.CREATE_OR_RETRIEVE.value:
+            response = TestRunAPI.CreateOrRetrieveResponse(test_run_id=1000)
+            return MockResponse(dataclasses.asdict(response), 200)
+        return krequests.put(endpoint_path, data, json, **kwargs)
+
+    with patch("kolena._utils.krequests.put", new=mock_put):
+        with patch.object(TestRun, "_start_server_side_evaluation") as remote_patched:
+            with patch.object(TestRun, "_perform_evaluation") as eval_patched:
+                with patch.object(TestRun, "_perform_streamlined_evaluation") as streamlined_eval_patched:
+                    TestRun(dummy_model, dummy_test_suites[0], evaluator=None).evaluate()
+    remote_patched.assert_called_once()
+    eval_patched.assert_not_called()
+    streamlined_eval_patched.assert_not_called()
+
+
+def test__dataobject_schema_mismatch() -> None:
+    test_samples = [
+        (
+            GrabbagTestSample(
+                locator=fake_locator(i, "dataobject"),
+                value=i,
+                bbox=BoundingBox(
+                    top_left=(random.randint(0, 10), random.randint(0, 10)),
+                    bottom_right=(random.randint(11, 20), random.randint(11, 20)),
+                    value=i,
+                    foo="bar",
+                ),
+            ),
+            GrabbagGroundTruth(label=f"ground truth {i}", value=i, license="noncommercial"),
+        )
+        for i in range(10)
+    ]
+    # spotcheck extra field
+    assert test_samples[1][0].bbox.foo == "bar"
+
+    name = with_test_prefix(f"{__file__}::test__dataobject_schema_mismatch")
+    _, GrabbagTestCase, GrabbagTestSuite, GrabbagModel = define_workflow(
+        DUMMY_WORKFLOW.name,
+        GrabbagTestSample,
+        GrabbagGroundTruth,
+        GrabbagInference,
+    )
+    test_case_name = f"{name} test case"
+    test_case = GrabbagTestCase(test_case_name, test_samples=test_samples)
+
+    loaded_test_samples = test_case.load_test_samples()
+
+    assert sorted(loaded_test_samples) == sorted(test_samples)
+
+    # dataclass without `extra = allow` should also work
+    expected_alt_format = [
+        (
+            DummyTestSample(
+                locator=test_sample.locator,
+                value=test_sample.value,
+                bbox=test_sample.bbox,
+            ),
+            DummyGroundTruth(label=ground_truth.label, value=ground_truth.value),
+        )
+        for test_sample, ground_truth in test_samples
+    ]
+    dummy_test_case = DummyTestCase(test_case_name)
+    loaded_dummy_test_samples = dummy_test_case.load_test_samples()
+    assert sorted(loaded_dummy_test_samples) == sorted(expected_alt_format)
+
+    test_suite = GrabbagTestSuite(f"{name} test suite", test_cases=[test_case])
+    dummy_inferences = [GrabbagInference(value=i, mask=ClassificationLabel(label="cat", source=i)) for i in range(10)]
+
+    # match inference to test sample
+    model = GrabbagModel(f"{name} model", infer=lambda sample: dummy_inferences[int(sample.value)])
+
+    def evaluator(
+        test_samples: List[GrabbagTestSample],
+        ground_truths: List[GrabbagGroundTruth],
+        inferences: List[GrabbagInference],
+        test_cases: TestCases,
+    ) -> Optional[EvaluationResults]:
+        fixed_random_value = random.randint(0, 1_000_000_000)
+        test_sample_to_metrics = [
+            (ts, DummyMetricsTestSample(value=fixed_random_value, ignored=False)) for ts in test_samples
+        ]
+        metrics_test_sample = [metrics for _, metrics in test_sample_to_metrics]
+        metrics_test_case: List[Tuple[TestCase, DummyMetricsTestCase]] = []
+        for test_case, tc_test_samples, tc_gts, tc_infs, tc_ts_metrics in test_cases.iter(
+            test_samples,
+            ground_truths,
+            inferences,
+            metrics_test_sample,
+        ):
+            metrics = DummyMetricsTestCase(value=fixed_random_value, summary="foobar")
+            metrics_test_case.append((test_case, metrics))
+
+        return EvaluationResults(
+            metrics_test_sample=test_sample_to_metrics,
+            metrics_test_case=metrics_test_case,
+        )
+
+    TestRun(model, test_suite, evaluator).run()
+
+    inferences = model.load_inferences(test_case)
+    assert_sorted_list_equal(inferences, [(ts, gt, inf) for (ts, gt), inf in zip(test_samples, dummy_inferences)])

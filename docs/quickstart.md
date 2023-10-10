@@ -108,6 +108,15 @@ and run directly:
     Question Answering using the
     [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
 
+- [:kolena-polygon-20: Example: Semantic Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/semantic_segmentation)
+
+    ![Example image from COCO-Stuff 10K dataset.](assets/images/coco-stuff-10k.jpg)
+
+    ---
+
+    Semantic Segmentation on class `Person` using the
+    [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset
+
 </div>
 
 To get started, clone the `kolena` repository:

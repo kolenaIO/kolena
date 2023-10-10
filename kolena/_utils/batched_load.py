@@ -22,6 +22,7 @@ from typing import Iterator
 from typing import Optional
 from typing import Type
 from typing import TypeVar
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -30,9 +31,12 @@ from retrying import retry
 
 from kolena._api.v1.batched_load import BatchedLoad as API
 from kolena._utils import krequests
+from kolena._utils import krequests_v2
 from kolena._utils import log
 from kolena._utils.datatypes import LoadableDataFrame
 from kolena._utils.serde import from_dict
+from kolena._utils.state import API_V1
+from kolena._utils.state import DEFAULT_API_VERSION
 
 VALIDATION_COUNT_LIMIT = 100
 STAGE_STATUS__LOADED = "LOADED"
@@ -79,7 +83,7 @@ DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 class _BatchedLoader(Generic[DFType]):
     @staticmethod
-    def load_path(path: str, df_class: Type[DFType]) -> DFType:
+    def load_path(path: str, df_class: Optional[Type[DFType]]) -> Union[DFType, pd.DataFrame]:
         with tempfile.TemporaryFile() as tmp:
             with krequests.get(
                 endpoint_path=API.Path.download_by_path(path),
@@ -96,7 +100,7 @@ class _BatchedLoader(Generic[DFType]):
         column_mapping = {col_name: col_name.lower() for col_name in df.columns}
         df.rename(columns=column_mapping, inplace=True)
 
-        return df_class.from_serializable(df)
+        return df_class.from_serializable(df) if df_class else df
 
     @staticmethod
     def concat(dfs: Iterable[pd.DataFrame], df_class: Type[DFType]) -> DFType:
@@ -108,11 +112,12 @@ class _BatchedLoader(Generic[DFType]):
         return df_class(df)
 
     @staticmethod
-    def complete_load(uuid: Optional[str]) -> None:
+    def complete_load(uuid: Optional[str], api_version: int = DEFAULT_API_VERSION) -> None:
         if uuid is None:
             return
+        kreq = krequests if api_version == "v1" else krequests_v2
         complete_request = API.CompleteDownloadRequest(uuid=uuid)
-        complete_res = krequests.put(
+        complete_res = kreq.put(
             endpoint_path=API.Path.COMPLETE_DOWNLOAD.value,
             data=json.dumps(dataclasses.asdict(complete_request)),
         )
@@ -122,9 +127,11 @@ class _BatchedLoader(Generic[DFType]):
     def iter_data(
         init_request: API.BaseInitDownloadRequest,
         endpoint_path: str,
-        df_class: Type[DFType],
+        df_class: Optional[Type[DFType]],
+        endpoint_api_version: int = DEFAULT_API_VERSION,
     ) -> Iterator[DFType]:
-        with krequests.put(
+        kreq = krequests if endpoint_api_version == API_V1 else krequests_v2
+        with kreq.put(
             endpoint_path=endpoint_path,
             data=json.dumps(dataclasses.asdict(init_request)),
             stream=True,

@@ -8,7 +8,7 @@ documentation = "https://docs.kolena.io"
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["Kolena", "ML", "testing"]
-classifiers = [  # classifiers for license, versions set automatically during Poetry build
+classifiers = [# classifiers for license, versions set automatically during Poetry build
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
@@ -35,7 +35,7 @@ pandas = [
     { version = ">=1.5,<1.6", python = ">=3.11" },
 ]
 pandera = ">=0.9.0,<0.16"
-pydantic = ">=1.8,<2"
+pydantic = ">=1.10,<2"
 dacite = ">=1.6,<2"
 requests = ">=2.20,<2.30"  # TODO: revert upper bound when urllib3 situation sorts out: https://github.com/psf/requests/issues/6432
 requests-toolbelt = "*"

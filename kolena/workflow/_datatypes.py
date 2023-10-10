@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import json
 from abc import ABCMeta
 from abc import abstractmethod
 from collections import OrderedDict
@@ -30,6 +31,7 @@ import numpy as np
 import pandas as pd
 import pandera as pa
 from pandera.typing import Series
+from pydantic import Extra
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.dataframes.validators import validate_df_schema
@@ -44,9 +46,81 @@ from kolena._utils.validators import ValidatorConfig
 T = TypeVar("T", bound="DataObject")
 
 
+def _double_under(input: str) -> bool:
+    return input.startswith("__") and input.endswith("__")
+
+
+def _allow_extra(cls: Type[T]) -> bool:
+    # `pydantic.dataclasses.is_built_in_dataclass` would have false-positive when a stdlib-dataclass decorated
+    # class extends a pydantic dataclass
+    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow
+
+
+# used to track data_type string -> TypedDataObject
+_DATA_TYPE_MAP = {}
+
+
+def _get_full_type(obj: "TypedDataObject") -> str:
+    data_type = obj._data_type()
+    return f"{data_type._data_category()}/{data_type.value}"
+
+
+def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
+    return _DATA_TYPE_MAP.get(name, None)
+
+
+# used for TypedBaseDataObject to register themselves to be used in dataclass extra fields deserialization
+def _register_data_type(cls) -> None:
+    full_name = _get_full_type(cls)
+    # leverage class inheritance order, only keep base classes of a datatype
+    if full_name not in _DATA_TYPE_MAP:
+        _DATA_TYPE_MAP[full_name] = cls
+
+
+def _deserialize_typed_dataobject(value: Dict[Any, Any]) -> Any:
+    data_type = _get_data_type(value[DATA_TYPE_FIELD])
+    if data_type is None:
+        return value
+
+    # 'data_type' is not a real member
+    value.pop(DATA_TYPE_FIELD)
+    return data_type._from_dict(value)
+
+
+# best effort to deserialize typed data objects in dataclass extra fields
+# note: since a "data_type" string could map to multiple classes through inheritance, only base case would be used.
+def _try_deserialize_typed_dataobject(value: Any) -> Any:
+    if isinstance(value, list):
+        # only attempt deserialization when it is likely this is a list of typed data objects
+        if value and isinstance(value[0], dict) and DATA_TYPE_FIELD in value[0]:
+            return [_try_deserialize_typed_dataobject(val) for val in value]
+    elif isinstance(value, dict):
+        if DATA_TYPE_FIELD in value:
+            return _deserialize_typed_dataobject(value)
+
+    return value
+
+
 @dataclass(frozen=True, config=ValidatorConfig)
 class DataObject(metaclass=ABCMeta):
     """The base for various objects in `kolena.workflow`."""
+
+    def __str__(self):
+        if not _allow_extra(type(self)):
+            return self.__repr__()
+
+        # emulate stdlib dataclass _repr_fn implementation, extending extra fields
+        fields = [f.name for f in dataclasses.fields(self)]
+        extras = [f for f in vars(self) if f not in fields and not _double_under(f)]
+
+        # caveat: dataclass generate `__repr__` for decorated classes, as such calls `__str__` for `DataObject` instead.
+        value_str = ", ".join(
+            [
+                f"{f}={getattr(self, f)}" if isinstance(getattr(self, f), DataObject) else f"{f}={getattr(self, f)!r}"
+                for f in fields + extras
+            ],
+        )
+        return f"{self.__class__.__qualname__}({value_str})"
 
     def _to_dict(self) -> Dict[str, Any]:
         def serialize_value(value: Any) -> Any:
@@ -65,6 +139,11 @@ class DataObject(metaclass=ABCMeta):
             raise ValueError(f"unsupported value type: '{type(value).__name__}' (value: {value})")
 
         items = [(field.name, getattr(self, field.name)) for field in dataclasses.fields(type(self))]
+        field_names = {field.name for field in dataclasses.fields(type(self))}
+        if _allow_extra(type(self)):
+            for key, val in vars(self).items():
+                if key not in field_names and not _double_under(key):
+                    items.append((key, val))
         return OrderedDict([(key, serialize_value(value)) for key, value in items])
 
     @classmethod
@@ -146,7 +225,86 @@ class DataObject(metaclass=ABCMeta):
             )
 
         items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
+        field_names = {f.name for f in dataclasses.fields(cls)}
+        if _allow_extra(cls):
+            for key, val in obj_dict.items():
+                if key not in field_names:
+                    items[key] = _try_deserialize_typed_dataobject(val)
         return cls(**items)
+
+    # integrate with pandas json deserialization
+    # https://pandas.pydata.org/docs/user_guide/io.html#fallback-behavior
+    def toDict(self) -> Dict:
+        return self._to_dict()
+
+
+def _serialize_dataobject(x: Any) -> Any:
+    if isinstance(x, list):
+        return [item._to_dict() if isinstance(item, DataObject) else item for item in x]
+
+    return x._to_dict() if isinstance(x, DataObject) else x
+
+
+def _deserialize_dataobject(x: Any) -> Any:
+    if isinstance(x, list):
+        return [_deserialize_dataobject(item) for item in x]
+
+    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
+        data = {**x}
+        data_type = data.pop(DATA_TYPE_FIELD)
+        typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
+        if typed_dataobject:
+            return typed_dataobject._from_dict(data)
+
+    return x
+
+
+_serialize_series = np.vectorize(_serialize_dataobject)
+_deserialize_series = np.vectorize(_deserialize_dataobject)
+
+
+def _serialize_json(x: Any) -> Any:
+    if isinstance(x, list) or isinstance(x, dict):
+        return json.dumps(x)
+
+    return x
+
+
+def _deserialize_json(x: Any) -> Any:
+    if isinstance(x, str):
+        try:
+            return json.loads(x)
+        except Exception:
+            ...
+
+    return x
+
+
+def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
+    columns = list(df.select_dtypes(include="object").columns)
+    df_post = df.select_dtypes(exclude="object")
+    df_post[columns] = df[columns].apply(_serialize_series)
+    df_post[columns] = df_post[columns].apply(np.vectorize(_serialize_json))
+    return df_post.to_csv(*args, **kwargs)
+
+
+def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
+    df = pd.read_csv(*args, **kwargs)
+    columns = list(df.select_dtypes(include="object").columns)
+    df_post = df.select_dtypes(exclude="object")
+    df_post[columns] = df[columns].apply(np.vectorize(_deserialize_json))
+    df_post[columns] = df_post[columns].apply(_deserialize_series)
+
+    return df_post
+
+
+def dataframe_from_json(*args, **kwargs) -> pd.DataFrame:
+    df = pd.read_json(*args, **kwargs)
+    columns = list(df.select_dtypes(include="object").columns)
+    df_post = df.select_dtypes(exclude="object")
+    df_post[columns] = df[columns].apply(_deserialize_series)
+
+    return df_post
 
 
 class DataType(str, Enum):
@@ -222,6 +380,7 @@ class TestSuiteTestSamplesDataFrameSchema(pa.SchemaModel):
 
     test_case_id: Optional[Series[pa.typing.Int64]] = pa.Field(coerce=True)
     test_sample: Series[JSONObject] = pa.Field(coerce=True)
+    test_sample_metadata: Series[JSONObject] = pa.Field(coerce=True)
 
 
 class TestSuiteTestSamplesDataFrame(
@@ -246,6 +405,7 @@ class TestSuiteTestSamplesDataFrame(
         serde_function = as_serialized_json if serialize else as_deserialized_json
         df_out = df.copy()
         df_out["test_sample"] = df_out["test_sample"].apply(serde_function)
+        df_out["test_sample_metadata"] = df_out["test_sample_metadata"].apply(serde_function)
         return df_out
 
 
