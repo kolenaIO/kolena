@@ -28,7 +28,7 @@ to candidate texts that are very short in length, but mostly contain n-grams in 
 The BLEU score is mathematically defined as:
 
 $$\begin{align*} \text{BLEU} &= \text{Brevity Penalty} \times \text{n-gram Overlap} \\
-&= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \left(\prod_{i=1}^{4}\text{i-gram Precision}^{1/4}\right)
+&= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \prod_{i=1}^{4}\text{i-gram Precision}^{\frac{1}{4}}
 \end{align*}$$
 
 where the i-gram precision is calculated as:
