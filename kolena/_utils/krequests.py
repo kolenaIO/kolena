@@ -65,6 +65,7 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         "Authorization": f"Bearer {client_state.jwt_token}",
         "X-Request-ID": uuid.uuid4().hex,
         "User-Agent": user_agent(client_name, client_version),
+        "X-Kolena-Telemetry": str(client_state.telemetry),
     }
     return {
         **default_kwargs,
