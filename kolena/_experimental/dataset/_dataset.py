@@ -101,7 +101,7 @@ def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
 
 
 def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    flattened = pd.json_normalize([json.loads(r[column]) for r in df.to_dict("records")], max_level=1)
+    flattened = pd.json_normalize([json.loads(r[column]) for r in df.to_dict("records")], max_level=0)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     object_columns = list(flattened.select_dtypes(include="object").columns)
     result = flattened.select_dtypes(exclude="object")

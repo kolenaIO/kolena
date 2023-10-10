@@ -65,7 +65,10 @@ class EvaluationConfiguration(Protocol):
 
 TYPE_EVALUATION_CONFIG = Union[EvaluationConfiguration, Dict]
 INFER_FUNC_TYPE = Callable[[pd.DataFrame], pd.DataFrame]
-EVAL_FUNC_TYPE = Callable[[pd.DataFrame, pd.DataFrame, Optional[TYPE_EVALUATION_CONFIG]], pd.DataFrame]
+EVAL_FUNC_TYPE = Callable[
+    [pd.DataFrame, pd.DataFrame, Union[Optional[TYPE_EVALUATION_CONFIG], TYPE_EVALUATION_CONFIG]],
+    pd.DataFrame,
+]
 
 
 def _fetch_dataset(dataset: str) -> pd.DataFrame:
