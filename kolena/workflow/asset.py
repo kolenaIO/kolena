@@ -146,7 +146,7 @@ class VideoAsset(BaseVideoAsset):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class AudioAsset:
+class AudioAsset(Asset):
     """An audio file located in a cloud bucket or served at a URL"""
 
     locator: str
