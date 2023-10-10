@@ -40,7 +40,7 @@ def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: floa
     For more details on how threshold is used see https://pages.nist.gov/frvt/reports/11/frvt_11_report.pdf
     """
     similarity_scores = np.array(
-        [inf.similarity for gt, inf in inferences if (not gt.is_same) and (inf.similarity is not None)]
+        [inf.similarity for gt, inf in inferences if (not gt.is_same) and (inf.similarity is not None)],
     )
     threshold = np.quantile(similarity_scores, 1.0 - fmr)
     return threshold

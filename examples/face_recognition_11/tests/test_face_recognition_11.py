@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from argparse import Namespace
+
 import pytest
 from face_recognition_11.seed_test_run import main as seed_test_run_main
 from face_recognition_11.seed_test_suite import main as seed_test_suite_main

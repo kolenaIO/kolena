@@ -15,7 +15,8 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import List, Tuple
+from typing import List
+from typing import Tuple
 
 import pandas as pd
 from face_recognition_11.workflow import GroundTruth
@@ -31,7 +32,9 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def create_test_case_for_tag(
-    test_samples_and_ground_truths: List[Tuple[TestCase, GroundTruth]], category: str, value: str
+    test_samples_and_ground_truths: List[Tuple[TestCase, GroundTruth]],
+    category: str,
+    value: str,
 ) -> TestCase:
     name = f"{category} :: {value} :: {DATASET}"
     description = f"demographic subset of {DATASET} with source data labeled as {category}={value}"
