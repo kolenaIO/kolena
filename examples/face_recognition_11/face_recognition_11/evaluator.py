@@ -29,8 +29,8 @@ from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
-from kolena.workflow import Plot
 from kolena.workflow import Histogram
+from kolena.workflow import Plot
 from kolena.workflow import TestCases
 
 
@@ -190,7 +190,8 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
 
 
 def compute_test_suite_metrics(
-    test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]], threshold: float
+    test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]],
+    threshold: float,
 ) -> TestSuiteMetrics:
     baseline: TestCaseMetrics = test_case_metrics[0][1]
 

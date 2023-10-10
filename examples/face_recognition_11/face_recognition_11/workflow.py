@@ -184,4 +184,4 @@ class FMRConfiguration(EvaluatorConfiguration):
     """
 
     def display_name(self) -> str:
-        return "False Match Rate: {:.1e}".format(self.false_match_rate)
+        return f"False Match Rate: {self.false_match_rate:.1e}"
