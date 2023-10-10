@@ -2500,6 +2500,20 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
     <li class="md-nav__item md-nav__item--active md-nav__item--nested">
@@ -2670,6 +2684,62 @@
   
   
     <li class="md-nav__item">
+      <a href="bertscore/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BERTScore
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="bleu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BLEU
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="confusion-matrix/" class="md-nav__link">
         
   
@@ -2726,6 +2796,34 @@
   
   
     <li class="md-nav__item">
+      <a href="fpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      False Positive Rate (FPR)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="geometry-matching/" class="md-nav__link">
         
   
@@ -2762,6 +2860,34 @@
   
     <span class="md-typeset">
       Intersection over Union (IoU)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="meteor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      METEOR
     </span>
   
 
@@ -2846,6 +2972,93 @@
   
     <span class="md-typeset">
       Recall (TPR, Sensitivity)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="roc-curve/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROC Curve
+    </span>
+  
+
+    
+      <br>
+      <small>AUC ROC</small>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="rouge-n/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROUGE-N
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="specificity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Specificity (TNR)
     </span>
   
 
@@ -3104,6 +3317,18 @@ representing model's performance across all thresholds.</p>
 object detection.</p>
 </li>
 <li>
+<p><a href="bertscore/">BERTScore</a></p>
+<hr />
+<p>BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference
+texts.</p>
+</li>
+<li>
+<p><a href="bleu/">BLEU</a></p>
+<hr />
+<p>BLEU is a metric commonly used in a variety of NLP workflows to evaluate the quality of candidate texts. BLEU can be
+thought of as an analog to <a href="precision/">precision</a> for text comparisons.</p>
+</li>
+<li>
 <p><a href="confusion-matrix/">Confusion Matrix</a></p>
 <hr />
 <p>Confusion matrix is a structured plot describing classification model performance as a table that highlights counts
@@ -3114,6 +3339,12 @@ of objects with predicted classes (columns) against the actual classes (rows), i
 <hr />
 <p>F<sub>1</sub>-score is a metric that combines two competing metrics, <a href="precision/">precision</a> and
 <a href="recall/">recall</a> with an equal weight. It symmetrically represents both precision and recall as one metric.</p>
+</li>
+<li>
+<p><a href="fpr/">False Positive Rate (FPR)</a></p>
+<hr />
+<p>False positive rate (FPR) measures the proportion of negative ground truths that a model incorrectly predicts as
+positive, ranging from 0 to 1. It is useful when the objective is to measure and reduce false positive inferences.</p>
 </li>
 <li>
 <p><a href="geometry-matching/">Geometry Matching</a></p>
@@ -3128,6 +3359,13 @@ metrics built on top of these, like <a href="precision/">precision</a>, <a href=
 <hr />
 <p>IoU measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
 Also known as Jaccard index in classification workflow.</p>
+</li>
+<li>
+<p><a href="meteor/">METEOR</a></p>
+<hr />
+<p>METEOR is a widely recognized and vital metric used in NLP. It is used to measure the quality of candidate texts
+against reference texts. Though it is an n-gram based metric, it goes beyond traditional methods by factoring in
+elements such as precision, recall, and order to provide a comprehensive measure of text quality.</p>
 </li>
 <li>
 <p><a href="precision/">Precision</a></p>
@@ -3148,6 +3386,27 @@ thresholds.</p>
 <p>Recall, also known as true positive rate (TPR) and sensitivity, measures the proportion of all positive ground
 truths that a model correctly predicts. It is useful when the objective is to measure and reduce false negative
 ground truths, i.e. model misses.</p>
+</li>
+<li>
+<p><a href="roc-curve/">Receiver Operating Characteristic (ROC) Curve</a></p>
+<hr />
+<p>A receiver operating characteristic (ROC) curve is a plot that is used to evaluate the performance of binary
+classification models by using the <a href="recall/">true positive rate (TPR)</a> and the
+<a href="fpr/">false positive rate (FPR)</a>.</p>
+</li>
+<li>
+<p><a href="rouge-n/">ROUGE-N</a></p>
+<hr />
+<p>ROUGE-N, a metric within the broader ROUGE metric collection, is a vital metric in the field of NLP. It assesses
+the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
+ROUGE-N can be thought of as an analog to <a href="recall/">recall</a> for text comparisons.</p>
+</li>
+<li>
+<p><a href="specificity/">Specificity (TNR)</a></p>
+<hr />
+<p>Specificity, also known as true negative rate (TNR), measures the proportion of negative ground truths that a
+model correctly predicts, ranging from 0 to 1. It is useful when the objective is to measure the model's ability to
+correctly identify the negative class instances.</p>
 </li>
 <li>
 <p><a href="tp-fp-fn-tn/">TP / FP / FN / TN</a></p>
@@ -3171,7 +3430,7 @@ and <a href="recall/">recall</a>.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 18, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
       </span>
     
     

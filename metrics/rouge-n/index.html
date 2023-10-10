@@ -10,29 +10,29 @@
       
       
       
-        <link rel="canonical" href="https://docs.kolena.io/reference/workflow/test-run/">
+        <link rel="canonical" href="https://docs.kolena.io/metrics/rouge-n/">
       
       
-        <link rel="prev" href="../model/">
+        <link rel="prev" href="../roc-curve/">
       
       
-        <link rel="next" href="../annotation/">
+        <link rel="next" href="../specificity/">
       
       
         
       
       
-      <link rel="icon" href="../../../assets/images/favicon.png">
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.3+insiders-4.39.1">
     
     
-<title>test · Testing with Kolena</title>
+<title>ROUGE-N · Testing with Kolena</title>
 
     
-      <link rel="stylesheet" href="../../../assets/stylesheets/main.b13eea88.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.b13eea88.min.css">
       
         
-        <link rel="stylesheet" href="../../../assets/stylesheets/palette.da3f46a0.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.da3f46a0.min.css">
       
       
 
@@ -51,13 +51,13 @@
       
     
     
-      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../../assets/css/theme.css">
+      <link rel="stylesheet" href="../../assets/css/theme.css">
     
-      <link rel="stylesheet" href="../../../assets/css/mkdocstrings.css">
+      <link rel="stylesheet" href="../../assets/css/mkdocstrings.css">
     
-    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -90,17 +90,17 @@
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="<code>test</code> - Testing with Kolena" />
+<meta property="og:title" content="ROUGE-N - Testing with Kolena" />
 <meta property="og:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="og:image" content="https://docs.kolena.io/assets/images/social/reference/workflow/test-run.png" />
+<meta property="og:image" content="https://docs.kolena.io/assets/images/social/metrics/rouge-n.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://docs.kolena.io/reference/workflow/test-run/" />
+<meta property="og:url" content="https://docs.kolena.io/metrics/rouge-n/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="<code>test</code> - Testing with Kolena" />
+<meta property="twitter:title" content="ROUGE-N - Testing with Kolena" />
 <meta property="twitter:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/reference/workflow/test-run.png" />
+<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/metrics/rouge-n.png" />
 </head>
   
   
@@ -120,7 +120,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kolenaworkflowtest" class="md-skip">
+        <a href="#rouge-n" class="md-skip">
           Skip to content
         </a>
       
@@ -136,9 +136,9 @@
 
 <header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../.." title="Testing with Kolena" class="md-header__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
+    <a href="../.." title="Testing with Kolena" class="md-header__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
       
-  <img src="../../../assets/images/logo-white.svg" alt="logo">
+  <img src="../../assets/images/logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -155,7 +155,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              <code>test</code>
+              ROUGE-N
             
           </span>
         </div>
@@ -270,7 +270,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../.." class="md-tabs__link">
+        <a href="../.." class="md-tabs__link">
           
   
     
@@ -298,13 +298,11 @@
         
   
   
-    
-  
   
     
     
-      <li class="md-tabs__item md-tabs__item--active">
-        <a href="../../" class="md-tabs__link">
+      <li class="md-tabs__item">
+        <a href="../../reference/" class="md-tabs__link">
           
   
     
@@ -338,11 +336,13 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
-        <a href="../../../metrics/" class="md-tabs__link">
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
           
   
     
@@ -391,7 +391,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../../faq/" class="md-tabs__link">
+        <a href="../../faq/" class="md-tabs__link">
           
   
     
@@ -463,9 +463,9 @@
 
 <nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../.." title="Testing with Kolena" class="md-nav__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
+    <a href="../.." title="Testing with Kolena" class="md-nav__button md-logo" aria-label="Testing with Kolena" data-md-component="logo">
       
-  <img src="../../../assets/images/logo-white.svg" alt="logo">
+  <img src="../../assets/images/logo-white.svg" alt="logo">
 
     </a>
     Testing with Kolena
@@ -520,7 +520,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../.." class="md-nav__link ">
+            <a href="../.." class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -573,7 +573,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../quickstart/" class="md-nav__link">
+      <a href="../../quickstart/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -610,7 +610,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../installing-kolena/" class="md-nav__link">
+      <a href="../../installing-kolena/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -653,7 +653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../building-a-workflow/" class="md-nav__link">
+      <a href="../../building-a-workflow/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -717,7 +717,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../core-concepts/" class="md-nav__link ">
+            <a href="../../core-concepts/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -769,7 +769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../core-concepts/workflow/" class="md-nav__link">
+      <a href="../../core-concepts/workflow/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -806,7 +806,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../core-concepts/test-suite/" class="md-nav__link">
+      <a href="../../core-concepts/test-suite/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -843,7 +843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../core-concepts/model/" class="md-nav__link">
+      <a href="../../core-concepts/model/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -923,7 +923,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../advanced-usage/" class="md-nav__link ">
+            <a href="../../advanced-usage/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1004,7 +1004,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../advanced-usage/connecting-cloud-storage/" class="md-nav__link ">
+            <a href="../../advanced-usage/connecting-cloud-storage/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1057,7 +1057,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/connecting-cloud-storage/amazon-s3/" class="md-nav__link">
+      <a href="../../advanced-usage/connecting-cloud-storage/amazon-s3/" class="md-nav__link">
         
   
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m20.913 13.147.12-.895c.947.576 1.258.922 1.354 1.071-.16.031-.562.046-1.474-.176zm-2.174 7.988a.547.547 0 0 0-.005.073c0 .084-.207.405-1.124.768a10.28 10.28 0 0 1-1.438.432c-1.405.325-3.128.504-4.853.504-4.612 0-7.412-1.184-7.412-1.704a.547.547 0 0 0-.005-.073L1.81 5.602c.135.078.28.154.432.227.042.02.086.038.128.057.134.062.272.122.417.18l.179.069c.154.058.314.114.478.168.043.013.084.029.13.043.207.065.423.127.646.187l.176.044c.175.044.353.087.534.127a23.414 23.414 0 0 0 .843.17l.121.023c.252.045.508.085.768.122.071.011.144.02.216.03.2.027.4.053.604.077l.24.027c.245.026.49.05.74.07l.081.009c.275.022.552.04.83.056l.233.012c.21.01.422.018.633.025a33.088 33.088 0 0 0 2.795-.026l.232-.011c.278-.016.555-.034.83-.056l.08-.008c.25-.02.497-.045.742-.072l.238-.026c.205-.024.408-.05.609-.077.07-.01.141-.019.211-.03.261-.037.519-.078.772-.122l.111-.02c.215-.04.427-.082.634-.125l.212-.047c.186-.041.368-.085.546-.13l.166-.042c.225-.06.444-.122.654-.189.04-.012.077-.026.115-.038a10.6 10.6 0 0 0 .493-.173c.058-.021.114-.044.17-.066.15-.06.293-.12.43-.185.038-.017.079-.034.116-.052.153-.073.3-.15.436-.228l-.976 7.245c-2.488-.78-5.805-2.292-7.311-3a1.09 1.09 0 0 0-1.088-1.085c-.6 0-1.088.489-1.088 1.088 0 .6.488 1.089 1.088 1.089.196 0 .378-.056.537-.148 1.72.812 5.144 2.367 7.715 3.15zm-7.42-20.047c5.677 0 9.676 1.759 9.75 2.736l-.014.113c-.01.033-.031.067-.048.101-.015.028-.026.057-.047.087-.024.033-.058.068-.09.102-.028.03-.051.06-.084.09-.038.035-.087.07-.133.105-.04.03-.074.06-.119.091-.053.036-.116.071-.177.107-.05.03-.095.06-.15.09-.068.036-.147.073-.222.11-.059.028-.114.057-.177.085-.084.038-.177.074-.268.111-.068.027-.13.054-.203.082-.097.036-.205.072-.31.107-.075.026-.148.053-.228.079-.111.035-.233.069-.35.103-.085.024-.165.05-.253.073-.124.034-.258.065-.389.098-.093.022-.181.046-.278.068-.139.032-.287.061-.433.091-.098.02-.191.041-.293.06-.155.03-.32.057-.482.084-.1.018-.198.036-.302.052-.166.026-.342.048-.515.072-.11.014-.213.03-.325.044-.181.023-.372.041-.56.06-.11.012-.218.025-.332.036-.188.016-.386.029-.58.043-.122.009-.24.02-.364.028-.207.012-.422.02-.635.028-.12.005-.234.012-.354.016a35.605 35.605 0 0 1-2.069 0c-.12-.004-.234-.011-.352-.016-.214-.008-.43-.016-.637-.028-.122-.008-.238-.02-.36-.027-.195-.015-.394-.028-.584-.044-.11-.01-.215-.024-.324-.035-.19-.02-.384-.038-.568-.06l-.315-.044c-.176-.024-.355-.046-.525-.073-.1-.015-.192-.033-.29-.05-.167-.028-.335-.055-.494-.086-.096-.018-.183-.038-.276-.056-.151-.032-.305-.062-.45-.095-.09-.02-.173-.043-.26-.064-.138-.034-.277-.067-.407-.102-.082-.022-.157-.046-.235-.069a11.75 11.75 0 0 1-.368-.108c-.075-.024-.141-.049-.213-.073-.11-.037-.223-.075-.325-.113-.067-.025-.125-.051-.188-.077-.096-.038-.195-.076-.282-.115-.06-.027-.11-.054-.166-.08-.08-.039-.162-.077-.233-.116-.052-.028-.094-.055-.142-.084-.063-.038-.13-.075-.185-.113-.043-.029-.075-.058-.113-.086-.048-.037-.098-.073-.139-.11-.032-.029-.054-.057-.08-.087-.033-.035-.069-.07-.093-.104-.02-.03-.031-.058-.046-.086-.018-.035-.039-.068-.049-.102l-.015-.113c.076-.977 4.074-2.736 9.748-2.736zm12.182 12.124c-.118-.628-.84-1.291-2.31-2.128l.963-7.16a.531.531 0 0 0 .005-.073C22.16 1.581 16.447 0 11.32 0 6.194 0 .482 1.581.482 3.851a.58.58 0 0 0 .005.072L2.819 21.25c.071 2.002 5.236 2.75 8.5 2.75 1.805 0 3.615-.188 5.098-.531.598-.138 1.133-.3 1.592-.48 1.18-.467 1.789-1.053 1.813-1.739l.945-7.018c.557.131 1.016.197 1.389.197.54 0 .902-.137 1.134-.413a.956.956 0 0 0 .21-.804Z"/></svg>
@@ -1085,7 +1085,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/connecting-cloud-storage/s3-compatible/" class="md-nav__link">
+      <a href="../../advanced-usage/connecting-cloud-storage/s3-compatible/" class="md-nav__link">
         
   
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.207.006a2.16 2.16 0 0 0-1.62.582 2.15 2.15 0 0 0-.095 3.035l3.408 3.55a3.042 3.042 0 0 1-.663 4.688l-.463.239V7.285a15.42 15.42 0 0 0-8.018 10.486v.018l6.549-3.328v7.621L13.779 24V13.682l.897-.463a4.443 4.443 0 0 0 1.22-7.03l-3.37-3.525a.749.749 0 0 1 .037-1.055.752.752 0 0 1 1.056.038l.467.486-.006.006 4.07 4.244a.057.057 0 0 0 .082 0 .06.06 0 0 0 0-.07l-3.14-5.143-.149.143.149-.145C14.494.393 13.829.054 13.207.006Zm-.902 9.865v2.994l-4.152 2.149a13.979 13.979 0 0 1 2.767-3.928 14.178 14.178 0 0 1 1.385-1.215z"/></svg>
@@ -1116,7 +1116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/connecting-cloud-storage/google-cloud-storage/" class="md-nav__link">
+      <a href="../../advanced-usage/connecting-cloud-storage/google-cloud-storage/" class="md-nav__link">
         
   
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.19 2.38a9.344 9.344 0 0 0-9.234 6.893c.053-.02-.055.013 0 0-3.875 2.551-3.922 8.11-.247 10.941l.006-.007-.007.03a6.717 6.717 0 0 0 4.077 1.356h5.173l.03.03h5.192c6.687.053 9.376-8.605 3.835-12.35a9.365 9.365 0 0 0-2.821-4.552l-.043.043.006-.05A9.344 9.344 0 0 0 12.19 2.38zm-.358 4.146c1.244-.04 2.518.368 3.486 1.15a5.186 5.186 0 0 1 1.862 4.078v.518c3.53-.07 3.53 5.262 0 5.193h-5.193l-.008.009v-.04H6.785a2.59 2.59 0 0 1-1.067-.23h.001a2.597 2.597 0 1 1 3.437-3.437l3.013-3.012A6.747 6.747 0 0 0 8.11 8.24c.018-.01.04-.026.054-.023a5.186 5.186 0 0 1 3.67-1.69z"/></svg>
@@ -1144,7 +1144,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/connecting-cloud-storage/azure-blob-storage/" class="md-nav__link">
+      <a href="../../advanced-usage/connecting-cloud-storage/azure-blob-storage/" class="md-nav__link">
         
   
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22.379 23.343a1.62 1.62 0 0 0 1.536-2.14v.002L17.35 1.76A1.62 1.62 0 0 0 15.816.657H8.184A1.62 1.62 0 0 0 6.65 1.76L.086 21.204a1.62 1.62 0 0 0 1.536 2.139h4.741a1.62 1.62 0 0 0 1.535-1.103l.977-2.892 4.947 3.675c.28.208.618.32.966.32m-3.084-12.531 3.624 10.739a.54.54 0 0 1-.51.713v-.001h-.03a.54.54 0 0 1-.322-.106l-9.287-6.9h4.853m6.313 7.006c.116-.326.13-.694.007-1.058L9.79 1.76a1.722 1.722 0 0 0-.007-.02h6.034a.54.54 0 0 1 .512.366l6.562 19.445a.54.54 0 0 1-.338.684"/></svg>
@@ -1172,7 +1172,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/connecting-cloud-storage/http-basic/" class="md-nav__link">
+      <a href="../../advanced-usage/connecting-cloud-storage/http-basic/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1217,7 +1217,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/packaging-for-automated-evaluation/" class="md-nav__link">
+      <a href="../../advanced-usage/packaging-for-automated-evaluation/" class="md-nav__link">
         
   
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><path d="m10.41.24 4.711 2.774c.544.316.878.897.879 1.526v5.01a1.77 1.77 0 0 1-.88 1.53l-7.753 4.521-.002.001a1.769 1.769 0 0 1-1.774 0H5.59L.873 12.85A1.761 1.761 0 0 1 0 11.327V6.292c0-.304.078-.598.22-.855l.004-.005.01-.019c.15-.262.369-.486.64-.643L8.641.239a1.752 1.752 0 0 1 1.765 0l.002.001ZM9.397 1.534l-7.17 4.182 4.116 2.388a.27.27 0 0 0 .269 0l7.152-4.148-4.115-2.422a.252.252 0 0 0-.252 0Zm-7.768 10.02 4.1 2.393V9.474a1.807 1.807 0 0 1-.138-.072L1.5 7.029v4.298c0 .095.05.181.129.227Zm8.6.642 1.521-.887v-4.45l-1.521.882ZM7.365 9.402h.001c-.044.026-.09.049-.136.071v4.472l1.5-.875V8.61Zm5.885 1.032 1.115-.65h.002a.267.267 0 0 0 .133-.232V5.264l-1.25.725Z"/></svg>
@@ -1245,7 +1245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/nesting-test-case-metrics/" class="md-nav__link">
+      <a href="../../advanced-usage/nesting-test-case-metrics/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1280,7 +1280,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../advanced-usage/uploading-activation-maps/" class="md-nav__link">
+      <a href="../../advanced-usage/uploading-activation-maps/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1335,8 +1335,6 @@
       
   
   
-    
-  
   
     
     
@@ -1355,18 +1353,18 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../" class="md-nav__link ">
+            <a href="../../reference/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1406,7 +1404,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1425,7 +1423,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../initialize/" class="md-nav__link">
+      <a href="../../reference/initialize/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1451,7 +1449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../errors/" class="md-nav__link">
+      <a href="../../reference/errors/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1475,8 +1473,6 @@
                 
   
   
-    
-  
   
     
     
@@ -1507,18 +1503,18 @@
     
       
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../" class="md-nav__link ">
+            <a href="../../reference/workflow/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -1551,7 +1547,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1570,7 +1566,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../test-sample/" class="md-nav__link">
+      <a href="../../reference/workflow/test-sample/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1596,7 +1592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../ground-truth/" class="md-nav__link">
+      <a href="../../reference/workflow/ground-truth/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1622,7 +1618,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../inference/" class="md-nav__link">
+      <a href="../../reference/workflow/inference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1648,7 +1644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../evaluator/" class="md-nav__link">
+      <a href="../../reference/workflow/evaluator/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1674,7 +1670,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../test-case/" class="md-nav__link">
+      <a href="../../reference/workflow/test-case/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1700,7 +1696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../test-suite/" class="md-nav__link">
+      <a href="../../reference/workflow/test-suite/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1726,7 +1722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../model/" class="md-nav__link">
+      <a href="../../reference/workflow/model/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1750,35 +1746,9 @@
                 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    
-  
-    <code>test</code>
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../reference/workflow/test-run/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1793,109 +1763,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;TestRun
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label=" TestRun">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.run" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;run
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.load_test_samples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;load_test_samples
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.iter_test_samples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;iter_test_samples
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.upload_inferences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;upload_inferences
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.evaluate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;evaluate
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.test" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;test
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1967,7 +1834,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../annotation/" class="md-nav__link">
+      <a href="../../reference/workflow/annotation/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1993,7 +1860,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../asset/" class="md-nav__link">
+      <a href="../../reference/workflow/asset/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2019,7 +1886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../plot/" class="md-nav__link">
+      <a href="../../reference/workflow/plot/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2045,7 +1912,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../define-workflow/" class="md-nav__link">
+      <a href="../../reference/workflow/define-workflow/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2071,7 +1938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../metrics/" class="md-nav__link">
+      <a href="../../reference/workflow/metrics/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2097,7 +1964,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../io-tools/" class="md-nav__link">
+      <a href="../../reference/workflow/io-tools/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2123,7 +1990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../visualization/" class="md-nav__link">
+      <a href="../../reference/workflow/visualization/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2192,7 +2059,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../pre-built/" class="md-nav__link ">
+            <a href="../../reference/pre-built/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2244,7 +2111,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../pre-built/object-detection-2d/" class="md-nav__link">
+      <a href="../../reference/pre-built/object-detection-2d/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2293,7 +2160,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../pre-built/classification/" class="md-nav__link">
+      <a href="../../reference/pre-built/classification/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2365,7 +2232,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../legacy/" class="md-nav__link ">
+            <a href="../../reference/legacy/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2420,7 +2287,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../legacy/built-in/classification/" class="md-nav__link">
+      <a href="../../reference/legacy/built-in/classification/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2457,7 +2324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../legacy/built-in/detection/" class="md-nav__link">
+      <a href="../../reference/legacy/built-in/detection/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2500,7 +2367,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../legacy/built-in/fr/" class="md-nav__link">
+      <a href="../../reference/legacy/built-in/fr/" class="md-nav__link">
         
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2552,7 +2419,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../legacy/built-in/base/" class="md-nav__link">
+      <a href="../../reference/legacy/built-in/base/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2599,6 +2466,8 @@
       
   
   
+    
+  
   
     
     
@@ -2645,18 +2514,18 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../metrics/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -2707,7 +2576,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2726,7 +2595,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/accuracy/" class="md-nav__link">
+      <a href="../accuracy/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2754,7 +2623,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/average-precision/" class="md-nav__link">
+      <a href="../average-precision/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2782,7 +2651,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/averaging-methods/" class="md-nav__link">
+      <a href="../averaging-methods/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2813,7 +2682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/bertscore/" class="md-nav__link">
+      <a href="../bertscore/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2841,7 +2710,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/bleu/" class="md-nav__link">
+      <a href="../bleu/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2869,7 +2738,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/confusion-matrix/" class="md-nav__link">
+      <a href="../confusion-matrix/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2897,7 +2766,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/f1-score/" class="md-nav__link">
+      <a href="../f1-score/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2925,7 +2794,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/fpr/" class="md-nav__link">
+      <a href="../fpr/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2953,7 +2822,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/geometry-matching/" class="md-nav__link">
+      <a href="../geometry-matching/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -2981,7 +2850,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/iou/" class="md-nav__link">
+      <a href="../iou/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3009,7 +2878,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/meteor/" class="md-nav__link">
+      <a href="../meteor/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3037,7 +2906,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/precision/" class="md-nav__link">
+      <a href="../precision/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3065,7 +2934,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/pr-curve/" class="md-nav__link">
+      <a href="../pr-curve/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3093,7 +2962,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/recall/" class="md-nav__link">
+      <a href="../recall/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3121,7 +2990,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/roc-curve/" class="md-nav__link">
+      <a href="../roc-curve/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3150,9 +3019,37 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../../../metrics/rouge-n/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROUGE-N
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -3169,6 +3066,129 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Implementation Details
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#multiple-references-taking-the-max" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Multiple References - Taking the Max
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Interpretation
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Examples
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rouge-1-unigrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          ROUGE-1 (Unigrams)
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rouge-2-bigrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          ROUGE-2 (Bigrams)
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Limitations and Advantages
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3180,7 +3200,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/specificity/" class="md-nav__link">
+      <a href="../specificity/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3208,7 +3228,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../metrics/tp-fp-fn-tn/" class="md-nav__link">
+      <a href="../tp-fp-fn-tn/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -3262,7 +3282,7 @@
           
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../faq/" class="md-nav__link ">
+            <a href="../../faq/" class="md-nav__link ">
               
   
     <?xml version="1.0" encoding="utf-8"?>
@@ -3366,22 +3386,26 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun" class="md-nav__link">
+  <a href="#implementation-details" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;TestRun
+        <span class="md-typeset">
+          Implementation Details
+        </span>
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label=" TestRun">
+    <nav class="md-nav" aria-label="Implementation Details">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.run" class="md-nav__link">
+  <a href="#multiple-references-taking-the-max" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;run
+        <span class="md-typeset">
+          Multiple References - Taking the Max
+        </span>
       
     </span>
   </a>
@@ -3389,43 +3413,12 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.load_test_samples" class="md-nav__link">
+  <a href="#interpretation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;load_test_samples
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.iter_test_samples" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;iter_test_samples
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.upload_inferences" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;upload_inferences
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.TestRun.evaluate" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;evaluate
+        <span class="md-typeset">
+          Interpretation
+        </span>
       
     </span>
   </a>
@@ -3438,10 +3431,57 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.test_run.test" class="md-nav__link">
+  <a href="#examples" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-function"></code>&nbsp;test
+        <span class="md-typeset">
+          Examples
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rouge-1-unigrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          ROUGE-1 (Unigrams)
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rouge-2-bigrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          ROUGE-2 (Bigrams)
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Limitations and Advantages
+        </span>
       
     </span>
   </a>
@@ -3464,54 +3504,13 @@
 
 
 
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-      
-        
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../../" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    API Reference
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-        
-  
-    
-    
-      <li class="md-path__item">
-        <a href="../" class="md-path__link">
-          
-  <span class="md-ellipsis">
-    <code>kolena.workflow</code>
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
               
               <article class="md-content__inner md-typeset">
                 
                   
 
   
-    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/reference/workflow/test-run.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/metrics/rouge-n.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -3519,455 +3518,194 @@
   
 
 
-<h1 id="kolenaworkflowtest"><code>kolena.workflow.test</code><a class="headerlink" href="#kolenaworkflowtest" title="Permanent link">#</a></h1>
-
-
-<div class="doc doc-object doc-module">
-
-
-
-
-
-
-  <div class="doc doc-contents first">
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-class">
-
-
-
-<h3 id="kolena.workflow.test_run.TestRun" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code><code class="highlight language-python"><span class="n">TestRun</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_suite</span><span class="p">,</span> <span class="n">evaluator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">configurations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
-
-<a href="#kolena.workflow.test_run.TestRun" class="headerlink" title="Permanent link">#</a></h3>
-
-
-
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="kolena._utils.frozen.Frozen">Frozen</span></code>, <code><span title="kolena._utils.instrumentation.WithTelemetry">WithTelemetry</span></code></p>
-
-  
-      <p>A <a class="autorefs autorefs-internal" href="../model/#kolena.workflow.model.Model"><code>Model</code></a> tested on a <a class="autorefs autorefs-internal" href="../test-suite/#kolena.workflow.test_suite.TestSuite"><code>TestSuite</code></a> using a specific
-<a class="autorefs autorefs-internal" href="../evaluator/#kolena.workflow.evaluator.Evaluator"><code>Evaluator</code></a> implementation.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>model</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="kolena.workflow.Model" href="../model/#kolena.workflow.model.Model">Model</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The model being tested.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>test_suite</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="kolena.workflow.TestSuite" href="../test-suite/#kolena.workflow.test_suite.TestSuite">TestSuite</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The test suite on which to test the model.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>evaluator</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" title="typing.Union" href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.Evaluator" href="../evaluator/#kolena.workflow.evaluator.Evaluator">Evaluator</a>, <a class="autorefs autorefs-internal" title="kolena.workflow.evaluator_function.BasicEvaluatorFunction" href="../evaluator/#kolena.workflow.evaluator_function.BasicEvaluatorFunction">BasicEvaluatorFunction</a>]]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>An optional evaluator implementation. Requires a previously configured server-side evaluator to default to if omitted. (Please see <a class="autorefs autorefs-internal" href="../evaluator/#kolena.workflow.evaluator_function.BasicEvaluatorFunction"><code>BasicEvaluatorFunction</code></a> for type definition.)</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>configurations</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.EvaluatorConfiguration" href="../evaluator/#kolena.workflow.evaluator.EvaluatorConfiguration">EvaluatorConfiguration</a>]]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>a list of configurations to use when running the evaluator.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>reset</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>overwrites existing inferences if set.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-
-  
-
-  <div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="kolena.workflow.test_run.TestRun.run" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code><code class="highlight language-python"><span class="n">run</span><span class="p">()</span></code>
-
-<a href="#kolena.workflow.test_run.TestRun.run" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Run the testing process, first extracting inferences for all test samples in the test suite then performing
-evaluation.</p>
-
-  </div>
-
+<h1 id="rouge-n">ROUGE-N<a class="headerlink" href="#rouge-n" title="Permanent link">#</a></h1>
+<div class="admonition info inline end">
+<p class="admonition-title">ROUGE vs. Recall</p>
+<p>Complimentary to <a href="../bleu/">BLEU</a>, ROUGE-N can be thought of as an analog to <a href="../recall/">recall</a> for text
+comparisons.</p>
 </div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="kolena.workflow.test_run.TestRun.load_test_samples" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code><code class="highlight language-python"><span class="n">load_test_samples</span><span class="p">()</span></code>
-
-<a href="#kolena.workflow.test_run.TestRun.load_test_samples" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Load the test samples in the test suite that do not yet have inferences uploaded.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.TestSample" href="../test-sample/#kolena.workflow.test_sample.TestSample">TestSample</a>]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>a list of all test samples in the test suite still requiring inferences.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="kolena.workflow.test_run.TestRun.iter_test_samples" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code><code class="highlight language-python"><span class="n">iter_test_samples</span><span class="p">()</span></code>
-
-<a href="#kolena.workflow.test_run.TestRun.iter_test_samples" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Iterate through the test samples in the test suite that do not yet have inferences uploaded.</p>
-
-
-
-  <p><strong>Returns:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Iterator" href="https://docs.python.org/3/library/typing.html#typing.Iterator">Iterator</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.TestSample" href="../test-sample/#kolena.workflow.test_sample.TestSample">TestSample</a>]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>an iterator over each test sample still requiring inferences.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="kolena.workflow.test_run.TestRun.upload_inferences" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code><code class="highlight language-python"><span class="n">upload_inferences</span><span class="p">(</span><span class="n">inferences</span><span class="p">)</span></code>
-
-<a href="#kolena.workflow.test_run.TestRun.upload_inferences" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Upload inferences from a model.</p>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>inferences</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-external" title="typing.Tuple" href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.TestSample" href="../test-sample/#kolena.workflow.test_sample.TestSample">TestSample</a>, <a class="autorefs autorefs-internal" title="kolena.workflow.Inference" href="../inference/#kolena.workflow.inference.Inference">Inference</a>]]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>the inferences, paired with their corresponding test samples, to upload.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h4 id="kolena.workflow.test_run.TestRun.evaluate" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code><code class="highlight language-python"><span class="n">evaluate</span><span class="p">()</span></code>
-
-<a href="#kolena.workflow.test_run.TestRun.evaluate" class="headerlink" title="Permanent link">#</a></h4>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Perform evaluation by computing metrics for individual test samples, in aggregate across test cases, and across
-the complete test suite at each <a class="autorefs autorefs-internal" href="../evaluator/#kolena.workflow.evaluator.EvaluatorConfiguration"><code>EvaluatorConfiguration</code></a>.</p>
-
-  </div>
-
-</div>
-
-
-
-  </div>
-
-  </div>
-
-
-</div>
-
-
-
-<div class="doc doc-object doc-function">
-
-
-
-<h3 id="kolena.workflow.test_run.test" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-function"></code><code class="highlight language-python"><span class="n">test</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_suite</span><span class="p">,</span> <span class="n">evaluator</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">configurations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
-
-<a href="#kolena.workflow.test_run.test" class="headerlink" title="Permanent link">#</a></h3>
-
-
-
-  <div class="doc doc-contents ">
-  
-      <p>Test a <a class="autorefs autorefs-internal" href="../model/#kolena.workflow.model.Model"><code>Model</code></a> on a <a class="autorefs autorefs-internal" href="../test-suite/#kolena.workflow.test_suite.TestSuite"><code>TestSuite</code></a> using a specific
-<a class="autorefs autorefs-internal" href="../evaluator/#kolena.workflow.evaluator.Evaluator"><code>Evaluator</code></a> implementation.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">kolena.workflow</span> <span class="kn">import</span> <span class="n">test</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">test</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test_suite</span><span class="p">,</span> <span class="n">evaluator</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span></code></pre></div>
-
-
-
-  <p><strong>Parameters:</strong></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr>
-          <td><code>model</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="kolena.workflow.Model" href="../model/#kolena.workflow.model.Model">Model</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The model being tested, implementing the <code>infer</code> method.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>test_suite</code></td>
-          <td>
-                <code><a class="autorefs autorefs-internal" title="kolena.workflow.TestSuite" href="../test-suite/#kolena.workflow.test_suite.TestSuite">TestSuite</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>The test suite on which to test the model.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
-        </tr>
-        <tr>
-          <td><code>evaluator</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" title="typing.Union" href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.Evaluator" href="../evaluator/#kolena.workflow.evaluator.Evaluator">Evaluator</a>, <a class="autorefs autorefs-internal" title="kolena.workflow.evaluator_function.BasicEvaluatorFunction" href="../evaluator/#kolena.workflow.evaluator_function.BasicEvaluatorFunction">BasicEvaluatorFunction</a>]]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>An optional evaluator implementation. Requires a previously configured server-side evaluator to default to if omitted. (Please see <a class="autorefs autorefs-internal" href="../evaluator/#kolena.workflow.evaluator_function.BasicEvaluatorFunction"><code>BasicEvaluatorFunction</code></a> for type definition.)</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>configurations</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" title="typing.Optional" href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a class="autorefs autorefs-external" title="typing.List" href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a class="autorefs autorefs-internal" title="kolena.workflow.EvaluatorConfiguration" href="../evaluator/#kolena.workflow.evaluator.EvaluatorConfiguration">EvaluatorConfiguration</a>]]</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>A list of configurations to use when running the evaluator.</p>
-            </div>
-          </td>
-          <td>
-                <code>None</code>
-          </td>
-        </tr>
-        <tr>
-          <td><code>reset</code></td>
-          <td>
-                <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Overwrites existing inferences if set.</p>
-            </div>
-          </td>
-          <td>
-                <code>False</code>
-          </td>
-        </tr>
-    </tbody>
-  </table>
-
-  </div>
-
-</div>
-
-
-
-  </div>
-
-  </div>
-
-</div>
+<p>ROUGE-N (<strong>R</strong>ecall-<strong>O</strong>riented <strong>U</strong>nderstudy for <strong>G</strong>isting <strong>E</strong>valuation), a metric within the broader ROUGE
+metric collection, is a vital metric in the field of natural language processing and text evaluation. It assesses the
+quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts. ROUGE-N
+provides insights into the ability of a system to capture essential content and linguistic nuances, making it an
+important and versatile tool used in many NLP workflows. As the name implies, it is a recall-based metric — a complement
+to the precision-based BLEU score.</p>
+<h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">#</a></h2>
+<p>Formally, ROUGE-N is an n-gram recall between a candidate and a set of reference texts. That is, ROUGE-N calculates the
+number of overlapping n-grams between the generated and reference texts divided by the total number of n-grams in the
+reference texts.</p>
+<p>Mathematically, we define ROUGE-N as follows:</p>
+<div class="arithmatex">\[
+\text{ROUGE-N} = \frac{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Match}(\text{n-gram})}{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Count}(\text{n-gram})}
+\]</div>
+<p>where <span class="arithmatex">\(\text{Match(n-gram)}\)</span> is the maximum number of n-grams co-occuring in a candidate text and set of reference
+texts.</p>
+<p>It is clear that ROUGE-N is analogous to a recall-based measure, since the denominator of the equation is the sum of the
+number of n-grams on the reference-side.</p>
+<h3 id="multiple-references-taking-the-max">Multiple References - Taking the Max<a class="headerlink" href="#multiple-references-taking-the-max" title="Permanent link">#</a></h3>
+<p>We usually want to compare a candidate text against multiple reference texts, as there is no single correct reference
+text that can capture all semantic nuances. Though the above formula is sufficient for calculating ROUGE-N across
+multiple references, another proposed way of calculating ROUGE-N across multiple references, as highlighted in the
+<a href="https://aclanthology.org/W04-1013.pdf">original ROUGE paper</a>, is as follows:</p>
+<p>We compute pairwise ROUGE-N between a candidate text s, and every reference, <span class="arithmatex">\(r_i\)</span>, in the reference set, then take the
+maximum of pairwise ROUGE-N scores as the final multiple reference ROUGE-N score. That is,</p>
+<div class="arithmatex">\[
+\text{ROUGE-N}_\text{multi} = argmax_i \space \text{ROUGE-N}(r_i, s)
+\]</div>
+<p>The decision to use classic <span class="arithmatex">\(\text{ROUGE-N}\)</span> or <span class="arithmatex">\(\text{ROUGE-N}_\text{multi}\)</span> is up to the user.</p>
+<h3 id="interpretation">Interpretation<a class="headerlink" href="#interpretation" title="Permanent link">#</a></h3>
+<p>When using ROUGE-N, it is important to consider the metric for multiple values of N (n-gram length). For smaller values
+of N, like ROUGE-1, it places more focus on capturing the presence of keywords or content terms in the candidate text.
+For larger values of N, like ROUGE-3, it places focus on syntactic structure and replicating linguistic patterns. In
+other words, ROUGE-1 and small values of N are suitable for tasks where the primary concern is to assess whether the
+candidate text contains essential vocabulary, while ROUGE-3 and larger values of N are used in tasks where sentence
+structure and fluency are important.</p>
+<p>Generally speaking, a higher ROUGE-N score is desirable. However, the score varies among different tasks and values of
+N, so it is a good idea to benchmark your model's ROUGE-N score against other models trained on the same data, or
+previous iterations of your model.</p>
+<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
+<h3 id="rouge-1-unigrams">ROUGE-1 (Unigrams)<a class="headerlink" href="#rouge-1-unigrams" title="Permanent link">#</a></h3>
+<p>Assume we have the following candidate and reference texts:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reference #1</strong></td>
+<td><code>A fast brown dog jumps over a sleeping fox</code></td>
+</tr>
+<tr>
+<td><strong>Reference #2</strong></td>
+<td><code>A quick brown dog jumps over the fox</code></td>
+</tr>
+<tr>
+<td><strong>Candidate</strong></td>
+<td><code>The quick brown fox jumps over the lazy dog</code></td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>Step 1: Tokenization &amp; n-Grams</summary>
+<p>Splitting our candidate and reference texts into unigrams, we get the following:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reference #1</strong></td>
+<td>[<code>A</code>, <code>fast</code>, <code>brown</code>, <code>dog</code>, <code>jumps</code>, <code>over</code>, <code>a</code>, <code>sleeping</code>, <code>fox</code>]</td>
+</tr>
+<tr>
+<td><strong>Reference #2</strong></td>
+<td>[<code>A</code>, <code>quick</code>, <code>brown</code>, <code>dog</code>, <code>jumps</code>, <code>over</code>, <code>the</code>, <code>fox</code>]</td>
+</tr>
+<tr>
+<td><strong>Candidate</strong></td>
+<td>[<code>The</code>, <code>quick</code>, <code>brown</code>, <code>fox</code>, <code>jumps</code>, <code>over</code>, <code>the</code>, <code>lazy</code>, <code>dog</code>]</td>
+</tr>
+</tbody>
+</table>
+</details>
+<details class="example">
+<summary>Step 2: Calculate ROUGE</summary>
+<p>Recall that our ROUGE-N formula is: <span class="arithmatex">\(\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}\)</span></p>
+<p>There are 5 overlapping unigrams in the first reference and 7 in the second reference, and 9 total unigrams in the
+first reference and 8 in the second.
+Thus our calculated ROUGE-1 score is <span class="arithmatex">\(\frac{12}{17} \approx 0.706\)</span></p>
+</details>
+<h3 id="rouge-2-bigrams">ROUGE-2 (Bigrams)<a class="headerlink" href="#rouge-2-bigrams" title="Permanent link">#</a></h3>
+<p>Assume we have the same following candidate and reference texts:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reference #1</strong></td>
+<td><code>A fast brown dog jumps over a sleeping fox</code></td>
+</tr>
+<tr>
+<td><strong>Reference #2</strong></td>
+<td><code>A quick brown dog jumps over the fox</code></td>
+</tr>
+<tr>
+<td><strong>Candidate</strong></td>
+<td><code>The quick brown fox jumps over the lazy dog</code></td>
+</tr>
+</tbody>
+</table>
+<details class="example">
+<summary>Step 1: Tokenization &amp; n-Grams</summary>
+<p>Splitting our candidate and reference texts into bigrams, we get the following:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><nobr><strong>Reference #1</strong></nobr></td>
+<td>[<code>A fast</code>, <code>fast brown</code>, <code>brown dog</code>, <code>dog jumps</code>, <code>jumps over</code>, <code>over a</code>, <code>a sleeping</code>, <code>sleeping fox</code>]</td>
+</tr>
+<tr>
+<td><nobr><strong>Reference #2</strong></nobr></td>
+<td>[<code>A quick</code>, <code>quick brown</code>, <code>brown dog</code>, <code>dog jumps</code>, <code>jumps over</code>, <code>over the</code>, <code>the fox</code>]</td>
+</tr>
+<tr>
+<td><strong>Candidate</strong></td>
+<td>[<code>The quick</code>, <code>quick brown</code>, <code>brown fox</code>, <code>fox jumps</code>, <code>jumps over</code>, <code>over the</code>, <code>the lazy</code>, <code>lazy dog</code>]</td>
+</tr>
+</tbody>
+</table>
+</details>
+<details class="example">
+<summary>Step 2: Calculate ROUGE</summary>
+<p>Recall that our ROUGE-N formula is: <span class="arithmatex">\(\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}\)</span></p>
+<p>There is 1 overlapping bigram in the first reference and 3 in the second reference, and 8 total bigrams in the first
+reference and 7 in the second.
+Thus our calculated ROUGE-2 score is <span class="arithmatex">\(\frac{4}{15} = 0.267\)</span></p>
+<p>Note that our ROUGE-2 score is significantly lower than our ROUGE-1 score on the given candidate and reference
+texts. It is always important to consider multiple n-grams when using ROUGE-N, as one value of N does not give a
+holistic view of candidate text quality.</p>
+</details>
+<h2 id="limitations-and-advantages">Limitations and Advantages<a class="headerlink" href="#limitations-and-advantages" title="Permanent link">#</a></h2>
+<p>ROUGE-N, like any other n-gram based metric, suffers from the following limitations:</p>
+<ol>
+<li>
+<p>Unlike <a href="../bertscore/">BERTScore</a>, ROUGE-N is not able to consider order, context, or semantics when calculating a
+score. Since it only relies on overlapping n-grams, it can not tell when a synonym is being used or if the placement of
+two matching n-grams have any meaning on the overall sentence. As a result, the metric may not be a perfect
+representation of the quality of the text, but rather the "likeness" of the n-grams in two sentences. Take for example,
+the ROUGE-2 score of "This is an example of text" and "Is an example of text this". Both ROUGE-1 and ROUGE-2 would give
+this a (nearly) perfect score, but the second sentence makes absolutely no sense!</p>
+</li>
+<li>
+<p>ROUGE-N can not capture global coherence. Given a long paragraph, realistically, having too large of a value for N
+would not return a meaningful score for two sentences, but having a reasonable number like N = 3 wouldn't be able to
+capture the flow of the text. The score might yield good results, but the entire paragraph might not flow smoothly at
+all. This is a weakness of n-gram based metrics, as they are limited to short context windows.</p>
+</li>
+</ol>
+<p>That being said, ROUGE-N has some advantages over embeddings-based metrics. First of all, it is very simple and easy to
+compute — it is able to calculate scores for large corpuses efficiently with no specialized hardware. ROUGE-N is also
+relatively easy to interpret. The N value can be adjusted to measure the granularity of measurements, and higher scores
+indicate greater overlap with the reference text. In fact, ROUGE is very widely used in NLP which allows engineers to
+benchmark their models against others on most open source NLP datasets. Lastly, it can be used in complement with other
+n-gram based metrics like BLEU to provide a more holistic view of test results — since BLEU provides a precision-related
+score, and ROUGE provides a recall-related score, it makes it easier to pinpoint potential failure cases.</p>
 
   
     
@@ -3981,7 +3719,7 @@ the complete test suite at each <a class="autorefs autorefs-internal" href="../e
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 13, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
       </span>
     
     
@@ -3994,9 +3732,9 @@ the complete test suite at each <a class="autorefs autorefs-internal" href="../e
         <span>GitHub</span>
         <nav>
           
-            <a href="https://github.com/gordonhart" class="md-author" title="@gordonhart">
+            <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
               
-              <img src="https://avatars.githubusercontent.com/u/9648886?size=72" alt="gordonhart">
+              <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
             </a>
           
           
@@ -4029,7 +3767,7 @@ the complete test suite at each <a class="autorefs autorefs-internal" href="../e
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../model/" class="md-footer__link md-footer__link--prev" aria-label="Previous: &lt;code&gt;Model&lt;/code&gt;" rel="prev">
+          <a href="../roc-curve/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ROC Curve" rel="prev">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -4039,20 +3777,20 @@ the complete test suite at each <a class="autorefs autorefs-internal" href="../e
                 Previous
               </span>
               <div class="md-ellipsis">
-                <code>Model</code>
+                ROC Curve
               </div>
             </div>
           </a>
         
         
           
-          <a href="../annotation/" class="md-footer__link md-footer__link--next" aria-label="Next: Annotations" rel="next">
+          <a href="../specificity/" class="md-footer__link md-footer__link--next" aria-label="Next: Specificity (TNR)" rel="next">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Annotations
+                Specificity (TNR)
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -4136,12 +3874,12 @@ the complete test suite at each <a class="autorefs autorefs-internal" href="../e
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../../..", "features": ["announce.dismiss", "content.action.edit", "content.code.copy", "content.tabs.link", "navigation.indexes", "navigation.instant", "navigation.footer", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "search.highlight", "search.suggest", "toc.follow", "navigation.path", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.f2da59ea.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.edit", "content.code.copy", "content.tabs.link", "navigation.indexes", "navigation.instant", "navigation.footer", "navigation.sections", "navigation.tabs", "navigation.tabs.sticky", "search.highlight", "search.suggest", "toc.follow", "navigation.path", "content.tooltips"], "search": "../../assets/javascripts/workers/search.f2da59ea.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../../assets/javascripts/bundle.6fc684e3.min.js"></script>
+      <script src="../../assets/javascripts/bundle.6fc684e3.min.js"></script>
       
-        <script src="../../../assets/javascript/mathjax.js"></script>
+        <script src="../../assets/javascript/mathjax.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

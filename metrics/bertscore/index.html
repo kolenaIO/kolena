@@ -10,9 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://docs.kolena.io/metrics/rouge/">
+        <link rel="canonical" href="https://docs.kolena.io/metrics/bertscore/">
       
       
+        <link rel="prev" href="../averaging-methods/">
+      
+      
+        <link rel="next" href="../bleu/">
       
       
         
@@ -22,7 +26,7 @@
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.2.3+insiders-4.39.1">
     
     
-<title>ROUGE-N · Testing with Kolena</title>
+<title>BERTScore · Testing with Kolena</title>
 
     
       <link rel="stylesheet" href="../../assets/stylesheets/main.b13eea88.min.css">
@@ -86,17 +90,17 @@
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="ROUGE-N - Testing with Kolena" />
+<meta property="og:title" content="BERTScore - Testing with Kolena" />
 <meta property="og:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="og:image" content="https://docs.kolena.io/assets/images/social/metrics/rouge.png" />
+<meta property="og:image" content="https://docs.kolena.io/assets/images/social/metrics/bertscore.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://docs.kolena.io/metrics/rouge/" />
+<meta property="og:url" content="https://docs.kolena.io/metrics/bertscore/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="ROUGE-N - Testing with Kolena" />
+<meta property="twitter:title" content="BERTScore - Testing with Kolena" />
 <meta property="twitter:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/metrics/rouge.png" />
+<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/metrics/bertscore.png" />
 </head>
   
   
@@ -116,7 +120,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#rouge-n" class="md-skip">
+        <a href="#bertscore" class="md-skip">
           Skip to content
         </a>
       
@@ -151,7 +155,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ROUGE-N
+              BERTScore
             
           </span>
         </div>
@@ -332,10 +336,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../" class="md-tabs__link">
           
   
@@ -2460,6 +2466,8 @@
       
   
   
+    
+  
   
     
     
@@ -2490,15 +2498,29 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           
@@ -2554,7 +2576,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2658,6 +2680,239 @@
                 
   
   
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BERTScore
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BERTScore
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Implementation Details
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#calculating-bertscore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Calculating BERTScore
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Calculating BERTScore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bert-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          BERT-Precision
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bert-recall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          BERT-Recall
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bert-f1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          BERT-F1
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Python Implementation
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Interpretation
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Example
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advantages-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Advantages and Limitations
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bleu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BLEU
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
   
     <li class="md-nav__item">
       <a href="../confusion-matrix/" class="md-nav__link">
@@ -2716,6 +2971,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../fpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      False Positive Rate (FPR)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../geometry-matching/" class="md-nav__link">
         
   
@@ -2752,6 +3035,34 @@
   
     <span class="md-typeset">
       Intersection over Union (IoU)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../meteor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      METEOR
     </span>
   
 
@@ -2836,6 +3147,93 @@
   
     <span class="md-typeset">
       Recall (TPR, Sensitivity)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roc-curve/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROC Curve
+    </span>
+  
+
+    
+      <br>
+      <small>AUC ROC</small>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rouge-n/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROUGE-N
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specificity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Specificity (TNR)
     </span>
   
 
@@ -3028,11 +3426,69 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#multiple-references-taking-the-max" class="md-nav__link">
+  <a href="#calculating-bertscore" class="md-nav__link">
     <span class="md-ellipsis">
       
         <span class="md-typeset">
-          Multiple References - Taking the Max
+          Calculating BERTScore
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Calculating BERTScore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bert-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          BERT-Precision
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bert-recall" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          BERT-Recall
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bert-f1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          BERT-F1
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Python Implementation
         </span>
       
     </span>
@@ -3059,56 +3515,24 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#examples" class="md-nav__link">
+  <a href="#example" class="md-nav__link">
     <span class="md-ellipsis">
       
         <span class="md-typeset">
-          Examples
+          Example
         </span>
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#rouge-1-unigrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <span class="md-typeset">
-          ROUGE-1 (Unigrams)
-        </span>
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#rouge-2-bigrams" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <span class="md-typeset">
-          ROUGE-2 (Bigrams)
-        </span>
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#limitations-and-advantages" class="md-nav__link">
+  <a href="#advantages-and-limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
         <span class="md-typeset">
-          Limitations and Advantages
+          Advantages and Limitations
         </span>
       
     </span>
@@ -3138,7 +3562,7 @@
                   
 
   
-    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/metrics/rouge.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/metrics/bertscore.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -3146,155 +3570,202 @@
   
 
 
-<h1 id="rouge-n">ROUGE-N<a class="headerlink" href="#rouge-n" title="Permanent link">#</a></h1>
-<div class="admonition info inline end">
-<p class="admonition-title">ROUGE vs. Recall</p>
-<p>Complimentary to BLEU, ROUGE-N can be thought of as an analog to <a href="../recall/">recall</a> for text comparisons.</p>
-</div>
-<p>ROUGE-N (<strong>R</strong>ecall-<strong>O</strong>riented <strong>U</strong>nderstudy for <strong>G</strong>isting <strong>E</strong>valuation), a metric within the broader ROUGE metric collection, is a vital metric in the field of natural language processing and text evaluation. It assesses the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts. ROUGE-N provides insights into the ability of a system to capture essential content and linguistic nuances, making it an important and versatile tool used in many NLP workflows. As the name implies, it is a recall-based metric — a complement to the precision-based BLEU score.</p>
+<h1 id="bertscore">BERTScore<a class="headerlink" href="#bertscore" title="Permanent link">#</a></h1>
+<p>BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference texts.
+Unlike <a href="../bleu/">BLEU</a>, <a href="../rouge-n/">ROUGE</a>, and traditional n-gram similarity measures, it leverages pretrained BERT
+embeddings to capture the semantic and contextual information of words and phrases in both the candidate and reference
+texts. This approach makes BERTScore more effective at assessing the quality of candidate text because it considers not
+only exact word matches but also the overall meaning, fluency, and order of the output.</p>
+<details class="question">
+<summary>Recall: BERT &amp; Textual Embeddings</summary>
+<p>BERT (<strong>B</strong>idirectional <strong>E</strong>ncoder <strong>R</strong>epresentations from <strong>T</strong>ransformers) is a popular language model used to
+generate embeddings from words and phrases. Textual embeddings are learned dense token representations that capture
+the semantic and contextual information of words and phrases in a continuous vector space. In a perfect embedding
+space, similar words are grouped together while words that are semantically different are distanced. For a deeper
+dive into BERT and textual embeddings, feel free to refer to the
+<a href="https://arxiv.org/pdf/1810.04805.pdf">original paper</a>.
+<center><img alt="Embedding Space Image" src="../../assets/images/metrics-bert-vector-space-light.svg#only-light" style="height:20em;width:auto" /></center>
+<center><img alt="Embedding Space Image" src="../../assets/images/metrics-bert-vector-space-dark.svg#only-dark" style="height:20em;width:auto" /></center></p>
+</details>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">#</a></h2>
-<p>Formally, ROUGE-N is an n-gram recall between a candidate and a set of reference texts. That is, ROUGE-N calculates the number of overlapping n-grams between the generated and reference texts divided by the total number of n-grams in the reference texts.</p>
-<p>Mathematically, we define ROUGE-N as follows:</p>
+<p>BERTScore is a collection of three metrics — BERT-Precision, BERT-Recall, and BERT-F1. As the names imply,
+BERT-Precision measures how well the candidate texts avoid introducing irrelevant content. BERT-Recall measures how well
+the candidate texts avoid omitting relevant content. BERT-F1 is a combination of both Precision and Recall to measure
+how well the candidate texts capture and retain relevant information from the reference texts.</p>
+<h3 id="calculating-bertscore">Calculating BERTScore<a class="headerlink" href="#calculating-bertscore" title="Permanent link">#</a></h3>
+<p>Given a reference sentence, <span class="arithmatex">\(x = \langle x_1, x_2, ..., x_n \rangle\)</span>, and candidate sentence,
+<span class="arithmatex">\(\hat{x} = \langle\hat{x}_1, \hat{x}_2, ..., \hat{x}_m\rangle\)</span>, we first use BERT to generate a sequence of word
+embeddings for both reference and candidate sentences.</p>
 <div class="arithmatex">\[
-\text{ROUGE-N} = \frac{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Match}(\text{n-gram})}{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Count}(\text{n-gram})}
+\begin{align}
+    &amp; BERT(\langle x_1, x_2, ..., x_n \rangle) = \langle \mathbf{x_1}, \mathbf{x_2}, ..., \mathbf{x_n} \rangle \\
+    &amp; BERT(\langle \hat{x}_1, \hat{x}_2, ..., \hat{x}_m \rangle) = \langle \mathbf{\hat{x}_1}, \mathbf{\hat{x}_2}, ..., \mathbf{\hat{x}_m} \rangle
+\end{align}
 \]</div>
-<p>where <span class="arithmatex">\(\text{Match(n-gram)}\)</span> is the maximum number of n-grams co-occuring in a candidate text and set of reference texts.</p>
-<p>It is clear that ROUGE-N is analogous to a recall-based measure, since the denominator of the equation is the sum of the number of n-grams on the reference-side.</p>
-<h3 id="multiple-references-taking-the-max">Multiple References - Taking the Max<a class="headerlink" href="#multiple-references-taking-the-max" title="Permanent link">#</a></h3>
-<p>We usually want to compare a candidate text against multiple reference texts, as there is no single correct reference text that can capture all semantic nuances. Though the above formula is sufficient for calculating ROUGE-N across multiple references, another proposed way of calculating ROUGE-N across multiple references, as highlighted in the <a href="https://aclanthology.org/W04-1013.pdf">original ROUGE paper</a>, is as follows:</p>
-<p>We compute pairwise ROUGE-N between a candidate text s, and every reference, <span class="arithmatex">\(r_i\)</span>, in the reference set, then take the maximum of pairwise ROUGE-N scores as the final multiple reference ROUGE-N score. That is,</p>
+<p><center><p style="font-size:small;">Note that we will use <b>bold</b> text to indicate vectors, like a word embedding</p></center></p>
+<p>To measure the similarity between two individual embeddings, we will use the cosine similarity which is defined as:</p>
 <div class="arithmatex">\[
-\text{ROUGE-N}_\text{multi} = argmax_i \space \text{ROUGE-N}(r_i, s)
+\text{similarity}(\mathbf{x_i}, \mathbf{\hat{x}_j}) = \frac{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}{||\mathbf{x_i}||\space||\mathbf{\hat{x}_j}||}
 \]</div>
-<p>The decision to use classic <span class="arithmatex">\(\text{ROUGE-N}\)</span> or <span class="arithmatex">\(\text{ROUGE-N}_\text{multi}\)</span> is up to the user.</p>
+<p>which simply reduces to <span class="arithmatex">\(\mathbf{x_i}^\top \mathbf{\hat{x}_j}\)</span> since both <span class="arithmatex">\(\mathbf{x_i}\)</span> and <span class="arithmatex">\(\mathbf{\hat{x}_j}\)</span> are
+pre-normalized. With these definitions, we can now calculate the BERT-precision, BERT-recall, and BERT-F1.</p>
+<h4 id="bert-precision">BERT-Precision<a class="headerlink" href="#bert-precision" title="Permanent link">#</a></h4>
+<div class="arithmatex">\[
+P_\text{BERT} = \frac{1}{|\hat{x}|} \sum_{\mathbf{\hat{x}_j} \in \hat{x}} \underbrace{\max_{\mathbf{x_i} \in x}\overbrace{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}^\text{cosine similarity}}_\text{greedy matching}
+\]</div>
+<p>Though the formula may seem intimidating, BERT-precision is conceptually similar to the
+<a href="../precision/">precision formula</a>, but uses greedy matching to maximize the similarity score between a reference word
+and the current candidate word. This is because the language domain can have multiple words that are similar in context
+to the ground truth, and the words of a sentence can be arranged in different ways while preserving the same meaning —
+thus, why we use greedy matching.</p>
+<h4 id="bert-recall">BERT-Recall<a class="headerlink" href="#bert-recall" title="Permanent link">#</a></h4>
+<div class="arithmatex">\[
+R_\text{BERT} = \frac{1}{|x|} \sum_{\mathbf{x_i} \in x} \underbrace{\max_{\mathbf{\hat{x}_j} \in \hat{x}}\overbrace{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}^\text{cosine similarity}}_\text{greedy matching}
+\]</div>
+<p>Once again, the BERT-recall is conceptually similar to the <a href="../recall/">recall formula</a>. Note that we flip <span class="arithmatex">\(\hat{x}\)</span> with
+<span class="arithmatex">\(x\)</span> when calculating recall.</p>
+<h4 id="bert-f1">BERT-F1<a class="headerlink" href="#bert-f1" title="Permanent link">#</a></h4>
+<div class="arithmatex">\[
+F_\text{BERT} = 2 \times \frac{P_\text{BERT} \times R_\text{BERT}}{P_\text{BERT} + R_\text{BERT}}
+\]</div>
+<p>The formula is the same as the <a href="../f1-score/">F1-score formula</a>, replacing the precision and recall components with
+BERT-precision and BERT-recall.</p>
+<p>In a more advanced implementation of BERTScore, extra steps are taken to finetune the metric. These include:</p>
+<ol>
+<li>Applying an "importance factor" to rare words so that the score weighs keywords moreso than words like "it", "as",
+and "the".</li>
+<li>Rescaling the score such that it lies between 0 and 1 in practical use cases. Although the score already lies between
+0 and 1 in theory, it has been observed to lie between a more limited range in practice.</li>
+</ol>
+<p><a href="https://arxiv.org/pdf/1810.04805.pdf"><img alt="Bert Computation" src="../../assets/images/metrics-bert-computation-light.svg#only-light" /></a>
+<a href="https://arxiv.org/pdf/1810.04805.pdf"><img alt="Bert Computation" src="../../assets/images/metrics-bert-computation-dark.svg#only-dark" /></a></p>
+<h3 id="python-implementation">Python Implementation<a class="headerlink" href="#python-implementation" title="Permanent link">#</a></h3>
+<p>There are many packages that implement the BERTScore metric, making the implementation quick and simple.</p>
+<ol>
+<li><a href="https://huggingface.co/spaces/evaluate-metric/bertscore">HuggingFace</a> - HuggingFace provides a comprehensive
+BertScore module with <a href="https://docs.google.com/spreadsheets/d/1RKOVpselB98Nnh_EOC4A2BYn8_201tmPODpNWu4w7xI/edit#gid=0">140+ different BERT models</a>
+to choose from,  allowing you to find the perfect balance between efficiency and accuracy.</li>
+<li><a href="https://torchmetrics.readthedocs.io/en/stable/text/bert_score.html">TorchMetrics</a> - TorchMetrics provides a similar
+BertScore wrapper with the same functionality as HuggingFace.</li>
+<li><a href="https://pypi.org/project/bert-score/">bert-score</a> - bert-score is another package that can be used. It provides
+similar functionality as HuggingFace as well.</li>
+</ol>
+<p>There are many packages used to calculate BERTScore, and it is up to the user to choose their preferred package based
+on their existing workflow.</p>
 <h3 id="interpretation">Interpretation<a class="headerlink" href="#interpretation" title="Permanent link">#</a></h3>
-<p>When using ROUGE-N, it is important to consider the metric for multiple values of N (n-gram length). For smaller values of N, like ROUGE-1, it places more focus on capturing the presence of keywords or content terms in the candidate text. For larger values of N, like ROUGE-3, it places focus on syntactic structure and replicating linguistic patterns. In other words, ROUGE-1 and small values of N are suitable for tasks where the primary concern is to assess whether the candidate text contains essential vocabulary, while ROUGE-3 and larger values of N are used in tasks where sentence structure and fluency are important.</p>
-<p>Generally speaking, a higher ROUGE-N score is desirable. However, the score varies among different tasks and values of N, so it is a good idea to benchmark your model's ROUGE-N score against other models trained on the same data, or previous iterations of your model.</p>
-<h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
-<h3 id="rouge-1-unigrams">ROUGE-1 (Unigrams)<a class="headerlink" href="#rouge-1-unigrams" title="Permanent link">#</a></h3>
-<p>Assume we have the following candidate and reference texts:</p>
+<p>BERTScore (Precision, Recall, F1) scores lie between the range of 0 and 1, with 0 representing no semantic similarity,
+and 1 representing a perfect semantic match between candidate and reference texts. However, interpreting the metric is
+completely subjective based on your task. On some tasks, a BERT-F1 of 0.9 may be excellent, whereas a BERT-F1 of 0.8 may
+be excellent for another. Generally speaking, a higher BERTScore is desirable.</p>
+<h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">#</a></h2>
+<p>To showcase the value of BERTScore, let's consider the following candidate and reference texts:</p>
+<details class="example">
+<summary>Semantically Similar Texts</summary>
 <table>
 <thead>
 <tr>
-<th></th>
-<th></th>
+<th>Candidate Text</th>
+<th>Reference Text</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Reference #1</strong></td>
-<td><code>A fast brown dog jumps over a sleeping fox</code></td>
+<td>The sun set behind the mountains, casting a warm, orange glow across the horizon.</td>
+<td>As the mountains obscured the sun, a warm, orange glow painted the horizon.</td>
 </tr>
 <tr>
-<td><strong>Reference #2</strong></td>
-<td><code>A quick brown dog jumps over the fox</code></td>
+<td>She sipped her coffee and gazed out of the window, lost in thought on a rainy afternoon.</td>
+<td>Lost in thought on a rainy afternoon, she sipped her coffee and stared out of the window.</td>
 </tr>
 <tr>
-<td><strong>Candidate</strong></td>
-<td><code>The quick brown fox jumps over the lazy dog</code></td>
+<td>The adventurous explorer trekked through the dense jungle, searching for hidden treasures.</td>
+<td>In search of hidden treasures, the intrepid explorer ventured through the dense jungle.</td>
+</tr>
+<tr>
+<td>Laughter echoed through the park as children played on the swings and slides.</td>
+<td>Children's laughter filled the park as they enjoyed the swings and slides.</td>
+</tr>
+<tr>
+<td>The old bookstore was filled with the scent of well-worn pages, a haven for book lovers.</td>
+<td>A haven for book lovers, the old bookstore exuded the fragrance of well-read pages.</td>
 </tr>
 </tbody>
 </table>
+<p>Using the following code and the <a href="https://pypi.org/project/bert-score/"><code>bert-score</code></a> package:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">bert_score</span> <span class="kn">import</span> <span class="n">score</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">references</span> <span class="o">=</span> <span class="p">[</span><span class="o">...</span><span class="p">]</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">score</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="p">)</span> <span class="c1"># using the default `roberta-large` BERT model</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">f1</span> <span class="o">=</span> <span class="n">precision</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">recall</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">f1</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</span></code></pre></div>
+<p>We get the following BertScores: <span class="arithmatex">\(P_\text{BERT} = 0.9526, R_\text{BERT} = 0.9480, F_\text{BERT} = 0.9503\)</span>. This is
+in-line with human judgement, as the reference and candidate texts are semantically very similar.</p>
+<p>However, if we were to calculate the BLEU score given these candidates and references, BLEU would yield a
+sub-optimal score of <span class="arithmatex">\(\text{BLEU} = 0.2403\)</span>, despite the sentences being the same, semantically. This shows an
+advantage of embeddings-based metrics over n-gram-based metrics like BLEU.</p>
+</details>
 <details class="example">
-<summary>Step 1: Tokenization &amp; n-Grams</summary>
-<p>Splitting our candidate and reference texts into unigrams, we get the following:</p>
+<summary>Semantically Different Texts</summary>
+<p>This time, let our candidate and reference texts be:</p>
 <table>
 <thead>
 <tr>
-<th></th>
-<th></th>
+<th>Candidate Text</th>
+<th>Reference Text</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Reference #1</strong></td>
-<td>[<code>A</code>, <code>fast</code>, <code>brown</code>, <code>dog</code>, <code>jumps</code>, <code>over</code>, <code>a</code>, <code>sleeping</code>, <code>fox</code>]</td>
+<td>The sun was setting behind the mountains.</td>
+<td>This is a bad example</td>
 </tr>
 <tr>
-<td><strong>Reference #2</strong></td>
-<td>[<code>A</code>, <code>quick</code>, <code>brown</code>, <code>dog</code>, <code>jumps</code>, <code>over</code>, <code>the</code>, <code>fox</code>]</td>
+<td>She walked along the beach, feeling the sand between her toes.</td>
+<td>This has nothing to do with the other</td>
 </tr>
 <tr>
-<td><strong>Candidate</strong></td>
-<td>[<code>The</code>, <code>quick</code>, <code>brown</code>, <code>fox</code>, <code>jumps</code>, <code>over</code>, <code>the</code>, <code>lazy</code>, <code>dog</code>]</td>
+<td>The chef prepared a delicious meal with fresh ingredients.</td>
+<td>Hello, world!</td>
+</tr>
+<tr>
+<td>The old oak tree stood tall in the middle of the field.</td>
+<td>Vivaldi is a classical conductor</td>
+</tr>
+<tr>
+<td>The detective examined the clues carefully.</td>
+<td>Wrong answer</td>
 </tr>
 </tbody>
 </table>
+<p>This yields BERTScores of: <span class="arithmatex">\(P_\text{BERT} = 0.8328, R_\text{BERT} = 0.8428, F_\text{BERT} = 0.8377\)</span>.
+Between different tasks, the baseline for a "good" BERTScore may vary based on different factors, like text length
+and BERT model type.</p>
 </details>
-<details class="example">
-<summary>Step 2: Calculate ROUGE</summary>
-<p>Recall that our ROUGE-N formula is: <span class="arithmatex">\(\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}\)</span></p>
-<p>There are 5 overlapping unigrams in the first reference and 7 in the second reference, and 9 total unigrams in the first reference and 8 in the second.
-Thus our calculated ROUGE-1 score is <span class="arithmatex">\(\frac{12}{17} \approx 0.706\)</span></p>
-</details>
-<h3 id="rouge-2-bigrams">ROUGE-2 (Bigrams)<a class="headerlink" href="#rouge-2-bigrams" title="Permanent link">#</a></h3>
-<p>Assume we have the same following candidate and reference texts:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Reference #1</strong></td>
-<td><code>A fast brown dog jumps over a sleeping fox</code></td>
-</tr>
-<tr>
-<td><strong>Reference #2</strong></td>
-<td><code>A quick brown dog jumps over the fox</code></td>
-</tr>
-<tr>
-<td><strong>Candidate</strong></td>
-<td><code>The quick brown fox jumps over the lazy dog</code></td>
-</tr>
-</tbody>
-</table>
-<details class="example">
-<summary>Step 1: Tokenization &amp; n-Grams</summary>
-<p>Splitting our candidate and reference texts into bigrams, we get the following:</p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><nobr><strong>Reference #1</strong></nobr></td>
-<td>[<code>A fast</code>, <code>fast brown</code>, <code>brown dog</code>, <code>dog jumps</code>, <code>jumps over</code>, <code>over a</code>, <code>a sleeping</code>, <code>sleeping fox</code>]</td>
-</tr>
-<tr>
-<td><nobr><strong>Reference #2</strong></nobr></td>
-<td>[<code>A quick</code>, <code>quick brown</code>, <code>brown dog</code>, <code>dog jumps</code>, <code>jumps over</code>, <code>over the</code>, <code>the fox</code>]</td>
-</tr>
-<tr>
-<td><strong>Candidate</strong></td>
-<td>[<code>The quick</code>, <code>quick brown</code>, <code>brown fox</code>, <code>fox jumps</code>, <code>jumps over</code>, <code>over the</code>, <code>the lazy</code>, <code>lazy dog</code>]</td>
-</tr>
-</tbody>
-</table>
-</details>
-<details class="example">
-<summary>Step 2: Calculate ROUGE</summary>
-<p>Recall that our ROUGE-N formula is: <span class="arithmatex">\(\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}\)</span></p>
-<p>There is 1 overlapping bigram in the first reference and 3 in the second reference, and 8 total bigrams in the first reference and 7 in the second.
-Thus our calculated ROUGE-2 score is <span class="arithmatex">\(\frac{4}{15} = 0.267\)</span></p>
-<p>Note that our ROUGE-2 score is significantly lower than our ROUGE-1 score on the given candidate and reference texts. It is always important to consider multiple n-grams when using ROUGE-N, as one value of N does not give a holistic view of candidate text quality.</p>
-</details>
-<h2 id="limitations-and-advantages">Limitations and Advantages<a class="headerlink" href="#limitations-and-advantages" title="Permanent link">#</a></h2>
-<p>ROUGE-N, like any other n-gram based metric, suffers from the following limitations:</p>
+<h2 id="advantages-and-limitations">Advantages and Limitations<a class="headerlink" href="#advantages-and-limitations" title="Permanent link">#</a></h2>
+<p>BERTScore, originally designed to be a replacement to the BLEU score and other n-gram similarity metrics, is a powerful
+metric that closely aligns with human judgement. However, it comes with limitations.</p>
 <ol>
 <li>
-<p>Unlike BERTScore, ROUGE-N is not able to consider order, context, or semantics when calculating a score. Since it only relies on overlapping n-grams, it can not tell when a synonym is being used or if the placement of two matching n-grams have any meaning on the overall sentence. As a result, the metric may not be a perfect representation of the quality of the text, but rather the "likeness" of the n-grams in two sentences. Take for example, the ROUGE-2 score of "This is an example of text" and "Is an example of text this". Both ROUGE-1 and ROUGE-2 would give this a (nearly) perfect score, but the second sentence makes absolutely no sense!</p>
+<p>BERTScore is computationally expensive. The default model (<code>roberta-large</code>) used to calculate BERTScore requires
+1.4GB of weights to be stored, and requires a forward pass through the model in order to calculate the score. This may
+be computationally expensive for large datasets, compared to n-gram-based metrics which are straightforward and easy to
+compute. However, smaller distilled models like <code>distilbert-base-uncased</code> can be used instead to reduce the
+computational cost, at the cost of reduced alignment with human judgement.</p>
 </li>
 <li>
-<p>ROUGE-N can not capture global coherence. Given a long paragraph, realistically, having too large of a value for N would not return a meaningful score for two sentences, but having a reasonable number like N = 3 wouldn't be able to capture the flow of the text. The score might yield good results, but the entire paragraph might not flow smoothly at all. This is a weakness of n-gram based metrics, as they are limited to short context windows.</p>
+<p>BERTScore is calculated using a black-box pretrained model. The score can not be easily explained, as the embedding
+space of BERT is a dense and complex representation that is only understood by the model. Though the metric provides a
+numerical score, it does not explain how or why the particular score was assigned. In contrast, n-gram-based metrics
+can easily be calculated by inspection.</p>
 </li>
 </ol>
-<p>That being said, ROUGE-N has some advantages over embeddings-based metrics. First of all, it is very simple and easy to compute — it is able to calculate scores for large corpuses efficiently with no specialized hardware. ROUGE-N is also relatively easy to interpret. The N value can be adjusted to measure the granularity of measurements, and higher scores indicate greater overlap with the reference text. In fact, ROUGE is very widely used in NLP which allows engineers to benchmark their models against others on most open source NLP datasets. Lastly, it can be used in complement with other n-gram based metrics like BLEU to provide a more holistic view of test results — since BLEU provides a precision-related score, and ROUGE provides a recall-related score, it makes it easier to pinpoint potential failure cases.</p>
+<p>Limitations aside, BERTScore is still a powerful metric that can be included in NLP workflows to quantify the quality
+of machine-generated texts. It has been shown to have a high correlation with human judgement in tests, and is overall
+a better judge of similarity than BLEU, ROUGE, and traditional n-gram-based metrics. Furthermore, unlike traditional
+metrics, BERTScore's use of embeddings allows it to factor in context, semantics, and order into its score — which
+allows it to avoid the pitfalls of the traditional metrics it was designed to replace.</p>
 
   
     
@@ -3308,7 +3779,7 @@ Thus our calculated ROUGE-2 score is <span class="arithmatex">\(\frac{4}{15} = 0
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
       </span>
     
     
@@ -3321,14 +3792,14 @@ Thus our calculated ROUGE-2 score is <span class="arithmatex">\(\frac{4}{15} = 0
         <span>GitHub</span>
         <nav>
           
-            <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
-              
-              <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
-            </a>
-          
             <a href="https://github.com/billbai0102" class="md-author" title="@billbai0102">
               
               <img src="https://avatars.githubusercontent.com/u/31229051?size=72" alt="billbai0102">
+            </a>
+          
+            <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
+              
+              <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
             </a>
           
           
@@ -3356,6 +3827,44 @@ Thus our calculated ROUGE-2 score is <span class="arithmatex">\(\frac{4}{15} = 0
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../averaging-methods/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Averaging Methods" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Averaging Methods
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../bleu/" class="md-footer__link md-footer__link--next" aria-label="Next: BLEU" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                BLEU
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">

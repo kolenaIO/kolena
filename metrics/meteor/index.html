@@ -13,6 +13,10 @@
         <link rel="canonical" href="https://docs.kolena.io/metrics/meteor/">
       
       
+        <link rel="prev" href="../iou/">
+      
+      
+        <link rel="next" href="../precision/">
       
       
         
@@ -332,10 +336,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../" class="md-tabs__link">
           
   
@@ -2460,6 +2466,8 @@
       
   
   
+    
+  
   
     
     
@@ -2490,15 +2498,29 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           
@@ -2554,7 +2576,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2660,6 +2682,62 @@
   
   
     <li class="md-nav__item">
+      <a href="../bertscore/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BERTScore
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../bleu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BLEU
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../confusion-matrix/" class="md-nav__link">
         
   
@@ -2696,6 +2774,34 @@
   
     <span class="md-typeset">
       F<sub>1</sub>-score
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../fpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      False Positive Rate (FPR)
     </span>
   
 
@@ -2761,6 +2867,121 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      METEOR
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      METEOR
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Implementation Details
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Examples
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-and-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Limitations and Advantages
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -2836,6 +3057,93 @@
   
     <span class="md-typeset">
       Recall (TPR, Sensitivity)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roc-curve/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROC Curve
+    </span>
+  
+
+    
+      <br>
+      <small>AUC ROC</small>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rouge-n/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROUGE-N
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specificity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Specificity (TNR)
     </span>
   
 
@@ -3083,9 +3391,15 @@
 
 
 <h1 id="meteor">METEOR<a class="headerlink" href="#meteor" title="Permanent link">#</a></h1>
-<p>METEOR (<strong>M</strong>etric for <strong>E</strong>valuation of <strong>T</strong>ranslation with <strong>E</strong>xplicit <strong>OR</strong>dering) is a widely recognized and vital metric used in natural language processing. Originally developed for machine translation workflows, it is used to measure the quality of candidate texts against reference texts for many different workflows. Though it is an n-gram based metric, it goes beyond traditional methods by factoring in elements such as precision, recall, and order to provide a comprehensive measure of text quality. For an in-depth justification behind METEOR's design choices, feel free to check out the <a href="https://www.cs.cmu.edu/~alavie/METEOR/pdf/Banerjee-Lavie-2005-METEOR.pdf">original paper</a>.</p>
+<p>METEOR (<strong>M</strong>etric for <strong>E</strong>valuation of <strong>T</strong>ranslation with <strong>E</strong>xplicit <strong>OR</strong>dering) is a widely recognized and
+vital metric used in natural language processing. Originally developed for machine translation workflows, it is used to
+measure the quality of candidate texts against reference texts for many different workflows. Though it is an n-gram
+based metric, it goes beyond traditional methods by factoring in elements such as precision, recall, and order to
+provide a comprehensive measure of text quality. For an in-depth justification behind METEOR's design choices, feel free
+to check out the <a href="https://www.cs.cmu.edu/~alavie/METEOR/pdf/Banerjee-Lavie-2005-METEOR.pdf">original paper</a>.</p>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">#</a></h2>
-<p>We define METEOR as the product of two components - the Unigram Precision / Recall Harmonic Mean, and Word Order Penalty. That is,</p>
+<p>We define METEOR as the product of two components - the Unigram Precision / Recall Harmonic Mean, and Word Order
+Penalty. That is,</p>
 <div class="arithmatex">\[
 \text{METEOR} = \underbrace{\text{FMean}}_{\text{Harmonic Mean of Unigram Precision/Recall}} * \underbrace{(1 - \text{Penalty})}_{\text{Word Order Penalty}}
 \]</div>
@@ -3096,16 +3410,25 @@
 <div class="arithmatex">\[
 FMean = \frac{10PR}{R + 9P}
 \]</div>
-<p>where P represents the unigram precision, and R represents the unigram recall. Here's a recap of <a href="../precision/">precision</a> and <a href="../recall/">recall</a>. Notice that most of the weight is placed on the recall component by design – this allows METEOR to prioritize the coverage of essential keywords in the candidate text.</p>
+<p>where P represents the unigram precision, and R represents the unigram recall. Here's a recap of
+<a href="../precision/">precision</a> and <a href="../recall/">recall</a>. Notice that most of the weight is placed on the recall component
+by design – this allows METEOR to prioritize the coverage of essential keywords in the candidate text.</p>
 </details>
 <details class="info">
 <summary>Penalty: Word Order Penalty</summary>
-<p>Since the FMean is based on unigram precision and recall, to take into account longer sequences, METEOR has a penalty factor to alleviate this weakness and enforce an order on the candidate sentence.</p>
-<p>First, the  unigrams in the candidate text that are mapped to unigrams in the reference text are grouped in such a way that there exists the fewest number of <em>chunks</em>, where each chunk consists of adjacent unigrams. Our penalty factor is then defined as:</p>
+<p>Since the FMean is based on unigram precision and recall, to take into account longer sequences, METEOR has a
+penalty factor to alleviate this weakness and enforce an order on the candidate sentence.</p>
+<p>First, the  unigrams in the candidate text that are mapped to unigrams in the reference text are grouped in such a
+way that there exists the fewest number of <em>chunks</em>, where each chunk consists of adjacent unigrams. Our penalty
+factor is then defined as:</p>
 <div class="arithmatex">\[
 Penalty = 0.5 \times \frac{\text{# of Chunks}}{\text{# of Unigrams Matched}}
 \]</div>
-<p>For example, if our candidate sentence was "the president spoke to the audience" and our reference sentence was "the president <em>then</em> spoke to the audience", there would be two chunks – "the president" and "spoke to the audience" – and 6 unigrams matched. Notice that as the chunks decrease, so does the penalty, which results in a higher METEOR score. This is quite intuitive as a lower number of chunks translates to an enforced order and better alignment with the reference text.</p>
+<p>For example, if our candidate sentence was "the president spoke to the audience" and our reference sentence was
+"the president <em>then</em> spoke to the audience", there would be two chunks – "the president" and "spoke to the
+audience" – and 6 unigrams matched. Notice that as the chunks decrease, so does the penalty, which results in a
+higher METEOR score. This is quite intuitive as a lower number of chunks translates to an enforced order and better
+alignment with the reference text.</p>
 </details>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <table>
@@ -3124,7 +3447,8 @@ Penalty = 0.5 \times \frac{\text{# of Chunks}}{\text{# of Unigrams Matched}}
 </table>
 <details class="example">
 <summary>Step 1: Calculate FMean</summary>
-<p>Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both 1.0
+<p>Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both
+1.0.
 As a result, our FMean is <span class="arithmatex">\(\frac{10 \times 1.0 \times 1.0}{1.0 + 9 \times 1.0} = 1\)</span></p>
 </details>
 <details class="example">
@@ -3159,12 +3483,14 @@ Reference: <span class="arithmatex">\(\underbrace{\text{We danced with joy}}_{\t
 </table>
 <details class="example">
 <summary>Step 1: Calculate FMean</summary>
-<p>Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both 1.0
+<p>Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both
+1.0.
 As a result, our FMean is <span class="arithmatex">\(\frac{10 \times 1.0 \times 1.0}{1.0 + 9 \times 1.0} = 1\)</span></p>
 </details>
 <details class="example">
 <summary>Step 2: Calculate Word Order Penalty</summary>
-<p>Our penalty is different from the first example, due to the jumbled up order. We split our candidate sentence into 8 chunks, since no adjacent words can be mapped to the reference sentence.</p>
+<p>Our penalty is different from the first example, due to the jumbled up order. We split our candidate sentence into
+8 chunks, since no adjacent words can be mapped to the reference sentence.</p>
 <p>Candidate: <span class="arithmatex">\(\underbrace{\text{Danced}}_\text{Chunk 2}\space\underbrace{\text{we}}_\text{Chunk 1}\space\underbrace{\text{with}}_\text{Chunk 3}\space\underbrace{\text{under}}_\text{Chunk 5}\space\underbrace{\text{joy}}_\text{Chunk 4}\space\underbrace{\text{the}}_\text{Chunk 6}\space\underbrace{\text{night}}_\text{Chunk 8}\space\underbrace{\text{starry}}_\text{Chunk 7}\space\)</span></p>
 <p>Reference: <span class="arithmatex">\(\underbrace{\text{We}}_\text{Chunk 1}\space\underbrace{\text{danced}}_\text{Chunk 2}\space\underbrace{\text{with}}_\text{Chunk 3}\space\underbrace{\text{joy}}_\text{Chunk 4}\space\underbrace{\text{under}}_\text{Chunk 5}\space\underbrace{\text{the}}_\text{Chunk 6}\space\underbrace{\text{starry}}_\text{Chunk 7}\space\underbrace{\text{night}}_\text{Chunk 8}\space\)</span></p>
 <p>Between the eight chunks, we have matched 8 unigrams. This gives us a penalty score of <span class="arithmatex">\(0.5 \times \frac{8}{8} = 0.5\)</span>.</p>
@@ -3175,19 +3501,34 @@ As a result, our FMean is <span class="arithmatex">\(\frac{10 \times 1.0 \times 
 <div class="arithmatex">\[
 \text{METEOR} = 1 * (1 - 0.5) = 0.5.
 \]</div>
-<p>Despite having all the keywords of the reference sentence, our candidate had the wrong order and meaning! This is a massive improvement over something like ROUGE-1 which would not have considered the orders of the sentences, and given a perfect score of 1.0.</p>
+<p>Despite having all the keywords of the reference sentence, our candidate had the wrong order and meaning! This is a
+massive improvement over something like <a href="../rouge-n/">ROUGE-1</a> which would not have considered the orders of the
+sentences, and given a perfect score of 1.0.</p>
 </details>
 <h2 id="limitations-and-advantages">Limitations and Advantages<a class="headerlink" href="#limitations-and-advantages" title="Permanent link">#</a></h2>
-<p>Although METEOR was created to address some of the major limitations of BLEU, it still comes with its own limitations.</p>
+<p>Although METEOR was created to address some of the major limitations of <a href="../bleu/">BLEU</a>, it still comes with its own
+limitations.</p>
 <ol>
 <li>
-<p>METEOR does not consider synonyms. Unlike embeddings-based metrics like BERTScore, it does not have a mechanism to quantify the similarity of words within the candidate and reference sentences. Thus, having two sentences like "She looked extremely happy at the surprise party." and "She appeared exceptionally joyful during the unexpected celebration." would yield a subobtimal score despite being very similar in meaning. That being said, METEOR has shown to have a higher correlation with human judgement than both BLEU and ROUGE, making it <em>generally</em> better than the two.</p>
+<p>METEOR does not consider synonyms. Unlike embeddings-based metrics like <a href="../bertscore/">BERTScore</a>, it does not have
+a mechanism to quantify the similarity of words within the candidate and reference sentences. Thus, having two sentences
+like "She looked extremely happy at the surprise party." and "She appeared exceptionally joyful during the unexpected
+celebration." would yield a subobtimal score despite being very similar in meaning. That being said, METEOR has shown to
+have a higher correlation with human judgement than both BLEU and ROUGE, making it <em>generally</em> better than the two.</p>
 </li>
 <li>
-<p>METEOR can fail on context. If we have two sentences "I am a big fan of Taylor Swift" (Reference) and "Fan of Taylor Swift I am big" (Candidate), METEOR would yield a good score. However, the candidate sentence makes little sense and intuitively shouldn't be given a good score. This is a limitation with all n-gram metrics, and not specific to METEOR.</p>
+<p>METEOR can fail on context. If we have two sentences "I am a big fan of Taylor Swift" (Reference) and "Fan of Taylor
+Swift I am big" (Candidate), METEOR would yield a good score. However, the candidate sentence makes little sense and
+intuitively shouldn't be given a good score. This is a limitation with all n-gram metrics, and not specific to METEOR.</p>
 </li>
 </ol>
-<p>Limitations aside, METEOR is still a great metric to include in NLP workflows for measuring text similarity. Like other n-gram metrics, it is easy to compute and doesn't require extra hardware for inference. Furthermore, it is a noticeable improvement over BLEU, and even ROUGE, in many ways – it places weight on <em>both</em> precision and recall, factors in word order, and generally does a better job at filtering out bad candidate texts, as seen in example 2. It is also a better judge of global coherence than BLEU and ROUGE, since it greedily looks for the largest chunks to calculate its penalty factor, rather than using a sliding context window of n-grams. METEOR is a powerful metric, and should be included in every NLP toolbox to give a holistic view of model performance.</p>
+<p>Limitations aside, METEOR is still a great metric to include in NLP workflows for measuring text similarity. Like other
+n-gram metrics, it is easy to compute and doesn't require extra hardware for inference. Furthermore, it is a noticeable
+improvement over BLEU, and even ROUGE, in many ways – it places weight on <em>both</em> precision and recall, factors in word
+order, and generally does a better job at filtering out bad candidate texts, as seen in example 2. It is also a better
+judge of global coherence than BLEU and ROUGE, since it greedily looks for the largest chunks to calculate its penalty
+factor, rather than using a sliding context window of n-grams. METEOR is a powerful metric, and should be included in
+every NLP toolbox to give a holistic view of model performance.</p>
 
   
     
@@ -3201,7 +3542,7 @@ As a result, our FMean is <span class="arithmatex">\(\frac{10 \times 1.0 \times 
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 3, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
       </span>
     
     
@@ -3217,6 +3558,11 @@ As a result, our FMean is <span class="arithmatex">\(\frac{10 \times 1.0 \times 
             <a href="https://github.com/billbai0102" class="md-author" title="@billbai0102">
               
               <img src="https://avatars.githubusercontent.com/u/31229051?size=72" alt="billbai0102">
+            </a>
+          
+            <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
+              
+              <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
             </a>
           
           
@@ -3244,6 +3590,44 @@ As a result, our FMean is <span class="arithmatex">\(\frac{10 \times 1.0 \times 
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../iou/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Intersection over Union (IoU)" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Intersection over Union (IoU)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../precision/" class="md-footer__link md-footer__link--next" aria-label="Next: Precision" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Precision
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">

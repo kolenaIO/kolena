@@ -13,6 +13,10 @@
         <link rel="canonical" href="https://docs.kolena.io/metrics/bleu/">
       
       
+        <link rel="prev" href="../bertscore/">
+      
+      
+        <link rel="next" href="../confusion-matrix/">
       
       
         
@@ -332,10 +336,12 @@
         
   
   
+    
+  
   
     
     
-      <li class="md-tabs__item">
+      <li class="md-tabs__item md-tabs__item--active">
         <a href="../" class="md-tabs__link">
           
   
@@ -2460,6 +2466,8 @@
       
   
   
+    
+  
   
     
     
@@ -2490,15 +2498,29 @@
       
         
       
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           
@@ -2554,7 +2576,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2660,6 +2682,194 @@
   
   
     <li class="md-nav__item">
+      <a href="../bertscore/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BERTScore
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BLEU
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      BLEU
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Implementation Details
+        </span>
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#background" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Background
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Definition
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Interpretation
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Example
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advantages-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <span class="md-typeset">
+          Advantages and Limitations
+        </span>
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../confusion-matrix/" class="md-nav__link">
         
   
@@ -2716,6 +2926,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../fpr/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      False Positive Rate (FPR)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../geometry-matching/" class="md-nav__link">
         
   
@@ -2752,6 +2990,34 @@
   
     <span class="md-typeset">
       Intersection over Union (IoU)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../meteor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      METEOR
     </span>
   
 
@@ -2836,6 +3102,93 @@
   
     <span class="md-typeset">
       Recall (TPR, Sensitivity)
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../roc-curve/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROC Curve
+    </span>
+  
+
+    
+      <br>
+      <small>AUC ROC</small>
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../rouge-n/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      ROUGE-N
+    </span>
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../specificity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    
+  
+    <span class="md-typeset">
+      Specificity (TNR)
     </span>
   
 
@@ -3132,18 +3485,27 @@
 <p class="admonition-title">BLEU vs. Precision</p>
 <p>BLEU can be thought of as an analog to <a href="../precision/">precision</a> for text comparisons.</p>
 </div>
-<p>The BLEU (<strong>B</strong>i<strong>L</strong>ingual <strong>E</strong>valuation <strong>U</strong>nderstudy) score is a metric commonly used in a variety of NLP tasks ranging from Machine Translation to Text Summarization, to evaluate the quality of candidate texts. It quantifies the similarity between the candidate text and reference text as a score between 0 and 1 — 0 meaning there is no overlap with the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic nature for measuring textual similarity.</p>
+<p>The BLEU (<strong>B</strong>i<strong>L</strong>ingual <strong>E</strong>valuation <strong>U</strong>nderstudy) score is a metric commonly used in a variety of NLP tasks
+ranging from Machine Translation to Text Summarization, to evaluate the quality of candidate texts. It quantifies the
+similarity between the candidate text and reference text as a score between 0 and 1 — 0 meaning there is no overlap with
+the ground truth text, and 1 meaning there is a perfect overlap. As the name suggests, it was originally developed for
+evaluating machine-translation models, but has since been adapted to many different tasks within NLP due to its dynamic
+nature for measuring textual similarity.</p>
 <h2 id="implementation-details">Implementation Details<a class="headerlink" href="#implementation-details" title="Permanent link">#</a></h2>
 <h3 id="background">Background<a class="headerlink" href="#background" title="Permanent link">#</a></h3>
 <p>The BLEU score consists of two components — the Brevity Penalty and the n-gram Overlap.</p>
 <ol>
-<li>The <strong>n-gram Overlap</strong> counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.</li>
-<li>The <strong>Brevity Penalty</strong> is applied to penalize the score for generating sentences that are less in length than the reference text. This is due to the fact that the n-gram Overlap precision tends to give disproportionately high values to candidate texts that are very short in length, but mostly contain n-grams in the reference text.</li>
+<li>The <strong>n-gram Overlap</strong> counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the
+1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision
+ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.</li>
+<li>The <strong>Brevity Penalty</strong> is applied to penalize the score for generating sentences that are less in length than the
+reference text. This is due to the fact that the n-gram Overlap precision tends to give disproportionately high values
+to candidate texts that are very short in length, but mostly contain n-grams in the reference text.</li>
 </ol>
 <h3 id="definition">Definition<a class="headerlink" href="#definition" title="Permanent link">#</a></h3>
 <p>The BLEU score is mathematically defined as:</p>
 <div class="arithmatex">\[\begin{align*} \text{BLEU} &amp;= \text{Brevity Penalty} \times \text{n-gram Overlap} \\
-&amp;= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \left(\prod_{i=1}^{4}\text{i-gram Precision}^{1/4}\right)
+&amp;= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \prod_{i=1}^{4}\text{i-gram Precision}^{\frac{1}{4}}
 \end{align*}\]</div>
 <p>where the i-gram precision is calculated as:</p>
 <div class="arithmatex">\[
@@ -3151,15 +3513,20 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1
 \]</div>
 <div class="footnote-content">
     <p style="font-size: smaller;">
-        <sup>1</sup> The <i>clipped count of matching i-grams in candidate text</i> is the minimum between the count of i-grams in the candidate text and the maximum count of i-grams in any of the reference texts for a given i-gram.
+        <sup>1</sup> The <i>clipped count of matching i-grams in candidate text</i> is the minimum between the count of
+        i-grams in the candidate text and the maximum count of i-grams in any of the reference texts for a given i-gram.
     </p>
 </div>
 
 <h3 id="interpretation">Interpretation<a class="headerlink" href="#interpretation" title="Permanent link">#</a></h3>
-<p>A known fact about BLEU scores is that they are not to be compared between different workflows and tasks. An excellent BLEU score for one task may be subpar for another. The score only serves as a general guideline to quantify the performance of your model — not to replace human judgement. That being said, what do these scores really mean, and how can we decipher them?</p>
+<p>A known fact about BLEU scores is that they are not to be compared between different workflows and tasks. An excellent
+BLEU score for one task may be subpar for another. The score only serves as a general guideline to quantify the
+performance of your model — not to replace human judgement. That being said, what do these scores really mean, and how
+can we decipher them?</p>
 <ol>
 <li>
-<p><strong>Higher is better</strong>: Though BLEU scores may vary among tasks, one thing is for sure - higher scores are better. Generally speaking, a commonly accepted guideline is as follows: <br></p>
+<p><strong>Higher is better</strong>: Though BLEU scores may vary among tasks, one thing is for sure - higher scores are better.
+Generally speaking, a commonly accepted guideline is as follows: <br></p>
 <table>
 <thead>
 <tr>
@@ -3188,10 +3555,13 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1
 </table>
 </li>
 <li>
-<p><strong>Track Trends Over Time</strong>: Rising scores signal improvements in models, while drops could hint at issues or changes in your dataset.</p>
+<p><strong>Track Trends Over Time</strong>: Rising scores signal improvements in models, while drops could hint at issues or changes
+in your dataset.</p>
 </li>
 <li>
-<p><strong>Combine It With Other Metrics</strong>: BLEU primarily measures n-gram overlap, overlooking some nuances like context and understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like BertScore may help in quantifying your model's performance from other perspectives.</p>
+<p><strong>Combine It With Other Metrics</strong>: BLEU primarily measures n-gram overlap, overlooking some nuances like context and
+understanding. While a high BLEU score is promising, it doesn't guarantee flawless text. A complementary metric like
+<a href="../bertscore/">BertScore</a> may help in quantifying your model's performance from other perspectives.</p>
 </li>
 </ol>
 <h2 id="example">Example<a class="headerlink" href="#example" title="Permanent link">#</a></h2>
@@ -3308,7 +3678,8 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated
 </details>
 <details class="example">
 <summary>Step 3: Calculate Brevity Penalty</summary>
-<p>We apply a brevity penalty to prevent the BLEU score from giving undeservingly high scores for short generated texts. Recall that our formula is:</p>
+<p>We apply a brevity penalty to prevent the BLEU score from giving undeservingly high scores for short generated
+texts. Recall that our formula is:</p>
 <div class="arithmatex">\[
 \min\left(1, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right)
 = \min\left(1, \exp\left(1 - \frac{\text{9}}{\text{8}}\right)\right)
@@ -3321,15 +3692,29 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated
 <div class="arithmatex">\[
 \text{BLEU} = \text{Brevity Penalty} \times \text{n-gram Overlap} = 0.882 \times 0.841 = 0.742
 \]</div>
-<p>Note that in most cases, we may take the average or max of the BLEU score with respect to multiple reference texts — since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score with the reference text being <code>"Crisp autumn leaves rustled softly beneath our exhausted feet"</code>, our BLEU score would be 0.478 - a much lower score from a small semantic change.</p>
+<p>Note that in most cases, we may take the average or max of the BLEU score with respect to multiple reference texts
+— since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score
+with the reference text being <code>"Crisp autumn leaves rustled softly beneath our exhausted feet"</code>, our BLEU score
+would be 0.478 - a much lower score from a small semantic change.</p>
 </details>
 <h2 id="advantages-and-limitations">Advantages and Limitations<a class="headerlink" href="#advantages-and-limitations" title="Permanent link">#</a></h2>
 <p>Though BLEU is a popular metric in NLP workflows, it comes with its limitations.</p>
 <ol>
-<li>BLEU fails to consider the semantics of texts. As seen in the example, simply changing "take the mystery out of" to "demistify" — while the text still retains the exact same meaning — yields a much better score, going from 0.3 to 0.6. In contrast with embeddings-based metrics like BertScore, n-gram-based metrics like BLEU only consider the words in the candidate text, rather than the meaning. However, this is addressed by providing multiple possible reference texts when calculating the BLEU score.</li>
-<li>BLEU does not consider the order of words. Across a large candidate/reference, BLEU is unable to consider to order and fluency of the sentences due to its short context window of 4-grams. Although BLEU can be extended to include larger n-gram clipped precisions, it would negatively affect shorter texts. Similarly, BLEU does not consider the importance of words in a sentence either. It weighs unimportant words like "the", "an", "too", as much as it would the nouns and verbs in the sentence. Once again, these pitfalls are addressed by embeddings-based metrics like BertScore.</li>
+<li>BLEU fails to consider the semantics of texts. As seen in the example, simply changing "take the mystery out of" to
+"demistify" — while the text still retains the exact same meaning — yields a much better score, going from 0.3 to 0.6.
+In contrast with embeddings-based metrics like BertScore, n-gram-based metrics like BLEU only consider the words in the
+candidate text, rather than the meaning. However, this is addressed by providing multiple possible reference texts when
+calculating the BLEU score.</li>
+<li>BLEU does not consider the order of words. Across a large candidate/reference, BLEU is unable to consider to order
+and fluency of the sentences due to its short context window of 4-grams. Although BLEU can be extended to include larger
+n-gram clipped precisions, it would negatively affect shorter texts. Similarly, BLEU does not consider the importance of
+words in a sentence either. It weighs unimportant words like "the", "an", "too", as much as it would the nouns and verbs
+in the sentence. Once again, these pitfalls are addressed by embeddings-based metrics like BertScore.</li>
 </ol>
-<p>That being said, the metric still has its advantages. It is quick and easy to compute, as opposed to other metrics like BertScore which would take significantly longer to compute and is not easy to justify. Furthermore, it is relatively similar to human judgement, and is commonly used within NLP which allows you to easily benchmark your models with others and identify pain points.</p>
+<p>That being said, the metric still has its advantages. It is quick and easy to compute, as opposed to other metrics like
+BertScore which would take significantly longer to compute and is not easy to justify. Furthermore, it is relatively
+similar to human judgement, and is commonly used within NLP which allows you to easily benchmark your models with others
+and identify pain points.</p>
 
   
     
@@ -3343,7 +3728,7 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">September 29, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 10, 2023</span>
       </span>
     
     
@@ -3359,6 +3744,11 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated
             <a href="https://github.com/billbai0102" class="md-author" title="@billbai0102">
               
               <img src="https://avatars.githubusercontent.com/u/31229051?size=72" alt="billbai0102">
+            </a>
+          
+            <a href="https://github.com/y27choi" class="md-author" title="@y27choi">
+              
+              <img src="https://avatars.githubusercontent.com/u/17771952?size=72" alt="y27choi">
             </a>
           
           
@@ -3386,6 +3776,44 @@ p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../bertscore/" class="md-footer__link md-footer__link--prev" aria-label="Previous: BERTScore" rel="prev">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                BERTScore
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../confusion-matrix/" class="md-footer__link md-footer__link--next" aria-label="Next: Confusion Matrix" rel="next">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Confusion Matrix
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
