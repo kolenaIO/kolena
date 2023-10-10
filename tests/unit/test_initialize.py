@@ -15,7 +15,6 @@ import concurrent.futures
 import dataclasses
 import hashlib
 import json
-import os
 import time
 from typing import Any
 from typing import Dict
@@ -122,20 +121,28 @@ def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
         assert _client_state.jwt_token is not None
 
 
-def test__initialize__no_token_passed(clean_client_state: None) -> None:
+@patch.dict("os.environ", {KOLENA_TOKEN_ENV: "abc"}, True)
+def test__initialize__token_fallback_environ(clean_client_state: None) -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
-        os.environ[KOLENA_TOKEN_ENV] = "abc"
         kolena.initialize()
         assert _client_state.api_token == "abc"
         assert _client_state.jwt_token is not None
 
 
-def test__initialize__token_missing(clean_client_state: None) -> None:
-    if KOLENA_TOKEN_ENV in os.environ:
-        del os.environ[KOLENA_TOKEN_ENV]
+@patch.dict("os.environ", clear=True)
+def test__initialize__token_fallback_netrc(clean_client_state: None) -> None:
+    with patch("netrc.netrc.authenticators", return_value=(None, None, "abc")):
+        with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
+            kolena.initialize()
+            assert _client_state.api_token == "abc"
+            assert _client_state.jwt_token is not None
 
-    with pytest.raises(MissingTokenError):
-        kolena.initialize()
+
+@patch.dict("os.environ", clear=True)
+def test__initialize__token_missing(clean_client_state: None) -> None:
+    with patch("netrc.netrc.authenticators", return_value=None):
+        with pytest.raises(MissingTokenError):
+            kolena.initialize()
 
 
 def test__uninitialized_usage(clean_client_state: None) -> None:

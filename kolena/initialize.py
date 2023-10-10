@@ -13,9 +13,11 @@
 # limitations under the License.
 import os
 import warnings
+from netrc import netrc
 from typing import Any
 from typing import Dict
 from typing import Optional
+from urllib import parse
 
 import pandas as pd
 
@@ -39,24 +41,51 @@ def initialize(
     """
     Initialize a client session.
 
-    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page and
-    populate the `KOLENA_TOKEN` environment variable before initializing:
+    A session has a global scope and remains active until interpreter shutdown.
 
+    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page and
+    make it available through one of the following options before initializing:
+
+
+    1. Directly through the optional `api_token` argument
     ```python
     import os
     import kolena
 
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     ```
+    2. Populate the `KOLENA_TOKEN` environment variable
+    ```bash
+    export KOLENA_TOKEN="********"
+    ```
+    3. Store in [.netrc file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+    ```cfg title="~/.netrc"
+    machine api.kolena.io password ********
+    ```
 
-    A session has a global scope and remains active until interpreter shutdown.
+    ```mermaid
+    flowchart TD
+        Start[Get API token]
+        Step1{{`api_token` argument provided?}}
+        Step2{{$KOLENA_TOKEN environment set?}}
+        Step3{{Token in .netrc file?}}
+        End[Use as API token]
+        Exception[MissingTokenError]
+        Start --> Step1
+        Step1 -->|No| Step2
+        Step2 -->|No| Step3
+        Step3 -->|No| Exception
+        Step1 -->|Yes| End
+        Step2 -->|Yes| End
+        Step3 -->|Yes| End
+    ```
 
     !!! note
         As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
         has been deprecated and replaced by `initialize(api_token)`.
 
-    :param api_token: Optionally provide an API token, otherwise attempts to use the `KOLENA_TOKEN`
-        environment variable. This token is a secret and should be treated with caution.
+    :param api_token: Optionally provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
+        or `.netrc` file. This token is a secret and should be treated with caution.
     :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
         logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
@@ -65,7 +94,7 @@ def initialize(
         [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
     :raises InvalidTokenError: The provided `api_token` is not valid.
     :raises InputValidationError: The provided combination or number of args is not valid.
-    :raises MissingTokenError: The `KOLENA_TOKEN` environment variable is not populated.
+    :raises MissingTokenError: An API token could not be found.
     """
     used_deprecated_signature = False
 
@@ -85,10 +114,8 @@ def initialize(
         )
 
     if not api_token:
-        try:
-            api_token = os.environ[KOLENA_TOKEN_ENV]
-        except KeyError as e:
-            raise MissingTokenError("Kolena token environment variable is not set.", e)
+        # Attempt fallback options for retrieving api token
+        api_token = _find_token()
 
     init_response = state.get_token(api_token, proxies=proxies)
     derived_telemetry = init_response.tenant_telemetry
@@ -109,3 +136,20 @@ def initialize(
         # Configure third party logging based on verbosity
         pd.set_option("display.max_colwidth", None)
         log.info(f"connected to {get_platform_url()}")
+
+
+def _find_token() -> str:
+    if KOLENA_TOKEN_ENV in os.environ:
+        return os.environ[KOLENA_TOKEN_ENV]
+
+    hostname = parse.urlparse(state._get_api_base_url()).hostname
+    try:
+        netrc_file = netrc()
+        record = netrc_file.authenticators(hostname)
+        if record and record[2]:
+            return record[2]
+        raise MissingTokenError
+    except Exception:
+        raise MissingTokenError(
+            f"No api token in `{KOLENA_TOKEN_ENV}` env variable or in .netrc file under {hostname}",
+        )
