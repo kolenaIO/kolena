@@ -208,7 +208,6 @@ jobs:
                 name: Run << parameters.pytest-group >> integration tests
                 command: |
                   export KOLENA_TOKEN=${KOLENA_TOKEN}
-                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
                   TEST_GROUP="<< parameters.pytest-group >>"
                   if [ "$TEST_GROUP" = "misc" ]; then
                     TESTFILES=$(circleci tests glob tests/integration/test_*.py |
@@ -227,7 +226,6 @@ jobs:
                 name: Run experimental metrics integration tests
                 command: |
                   export KOLENA_TOKEN=${KOLENA_TOKEN}
-                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
                   poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
@@ -270,7 +268,6 @@ jobs:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
             export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
             poetry run pytest -vv tests
   example-evaluator:
     docker:
