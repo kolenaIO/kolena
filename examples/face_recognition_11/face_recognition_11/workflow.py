@@ -64,17 +64,17 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for Face Recognition 1:1 workflow."""
 
-    left_bbox: Optional[BoundingBox] = None
-    """The bounding box associated with the left image to be used for face recognition."""
+    a_bbox: Optional[BoundingBox] = None
+    """The bounding box associated with image A to be used for face recognition."""
 
-    left_keypoints: Optional[Keypoints] = None
-    """The keypoints associated with the left image to be used for face recognition."""
+    a_keypoints: Optional[Keypoints] = None
+    """The keypoints associated with image A to be used for face recognition."""
 
-    right_bbox: Optional[BoundingBox] = None
-    """The bounding box associated with the right image to be used for face recognition."""
+    b_bbox: Optional[BoundingBox] = None
+    """The bounding box associated with image B to be used for face recognition."""
 
-    right_keypoints: Optional[Keypoints] = None
-    """The keypoints associated with the right image to be used for face recognition."""
+    b_keypoints: Optional[Keypoints] = None
+    """The keypoints associated with image B to be used for face recognition."""
 
     similarity: float = None
     """
@@ -120,7 +120,7 @@ class TestCaseMetrics(MetricsTestCase):
     """Test-case-level aggregate metrics for Face Recognition 1:1 workflow."""
 
     n_images: int
-    """Total number of source and target images within this test case."""
+    """Total number of unique images within this test case."""
 
     n_genuine_pairs: int
     """Total number of genuine pairs within this test case."""
@@ -160,6 +160,4 @@ class FMRConfiguration(EvaluatorConfiguration):
     """
 
     def display_name(self) -> str:
-        if self.false_match_rate is not None:
-            return f"False Match Rate: {self.false_match_rate}"
-        return "Max False Match Rate"
+        return f"False Match Rate: {self.false_match_rate}"

@@ -15,11 +15,11 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import List
 from collections import defaultdict
+from typing import List
 
 import pandas as pd
-from face_recognition_11.evaluator import FaceRecognition11Evaluator
+from face_recognition_11.evaluator import evaluate_face_recognition_11
 from face_recognition_11.workflow import FMRConfiguration
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import Model
@@ -81,22 +81,19 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     model = Model(f"{model_name} [{DATASET}]", infer=infer)
     print(f"Model: {model}")
 
-    evaluator = FaceRecognition11Evaluator(
-        configurations=[
-            FMRConfiguration(false_match_rate=1e-1),
-            FMRConfiguration(false_match_rate=1e-2),
-            FMRConfiguration(false_match_rate=1e-3),
-            FMRConfiguration(false_match_rate=1e-4),
-            FMRConfiguration(false_match_rate=1e-5),
-            FMRConfiguration(false_match_rate=1e-6),
-        ],
-    )
+    configurations = [
+        FMRConfiguration(false_match_rate=1e-1),
+        FMRConfiguration(false_match_rate=1e-2),
+        FMRConfiguration(false_match_rate=1e-3),
+        FMRConfiguration(false_match_rate=1e-4),
+        FMRConfiguration(false_match_rate=1e-5),
+        FMRConfiguration(false_match_rate=1e-6),
+    ]
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
-
-        test(model, test_suite, evaluator, reset=True)
+        test(model, test_suite, evaluate_face_recognition_11, configurations)
 
 
 def main(args: Namespace) -> int:
