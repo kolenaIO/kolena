@@ -40,7 +40,7 @@ FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
 
 
-class DataPointType(str, Enum):
+class DatapointType(str, Enum):
     CUSTOM = "DATAPOINT/CUSTOM"
     DOCUMENT = "DATAPOINT/DOCUMENT"
     IMAGE = "DATAPOINT/IMAGE"
@@ -50,10 +50,10 @@ class DataPointType(str, Enum):
 
 
 _DATAPOINT_TYPE_MAP = {
-    "image": DataPointType.IMAGE.value,
-    "application/pdf": DataPointType.DOCUMENT.value,
-    "text": DataPointType.DOCUMENT.value,
-    "video": DataPointType.VIDEO.value,
+    "image": DatapointType.IMAGE.value,
+    "application/pdf": DatapointType.DOCUMENT.value,
+    "text": DatapointType.DOCUMENT.value,
+    "video": DatapointType.VIDEO.value,
 }
 
 
@@ -74,18 +74,18 @@ def _infer_datatype_value(x: str) -> str:
         if datatype is not None:
             return datatype
     elif x.endswith(".pcd"):
-        return DataPointType.POINT_CLOUD.value
+        return DatapointType.POINT_CLOUD.value
 
-    return DataPointType.CUSTOM.value
+    return DatapointType.CUSTOM.value
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if FIELD_LOCATOR in df.columns:
         return df[FIELD_LOCATOR].apply(_infer_datatype_value)
     elif FIELD_TEXT in df.columns:
-        return DataPointType.TEXT.value
+        return DatapointType.TEXT.value
 
-    return DataPointType.CUSTOM.value
+    return DatapointType.CUSTOM.value
 
 
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
