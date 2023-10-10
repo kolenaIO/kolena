@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Specificity (TNR)
 
 <div class="grid" markdown>
