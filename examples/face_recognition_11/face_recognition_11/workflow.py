@@ -26,6 +26,7 @@ from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
+from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 
@@ -146,6 +147,29 @@ class TestCaseMetrics(MetricsTestCase):
     (i.e. similarity is below threshold) within this test case.
     """
 
+    n_fte: int
+    """Total number of failure to enroll (FTE) within this test case."""
+
+    fter: float
+    """The percentage of FTE that exist within the test case."""
+
+
+@dataclass(frozen=True)
+class TestSuiteMetrics(MetricsTestSuite):
+    """Test-suite-level metrics for Face Recognition 1:1 workflow."""
+
+    threshold: float
+    """The threshold value of the baseline test case given a specific FMR."""
+
+    n_fm: int
+    """The total number of false matches in a """
+
+    n_fnm: int
+    """The threshold value of the baseline test case given a specific FMR."""
+
+    fnmr: float
+    """The threshold value of the baseline test case given a specific FMR."""
+
 
 @dataclass(frozen=True)
 class FMRConfiguration(EvaluatorConfiguration):
@@ -160,4 +184,4 @@ class FMRConfiguration(EvaluatorConfiguration):
     """
 
     def display_name(self) -> str:
-        return f"False Match Rate: {self.false_match_rate}"
+        return "False Match Rate: {:.1e}".format(self.false_match_rate)

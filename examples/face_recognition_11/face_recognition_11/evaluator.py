@@ -23,12 +23,14 @@ from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestCaseMetrics
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSampleMetrics
+from face_recognition_11.workflow import TestSuiteMetrics
 
 from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
+from kolena.workflow import Histogram
 from kolena.workflow import TestCases
 
 
@@ -90,6 +92,8 @@ def compute_test_case_metrics(
     n_fm = np.sum([metric.is_false_match and not metric.failure_to_enroll for metric in metrics])
     n_fnm = np.sum([metric.is_false_non_match and not metric.failure_to_enroll for metric in metrics])
 
+    n_fte = np.sum([metric.failure_to_enroll and not metric.failure_to_enroll for metric in metrics])
+
     unique_images = set()
     for ts in test_samples:
         unique_images.add(ts.a.locator)
@@ -103,6 +107,8 @@ def compute_test_case_metrics(
         fmr=n_fm / n_imposter_pairs,
         n_fnm=n_fnm,
         fnmr=n_fnm / n_genuine_pairs,
+        n_fte=n_fte,
+        fter=n_fte / (n_genuine_pairs + n_imposter_pairs),
     )
 
 
@@ -133,7 +139,7 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
         x_label="Baseline False Match Rate",
         y_label="Test Case False Non-Match Rate (%)",
         x_config=AxisConfig(type="log"),
-        curves=[Curve(x=baseline_fmr_x, y=fnmr_y)],
+        curves=[Curve(x=baseline_fmr_x, y=fnmr_y, extra=dict(Threshold=thresholds))],
     )
 
     curve_test_case_fmr = CurvePlot(
@@ -142,14 +148,58 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
         y_label="Test Case False Match Rate",
         x_config=AxisConfig(type="log"),
         y_config=AxisConfig(type="log"),
-        curves=[Curve(x=baseline_fmr_x, y=fmr_y)],
+        curves=[Curve(x=baseline_fmr_x, y=fmr_y, extra=dict(Threshold=thresholds))],
     )
 
-    return [curve_test_case_fnmr, curve_test_case_fmr]
+    genuine_values = [
+        inf.similarity for gt, inf in zip(ground_truths, inferences) if gt.is_same and inf.similarity is not None
+    ]
+    genuine_frequency, genuine_buckets = np.histogram(
+        genuine_values,
+        bins=12,
+        range=(min(genuine_values), max(genuine_values)),
+    )
+
+    imposter_values = [
+        inf.similarity for gt, inf in zip(ground_truths, inferences) if not gt.is_same and inf.similarity is not None
+    ]
+    imposter_frequency, imposter_buckets = np.histogram(
+        imposter_values,
+        bins=12,
+        range=(min(imposter_values), max(imposter_values)),
+    )
+
+    # histogram of the relative distribution of genuine and imposter pairs, bucketed by similarity score.
+    genuine_dist = Histogram(
+        title="Similarity Distribution for Genuine Pairs",
+        x_label="Similarity Score",
+        y_label="Frequency (%)",
+        buckets=list(genuine_buckets),
+        frequency=list(genuine_frequency / len(genuine_values)),
+    )
+
+    imposter_dist = Histogram(
+        title="Similarity Distribution for Imposter Pairs",
+        x_label="Similarity Score",
+        y_label="Frequency (%)",
+        buckets=list(imposter_buckets),
+        frequency=list(imposter_frequency / len(imposter_values)),
+    )
+
+    return [genuine_dist, imposter_dist, curve_test_case_fnmr, curve_test_case_fmr]
 
 
-def compute_test_suite_metrics():
-    return
+def compute_test_suite_metrics(
+    test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]], threshold: float
+) -> TestSuiteMetrics:
+    baseline: TestCaseMetrics = test_case_metrics[0][1]
+
+    return TestSuiteMetrics(
+        threshold=threshold,
+        n_fm=baseline.n_fm,
+        n_fnm=baseline.n_fnm,
+        fnmr=baseline.n_fnm / baseline.n_genuine_pairs,
+    )
 
 
 def evaluate_face_recognition_11(
@@ -171,12 +221,11 @@ def evaluate_face_recognition_11(
         all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, tsm)))
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
 
-    # TODO: ADD test suite metrics
-    # test_suite_metrics = compute_test_suite_metrics(test_samples, all_test_case_metrics)
+    test_suite_metrics = compute_test_suite_metrics(all_test_case_metrics, threshold)
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
         plots_test_case=all_test_case_plots,
-        # metrics_test_suite=test_suite_metrics,
+        metrics_test_suite=test_suite_metrics,
     )
