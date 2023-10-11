@@ -42,7 +42,7 @@ def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: floa
     For more details on how threshold is used see https://pages.nist.gov/frvt/reports/11/frvt_11_report.pdf
     """
     similarity_scores = np.array(
-        [inf.similarity for gt, inf in inferences if (not gt.is_same) and (inf.similarity is not None)],
+        [inf.similarity if inf.similarity is not None else 0 for gt, inf in inferences if not gt.is_same],
     )
     threshold = np.quantile(similarity_scores, 1.0 - fmr)
     return threshold
@@ -84,14 +84,13 @@ def compute_test_case_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
+    baseline_fnmr: float,
 ) -> TestCaseMetrics:
     n_genuine_pairs = np.sum([gt.is_same for gt in ground_truths])
     n_imposter_pairs = np.sum([not gt.is_same for gt in ground_truths])
 
-    # do not count FTE as belonging to FM or FNM
-    n_fm = np.sum([metric.is_false_match and not metric.failure_to_enroll for metric in metrics])
-    n_fnm = np.sum([metric.is_false_non_match and not metric.failure_to_enroll for metric in metrics])
-
+    n_fm = np.sum([metric.is_false_match for metric in metrics])
+    n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
     n_fte = np.sum([metric.failure_to_enroll for metric in metrics])
 
     unique_images = set()
@@ -104,11 +103,12 @@ def compute_test_case_metrics(
         n_genuine_pairs=n_genuine_pairs,
         n_imposter_pairs=n_imposter_pairs,
         n_fm=n_fm,
-        fmr=n_fm / n_imposter_pairs,
+        fmr=(n_fm / n_imposter_pairs) * 100,
         n_fnm=n_fnm,
-        fnmr=n_fnm / n_genuine_pairs,
+        fnmr=(n_fnm / n_genuine_pairs) * 100,
+        Δ_fnmr=((n_fnm / n_genuine_pairs) - baseline_fnmr) * 100,
         n_fte=n_fte,
-        fter=n_fte / (n_genuine_pairs + n_imposter_pairs),
+        fter=(n_fte / (n_genuine_pairs + n_imposter_pairs)) * 100,
     )
 
 
@@ -173,7 +173,7 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
     similarity_dist = Histogram(
         title="Similarity Distribution",
         x_label="Similarity Score",
-        y_label="Frequency",
+        y_label="Frequency (%)",
         buckets=list(bin_edges),
         frequency=list([hist1_adjusted, hist2_adjusted]),
         labels=["Genuine Pairs", "Imposter Pairs"],
@@ -211,9 +211,14 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
+    baseline_fnmr = 0.0
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, tsm)))
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, tsm, baseline_fnmr)))
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
+
+        # first processed test case is baseline
+        if len(all_test_case_metrics) == 1:
+            baseline_fnmr = all_test_case_metrics[0][1].fnmr
 
     test_suite_metrics = compute_test_suite_metrics(all_test_case_metrics, threshold)
 

@@ -146,11 +146,16 @@ class TestCaseMetrics(MetricsTestCase):
     (i.e. similarity is below threshold) within this test case.
     """
 
+    Δ_fnmr: float
+    """
+    The percentage difference of each test case compared to the baseline.
+    """
+
     n_fte: int
-    """Total number of failure to enroll (FTE) within this test case."""
+    """Total number of failure to enroll (FTE) test samples within this test case."""
 
     fter: float
-    """The percentage of FTE that exist within the test case."""
+    """The percentage of FTE test samples that exist within the test case."""
 
 
 @dataclass(frozen=True)
