@@ -112,8 +112,8 @@ def test__validate_field__dict() -> None:
     @dataclasses.dataclass(frozen=True)
     class Tester(DataObject):
         a: Dict[str, int]
-        b: Dict[float, str]
-        c: Dict[float, BoundingBox]
+        b: Dict[str, str]
+        c: Dict[str, BoundingBox]
 
     validate_data_object_type(
         Tester,

@@ -93,7 +93,7 @@ class AggregateMetrics(MetricsTestCase):
     macro_F1: float
     mAP: float
     PerClass: List[PerClassMetrics]
-    ThresholdMetrics: Dict[float, PerClassMetrics]
+    ThresholdMetrics: Dict[str, PerClassMetrics]
 ```
 
 Now we have the definitions to tell us everything we need to know about model performance within a test case:

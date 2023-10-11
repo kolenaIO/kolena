@@ -94,7 +94,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
         macro_F1: float
         mAP: float
         PerClass: List[PerClassMetrics]
-        ThresholdClass: Dict[float, PerClassMetrics]
+        ThresholdClass: Dict[str, PerClassMetrics]
     ```
 
     Any `str`-type fields (e.g. `Class` in the above example) will be used as identifiers when displaying nested metrics
@@ -264,7 +264,7 @@ class Evaluator(metaclass=ABCMeta):
 
 
 def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTestSample]) -> None:
-    supported_dict_key_types = [float]
+    supported_dict_key_types = [str]
     supported_dict_value_types = [MetricsTestSample]
 
     # TODO: support special structure for ImagePair test sample types?
@@ -292,7 +292,7 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    supported_dict_key_types = [float]
+    supported_dict_key_types = [str]
     supported_dict_value_types = [MetricsTestCase]
 
     validate_scalar_data_object_type(

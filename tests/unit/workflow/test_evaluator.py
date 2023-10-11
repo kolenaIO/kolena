@@ -43,7 +43,7 @@ def test__validate__metrics_test_sample() -> None:
         c: Union[bool, int]
         d: List[float]
         e: BoundingBox
-        f: Dict[float, NestedMetricsTestSample]
+        f: Dict[str, NestedMetricsTestSample]
 
 
 def test__validate__metrics_test_sample__invalid__bytes() -> None:
@@ -105,31 +105,31 @@ def test__validate__metrics_test_sample__invalid__dict_key() -> None:
 
         @dataclasses.dataclass(frozen=True)
         class DictTester(MetricsTestSample):
-            a: Dict[str, Any]  # str is not supported, only single Dict[float, MetricsTestSample] is allowed
+            a: Dict[str, Any]  # str is not supported, only single Dict[str, MetricsTestSample] is allowed
 
 
 def test__validate__metrics_test_sample__invalid_dict_nested() -> None:
     @dataclasses.dataclass(frozen=True)
     class Inner(DataObject):
-        a: Dict[float, NestedMetricsTestSample]
+        a: Dict[str, NestedMetricsTestSample]
 
     with pytest.raises(ValueError):
 
         @dataclasses.dataclass(frozen=True)
         class Tester(MetricsTestSample):
-            a: Inner  # only single Dict[float, MetricsTestSample] is allowed
+            a: Inner  # only single Dict[str, MetricsTestSample] is allowed
 
 
 def test__validate__metrics_test_sample__invalid_dict_double_nested() -> None:
     @dataclasses.dataclass(frozen=True)
     class Inner(DataObject):
-        a: Dict[float, Dict[float, NestedMetricsTestSample]]
+        a: Dict[str, Dict[str, NestedMetricsTestSample]]
 
     with pytest.raises(ValueError):
 
         @dataclasses.dataclass(frozen=True)
         class Tester(MetricsTestSample):
-            a: Inner  # only single Dict[float, MetricsTestSample] is allowed
+            a: Inner  # only single Dict[str, MetricsTestSample] is allowed
 
 
 def test__validate__metrics_test_sample__invalid_nested__optional_dict() -> None:
@@ -137,19 +137,19 @@ def test__validate__metrics_test_sample__invalid_nested__optional_dict() -> None
 
         @pydantic.dataclasses.dataclass(frozen=True)
         class Tester(MetricsTestSample):
-            a: Optional[Dict[float, NestedMetricsTestSample]]  # only single Dict[float, MetricsTestSample] is allowed
+            a: Optional[Dict[str, NestedMetricsTestSample]]  # only single Dict[str, MetricsTestSample] is allowed
 
 
 def test__validate__metrics_test_sample__invalid_nested__doubly_nested() -> None:
     @dataclasses.dataclass(frozen=True)
     class NestedNested(MetricsTestSample):
-        a: Dict[float, NestedMetricsTestSample]
+        a: Dict[str, NestedMetricsTestSample]
 
     with pytest.raises(ValueError):
 
         @dataclasses.dataclass(frozen=True)
         class Tester(MetricsTestSample):
-            a: Dict[float, NestedNested]  # only one layer of nesting allowed
+            a: Dict[str, NestedNested]  # only one layer of nesting allowed
 
 
 @pytest.mark.parametrize("base", [MetricsTestCase, MetricsTestSuite])
@@ -297,7 +297,7 @@ def test__validate__metrics_test_case__invalid_nested__doubly_nested() -> None:
 def test__validate__metrics_test_case__valid_dict() -> None:
     @dataclasses.dataclass(frozen=True)
     class DictTester(MetricsTestCase):
-        a: Dict[float, MetricsTestCase]
+        a: Dict[str, MetricsTestCase]
 
 
 def test__validate__metrics_test_case__invalid_dict_key() -> None:
@@ -305,7 +305,7 @@ def test__validate__metrics_test_case__invalid_dict_key() -> None:
 
         @dataclasses.dataclass(frozen=True)
         class InvalidDictKeyTester(MetricsTestCase):
-            a: Dict[str, MetricsTestCase]  # str key is unsupported
+            a: Dict[float, MetricsTestCase]  # float key is unsupported
 
 
 def test__validate__metrics_test_case__invalid_dict_value() -> None:
@@ -313,7 +313,7 @@ def test__validate__metrics_test_case__invalid_dict_value() -> None:
 
         @dataclasses.dataclass(frozen=True)
         class InvalidDictValueTester(MetricsTestCase):
-            a: Dict[float, DataObject]  # DataObject value is unsupported
+            a: Dict[str, DataObject]  # DataObject value is unsupported
 
 
 def test__validate__metrics_test_case__invalid_optional_dict_value() -> None:
@@ -321,4 +321,4 @@ def test__validate__metrics_test_case__invalid_optional_dict_value() -> None:
 
         @dataclasses.dataclass(frozen=True)
         class OptionalDictValueTester(MetricsTestCase):
-            a: Dict[float, Optional[MetricsTestCase]]  # Optional value is unsupported
+            a: Dict[str, Optional[MetricsTestCase]]  # Optional value is unsupported
