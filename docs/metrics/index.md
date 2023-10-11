@@ -12,7 +12,7 @@ Each ML use case requires different metrics. Using the right metrics is critical
 comparing model performance. In each metrics guide, you can learn about the metric with examples, its limitations and
 biases, and its intended uses.
 
-## :kolena-metrics-classification-icon-16: Classification Metrics
+## :kolena-metrics-classification-icon-20: Classification Metrics
 
 <div class="grid cards" markdown>
 
@@ -107,7 +107,7 @@ biases, and its intended uses.
 
 </div>
 
-## :kolena-metrics-nlp-icon-16: NLP Metrics
+## :kolena-metrics-nlp-icon-20: NLP Metrics
 
 <div class="grid cards" markdown>
 
@@ -143,7 +143,7 @@ biases, and its intended uses.
 
 </div>
 
-## :kolena-metrics-cv-icon-16: Computer Vision Metrics
+## :kolena-metrics-cv-icon-20: Computer Vision Metrics
 
 <div class="grid cards" markdown>
 
