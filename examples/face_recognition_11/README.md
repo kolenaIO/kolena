@@ -22,7 +22,7 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](face_recognition_11/seed_test_suite.py) creates a test case with all test samples in a test suite
 
-2. [`seed_test_run.py`](face_recognition_11/seed_test_run.py) tests a random keypoint generator against the test suite above
+2. [`seed_test_run.py`](face_recognition_11/seed_test_run.py) tests a face recognition model against the test suite above
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
@@ -41,7 +41,7 @@ optional arguments:
 
 ```shell
 $ poetry run python3 face_recognition_11/seed_test_run.py --help
-usage: seed_test_run.py [-h] models test_suite
+usage: seed_test_run.py [-h] models test_suites
 
 positional arguments:
   models  Name of the model(s) to test.
