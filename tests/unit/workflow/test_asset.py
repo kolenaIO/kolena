@@ -21,7 +21,6 @@ import pytest
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.asset import _AssetType
 from kolena.workflow.asset import Asset
-from kolena.workflow.asset import AudioAsset
 from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.asset import ImageAsset
 from kolena.workflow.asset import PlainTextAsset
@@ -36,7 +35,6 @@ from kolena.workflow.asset import VideoAsset
         (PointCloudAsset, _AssetType.POINT_CLOUD),
         (PlainTextAsset, _AssetType.PLAIN_TEXT),
         (BinaryAsset, _AssetType.BINARY),
-        (AudioAsset, _AssetType.AUDIO),
     ],
 )
 def test__serialize__locator(asset_class: Type[Asset], asset_type: _AssetType) -> None:

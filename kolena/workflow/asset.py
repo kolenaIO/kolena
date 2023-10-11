@@ -145,16 +145,4 @@ class VideoAsset(BaseVideoAsset):
             raise ValueError(f"Specified start time '{self.start}' and end time '{self.end}' must be non-negative")
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
-class AudioAsset(Asset):
-    """An audio file located in a cloud bucket or served at a URL"""
-
-    locator: str
-    """URL (e.g. S3, HTTPS) of the audio file."""
-
-    @classmethod
-    def _data_type(cls) -> _AssetType:
-        return _AssetType.AUDIO
-
-
-_ASSET_TYPES = [ImageAsset, PlainTextAsset, BinaryAsset, PointCloudAsset, BaseVideoAsset, VideoAsset, AudioAsset]
+_ASSET_TYPES = [ImageAsset, PlainTextAsset, BinaryAsset, PointCloudAsset, BaseVideoAsset, VideoAsset]
