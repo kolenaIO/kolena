@@ -136,7 +136,7 @@ jobs:
           condition:
             not:
               matches:
-                pattern: "^3\\.10"
+                pattern: "^3\\.10.*$"
                 value: << parameters.python-version >>
           steps:
             - run: poetry run pre-commit run -a
@@ -160,7 +160,7 @@ jobs:
           # Generate coverage only from one Python version
           condition:
             matches:
-                pattern: "^3\\.9"
+                pattern: "^3\\.9.*$"
                 value: << parameters.python-version >>
           steps:
             - run:
@@ -242,7 +242,7 @@ jobs:
           # Generate coverage only from one python version
           condition:
             matches:
-              pattern: "^3\\.9"
+              pattern: "^3\\.9.*$"
               value: << parameters.python-version >>
           steps:
             - run:
