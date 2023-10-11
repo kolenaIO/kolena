@@ -1,8 +1,10 @@
 ---
+search:
+  exclude: true
 subtitle: AUC ROC
 ---
 
-# ROC Curve
+# Receiver Operating Characteristic (ROC) Curve
 
 A receiver operating characteristic (ROC) curve is a plot that is used to evaluate the performance of binary
 classification models by using the [true positive rate (TPR)](./recall.md) and the
