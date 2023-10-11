@@ -9,7 +9,7 @@ This project uses [Poetry](https://python-poetry.org/) for packaging and Python 
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+poetry update
 ```
 
 ## Usage

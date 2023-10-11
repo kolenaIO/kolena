@@ -15,7 +15,7 @@ data has already been uploaded to your Kolena platform.
 dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+poetry update
 ```
 
 4. [Recommended] Download test images to a local path for faster embeddings extraction:

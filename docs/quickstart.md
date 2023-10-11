@@ -130,7 +130,7 @@ With the repository cloned, let's set up the
 
 ```shell
 cd kolena/examples/age_estimation
-poetry update && poetry install
+poetry update
 ```
 
 Now we're up and running and can start [creating test suites](#create-test-suites) and
