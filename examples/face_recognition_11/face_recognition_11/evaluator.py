@@ -99,7 +99,7 @@ def compute_test_case_metrics(
         unique_images.add(ts.b.locator)
 
     Δ_fnmr = 0.0
-    if baseline_fnmr is not 0.0:
+    if baseline_fnmr != 0.0:
         Δ_fnmr = (n_fnm / n_genuine_pairs) * 100 - baseline_fnmr
 
     return TestCaseMetrics(
