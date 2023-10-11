@@ -101,8 +101,7 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
 
     is_match: bool
     """
-    An indication of whether the model correct classified an imposter pair as an imposter pair or
-    a genuine pair as a genuine pair.
+    An indication of whether the model correct classified a genuine pair as a genuine pair.
     """
 
     is_false_match: bool
@@ -112,7 +111,7 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
     """An indication of whether the model incorrectly classified an genuine pair as a imposter pair."""
 
     failure_to_enroll: bool
-    """An indication of whether the model failed to detect a face."""
+    """An indication of whether the model failed to infer."""
 
 
 @dataclass(frozen=True)
@@ -151,12 +150,11 @@ class TestCaseMetrics(MetricsTestCase):
 class FMRConfiguration(EvaluatorConfiguration):
     """
     False Match Rate (FMR) configuration for Face Recognition 1:1 workflow.
-    Specify a minimum
     """
 
     false_match_rate: Optional[float] = None
     """
-    FMR to apply for predictions.
+    Specify a minimum FMR to apply for predictions.
     """
 
     def display_name(self) -> str:
