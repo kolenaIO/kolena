@@ -50,8 +50,18 @@ def mock_get_token(api_token: str, *args: Any, **kwargs: Any) -> ValidateRespons
     )
 
 
+def mock_get_token_with_telemetry(api_token: str, *args: Any, **kwargs: Any) -> ValidateResponse:
+    return ValidateResponse(
+        tenant="mock tenant",
+        access_token=mock_jwt(api_token),
+        token_type="mock token type",
+        tenant_telemetry=True,
+    )
+
+
 MOCK_TOKEN = "mock token"
 FIXED_TOKEN_RESPONSE = mock_get_token(MOCK_TOKEN)
+FIXED_TOKEN_RESPONSE_WITH_TELEMETRY = mock_get_token_with_telemetry(MOCK_TOKEN)
 
 
 @pytest.fixture
@@ -67,6 +77,15 @@ def test__initialize__positional(clean_client_state: None) -> None:
         kolena.initialize("bar")
         assert _client_state.api_token == "bar"
         assert _client_state.jwt_token is not None
+        assert not _client_state.telemetry
+
+
+def test__initialize__telemetry(clean_client_state: None) -> None:
+    with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE_WITH_TELEMETRY):
+        kolena.initialize("bar")
+        assert _client_state.api_token == "bar"
+        assert _client_state.jwt_token is not None
+        assert _client_state.telemetry
 
 
 def test__initialize__keyword(clean_client_state: None) -> None:
