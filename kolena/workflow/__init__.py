@@ -14,6 +14,7 @@
 
 # noreorder
 from ._datatypes import DataObject
+from .test_sample import Audio
 from .test_sample import Metadata
 from .test_sample import Image
 from .test_sample import ImagePair
@@ -87,4 +88,5 @@ __all__ = [
     "TestRun",
     "test",
     "define_workflow",
+    "Audio",
 ]
