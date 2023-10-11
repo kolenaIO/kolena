@@ -42,7 +42,7 @@ def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: floa
     For more details on how threshold is used see https://pages.nist.gov/frvt/reports/11/frvt_11_report.pdf
     """
     similarity_scores = np.array(
-        [inf.similarity if inf.similarity is not None else 0 for gt, inf in inferences if not gt.is_same],
+        [inf.similarity if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same],
     )
     threshold = np.quantile(similarity_scores, 1.0 - fmr)
     return threshold
@@ -98,6 +98,10 @@ def compute_test_case_metrics(
         unique_images.add(ts.a.locator)
         unique_images.add(ts.b.locator)
 
+    Δ_fnmr = 0.0
+    if baseline_fnmr is not 0.0:
+        Δ_fnmr = (n_fnm / n_genuine_pairs) * 100 - baseline_fnmr
+
     return TestCaseMetrics(
         n_images=len(unique_images),
         n_genuine_pairs=n_genuine_pairs,
@@ -106,7 +110,7 @@ def compute_test_case_metrics(
         fmr=(n_fm / n_imposter_pairs) * 100,
         n_fnm=n_fnm,
         fnmr=(n_fnm / n_genuine_pairs) * 100,
-        Δ_fnmr=((n_fnm / n_genuine_pairs) - baseline_fnmr) * 100,
+        Δ_fnmr=Δ_fnmr,
         n_fte=n_fte,
         fter=(n_fte / (n_genuine_pairs + n_imposter_pairs)) * 100,
     )
@@ -131,7 +135,7 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
         n_fnm = np.sum(
             [metric.is_false_non_match and not metric.failure_to_enroll for metric in tsm_for_one_threshold],
         )
-        fnmr_y.append(n_fnm / n_genuine_pairs)
+        fnmr_y.append((n_fnm / n_genuine_pairs) * 100)
         fmr_y.append(n_fm / n_imposter_pairs)
 
     curve_test_case_fnmr = CurvePlot(
