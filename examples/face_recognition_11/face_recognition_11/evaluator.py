@@ -154,33 +154,28 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
     genuine_values = [
         inf.similarity for gt, inf in zip(ground_truths, inferences) if gt.is_same and inf.similarity is not None
     ]
-    genuine_frequency, genuine_buckets = np.histogram(
-        genuine_values,
-        bins=12,
-        range=(min(genuine_values), max(genuine_values)),
-    )
 
     imposter_values = [
         inf.similarity for gt, inf in zip(ground_truths, inferences) if not gt.is_same and inf.similarity is not None
     ]
-    imposter_frequency, imposter_buckets = np.histogram(
-        imposter_values,
-        bins=12,
-        range=(min(imposter_values), max(imposter_values)),
-    )
 
-    combined_bins = np.concatenate((genuine_buckets, imposter_buckets))
-    combined_bins = np.unique(combined_bins)
+    min_data = min(min(genuine_values), min(imposter_values))
+    max_data = max(max(genuine_values), max(imposter_values))
 
-    print(combined_bins)
+    number_of_bins = 50
+    bin_size = (max_data - min_data) / number_of_bins
+    bin_edges = [min_data + i * bin_size for i in range(number_of_bins + 1)]
+
+    hist1_adjusted = list(np.histogram(genuine_values, bins=bin_edges, density=True)[0])
+    hist2_adjusted = list(np.histogram(imposter_values, bins=bin_edges, density=True)[0])
 
     # histogram of the relative distribution of genuine and imposter pairs, bucketed by similarity score.
     similarity_dist = Histogram(
         title="Similarity Distribution",
         x_label="Similarity Score",
-        y_label="Frequency (%)",
-        buckets=list(combined_bins),
-        frequency=list([genuine_frequency, imposter_frequency]),
+        y_label="Frequency",
+        buckets=list(bin_edges),
+        frequency=list([hist1_adjusted, hist2_adjusted]),
         labels=["Genuine Pairs", "Imposter Pairs"],
     )
 
