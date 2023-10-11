@@ -12,9 +12,9 @@ Each ML use case requires different metrics. Using the right metrics is critical
 comparing model performance. In each metrics guide, you can learn about the metric with examples, its limitations and
 biases, and its intended uses.
 
-<div class="grid cards" markdown>
-
 ## :kolena-metrics-classification-icon-16: Classification Metrics
+
+<div class="grid cards" markdown>
 
 - [Accuracy](accuracy.md)
 
@@ -105,7 +105,11 @@ biases, and its intended uses.
     are the building blocks of many other metrics, including [accuracy](accuracy.md), [precision](precision.md),
     and [recall](recall.md).
 
+</div>
+
 ## :kolena-metrics-nlp-icon-16: NLP Metrics
+
+<div class="grid cards" markdown>
 
 - [BERTScore](bertscore.md)
 
@@ -137,7 +141,11 @@ biases, and its intended uses.
     the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
     ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
 
+</div>
+
 ## :kolena-metrics-cv-icon-16: Computer Vision Metrics
+
+<div class="grid cards" markdown>
 
 - [Geometry Matching](geometry-matching.md)
 
