@@ -92,7 +92,7 @@ def compute_test_case_metrics(
     n_fm = np.sum([metric.is_false_match and not metric.failure_to_enroll for metric in metrics])
     n_fnm = np.sum([metric.is_false_non_match and not metric.failure_to_enroll for metric in metrics])
 
-    n_fte = np.sum([metric.failure_to_enroll and not metric.failure_to_enroll for metric in metrics])
+    n_fte = np.sum([metric.failure_to_enroll for metric in metrics])
 
     unique_images = set()
     for ts in test_samples:
@@ -169,24 +169,22 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
         range=(min(imposter_values), max(imposter_values)),
     )
 
+    combined_bins = np.concatenate((genuine_buckets, imposter_buckets))
+    combined_bins = np.unique(combined_bins)
+
+    print(combined_bins)
+
     # histogram of the relative distribution of genuine and imposter pairs, bucketed by similarity score.
-    genuine_dist = Histogram(
-        title="Similarity Distribution for Genuine Pairs",
+    similarity_dist = Histogram(
+        title="Similarity Distribution",
         x_label="Similarity Score",
         y_label="Frequency (%)",
-        buckets=list(genuine_buckets),
-        frequency=list(genuine_frequency / len(genuine_values)),
+        buckets=list(combined_bins),
+        frequency=list([genuine_frequency, imposter_frequency]),
+        labels=["Genuine Pairs", "Imposter Pairs"],
     )
 
-    imposter_dist = Histogram(
-        title="Similarity Distribution for Imposter Pairs",
-        x_label="Similarity Score",
-        y_label="Frequency (%)",
-        buckets=list(imposter_buckets),
-        frequency=list(imposter_frequency / len(imposter_values)),
-    )
-
-    return [genuine_dist, imposter_dist, curve_test_case_fnmr, curve_test_case_fmr]
+    return [similarity_dist, curve_test_case_fnmr, curve_test_case_fmr]
 
 
 def compute_test_suite_metrics(
