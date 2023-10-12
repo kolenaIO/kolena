@@ -2,7 +2,7 @@
 icon: kolena/comparison-16
 ---
 
-# :kolena-comparison-20: Enabling Natural Language and Similarity Search
+# :kolena-comparison-20: Enabling Natural Language Search
 
 Kolena supports natural language and similar image search across [`Image`][kolena.workflow.Image] data previously registered to the platform.
 Users may enable this functionality by extracting and uploading the corresponding search embeddings using a Kolena provided package.
