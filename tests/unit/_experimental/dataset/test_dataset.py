@@ -25,7 +25,9 @@ from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import COL_DATAPOINT
 from kolena._experimental.dataset._dataset import TestSampleType
 from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import LabeledBoundingBox
+from kolena.workflow.annotation import ScoredClassificationLabel
 
 
 @pytest.mark.parametrize(
@@ -97,6 +99,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                 LabeledBoundingBox(label="car", top_left=[i, i], bottom_right=[i + 50, i + 50])
                 for i in range(random.randint(2, 6))
             ],
+            label=ScoredClassificationLabel(label="dog", score=0.1 + i * 0.05),
         )
         for i in range(10)
     ]
@@ -110,6 +113,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     height=dp["height"],
                     category=dp["category"],
                     bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
+                    label=dp["label"]._to_dict(),
                     data_type=TestSampleType.IMAGE,
                 )
                 for dp in datapoints
@@ -131,6 +135,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
                     for bbox in dp["bboxes"]
                 ],
+                label=ClassificationLabel(label=dp["label"].label, score=dp["label"].score),
             )
             for dp in datapoints
         ],

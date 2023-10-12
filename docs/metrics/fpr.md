@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # False Positive Rate (FPR)
 
 <div class="grid" markdown>
@@ -24,8 +19,8 @@ positive inferences.
     Read the [TP / FP / FN / TN](./tp-fp-fn-tn.md) guide if you're not familiar with "TN" and "FP" terminology.
 
 </div>
-![Specificity Image](../assets/images/metrics-fpr-light.svg#only-light)
-![Specificity Image](../assets/images/metrics-fpr-dark.svg#only-dark)
+![FPR Image](../assets/images/metrics-fpr-light.svg#only-light)
+![FPR Image](../assets/images/metrics-fpr-dark.svg#only-dark)
 </div>
 
 FPR is often used in conjuction with [TPR (recall)](./recall.md). By measuring both FPR and TPR, a more complete picture

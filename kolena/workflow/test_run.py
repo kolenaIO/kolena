@@ -43,6 +43,7 @@ from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
+from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import Evaluator
@@ -508,4 +509,8 @@ def test(
     :param configurations: A list of configurations to use when running the evaluator.
     :param reset: Overwrites existing inferences if set.
     """
+    if not test_suite.test_cases:
+        raise IncorrectUsageError(
+            f"test suite '{test_suite.name}' has no test cases, please add test cases" f" to the test suite",
+        )
     TestRun(model, test_suite, evaluator, configurations, reset).run()
