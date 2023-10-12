@@ -96,3 +96,28 @@ def set_profile():
 
 def track_event(request: EventTrackingAPI.TrackEventRequest):
     krequests.post(endpoint_path=EventTrackingAPI.Path.EVENT, data=json.dumps(dataclasses.asdict(request)))
+
+
+def with_invocation_tracked(event_name: str):
+    """function decorator to track start and end of an event"""
+    def tracking_decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            if not _client_state.telemetry:
+                return func(*args, **kwargs)
+            # track start of event
+            track_event(EventTrackingAPI.TrackEventRequest(event_name=event_name + "-started"))
+
+            # track success or failure of the call, and if failed record the exception class name
+            try:
+                response = func(*args, **kwargs)
+                track_event(EventTrackingAPI.TrackEventRequest(event_name=event_name + "-succeeded"))
+                return response
+            except Exception as e:
+                track_event(EventTrackingAPI.TrackEventRequest(
+                    event_name=event_name + "-failed",
+                    additional_metadata={"response_error": e.__class__.__name__}
+                ))
+                raise e
+        return wrapper
+    return tracking_decorator
