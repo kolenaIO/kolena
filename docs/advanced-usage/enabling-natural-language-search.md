@@ -65,6 +65,7 @@ In this section, we will load these images from an S3 bucket. For other cloud st
 
 ```python
 from typing import Iterator
+from typing import List
 from typing import Tuple
 
 import boto3
