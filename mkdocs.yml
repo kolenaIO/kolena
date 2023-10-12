@@ -76,12 +76,12 @@ nav:
       - metrics/roc-curve.md
       - metrics/specificity.md
       - metrics/tp-fp-fn-tn.md
-      - Natural Language Processing Metrics:
+      - Natural Language Processing:
         - metrics/bertscore.md
         - metrics/bleu.md
         - metrics/meteor.md
         - metrics/rouge-n.md
-      - Computer Vision Metrics:
+      - Computer Vision:
         - metrics/geometry-matching.md
         - metrics/iou.md
   - Help & FAQ:

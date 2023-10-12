@@ -105,7 +105,7 @@ biases, and its intended uses.
 
 </div>
 
-## :kolena-metrics-nlp-icon-20: Natural Language Processing Metrics
+## :kolena-metrics-nlp-icon-20: Natural Language Processing
 
 <div class="grid cards" markdown>
 
@@ -141,7 +141,7 @@ biases, and its intended uses.
 
 </div>
 
-## :kolena-metrics-cv-icon-20: Computer Vision Metrics
+## :kolena-metrics-cv-icon-20: Computer Vision
 
 <div class="grid cards" markdown>
 
