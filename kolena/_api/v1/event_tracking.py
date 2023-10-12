@@ -25,7 +25,14 @@ class Tracking:
         LOAD_TEST_SUITE = "load-test-suite"
         LOAD_ALL_TEST_SUITE = "load-all-test-suite"
         EDIT_TEST_SUITE = "edit-test-suite"
-        LOAD_TEST_SUITE_SAMPLES = 'load-test-suite-samples'
+        LOAD_TEST_SUITE_SAMPLES = "load-test-suite-samples"
+
+        # model
+        CREATE_MODEL = "create-model"
+        LOAD_MODEL = "load-model"
+
+        # test run
+        EXECUTE_TEST_RUN = "execute-test-run"
 
     @dataclass(frozen=True)
     class TrackEventRequest:

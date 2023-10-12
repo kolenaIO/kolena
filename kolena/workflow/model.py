@@ -27,6 +27,7 @@ from pydantic import validate_arguments
 
 from kolena._api.v1.core import Model as CoreAPI
 from kolena._api.v1.generic import Model as API
+from kolena._api.v1.event_tracking import Tracking
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -35,6 +36,7 @@ from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
+from kolena._utils.instrumentation import with_invocation_tracked
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -108,6 +110,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._populate_from_other(loaded)
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.CREATE_MODEL)
     def create(
         cls,
         name: str,
@@ -132,6 +135,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         return obj
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_MODEL)
     def load(cls, name: str, infer: Optional[Callable[[TestSample], Inference]] = None) -> "Model":
         """
         Load an existing model.
