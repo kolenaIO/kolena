@@ -105,7 +105,29 @@ biases, and its intended uses.
 
 </div>
 
-## :kolena-metrics-nlp-icon-20: Natural Language Processing
+## Computer Vision
+
+<div class="grid cards" markdown>
+
+- [Geometry Matching](geometry-matching.md)
+
+    ---
+
+    Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
+    localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any
+    metrics built on top of these, like [precision](precision.md), [recall](recall.md), and
+    [F<sub>1</sub>-score](f1-score.md).
+
+- [Intersection over Union (IoU)](iou.md)
+
+    ---
+
+    IoU measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
+    Also known as Jaccard index in classification workflow.
+
+</div>
+
+## Natural Language Processing
 
 <div class="grid cards" markdown>
 
@@ -138,27 +160,5 @@ biases, and its intended uses.
     ROUGE-N, a metric within the broader ROUGE metric collection, is a vital metric in the field of NLP. It assesses
     the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
     ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
-
-</div>
-
-## :kolena-metrics-cv-icon-20: Computer Vision
-
-<div class="grid cards" markdown>
-
-- [Geometry Matching](geometry-matching.md)
-
-    ---
-
-    Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
-    localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any
-    metrics built on top of these, like [precision](precision.md), [recall](recall.md), and
-    [F<sub>1</sub>-score](f1-score.md).
-
-- [Intersection over Union (IoU)](iou.md)
-
-    ---
-
-    IoU measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets.
-    Also known as Jaccard index in classification workflow.
 
 </div>
