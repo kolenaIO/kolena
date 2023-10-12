@@ -25,6 +25,7 @@ from typing import Callable
 import kolena
 from kolena._api.v1.client_log import ClientLog as API
 from kolena._api.v1.core import TestRun as CoreAPI
+from kolena._api.v1.event_tracking import Tracking as EventTrackingAPI
 from kolena._utils import krequests
 from kolena._utils.state import _client_state
 
@@ -87,3 +88,11 @@ def report_crash(id: int, endpoint_path: str):
     request = CoreAPI.MarkCrashedRequest(test_run_id=id)
     # note no krequests.raise_for_status -- already in crashed state
     krequests.post(endpoint_path=endpoint_path, data=json.dumps(dataclasses.asdict(request)))
+
+
+def set_profile():
+    krequests.put(endpoint_path=EventTrackingAPI.Path.PROFILE)
+
+
+def track_event(request: EventTrackingAPI.TrackEventRequest):
+    krequests.post(endpoint_path=EventTrackingAPI.Path.EVENT, data=json.dumps(dataclasses.asdict(request)))
