@@ -15,7 +15,6 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
-from collections import defaultdict
 from typing import List
 
 import pandas as pd
@@ -43,17 +42,14 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             (df_results["locator_a"] == test_sample.a.locator) & (df_results["locator_b"] == test_sample.b.locator)
         ].iloc[0]
 
-        if sample_results["failure"]:  # failure to enroll
-            return Inference()
-
-        sample_results = defaultdict(None, sample_results)
+        similarity = None if sample_results["failure"] else sample_results["similarity"]
 
         return Inference(
-            left_bbox=BoundingBox(
+            a_bbox=BoundingBox(
                 (sample_results["a_min_x"], sample_results["a_min_y"]),
                 (sample_results["a_max_x"], sample_results["a_max_y"]),
             ),
-            left_keypoints=Keypoints(
+            a_keypoints=Keypoints(
                 [
                     (sample_results["a_right_eye_x"], sample_results["a_right_eye_y"]),
                     (sample_results["a_left_eye_x"], sample_results["a_left_eye_y"]),
@@ -62,11 +58,11 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
                     (sample_results["a_mouth_left_x"], sample_results["a_mouth_left_y"]),
                 ],
             ),
-            right_bbox=BoundingBox(
+            b_bbox=BoundingBox(
                 (sample_results["b_min_x"], sample_results["b_min_y"]),
                 (sample_results["b_max_x"], sample_results["b_max_y"]),
             ),
-            right_keypoints=Keypoints(
+            b_keypoints=Keypoints(
                 [
                     (sample_results["b_right_eye_x"], sample_results["b_right_eye_y"]),
                     (sample_results["b_left_eye_x"], sample_results["b_left_eye_y"]),
@@ -75,7 +71,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
                     (sample_results["b_mouth_left_x"], sample_results["b_mouth_left_y"]),
                 ],
             ),
-            similarity=sample_results["similarity"],
+            similarity=similarity,
         )
 
     model = Model(f"{model_name} [{DATASET}]", infer=infer)

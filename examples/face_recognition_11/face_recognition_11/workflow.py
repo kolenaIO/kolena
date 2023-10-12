@@ -152,10 +152,16 @@ class TestCaseMetrics(MetricsTestCase):
     """
 
     n_fte: int
-    """Total number of failure to enroll (FTE) test samples within this test case."""
+    """Total number of failure to enroll (FTE) across images within this test case."""
 
     fter: float
-    """The percentage of FTE test samples that exist within the test case."""
+    """The percentage of FTE across images that exist within the test case."""
+
+    n_pair_failures: int
+    """Total number of failure to enroll (FTE) across test samples within this test case."""
+
+    pair_failure_rate: float
+    """The percentage of FTE across test samples within the test case."""
 
 
 @dataclass(frozen=True)

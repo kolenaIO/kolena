@@ -83,15 +83,20 @@ def compute_per_sample(
 def compute_test_case_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
+    inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
 ) -> TestCaseMetrics:
     n_genuine_pairs = np.sum([gt.is_same for gt in ground_truths])
     n_imposter_pairs = np.sum([not gt.is_same for gt in ground_truths])
+    N = n_genuine_pairs + n_imposter_pairs
 
     n_fm = np.sum([metric.is_false_match for metric in metrics])
     n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
-    n_fte = np.sum([metric.failure_to_enroll for metric in metrics])
+    n_pair_failures = np.sum([metric.failure_to_enroll for metric in metrics])
+    n_fte = np.sum(
+        [int(len(inf.a_keypoints.points) == 0) + int(len(inf.b_keypoints.points) == 0) for inf in inferences],
+    )
 
     unique_images = set()
     for ts in test_samples:
@@ -112,7 +117,9 @@ def compute_test_case_metrics(
         fnmr=(n_fnm / n_genuine_pairs) * 100,
         Δ_fnmr=Δ_fnmr,
         n_fte=n_fte,
-        fter=(n_fte / (n_genuine_pairs + n_imposter_pairs)) * 100,
+        fter=(n_fte / N) * 100,
+        n_pair_failures=n_pair_failures,
+        pair_failure_rate=(n_pair_failures / N) * 100,
     )
 
 
@@ -217,7 +224,7 @@ def evaluate_face_recognition_11(
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     baseline_fnmr = 0.0
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, tsm, baseline_fnmr)))
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr)))
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
 
         # first processed test case is baseline
