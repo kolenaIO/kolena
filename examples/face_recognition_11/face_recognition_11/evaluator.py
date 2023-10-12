@@ -16,6 +16,7 @@ from typing import Optional
 from typing import Tuple
 
 import numpy as np
+from face_recognition_11.utils import create_similiarity_histogram
 from face_recognition_11.workflow import FMRConfiguration
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
@@ -29,7 +30,6 @@ from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
-from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
 
@@ -89,7 +89,6 @@ def compute_test_case_metrics(
 ) -> TestCaseMetrics:
     n_genuine_pairs = np.sum([gt.is_same for gt in ground_truths])
     n_imposter_pairs = np.sum([not gt.is_same for gt in ground_truths])
-    N = n_genuine_pairs + n_imposter_pairs
 
     n_fm = np.sum([metric.is_false_match for metric in metrics])
     n_fnm = np.sum([metric.is_false_non_match for metric in metrics])
@@ -108,18 +107,18 @@ def compute_test_case_metrics(
         Δ_fnmr = (n_fnm / n_genuine_pairs) * 100 - baseline_fnmr
 
     return TestCaseMetrics(
-        n_images=len(unique_images),
-        n_genuine_pairs=n_genuine_pairs,
-        n_imposter_pairs=n_imposter_pairs,
-        n_fm=n_fm,
-        fmr=(n_fm / n_imposter_pairs) * 100,
-        n_fnm=n_fnm,
-        fnmr=(n_fnm / n_genuine_pairs) * 100,
-        Δ_fnmr=Δ_fnmr,
-        n_fte=n_fte,
-        fter=(n_fte / N) * 100,
-        n_pair_failures=n_pair_failures,
-        pair_failure_rate=(n_pair_failures / N) * 100,
+        nImages=len(unique_images),
+        nGenuinePairs=n_genuine_pairs,
+        nImposterPairs=n_imposter_pairs,
+        FM=n_fm,
+        FMR=(n_fm / n_imposter_pairs) * 100,
+        FNM=n_fnm,
+        FNMR=(n_fnm / n_genuine_pairs) * 100,
+        ΔFNMR=Δ_fnmr,
+        FTE=n_fte,
+        FTER=(n_fte / len(unique_images)) * 100,
+        PairFailures=n_pair_failures,
+        PairFailureRate=(n_pair_failures / (n_genuine_pairs + n_imposter_pairs)) * 100,
     )
 
 
@@ -162,33 +161,7 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
         curves=[Curve(x=baseline_fmr_x, y=fmr_y, extra=dict(Threshold=thresholds))],
     )
 
-    genuine_values = [
-        inf.similarity for gt, inf in zip(ground_truths, inferences) if gt.is_same and inf.similarity is not None
-    ]
-
-    imposter_values = [
-        inf.similarity for gt, inf in zip(ground_truths, inferences) if not gt.is_same and inf.similarity is not None
-    ]
-
-    min_data = min(min(genuine_values), min(imposter_values))
-    max_data = max(max(genuine_values), max(imposter_values))
-
-    number_of_bins = 50
-    bin_size = (max_data - min_data) / number_of_bins
-    bin_edges = [min_data + i * bin_size for i in range(number_of_bins + 1)]
-
-    hist1_adjusted = list(np.histogram(genuine_values, bins=bin_edges, density=True)[0])
-    hist2_adjusted = list(np.histogram(imposter_values, bins=bin_edges, density=True)[0])
-
-    # histogram of the relative distribution of genuine and imposter pairs, bucketed by similarity score.
-    similarity_dist = Histogram(
-        title="Similarity Distribution",
-        x_label="Similarity Score",
-        y_label="Frequency (%)",
-        buckets=list(bin_edges),
-        frequency=list([hist1_adjusted, hist2_adjusted]),
-        labels=["Genuine Pairs", "Imposter Pairs"],
-    )
+    similarity_dist = create_similiarity_histogram(ground_truths, inferences)
 
     return [similarity_dist, curve_test_case_fnmr, curve_test_case_fmr]
 
@@ -200,10 +173,10 @@ def compute_test_suite_metrics(
     baseline: TestCaseMetrics = test_case_metrics[0][1]
 
     return TestSuiteMetrics(
-        threshold=threshold,
-        n_fm=baseline.n_fm,
-        n_fnm=baseline.n_fnm,
-        fnmr=baseline.n_fnm / baseline.n_genuine_pairs,
+        Threshold=threshold,
+        FM=baseline.FM,
+        FNM=baseline.FNM,
+        FNMR=baseline.FNM / baseline.nGenuinePairs,
     )
 
 
@@ -229,7 +202,7 @@ def evaluate_face_recognition_11(
 
         # first processed test case is baseline
         if len(all_test_case_metrics) == 1:
-            baseline_fnmr = all_test_case_metrics[0][1].fnmr
+            baseline_fnmr = all_test_case_metrics[0][1].FNMR
 
     test_suite_metrics = compute_test_suite_metrics(all_test_case_metrics, threshold)
 

@@ -119,48 +119,48 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
 class TestCaseMetrics(MetricsTestCase):
     """Test-case-level aggregate metrics for Face Recognition 1:1 workflow."""
 
-    n_images: int
+    nImages: int
     """Total number of unique images within this test case."""
 
-    n_genuine_pairs: int
+    nGenuinePairs: int
     """Total number of genuine pairs within this test case."""
 
-    n_imposter_pairs: int
+    nImposterPairs: int
     """Total number of imposter pairs within this test case."""
 
-    n_fm: int
+    FM: int
     """Total number of false matches within this test case."""
 
-    fmr: float
+    FMR: float
     """
     The percentage of imposter pairs that are incorrectly classified as genuine pairs
     (i.e. similarity is above threshold) within this test case.
     """
 
-    n_fnm: int
+    FNM: int
     """Total number of false non-matches within this test case."""
 
-    fnmr: float
+    FNMR: float
     """
     The percentage of genuine pairs that are incorrectly classified as imposter pairs
     (i.e. similarity is below threshold) within this test case.
     """
 
-    Δ_fnmr: float
+    ΔFNMR: float
     """
     The percentage difference of each test case compared to the baseline.
     """
 
-    n_fte: int
+    FTE: int
     """Total number of failure to enroll (FTE) across images within this test case."""
 
-    fter: float
+    FTER: float
     """The percentage of FTE across images that exist within the test case."""
 
-    n_pair_failures: int
+    PairFailures: int
     """Total number of failure to enroll (FTE) across test samples within this test case."""
 
-    pair_failure_rate: float
+    PairFailureRate: float
     """The percentage of FTE across test samples within the test case."""
 
 
@@ -168,16 +168,16 @@ class TestCaseMetrics(MetricsTestCase):
 class TestSuiteMetrics(MetricsTestSuite):
     """Test-suite-level metrics for Face Recognition 1:1 workflow."""
 
-    threshold: float
+    Threshold: float
     """The threshold value of the baseline test case given a specific FMR."""
 
-    n_fm: int
+    FM: int
     """The total number of false matches in a """
 
-    n_fnm: int
+    FNM: int
     """The threshold value of the baseline test case given a specific FMR."""
 
-    fnmr: float
+    FNMR: float
     """The threshold value of the baseline test case given a specific FMR."""
 
 

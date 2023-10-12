@@ -82,8 +82,6 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         FMRConfiguration(false_match_rate=1e-2),
         FMRConfiguration(false_match_rate=1e-3),
         FMRConfiguration(false_match_rate=1e-4),
-        FMRConfiguration(false_match_rate=1e-5),
-        FMRConfiguration(false_match_rate=1e-6),
     ]
 
     for test_suite_name in test_suite_names:
