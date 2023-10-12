@@ -20,6 +20,13 @@ class Tracking:
         EDIT_TEST_CASE = "edit-test-case"
         INIT_MANY_TEST_CASES = "initialize-many-test-cases"
 
+        # test suite
+        CREATE_TEST_SUITE = "create-test-suite"
+        LOAD_TEST_SUITE = "load-test-suite"
+        LOAD_ALL_TEST_SUITE = "load-all-test-suite"
+        EDIT_TEST_SUITE = "edit-test-suite"
+        LOAD_TEST_SUITE_SAMPLES = 'load-test-suite-samples'
+
     @dataclass(frozen=True)
     class TrackEventRequest:
         event_name: str

@@ -27,6 +27,7 @@ from typing import Type
 from pydantic import validate_arguments
 
 from kolena._api.v1.core import TestSuite as CoreAPI
+from kolena._api.v1.event_tracking import Tracking
 from kolena._api.v1.generic import TestSuite as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -36,6 +37,7 @@ from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
+from kolena._utils.instrumentation import with_invocation_tracked
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -181,6 +183,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
                 editor.tags = tags
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.CREATE_TEST_SUITE)
     def create(
         cls,
         name: str,
@@ -211,6 +214,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         return obj
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_TEST_SUITE)
     def load(cls, name: str, version: Optional[int] = None) -> "TestSuite":
         """
         Load an existing test suite with the provided name.
@@ -230,6 +234,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         return obj
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_ALL_TEST_SUITE)
     def load_all(cls, *, tags: Optional[Set[str]] = None) -> List["TestSuite"]:
         """
         Load the latest version of all non-archived test suites with this workflow.
@@ -303,6 +308,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             )
 
     @contextmanager
+    @with_invocation_tracked(event_name=Tracking.Events.EDIT_TEST_SUITE)
     def edit(self, reset: bool = False) -> Iterator[Editor]:
         """
         Edit this test suite in a context:
@@ -340,6 +346,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._populate_from_other(self._create_from_data(test_suite_data))
         log.success(f"edited test suite '{self.name}' (v{self.version}) ({get_test_suite_url(self._id)})")
 
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_TEST_SUITE_SAMPLES)
     def load_test_samples(self) -> List[Tuple[TestCase, List[TestSample]]]:
         """
         Load test samples for all test cases within this test suite.
