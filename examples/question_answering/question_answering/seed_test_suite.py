@@ -91,7 +91,7 @@ def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     df_metadata = pd.read_csv(args.dataset_csv)
     context_dict = defaultdict(list)

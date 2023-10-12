@@ -150,7 +150,7 @@ def main(args: Namespace) -> None:
     model_full_name = MODEL_LIST[model_alias]
 
     # run evaluation on test suites
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     metadata_by_image = load_results(model_alias)
 

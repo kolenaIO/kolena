@@ -67,7 +67,7 @@ FIXED_TOKEN_RESPONSE = mock_get_token(MOCK_TOKEN)
 FIXED_TOKEN_RESPONSE_WITH_TELEMETRY = mock_get_token_with_telemetry(MOCK_TOKEN)
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def clean_client_state() -> Iterator[None]:
     try:
         yield
@@ -75,7 +75,7 @@ def clean_client_state() -> Iterator[None]:
         _client_state.reset()
 
 
-def test__initialize__positional(clean_client_state: None) -> None:
+def test__initialize__positional() -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize("bar")
         assert _client_state.api_token == "bar"
@@ -83,22 +83,22 @@ def test__initialize__positional(clean_client_state: None) -> None:
         assert not _client_state.telemetry
 
 
-def test__initialize__telemetry(clean_client_state: None) -> None:
+def test__initialize__telemetry() -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE_WITH_TELEMETRY):
-        kolena.initialize("bar")
+        kolena.initialize(api_token="bar")
         assert _client_state.api_token == "bar"
         assert _client_state.jwt_token is not None
         assert _client_state.telemetry
 
 
-def test__initialize__keyword(clean_client_state: None) -> None:
+def test__initialize__keyword() -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize(api_token="foo")
         assert _client_state.api_token == "foo"
         assert _client_state.jwt_token is not None
 
 
-def test__initialize__deprecated_positional(clean_client_state: None) -> None:
+def test__initialize__deprecated_positional() -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize("random entity", "def")
         assert _client_state.api_token == "def"
@@ -119,14 +119,14 @@ def test__initialize__api_url_environ(env: Dict[str, str], expected: str) -> Non
         assert _get_api_base_url() == expected
 
 
-def test__initialize__updated_environ(clean_client_state: None) -> None:
+def test__initialize__updated_environ() -> None:
     base_url = "https://internal-api.kolena.io"
     mock_response = Response()
     mock_response.status_code = 200
     mock_response._content = str.encode(json.dumps(dataclasses.asdict(FIXED_TOKEN_RESPONSE)))
     with patch.dict("os.environ", {API_URL_ENV_VAR: base_url}, clear=True):
         with patch("requests.put", return_value=mock_response) as patched:
-            kolena.initialize("random entity", "def")
+            kolena.initialize(api_token="def")
             client_state = get_client_state()
             assert client_state.api_token == "def"
 
@@ -134,7 +134,7 @@ def test__initialize__updated_environ(clean_client_state: None) -> None:
         assert patched.call_args.args[0] != get_endpoint_with_baseurl(base_url, "token/login")
 
 
-def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
+def test__initialize__deprecated_keyword() -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize(entity="test entity", api_token="abc")
         assert _client_state.api_token == "abc"
@@ -142,7 +142,7 @@ def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
 
 
 @patch.dict("os.environ", {KOLENA_TOKEN_ENV: "abc"}, True)
-def test__initialize__token_fallback_environ(clean_client_state: None) -> None:
+def test__initialize__token_fallback_environ() -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         kolena.initialize()
         assert _client_state.api_token == "abc"
@@ -151,7 +151,7 @@ def test__initialize__token_fallback_environ(clean_client_state: None) -> None:
 
 @patch("netrc.netrc")
 @patch.dict("os.environ", clear=True)
-def test__initialize__token_fallback_netrc(mock_netrc: Mock, clean_client_state: None) -> None:
+def test__initialize__token_fallback_netrc(mock_netrc: Mock) -> None:
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
         mock_netrc.return_value.authenticators.return_value = None, None, "abc"
         kolena.initialize()
@@ -160,18 +160,18 @@ def test__initialize__token_fallback_netrc(mock_netrc: Mock, clean_client_state:
 
 
 @patch.dict("os.environ", clear=True)
-def test__initialize__token_missing(clean_client_state: None) -> None:
+def test__initialize__token_missing() -> None:
     with patch("netrc.netrc", side_effect=MissingTokenError):
         with pytest.raises(MissingTokenError):
             kolena.initialize()
 
 
-def test__uninitialized_usage(clean_client_state: None) -> None:
+def test__uninitialized_usage() -> None:
     with pytest.raises(UninitializedError):
         kolena.fr.Model.create("test", {})
 
 
-def test__kolena_session(clean_client_state: None) -> None:
+def test__kolena_session() -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
     token_2 = "token tenant two"
@@ -196,7 +196,7 @@ def test__kolena_session(clean_client_state: None) -> None:
                 assert new_client_state.api_token == token_1
                 assert new_client_state.jwt_token == mock_jwt(token_1)
 
-            kolena.initialize(base_token)
+            kolena.initialize(api_token=base_token)
             check_global_client_state(base_token, True)
 
             # context-client-state should be used in making SDK requests
@@ -208,7 +208,7 @@ def test__kolena_session(clean_client_state: None) -> None:
         assert get_client_state() == _client_state
 
 
-def test__kolena_session__multithread(clean_client_state: None) -> None:
+def test__kolena_session__multithread() -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
     token_2 = "token tenant two"
@@ -221,7 +221,7 @@ def test__kolena_session__multithread(clean_client_state: None) -> None:
             assert get_client_state() == client_state
 
     with patch("kolena._utils.state.get_token", side_effect=mock_get_token):
-        kolena.initialize(base_token)
+        kolena.initialize(api_token=base_token)
 
         # check thread state is clean
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:

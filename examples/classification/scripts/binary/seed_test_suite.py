@@ -32,7 +32,7 @@ POSITIVE_LABEL = "dog"
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     df_metadata = pd.read_csv(args.dataset_csv)
 

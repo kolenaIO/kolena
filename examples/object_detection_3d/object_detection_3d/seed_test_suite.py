@@ -40,7 +40,7 @@ def parse_args():
 
 
 def seed_test_suite(test_suite_name: str, test_samples: List[Tuple[TestSample, GroundTruth]]):
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     test_cases = TestCase.init_many([(test_suite_name, test_samples)], reset=True)
     test_suite = TestSuite(test_suite_name, test_cases=test_cases, reset=True)
