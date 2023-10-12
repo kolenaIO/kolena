@@ -30,7 +30,7 @@ nav:
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
-          - Enabling Natural Language Search: advanced-usage/enabling-natural-language-search.md
+          - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md

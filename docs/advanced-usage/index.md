@@ -37,11 +37,11 @@ This section contains tutorial documentation for advanced features available in 
     Upload and visualize your activation map for each [`TestSample`][kolena.workflow.TestSample] along with your model
     results on the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio).
 
-- [:kolena-comparison-16: Enabling Natural Language Search](./enabling-natural-language-search.md)
+- [:kolena-comparison-16: Setting Up Natural Language Search](./set-up-natural-language-search.md)
 
     ---
 
-    Extract and upload embeddings on each [`Image`][kolena.workflow.Image] to enable natural language and similarity search across image data and
+    Extract and upload embeddings on each [`Image`][kolena.workflow.Image] to set up natural language and similarity search across image data and
     results in the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio).
 
 </div>

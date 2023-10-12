@@ -2,10 +2,10 @@
 icon: kolena/comparison-16
 ---
 
-# :kolena-comparison-20: Enabling Natural Language Search
+# :kolena-comparison-20: Natural Language Search Setup
 
 Kolena supports natural language and similar image search across [`Image`][kolena.workflow.Image] data previously registered to the platform.
-Users may enable this functionality by extracting and uploading the corresponding search embeddings using a Kolena provided package.
+Users may set up this functionality by extracting and uploading the corresponding search embeddings using a Kolena provided package.
 
 !!! note end
     Kolena supports search embedding extraction and upload as an opt-in feature for our customers.
@@ -18,7 +18,7 @@ of integration code for embeddings extraction and upload.
 This builds off the data uploaded in the [age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
 example workflow, and is best run after this data has been uploaded to your Kolena platform.
 
-## How to Enabling Natural Language and Search on Kolena
+## How to Set Up Natural Language Search
 
 Uploading embeddings to Kolena can be done in three simple steps:
 
