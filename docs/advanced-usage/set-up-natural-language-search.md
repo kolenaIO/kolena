@@ -128,3 +128,14 @@ In this tutorial, we learned how to extract and upload vector embeddings over yo
     Embeddings extraction is a unidirectional mapping, and used only for natural language search and similarity comparisons.
     Uploading these embeddings to Kolena does not allow for any reconstruction of these images, nor does it involve
     sharing these images with Kolena.
+
+??? faq "Do I need to upload embeddings for every test suite on the Kolena platform?"
+    Embeddings are uploaded by locator, but resolved against existing image samples in the platform at upload time.
+    This means that these embeddings are matched against every image with the provided locator across multiple test
+    suites, and subsequent test suites containing the same [`Image`][kolena.workflow.Image] will remain associated
+    with these search embeddings.
+
+    Please note that if you subsequently register an image sample with different fields (but the same locator),
+    the previously uploaded embeddings may not automatically associate with the image sample.
+    We are working on improving this process so that once embeddings are uploaded once, future image samples linked
+    to the same locator will automatically use these embeddings. Please stay tuned!
