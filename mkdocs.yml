@@ -67,21 +67,23 @@ nav:
       - metrics/accuracy.md
       - metrics/average-precision.md
       - metrics/averaging-methods.md
-      - metrics/bertscore.md
-      - metrics/bleu.md
       - metrics/confusion-matrix.md
       - metrics/f1-score.md
       - metrics/fpr.md
-      - metrics/geometry-matching.md
-      - metrics/iou.md
-      - metrics/meteor.md
       - metrics/precision.md
       - metrics/pr-curve.md
       - metrics/recall.md
       - metrics/roc-curve.md
-      - metrics/rouge-n.md
       - metrics/specificity.md
       - metrics/tp-fp-fn-tn.md
+      - Computer Vision:
+        - metrics/geometry-matching.md
+        - metrics/iou.md
+      - Natural Language Processing:
+        - metrics/bertscore.md
+        - metrics/bleu.md
+        - metrics/meteor.md
+        - metrics/rouge-n.md
   - Help & FAQ:
       - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
