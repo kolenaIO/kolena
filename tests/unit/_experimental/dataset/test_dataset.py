@@ -173,6 +173,16 @@ def test__datapoint_dataframe__serde_text() -> None:
     assert_frame_equal(df_deserialized[df_expected.columns], df_expected)
 
 
+def test__datapoint_dataframe__columns_unlabeled() -> None:
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy())
+    df_deserialized = _to_deserialized_dataframe(df_serialized)
+
+    # Column class mismatch is expected due to json serialization
+    df_expected.rename(mapper=str, axis="columns", inplace=True)
+    assert_frame_equal(df_deserialized, df_expected)
+
+
 def test__datapoint_dataframe__empty() -> None:
     df_serialized = _to_serialized_dataframe(pd.DataFrame())
     assert df_serialized.empty

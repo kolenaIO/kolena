@@ -90,6 +90,9 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    # Pandas defaults to int column labels if none provided. Cast to sort with added str labels
+    df.rename(mapper=str, axis="columns", copy=False, inplace=True)
+
     object_columns = list(df.select_dtypes(include="object").columns)
     result = df.select_dtypes(exclude="object")
     result[object_columns] = df[object_columns].applymap(_serialize_dataobject)
