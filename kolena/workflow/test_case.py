@@ -28,6 +28,7 @@ from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.core import BulkProcessStatus
 from kolena._api.v1.core import TestCase as CoreAPI
+from kolena._api.v1.event_tracking import Tracking
 from kolena._api.v1.generic import TestCase as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -39,6 +40,7 @@ from kolena._utils.consts import FieldName
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
+from kolena._utils.instrumentation import with_invocation_tracked
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -187,6 +189,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
                 editor.add(test_sample, ground_truth)
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.CREATE_TEST_CASE)
     def create(
         cls,
         name: str,
@@ -214,6 +217,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         return obj
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_TEST_CASE)
     def load(cls, name: str, version: Optional[int] = None) -> "TestCase":
         """
         Load an existing test case with the provided name.
@@ -230,6 +234,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info(f"loaded test case '{name}' (v{data.version})")
         return cls._create_from_data(data)
 
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_TEST_CASE_SAMPLES)
     def load_test_samples(self) -> List[Tuple[TestSample, GroundTruth]]:
         """
         Load all [`TestSample`s][kolena.workflow.TestSample] and [`GroundTruth`s][kolena.workflow.GroundTruth] contained
@@ -317,6 +322,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             )
 
     @contextmanager
+    @with_invocation_tracked(event_name=Tracking.Events.EDIT_TEST_CASE)
     def edit(self, reset: bool = False) -> Iterator[Editor]:
         """
         Edit this test case in a context:
@@ -361,6 +367,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.success(f"edited test case '{self.name}' (v{self.version})")
 
     @classmethod
+    @with_invocation_tracked(event_name=Tracking.Events.INIT_MANY_TEST_CASES)
     def init_many(
         cls,
         data: List[Tuple[str, List[Tuple[TestSample, GroundTruth]]]],

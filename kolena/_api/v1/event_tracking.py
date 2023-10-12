@@ -13,6 +13,13 @@ class Tracking:
         # auth
         GENERATE_TOKEN = "generate-token"
 
+        # test case
+        CREATE_TEST_CASE = "create-test-case"
+        LOAD_TEST_CASE = "load-test-case"
+        LOAD_TEST_CASE_SAMPLES = "load-test-case-samples"
+        EDIT_TEST_CASE = "edit-test-case"
+        INIT_MANY_TEST_CASES = "initialize-many-test-cases"
+
     @dataclass(frozen=True)
     class TrackEventRequest:
         event_name: str
