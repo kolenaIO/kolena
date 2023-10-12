@@ -39,7 +39,7 @@ class InvalidClientStateError(RuntimeError, KolenaError):
 
 
 class MissingTokenError(KeyError, KolenaError):
-    """Exception indicating that the client could not locate an api token."""
+    """Exception indicating that the client could not locate an API token."""
 
 
 class UninitializedError(InvalidClientStateError):

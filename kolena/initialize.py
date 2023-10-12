@@ -58,16 +58,16 @@ def initialize(
     ```bash
     export KOLENA_TOKEN="********"
     ```
-    3. Store in [.netrc file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+    3. Store in [`.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
     ```cfg title="~/.netrc"
     machine api.kolena.io password ********
     ```
 
-    ```mermaid
+    ``` mermaid
     flowchart TD
         Start[Get API token]
-        Step1{{`api_token` argument provided?}}
-        Step2{{$KOLENA_TOKEN environment set?}}
+        Step1{{api_token argument provided?}}
+        Step2{{KOLENA_TOKEN environment variable set?}}
         Step3{{Token in .netrc file?}}
         End[Use as API token]
         Exception[MissingTokenError]
@@ -148,8 +148,10 @@ def _find_token() -> str:
         record = netrc_file.authenticators(hostname)
         if record and record[2]:
             return record[2]
-        raise MissingTokenError
-    except Exception:
         raise MissingTokenError(
-            f"No api token in `{KOLENA_TOKEN_ENV}` env variable or in .netrc file under {hostname}",
+            f"No API token in `{KOLENA_TOKEN_ENV}` env variable or in .netrc file under {hostname}",
+        )
+    except (FileNotFoundError, netrc.NetrcParseError):
+        raise MissingTokenError(
+            f"No API token in `{KOLENA_TOKEN_ENV}` env variable and unable to parse .netrc file",
         )
