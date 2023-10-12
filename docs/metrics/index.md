@@ -12,8 +12,6 @@ Each ML use case requires different metrics. Using the right metrics is critical
 comparing model performance. In each metrics guide, you can learn about the metric with examples, its limitations and
 biases, and its intended uses.
 
-## :kolena-metrics-classification-icon-20: Classification Metrics
-
 <div class="grid cards" markdown>
 
 - [Accuracy](accuracy.md)
@@ -107,7 +105,7 @@ biases, and its intended uses.
 
 </div>
 
-## :kolena-metrics-nlp-icon-20: NLP Metrics
+## :kolena-metrics-nlp-icon-20: Natural Language Processing Metrics
 
 <div class="grid cards" markdown>
 
