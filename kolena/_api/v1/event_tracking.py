@@ -10,7 +10,8 @@ class Tracking:
         EVENT = "/tracking/event"
 
     class Events(str, Enum):
-        TOKEN_GENERATED = "token-generated"
+        # auth
+        GENERATE_TOKEN = "generate-token"
 
     @dataclass(frozen=True)
     class TrackEventRequest:

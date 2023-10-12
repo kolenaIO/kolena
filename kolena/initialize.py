@@ -96,7 +96,7 @@ def initialize(
 
     if derived_telemetry:
         set_profile()
-        track_event(EventTrackingAPI.TrackEventRequest(event_name=EventTrackingAPI.Events.TOKEN_GENERATED))
+        track_event(EventTrackingAPI.TrackEventRequest(event_name=EventTrackingAPI.Events.GENERATE_TOKEN))
 
     log.info("initialized")
     if verbose:
