@@ -56,8 +56,8 @@ To understand the formula, let's break down each component into their respective
 
 ??? example "Step 1: Calculate FMean"
     Upon analysis, our precision is $\frac{7}{8} = 0.875$ and our recall is also $\frac{7}{8} = 0.875$.
-    As a result, our FMean is 
-    
+    As a result, our FMean is
+
     $$
     \frac{10 \times 0.875 \times 0.875}{0.875 + 9 \times 0.875} = 0.875
     $$
