@@ -13,6 +13,7 @@
 # limitations under the License.
 import math
 import os
+import time
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -48,6 +49,7 @@ def load_data(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    t_start = time.time()
     data_loader = DataLoader()
 
     batch_size = 32
@@ -62,7 +64,7 @@ def load_data(
         gt_masks.extend(gt_masks_batch)
         inf_probs.extend(inf_probs_batch)
 
-    print(f"finished loading {len(inferences)} ground truth masks and inferences")
+    print(f"finished loading {len(inferences)} ground truth masks and inferences: {time.time() - t_start}s")
     return gt_masks, inf_probs
 
 
@@ -79,7 +81,7 @@ def apply_threshold(
     return inf_masks
 
 
-def compute_image_metrics(gt_mask: np.ndarray, inf_mask: np.ndarray, result_masks: ResultMasks) -> TestSampleMetric:
+def compute_image_metrics(result_masks: ResultMasks) -> TestSampleMetric:
     tp_result_mask, fp_result_mask, fn_result_mask = result_masks
 
     count_tps = tp_result_mask.count
@@ -122,13 +124,14 @@ def compute_test_sample_metrics(
     result_masks = []
     zipped_data = list(zip(test_samples, gt_masks, inf_masks))
 
+    t_start = time.time()
     for start_index in progress_bar(range(0, len(test_samples), batch_size)):
         batch = zipped_data[start_index : min(len(test_samples), start_index + batch_size)]
         result_masks_batch = data_loader.upload_batch(locator_prefix, batch)
         result_masks.extend(result_masks_batch)
 
-    print(f"finished uploading result masks for {len(test_samples)} samples")
-    return [compute_image_metrics(gt, inf, result) for gt, inf, result in zip(gt_masks, inf_masks, result_masks)]
+    print(f"finished uploading result masks for {len(test_samples)} samples: {time.time() - t_start}s")
+    return [compute_image_metrics(result) for result in zip(result_masks)]
 
 
 def compute_test_case_metrics(
@@ -188,18 +191,28 @@ def evaluate_semantic_segmentation(
     test_cases: TestCases,
     configuration: SegmentationConfiguration,
 ) -> EvaluationResults:
+    t_initial = time.time()
     gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
+    print(f"finished loading {len(test_samples)} ground truth and inference masks: {time.time() - t_initial}s")
+    t_start = time.time()
     inf_masks = apply_threshold(inf_probs, configuration.threshold)
+    print(f"finished applying threshold to {len(test_samples)} inference masks: {time.time() - t_start}s")
 
+    t_start = time.time()
     test_sample_metrics = compute_test_sample_metrics(test_samples, gt_masks, inf_masks, configuration.threshold)
+    print(f"finished computing {len(test_samples)} test sample metrics: {time.time() - t_start}s")
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
+        t_start = time.time()
         print(f"computing {test_case.name} test case metrics")
         all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, inf, tsm)))
+        print(f"finished computing {len(test_samples)} test case metrics: {time.time() - t_start}s")
+        t_start = time.time()
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
+        print(f"finished computing {len(test_samples)} test case plots: {time.time() - t_start}s")
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
