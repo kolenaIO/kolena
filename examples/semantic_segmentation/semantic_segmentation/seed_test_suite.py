@@ -28,7 +28,6 @@ from semantic_segmentation.workflow import TestSuite
 from tqdm import tqdm
 
 import kolena
-from kolena.workflow.annotation import SegmentationMask
 
 
 def within_range(area: int, range: Tuple[int, int]) -> bool:

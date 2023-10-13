@@ -26,7 +26,6 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow.annotation import BitmapMask
-from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.asset import BinaryAsset
 
 
@@ -37,7 +36,7 @@ class TestSample(Image):
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
-    gt_placeholder: int = 0
+    pass
 
 
 @dataclass(frozen=True)
@@ -61,7 +60,7 @@ _, TestCase, TestSuite, Model = define_workflow("Semantic Segmentation", TestSam
 @dataclass(frozen=True)
 class TestSampleMetric(MetricsTestSample):
     """Sample-level metrics for the Semantic Segmentation workflow."""
-    tsm_placeholder: int = 0
+    pass
 
 
 @dataclass(frozen=True)
