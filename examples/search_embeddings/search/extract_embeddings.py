@@ -19,7 +19,7 @@ from typing import Optional
 from typing import Tuple
 
 import boto3
-from kembeddings.util import extract_and_upload_embeddings
+from kembed.util import extract_and_upload_embeddings
 from PIL import Image
 
 

@@ -44,7 +44,7 @@ Copy the `kolena_embeddings-*.*.*.tar.gz` file (provided by your Kolena contact)
     poetry add ./kolena_embeddings-*.*.*.tar.gz
     ```
 
-This package provides the `kembeddings.util.extract_and_upload_embeddings` method:
+This package provides the `kembed.util.extract_and_upload_embeddings` method:
 ```python
 def extract_and_upload_embeddings(locators_and_images: Iterable[Tuple[str, Image.Image]], batch_size: int = 50) -> None:
     """
@@ -104,7 +104,7 @@ We then pass our locators into the `extract_and_upload_embeddings` function to i
 [`Image`][kolena.workflow.Image] objects in the Kolena platform with matching locators.
 
 ```python
-from kembeddings.util import extract_and_upload_embeddings
+from kembed.util import extract_and_upload_embeddings
 
 locators = [
     "s3://kolena-public-datasets/labeled-faces-in-the-wild/imgs/AJ_Cook/AJ_Cook_0001.jpg",
