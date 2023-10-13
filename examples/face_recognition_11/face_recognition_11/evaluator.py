@@ -34,17 +34,12 @@ from kolena.workflow import Plot
 from kolena.workflow import TestCases
 
 
-def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: float) -> float:
-    """
-    The threhsold is calculated as Threshold = Quantile_v(1 - FMR) where the quantiles are of the observed
-    IMPOSTER scores, v.
-
-    For more details on how threshold is used see https://pages.nist.gov/frvt/reports/11/frvt_11_report.pdf
-    """
-    similarity_scores = np.array(
-        [inf.similarity if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same],
+def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: float, eps: float = 1e-9) -> float:
+    imposter_scores = sorted(
+        [inf.similarity if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same]
     )
-    threshold = np.quantile(similarity_scores, 1.0 - fmr)
+    threshold_idx = round((1.0 - fmr) * len(imposter_scores)) - 1
+    threshold = imposter_scores[threshold_idx] - eps
     return threshold
 
 
@@ -56,6 +51,9 @@ def compute_per_sample(
     is_match, is_false_match, is_false_non_match = False, False, False
 
     if inference.similarity is None:
+        if ground_truth.is_same:
+            is_false_non_match = True
+
         return TestSampleMetrics(
             is_match=is_match,
             is_false_match=is_false_match,
@@ -102,10 +100,6 @@ def compute_test_case_metrics(
         unique_images.add(ts.a.locator)
         unique_images.add(ts.b.locator)
 
-    Δ_fnmr = 0.0
-    if baseline_fnmr != 0.0:
-        Δ_fnmr = (n_fnm / n_genuine_pairs) * 100 - baseline_fnmr
-
     return TestCaseMetrics(
         nImages=len(unique_images),
         nGenuinePairs=n_genuine_pairs,
@@ -114,7 +108,7 @@ def compute_test_case_metrics(
         FMR=(n_fm / n_imposter_pairs) * 100,
         FNM=n_fnm,
         FNMR=(n_fnm / n_genuine_pairs) * 100,
-        ΔFNMR=Δ_fnmr,
+        ΔFNMR=(n_fnm / n_genuine_pairs) * 100 - baseline_fnmr,
         FTE=n_fte,
         FTER=(n_fte / len(unique_images)) * 100,
         PairFailures=n_pair_failures,
@@ -166,17 +160,12 @@ def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[I
     return [similarity_dist, curve_test_case_fnmr, curve_test_case_fmr]
 
 
-def compute_test_suite_metrics(
-    test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]],
-    threshold: float,
-) -> TestSuiteMetrics:
-    baseline: TestCaseMetrics = test_case_metrics[0][1]
-
+def compute_test_suite_metrics(baseline: TestCaseMetrics, threshold: float) -> TestSuiteMetrics:
     return TestSuiteMetrics(
         Threshold=threshold,
         FM=baseline.FM,
         FNM=baseline.FNM,
-        FNMR=baseline.FNM / baseline.nGenuinePairs,
+        FNMR=(baseline.FNM / baseline.nGenuinePairs) * 100,
     )
 
 
@@ -195,16 +184,13 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    baseline_fnmr = 0.0
+    baseline = compute_test_case_metrics(test_samples, ground_truths, inferences, test_sample_metrics, 0)
+    baseline_fnmr = baseline.FNMR
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
         all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr)))
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
 
-        # first processed test case is baseline
-        if len(all_test_case_metrics) == 1:
-            baseline_fnmr = all_test_case_metrics[0][1].FNMR
-
-    test_suite_metrics = compute_test_suite_metrics(all_test_case_metrics, threshold)
+    test_suite_metrics = compute_test_suite_metrics(baseline, threshold)
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
