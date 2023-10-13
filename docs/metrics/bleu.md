@@ -16,6 +16,9 @@ nature for measuring textual similarity.
 ### Background
 The BLEU score consists of two components — the Brevity Penalty and the n-gram Overlap.
 
+??? question "What are n-grams?"
+    An n-gram is a series of `n` adjacent tokens or words in a text. For example, all 1-grams (or unigrams) of the sentence `The cat chased the squirrel` are `["the", "cat", "chased", "the", "squirrel"]`. The *bigrams* of the same sentence are `["the cat", "cat chased", "chased the", "the squirrel"]`.
+
 1. The **n-gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the
 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision
 ensures that the correct vocabulary is used, whereas the 4-gram precision ensures that the candidate text is coherent.
