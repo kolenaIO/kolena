@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 # Perplexity
 
 !!! info inline end "Requirements"
