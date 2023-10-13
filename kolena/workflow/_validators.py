@@ -52,8 +52,6 @@ def validate_data_object_type(
     data_object_type: Type[DataObject],
     supported_field_types: Optional[List[Type]] = None,
     supported_list_types: Optional[List[Type]] = None,
-    supported_dict_key_types: Optional[List[Type]] = None,
-    supported_dict_value_types: Optional[List[Type]] = None,
 ) -> None:
     if not issubclass(data_object_type, DataObject):
         raise ValueError(f"'{data_object_type.__name__}' must extend {DataObject.__name__}")
@@ -64,24 +62,17 @@ def validate_data_object_type(
             field_type,
             supported_field_types=supported_field_types,
             supported_list_types=supported_list_types,
-            supported_dict_key_types=supported_dict_key_types,
-            supported_dict_value_types=supported_dict_value_types,
         )
 
 
 def validate_scalar_data_object_type(
     data_object_type: Type[DataObject],
     supported_list_types: Optional[List[Type]] = None,
-    supported_dict_key_types: Optional[List[Type]] = None,
-    supported_dict_value_types: Optional[List[Type]] = None,
 ) -> None:
     validate_data_object_type(
         data_object_type,
         supported_field_types=_SCALAR_TYPES,
         supported_list_types=supported_list_types or [],  # default to supporting no list types
-        # default to supporting no dict types
-        supported_dict_key_types=supported_dict_key_types or [],
-        supported_dict_value_types=supported_dict_value_types or [],
     )
 
 
@@ -90,24 +81,17 @@ def validate_field(
     field_type: Type,
     supported_field_types: Optional[List[Type]] = None,
     supported_list_types: Optional[List[Type]] = None,
-    supported_dict_key_types: Optional[List[Type]] = None,
-    supported_dict_value_types: Optional[List[Type]] = None,
 ) -> None:
     if field_name == DATA_TYPE_FIELD:
         raise ValueError(f"Unsupported field name: '{DATA_TYPE_FIELD}' is reserved")
 
     supported_field_types = supported_field_types or _SUPPORTED_FIELD_TYPES
     supported_list_types = supported_field_types if supported_list_types is None else supported_list_types
-    supported_dict_key_types = supported_dict_key_types or []
-    supported_dict_value_types = supported_dict_value_types or []
     supported_bases = ", ".join(t.__name__ for t in supported_field_types)
 
     origin = get_origin(field_type)
     if origin is list:
         validate_list(field_name, field_type, supported_list_types)
-
-    elif origin is dict:
-        validate_dict(field_name, field_type, supported_dict_key_types, supported_dict_value_types)
 
     elif origin is Union:  # NOTE: get_origin(Optional[T]) == Union
         validate_union(field_name, field_type, supported_field_types, supported_list_types)
@@ -130,26 +114,6 @@ def validate_list(field_name: str, field_type: Type, supported_field_types: List
     elif arg_origin is not None or not issubclass(arg, tuple(supported_field_types)):
         raise ValueError(
             f"Unsupported field type: field '{field_name}', unsupported List type '{arg}'",
-        )
-
-
-def validate_dict(
-    field_name: str,
-    field_type: Type,
-    supported_dict_key_types: List[Type],
-    supported_dict_value_types: List[Type],
-) -> None:
-    key_type, value_type = get_args(field_type)
-
-    if key_type not in supported_dict_key_types:
-        raise ValueError(
-            f"Unsupported field type: field '{field_name}', unsupported Dict key type '{key_type}'",
-        )
-
-    value_type_origin = get_origin(value_type)
-    if value_type_origin is not None or not issubclass(value_type, tuple(supported_dict_value_types)):
-        raise ValueError(
-            f"Unsupported field type: field '{field_name}', unsupported Dict value type '{value_type}'",
         )
 
 

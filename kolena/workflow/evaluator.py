@@ -32,6 +32,7 @@ from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow._thresholded import ThresholdedMetrics
 from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
@@ -264,42 +265,14 @@ class Evaluator(metaclass=ABCMeta):
 
 
 def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTestSample]) -> None:
-    supported_dict_key_types = [str]
-    supported_dict_value_types = [MetricsTestSample]
-
     # TODO: support special structure for ImagePair test sample types?
-    validate_data_object_type(
-        metrics_test_sample_type,
-        supported_dict_key_types=supported_dict_key_types,
-        supported_dict_value_types=supported_dict_value_types,
-    )
-
-    # validate that there is only one level of nesting
-    for field_name, field_type in get_data_object_field_types(metrics_test_sample_type).items():
-        origin = get_origin(field_type)
-
-        if origin is dict:
-            key_type, value_type = get_args(field_type)
-            if key_type not in supported_dict_key_types:
-                raise ValueError(f"Unsupported dict key type in field '{field_name}'")
-
-            dict_value_types = [t for arg_type in [value_type] for t in get_args(arg_type) or [arg_type]]
-            for arg_type in dict_value_types:
-                try:
-                    validate_scalar_data_object_type(arg_type)
-                except ValueError:
-                    raise ValueError(f"Unsupported doubly-nested object in field '{field_name}'")
+    validate_data_object_type(metrics_test_sample_type)
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    supported_dict_key_types = [str]
-    supported_dict_value_types = [MetricsTestCase]
-
     validate_scalar_data_object_type(
         metrics_test_case_type,
-        supported_list_types=[MetricsTestCase],
-        supported_dict_key_types=supported_dict_key_types,
-        supported_dict_value_types=supported_dict_value_types,
+        supported_list_types=[MetricsTestCase, ThresholdedMetrics],
     )
 
     # validate that there is only one level of nesting
@@ -310,20 +283,6 @@ def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -
         if origin is list:
             list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
             for arg_type in list_arg_types:
-                if arg_type is None:
-                    raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
-                try:
-                    validate_scalar_data_object_type(arg_type)
-                except ValueError:
-                    raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
-
-        elif origin is dict:
-            key_type, value_type = get_args(field_type)
-            if key_type not in supported_dict_key_types:
-                raise ValueError(f"Unsupported dict key type in field '{field_name}'")
-
-            dict_value_types = [t for arg_type in [value_type] for t in get_args(arg_type) or [arg_type]]
-            for arg_type in dict_value_types:
                 if arg_type is None:
                     raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
                 try:

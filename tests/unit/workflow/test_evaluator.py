@@ -23,6 +23,8 @@ import pydantic
 import pytest
 
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow._datatypes import TypedDataObject
+from kolena.workflow._thresholded import ThresholdedMetrics
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Polyline
 from kolena.workflow.evaluator import MetricsTestCase
@@ -43,7 +45,6 @@ def test__validate__metrics_test_sample() -> None:
         c: Union[bool, int]
         d: List[float]
         e: BoundingBox
-        f: Dict[str, NestedMetricsTestSample]
 
 
 def test__validate__metrics_test_sample__invalid__bytes() -> None:
@@ -98,58 +99,6 @@ def test__validate__metrics_test_sample__image_pair__invalid() -> None:
         @dataclasses.dataclass(frozen=True)
         class Tester(MetricsTestSample):
             a: Inner
-
-
-def test__validate__metrics_test_sample__invalid__dict_key() -> None:
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class DictTester(MetricsTestSample):
-            a: Dict[str, Any]  # str is not supported, only single Dict[str, MetricsTestSample] is allowed
-
-
-def test__validate__metrics_test_sample__invalid_dict_nested() -> None:
-    @dataclasses.dataclass(frozen=True)
-    class Inner(DataObject):
-        a: Dict[str, NestedMetricsTestSample]
-
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class Tester(MetricsTestSample):
-            a: Inner  # only single Dict[str, MetricsTestSample] is allowed
-
-
-def test__validate__metrics_test_sample__invalid_dict_double_nested() -> None:
-    @dataclasses.dataclass(frozen=True)
-    class Inner(DataObject):
-        a: Dict[str, Dict[str, NestedMetricsTestSample]]
-
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class Tester(MetricsTestSample):
-            a: Inner  # only single Dict[str, MetricsTestSample] is allowed
-
-
-def test__validate__metrics_test_sample__invalid_nested__optional_dict() -> None:
-    with pytest.raises(ValueError):
-
-        @pydantic.dataclasses.dataclass(frozen=True)
-        class Tester(MetricsTestSample):
-            a: Optional[Dict[str, NestedMetricsTestSample]]  # only single Dict[str, MetricsTestSample] is allowed
-
-
-def test__validate__metrics_test_sample__invalid_nested__doubly_nested() -> None:
-    @dataclasses.dataclass(frozen=True)
-    class NestedNested(MetricsTestSample):
-        a: Dict[str, NestedMetricsTestSample]
-
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class Tester(MetricsTestSample):
-            a: Dict[str, NestedNested]  # only one layer of nesting allowed
 
 
 @pytest.mark.parametrize("base", [MetricsTestCase, MetricsTestSuite])
@@ -294,31 +243,9 @@ def test__validate__metrics_test_case__invalid_nested__doubly_nested() -> None:
             a: List[NestedNested]  # only one layer of nesting allowed
 
 
-def test__validate__metrics_test_case__valid_dict() -> None:
-    @dataclasses.dataclass(frozen=True)
-    class DictTester(MetricsTestCase):
-        a: Dict[str, MetricsTestCase]
-
-
-def test__validate__metrics_test_case__invalid_dict_key() -> None:
-    with pytest.raises(ValueError):
+def test__validate__metrics_test_case__fail_overwrite_field() -> None:
+    with pytest.raises(TypeError):
 
         @dataclasses.dataclass(frozen=True)
-        class InvalidDictKeyTester(MetricsTestCase):
-            a: Dict[float, MetricsTestCase]  # float key is unsupported
-
-
-def test__validate__metrics_test_case__invalid_dict_value() -> None:
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class InvalidDictValueTester(MetricsTestCase):
-            a: Dict[str, DataObject]  # DataObject value is unsupported
-
-
-def test__validate__metrics_test_case__invalid_optional_dict_value() -> None:
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class OptionalDictValueTester(MetricsTestCase):
-            a: Dict[str, Optional[MetricsTestCase]]  # Optional value is unsupported
+        class MyThresholdedMetrics(ThresholdedMetrics):
+            threshold: str  # overwrite type

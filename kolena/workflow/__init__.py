@@ -14,6 +14,7 @@
 
 # noreorder
 from ._datatypes import DataObject
+from ._thresholded import ThresholdedMetrics
 from .test_sample import Metadata
 from .test_sample import Image
 from .test_sample import ImagePair
@@ -52,6 +53,7 @@ from .define_workflow import define_workflow
 
 __all__ = [
     "DataObject",
+    "ThresholdedMetrics",
     "Metadata",
     "Image",
     "ImagePair",
