@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
-import random
 
 import pandas as pd
 import pytest
@@ -96,8 +95,15 @@ def test__datapoint_dataframe__serde_locator() -> None:
             height=400 + i,
             category="outdoor" if i < 5 else "indoor",
             bboxes=[
-                LabeledBoundingBox(label="car", top_left=[i, i], bottom_right=[i + 50, i + 50])
-                for i in range(random.randint(2, 6))
+                [
+                    LabeledBoundingBox(
+                        label="car",
+                        top_left=[j * 10 + i, j * 10 + i],
+                        bottom_right=[j * 10 + i + 50, j * 10 + i + 50],
+                    )
+                    for j in range(3)
+                ]
+                for i in range(5)
             ],
             label=ScoredClassificationLabel(label="dog", score=0.1 + i * 0.05),
         )
@@ -112,7 +118,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     width=dp["width"],
                     height=dp["height"],
                     category=dp["category"],
-                    bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
+                    bboxes=[[bbox._to_dict() for bbox in bboxes] for bboxes in dp["bboxes"]],
                     label=dp["label"]._to_dict(),
                     data_type=TestSampleType.IMAGE,
                 )
@@ -132,8 +138,11 @@ def test__datapoint_dataframe__serde_locator() -> None:
                 height=dp["height"],
                 category=dp["category"],
                 bboxes=[
-                    BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
-                    for bbox in dp["bboxes"]
+                    [
+                        BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
+                        for bbox in bboxes
+                    ]
+                    for bboxes in dp["bboxes"]
                 ],
                 label=ClassificationLabel(label=dp["label"].label, score=dp["label"].score),
             )
