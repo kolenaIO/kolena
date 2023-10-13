@@ -47,20 +47,20 @@ def test__validate__metrics_test_sample() -> None:
         e: BoundingBox
 
 
-def test__validate__metrics_test_sample__invalid__dict() -> None:
-    with pytest.raises(ValueError):
-
-        @dataclasses.dataclass(frozen=True)
-        class DictTester(MetricsTestSample):
-            a: Dict[str, Any]
-
-
 def test__validate__metrics_test_sample__invalid__bytes() -> None:
     with pytest.raises(ValueError):
 
         @dataclasses.dataclass(frozen=True)
         class BytesTester(MetricsTestSample):
             a: Optional[bytes]
+
+
+def test__validate__metrics_test_sample__invalid__dict() -> None:
+    with pytest.raises(ValueError):
+
+        @dataclasses.dataclass(frozen=True)
+        class DictTester(MetricsTestSample):
+            a: Dict[str, Any]
 
 
 def test__validate__metrics_test_sample__invalid__nested() -> None:
