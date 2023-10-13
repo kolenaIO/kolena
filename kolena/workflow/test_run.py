@@ -29,8 +29,8 @@ from typing import Union
 import pandas as pd
 from pydantic import validate_arguments
 
-from kolena._api.v1.generic import TestRun as API
 from kolena._api.v1.event_tracking import Tracking
+from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader

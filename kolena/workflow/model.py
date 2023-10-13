@@ -26,8 +26,8 @@ from typing import TypeVar
 from pydantic import validate_arguments
 
 from kolena._api.v1.core import Model as CoreAPI
-from kolena._api.v1.generic import Model as API
 from kolena._api.v1.event_tracking import Tracking
+from kolena._api.v1.generic import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader

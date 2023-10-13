@@ -100,6 +100,7 @@ def track_event(request: EventTrackingAPI.TrackEventRequest):
 
 def with_invocation_tracked(event_name: str):
     """function decorator to track start and end of an event"""
+
     def tracking_decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -114,10 +115,14 @@ def with_invocation_tracked(event_name: str):
                 track_event(EventTrackingAPI.TrackEventRequest(event_name=event_name + "-succeeded"))
                 return response
             except Exception as e:
-                track_event(EventTrackingAPI.TrackEventRequest(
-                    event_name=event_name + "-failed",
-                    additional_metadata={"response_error": e.__class__.__name__}
-                ))
+                track_event(
+                    EventTrackingAPI.TrackEventRequest(
+                        event_name=event_name + "-failed",
+                        additional_metadata={"response_error": e.__class__.__name__},
+                    ),
+                )
                 raise e
+
         return wrapper
+
     return tracking_decorator
