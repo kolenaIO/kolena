@@ -32,11 +32,6 @@ from kolena.workflow.evaluator import MetricsTestSample
 from kolena.workflow.evaluator import MetricsTestSuite
 
 
-@dataclasses.dataclass(frozen=True)
-class NestedMetricsTestSample(MetricsTestSample):
-    a: float
-
-
 def test__validate__metrics_test_sample() -> None:
     @dataclasses.dataclass(frozen=True)
     class Tester(MetricsTestSample):
