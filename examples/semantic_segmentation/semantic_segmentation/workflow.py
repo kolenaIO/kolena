@@ -37,12 +37,7 @@ class TestSample(Image):
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
-    """Ground truth type for the Semantic Segmentation workflow."""
-
-    mask: SegmentationMask
-    """
-    The ground truth [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask] associated with an image.
-    """
+    gt_placeholder: int = 0
 
 
 @dataclass(frozen=True)
@@ -66,28 +61,13 @@ _, TestCase, TestSuite, Model = define_workflow("Semantic Segmentation", TestSam
 @dataclass(frozen=True)
 class TestSampleMetric(MetricsTestSample):
     """Sample-level metrics for the Semantic Segmentation workflow."""
-
-    TP: SegmentationMask
-    FP: SegmentationMask
-    FN: SegmentationMask
-
-    Precision: float
-    Recall: float
-    F1: float
-
-    CountTP: int
-    CountFP: int
-    CountFN: int
+    tsm_placeholder: int = 0
 
 
 @dataclass(frozen=True)
 class TestCaseMetric(MetricsTestCase):
     """Test-case-level aggregate metrics for the Semantic Segmentation workflow."""
-
-    Precision: float
-    Recall: float
-    F1: float
-    AP: float
+    tcm_placeholder: int = 0
 
 
 class Label(Enum):
