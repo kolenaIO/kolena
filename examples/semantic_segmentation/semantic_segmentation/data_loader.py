@@ -21,7 +21,6 @@ import numpy as np
 from pydantic.dataclasses import dataclass
 from semantic_segmentation.utils import create_bitmap
 from semantic_segmentation.utils import download_binary_array
-from semantic_segmentation.utils import download_mask
 from semantic_segmentation.utils import upload_image
 from semantic_segmentation.utils import upload_image_buffer
 from semantic_segmentation.workflow import GroundTruth
@@ -53,8 +52,7 @@ class DataLoader:
     ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
         def load(ts: TestSample, gt: GroundTruth, inf: Inference) -> Tuple[str, np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
-            gt_mask = download_mask(gt.mask.locator)
-            gt_mask[gt_mask != 1] = 0  # binarize gt_mask
+            gt_mask = np.zeros_like(inf_prob)
             return ts.locator, gt_mask, inf_prob
 
         futures = [self.pool.submit(functools.partial(load, *item)) for item in batch]
@@ -101,7 +99,7 @@ class DataLoader:
 
 class ActivationMapUploader:
     def __init__(self):
-        self.pool = ThreadPoolExecutor(max_workers=32)
+        self.pool = ThreadPoolExecutor(max_workers=1)
         self.futures = {}
 
     def wait(self) -> None:

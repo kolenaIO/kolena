@@ -83,7 +83,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"# of people :: {DATASET} [person]"],
+        default=[f"# of people :: {DATASET} [person] 5"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )

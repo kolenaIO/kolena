@@ -26,7 +26,6 @@ from semantic_segmentation.utils import compute_sklearn_arrays
 from semantic_segmentation.workflow import GroundTruth
 from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import SegmentationConfiguration
-from semantic_segmentation.workflow import TestCase
 from semantic_segmentation.workflow import TestCaseMetric
 from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSampleMetric
@@ -80,27 +79,7 @@ def apply_threshold(
 
 
 def compute_image_metrics(gt_mask: np.ndarray, inf_mask: np.ndarray, result_masks: ResultMasks) -> TestSampleMetric:
-    tp_result_mask, fp_result_mask, fn_result_mask = result_masks
-
-    count_tps = tp_result_mask.count
-    count_fps = fp_result_mask.count
-    count_fns = fn_result_mask.count
-
-    precision = compute_precision(count_tps, count_fps)
-    recall = compute_recall(count_tps, count_fns)
-    f1 = compute_f1_score(count_tps, count_fps, count_fns)
-
-    return TestSampleMetric(
-        TP=tp_result_mask.mask,
-        FP=fp_result_mask.mask,
-        FN=fn_result_mask.mask,
-        Precision=precision,
-        Recall=recall,
-        F1=f1,
-        CountTP=count_tps,
-        CountFP=count_fps,
-        CountFN=count_fns,
-    )
+    return TestSampleMetric()
 
 
 def compute_test_sample_metrics(
@@ -194,16 +173,11 @@ def evaluate_semantic_segmentation(
     test_sample_metrics = compute_test_sample_metrics(test_samples, gt_masks, inf_masks, configuration.threshold)
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
-    all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
-    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
-        print(f"computing {test_case.name} test case metrics")
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, inf, tsm)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
+    all_test_case_metrics = [(test_case, TestCaseMetric()) for test_case, *_
+                             in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics)]
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
-        plots_test_case=all_test_case_plots,
     )
