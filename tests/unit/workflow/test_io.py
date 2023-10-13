@@ -25,12 +25,12 @@ from kolena.workflow.io import dataframe_to_csv
 NAN = float("nan")
 DF_TEST = pd.DataFrame.from_dict(
     {
-        "id": list(range(10)),
         "z": [dict(value=i + 0.3) for i in range(10)],
         "partial": [None, ""] + ["fan"] * 8,
         "data": [
             LabeledBoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)
         ],
+        "id": list(range(10)),
         "bad actor": [
             "{",
             dict(value="box"),
@@ -52,10 +52,10 @@ def test__dataframe_json() -> None:
 
     df_expected = pd.DataFrame.from_dict(
         {
-            "id": list(range(10)),
             "z": [dict(value=i + 0.3) for i in range(10)],
             "partial": [None, ""] + ["fan"] * 8,
             "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
+            "id": list(range(10)),
             "bad actor": [
                 "{",
                 dict(value="box"),
@@ -79,10 +79,10 @@ def test__dataframe_csv() -> None:
 
     df_expected = pd.DataFrame.from_dict(
         {
-            "id": list(range(10)),
             "z": [dict(value=i + 0.3) for i in range(10)],
             "partial": [NAN, NAN] + ["fan"] * 8,
             "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
+            "id": list(range(10)),
             "bad actor": [
                 "{",
                 dict(value="box"),
