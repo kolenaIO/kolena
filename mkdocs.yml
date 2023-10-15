@@ -176,6 +176,7 @@ extra_javascript:
 
 plugins:
   social: # render social media cards for copy+paste
+    cache_dir: .cache/plugin/social/free
   search:
     lang: en
   git-revision-date-localized:
