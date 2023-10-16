@@ -36,6 +36,8 @@ from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow.io import _dataframe_object_serde
 
+COLUMN_ORDER_FIELD = "_field_order"
+
 COL_DATAPOINT = "datapoint"
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
@@ -93,7 +95,7 @@ def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     columns = [str(col) for col in df.columns]
     result = _dataframe_object_serde(df, _serialize_dataobject)
     result[DATA_TYPE_FIELD] = _infer_datatype(df)
-    result["_field_order"] = [columns for i in df.index]
+    result[COLUMN_ORDER_FIELD] = [columns for i in df.index]
     result[COL_DATAPOINT] = result.to_dict("records")
     result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(json.dumps)
 
@@ -102,10 +104,10 @@ def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     records = [json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")]
-    field_order = records[0]["_field_order"] if records and "_field_order" in records[0] else None
+    field_order = records[0][COLUMN_ORDER_FIELD] if records and COLUMN_ORDER_FIELD in records[0] else None
     flattened = pd.json_normalize(records, max_level=0)
     flattened = flattened.drop(
-        [col for col in flattened.columns if col.endswith(DATA_TYPE_FIELD) or col == "_field_order"],
+        [col for col in flattened.columns if col.endswith(DATA_TYPE_FIELD) or col == COLUMN_ORDER_FIELD],
         axis=1,
     )
     result = _dataframe_object_serde(flattened, _deserialize_dataobject)
