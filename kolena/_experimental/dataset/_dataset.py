@@ -34,6 +34,7 @@ from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
+from kolena.workflow.io import _dataframe_object_serde
 
 COL_DATAPOINT = "datapoint"
 TEST_SAMPLE_TYPE = "TEST_SAMPLE"
@@ -90,12 +91,10 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    object_columns = list(df.select_dtypes(include="object").columns)
-    result = df.select_dtypes(exclude="object")
-    result[object_columns] = df[object_columns].applymap(_serialize_dataobject)
+    result = _dataframe_object_serde(df, _serialize_dataobject)
     result[DATA_TYPE_FIELD] = _infer_datatype(df)
     result[COL_DATAPOINT] = result.to_dict("records")
-    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x, sort_keys=True))
+    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x))
 
     return result[[COL_DATAPOINT]]
 
@@ -103,9 +102,7 @@ def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     flattened = pd.json_normalize([json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")], max_level=0)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
-    object_columns = list(flattened.select_dtypes(include="object").columns)
-    result = flattened.select_dtypes(exclude="object")
-    result[object_columns] = flattened[object_columns].applymap(_deserialize_dataobject)
+    result = _dataframe_object_serde(flattened, _deserialize_dataobject)
 
     return result
 
