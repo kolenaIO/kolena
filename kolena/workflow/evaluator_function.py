@@ -254,6 +254,17 @@ def noop_evaluator(
     inferences: List[Inference],
     test_cases: TestCases,
 ) -> EvaluationResults:
+    """
+    A no-op implementation of the Kolena [`Evaluator`][kolena.workflow.Evaluator] that will bypass evaluation but
+    make [`Inference`][kolena.workflow.Inference]s accessible in the platform.
+
+    ```python
+    from kolena.workflow import noop_evaluator
+    from kolena.workflow import test
+
+    test(model, test_suite, noop_evaluator)
+    ```
+    """
     test_sample_metrics = [BaseMetricsTestSample() for _ in test_samples]
     test_case_metrics = [
         (tc, MetricsTestCase())
