@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+from typing import List
+from typing import Tuple
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
@@ -22,6 +24,8 @@ from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Image
 from kolena.workflow import ImagePair
+from kolena.workflow.asset import ImageAsset
+from kolena.workflow import TestSample as BaseTestSample
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
@@ -32,7 +36,7 @@ from kolena.workflow.annotation import Keypoints
 
 
 @dataclass(frozen=True)
-class ImageWithMetadata(Image):
+class ImageSample(Image):
     """
     An image belonging to an Image Pair containing the locator and metadata
     for the Face Recognition 1:1 workflow.
@@ -43,22 +47,18 @@ class ImageWithMetadata(Image):
 
 
 @dataclass(frozen=True)
-class TestSample(ImagePair):
+class TestSample(Image):  # Wrapper
     """Test sample type for Face Recognition 1:1 workflow."""
 
-    a: ImageWithMetadata
-    """The locator and metadata associated with image A in the test sample."""
-
-    b: ImageWithMetadata
-    """The locator and metadata associated with image B in the test sample."""
+    targets: List[ImageAsset]
 
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for Face Recognition 1:1 workflow."""
 
-    is_same: bool
-    """Whether to treat this image pair as a a genuine pair (True) or an imposter pair (False)."""
+    matches: List[bool]
+    # """Whether to treat this image pair as a a genuine pair (True) or an imposter pair (False)."""
 
 
 @dataclass(frozen=True)

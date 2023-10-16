@@ -13,14 +13,17 @@
 # limitations under the License.
 import os
 import sys
+import time
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
+from typing import Dict
 from typing import Tuple
+from collections import defaultdict
 
 import pandas as pd
 from face_recognition_11.workflow import GroundTruth
-from face_recognition_11.workflow import ImageWithMetadata
+from kolena.workflow.asset import ImageAsset
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
@@ -28,7 +31,8 @@ from face_recognition_11.workflow import TestSuite
 import kolena
 
 BUCKET = "kolena-public-datasets"
-DATASET = "labeled-faces-in-the-wild"
+# DATASET = "labeled-faces-in-the-wild"
+DATASET = "5M-wild-v4"
 
 
 def create_test_case_for_tag(
@@ -62,30 +66,51 @@ def main(args: Namespace) -> int:
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
 
-    metadata_by_locator = {}
+    sample_by_locator = defaultdict()
     for record in df_metadata.itertuples(index=False):
         fields = set(record._fields)
         fields.remove("locator")
-        metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
-
-    test_samples_and_ground_truths = [
-        (
-            TestSample(
-                a=ImageWithMetadata(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
-                b=ImageWithMetadata(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
-            ),
-            GroundTruth(is_same=row["is_same"]),
+        # metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
+        sample_by_locator[record.locator] = ImageAsset(
+            locator=record.locator, metadata={f: getattr(record, f) for f in fields}
         )
-        for idx, row in df.iterrows()
-    ]
 
+    test_samples: Dict[str, ImageAsset] = defaultdict(list)
+    ground_truths: Dict[str, bool] = defaultdict(list)
+    for idx, row in df.iterrows():
+        test_samples[row["locator_a"]].append(sample_by_locator[row["locator_b"]])
+        ground_truths[row["locator_a"]].append(row["is_same"])
+
+        test_samples[row["locator_b"]].append(sample_by_locator[row["locator_a"]])
+        ground_truths[row["locator_b"]].append(row["is_same"])
+
+    test_samples_and_ground_truths: List[TestSample] = []
+    for locator, targets in test_samples.items():
+        test_samples_and_ground_truths.append(
+            (TestSample(locator=locator, targets=targets), GroundTruth(matches=ground_truths[locator]))
+        )
+
+    print(f"total number of test samples: {len(test_samples_and_ground_truths)}")
+
+    # test_samples_and_ground_truths = [
+    #     (
+    #         TestSample(
+    #             locator:
+    #             a=ImageSample(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
+    #             b=ImageSample(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
+    #         ),
+    #         GroundTruth(is_same=row["is_same"]),
+    #     )
+    #     for idx, row in df.iterrows()
+    # ]
+    t0 = time.time()
     complete_test_case = TestCase(
         name=f"fr 1:1 complete :: {DATASET}",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
-    print(f"created baseline test case '{complete_test_case.name}'")
+    print(f"created baseline test case '{complete_test_case.name}' in {time.time() - t0:0.3f} seconds")
 
     # Metadata Test Cases
     demographic_subsets = dict(
@@ -105,7 +130,7 @@ def main(args: Namespace) -> int:
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
-    print(f"created test suite '{test_suite}'")
+    print(f"created test suite '{test_suite}' in {time.time() - t0:0.3f} seconds")
 
 
 if __name__ == "__main__":
