@@ -35,8 +35,18 @@ from kolena.workflow import TestCases
 
 
 def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: float, eps: float = 1e-9) -> float:
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
     imposter_scores = sorted(
         [inf.similarity if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same]
+=======
+    similarity_scores = np.array(
+        [(inf.similarity - eps) if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same],
+>>>>>>> Stashed changes
+=======
+    similarity_scores = np.array(
+        [(inf.similarity - eps) if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same],
+>>>>>>> Stashed changes
     )
     threshold_idx = round((1.0 - fmr) * len(imposter_scores)) - 1
     threshold = imposter_scores[threshold_idx] - eps
