@@ -230,7 +230,6 @@ def test__test__mark_crashed(
 def test__evaluator__unconfigured(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     class UnconfiguredDummyEvaluator(DummyEvaluator):
         def compute_test_suite_metrics(
@@ -344,7 +343,6 @@ def test__handle_nan_inf() -> None:
 def test__test__function_evaluator(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     test(dummy_model, dummy_test_suites[0], dummy_evaluator_function)
     TestRun(dummy_model, dummy_test_suites[0], dummy_evaluator_function)
@@ -353,7 +351,6 @@ def test__test__function_evaluator(
 def test__test__noop_evaluator(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     test(dummy_model, dummy_test_suites[0], noop_evaluator)
     TestRun(dummy_model, dummy_test_suites[0], noop_evaluator)
@@ -362,7 +359,6 @@ def test__test__noop_evaluator(
 def test__test__function_evaluator__with_skip(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     config = [DummyConfiguration(value="skip")]
     test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)
