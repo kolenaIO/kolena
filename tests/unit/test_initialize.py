@@ -20,6 +20,7 @@ from typing import Any
 from typing import Dict
 from typing import Iterator
 from typing import Optional
+from unittest.mock import Mock
 from unittest.mock import patch
 
 import pytest
@@ -27,6 +28,7 @@ from requests import Response
 
 import kolena
 from kolena._api.v1.token import ValidateResponse
+from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.state import _client_state
 from kolena._utils.state import _get_api_base_url
 from kolena._utils.state import API_URL
@@ -34,6 +36,7 @@ from kolena._utils.state import API_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
+from kolena.errors import MissingTokenError
 from kolena.errors import UninitializedError
 
 
@@ -136,6 +139,31 @@ def test__initialize__deprecated_keyword(clean_client_state: None) -> None:
         kolena.initialize(entity="test entity", api_token="abc")
         assert _client_state.api_token == "abc"
         assert _client_state.jwt_token is not None
+
+
+@patch.dict("os.environ", {KOLENA_TOKEN_ENV: "abc"}, True)
+def test__initialize__token_fallback_environ(clean_client_state: None) -> None:
+    with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
+        kolena.initialize()
+        assert _client_state.api_token == "abc"
+        assert _client_state.jwt_token is not None
+
+
+@patch("netrc.netrc")
+@patch.dict("os.environ", clear=True)
+def test__initialize__token_fallback_netrc(mock_netrc: Mock, clean_client_state: None) -> None:
+    with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
+        mock_netrc.return_value.authenticators.return_value = None, None, "abc"
+        kolena.initialize()
+        assert _client_state.api_token == "abc"
+        assert _client_state.jwt_token is not None
+
+
+@patch.dict("os.environ", clear=True)
+def test__initialize__token_missing(clean_client_state: None) -> None:
+    with patch("netrc.netrc", side_effect=MissingTokenError):
+        with pytest.raises(MissingTokenError):
+            kolena.initialize()
 
 
 def test__uninitialized_usage(clean_client_state: None) -> None:
