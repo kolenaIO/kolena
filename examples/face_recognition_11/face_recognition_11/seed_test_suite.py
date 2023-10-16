@@ -63,6 +63,7 @@ def create_test_case_for_tag(
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
+    t0 = time.time()
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
 
@@ -70,7 +71,6 @@ def main(args: Namespace) -> int:
     for record in df_metadata.itertuples(index=False):
         fields = set(record._fields)
         fields.remove("locator")
-        # metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
         sample_by_locator[record.locator] = ImageAsset(
             locator=record.locator, metadata={f: getattr(record, f) for f in fields}
         )
@@ -92,25 +92,14 @@ def main(args: Namespace) -> int:
 
     print(f"total number of test samples: {len(test_samples_and_ground_truths)}")
 
-    # test_samples_and_ground_truths = [
-    #     (
-    #         TestSample(
-    #             locator:
-    #             a=ImageSample(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
-    #             b=ImageSample(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
-    #         ),
-    #         GroundTruth(is_same=row["is_same"]),
-    #     )
-    #     for idx, row in df.iterrows()
-    # ]
-    t0 = time.time()
+    t1 = time.time()
     complete_test_case = TestCase(
         name=f"fr 1:1 complete :: {DATASET}",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
-    print(f"created baseline test case '{complete_test_case.name}' in {time.time() - t0:0.3f} seconds")
+    print(f"created baseline test case '{complete_test_case.name}' in {time.time() - t1:0.3f} seconds")
 
     # Metadata Test Cases
     demographic_subsets = dict(
