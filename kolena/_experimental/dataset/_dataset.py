@@ -90,20 +90,27 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    columns = [str(col) for col in df.columns]
     result = _dataframe_object_serde(df, _serialize_dataobject)
     result[DATA_TYPE_FIELD] = _infer_datatype(df)
+    result["_field_order"] = [columns for i in df.index]
     result[COL_DATAPOINT] = result.to_dict("records")
-    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x))
+    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(json.dumps)
 
     return result[[COL_DATAPOINT]]
 
 
 def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    flattened = pd.json_normalize([json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")], max_level=0)
-    flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
+    records = [json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")]
+    field_order = records[0]["_field_order"] if records and "_field_order" in records[0] else None
+    flattened = pd.json_normalize(records, max_level=0)
+    flattened = flattened.drop(
+        [col for col in flattened.columns if col.endswith(DATA_TYPE_FIELD) or col == "_field_order"],
+        axis=1,
+    )
     result = _dataframe_object_serde(flattened, _deserialize_dataobject)
 
-    return result
+    return result[field_order] if field_order else result
 
 
 def register_dataset(name: str, df: pd.DataFrame) -> None:

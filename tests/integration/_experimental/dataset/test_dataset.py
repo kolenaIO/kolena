@@ -61,20 +61,19 @@ def test__register_dataset() -> None:
         )
         for dp in datapoints
     ]
-    columns = ["locator", "width", "height", "city", "bboxes"]
 
-    register_dataset(name, pd.DataFrame(datapoints[:10], columns=columns))
+    register_dataset(name, pd.DataFrame(datapoints[:10]))
 
-    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
-    expected = pd.DataFrame(expected_datapoints[:10], columns=columns)
+    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True)
+    expected = pd.DataFrame(expected_datapoints[:10])
     assert_frame_equal(loaded_datapoints, expected)
 
     # update dataset
-    datapoints_updated = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
+    datapoints_updated = pd.DataFrame(datapoints[:5] + datapoints[7:15])
     register_dataset(name, datapoints_updated)
 
-    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
-    expected = pd.DataFrame(expected_datapoints[:5] + expected_datapoints[7:15], columns=columns)
+    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True)
+    expected = pd.DataFrame(expected_datapoints[:5] + expected_datapoints[7:15])
     assert_frame_equal(loaded_datapoints, expected)
 
 

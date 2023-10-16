@@ -115,6 +115,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
                     label=dp["label"]._to_dict(),
                     data_type=DatapointType.IMAGE,
+                    _field_order=["locator", "width", "height", "category", "bboxes", "label"],
                 )
                 for dp in datapoints
             ],
@@ -157,7 +158,13 @@ def test__datapoint_dataframe__serde_text() -> None:
     df_expected = pd.DataFrame(
         dict(
             datapoint=[
-                dict(text=dp["text"], value=dp["value"], category=dp["category"], data_type=DatapointType.TEXT)
+                dict(
+                    text=dp["text"],
+                    value=dp["value"],
+                    category=dp["category"],
+                    data_type=DatapointType.TEXT,
+                    _field_order=["text", "value", "category"],
+                )
                 for dp in datapoints
             ],
         ),
