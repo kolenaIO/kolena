@@ -38,7 +38,6 @@ from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow.io import _dataframe_object_serde
 
 
-COL_DATAPOINT = "datapoint"
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
 
@@ -91,19 +90,17 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     return DatapointType.CUSTOM.value
 
 
-
-def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
     result[DATA_TYPE_FIELD] = _infer_datatype(df)
-    result[COL_DATAPOINT] = result.to_dict("records")
-    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x))
+    result[column] = result.to_dict("records")
+    result[column] = result[column].apply(lambda x: json.dumps(x))
 
     return result[[column]]
 
 
-
-def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    flattened = pd.json_normalize([json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")], max_level=0)
+def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    flattened = pd.json_normalize([json.loads(r[column]) for r in df.to_dict("records")], max_level=0)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     result = _dataframe_object_serde(flattened, _deserialize_dataobject)
 
