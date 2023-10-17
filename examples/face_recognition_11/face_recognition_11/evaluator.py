@@ -36,9 +36,10 @@ from kolena.workflow import TestCases
 
 def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: float, eps: float = 1e-9) -> float:
     imposter_scores = sorted(
-        [inf.similarity if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same]
+        [inf.similarity if inf.similarity is not None else 0.0 for gt, inf in inferences if not gt.is_same],
+        reverse=True,
     )
-    threshold_idx = round((1.0 - fmr) * len(imposter_scores)) - 1
+    threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
     threshold = imposter_scores[threshold_idx] - eps
     return threshold
 
