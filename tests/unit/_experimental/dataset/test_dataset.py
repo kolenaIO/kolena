@@ -152,7 +152,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
                     x=dp["x"],
                     width=dp["width"],
-                    data_type=TestSampleType.IMAGE,
+                    data_type=DatapointType.IMAGE,
                     _field_order=["locator", "bboxes", "x", "width"],
                 )
                 for dp in datapoints_v2
