@@ -38,6 +38,10 @@ class InvalidClientStateError(RuntimeError, KolenaError):
     """Exception indicating that client state was invalid."""
 
 
+class MissingTokenError(KeyError, KolenaError):
+    """Exception indicating that the client could not locate an API token."""
+
+
 class UninitializedError(InvalidClientStateError):
     """Exception indicating that the client has not been properly initialized before usage."""
 

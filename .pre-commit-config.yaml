@@ -30,6 +30,11 @@ repos:
     -   id: insert-license
         files: ^(kolena|tests|examples)/.*\.py$
         args: [--license-filepath, "LICENSE_HEADER"]
+-   repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+        -   id: black
+            args: [--line-length, "120"]
 -   repo: https://github.com/PyCQA/flake8
     rev: 5.0.4
     hooks:
@@ -39,11 +44,6 @@ repos:
                 - flake8-typing-imports==1.12.0
                 - flake8-quotes==3.3.1
                 - flake8-picky-parentheses==0.4.0
--   repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-        -   id: black
-            args: [--line-length, "120"]
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
     hooks:

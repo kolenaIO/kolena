@@ -35,26 +35,28 @@ from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
+from kolena.workflow.io import _dataframe_object_serde
 
-TEST_SAMPLE_TYPE = "TEST_SAMPLE"
+
+COL_DATAPOINT = "datapoint"
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
 
 
-class TestSampleType(str, Enum):
-    CUSTOM = "TEST_SAMPLE/CUSTOM"
-    DOCUMENT = "TEST_SAMPLE/DOCUMENT"
-    IMAGE = "TEST_SAMPLE/IMAGE"
-    POINT_CLOUD = "TEST_SAMPLE/POINT_CLOUD"
-    TEXT = "TEST_SAMPLE/TEXT"
-    VIDEO = "TEST_SAMPLE/VIDEO"
+class DatapointType(str, Enum):
+    CUSTOM = "DATAPOINT/CUSTOM"
+    DOCUMENT = "DATAPOINT/DOCUMENT"
+    IMAGE = "DATAPOINT/IMAGE"
+    POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
+    TEXT = "DATAPOINT/TEXT"
+    VIDEO = "DATAPOINT/VIDEO"
 
 
 _DATAPOINT_TYPE_MAP = {
-    "image": TestSampleType.IMAGE.value,
-    "application/pdf": TestSampleType.DOCUMENT.value,
-    "text": TestSampleType.DOCUMENT.value,
-    "video": TestSampleType.VIDEO.value,
+    "image": DatapointType.IMAGE.value,
+    "application/pdf": DatapointType.DOCUMENT.value,
+    "text": DatapointType.DOCUMENT.value,
+    "video": DatapointType.VIDEO.value,
 }
 
 
@@ -75,37 +77,35 @@ def _infer_datatype_value(x: str) -> str:
         if datatype is not None:
             return datatype
     elif x.endswith(".pcd"):
-        return TestSampleType.POINT_CLOUD.value
+        return DatapointType.POINT_CLOUD.value
 
-    return TestSampleType.CUSTOM.value
+    return DatapointType.CUSTOM.value
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if FIELD_LOCATOR in df.columns:
         return df[FIELD_LOCATOR].apply(_infer_datatype_value)
     elif FIELD_TEXT in df.columns:
-        return TestSampleType.TEXT.value
+        return DatapointType.TEXT.value
 
-    return TestSampleType.CUSTOM.value
+    return DatapointType.CUSTOM.value
 
 
-def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    object_columns = list(df.select_dtypes(include="object").columns)
-    result = df.select_dtypes(exclude="object")
-    result[object_columns] = df[object_columns].applymap(_serialize_dataobject)
+
+def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    result = _dataframe_object_serde(df, _serialize_dataobject)
     result[DATA_TYPE_FIELD] = _infer_datatype(df)
-    result[column] = result.to_dict("records")
-    result[column] = result[column].apply(lambda x: json.dumps(x, sort_keys=True))
+    result[COL_DATAPOINT] = result.to_dict("records")
+    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x))
 
     return result[[column]]
 
 
-def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    flattened = pd.json_normalize([json.loads(r[column]) for r in df.to_dict("records")], max_level=1)
+
+def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+    flattened = pd.json_normalize([json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")], max_level=0)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
-    object_columns = list(flattened.select_dtypes(include="object").columns)
-    result = flattened.select_dtypes(exclude="object")
-    result[object_columns] = flattened[object_columns].applymap(_deserialize_dataobject)
+    result = _dataframe_object_serde(flattened, _deserialize_dataobject)
 
     return result
 
