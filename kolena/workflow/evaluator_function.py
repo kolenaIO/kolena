@@ -248,7 +248,7 @@ def _is_configured(evaluator: BasicEvaluatorFunction) -> bool:
     return len(param_values) == 5 and issubclass(param_values[4].annotation, EvaluatorConfiguration)
 
 
-def noop_evaluator(
+def no_op_evaluator(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
@@ -259,10 +259,10 @@ def noop_evaluator(
     make [`Inference`][kolena.workflow.Inference]s accessible in the platform.
 
     ```python
-    from kolena.workflow import noop_evaluator
+    from kolena.workflow import no_op_evaluator
     from kolena.workflow import test
 
-    test(model, test_suite, noop_evaluator)
+    test(model, test_suite, no_op_evaluator)
     ```
     """
     test_sample_metrics = [BaseMetricsTestSample() for _ in test_samples]

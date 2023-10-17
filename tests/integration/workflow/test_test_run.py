@@ -35,7 +35,7 @@ from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
-from kolena.workflow import noop_evaluator
+from kolena.workflow import no_op_evaluator
 from kolena.workflow import test
 from kolena.workflow import TestCase
 from kolena.workflow import TestCases
@@ -352,8 +352,8 @@ def test__test__noop_evaluator(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
 ) -> None:
-    test(dummy_model, dummy_test_suites[0], noop_evaluator)
-    TestRun(dummy_model, dummy_test_suites[0], noop_evaluator)
+    test(dummy_model, dummy_test_suites[0], no_op_evaluator)
+    TestRun(dummy_model, dummy_test_suites[0], no_op_evaluator)
 
 
 def test__test__function_evaluator__with_skip(
