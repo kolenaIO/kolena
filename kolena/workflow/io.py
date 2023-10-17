@@ -16,7 +16,6 @@ from typing import Any
 from typing import Callable
 from typing import Union
 
-import numpy as np
 import pandas as pd
 
 from kolena.workflow import DataObject
@@ -109,7 +108,7 @@ def _dataframe_object_serde(df, serde_fn: Callable[[Any], Any]):
     df_post = pd.DataFrame(columns=columns)
     for column in columns:
         if df.dtypes[column] == "object":
-            df_post[column] = df[column].apply(serde_fn).replace(np.nan, None)
+            df_post[column] = df[column].apply(serde_fn)
         else:
             df_post[column] = df[column]
     return df_post

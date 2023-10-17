@@ -169,13 +169,15 @@ def test__datapoint_dataframe__serde_locator() -> None:
                 locator=dp["locator"],
                 width=dp["width"],
                 height=dp.get("height", math.nan),
-                category=dp.get("category", None),
+                category=dp.get("category", math.nan),
                 bboxes=[
                     BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
                     for bbox in dp["bboxes"]
                 ],
-                label=ClassificationLabel(label=dp["label"].label, score=dp["label"].score) if "label" in dp else None,
-                x=dp.get("x", None),
+                label=ClassificationLabel(label=dp["label"].label, score=dp["label"].score)
+                if "label" in dp
+                else math.nan,
+                x=dp.get("x", math.nan),
             )
             for dp in datapoints_v1 + datapoints_v2
         ],
