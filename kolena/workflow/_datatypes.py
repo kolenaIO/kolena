@@ -145,7 +145,7 @@ class DataObject(metaclass=ABCMeta):
             for key, val in vars(self).items():
                 if key not in field_set and not _double_under(key):
                     items.append((key, val))
-        items.append((FIELD_ORDER_FIELD, field_names))
+        items.append((FIELD_ORDER_FIELD, [key for key, _ in items]))
         return OrderedDict([(key, serialize_value(value)) for key, value in items])
 
     @classmethod

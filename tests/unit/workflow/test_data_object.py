@@ -97,6 +97,7 @@ def test__data_object__extras_allow() -> None:
     tester = DataclassesTester(z=False, a="foobar", b=0.3, y=["hello"], x=bbox)
     serialized = tester._to_dict()
     assert list(serialized.keys()) == ["b", "a", "z", "y", "x", FIELD_ORDER_FIELD]
+    assert serialized[FIELD_ORDER_FIELD] == ["b", "a", "z", "y", "x"]
 
     bbox_str = str(bbox)
     assert bbox_str == (
