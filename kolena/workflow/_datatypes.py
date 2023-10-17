@@ -140,9 +140,10 @@ class DataObject(metaclass=ABCMeta):
 
         items = [(field.name, getattr(self, field.name)) for field in dataclasses.fields(type(self))]
         field_names = [field.name for field in dataclasses.fields(type(self))]
+        field_set = set(field_names)
         if _allow_extra(type(self)):
             for key, val in vars(self).items():
-                if key not in field_names and not _double_under(key):
+                if key not in field_set and not _double_under(key):
                     items.append((key, val))
         items.append((FIELD_ORDER_FIELD, field_names))
         return OrderedDict([(key, serialize_value(value)) for key, value in items])
