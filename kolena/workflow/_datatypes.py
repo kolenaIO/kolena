@@ -42,6 +42,7 @@ from kolena._utils.serde import as_serialized_json
 from kolena._utils.serde import with_serialized_columns
 from kolena._utils.validators import ValidatorConfig
 
+FIELD_ORDER_FIELD = "_field_order"
 T = TypeVar("T", bound="DataObject")
 
 
@@ -138,11 +139,12 @@ class DataObject(metaclass=ABCMeta):
             raise ValueError(f"unsupported value type: '{type(value).__name__}' (value: {value})")
 
         items = [(field.name, getattr(self, field.name)) for field in dataclasses.fields(type(self))]
-        field_names = {field.name for field in dataclasses.fields(type(self))}
+        field_names = [field.name for field in dataclasses.fields(type(self))]
         if _allow_extra(type(self)):
             for key, val in vars(self).items():
                 if key not in field_names and not _double_under(key):
                     items.append((key, val))
+        items.append((FIELD_ORDER_FIELD, field_names))
         return OrderedDict([(key, serialize_value(value)) for key, value in items])
 
     @classmethod
@@ -227,7 +229,7 @@ class DataObject(metaclass=ABCMeta):
         field_names = {f.name for f in dataclasses.fields(cls)}
         if _allow_extra(cls):
             for key, val in obj_dict.items():
-                if key not in field_names:
+                if key not in field_names and key != FIELD_ORDER_FIELD:
                     items[key] = _try_deserialize_typed_dataobject(val)
         return cls(**items)
 

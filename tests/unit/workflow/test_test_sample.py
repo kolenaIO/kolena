@@ -336,6 +336,7 @@ def test__serialize() -> None:
         m=BoundingBox(top_left=(0, 0), bottom_right=(10, 10))._to_dict(),
         n=[1, 2, 3],
         data_type=f"{_TestSampleType._data_category()}/{_TestSampleType.CUSTOM.value}",
+        _field_order=[chr(o) for o in range(ord("a"), ord("o"))],
     )
 
     assert Tester._from_dict(obj_dict) == obj
@@ -530,7 +531,7 @@ def test__serialize__metadata(dataclass: Callable) -> None:
     obj = Tester(a=1, metadata=metadata_dict)
     got_dict = obj._to_dict()
     got_metadata_dict = obj._to_metadata_dict()
-    assert len(got_dict) == 2
+    assert len(got_dict) == 3
     assert got_dict["a"] == 1
     assert got_dict["data_type"] == "TEST_SAMPLE/CUSTOM"
     assert got_metadata_dict == metadata_dict
@@ -544,7 +545,7 @@ def test__serialize__metadata__absent() -> None:
     obj = Tester(a=1)
     got_dict = obj._to_dict()
     got_metadata_dict = obj._to_metadata_dict()
-    assert len(got_dict) == 2
+    assert len(got_dict) == 3
     assert got_dict["a"] == 1
     assert got_dict["data_type"] == "TEST_SAMPLE/CUSTOM"
     assert got_metadata_dict == {}

@@ -19,6 +19,7 @@ import pydantic
 import pytest
 
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow.asset import _AssetType
 from kolena.workflow.asset import Asset
 from kolena.workflow.asset import BinaryAsset
@@ -42,7 +43,11 @@ def test__serialize__locator(asset_class: Type[Asset], asset_type: _AssetType) -
     asset = asset_class(locator=locator)  # type: ignore
     asset_dict = asset._to_dict()
 
-    assert asset_dict == {"locator": locator, DATA_TYPE_FIELD: f"{_AssetType._data_category()}/{asset_type.value}"}
+    assert asset_dict == {
+        "locator": locator,
+        DATA_TYPE_FIELD: f"{_AssetType._data_category()}/{asset_type.value}",
+        FIELD_ORDER_FIELD: ["locator"],
+    }
     assert asset == asset_class._from_dict(asset_dict)
 
 
@@ -57,6 +62,7 @@ def test__serialize__video() -> None:
         "thumbnail": None,
         "start": 0,
         "end": 1,
+        FIELD_ORDER_FIELD: ["locator", "thumbnail", "start", "end"],
     }
     assert asset == VideoAsset._from_dict(asset_dict)
 

@@ -12,18 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import math
 import random
 
 import pandas as pd
 import pytest
 from pandas._testing import assert_frame_equal
+from pandas._testing import assert_series_equal
 
+from kolena._experimental.dataset._dataset import _consolidate_field_order
 from kolena._experimental.dataset._dataset import _infer_datatype
 from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import COL_DATAPOINT
 from kolena._experimental.dataset._dataset import DatapointType
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -88,8 +92,18 @@ def test__infer_datatype() -> None:
     )
 
 
-def test__datapoint_dataframe__serde_locator() -> None:
+def test__consolidate_field_order() -> None:
     datapoints = [
+        {FIELD_ORDER_FIELD: ["b", "c", "a"]},
+        {FIELD_ORDER_FIELD: ["a", "b", "d"]},
+        {FIELD_ORDER_FIELD: ["y", "d", "c", "x"]},
+    ]
+    assert _consolidate_field_order(datapoints) == ["b", "c", "a", "d", "y", "x"]
+
+
+def test__datapoint_dataframe__serde_locator() -> None:
+    # emulate mixing datapoints of different structure, as is possible from dataset updates/curations
+    datapoints_v1 = [
         dict(
             locator=f"https://test-iamge-{i}.png",
             width=500 + i,
@@ -101,9 +115,22 @@ def test__datapoint_dataframe__serde_locator() -> None:
             ],
             label=ScoredClassificationLabel(label="dog", score=0.1 + i * 0.05),
         )
-        for i in range(10)
+        for i in range(8)
     ]
-    df = pd.DataFrame(datapoints)
+    datapoints_v2 = [
+        dict(
+            locator=f"https://test-iamge-{i}.png",
+            bboxes=[
+                LabeledBoundingBox(label="car", top_left=[i, i], bottom_right=[i + 50, i + 50])
+                for i in range(random.randint(2, 6))
+            ],
+            x=f"v{i}",
+            width=500 + i,
+        )
+        for i in range(8, 10)
+    ]
+    df_v1 = pd.DataFrame(datapoints_v1)
+    df_v2 = pd.DataFrame(datapoints_v2)
     df_expected = pd.DataFrame(
         dict(
             datapoint=[
@@ -117,28 +144,40 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     data_type=DatapointType.IMAGE,
                     _field_order=["locator", "width", "height", "category", "bboxes", "label"],
                 )
-                for dp in datapoints
+                for dp in datapoints_v1
+            ]
+            + [
+                dict(
+                    locator=dp["locator"],
+                    bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
+                    x=dp["x"],
+                    width=dp["width"],
+                    data_type=TestSampleType.IMAGE,
+                    _field_order=["locator", "bboxes", "x", "width"],
+                )
+                for dp in datapoints_v2
             ],
         ),
     )
-    df_serialized = _to_serialized_dataframe(df)
+    df_serialized = pd.concat([_to_serialized_dataframe(df_v1), _to_serialized_dataframe(df_v2)], ignore_index=True)
 
-    assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
+    assert_series_equal(df_serialized[COL_DATAPOINT].apply(json.loads), df_expected[COL_DATAPOINT])
 
     df_expected = pd.DataFrame(
         [
             dict(
                 locator=dp["locator"],
                 width=dp["width"],
-                height=dp["height"],
-                category=dp["category"],
+                height=dp.get("height", math.nan),
+                category=dp.get("category", None),
                 bboxes=[
                     BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
                     for bbox in dp["bboxes"]
                 ],
-                label=ClassificationLabel(label=dp["label"].label, score=dp["label"].score),
+                label=ClassificationLabel(label=dp["label"].label, score=dp["label"].score) if "label" in dp else None,
+                x=dp.get("x", None),
             )
-            for dp in datapoints
+            for dp in datapoints_v1 + datapoints_v2
         ],
     )
     df_deserialized = _to_deserialized_dataframe(df_serialized)

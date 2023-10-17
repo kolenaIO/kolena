@@ -25,6 +25,7 @@ import pytest
 
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow.annotation import _AnnotationType
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
@@ -45,6 +46,7 @@ def test__serde__simple() -> None:
         "label": "test",
         "points": [[1, 1], [2, 2], [3, 3]],
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
+        FIELD_ORDER_FIELD: ["points", "label"],
     }
     assert LabeledPolygon._from_dict(obj_dict) == obj
 
@@ -60,6 +62,7 @@ def test__serde__derived() -> None:
         "area": 0,
         "aspect_ratio": 0,
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+        FIELD_ORDER_FIELD: ["top_left", "bottom_right", "width", "height", "area", "aspect_ratio"],
     }
     # deserialization from dict containing all fields, including derived
     assert BoundingBox._from_dict(obj_dict) == obj
@@ -88,6 +91,7 @@ def test__serde__derived__extended(dataclass_decorator: Callable[..., Any]) -> N
         "b": False,
         "c": 0,
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+        FIELD_ORDER_FIELD: ["top_left", "bottom_right", "width", "height", "area", "aspect_ratio", "a", "b", "c"],
     }
     assert ExtendedBoundingBox._from_dict(obj_dict) == obj
 
@@ -132,6 +136,7 @@ def test__serde__nested() -> None:
         "points": [[0, 0], [1, 1], [2, 2], [0, 0]],
         "label": "e",
         DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
+        FIELD_ORDER_FIELD: ["points", "label"],
     }
     assert Tester._from_dict(obj_dict) == obj
 

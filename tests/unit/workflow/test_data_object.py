@@ -26,6 +26,7 @@ from kolena.workflow import Document
 from kolena.workflow import Image
 from kolena.workflow import PointCloud
 from kolena.workflow import Text
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import BoundingBox3D
@@ -82,7 +83,7 @@ def test__data_object__serialize_order() -> None:
 
     tester = DataclassesTester(z=False, a="foobar", b=0.3)
     serialized = tester._to_dict()
-    assert list(serialized.keys()) == ["b", "a", "z"]
+    assert list(serialized.keys()) == ["b", "a", "z", FIELD_ORDER_FIELD]
 
 
 def test__data_object__extras_allow() -> None:
@@ -95,7 +96,7 @@ def test__data_object__extras_allow() -> None:
     bbox = LabeledBoundingBox(top_left=(1, 1), bottom_right=(10, 10), label="bus", extra=[1, 2, 3])
     tester = DataclassesTester(z=False, a="foobar", b=0.3, y=["hello"], x=bbox)
     serialized = tester._to_dict()
-    assert list(serialized.keys()) == ["b", "a", "z", "y", "x"]
+    assert list(serialized.keys()) == ["b", "a", "z", "y", "x", FIELD_ORDER_FIELD]
 
     bbox_str = str(bbox)
     assert bbox_str == (

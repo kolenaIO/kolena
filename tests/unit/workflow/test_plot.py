@@ -26,6 +26,7 @@ from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow.plot import _PlotType
 from kolena.workflow.plot import NullableNumberSeries
 from kolena.workflow.plot import NumberSeries
@@ -96,10 +97,19 @@ def test__curve_plot__serialize() -> None:
         "title": "test",
         "x_label": "x",
         "y_label": "y",
-        "curves": [{"label": "a", "x": [1, 2, 3], "y": [2, 3, 4], "extra": None}],
+        "curves": [
+            {
+                "label": "a",
+                "x": [1, 2, 3],
+                "y": [2, 3, 4],
+                "extra": None,
+                FIELD_ORDER_FIELD: ["x", "y", "label", "extra"],
+            },
+        ],
         "data_type": f"{_PlotType._data_category()}/{_PlotType.CURVE.value}",
         "x_config": None,
-        "y_config": {"type": "log"},
+        "y_config": {"type": "log", FIELD_ORDER_FIELD: ["type"]},
+        FIELD_ORDER_FIELD: ["title", "x_label", "y_label", "curves", "x_config", "y_config"],
     }
 
 
@@ -150,6 +160,7 @@ def test__confusion_matrix__serialize() -> None:
         labels=["a", "b"],
         matrix=[[90, 10], [20, 80]],
         data_type=f"{_PlotType._data_category()}/{_PlotType.CONFUSION_MATRIX.value}",
+        _field_order=["title", "labels", "matrix", "x_label", "y_label"],
     )
 
     # TODO: list of lists fails to deserialize, but not critical for plots (plots are never pulled down)
@@ -216,8 +227,9 @@ def test__histogram__serialize() -> None:
         "frequency": [[0, 1, 2, 1, 4.4, 0.2], [0, 1, 2, 3, 4, 5]],
         "labels": ["a", "b"],
         "x_config": None,
-        "y_config": {"type": "log"},
+        "y_config": {"type": "log", FIELD_ORDER_FIELD: ["type"]},
         "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
+        FIELD_ORDER_FIELD: ["title", "x_label", "y_label", "buckets", "frequency", "labels", "x_config", "y_config"],
     }
 
 

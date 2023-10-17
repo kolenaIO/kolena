@@ -15,7 +15,9 @@ import json
 import mimetypes
 from dataclasses import asdict
 from enum import Enum
+from typing import Dict
 from typing import Iterator
+from typing import List
 from typing import Union
 
 import pandas as pd
@@ -33,10 +35,9 @@ from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow.io import _dataframe_object_serde
-
-COLUMN_ORDER_FIELD = "_field_order"
 
 COL_DATAPOINT = "datapoint"
 FIELD_LOCATOR = "locator"
@@ -91,11 +92,24 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     return DatapointType.CUSTOM.value
 
 
+def _consolidate_field_order(records: List[Dict]) -> List[str]:
+    # field order from datapoints that come first, in dataframe order, would take precedence
+    orders = pd.Series([tuple(record[FIELD_ORDER_FIELD]) for record in records if FIELD_ORDER_FIELD in record])
+    dc_orders = orders.unique()
+    merged_order = {}
+    for order in dc_orders:
+        for field in order:
+            if field not in merged_order:
+                merged_order[field] = len(merged_order)
+
+    return [x[0] for x in sorted(merged_order.items(), key=lambda x: x[1])]
+
+
 def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     columns = [str(col) for col in df.columns]
     result = _dataframe_object_serde(df, _serialize_dataobject)
     result[DATA_TYPE_FIELD] = _infer_datatype(df)
-    result[COLUMN_ORDER_FIELD] = [columns for i in df.index]
+    result[FIELD_ORDER_FIELD] = [columns for i in df.index]
     result[COL_DATAPOINT] = result.to_dict("records")
     result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(json.dumps)
 
@@ -104,10 +118,10 @@ def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
 
 def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     records = [json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")]
-    field_order = records[0][COLUMN_ORDER_FIELD] if records and COLUMN_ORDER_FIELD in records[0] else None
+    field_order = _consolidate_field_order(records)
     flattened = pd.json_normalize(records, max_level=0)
     flattened = flattened.drop(
-        [col for col in flattened.columns if col.endswith(DATA_TYPE_FIELD) or col == COLUMN_ORDER_FIELD],
+        [col for col in flattened.columns if col.endswith(DATA_TYPE_FIELD) or col == FIELD_ORDER_FIELD],
         axis=1,
     )
     result = _dataframe_object_serde(flattened, _deserialize_dataobject)
