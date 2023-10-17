@@ -35,15 +35,15 @@ from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 
 
-@dataclass(frozen=True)
-class ImageSample(Image):
-    """
-    An image belonging to an Image Pair containing the locator and metadata
-    for the Face Recognition 1:1 workflow.
-    """
+# @dataclass(frozen=True)
+# class ImageSample(Image):
+#     """
+#     An image belonging to an Image Pair containing the locator and metadata
+#     for the Face Recognition 1:1 workflow.
+#     """
 
-    metadata: Metadata = dataclasses.field(default_factory=dict)
-    """The metadata associated with an image in the image pair."""
+# metadata: Metadata = dataclasses.field(default_factory=dict)
+# """The metadata associated with an image in the image pair."""
 
 
 @dataclass(frozen=True)
@@ -51,6 +51,9 @@ class TestSample(Image):  # Wrapper
     """Test sample type for Face Recognition 1:1 workflow."""
 
     targets: List[ImageAsset]
+
+    metadata: Metadata = dataclasses.field(default_factory=dict)
+    """The metadata associated with an image in the image pairs."""
 
 
 @dataclass(frozen=True)

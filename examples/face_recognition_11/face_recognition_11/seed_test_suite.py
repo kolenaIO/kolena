@@ -31,8 +31,7 @@ from face_recognition_11.workflow import TestSuite
 import kolena
 
 BUCKET = "kolena-public-datasets"
-# DATASET = "labeled-faces-in-the-wild"
-DATASET = "5M-wild-v4"
+DATASET = "wild-v4"
 
 
 def create_test_case_for_tag(
@@ -67,27 +66,25 @@ def main(args: Namespace) -> int:
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
 
-    sample_by_locator = defaultdict()
+    metadata_by_locator = defaultdict()
     for record in df_metadata.itertuples(index=False):
         fields = set(record._fields)
         fields.remove("locator")
-        sample_by_locator[record.locator] = ImageAsset(
-            locator=record.locator, metadata={f: getattr(record, f) for f in fields}
-        )
+        metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
 
     test_samples: Dict[str, ImageAsset] = defaultdict(list)
     ground_truths: Dict[str, bool] = defaultdict(list)
     for idx, row in df.iterrows():
-        test_samples[row["locator_a"]].append(sample_by_locator[row["locator_b"]])
+        test_samples[row["locator_a"]].append(ImageAsset(locator=row["locator_b"]))
         ground_truths[row["locator_a"]].append(row["is_same"])
-
-        test_samples[row["locator_b"]].append(sample_by_locator[row["locator_a"]])
-        ground_truths[row["locator_b"]].append(row["is_same"])
 
     test_samples_and_ground_truths: List[TestSample] = []
     for locator, targets in test_samples.items():
         test_samples_and_ground_truths.append(
-            (TestSample(locator=locator, targets=targets), GroundTruth(matches=ground_truths[locator]))
+            (
+                TestSample(locator=locator, targets=targets, metadata=metadata_by_locator[locator]),
+                GroundTruth(matches=ground_truths[locator]),
+            )
         )
 
     print(f"total number of test samples: {len(test_samples_and_ground_truths)}")
