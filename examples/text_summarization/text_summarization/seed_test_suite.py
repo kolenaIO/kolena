@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Callable
@@ -192,7 +191,7 @@ def seed_test_suites(
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {

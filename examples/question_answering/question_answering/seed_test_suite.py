@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -91,7 +90,7 @@ def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     df_metadata = pd.read_csv(args.dataset_csv)
     context_dict = defaultdict(list)
