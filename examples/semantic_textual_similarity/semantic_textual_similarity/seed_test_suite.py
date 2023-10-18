@@ -57,7 +57,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
     complete_test_case = seed_complete_test_case(args)
     test_suite = TestSuite(
         f"{DATASET}",

@@ -174,7 +174,7 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     complete_test_case = create_complete_transportation_case(args)
 

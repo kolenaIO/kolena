@@ -95,7 +95,11 @@ jobs:
     steps:
       - checkout
       - restore_cache:
+          name: Restore Poetry cache
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - restore_cache:
+          name: Restore MkDocs cache
+          key: mkdocs-cache
       - run:
           name: Install system-level dependencies
           command: |
@@ -114,6 +118,10 @@ jobs:
           command: |
             ./docs/setup_insiders.sh
             poetry run mkdocs build --config-file mkdocs.insiders.yml
+      - save_cache:
+          key: mkdocs-cache
+          paths:
+            - .cache
 
   unit-test:
     parameters:

@@ -11,24 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import netrc
+import os
 import warnings
 from typing import Any
 from typing import Dict
 from typing import Optional
+from urllib.parse import urlparse
 
 import pandas as pd
 
 from kolena._utils import log
 from kolena._utils import state
+from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.endpoints import get_platform_url
 from kolena._utils.instrumentation import upload_log
 from kolena._utils.state import _client_state
 from kolena.errors import InputValidationError
+from kolena.errors import MissingTokenError
 
 
 def initialize(
-    api_token: str,
     *args: Any,
+    api_token: Optional[str] = None,
     verbose: bool = False,
     proxies: Optional[Dict[str, str]] = None,
     **kwargs: Any,
@@ -36,23 +41,51 @@ def initialize(
     """
     Initialize a client session.
 
-    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page and
-    populate the `KOLENA_TOKEN` environment variable before initializing:
+    A session has a global scope and remains active until interpreter shutdown.
 
+    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page and
+    make it available through one of the following options before initializing:
+
+
+    1. Directly through the `api_token` keyword argument
     ```python
     import os
     import kolena
 
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
+    ```
+    2. Populate the `KOLENA_TOKEN` environment variable
+    ```bash
+    export KOLENA_TOKEN="********"
+    ```
+    3. Store in [`.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+    ```cfg title="~/.netrc"
+    machine api.kolena.io password ********
     ```
 
-    A session has a global scope and remains active until interpreter shutdown.
+    ``` mermaid
+    flowchart TD
+        Start[Get API token]
+        Step1{{api_token argument provided?}}
+        Step2{{KOLENA_TOKEN environment variable set?}}
+        Step3{{Token in .netrc file?}}
+        End[Use as API token]
+        Exception[MissingTokenError]
+        Start --> Step1
+        Step1 -->|No| Step2
+        Step2 -->|No| Step3
+        Step3 -->|No| Exception
+        Step1 -->|Yes| End
+        Step2 -->|Yes| End
+        Step3 -->|Yes| End
+    ```
 
     !!! note
         As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
         has been deprecated and replaced by `initialize(api_token)`.
 
-    :param api_token: Provided API token. This token is a secret and should be treated with caution.
+    :param api_token: Optionally provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
+        or `.netrc` file. This token is a secret and should be treated with caution.
     :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
         logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
@@ -61,18 +94,27 @@ def initialize(
         [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
     :raises InvalidTokenError: The provided `api_token` is not valid.
     :raises InputValidationError: The provided combination or number of args is not valid.
+    :raises MissingTokenError: An API token could not be found.
     """
-    used_deprecated_signature = False
+    used_deprecated_signature = "entity" in kwargs
 
-    if len(args) > 1:
-        raise InputValidationError(f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage.")
-    elif len(args) == 1:
-        # overwrite the originally passed api_token since we are supporting backward compatability with entity
-        api_token = args[0]
-    if len(args) == 1 or "entity" in kwargs:
-        used_deprecated_signature = True
+    if len(args) > 2:
+        raise InputValidationError(
+            f"Too many args. Expected 0..2 but got {len(args)} Check docs for usage.",
+        )
+
+    if not api_token:
+        if len(args) == 1:
+            api_token = args[0]
+        elif len(args) == 2:
+            api_token = args[1]
+            used_deprecated_signature = True
+        else:
+            api_token = _find_token()
+
+    if used_deprecated_signature:
         warnings.warn(
-            "The signature initialize(entity, token) is deprecated. Please update to initialize(token).",
+            "The signature initialize(entity, token) is deprecated.",
             category=DeprecationWarning,
             stacklevel=2,
         )
@@ -96,3 +138,22 @@ def initialize(
         # Configure third party logging based on verbosity
         pd.set_option("display.max_colwidth", None)
         log.info(f"connected to {get_platform_url()}")
+
+
+def _find_token() -> str:
+    if KOLENA_TOKEN_ENV in os.environ:
+        return os.environ[KOLENA_TOKEN_ENV]
+
+    hostname = urlparse(state._get_api_base_url()).hostname
+    try:
+        netrc_file = netrc.netrc()
+        record = netrc_file.authenticators(hostname)
+        if record and record[2]:
+            return record[2]
+        raise MissingTokenError(
+            f"No API token in `{KOLENA_TOKEN_ENV}` env variable or in .netrc file under {hostname}",
+        )
+    except (FileNotFoundError, netrc.NetrcParseError):
+        raise MissingTokenError(
+            f"No API token in `{KOLENA_TOKEN_ENV}` env variable and unable to parse .netrc file",
+        )

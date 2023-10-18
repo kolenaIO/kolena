@@ -33,7 +33,7 @@ MODELS = ["gpt-3.5-turbo-0301", "gpt-3.5-turbo", "gpt-4-0314", "gpt-4"]
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     inference_mapping = {}
     model_file_path = f"s3://kolena-public-datasets/CoQA/results/{args.model}.csv"

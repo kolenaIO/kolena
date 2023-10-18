@@ -68,7 +68,7 @@ def load_results(path: str) -> Dict[str, Any]:
 
 
 def seed_test_run(test_suite_name: str, model_name: str, results: List[Dict[str, Any]]) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     inference_by_id = {result["label_id"]: result for result in results}
 

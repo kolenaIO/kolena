@@ -20,7 +20,7 @@ first let's initialize a client session:
 import os
 import kolena
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 ```
 
 The data used in this tutorial is publicly available in the `kolena-public-datasets` S3 bucket in a `metadata.csv` file:

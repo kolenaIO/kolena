@@ -67,7 +67,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str)
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
     os.environ["KOLENA_MODEL_NAME"] = str(args.model)
     os.environ["KOLENA_OUT_BUCKET"] = str(args.out_bucket)
     seed_test_run(args.model, args.test_suites, args.out_bucket)
