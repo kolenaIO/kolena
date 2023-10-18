@@ -39,7 +39,7 @@ from kolena.workflow.annotation import ScoredClassificationLabel
         ("file:///var/mime.csv", DatapointType.DOCUMENT),
         ("test.pcd", DatapointType.POINT_CLOUD),
         ("gcp://summary.pdf", DatapointType.DOCUMENT),
-        ("//my.mp3", DatapointType.CUSTOM),
+        ("//my.mp3", DatapointType.AUDIO),
     ],
 )
 def test__infer_datatype_value(uri: str, expected: str) -> None:
