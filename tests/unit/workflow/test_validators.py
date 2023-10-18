@@ -185,26 +185,24 @@ def test__validate_field__thresholded() -> None:
         g: List[Polygon]
         i: List[Keypoints]
         j: List[Polyline]
-        k: List[Union[BoundingBox, BoundingBox]]
+        k: List[Union[BoundingBox, BoundingBox]]  # Redundant Union can be simplified
         l: float
         m: int
         n: str
 
     MyThresholdedMetrics(
         threshold=1.0,
-        a=List["1"],
-        b=List[False],
-        c=List[1],
-        d=List[1.0],
-        e=List[BoundingBox((1, 1), (2, 2))],
-        g=List[Polygon(points=[(0, 0), (1, 1), (2, 2), (0, 0)])],
-        i=List[Keypoints(points=[(10, 10), (11, 11), (12, 12)])],
-        j=List[Polyline(points=[(0, 0), (1, 1), (2, 2)])],
-        k=List[
-            Union[
-                BoundingBox((1, 1), (2, 2)),
-                BoundingBox(top_left=[1, 1], bottom_right=[10, 10]),
-            ]
+        a=["1"],
+        b=[True, False],
+        c=[1],
+        d=[1.0],
+        e=[BoundingBox((1, 1), (2, 2))],
+        g=[Polygon(points=[(0, 0), (1, 1), (2, 2), (0, 0)])],
+        i=[Keypoints(points=[(10, 10), (11, 11), (12, 12)])],
+        j=[Polyline(points=[(0, 0), (1, 1), (2, 2)])],
+        k=[
+            BoundingBox((1, 1), (2, 2)),
+            BoundingBox(top_left=[1, 1], bottom_right=[10, 10]),
         ],
         l=1.0,
         m=1,
