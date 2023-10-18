@@ -14,8 +14,6 @@
 from abc import ABCMeta
 from dataclasses import dataclass
 
-from pydantic.dataclasses import dataclass
-
 from kolena.workflow._datatypes import TypedDataObject
 
 

@@ -23,7 +23,6 @@ import pydantic
 import pytest
 
 from kolena.workflow._datatypes import DataObject
-from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._thresholded import ThresholdedMetrics
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Polyline
