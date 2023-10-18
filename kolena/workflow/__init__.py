@@ -64,6 +64,7 @@ __all__ = [
     "Video",
     "Document",
     "PointCloud",
+    "Audio",
     "GroundTruth",
     "Inference",
     "Workflow",
@@ -88,5 +89,4 @@ __all__ = [
     "TestRun",
     "test",
     "define_workflow",
-    "Audio",
 ]
