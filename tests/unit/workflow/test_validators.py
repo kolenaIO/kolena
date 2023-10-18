@@ -182,12 +182,10 @@ def test__validate_field__thresholded() -> None:
         c: List[int]
         d: List[float]
         e: List[BoundingBox]
-        f: List[LabeledBoundingBox]
         g: List[Polygon]
-        h: List[LabeledPolygon]
         i: List[Keypoints]
         j: List[Polyline]
-        k: List[Union[BoundingBox, LabeledBoundingBox]]
+        k: List[Union[BoundingBox, BoundingBox]]
         l: float
         m: int
         n: str
@@ -198,16 +196,15 @@ def test__validate_field__thresholded() -> None:
         b=List[False],
         c=List[1],
         d=List[1.0],
-        e=List[LabeledBoundingBox((1, 1), (2, 2), "a")],
-        f=List[LabeledBoundingBox(label="l", top_left=[1, 1], bottom_right=[10, 10])],
+        e=List[BoundingBox((1, 1), (2, 2))],
+        f=List[BoundingBox(top_left=[1, 1], bottom_right=[10, 10])],
         g=List[Polygon(points=[(0, 0), (1, 1), (2, 2), (0, 0)])],
-        h=List[LabeledPolygon(label="e", points=[(0, 0), (1, 1), (2, 2), (0, 0)])],
         i=List[Keypoints(points=[(10, 10), (11, 11), (12, 12)])],
         j=List[Polyline(points=[(0, 0), (1, 1), (2, 2)])],
         k=List[
             Union[
-                LabeledBoundingBox((1, 1), (2, 2), "a"),
-                LabeledBoundingBox(label="l", top_left=[1, 1], bottom_right=[10, 10]),
+                BoundingBox((1, 1), (2, 2)),
+                BoundingBox(top_left=[1, 1], bottom_right=[10, 10]),
             ]
         ],
         l=1.0,
