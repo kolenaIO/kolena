@@ -229,9 +229,10 @@ class DataObject(metaclass=ABCMeta):
         items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
         field_names = {f.name for f in dataclasses.fields(cls)}.union(RESERVED_FIELDS)
         if _allow_extra(cls):
-            for key, val in obj_dict.items():
+            keys = obj_dict[FIELD_ORDER_FIELD] if FIELD_ORDER_FIELD in obj_dict else obj_dict.keys()
+            for key in keys:
                 if key not in field_names:
-                    items[key] = _try_deserialize_typed_dataobject(val)
+                    items[key] = _try_deserialize_typed_dataobject(obj_dict[key])
         return cls(**items)
 
     # integrate with pandas json deserialization

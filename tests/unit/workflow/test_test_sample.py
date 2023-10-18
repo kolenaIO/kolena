@@ -41,7 +41,9 @@ from kolena.workflow import PointCloud
 from kolena.workflow import TestSample
 from kolena.workflow import Text
 from kolena.workflow import Video
+from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import DataObject
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -563,6 +565,15 @@ def test__deserialize__metadata__absent_no_default() -> None:
     assert Tester._from_dict(dict(a=1)) == Tester(a=1, metadata={})
 
 
+def test__deserialize__metadata__absent_allow_extras() -> None:
+    @pydantic.dataclasses.dataclass(frozen=True, config={"extra": "allow"})
+    class Tester(TestSample):
+        a: int
+
+    tester = Tester._from_dict(dict(a=1, metadata={"x": 12}))
+    assert tester._to_dict() == {"a": 1, FIELD_ORDER_FIELD: ["a"], DATA_TYPE_FIELD: "TEST_SAMPLE/CUSTOM"}
+
+
 @pytest.mark.parametrize(
     "dataclass,include_default",
     [
@@ -581,7 +592,11 @@ def test__deserialize__metadata(dataclass: Callable, include_default: bool) -> N
     obj = Tester(metadata=metadata_dict)
     got_dict = obj._to_dict()
     got_metadata_dict = obj._to_metadata_dict()
-    assert obj == Tester._from_dict(dict(**got_dict, metadata=got_metadata_dict))
+    deserialized = Tester._from_dict(dict(**got_dict, metadata=got_metadata_dict))
+    assert deserialized == obj
+
+    # verify idempotent
+    assert deserialized._to_dict() == got_dict
 
 
 @pytest.mark.parametrize("dataclass", [dataclasses.dataclass, pydantic.dataclasses.dataclass])

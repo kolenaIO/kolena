@@ -50,6 +50,7 @@ from pydantic.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow._datatypes import _register_data_type
 from kolena.workflow._datatypes import DataType
+from kolena.workflow._datatypes import FIELD_ORDER_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import safe_issubclass
@@ -149,6 +150,11 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     def _to_dict(self) -> Dict[str, Any]:
         base_dict = super()._to_dict()
         base_dict.pop(_METADATA_KEY, None)
+        if FIELD_ORDER_FIELD in base_dict:
+            try:
+                base_dict[FIELD_ORDER_FIELD].remove(_METADATA_KEY)
+            except ValueError:
+                ...
         return base_dict
 
     def _to_metadata_dict(self) -> Metadata:

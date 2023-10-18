@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import json
 import sys
 
 import pydantic
@@ -84,6 +85,22 @@ def test__data_object__serialize_order() -> None:
     tester = DataclassesTester(z=False, a="foobar", b=0.3)
     serialized = tester._to_dict()
     assert list(serialized.keys()) == ["b", "a", "z", FIELD_ORDER_FIELD]
+
+
+def test__data_object__deserialize_order_extra() -> None:
+    @dataclass(frozen=True, config={"extra": "allow"})
+    class DataclassesTester(DataObject):
+        b: float
+        a: str
+
+    tester = DataclassesTester(a="foobar", b=0.3, foo=1, bar=2)
+    serialized = tester._to_dict()
+    assert list(serialized.keys()) == ["b", "a", "foo", "bar", FIELD_ORDER_FIELD]
+
+    # change source dict key order
+    deserialized = DataclassesTester._from_dict(json.loads(json.dumps(serialized, sort_keys=True)))
+    reserialized = deserialized._to_dict()
+    assert reserialized == serialized
 
 
 def test__data_object__serde_extra_typed_data_object() -> None:
