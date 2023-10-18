@@ -42,6 +42,7 @@ class _AssetType(DataType):
     BINARY = "BINARY"
     POINT_CLOUD = "POINT_CLOUD"
     VIDEO = "VIDEO"
+    AUDIO = "AUDIO"
 
     @staticmethod
     def _data_category() -> str:
