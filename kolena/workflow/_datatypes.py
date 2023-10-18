@@ -42,7 +42,9 @@ from kolena._utils.serde import as_serialized_json
 from kolena._utils.serde import with_serialized_columns
 from kolena._utils.validators import ValidatorConfig
 
+DATA_TYPE_FIELD = "data_type"
 FIELD_ORDER_FIELD = "_field_order"
+RESERVED_FIELDS = {DATA_TYPE_FIELD, FIELD_ORDER_FIELD}
 T = TypeVar("T", bound="DataObject")
 
 
@@ -82,8 +84,6 @@ def _deserialize_typed_dataobject(value: Dict[Any, Any]) -> Any:
     if data_type is None:
         return value
 
-    # 'data_type' is not a real member
-    value.pop(DATA_TYPE_FIELD)
     return data_type._from_dict(value)
 
 
@@ -227,10 +227,10 @@ class DataObject(metaclass=ABCMeta):
             )
 
         items = {f.name: deserialize_field(f, obj_dict.get(f.name, None)) for f in dataclasses.fields(cls) if f.init}
-        field_names = {f.name for f in dataclasses.fields(cls)}
+        field_names = {f.name for f in dataclasses.fields(cls)}.union(RESERVED_FIELDS)
         if _allow_extra(cls):
             for key, val in obj_dict.items():
-                if key not in field_names and key != FIELD_ORDER_FIELD:
+                if key not in field_names:
                     items[key] = _try_deserialize_typed_dataobject(val)
         return cls(**items)
 
@@ -252,11 +252,10 @@ def _deserialize_dataobject(x: Any) -> Any:
         return [_deserialize_dataobject(item) for item in x]
 
     if isinstance(x, dict) and DATA_TYPE_FIELD in x:
-        data = {**x}
-        data_type = data.pop(DATA_TYPE_FIELD)
+        data_type = x[DATA_TYPE_FIELD]
         typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
         if typed_dataobject:
-            return typed_dataobject._from_dict(data)
+            return typed_dataobject._from_dict(x)
 
     return x
 
@@ -267,7 +266,6 @@ class DataType(str, Enum):
         raise NotImplementedError
 
 
-DATA_TYPE_FIELD = "data_type"
 U = TypeVar("U", bound=DataType)
 
 

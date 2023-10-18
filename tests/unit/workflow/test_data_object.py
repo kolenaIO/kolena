@@ -86,6 +86,23 @@ def test__data_object__serialize_order() -> None:
     assert list(serialized.keys()) == ["b", "a", "z", FIELD_ORDER_FIELD]
 
 
+def test__data_object__serde_extra_typed_data_object() -> None:
+    @dataclass(frozen=True, config={"extra": "allow"})
+    class DataclassesTester(DataObject):
+        b: float
+
+    bbox = LabeledBoundingBox(top_left=(1, 1), bottom_right=(10, 10), label="bus", extra=[1, 2, 3])
+    tester = DataclassesTester(b=0.3, x=bbox)
+    serialized = tester._to_dict()
+    assert serialized[FIELD_ORDER_FIELD] == ["b", "x"]
+
+    # verify idempotent
+    deserialized_tester = DataclassesTester._from_dict(serialized)
+    assert deserialized_tester == tester
+    reserialized = deserialized_tester._to_dict()
+    assert reserialized == serialized
+
+
 def test__data_object__extras_allow() -> None:
     @dataclass(frozen=True, config={"extra": "allow"})
     class DataclassesTester(DataObject):
