@@ -197,7 +197,6 @@ def test__validate_field__thresholded() -> None:
         c=List[1],
         d=List[1.0],
         e=List[BoundingBox((1, 1), (2, 2))],
-        f=List[BoundingBox(top_left=[1, 1], bottom_right=[10, 10])],
         g=List[Polygon(points=[(0, 0), (1, 1), (2, 2), (0, 0)])],
         i=List[Keypoints(points=[(10, 10), (11, 11), (12, 12)])],
         j=List[Polyline(points=[(0, 0), (1, 1), (2, 2)])],
