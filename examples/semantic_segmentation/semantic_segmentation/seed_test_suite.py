@@ -77,7 +77,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
     test_suite_name = f"# of people :: {DATASET} [person]"
     complete_test_case = seed_complete_test_case(args)
     stratified_test_cases = seed_stratified_test_cases(complete_test_case, test_suite_name)

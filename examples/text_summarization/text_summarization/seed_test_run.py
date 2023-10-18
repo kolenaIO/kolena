@@ -139,7 +139,7 @@ def seed_test_run(
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     mod = MODEL_MAP[args.model]
     print("loading inference CSV")

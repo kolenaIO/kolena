@@ -50,7 +50,7 @@ def main() -> None:
     ap = ArgumentParser()
     ap.add_argument("test_suite", type=str, help="Name of the test suite to make.")
 
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
 
     run(ap.parse_args())
 
