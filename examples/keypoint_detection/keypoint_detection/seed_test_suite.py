@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 
@@ -50,7 +49,7 @@ def main() -> None:
     ap = ArgumentParser()
     ap.add_argument("test_suite", type=str, help="Name of the test suite to make.")
 
-    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     run(ap.parse_args())
 

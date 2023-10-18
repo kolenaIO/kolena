@@ -49,10 +49,9 @@ def initialize(
 
     1. Directly through the `api_token` keyword argument
     ```python
-    import os
     import kolena
 
-    kolena.initialize(api_token=os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=your_token, verbose=True)
     ```
     2. Populate the `KOLENA_TOKEN` environment variable
     ```bash
