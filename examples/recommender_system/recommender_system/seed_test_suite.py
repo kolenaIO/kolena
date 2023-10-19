@@ -126,7 +126,7 @@ def main(args: Namespace) -> int:
     print(f"created test case genre stratifications in {time.time() - t2:0.3f} seconds")
 
     test_suite = TestSuite(
-        name=f"fr 1:1 :: {DATASET}",
+        name=f"ml-100k :: {DATASET}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )

@@ -11,3 +11,64 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import os
+import sys
+from argparse import ArgumentParser
+from argparse import Namespace
+from typing import List
+
+import pandas as pd
+from recommender_system.evaluator import evaluate_recommender_system
+from recommender_system.workflow import TopKConfiguration
+from recommender_system.workflow import Inference
+from recommender_system.workflow import Model
+from recommender_system.workflow import TestSample
+from recommender_system.workflow import TestSuite
+
+import kolena
+from kolena.workflow import test
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import Keypoints
+
+BUCKET = "kolena-public-datasets"
+DATASET = "movielens"
+
+
+def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
+
+    def infer(test_sample: TestSample) -> Inference:
+        rating = df_results.loc[test_sample.user_id, test_sample.movie_id]
+        return Inference(rating=rating)
+
+    model = Model(f"{model_name} [{DATASET}] :: ml-100k", infer=infer)
+    print(f"Model: {model}")
+
+    configurations = [TopKConfiguration(k=5), TopKConfiguration(k=10)]
+
+    for test_suite_name in test_suite_names:
+        test_suite = TestSuite.load(test_suite_name)
+        print(f"Test Suite: {test_suite}")
+        test(model, test_suite, evaluate_recommender_system, configurations)
+
+
+def main(args: Namespace) -> int:
+    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    for model_name in args.models:
+        seed_test_run(model_name, args.test_suites)
+    return 0
+
+
+if __name__ == "__main__":
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--models",
+        default=["MF", "PMF", "BPF"],
+        help="Name(s) of model(s) in directory to test",
+    )
+    ap.add_argument(
+        "--test_suites",
+        default=[f"fr 1:1 :: {DATASET}"],
+        help="Name(s) of test suite(s) to test.",
+    )
+    sys.exit(main(ap.parse_args()))
