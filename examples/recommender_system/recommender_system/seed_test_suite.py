@@ -78,6 +78,8 @@ def main(args: Namespace) -> int:
         for record in df_ratings.itertuples(index=False)
     ]
 
+    print(f"prepping {len(test_samples_and_ground_truths)} test samples")
+
     t1 = time.time()
     complete_test_case = TestCase(
         name=f"ml-100k complete :: {DATASET}",
@@ -111,12 +113,17 @@ def main(args: Namespace) -> int:
         "(no genres listed)",
     ]
 
+    genre_ts_gt_splits = {item: [] for item in genre_subsets}
+
+    for ts, gt in test_samples_and_ground_truths:
+        for genre in ts.metadata["genres"]:
+            genre_ts_gt_splits[genre].append((ts, gt))
+
     t2 = time.time()
-    test_cases: List[TestCase] = []
-    for genre in genre_subsets:
-        test_case = create_test_case_for_genre(test_samples_and_ground_truths, genre)
-        test_cases.append(test_case)
-        print(f"created test case '{test_case.name}' in {time.time() - t2:0.3f} seconds")
+    test_cases = TestCase.init_many(
+        [(f"genre :: {genre} :: {DATASET}", test_samples) for genre, test_samples in genre_ts_gt_splits.items()]
+    )
+    print(f"created test case genre stratifications in {time.time() - t2:0.3f} seconds")
 
     test_suite = TestSuite(
         name=f"fr 1:1 :: {DATASET}",
