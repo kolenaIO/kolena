@@ -14,7 +14,7 @@
 from io import StringIO
 
 import pandas as pd
-from pandas._testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox

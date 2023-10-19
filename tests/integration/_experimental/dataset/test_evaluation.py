@@ -16,7 +16,7 @@ from typing import Optional
 
 import pandas as pd
 import pytest
-from pandas._testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 from pydantic.dataclasses import dataclass
 
 from kolena._experimental.dataset import fetch_evaluation_results
