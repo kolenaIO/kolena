@@ -129,7 +129,7 @@ def _upload_inferences(model: str, df: pd.DataFrame) -> None:
 def _upload_metrics(
     df: pd.DataFrame,
     all_metrics: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame]],
-) -> None:
+) -> int:
     df_metrics_by_eval = []
     for eval_config, df_metrics in all_metrics:
         df_metrics_eval = _to_serialized_dataframe(df_metrics, column=COL_METRICS)
@@ -148,6 +148,7 @@ def _upload_metrics(
     request = UploadMetricsRequest(uuid=load_uuid)
     response = krequests.post(EvaluationPath.UPLOAD_METRICS, json=asdict(request))
     krequests.raise_for_status(response)
+    return len(df_metrics)
 
 
 def fetch_evaluation_results(
@@ -220,5 +221,5 @@ def test(
             metrics.append(single_metrics)
             log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
 
-        _upload_metrics(df_data, list(zip(eval_configs, metrics)))
-        log.info("evaluation results uploaded")
+        n_uploaded_metrics = _upload_metrics(df_data, list(zip(eval_configs, metrics)))
+        log.info(f"uploaded {n_uploaded_metrics} evaluation results")

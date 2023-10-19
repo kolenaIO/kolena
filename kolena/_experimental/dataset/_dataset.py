@@ -144,7 +144,7 @@ def iter_dataset(
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
-    Get an interator over datapoints in the dataset.
+    Get an iterator over datapoints in the dataset.
     """
     for df_batch in _iter_dataset_raw(name, batch_size):
         yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
