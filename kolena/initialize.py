@@ -32,8 +32,8 @@ from kolena.errors import MissingTokenError
 
 
 def initialize(
-    api_token: Optional[str] = None,
     *args: Any,
+    api_token: Optional[str] = None,
     verbose: bool = False,
     proxies: Optional[Dict[str, str]] = None,
     **kwargs: Any,
@@ -47,12 +47,11 @@ def initialize(
     make it available through one of the following options before initializing:
 
 
-    1. Directly through the optional `api_token` argument
+    1. Directly through the `api_token` keyword argument
     ```python
-    import os
     import kolena
 
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(api_token=your_token, verbose=True)
     ```
     2. Populate the `KOLENA_TOKEN` environment variable
     ```bash
@@ -96,26 +95,28 @@ def initialize(
     :raises InputValidationError: The provided combination or number of args is not valid.
     :raises MissingTokenError: An API token could not be found.
     """
-    used_deprecated_signature = False
+    used_deprecated_signature = "entity" in kwargs
 
-    if len(args) > 1:
+    if len(args) > 2:
         raise InputValidationError(
-            f"Too many args. Expected 0 or 1 but got {len(args)} Check docs for usage.",
-        )
-    elif len(args) == 1:
-        # overwrite the originally passed api_token since we are supporting backward compatability with entity
-        api_token = args[0]
-    if len(args) == 1 or "entity" in kwargs:
-        used_deprecated_signature = True
-        warnings.warn(
-            "The signature initialize(entity, token) is deprecated. Please update to initialize(token).",
-            category=DeprecationWarning,
-            stacklevel=2,
+            f"Too many args. Expected 0..2 but got {len(args)} Check docs for usage.",
         )
 
     if not api_token:
-        # Attempt fallback options for retrieving api token
-        api_token = _find_token()
+        if len(args) == 1:
+            api_token = args[0]
+        elif len(args) == 2:
+            api_token = args[1]
+            used_deprecated_signature = True
+        else:
+            api_token = _find_token()
+
+    if used_deprecated_signature:
+        warnings.warn(
+            "The signature initialize(entity, token) is deprecated.",
+            category=DeprecationWarning,
+            stacklevel=2,
+        )
 
     init_response = state.get_token(api_token, proxies=proxies)
     derived_telemetry = init_response.tenant_telemetry

@@ -49,6 +49,7 @@ class DatapointType(str, Enum):
     POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
     TEXT = "DATAPOINT/TEXT"
     VIDEO = "DATAPOINT/VIDEO"
+    AUDIO = "DATAPOINT/AUDIO"
 
 
 _DATAPOINT_TYPE_MAP = {
@@ -56,6 +57,7 @@ _DATAPOINT_TYPE_MAP = {
     "application/pdf": DatapointType.DOCUMENT.value,
     "text": DatapointType.DOCUMENT.value,
     "video": DatapointType.VIDEO.value,
+    "audio": DatapointType.AUDIO.value,
 }
 
 
