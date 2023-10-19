@@ -101,7 +101,7 @@ class DataLoader:
 
 class ActivationMapUploader:
     def __init__(self):
-        self.pool = ThreadPoolExecutor(max_workers=32)
+        self.pool = ThreadPoolExecutor(max_workers=1)
         self.futures = {}
 
     def wait(self) -> None:
