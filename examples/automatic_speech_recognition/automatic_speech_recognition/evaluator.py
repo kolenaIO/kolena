@@ -298,6 +298,22 @@ def compute_test_case_plots(
             (0, 35, 7),
             metadata=True,
         ),
+        compute_metric_vs_metric_plot(
+            "tempo",
+            "word_error_rate",
+            test_samples,
+            test_case_metrics,
+            (0, 6, 14),
+            metadata=True,
+        ),
+        compute_metric_vs_metric_plot(
+            "tempo",
+            "character_error_rate",
+            test_samples,
+            test_case_metrics,
+            (0, 6, 14),
+            metadata=True,
+        ),
     ]
 
 
