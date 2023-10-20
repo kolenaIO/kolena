@@ -9,6 +9,7 @@ from jiwer import cer, process_words
 import numpy as np
 import langid
 import langcodes
+from numwords_to_nums.numwords_to_nums import NumWordsToNum
 
 from workflow import GroundTruth
 from workflow import Inference
@@ -66,6 +67,11 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
 
     gt = re.sub(r'[^\w\s]', '', gt.transcription.label.lower())
     inf = re.sub(r'[^\w\s]', '', inf.transcription.label.lower())
+
+    ## This is to work around the bug in NumWordstoNum()
+    num = NumWordsToNum()
+    gt = 'oh'.join([num.numerical_words_to_numbers('th'.join([num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r'(?<=[a-zA-Z])th', y)]), convert_operator=True) for y in gt.split('oh')])
+    inf = 'oh'.join([num.numerical_words_to_numbers('th'.join([num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r'(?<=[a-zA-Z])th', y)]), convert_operator=True) for y in inf.split('oh')])
 
     wer_metrics = process_words(gt, inf)
     word_errors = wer_metrics.substitutions + wer_metrics.deletions + wer_metrics.insertions

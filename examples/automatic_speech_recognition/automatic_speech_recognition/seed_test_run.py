@@ -21,17 +21,18 @@ DATASET = 'LibriSpeech'
 WORKFLOW = "Speech Recognition"
 MODEL_MAP: Dict[str, Tuple[str, str]] = {
     "whisper-1-default": ("whisper-1-default", f"whisper-1-default ({WORKFLOW})"),
+    "whisper-1-translate": ("whisper-1-translate", f"whisper-1-translate ({WORKFLOW})"),
     "wav2vec2-base-960h": ("wav2vec2-base-960h", f"wav2vec2-base-960h ({WORKFLOW})"),
 }
 
 TEST_SUITE_NAMES = [
-    # f"{DATASET} :: word count",
-    # f"{DATASET} :: audio duration",
-    # f"{DATASET} :: speaker sex",
-    # f"{DATASET} :: longest word length",
-    # f"{DATASET} :: max pitch",
-    # f"{DATASET} :: energy",
-    # f"{DATASET} :: zero crossing rate",
+    f"{DATASET} :: word count",
+    f"{DATASET} :: audio duration",
+    f"{DATASET} :: speaker sex",
+    f"{DATASET} :: longest word length",
+    f"{DATASET} :: max pitch",
+    f"{DATASET} :: energy",
+    f"{DATASET} :: zero crossing rate",
     f"{DATASET} :: tempo (words per second)",
 ]
 
@@ -50,11 +51,17 @@ COMMON_METADATA = {
 
 MODEL_A = {
     "model family": "whisper",
-    "model name": "whisper-1",
+    "model name": "whisper-1-default",
     "description": "OpenAI's premier speech-to-text model.",
 }
 
 MODEL_B = {
+    "model family": "whisper",
+    "model name": "whisper-1-translate",
+    "description": "OpenAI's premier speech-to-text model w/ English translations.",
+}
+
+MODEL_C = {
     "model family": "wav2vec2",
     "model name": "wav2vec2-base-960h",
     "description": "Facebook's Wav2Vec2 model trained on 960h of LibriSpeech audio samples.",
@@ -62,7 +69,8 @@ MODEL_B = {
 
 MODEL_METADATA: Dict[str, Dict[str, str]] = {
     "whisper-1-default": MODEL_A,
-    "wav2vec2-base-960h": MODEL_B,
+    "whisper-1-translate": MODEL_B,
+    "wav2vec2-base-960h": MODEL_C,
 }
 
 
@@ -104,6 +112,7 @@ def main(args: Namespace) -> None:
         "locator",
         "text",
         "inference_whisper-1-default",
+        "inference_whisper-1-translate",
         "inference_wav2vec2-base-960h",
     ]
     df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest)
