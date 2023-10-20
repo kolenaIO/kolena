@@ -99,36 +99,7 @@ class DataLoader:
         return [result_masks_by_locator[ts.locator] for ts, _, _ in batch]
 
 
-class ActivationMapUploader:
-    def __init__(self):
-        self.pool = ThreadPoolExecutor(max_workers=1)
-        self.futures = {}
-
-    def wait(self) -> None:
-        if len(self.futures) == 0:
-            return
-
-        print(f"waiting for uploads for {len(self.futures)} activation maps")
-        successes, failures = wait(list(self.futures.values()))
-
-        if len(failures) != 0:
-            exceptions = ", ".join([str(failure.exception()) for failure in failures])
-            raise RuntimeError(f"failed to load {len(failures)} samples: {exceptions}")
-        elif len(successes) != len(self.futures):
-            raise RuntimeError(f"missing uploads for {len(self.futures) - len(successes)} activation maps")
-        else:
-            print(f"completed upload of {len(self.futures)} activation maps")
-
-    def submit(self, prob_array_locator: str, activation_map_locator: str) -> None:
-        if activation_map_locator in self.futures.keys():
-            # already being processed, skip
-            return
-        future = self.pool.submit(
-            functools.partial(self.process_activation_map, prob_array_locator, activation_map_locator),
-        )
-        self.futures[activation_map_locator] = future
-
-    def process_activation_map(self, prob_array_locator: str, activation_map_locator: str) -> None:
-        prob_array = download_binary_array(prob_array_locator)
-        activation_map = create_bitmap(prob_array)
-        upload_image_buffer(activation_map_locator, activation_map)
+def process_activation_map(prob_array_locator: str, activation_map_locator: str) -> None:
+    prob_array = download_binary_array(prob_array_locator)
+    activation_map = create_bitmap(prob_array)
+    upload_image_buffer(activation_map_locator, activation_map)
