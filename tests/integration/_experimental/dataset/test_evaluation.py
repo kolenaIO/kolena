@@ -42,34 +42,34 @@ class ThresholdConfiguration(EvaluatorConfiguration):
         return "Max Confidence"
 
 
-def get_dp(n: int = 20) -> pd.DataFrame:
+def get_df_dp(n: int = 20) -> pd.DataFrame:
     records = [
         dict(
-            dp_id=i,
+            user_dp_id=i,
             locator=fake_locator(i, "datapoints"),
             width=i + 500,
             height=i + 400,
             city=random.choice(["new york", "waterloo"]),
         )
-        for i in range(20)
+        for i in range(n)
     ]
     return pd.DataFrame(records)
 
 
 def get_df_inf(n: int = 20) -> pd.DataFrame:
-    records = [dict(dp_id=i, softmax_bitmap=fake_locator(i, "softmax_bitmap")) for i in range(n)]
+    records = [dict(user_dp_id=i, softmax_bitmap=fake_locator(i, "softmax_bitmap")) for i in range(n)]
     return pd.DataFrame(records)
 
 
 def get_df_metrics(n: int = 20) -> pd.DataFrame:
-    records = [dict(dp_id=i, score=i) for i in range(n)]
+    records = [dict(user_dp_id=i, score=i) for i in range(n)]
     return pd.DataFrame(records)
 
 
 def get_infer_func(
     df_inf: pd.DataFrame,
     columns: List[str],
-    id_col: str = "dp_id",
+    id_col: str = "user_dp_id",
     how: str = "left",
 ) -> INFER_FUNC_TYPE:
     def infer_func(datapoints: pd.DataFrame) -> pd.DataFrame:
@@ -81,7 +81,7 @@ def get_infer_func(
 def get_eval_func(
     df_metrics: pd.DataFrame,
     columns: List[str],
-    id_col: str = "dp_id",
+    id_col: str = "user_dp_id",
     how: str = "left",
 ) -> EVAL_FUNC_TYPE:
     def eval_func(
@@ -97,8 +97,8 @@ def get_eval_func(
 def test__test() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test")
     model_name = with_test_prefix(f"{__file__}::test__test")
-    df_dp = get_dp()
-    dp_columns = ["dp_id", "locator", "width", "height", "city"]
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
     register_dataset(dataset_name, df_dp[:10][dp_columns])
 
     df_inf = get_df_inf()
