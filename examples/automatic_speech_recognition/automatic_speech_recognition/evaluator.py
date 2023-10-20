@@ -1,16 +1,29 @@
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+import difflib
+import re
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import re
-import difflib
-from jiwer import cer, process_words
-import numpy as np
-import langid
 import langcodes
+import langid
+import numpy as np
+from jiwer import cer
+from jiwer import process_words
 from numwords_to_nums.numwords_to_nums import NumWordsToNum
-
 from workflow import GroundTruth
 from workflow import Inference
 from workflow import TestCase
@@ -27,51 +40,71 @@ from kolena.workflow import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
 
-def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
 
+def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
     def generate_diff_word_level(reference: str, candidate: str, mode: str):
         matcher = difflib.SequenceMatcher(None, reference.split(), candidate.split())
         fp_count = 0
         fn_count = 0
-        
+
         output = []
         for opcode, a0, a1, b0, b1 in matcher.get_opcodes():
-            if opcode == 'equal':
+            if opcode == "equal":
                 output.append(" ".join(matcher.a[a0:a1]))
-                
-            elif opcode == 'insert':
+
+            elif opcode == "insert":
                 fn_count += 1
                 if mode == "fn":
-                    output.append(f"<fn>" + " ".join(matcher.b[b0:b1]) + f"</fn>")
+                    output.append("<fn>" + " ".join(matcher.b[b0:b1]) + "</fn>")
                 else:
                     output.append(" ".join(matcher.b[b0:b1]))
 
-            elif opcode == 'delete':
+            elif opcode == "delete":
                 fp_count += 1
                 if mode == "fp":
-                    output.append(f"<fp>" + " ".join(matcher.a[a0:a1]) + f"</fp>")
+                    output.append("<fp>" + " ".join(matcher.a[a0:a1]) + "</fp>")
                 else:
                     output.append(" ".join(matcher.a[a0:a1]))
 
-            elif opcode == 'replace':
+            elif opcode == "replace":
                 fn_count += 1
                 fp_count += 1
                 if mode == "fp":
-                    output.append(f"<fp>" + " ".join(matcher.b[b0:b1]) + f"</fp>")
+                    output.append("<fp>" + " ".join(matcher.b[b0:b1]) + "</fp>")
                 elif mode == "fn":
-                    output.append(f"<fn>" + " ".join(matcher.a[a0:a1]) + f"</fn>")
+                    output.append("<fn>" + " ".join(matcher.a[a0:a1]) + "</fn>")
                 else:
                     output.append(" ".join(matcher.b[b0:b1]))
-        
+
         return " ".join(output), fn_count, fp_count
 
-    gt = re.sub(r'[^\w\s]', '', gt.transcription.label.lower())
-    inf = re.sub(r'[^\w\s]', '', inf.transcription.label.lower())
+    gt = re.sub(r"[^\w\s]", "", gt.transcription.label.lower())
+    inf = re.sub(r"[^\w\s]", "", inf.transcription.label.lower())
 
-    ## This is to work around the bug in NumWordstoNum()
+    # This is to work around the bug in NumWordstoNum()
     num = NumWordsToNum()
-    gt = 'oh'.join([num.numerical_words_to_numbers('th'.join([num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r'(?<=[a-zA-Z])th', y)]), convert_operator=True) for y in gt.split('oh')])
-    inf = 'oh'.join([num.numerical_words_to_numbers('th'.join([num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r'(?<=[a-zA-Z])th', y)]), convert_operator=True) for y in inf.split('oh')])
+    gt = "oh".join(
+        [
+            num.numerical_words_to_numbers(
+                "th".join(
+                    [num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r"(?<=[a-zA-Z])th", y)],
+                ),
+                convert_operator=True,
+            )
+            for y in gt.split("oh")
+        ],
+    )
+    inf = "oh".join(
+        [
+            num.numerical_words_to_numbers(
+                "th".join(
+                    [num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r"(?<=[a-zA-Z])th", y)],
+                ),
+                convert_operator=True,
+            )
+            for y in inf.split("oh")
+        ],
+    )
 
     wer_metrics = process_words(gt, inf)
     word_errors = wer_metrics.substitutions + wer_metrics.deletions + wer_metrics.insertions
@@ -128,11 +161,11 @@ def compute_aggregate_metrics(
         sum_word_information_preserved += metric.word_information_preserved
         sum_character_error_rate += metric.character_error_rate
         n_samples += 1
-    
+
     for gt in ground_truths:
-        sum_wc_gt += len(gt.transcription.label.split(' '))
+        sum_wc_gt += len(gt.transcription.label.split(" "))
     for inf in inferences:
-        sum_wc_inf += len(inf.transcription.label.split(' '))
+        sum_wc_inf += len(inf.transcription.label.split(" "))
 
     return TestCaseMetric(
         n_failures=n_failures,
@@ -143,8 +176,8 @@ def compute_aggregate_metrics(
         avg_word_information_lost=sum_word_information_lost / n_samples,
         avg_word_information_preserved=sum_word_information_preserved / n_samples,
         avg_character_error_rate=sum_character_error_rate / n_samples,
-        avg_wc_gt=sum_wc_gt/n_samples,
-        avg_wc_inf=sum_wc_inf/n_samples,
+        avg_wc_gt=sum_wc_gt / n_samples,
+        avg_wc_inf=sum_wc_inf / n_samples,
     )
 
 
@@ -183,7 +216,6 @@ def compute_metric_vs_metric_plot(
     y_logarithmic: bool = False,
     metadata: bool = False,
 ) -> CurvePlot:
-    
     y_values = [getattr(m, y_metric) for m in y_metrics]
     if metadata:
         x_values = [m.metadata[x_metric] for m in x_metrics]
@@ -214,20 +246,39 @@ def compute_metric_vs_metric_plot(
     )
 
 
-def compute_plots(metrics: List[TestSampleMetric], test_samples: List[TestSample], infs: List[Inference]) -> List[Plot]:
-    max_word_error = 0
-    for metric in metrics:
-        if metric.word_errors > max_word_error:
-            max_word_error = metric.word_errors
+def compute_test_case_plots(
+    complete_metrics: List[TestSampleMetric],
+    test_case_metrics: List[TestSampleMetric],
+    test_samples: List[TestSample],
+) -> List[Plot]:
+    max_word_error = max([metric.word_errors for metric in complete_metrics])
 
     return [
-        compute_score_distribution_plot("word_errors", metrics, (0, max_word_error + 1, int(max_word_error)), logarithmic_y=True),
-        compute_score_distribution_plot("word_error_rate", metrics, (0, 1, 51), logarithmic_y=True),
-        compute_score_distribution_plot("character_error_rate", metrics, (0, 1, 51), logarithmic_y=True),
-        compute_score_distribution_plot("word_information_lost", metrics, (0, 1, 51), logarithmic_y=True),
-
-        compute_metric_vs_metric_plot("duration_seconds", "word_error_rate", test_samples, metrics, (0, 35, 7), metadata=True),
-        compute_metric_vs_metric_plot("duration_seconds", "character_error_rate", test_samples, metrics, (0, 35, 7), metadata=True),
+        compute_score_distribution_plot(
+            "word_errors",
+            test_case_metrics,
+            (0, max_word_error + 1, int(max_word_error)),
+            logarithmic_y=True,
+        ),
+        compute_score_distribution_plot("word_error_rate", test_case_metrics, (0, 1, 51), logarithmic_y=True),
+        compute_score_distribution_plot("character_error_rate", test_case_metrics, (0, 1, 51), logarithmic_y=True),
+        compute_score_distribution_plot("word_information_lost", test_case_metrics, (0, 1, 51), logarithmic_y=True),
+        compute_metric_vs_metric_plot(
+            "duration_seconds",
+            "word_error_rate",
+            test_samples,
+            test_case_metrics,
+            (0, 35, 7),
+            metadata=True,
+        ),
+        compute_metric_vs_metric_plot(
+            "duration_seconds",
+            "character_error_rate",
+            test_samples,
+            test_case_metrics,
+            (0, 35, 7),
+            metadata=True,
+        ),
     ]
 
 
@@ -236,10 +287,6 @@ def compute_test_suite_metrics(
     inferences: List[Inference],
     metrics: List[Tuple[TestCase, TestCaseMetric]],
 ) -> TestSuiteMetric:
-    
-    n_samples = 0
-    n_failures = 0
-
     # for _, metric in metrics:
     #     if metric.word_errors != 0:
     #         n_failures += 1
@@ -280,12 +327,12 @@ def evaluate_audio_recognition(
         all_test_case_metrics.append((test_case, test_case_metrics))
 
         print(f"computing plots for test case '{test_case.name}'...")
-        test_case_plots = compute_plots(tc_ts_metrics, tc_test_samples, tc_infs)
+        test_case_plots = compute_test_case_plots(test_sample_metrics, tc_ts_metrics, tc_test_samples)
         all_test_case_plots.append((test_case, test_case_plots))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
         metrics_test_suite=compute_test_suite_metrics(test_samples, inferences, all_test_case_metrics),
-        plots_test_case=all_test_case_plots
+        plots_test_case=all_test_case_plots,
     )

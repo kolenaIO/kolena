@@ -1,22 +1,34 @@
-import os
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from tqdm import tqdm
 from workflow import GroundTruth
 from workflow import TestCase
 from workflow import TestSample
 from workflow import TestSuite
-from tqdm import tqdm
-
 
 import kolena
 from kolena.workflow.annotation import ClassificationLabel
 
-BUCKET = 'kolena-public-datasets'
-DATASET = 'LibriSpeech'
+BUCKET = "kolena-public-datasets"
+DATASET = "LibriSpeech"
+
 
 def seed_test_suite_word_count(
     test_suite_name: str,
@@ -30,7 +42,7 @@ def seed_test_suite_word_count(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['word_count'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["word_count"])]
 
         new_ts = TestCase(
             f"transcription word count :: {name} :: {DATASET}",
@@ -46,6 +58,7 @@ def seed_test_suite_word_count(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_duration(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -58,7 +71,7 @@ def seed_test_suite_duration(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['duration_seconds'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["duration_seconds"])]
 
         new_ts = TestCase(
             f"transcription duration (seconds) :: {name} :: {DATASET}",
@@ -74,18 +87,19 @@ def seed_test_suite_duration(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_speaker_sex(
     test_suite_name: str,
     complete_test_case: TestCase,
 ) -> TestSuite:
     test_case_name_to_decision_logic_map = {
-        "male": lambda x: x == ' M ',
-        "female": lambda x: x == ' F ',
+        "male": lambda x: x == " M ",
+        "female": lambda x: x == " F ",
     }
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['speaker_sex'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["speaker_sex"])]
 
         new_ts = TestCase(
             f"speaker sex:: {name} :: {DATASET}",
@@ -101,6 +115,7 @@ def seed_test_suite_speaker_sex(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_longest_word_len(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -113,7 +128,7 @@ def seed_test_suite_longest_word_len(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['longest_word_len'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["longest_word_len"])]
 
         new_ts = TestCase(
             f"longest word length :: {name} :: {DATASET}",
@@ -129,6 +144,7 @@ def seed_test_suite_longest_word_len(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_max_pitch(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -142,7 +158,7 @@ def seed_test_suite_max_pitch(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['max_pitch'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["max_pitch"])]
 
         new_ts = TestCase(
             f"max pitch :: {name} :: {DATASET}",
@@ -158,6 +174,7 @@ def seed_test_suite_max_pitch(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_energy(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -171,7 +188,7 @@ def seed_test_suite_energy(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['energy'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["energy"])]
 
         new_ts = TestCase(
             f"energy :: {name} :: {DATASET}",
@@ -187,6 +204,7 @@ def seed_test_suite_energy(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_zero_crossing_rate(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -200,7 +218,9 @@ def seed_test_suite_zero_crossing_rate(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['zero_crossing_rate'])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["zero_crossing_rate"])
+        ]
 
         new_ts = TestCase(
             f"zero crossing rate :: {name} :: {DATASET}",
@@ -216,6 +236,7 @@ def seed_test_suite_zero_crossing_rate(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_test_suite_tempo(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -228,7 +249,7 @@ def seed_test_suite_tempo(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['tempo'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["tempo"])]
 
         new_ts = TestCase(
             f"tempo (words per second) :: {name} :: {DATASET}",
@@ -244,32 +265,45 @@ def seed_test_suite_tempo(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_complete_test_case(args: Namespace) -> TestCase:
     df = pd.read_csv(args.dataset_csv)
     df = df.where(pd.notnull(df), None)  # read missing cells as None
     df.columns = df.columns.str.replace(r"(\s|\.)+", "_", regex=True)  # sanitize column names to use underscores
 
-    required_columns = {'id', 'locator', 'text', 'inference_whisper_default',
-                        'inference_wav2vec-base-960h', 'speaker_sex', 'duration_seconds',
-                        'max_pitch', 'energy', 'zero_crossing_rate', 'word_count',
-                        'longest_word_len', 'tempo'}
+    required_columns = {
+        "id",
+        "locator",
+        "text",
+        "inference_whisper_default",
+        "inference_wav2vec-base-960h",
+        "speaker_sex",
+        "duration_seconds",
+        "max_pitch",
+        "energy",
+        "zero_crossing_rate",
+        "word_count",
+        "longest_word_len",
+        "tempo",
+    }
     assert all(required_column in set(df.columns) for required_column in required_columns)
 
     test_samples = []
     for record in tqdm(df.itertuples(index=False), total=len(df)):
         test_sample = TestSample(
             locator=f"s3://{BUCKET}/{DATASET}/{record.locator}",
-            metadata={"file_id": record.id,
-                      "text": record.text,
-                      "speaker_sex": record.speaker_sex,
-                      "duration_seconds": record.duration_seconds,
-                      "max_pitch": record.max_pitch,
-                      "energy": record.energy,
-                      "zero_crossing_rate": record.zero_crossing_rate,
-                      "word_count": record.word_count,
-                      "longest_word_len": record.longest_word_len,
-                      "tempo": record.tempo,
-                      }
+            metadata={
+                "file_id": record.id,
+                "text": record.text,
+                "speaker_sex": record.speaker_sex,
+                "duration_seconds": record.duration_seconds,
+                "max_pitch": record.max_pitch,
+                "energy": record.energy,
+                "zero_crossing_rate": record.zero_crossing_rate,
+                "word_count": record.word_count,
+                "longest_word_len": record.longest_word_len,
+                "tempo": record.tempo,
+            },
         )
         ground_truth = GroundTruth(transcription=ClassificationLabel(record.text))
         test_samples.append((test_sample, ground_truth))
@@ -293,7 +327,7 @@ def seed_test_suites(
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ['KOLENA_TOKEN'], verbose=True)
+    kolena.initialize(verbose=True)
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
