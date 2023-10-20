@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
+from typing import List
 from typing import Optional
 
 import pandas as pd
@@ -23,6 +24,8 @@ from kolena._experimental.dataset import fetch_evaluation_results
 from kolena._experimental.dataset import fetch_inferences
 from kolena._experimental.dataset import register_dataset
 from kolena._experimental.dataset import test
+from kolena._experimental.dataset._evaluation import EVAL_FUNC_TYPE
+from kolena._experimental.dataset._evaluation import INFER_FUNC_TYPE
 from kolena.errors import NotFoundError
 from kolena.workflow import EvaluatorConfiguration
 from tests.integration.helper import fake_locator
@@ -39,34 +42,10 @@ class ThresholdConfiguration(EvaluatorConfiguration):
         return "Max Confidence"
 
 
-def test__test() -> None:
-    def get_df_inf() -> pd.DataFrame:
-        record = [dict(softmax_bitmap=fake_locator(i, "softmax_bitmap")) for i in range(10)]
-        columns = ["softmax_bitmap"]
-        return pd.DataFrame(record, columns=columns)
-
-    def get_df_metrics() -> pd.DataFrame:
-        record = [dict(score=i) for i in range(10)]
-        columns = ["score"]
-        return pd.DataFrame(record, columns=columns)
-
-    df_inf = get_df_inf()
-    df_metrics = get_df_metrics()
-
-    def infer_func(datapoints: pd.DataFrame) -> pd.DataFrame:
-        return df_inf
-
-    def eval_func(
-        datapoints: pd.DataFrame,
-        inferences: pd.DataFrame,
-        eval_config: ThresholdConfiguration,
-    ) -> pd.DataFrame:
-        return df_metrics
-
-    dataset_name = with_test_prefix(f"{__file__}::test__fetch_inferences__not_exist")
-    model_name = with_test_prefix(f"{__file__}::test__fetch_inferences__not_exist")
-    datapoints = [
+def get_dp(n: int = 20) -> pd.DataFrame:
+    records = [
         dict(
+            dp_id=i,
             locator=fake_locator(i, "datapoints"),
             width=i + 500,
             height=i + 400,
@@ -74,28 +53,88 @@ def test__test() -> None:
         )
         for i in range(20)
     ]
-    columns = ["locator", "width", "height", "city", "bboxes"]
-    register_dataset(dataset_name, pd.DataFrame(datapoints[:10], columns=columns))
+    return pd.DataFrame(records)
 
+
+def get_df_inf(n: int = 20) -> pd.DataFrame:
+    records = [dict(dp_id=i, softmax_bitmap=fake_locator(i, "softmax_bitmap")) for i in range(n)]
+    return pd.DataFrame(records)
+
+
+def get_df_metrics(n: int = 20) -> pd.DataFrame:
+    records = [dict(dp_id=i, score=i) for i in range(n)]
+    return pd.DataFrame(records)
+
+
+def get_infer_func(
+    df_inf: pd.DataFrame,
+    columns: List[str],
+    id_col: str = "dp_id",
+    how: str = "left",
+) -> INFER_FUNC_TYPE:
+    def infer_func(datapoints: pd.DataFrame) -> pd.DataFrame:
+        return datapoints.set_index(id_col).join(df_inf.set_index(id_col), how=how).reset_index()[columns]
+
+    return infer_func
+
+
+def get_eval_func(
+    df_metrics: pd.DataFrame,
+    columns: List[str],
+    id_col: str = "dp_id",
+    how: str = "left",
+) -> EVAL_FUNC_TYPE:
+    def eval_func(
+        datapoints: pd.DataFrame,
+        inferences: pd.DataFrame,
+        eval_config: ThresholdConfiguration,
+    ) -> pd.DataFrame:
+        return datapoints.set_index(id_col).join(df_metrics.set_index(id_col), how=how).reset_index()[columns]
+
+    return eval_func
+
+
+def test__test() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test")
+    model_name = with_test_prefix(f"{__file__}::test__test")
+    df_dp = get_dp()
+    dp_columns = ["dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[:10][dp_columns])
+
+    df_inf = get_df_inf()
+    df_metrics = get_df_metrics()
+    inf_columns = ["softmax_bitmap"]
+    metrics_columns = ["score"]
+
+    eval_configs = [
+        ThresholdConfiguration(
+            threshold=0.3,
+        ),
+        ThresholdConfiguration(
+            threshold=0.6,
+        ),
+    ]
     test(
         dataset_name,
         model_name,
-        infer=infer_func,
-        eval=eval_func,
-        eval_configs=[
-            ThresholdConfiguration(
-                threshold=0.3,
-            ),
-            ThresholdConfiguration(
-                threshold=0.6,
-            ),
-        ],
+        infer=get_infer_func(df_inf, inf_columns),
+        eval=get_eval_func(df_metrics, metrics_columns),
+        eval_configs=eval_configs,
     )
+
     df_by_eval = fetch_evaluation_results(dataset_name, model_name)
     assert len(df_by_eval) == 2
-    # TODO: figure out the expected
-    expected = pd.DataFrame(datapoints[:10], columns=columns)
-    assert_frame_equal(df_by_eval[0], expected)
+    assert sorted([cfg for cfg, *_ in df_by_eval], key=lambda x: x.get("threshold")) == sorted(
+        [dict(cfg._to_dict()) for cfg in eval_configs],
+        key=lambda x: x.get("threshold"),
+    )
+    expected_df_dp = df_dp[:10][dp_columns]
+    expected_df_inf = df_inf[:10][inf_columns]
+    expected_df_metrics = df_metrics[:10][metrics_columns]
+    for df_eval in df_by_eval:
+        assert_frame_equal(df_eval[1][dp_columns], expected_df_dp)
+        assert_frame_equal(df_eval[2], expected_df_inf)
+        assert_frame_equal(df_eval[3], expected_df_metrics)
 
 
 def test__fetch_inferences__not_exist() -> None:
