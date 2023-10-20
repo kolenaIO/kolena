@@ -47,6 +47,12 @@ class TestSampleMetric(MetricsTestSample):
 
     fn_count: int
     fp_count: int
+    ins_count: int
+    del_count: int
+    sub_count: int
+
+    FP = List[ClassificationLabel]
+    FN = List[ClassificationLabel]
 
     language: str
 

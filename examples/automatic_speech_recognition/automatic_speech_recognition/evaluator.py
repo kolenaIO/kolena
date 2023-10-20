@@ -39,6 +39,7 @@ from kolena.workflow import Histogram
 from kolena.workflow import Plot
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
+from kolena.workflow.annotation import ClassificationLabel
 
 
 def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
@@ -46,37 +47,49 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         matcher = difflib.SequenceMatcher(None, reference.split(), candidate.split())
         fp_count = 0
         fn_count = 0
-
+        ins_count = 0
+        sub_count = 0
+        del_count = 0
+        fp_list = []
+        fn_list = []
+        
         output = []
         for opcode, a0, a1, b0, b1 in matcher.get_opcodes():
             if opcode == "equal":
                 output.append(" ".join(matcher.a[a0:a1]))
-
-            elif opcode == "insert":
-                fn_count += 1
-                if mode == "fn":
-                    output.append("<fn>" + " ".join(matcher.b[b0:b1]) + "</fn>")
+                
+            elif opcode == 'insert':
+                fp_count += len(matcher.b[b0:b1])
+                ins_count += len(matcher.b[b0:b1])
+                fp_list.append(matcher.b[b0:b1])
+                if mode == "fp":
+                    output.append(f"<fp>" + " ".join(matcher.b[b0:b1]) + f"</fp>")
                 else:
                     output.append(" ".join(matcher.b[b0:b1]))
 
-            elif opcode == "delete":
-                fp_count += 1
-                if mode == "fp":
-                    output.append("<fp>" + " ".join(matcher.a[a0:a1]) + "</fp>")
+            elif opcode == 'delete':
+                fn_count += len(matcher.a[a0:a1])
+                del_count += len(matcher.a[a0:a1])
+                fn_list.append(matcher.a[a0:a1])
+                if mode == "fn":
+                    output.append(f"<fn>" + " ".join(matcher.a[a0:a1]) + f"</fn>")
                 else:
                     output.append(" ".join(matcher.a[a0:a1]))
 
             elif opcode == "replace":
-                fn_count += 1
-                fp_count += 1
+                fn_count += len(matcher.a[a0:a1])
+                fp_count += len(matcher.b[b0:b1])
+                sub_count += len(matcher.a[a0:a1])
+                fn_list.append(matcher.a[a0:a1])
+                fp_list.append(matcher.b[b0:b1])
                 if mode == "fp":
                     output.append("<fp>" + " ".join(matcher.b[b0:b1]) + "</fp>")
                 elif mode == "fn":
                     output.append("<fn>" + " ".join(matcher.a[a0:a1]) + "</fn>")
                 else:
                     output.append(" ".join(matcher.b[b0:b1]))
-
-        return " ".join(output), fn_count, fp_count
+        
+        return " ".join(output), (fn_count, fp_count, ins_count, del_count, sub_count, fp_list, fn_list)
 
     gt = re.sub(r"[^\w\s]", "", gt.transcription.label.lower())
     inf = re.sub(r"[^\w\s]", "", inf.transcription.label.lower())
@@ -114,8 +127,8 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
     word_information_preserved = wer_metrics.wip
     character_error_rate = cer(gt, inf)
 
-    word_fp, fn_count, fp_count = generate_diff_word_level(gt, inf, mode="fp")
-    word_fn, _, _ = generate_diff_word_level(gt, inf, mode="fn")
+    word_fp, (fn_count, fp_count, ins_count, del_count, sub_count, fp_list, fn_list) = generate_diff_word_level(gt, inf, mode="fp")
+    word_fn, _ = generate_diff_word_level(gt, inf, mode="fn")
 
     language = langcodes.Language.get(langid.classify(inf)[0]).display_name()
 
@@ -130,7 +143,13 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         word_fn=word_fn,
         fn_count=fn_count,
         fp_count=fp_count,
+        ins_count=ins_count,
+        del_count=del_count,
+        sub_count=sub_count,
         language=language,
+
+        FP = [ClassificationLabel(item) for sublist in fp_list for item in (sublist if isinstance(sublist, list) else [sublist])],
+        FN = [ClassificationLabel(item) for sublist in fn_list for item in (sublist if isinstance(sublist, list) else [sublist])]
     )
 
 
