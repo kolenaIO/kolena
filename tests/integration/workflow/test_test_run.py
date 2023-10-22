@@ -94,6 +94,14 @@ def test__init(
     assert test_run0._id != test_run5._id
 
 
+def test__init__missing_configuration(dummy_model: Model, dummy_test_suites: List[TestSuite]) -> None:
+    with pytest.raises(ValueError):
+        test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config)
+
+    with pytest.raises(ValueError):
+        test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, configurations=[])
+
+
 def test__load_test_samples(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
