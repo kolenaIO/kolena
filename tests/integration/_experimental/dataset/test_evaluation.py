@@ -261,8 +261,8 @@ def test__test__invalid_data__eval_before_inf() -> None:
 
 
 def test__test__invalid_data__df_size_mismatch() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data")
-    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data")
+    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
+    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
     df_dp = get_df_dp()
     dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
     register_dataset(dataset_name, df_dp[dp_columns])
