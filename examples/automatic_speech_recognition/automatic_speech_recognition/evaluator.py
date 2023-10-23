@@ -50,8 +50,9 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         ins_count = 0
         sub_count = 0
         del_count = 0
-        fp_list = []
-        fn_list = []
+        sub_list = []
+        ins_list = []
+        del_list = []
         
         output = []
         for opcode, a0, a1, b0, b1 in matcher.get_opcodes():
@@ -61,7 +62,7 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
             elif opcode == 'insert':
                 fp_count += len(matcher.b[b0:b1])
                 ins_count += len(matcher.b[b0:b1])
-                fp_list.append(matcher.b[b0:b1])
+                ins_list.append(matcher.b[b0:b1])
                 if mode == "fp":
                     output.append(f"<fp>" + " ".join(matcher.b[b0:b1]) + f"</fp>")
                 else:
@@ -70,7 +71,7 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
             elif opcode == 'delete':
                 fn_count += len(matcher.a[a0:a1])
                 del_count += len(matcher.a[a0:a1])
-                fn_list.append(matcher.a[a0:a1])
+                del_list.append(matcher.a[a0:a1])
                 if mode == "fn":
                     output.append(f"<fn>" + " ".join(matcher.a[a0:a1]) + f"</fn>")
                 else:
@@ -80,8 +81,7 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
                 fn_count += len(matcher.a[a0:a1])
                 fp_count += len(matcher.b[b0:b1])
                 sub_count += len(matcher.a[a0:a1])
-                fn_list.append(matcher.a[a0:a1])
-                fp_list.append(matcher.b[b0:b1])
+                sub_list.append(f"{' '.join(matcher.a[a0:a1])} → {' '.join(matcher.b[b0:b1])}")
                 if mode == "fp":
                     output.append("<fp>" + " ".join(matcher.b[b0:b1]) + "</fp>")
                 elif mode == "fn":
@@ -89,7 +89,7 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
                 else:
                     output.append(" ".join(matcher.b[b0:b1]))
         
-        return " ".join(output), (fn_count, fp_count, ins_count, del_count, sub_count, fp_list, fn_list)
+        return " ".join(output), (fn_count, fp_count, ins_count, del_count, sub_count, sub_list, ins_list, del_list)
 
     gt = re.sub(r"[^\w\s]", "", gt.transcription.label.lower())
     inf = re.sub(r"[^\w\s]", "", inf.transcription.label.lower())
@@ -119,37 +119,38 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         ],
     )
 
+    word_fp, (fn_count, fp_count, ins_count, del_count, sub_count, sub_list, ins_list, del_list) = generate_diff_word_level(gt, inf, mode="fp")
+    word_fn, _ = generate_diff_word_level(gt, inf, mode="fn")
+
     wer_metrics = process_words(gt, inf)
-    word_errors = wer_metrics.substitutions + wer_metrics.deletions + wer_metrics.insertions
+    word_errors = ins_count + sub_count + del_count
     word_error_rate = wer_metrics.wer
     match_error_rate = wer_metrics.mer
     word_information_lost = wer_metrics.wil
     word_information_preserved = wer_metrics.wip
     character_error_rate = cer(gt, inf)
 
-    word_fp, (fn_count, fp_count, ins_count, del_count, sub_count, fp_list, fn_list) = generate_diff_word_level(gt, inf, mode="fp")
-    word_fn, _ = generate_diff_word_level(gt, inf, mode="fn")
-
     language = langcodes.Language.get(langid.classify(inf)[0]).display_name()
 
     return TestSampleMetric(
-        word_errors=word_errors,
-        word_error_rate=word_error_rate,
-        match_error_rate=match_error_rate,
-        word_information_lost=word_information_lost,
-        word_information_preserved=word_information_preserved,
-        character_error_rate=character_error_rate,
-        word_fp=word_fp,
-        word_fn=word_fn,
-        fn_count=fn_count,
-        fp_count=fp_count,
-        ins_count=ins_count,
-        del_count=del_count,
-        sub_count=sub_count,
-        language=language,
+        WordErrors=word_errors,
+        WordErrorRate=word_error_rate,
+        MatchErrorRate=match_error_rate,
+        WordInformationLost=word_information_lost,
+        WordInformationPreserved=word_information_preserved,
+        CharacterErrorRate=character_error_rate,
+        FalsePositiveText=word_fp,
+        FalseNegativeText=word_fn,
+        FNCount=fn_count,
+        FPCount=fp_count,
+        InsertionCount=ins_count,
+        DeletionCount=del_count,
+        SubstitutionCount=sub_count,
+        Language=language,
 
-        FP = [ClassificationLabel(item) for sublist in fp_list for item in (sublist if isinstance(sublist, list) else [sublist])],
-        FN = [ClassificationLabel(item) for sublist in fn_list for item in (sublist if isinstance(sublist, list) else [sublist])]
+        Substitutions = [ClassificationLabel(item) for sublist in sub_list for item in (sublist if isinstance(sublist, list) else [sublist])],
+        Insertions = [ClassificationLabel(item) for sublist in ins_list for item in (sublist if isinstance(sublist, list) else [sublist])],
+        Deletions = [ClassificationLabel(item) for sublist in del_list for item in (sublist if isinstance(sublist, list) else [sublist])],
     )
 
 
@@ -171,14 +172,14 @@ def compute_aggregate_metrics(
     sum_wc_inf = 0
 
     for metric in test_samples_metrics:
-        if metric.word_errors != 0:
+        if metric.WordErrors != 0:
             n_failures += 1
-        sum_word_errors += metric.word_errors
-        sum_word_error_rate += metric.word_error_rate
-        sum_match_error_rate += metric.match_error_rate
-        sum_word_information_lost += metric.word_information_lost
-        sum_word_information_preserved += metric.word_information_preserved
-        sum_character_error_rate += metric.character_error_rate
+        sum_word_errors += metric.WordErrors
+        sum_word_error_rate += metric.WordErrorRate
+        sum_match_error_rate += metric.MatchErrorRate
+        sum_word_information_lost += metric.WordInformationLost
+        sum_word_information_preserved += metric.WordInformationPreserved
+        sum_character_error_rate += metric.CharacterErrorRate
         n_samples += 1
 
     for gt in ground_truths:
@@ -187,16 +188,16 @@ def compute_aggregate_metrics(
         sum_wc_inf += len(inf.transcription.label.split(" "))
 
     return TestCaseMetric(
-        n_failures=n_failures,
-        failure_rate=n_failures / n_samples,
-        avg_word_errors=sum_word_errors / n_samples,
-        avg_word_error_rate=sum_word_error_rate / n_samples,
-        avg_match_error_rate=sum_match_error_rate / n_samples,
-        avg_word_information_lost=sum_word_information_lost / n_samples,
-        avg_word_information_preserved=sum_word_information_preserved / n_samples,
-        avg_character_error_rate=sum_character_error_rate / n_samples,
-        avg_wc_gt=sum_wc_gt / n_samples,
-        avg_wc_inf=sum_wc_inf / n_samples,
+        FailCount=n_failures,
+        FailRate=n_failures / n_samples,
+        AvgWordErrors=sum_word_errors / n_samples,
+        WER=sum_word_error_rate / n_samples,
+        MER=sum_match_error_rate / n_samples,
+        WIL=sum_word_information_lost / n_samples,
+        WIP=sum_word_information_preserved / n_samples,
+        CER=sum_character_error_rate / n_samples,
+        AvgGTWordCount=sum_wc_gt / n_samples,
+        AvgInfWordCount=sum_wc_inf / n_samples,
     )
 
 
@@ -270,21 +271,21 @@ def compute_test_case_plots(
     test_case_metrics: List[TestSampleMetric],
     test_samples: List[TestSample],
 ) -> List[Plot]:
-    max_word_error = max([metric.word_errors for metric in complete_metrics])
+    max_word_error = max([metric.WordErrors for metric in complete_metrics])
 
     return [
         compute_score_distribution_plot(
-            "word_errors",
+            "WordErrors",
             test_case_metrics,
             (0, max_word_error + 1, int(max_word_error)),
             logarithmic_y=True,
         ),
-        compute_score_distribution_plot("word_error_rate", test_case_metrics, (0, 1, 51), logarithmic_y=True),
-        compute_score_distribution_plot("character_error_rate", test_case_metrics, (0, 1, 51), logarithmic_y=True),
-        compute_score_distribution_plot("word_information_lost", test_case_metrics, (0, 1, 51), logarithmic_y=True),
+        compute_score_distribution_plot("WordErrorRate", test_case_metrics, (0, 1, 51), logarithmic_y=True),
+        compute_score_distribution_plot("CharacterErrorRate", test_case_metrics, (0, 1, 51), logarithmic_y=True),
+        compute_score_distribution_plot("WordInformationLost", test_case_metrics, (0, 1, 51), logarithmic_y=True),
         compute_metric_vs_metric_plot(
             "duration_seconds",
-            "word_error_rate",
+            "WordErrorRate",
             test_samples,
             test_case_metrics,
             (0, 35, 7),
@@ -292,7 +293,7 @@ def compute_test_case_plots(
         ),
         compute_metric_vs_metric_plot(
             "duration_seconds",
-            "character_error_rate",
+            "CharacterErrorRate",
             test_samples,
             test_case_metrics,
             (0, 35, 7),
@@ -300,7 +301,7 @@ def compute_test_case_plots(
         ),
         compute_metric_vs_metric_plot(
             "tempo",
-            "word_error_rate",
+            "WordErrorRate",
             test_samples,
             test_case_metrics,
             (0, 6, 14),
@@ -308,7 +309,7 @@ def compute_test_case_plots(
         ),
         compute_metric_vs_metric_plot(
             "tempo",
-            "character_error_rate",
+            "CharacterErrorRate",
             test_samples,
             test_case_metrics,
             (0, 6, 14),
@@ -322,21 +323,20 @@ def compute_test_suite_metrics(
     inferences: List[Inference],
     metrics: List[Tuple[TestCase, TestCaseMetric]],
 ) -> TestSuiteMetric:
-    # for _, metric in metrics:
-    #     if metric.word_errors != 0:
-    #         n_failures += 1
-    #     n_samples += 1
-    # FIX THIS LATER
+    transcriptions = 0
+    failures = 0
+    failurerate = 0
+    for metric in metrics:
+        if "complete" in metric[0].name:
+            transcriptions = len(test_samples)
+            failures = metric[1].FailCount
+            failurerate = metric[1].FailRate
+            break
 
     return TestSuiteMetric(
-        num_transcriptions=0,
-        num_failures=0,
-        failure_rate=0,
-        variance_word_error_rate=np.var([m.avg_word_error_rate for _, m in metrics]),
-        variance_match_error_rate=np.var([m.avg_match_error_rate for _, m in metrics]),
-        variance_word_information_lost=np.var([m.avg_word_information_lost for _, m in metrics]),
-        variance_word_information_preserved=np.var([m.avg_word_information_lost for _, m in metrics]),
-        variance_character_error_rate=np.var([m.avg_character_error_rate for _, m in metrics]),
+        Transcriptions=transcriptions,
+        Failures=failures,
+        FailureRate=failurerate,
     )
 
 

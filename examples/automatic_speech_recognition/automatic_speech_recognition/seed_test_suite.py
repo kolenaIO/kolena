@@ -332,10 +332,10 @@ def main(args: Namespace) -> None:
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
         # f"{DATASET} :: word count": seed_test_suite_word_count,
-        # f"{DATASET} :: audio duration": seed_test_suite_duration,
+        f"{DATASET} :: audio duration": seed_test_suite_duration,
         # f"{DATASET} :: speaker sex": seed_test_suite_speaker_sex,
         # f"{DATASET} :: longest word length": seed_test_suite_longest_word_len,
-        # f"{DATASET} :: max pitch": seed_test_suite_max_pitch,
+        f"{DATASET} :: max pitch": seed_test_suite_max_pitch,
         # f"{DATASET} :: energy": seed_test_suite_energy,
         # f"{DATASET} :: zero crossing rate": seed_test_suite_zero_crossing_rate,
         f"{DATASET} :: tempo (words per second)": seed_test_suite_tempo,

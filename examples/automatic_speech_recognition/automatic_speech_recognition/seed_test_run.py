@@ -18,21 +18,20 @@ from kolena.workflow.annotation import ClassificationLabel
 BUCKET = 'kolena-public-datasets'
 DATASET = 'LibriSpeech'
 
-WORKFLOW = "Speech Recognition"
 MODEL_MAP: Dict[str, Tuple[str, str]] = {
-    "whisper-1-default": ("whisper-1-default", f"whisper-1-default ({WORKFLOW})"),
-    "whisper-1-translate": ("whisper-1-translate", f"whisper-1-translate ({WORKFLOW})"),
-    "wav2vec2-base-960h": ("wav2vec2-base-960h", f"wav2vec2-base-960h ({WORKFLOW})"),
+    "whisper-1-default": ("whisper-1-default", f"whisper-1-default"),
+    "whisper-1-translate": ("whisper-1-translate", f"whisper-1-translate"),
+    "wav2vec2-base-960h": ("wav2vec2-base-960h", f"wav2vec2-base-960h"),
 }
 
 TEST_SUITE_NAMES = [
-    f"{DATASET} :: word count",
+    # f"{DATASET} :: word count",
     f"{DATASET} :: audio duration",
-    f"{DATASET} :: speaker sex",
-    f"{DATASET} :: longest word length",
+    # f"{DATASET} :: speaker sex",
+    # f"{DATASET} :: longest word length",
     f"{DATASET} :: max pitch",
-    f"{DATASET} :: energy",
-    f"{DATASET} :: zero crossing rate",
+    # f"{DATASET} :: energy",
+    # f"{DATASET} :: zero crossing rate",
     f"{DATASET} :: tempo (words per second)",
 ]
 
