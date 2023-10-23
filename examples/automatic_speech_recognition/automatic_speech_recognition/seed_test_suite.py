@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Callable
@@ -331,15 +332,16 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        # f"{DATASET} :: word count": seed_test_suite_word_count,
+        f"{DATASET} :: word count": seed_test_suite_word_count,
         f"{DATASET} :: audio duration": seed_test_suite_duration,
-        # f"{DATASET} :: speaker sex": seed_test_suite_speaker_sex,
-        # f"{DATASET} :: longest word length": seed_test_suite_longest_word_len,
+        f"{DATASET} :: speaker sex": seed_test_suite_speaker_sex,
+        f"{DATASET} :: longest word length": seed_test_suite_longest_word_len,
         f"{DATASET} :: max pitch": seed_test_suite_max_pitch,
-        # f"{DATASET} :: energy": seed_test_suite_energy,
-        # f"{DATASET} :: zero crossing rate": seed_test_suite_zero_crossing_rate,
+        f"{DATASET} :: energy": seed_test_suite_energy,
+        f"{DATASET} :: zero crossing rate": seed_test_suite_zero_crossing_rate,
         f"{DATASET} :: tempo (words per second)": seed_test_suite_tempo,
     }
+
     seed_test_suites(test_suite_names, complete_tc)
 
 

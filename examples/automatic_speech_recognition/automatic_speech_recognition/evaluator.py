@@ -11,8 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import difflib
-import re
+
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -41,83 +40,12 @@ from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
 from kolena.workflow.annotation import ClassificationLabel
 
+from utils import generate_diff_word_level, preprocess_transcription
+
 
 def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
-    def generate_diff_word_level(reference: str, candidate: str, mode: str):
-        matcher = difflib.SequenceMatcher(None, reference.split(), candidate.split())
-        fp_count = 0
-        fn_count = 0
-        ins_count = 0
-        sub_count = 0
-        del_count = 0
-        sub_list = []
-        ins_list = []
-        del_list = []
-        
-        output = []
-        for opcode, a0, a1, b0, b1 in matcher.get_opcodes():
-            if opcode == "equal":
-                output.append(" ".join(matcher.a[a0:a1]))
-                
-            elif opcode == 'insert':
-                fp_count += len(matcher.b[b0:b1])
-                ins_count += len(matcher.b[b0:b1])
-                ins_list.append(matcher.b[b0:b1])
-                if mode == "fp":
-                    output.append("<fp>" + " ".join(matcher.b[b0:b1]) + "</fp>")
-                else:
-                    output.append(" ".join(matcher.b[b0:b1]))
-
-            elif opcode == 'delete':
-                fn_count += len(matcher.a[a0:a1])
-                del_count += len(matcher.a[a0:a1])
-                del_list.append(matcher.a[a0:a1])
-                if mode == "fn":
-                    output.append("<fn>" + " ".join(matcher.a[a0:a1]) + "</fn>")
-                else:
-                    output.append(" ".join(matcher.a[a0:a1]))
-
-            elif opcode == "replace":
-                fn_count += len(matcher.a[a0:a1])
-                fp_count += len(matcher.b[b0:b1])
-                sub_count += len(matcher.a[a0:a1])
-                sub_list.append(f"{' '.join(matcher.a[a0:a1])} → {' '.join(matcher.b[b0:b1])}")
-                if mode == "fp":
-                    output.append("<fp>" + " ".join(matcher.b[b0:b1]) + "</fp>")
-                elif mode == "fn":
-                    output.append("<fn>" + " ".join(matcher.a[a0:a1]) + "</fn>")
-                else:
-                    output.append(" ".join(matcher.b[b0:b1]))
-        
-        return " ".join(output), (fn_count, fp_count, ins_count, del_count, sub_count, sub_list, ins_list, del_list)
-
-    gt = re.sub(r"[^\w\s]", "", gt.transcription.label.lower())
-    inf = re.sub(r"[^\w\s]", "", inf.transcription.label.lower())
-
-    # This is to work around the bug in NumWordstoNum()
-    num = NumWordsToNum()
-    gt = "oh".join(
-        [
-            num.numerical_words_to_numbers(
-                "th".join(
-                    [num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r"(?<=[a-zA-Z])th", y)],
-                ),
-                convert_operator=True,
-            )
-            for y in gt.split("oh")
-        ],
-    )
-    inf = "oh".join(
-        [
-            num.numerical_words_to_numbers(
-                "th".join(
-                    [num.numerical_words_to_numbers(x, convert_operator=True) for x in re.split(r"(?<=[a-zA-Z])th", y)],
-                ),
-                convert_operator=True,
-            )
-            for y in inf.split("oh")
-        ],
-    )
+    gt = preprocess_transcription(gt)
+    inf = preprocess_transcription(inf)
 
     word_fp, (fn_count, fp_count, ins_count, del_count, sub_count, sub_list, ins_list, del_list) = generate_diff_word_level(gt, inf, mode="fp")
     word_fn, _ = generate_diff_word_level(gt, inf, mode="fn")
@@ -191,11 +119,11 @@ def compute_aggregate_metrics(
         FailCount=n_failures,
         FailRate=n_failures / n_samples,
         AvgWordErrors=sum_word_errors / n_samples,
-        WER=sum_word_error_rate / n_samples,
-        MER=sum_match_error_rate / n_samples,
-        WIL=sum_word_information_lost / n_samples,
-        WIP=sum_word_information_preserved / n_samples,
-        CER=sum_character_error_rate / n_samples,
+        WordErrorRate=sum_word_error_rate / n_samples,
+        MatchErrorRate=sum_match_error_rate / n_samples,
+        WordInfoLost=sum_word_information_lost / n_samples,
+        WordInfoPreserved=sum_word_information_preserved / n_samples,
+        CharacterErrorRate=sum_character_error_rate / n_samples,
         AvgGTWordCount=sum_wc_gt / n_samples,
         AvgInfWordCount=sum_wc_inf / n_samples,
     )
