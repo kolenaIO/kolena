@@ -107,6 +107,9 @@ def _fetch_inferences(dataset: str, model: str) -> pd.DataFrame:
 
 
 def fetch_inferences(dataset: str, model: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """
+    Fetch inferences given dataset name and model name.
+    """
     df_data = _fetch_inferences(dataset, model)
     df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
     df_inferences = _to_deserialized_dataframe(df_data, column=COL_INFERENCE)
@@ -155,6 +158,9 @@ def fetch_evaluation_results(
     dataset: str,
     model: str,
 ) -> List[Tuple[Dict[str, Any], pd.DataFrame, pd.DataFrame, pd.DataFrame]]:
+    """
+    Fetch evaluation results given dataset name and model name.
+    """
     df_results_batch = list(_iter_metrics_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS))
     df = (
         pd.concat(df_results_batch)
@@ -192,6 +198,17 @@ def test(
     eval: Optional[EVAL_FUNC_TYPE] = None,
     eval_configs: Optional[Union[TYPE_EVALUATION_CONFIG, List[TYPE_EVALUATION_CONFIG]]] = None,
 ) -> None:
+    """
+    This function is used for running inference and evaluation on a given dataset using a specified model.
+
+    :param dataset: The name of the dataset to be used.
+    :param model: The name of the model to be used.
+    :param infer: The inference function to be used. Defaults to None.
+    :param eval: The evaluation function to be used if any. Defaults to None.
+    :param eval_configs: The evaluation configurations to be used. Defaults to None.
+
+    :return None: This function doesn't return anything.
+    """
     if infer:
         df_data = _fetch_dataset(dataset)
         df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)

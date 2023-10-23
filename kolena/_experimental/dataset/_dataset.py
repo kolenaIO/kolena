@@ -157,5 +157,8 @@ def fetch_dataset(
     name: str,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> pd.DataFrame:
+    """
+    Fetch an entire dataset given its name.
+    """
     df_batches = list(iter_dataset(name, batch_size))
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
