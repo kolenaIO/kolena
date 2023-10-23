@@ -70,7 +70,7 @@ def get_df_inf(n: int = 20) -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
-def get_df_metrics(n: int = 20) -> pd.DataFrame:
+def get_df_mtr(n: int = 20) -> pd.DataFrame:
     records = [dict(user_dp_id=i, score=i) for i in range(n)]
     return pd.DataFrame(records)
 
@@ -89,7 +89,7 @@ def get_infer_func(
 
 
 def get_eval_func(
-    df_metrics: pd.DataFrame,
+    df_mtr: pd.DataFrame,
     columns: List[str],
     id_col: str = "user_dp_id",
     how: str = "left",
@@ -99,7 +99,7 @@ def get_eval_func(
         inferences: pd.DataFrame,
         eval_config: ThresholdConfiguration,
     ) -> pd.DataFrame:
-        _metrics = datapoints.set_index(id_col).join(df_metrics.set_index(id_col), how=how).reset_index()[columns]
+        _metrics = datapoints.set_index(id_col).join(df_mtr.set_index(id_col), how=how).reset_index()[columns]
         return _metrics
 
     return eval_func
@@ -113,9 +113,9 @@ def test__test() -> None:
     register_dataset(dataset_name, df_dp[3:10][dp_columns])
 
     df_inf = get_df_inf()
-    df_metrics = get_df_metrics()
+    df_mtr = get_df_mtr()
     inf_columns = ["softmax_bitmap"]
-    metrics_columns = ["score"]
+    mtr_columns = ["score"]
 
     eval_configs = [
         ThresholdConfiguration(
@@ -129,7 +129,7 @@ def test__test() -> None:
         dataset_name,
         model_name,
         infer=get_infer_func(df_inf, inf_columns),
-        eval=get_eval_func(df_metrics, metrics_columns),
+        eval=get_eval_func(df_mtr, mtr_columns),
         eval_configs=eval_configs,
     )
 
@@ -141,11 +141,11 @@ def test__test() -> None:
     )
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
     expected_df_inf = df_inf[3:10].reset_index(drop=True)
-    expected_df_metrics = df_metrics[3:10].reset_index(drop=True)
+    expected_df_mtr = df_mtr[3:10].reset_index(drop=True)
     for df_eval in df_by_eval:
         _assert_frame_equal(df_eval[1], expected_df_dp, dp_columns)
         _assert_frame_equal(df_eval[2], expected_df_inf, inf_columns)
-        _assert_frame_equal(df_eval[3], expected_df_metrics, metrics_columns)
+        _assert_frame_equal(df_eval[3], expected_df_mtr, mtr_columns)
 
 
 def test__test__missing_inference() -> None:
@@ -182,6 +182,60 @@ def test__test__missing_inference() -> None:
     ).reset_index(drop=True)
     _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
     _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
+
+
+def test__test__missing_metrics() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__missing_metrics")
+    model_name = with_test_prefix(f"{__file__}::test__test__missing_metrics")
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[13:20][dp_columns])
+
+    df_inf = get_df_inf()
+    df_mtr = get_df_mtr()
+    inf_columns = ["softmax_bitmap"]
+    mtr_columns = ["score"]
+
+    test(
+        dataset_name,
+        model_name,
+        infer=get_infer_func(df_inf, inf_columns),
+        eval=get_eval_func(df_mtr, mtr_columns),
+    )
+
+    df_by_eval = fetch_evaluation_results(dataset_name, model_name)
+    eval_cfg, df_datapoints, df_inferences, df_metrics = df_by_eval[0]
+    expected_df_dp = df_dp[13:20].reset_index(drop=True)
+    expected_df_inf = pd.concat([df_inf[13:20]], axis=0).reset_index(
+        drop=True,
+    )
+    expected_df_mtr = pd.concat([df_mtr[13:20]], axis=0).reset_index(
+        drop=True,
+    )
+    assert len(df_by_eval) == 1
+    assert eval_cfg is None
+    _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
+    _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
+    _assert_frame_equal(df_metrics, expected_df_mtr, mtr_columns)
+
+    # add 3 new datapoints, then we should have missing inference and metrics in the db records
+    register_dataset(dataset_name, df_dp[10:20][dp_columns])
+
+    df_by_eval = fetch_evaluation_results(dataset_name, model_name)
+    eval_cfg, df_datapoints, df_inferences, df_metrics = df_by_eval[0]
+    expected_df_dp = pd.concat([df_dp[13:20], df_dp[10:13]]).reset_index(drop=True)
+    expected_df_inf = pd.concat(
+        [df_inf[13:20], pd.DataFrame({"softmax_bitmap": [np.nan] * 3})],
+        axis=0,
+    ).reset_index(drop=True)
+    expected_df_mtr = pd.concat([df_mtr[13:20], pd.DataFrame({"score": [np.nan] * 3})], axis=0).reset_index(
+        drop=True,
+    )
+    assert len(df_by_eval) == 1
+    assert eval_cfg is None
+    _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
+    _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
+    _assert_frame_equal(df_metrics, expected_df_mtr, mtr_columns)
 
 
 def test__fetch_inferences__not_exist() -> None:

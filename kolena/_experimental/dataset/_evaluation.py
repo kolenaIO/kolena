@@ -133,7 +133,7 @@ def _upload_metrics(
     df_metrics_by_eval = []
     for eval_config, df_metrics in all_metrics:
         df_metrics_eval = _to_serialized_dataframe(df_metrics, column=COL_METRICS)
-        df_metrics_eval["eval_config"] = json.dumps(eval_config._to_dict())
+        df_metrics_eval["eval_config"] = json.dumps(eval_config._to_dict()) if eval_config is not None else None
         df_metrics_by_eval.append(pd.concat([df["inference_id"], df_metrics_eval], axis=1))
     df_metrics = (
         pd.concat(df_metrics_by_eval, ignore_index=True)
@@ -167,10 +167,10 @@ def fetch_evaluation_results(
     eval_configs = df[COL_EVAL_CONFIG].unique()
     df_by_eval = []
     for eval_config in eval_configs:
-        df_matched = df[df[COL_EVAL_CONFIG] == eval_config]
+        df_matched = df[df[COL_EVAL_CONFIG] == eval_config if eval_config is not None else df[COL_EVAL_CONFIG].isnull()]
         df_by_eval.append(
             (
-                json.loads(eval_config),
+                json.loads(eval_config) if eval_config is not None else None,
                 _to_deserialized_dataframe(df_matched, column=COL_DATAPOINT),
                 _to_deserialized_dataframe(df_matched, column=COL_INFERENCE),
                 _to_deserialized_dataframe(df_matched, column=COL_METRICS),
