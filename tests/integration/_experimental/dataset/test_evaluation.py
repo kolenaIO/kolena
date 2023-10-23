@@ -82,9 +82,12 @@ def get_infer_func(
     columns: List[str],
     id_col: str = "user_dp_id",
     how: str = "left",
+    keep_none: bool = False,
 ) -> INFER_FUNC_TYPE:
     def infer_func(datapoints: pd.DataFrame) -> pd.DataFrame:
         _inf = datapoints.set_index(id_col).join(df_inf.set_index(id_col), how=how).reset_index()[columns]
+        if keep_none:
+            _inf = _inf.replace({np.nan: None})
         return _inf
 
     return infer_func
@@ -95,6 +98,7 @@ def get_eval_func(
     columns: List[str],
     id_col: str = "user_dp_id",
     how: str = "left",
+    keep_none: bool = False,
 ) -> EVAL_FUNC_TYPE:
     def eval_func(
         datapoints: pd.DataFrame,
@@ -102,6 +106,8 @@ def get_eval_func(
         eval_config: ThresholdConfiguration,
     ) -> pd.DataFrame:
         _metrics = datapoints.set_index(id_col).join(df_mtr.set_index(id_col), how=how).reset_index()[columns]
+        if keep_none:
+            _metrics = _metrics.replace({np.nan: None})
         return _metrics
 
     return eval_func
@@ -231,6 +237,41 @@ def test__test__missing_metrics() -> None:
         axis=0,
     ).reset_index(drop=True)
     expected_df_mtr = pd.concat([df_mtr[13:20], pd.DataFrame({"score": [np.nan] * 3})], axis=0).reset_index(
+        drop=True,
+    )
+    assert len(df_by_eval) == 1
+    assert eval_cfg is None
+    _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
+    _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
+    _assert_frame_equal(df_metrics, expected_df_mtr, mtr_columns)
+
+
+def test__test__upload_none() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__upload_none")
+    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__upload_none")
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[dp_columns])
+
+    df_inf = get_df_inf(10)
+    df_mtr = get_df_mtr(10)
+    inf_columns = ["softmax_bitmap"]
+    mtr_columns = ["score"]
+
+    test(
+        dataset_name,
+        model_name,
+        infer=get_infer_func(df_inf, inf_columns, keep_none=True),
+        eval=get_eval_func(df_mtr, mtr_columns, keep_none=True),
+    )
+
+    df_by_eval = fetch_evaluation_results(dataset_name, model_name)
+    eval_cfg, df_datapoints, df_inferences, df_metrics = df_by_eval[0]
+    expected_df_dp = df_dp.reset_index(drop=True)
+    expected_df_inf = pd.concat([df_inf, pd.DataFrame({"softmax_bitmap": [np.nan] * 10})], axis=0).reset_index(
+        drop=True,
+    )
+    expected_df_mtr = pd.concat([df_mtr, pd.DataFrame({"score": [np.nan] * 10})], axis=0).reset_index(
         drop=True,
     )
     assert len(df_by_eval) == 1

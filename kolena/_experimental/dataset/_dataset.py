@@ -94,7 +94,8 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
-    result[DATA_TYPE_FIELD] = _infer_datatype(df)
+    if column == COL_DATAPOINT:
+        result[DATA_TYPE_FIELD] = _infer_datatype(df)
     result[column] = result.to_dict("records")
     result[column] = result[column].apply(lambda x: json.dumps(x))
 
