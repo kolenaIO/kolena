@@ -299,8 +299,8 @@ def test__fetch_inferences__not_exist() -> None:
     assert df_inferences.empty
 
 
-def test__fetch_evaluation_results_not_exist() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__fetch_evaluation_results_not_exist")
-    model_name = with_test_prefix(f"{__file__}::test__fetch_evaluation_results_not_exist")
+def test__fetch_evaluation_results__not_exist() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__fetch_evaluation_results__not_exist")
+    model_name = with_test_prefix(f"{__file__}::test__fetch_evaluation_results__not_exist")
     with pytest.raises(NotFoundError):
         fetch_evaluation_results(dataset_name, model_name)
