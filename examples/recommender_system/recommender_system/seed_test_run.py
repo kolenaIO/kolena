@@ -19,7 +19,7 @@ from typing import List
 
 import pandas as pd
 from recommender_system.evaluator import evaluate_recommender_system
-from recommender_system.workflow import TopKConfiguration
+from recommender_system.workflow import RecommendationConfiguration
 from recommender_system.workflow import Inference
 from recommender_system.workflow import Model
 from recommender_system.workflow import TestSample
@@ -27,8 +27,6 @@ from recommender_system.workflow import TestSuite
 
 import kolena
 from kolena.workflow import test
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import Keypoints
 
 BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
@@ -38,13 +36,19 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
 
     def infer(test_sample: TestSample) -> Inference:
-        rating = df_results.loc[test_sample.user_id, test_sample.movie_id]
+        row = df_results[
+            (df_results["userId"] == test_sample.user_id) & (df_results["movieId"] == test_sample.movie_id)
+        ]
+        rating = row.predicted_rating.values[0]
         return Inference(rating=rating)
 
-    model = Model(f"{model_name} [{DATASET}] :: ml-100k", infer=infer)
+    model = Model(f"{model_name} [{DATASET}] :: ml-50k", infer=infer)
     print(f"Model: {model}")
 
-    configurations = [TopKConfiguration(k=5), TopKConfiguration(k=10)]
+    configurations = [
+        RecommendationConfiguration(rating_threshold=3.5, k=2),
+        RecommendationConfiguration(rating_threshold=3.5, k=5),
+    ]
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
@@ -63,12 +67,12 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["MF", "PMF", "BPF"],
+        default=["Bias"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"fr 1:1 :: {DATASET}"],
+        default=[f"ml-50k :: {DATASET}"],
         help="Name(s) of test suite(s) to test.",
     )
     sys.exit(main(ap.parse_args()))

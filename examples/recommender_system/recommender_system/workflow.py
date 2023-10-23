@@ -58,31 +58,32 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     is_correct: bool
-    rating: float
-    rank: int
+    real_rating: float
+    predicted_rating: float
 
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
     RMSE: float  # Root Mean Squared Error
     MAE: float  # Mean Absolute Error
-    Precision_k: float  # Mean Average Precision
-    Recall_k: float  # Mean Average Recall
-    mAP_k: float  # Mean Average Precision
-    mAR_k: float  # Mean Average Recall
+    Precision: float
+    Recall: float
+    # mAP_k: float  # Mean Average Precision
+    # mAR_k: float  # Mean Average Recall
 
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
     average_RMSE: float
     average_MAE: float
-    average_mAP_k: float
-    average_mAR_k: float
+    # average_mAP_k: float
+    # average_mAR_k: float
 
 
 @dataclass(frozen=True)
-class TopKConfiguration(EvaluatorConfiguration):
-    k: float
+class RecommendationConfiguration(EvaluatorConfiguration):
+    rating_threshold: float
+    k: int
 
     def display_name(self) -> str:
-        return f"Top K value: {self.k}"
+        return f"Rating Threshold: {self.rating_threshold} (k={self.k})"

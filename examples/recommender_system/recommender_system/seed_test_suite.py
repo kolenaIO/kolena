@@ -18,6 +18,7 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
 from typing import Tuple
+from collections import defaultdict
 
 import pandas as pd
 from recommender_system.workflow import GroundTruth
@@ -63,7 +64,7 @@ def main(args: Namespace) -> int:
         value = getattr(record, f)
         return value if f != "genres" else value.split("|")
 
-    metadata_by_movie_id = {}
+    metadata_by_movie_id = defaultdict(dict)
     for record in df_movies.itertuples(index=False):
         fields = set(record._fields)
         fields.remove("movieId")
@@ -78,11 +79,11 @@ def main(args: Namespace) -> int:
         for record in df_ratings.itertuples(index=False)
     ]
 
-    print(f"prepping {len(test_samples_and_ground_truths)} test samples")
+    print(f"preparing {len(test_samples_and_ground_truths)} test samples")
 
     t1 = time.time()
     complete_test_case = TestCase(
-        name=f"ml-100k complete :: {DATASET}",
+        name=f"ml-50k complete :: {DATASET}",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
@@ -116,8 +117,9 @@ def main(args: Namespace) -> int:
     genre_ts_gt_splits = {item: [] for item in genre_subsets}
 
     for ts, gt in test_samples_and_ground_truths:
-        for genre in ts.metadata["genres"]:
-            genre_ts_gt_splits[genre].append((ts, gt))
+        if ts.metadata:
+            for genre in ts.metadata["genres"]:
+                genre_ts_gt_splits[genre].append((ts, gt))
 
     t2 = time.time()
     test_cases = TestCase.init_many(
@@ -126,7 +128,7 @@ def main(args: Namespace) -> int:
     print(f"created test case genre stratifications in {time.time() - t2:0.3f} seconds")
 
     test_suite = TestSuite(
-        name=f"ml-100k :: {DATASET}",
+        name=f"ml-50k :: {DATASET}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
@@ -138,7 +140,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--ratings_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/ratings.100k.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/ratings.sample.csv",
     )
     ap.add_argument(
         "--movies_csv",
