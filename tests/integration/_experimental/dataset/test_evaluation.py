@@ -27,6 +27,7 @@ from kolena._experimental.dataset import register_dataset
 from kolena._experimental.dataset import test
 from kolena._experimental.dataset._evaluation import EVAL_FUNC_TYPE
 from kolena._experimental.dataset._evaluation import INFER_FUNC_TYPE
+from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from kolena.workflow import EvaluatorConfiguration
 from tests.integration.helper import fake_locator
@@ -236,6 +237,37 @@ def test__test__missing_metrics() -> None:
     _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
     _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
     _assert_frame_equal(df_metrics, expected_df_mtr, mtr_columns)
+
+
+def test__test__invalid_data() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data")
+    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data")
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[dp_columns])
+
+    df_inf = get_df_inf(10)
+    df_mtr = get_df_mtr(10)
+    inf_columns = ["softmax_bitmap"]
+    mtr_columns = ["score"]
+
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        test(
+            dataset_name,
+            model_name,
+            infer=get_infer_func(df_inf, inf_columns, how="inner"),
+        )
+    exc_info_value = str(exc_info.value)
+    assert "numbers of rows between two dataframe do not match" in exc_info_value
+
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        test(
+            dataset_name,
+            model_name,
+            eval=get_eval_func(df_mtr, mtr_columns, how="inner"),
+        )
+    exc_info_value = str(exc_info.value)
+    assert "numbers of rows between two dataframe do not match" in exc_info_value
 
 
 def test__fetch_inferences__not_exist() -> None:
