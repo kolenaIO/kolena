@@ -15,6 +15,7 @@ import random
 from typing import List
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -30,6 +31,14 @@ from kolena.errors import NotFoundError
 from kolena.workflow import EvaluatorConfiguration
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
+
+
+def _assert_frame_equal(df1: pd.DataFrame, df2: pd.DataFrame, columns: Optional[List[str]] = None) -> None:
+    """wrapper of assert_frame_equal with selected columns options"""
+    if columns is None:
+        assert_frame_equal(df1, df2)
+    else:
+        assert_frame_equal(df1[columns], df2[columns])
 
 
 @dataclass(frozen=True)
@@ -73,7 +82,8 @@ def get_infer_func(
     how: str = "left",
 ) -> INFER_FUNC_TYPE:
     def infer_func(datapoints: pd.DataFrame) -> pd.DataFrame:
-        return datapoints.set_index(id_col).join(df_inf.set_index(id_col), how=how).reset_index()[columns]
+        _inf = datapoints.set_index(id_col).join(df_inf.set_index(id_col), how=how).reset_index()[columns]
+        return _inf
 
     return infer_func
 
@@ -89,7 +99,8 @@ def get_eval_func(
         inferences: pd.DataFrame,
         eval_config: ThresholdConfiguration,
     ) -> pd.DataFrame:
-        return datapoints.set_index(id_col).join(df_metrics.set_index(id_col), how=how).reset_index()[columns]
+        _metrics = datapoints.set_index(id_col).join(df_metrics.set_index(id_col), how=how).reset_index()[columns]
+        return _metrics
 
     return eval_func
 
@@ -99,7 +110,7 @@ def test__test() -> None:
     model_name = with_test_prefix(f"{__file__}::test__test")
     df_dp = get_df_dp()
     dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
-    register_dataset(dataset_name, df_dp[:10][dp_columns])
+    register_dataset(dataset_name, df_dp[3:10][dp_columns])
 
     df_inf = get_df_inf()
     df_metrics = get_df_metrics()
@@ -128,13 +139,49 @@ def test__test() -> None:
         [dict(cfg._to_dict()) for cfg in eval_configs],
         key=lambda x: x.get("threshold"),
     )
-    expected_df_dp = df_dp[:10][dp_columns]
-    expected_df_inf = df_inf[:10][inf_columns]
-    expected_df_metrics = df_metrics[:10][metrics_columns]
+    expected_df_dp = df_dp[3:10].reset_index(drop=True)
+    expected_df_inf = df_inf[3:10].reset_index(drop=True)
+    expected_df_metrics = df_metrics[3:10].reset_index(drop=True)
     for df_eval in df_by_eval:
-        assert_frame_equal(df_eval[1][dp_columns], expected_df_dp)
-        assert_frame_equal(df_eval[2], expected_df_inf)
-        assert_frame_equal(df_eval[3], expected_df_metrics)
+        _assert_frame_equal(df_eval[1], expected_df_dp, dp_columns)
+        _assert_frame_equal(df_eval[2], expected_df_inf, inf_columns)
+        _assert_frame_equal(df_eval[3], expected_df_metrics, metrics_columns)
+
+
+def test__test__missing_inference() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__missing_inference")
+    model_name = with_test_prefix(f"{__file__}::test__test__missing_inference")
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[3:10][dp_columns])
+
+    df_inf = get_df_inf(5)
+    inf_columns = ["softmax_bitmap"]
+
+    test(
+        dataset_name,
+        model_name,
+        infer=get_infer_func(df_inf, inf_columns),
+    )
+
+    df_datapoints, df_inferences = fetch_inferences(dataset_name, model_name)
+    expected_df_dp = df_dp[3:10].reset_index(drop=True)
+    expected_df_inf = pd.concat([df_inf[3:5], pd.DataFrame({"softmax_bitmap": [np.nan] * 5})], axis=0).reset_index(
+        drop=True,
+    )
+    _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
+    _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
+
+    # add 3 new datapoints, then we should have missing inference in the db records
+    register_dataset(dataset_name, df_dp[:10][dp_columns])
+    df_datapoints, df_inferences = fetch_inferences(dataset_name, model_name)
+    expected_df_dp = pd.concat([df_dp[3:10], df_dp[:3]]).reset_index(drop=True)
+    expected_df_inf = pd.concat(
+        [df_inf[3:5], pd.DataFrame({"softmax_bitmap": [np.nan] * (5 + 3)})],
+        axis=0,
+    ).reset_index(drop=True)
+    _assert_frame_equal(df_datapoints, expected_df_dp, dp_columns)
+    _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
 
 
 def test__fetch_inferences__not_exist() -> None:
