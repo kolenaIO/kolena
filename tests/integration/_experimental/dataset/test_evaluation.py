@@ -29,6 +29,7 @@ from kolena._experimental.dataset._evaluation import EVAL_FUNC_TYPE
 from kolena._experimental.dataset._evaluation import INFER_FUNC_TYPE
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
+from kolena.errors import RemoteError
 from kolena.workflow import EvaluatorConfiguration
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
@@ -239,7 +240,27 @@ def test__test__missing_metrics() -> None:
     _assert_frame_equal(df_metrics, expected_df_mtr, mtr_columns)
 
 
-def test__test__invalid_data() -> None:
+def test__test__invalid_data__eval_before_inf() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__eval_before_inf")
+    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__eval_before_inf")
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[13:20][dp_columns])
+
+    df_mtr = get_df_mtr()
+    mtr_columns = ["score"]
+
+    with pytest.raises(RemoteError) as exc_info:
+        test(
+            dataset_name,
+            model_name,
+            eval=get_eval_func(df_mtr, mtr_columns),
+        )
+    exc_info_value = str(exc_info.value)
+    assert "invalid input data" in exc_info_value
+
+
+def test__test__invalid_data__df_size_mismatch() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data")
     model_name = with_test_prefix(f"{__file__}::test__test__invalid_data")
     df_dp = get_df_dp()
