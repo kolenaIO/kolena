@@ -23,14 +23,19 @@ from recommender_system.workflow import TestCase
 from recommender_system.workflow import TestCaseMetrics
 from recommender_system.workflow import TestSample
 from recommender_system.workflow import TestSampleMetrics
-from recommender_system.workflow import TestSuiteMetrics
+from sklearn.metrics import auc, average_precision_score, precision_recall_curve, roc_curve
 
-from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
+from kolena.workflow import Histogram
+from kolena.workflow import ConfusionMatrix
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
+from kolena.workflow.metrics import precision
+from kolena.workflow.metrics import recall
+from kolena.workflow.metrics import f1_score
+from kolena.workflow.metrics import accuracy
 
 
 def compute_per_sample(
@@ -38,39 +43,112 @@ def compute_per_sample(
     inference: Inference,
     configuration: RecommendationConfiguration,
 ) -> TestSampleMetrics:
-    is_correct = False
-    if inference.rating is None:
-        return TestSampleMetrics(is_correct=is_correct, real_rating=ground_truth.rating)
+    is_relevant = ground_truth.rating >= configuration.rating_threshold
+    is_recommended = inference.rating >= configuration.rating_threshold
 
-    if (ground_truth.rating >= configuration.rating_threshold) == (inference.rating >= configuration.rating_threshold):
-        is_correct = True
-
-    return TestSampleMetrics(is_correct=is_correct, real_rating=ground_truth.rating, predicted_rating=inference.rating)
+    return TestSampleMetrics(
+        is_correct=is_relevant == is_recommended,
+        is_TP=is_relevant and is_recommended,
+        is_FP=not is_relevant and is_recommended,
+        is_FN=is_relevant and not is_recommended,
+        is_TN=not is_relevant and not is_recommended,
+        Δ_rating=inference.rating - ground_truth.rating,
+    )
 
 
 def compute_test_case_metrics(
-    test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
 ) -> TestCaseMetrics:
-    ratings = np.array([tsm.real_rating for tsm in metrics])
-    preds = np.array([tsm.predicted_rating for tsm in metrics])
+    ratings = np.array([gt.rating for gt in ground_truths])
+    preds = np.array([inf.rating for inf in inferences])
 
     rmse = np.sqrt(((preds - ratings) ** 2).mean())
     mae = (np.abs(preds - ratings)).mean()
 
-    return TestCaseMetrics(RMSE=rmse, MAE=mae, Precision=0, Recall=0)
+    tp = np.sum([tsm.is_TP for tsm in metrics])
+    fp = np.sum([tsm.is_FP for tsm in metrics])
+    fn = np.sum([tsm.is_FN for tsm in metrics])
+    tn = np.sum([tsm.is_TN for tsm in metrics])
+
+    return TestCaseMetrics(
+        RMSE=rmse,
+        MAE=mae,
+        TP=tp,
+        FP=fp,
+        FN=fp,
+        TN=tn,
+        Accuracy=accuracy(tp, fp, fn, tn),
+        Precision=precision(tp, fp),
+        Recall=recall(tp, fn),
+        F1=f1_score(tp, fp, fn),
+    )
 
 
-def compute_test_case_plots(ground_truths: List[GroundTruth], inferences: List[Inference]) -> Optional[List[Plot]]:
-    return []  # tail plot, coverage plot, confusion matrix, ROC, PR curve, ROC/AUC
+def compute_test_case_plots(
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    metrics: List[TestSampleMetrics],
+    configuration: RecommendationConfiguration,
+) -> Optional[List[Plot]]:
+    plots = []
 
+    tp = np.sum([tsm.is_TP for tsm in metrics])
+    tn = np.sum([tsm.is_TN for tsm in metrics])
+    fp = np.sum([tsm.is_FP for tsm in metrics])
+    fn = np.sum([tsm.is_FN for tsm in metrics])
 
-def compute_test_suite_metrics(
-    test_samples: List[TestSample], configuration: RecommendationConfiguration
-) -> TestSuiteMetrics:
-    return TestSuiteMetrics(average_RMSE=0, average_MAE=0, average_mAP_k=0, average_mAR_k=0)
+    plots.append(
+        ConfusionMatrix(
+            title="Recommendations Confusion Matrix",
+            labels=["Recommended", "Not Recommended"],
+            matrix=[[tp, fp], [fn, tn]],
+        )
+    )
+
+    deltas = [tsm.Δ_rating for tsm in metrics]
+    min_data, max_data = min(deltas), max(deltas)
+    freq, bin_edges = np.histogram(deltas, bins=10, range=(min_data, max_data), density=True)
+
+    plots.append(
+        Histogram(
+            title="Delta Rating Distribution",
+            x_label="Δ_rating",
+            y_label="Frequency (%)",
+            buckets=list(bin_edges),
+            frequency=list(freq),
+        )
+    )
+
+    gts_binary_labels = [int(gt.rating >= configuration.rating_threshold) for gt in ground_truths]
+    infs = [inf.rating for inf in inferences]
+
+    precision, recall, _ = precision_recall_curve(gts_binary_labels, infs)
+    print(precision)
+    print(recall)
+    plots.append(
+        CurvePlot(
+            title="Precision vs. Recall",
+            x_label="Recall",
+            y_label="Precision",
+            curves=[Curve(x=list(recall), y=list(precision))],
+        ),
+    )
+
+    fpr, tpr, _ = roc_curve(gts_binary_labels, infs)
+    roc_auc = auc(fpr, tpr)
+
+    plots.append(
+        CurvePlot(
+            title=f"Receiver Operating Characteristic",
+            x_label="False Positive Rate (FPR)",
+            y_label="True Positive Rate (TPR)",
+            curves=[Curve(x=list(fpr), y=list(tpr), label=f"AUC={roc_auc:.4f}")],
+        ),
+    )
+
+    return plots
 
 
 def evaluate_recommender_system(
@@ -87,14 +165,11 @@ def evaluate_recommender_system(
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, inf, tsm)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
-
-    test_suite_metrics = compute_test_suite_metrics(test_samples, configuration)
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, inf, tsm)))
+        all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf, tsm, configuration)))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
         plots_test_case=all_test_case_plots,
-        metrics_test_suite=test_suite_metrics,
     )

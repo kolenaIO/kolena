@@ -39,15 +39,14 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         row = df_results[
             (df_results["userId"] == test_sample.user_id) & (df_results["movieId"] == test_sample.movie_id)
         ]
-        rating = row.predicted_rating.values[0]
+        rating = row.prediction.values[0]
         return Inference(rating=rating)
 
-    model = Model(f"{model_name} [{DATASET}] :: ml-50k", infer=infer)
+    model = Model(f"{model_name} [{DATASET}] :: ml-small", infer=infer)
     print(f"Model: {model}")
 
     configurations = [
         RecommendationConfiguration(rating_threshold=3.5, k=2),
-        RecommendationConfiguration(rating_threshold=3.5, k=5),
     ]
 
     for test_suite_name in test_suite_names:
@@ -67,12 +66,12 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["Bias"],
+        default=["bias"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"ml-50k :: {DATASET}"],
+        default=[f"ml-small :: {DATASET}"],
         help="Name(s) of test suite(s) to test.",
     )
     sys.exit(main(ap.parse_args()))
