@@ -247,8 +247,8 @@ def test__test__missing_metrics() -> None:
 
 
 def test__test__upload_none() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__upload_none")
-    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__upload_none")
+    dataset_name = with_test_prefix(f"{__file__}::test__test__upload_none")
+    model_name = with_test_prefix(f"{__file__}::test__test__upload_none")
     df_dp = get_df_dp()
     dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
     register_dataset(dataset_name, df_dp[dp_columns])
