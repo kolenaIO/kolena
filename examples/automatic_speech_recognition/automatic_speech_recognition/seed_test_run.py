@@ -19,9 +19,9 @@ BUCKET = 'kolena-public-datasets'
 DATASET = 'LibriSpeech'
 
 MODEL_MAP: Dict[str, Tuple[str, str]] = {
-    "whisper-1-default": ("whisper-1-default", f"whisper-1-default"),
-    "whisper-1-translate": ("whisper-1-translate", f"whisper-1-translate"),
-    "wav2vec2-base-960h": ("wav2vec2-base-960h", f"wav2vec2-base-960h"),
+    "whisper-1-default": ("whisper-1-default", "whisper-1-default"),
+    "whisper-1-translate": ("whisper-1-translate", "whisper-1-translate"),
+    "wav2vec2-base-960h": ("wav2vec2-base-960h", "wav2vec2-base-960h"),
 }
 
 TEST_SUITE_NAMES = [

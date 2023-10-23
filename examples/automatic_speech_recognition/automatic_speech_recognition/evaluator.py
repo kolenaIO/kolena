@@ -64,7 +64,7 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
                 ins_count += len(matcher.b[b0:b1])
                 ins_list.append(matcher.b[b0:b1])
                 if mode == "fp":
-                    output.append(f"<fp>" + " ".join(matcher.b[b0:b1]) + f"</fp>")
+                    output.append("<fp>" + " ".join(matcher.b[b0:b1]) + "</fp>")
                 else:
                     output.append(" ".join(matcher.b[b0:b1]))
 
@@ -73,7 +73,7 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
                 del_count += len(matcher.a[a0:a1])
                 del_list.append(matcher.a[a0:a1])
                 if mode == "fn":
-                    output.append(f"<fn>" + " ".join(matcher.a[a0:a1]) + f"</fn>")
+                    output.append("<fn>" + " ".join(matcher.a[a0:a1]) + "</fn>")
                 else:
                     output.append(" ".join(matcher.a[a0:a1]))
 
