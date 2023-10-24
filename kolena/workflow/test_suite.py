@@ -234,7 +234,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         return obj
 
     @classmethod
-    @with_invocation_tracked(event_name=Tracking.Events.LOAD_ALL_TEST_SUITE)
+    @with_invocation_tracked(event_name=Tracking.Events.LOAD_ALL_TEST_SUITES)
     def load_all(cls, *, tags: Optional[Set[str]] = None) -> List["TestSuite"]:
         """
         Load the latest version of all non-archived test suites with this workflow.
