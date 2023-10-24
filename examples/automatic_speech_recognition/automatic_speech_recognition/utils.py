@@ -13,14 +13,14 @@
 # limitations under the License.
 import difflib
 import re
-from typing import Union
+from typing import Union, Dict, Any
 
 from numwords_to_nums.numwords_to_nums import NumWordsToNum
 from workflow import GroundTruth
 from workflow import Inference
 
 
-def generate_diff_word_level(reference: str, candidate: str):
+def generate_diff_word_level(reference: str, candidate: str) -> Dict[str, Any]:
     """
     Calculates the diff between the reference and candidate texts, and returns the following:
         fp_str: text wrapped with false postive tags
