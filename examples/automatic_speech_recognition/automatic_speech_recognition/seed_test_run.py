@@ -15,7 +15,6 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Callable
 from typing import Dict
-from typing import Tuple
 
 import pandas as pd
 from evaluator import evaluate_audio_recognition
