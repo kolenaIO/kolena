@@ -23,7 +23,7 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](automatic_speech_recognition/seed_test_suite.py) creates the following test suite:
 
-    - `LibriSpeech`, stratified by `word count`, `audio duration`, `longest word length`, `max pitch`, `energy`, `zero crossing rate`, `tempo`, and `speaker sex`.
+    - `LibriSpeech`, stratified by `audio duration`, `tempo`, and `speaker sex`.
 
     Run this command to seed the default test suite:
     ```shell
