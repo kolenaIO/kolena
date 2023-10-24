@@ -89,7 +89,7 @@ def generate_diff_word_level(reference: str, candidate: str) -> Dict[str, Any]:
     }
 
 
-def preprocess_transcription(txt: Union[GroundTruth, Inference]):
+def preprocess_transcription(txt: Union[GroundTruth, Inference]) -> str:
     """
     Preprocesses and standardizes text to prepare for metrics evaluations.
     Removes punctuation, changes text to lower case, and converts all NumWords to Numbers.
