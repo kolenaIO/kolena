@@ -244,6 +244,15 @@ def test__test__missing_metrics() -> None:
     _assert_frame_equal(df_inferences, expected_df_inf, inf_columns)
     _assert_frame_equal(df_metrics, expected_df_mtr, mtr_columns)
 
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        test(
+            dataset_name,
+            model_name,
+            eval=get_eval_func(df_mtr, mtr_columns),
+        )
+    exc_info_value = str(exc_info.value)
+    assert "cannot upload metrics without inference" in exc_info_value
+
 
 def test__test__upload_none() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__upload_none")
