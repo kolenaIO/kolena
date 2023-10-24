@@ -106,7 +106,8 @@ def with_invocation_tracked(event_name: str):
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             if not _client_state.telemetry:
                 return func(*args, **kwargs)
-            # track success or failure of the call, and if failed record the exception class name
+            # track duration of the call, and if failed record the exception class name
+            start_time = datetime.datetime.now()
             event_metadata = {}
             try:
                 response = func(*args, **kwargs)
@@ -115,6 +116,7 @@ def with_invocation_tracked(event_name: str):
                 event_metadata["response_error"] = e.__class__.__name__
                 raise e
             finally:
+                event_metadata["duration"] = round((datetime.datetime.now() - start_time).total_seconds(), 3)
                 track_event(
                     EventTrackingAPI.TrackEventRequest(
                         event_name=event_name,
