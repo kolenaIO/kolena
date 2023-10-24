@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 from typing import Any
+from typing import Callable
 from typing import Union
 
 import pandas as pd
@@ -43,21 +44,23 @@ def _deserialize_dataobject(x: Any) -> Any:
     return x
 
 
-def _serialize_json(x: Any) -> Any:
-    if isinstance(x, list) or isinstance(x, dict):
-        return json.dumps(x)
+def _serialize_dataobject_str(x: Any) -> Any:
+    y = _serialize_dataobject(x)
+    if isinstance(y, list) or isinstance(y, dict):
+        return json.dumps(y)
 
-    return x
+    return y
 
 
-def _deserialize_json(x: Any) -> Any:
+def _deserialize_dataobject_str(x: Any) -> Any:
+    y = x
     if isinstance(x, str):
         try:
-            return json.loads(x)
+            y = json.loads(x)
         except Exception:
             ...
 
-    return x
+    return _deserialize_dataobject(y)
 
 
 def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
@@ -68,10 +71,7 @@ def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
     :param kwargs: keyword arguments to `pandas.DataFrame.to_csv`.
     :return: None or str.
     """
-    columns = list(df.select_dtypes(include="object").columns)
-    df_post = df.select_dtypes(exclude="object")
-    df_post[columns] = df[columns].applymap(_serialize_dataobject)
-    df_post[columns] = df_post[columns].applymap(_serialize_json)
+    df_post = _dataframe_object_serde(df, _serialize_dataobject_str)
     return df_post.to_csv(*args, **kwargs)
 
 
@@ -84,10 +84,7 @@ def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
     :return: DataFrame.
     """
     df = pd.read_csv(*args, **kwargs)
-    columns = list(df.select_dtypes(include="object").columns)
-    df_post = df.select_dtypes(exclude="object")
-    df_post[columns] = df[columns].applymap(_deserialize_json)
-    df_post[columns] = df_post[columns].applymap(_deserialize_dataobject)
+    df_post = _dataframe_object_serde(df, _deserialize_dataobject_str)
 
     return df_post
 
@@ -101,8 +98,17 @@ def dataframe_from_json(*args, **kwargs) -> pd.DataFrame:
     :return: DataFrame.
     """
     df = pd.read_json(*args, **kwargs)
-    columns = list(df.select_dtypes(include="object").columns)
-    df_post = df.select_dtypes(exclude="object")
-    df_post[columns] = df[columns].applymap(_deserialize_dataobject)
+    df_post = _dataframe_object_serde(df, _deserialize_dataobject)
 
+    return df_post
+
+
+def _dataframe_object_serde(df, serde_fn: Callable[[Any], Any]):
+    columns = list(df.columns)
+    df_post = pd.DataFrame(columns=columns)
+    for column in columns:
+        if df.dtypes[column] == "object":
+            df_post[column] = df[column].apply(serde_fn)
+        else:
+            df_post[column] = df[column]
     return df_post

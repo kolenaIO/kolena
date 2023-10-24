@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -33,7 +32,7 @@ MODELS = ["gpt-3.5-turbo-0301", "gpt-3.5-turbo", "gpt-4-0314", "gpt-4"]
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     inference_mapping = {}
     model_file_path = f"s3://kolena-public-datasets/CoQA/results/{args.model}.csv"

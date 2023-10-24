@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -76,7 +75,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str], multiclass: bool
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     for model_name in args.models:
         seed_test_run(model_name, args.test_suites, args.multiclass)
     return 0

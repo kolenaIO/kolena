@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from ast import literal_eval
@@ -77,7 +76,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     test_suite_name = f"# of people :: {DATASET} [person]"
     complete_test_case = seed_complete_test_case(args)
     stratified_test_cases = seed_stratified_test_cases(complete_test_case, test_suite_name)

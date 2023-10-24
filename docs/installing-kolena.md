@@ -61,7 +61,7 @@ Certain metrics computation functionality depends on additional packages like
 
 ## Initialization
 
-Once you have `kolena` installed, initialize a session with `kolena.initialize(token)`.
+Once you have `kolena` installed, initialize a session with `kolena.initialize(api_token=token)`.
 
 From the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page, generate an API token and set
 the `KOLENA_TOKEN` environment variable:
@@ -73,10 +73,9 @@ export KOLENA_TOKEN="********"
 With the `KOLENA_TOKEN` environment variable set, initialize a client session:
 
 ```python
-import os
 import kolena
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+kolena.initialize(verbose=True)
 ```
 
 By default, sessions have static scope and persist until the interpreter is exited.

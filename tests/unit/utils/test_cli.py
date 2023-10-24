@@ -23,8 +23,8 @@ from kolena._utils.cli import base_command
 TEST_API_TOKEN = "XXXX"
 
 
-def mock_initialize(tok: str):
-    if tok != TEST_API_TOKEN:
+def mock_initialize(api_token: str):
+    if api_token != TEST_API_TOKEN:
         raise RuntimeError("bad token")
 
 

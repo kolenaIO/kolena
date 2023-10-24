@@ -108,6 +108,11 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if configurations is None:
             configurations = []
 
+        is_evaluator_class = isinstance(evaluator, Evaluator)
+        is_evaluator_function = evaluator is not None and not is_evaluator_class
+        if is_evaluator_function and _is_configured(evaluator) and len(configurations) == 0:
+            raise ValueError("evaluator requires configuration but no configurations provided")
+
         if model.workflow != test_suite.workflow:
             raise WorkflowMismatchError(
                 f"model workflow ({model.workflow}) does not match test suite workflow ({test_suite.workflow})",
@@ -121,15 +126,11 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.model = model
         self.test_suite = test_suite
         self.evaluator = evaluator
-        self.configurations = self.evaluator.configurations if isinstance(evaluator, Evaluator) else configurations
+        self.configurations = self.evaluator.configurations if is_evaluator_class else configurations
         self.reset = reset
 
         evaluator_display_name = (
-            None
-            if evaluator is None
-            else evaluator.display_name()
-            if isinstance(evaluator, Evaluator)
-            else evaluator.__name__
+            None if evaluator is None else evaluator.display_name() if is_evaluator_class else evaluator.__name__
         )
         api_configurations = (
             [_maybe_evaluator_configuration_to_api(config) for config in self.configurations]

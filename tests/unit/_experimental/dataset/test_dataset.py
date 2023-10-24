@@ -23,7 +23,7 @@ from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import COL_DATAPOINT
-from kolena._experimental.dataset._dataset import TestSampleType
+from kolena._experimental.dataset._dataset import DatapointType
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -33,13 +33,13 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 @pytest.mark.parametrize(
     "uri,expected",
     [
-        ("s3://public/png", TestSampleType.CUSTOM),
-        ("/opt/test.png", TestSampleType.IMAGE),
-        ("https://kolena.io/demo.mp4", TestSampleType.VIDEO),
-        ("file:///var/mime.csv", TestSampleType.DOCUMENT),
-        ("test.pcd", TestSampleType.POINT_CLOUD),
-        ("gcp://summary.pdf", TestSampleType.DOCUMENT),
-        ("//my.mp3", TestSampleType.CUSTOM),
+        ("s3://public/png", DatapointType.CUSTOM),
+        ("/opt/test.png", DatapointType.IMAGE),
+        ("https://kolena.io/demo.mp4", DatapointType.VIDEO),
+        ("file:///var/mime.csv", DatapointType.DOCUMENT),
+        ("test.pcd", DatapointType.POINT_CLOUD),
+        ("gcp://summary.pdf", DatapointType.DOCUMENT),
+        ("//my.mp3", DatapointType.AUDIO),
     ],
 )
 def test__infer_datatype_value(uri: str, expected: str) -> None:
@@ -54,7 +54,7 @@ def test__infer_datatype() -> None:
             ),
         ),
     ).equals(
-        pd.Series([TestSampleType.DOCUMENT, TestSampleType.IMAGE, TestSampleType.VIDEO, TestSampleType.POINT_CLOUD]),
+        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
     )
     assert _infer_datatype(
         pd.DataFrame(
@@ -64,7 +64,7 @@ def test__infer_datatype() -> None:
             ),
         ),
     ).equals(
-        pd.Series([TestSampleType.DOCUMENT, TestSampleType.IMAGE, TestSampleType.VIDEO, TestSampleType.POINT_CLOUD]),
+        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
     )
     assert (
         _infer_datatype(
@@ -74,7 +74,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == TestSampleType.TEXT
+        == DatapointType.TEXT
     )
     assert (
         _infer_datatype(
@@ -84,7 +84,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == TestSampleType.CUSTOM
+        == DatapointType.CUSTOM
     )
 
 
@@ -114,7 +114,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     category=dp["category"],
                     bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
                     label=dp["label"]._to_dict(),
-                    data_type=TestSampleType.IMAGE,
+                    data_type=DatapointType.IMAGE,
                 )
                 for dp in datapoints
             ],
@@ -141,15 +141,14 @@ def test__datapoint_dataframe__serde_locator() -> None:
         ],
     )
     df_deserialized = _to_deserialized_dataframe(df_serialized)
-    assert sorted(df_deserialized.columns) == sorted(df_expected.columns)
-
-    assert_frame_equal(df_deserialized[df_expected.columns], df_expected)
+    assert_frame_equal(df_deserialized, df_expected)
 
 
 def test__datapoint_dataframe__serde_text() -> None:
     datapoints = [
         dict(
             text=f"foo-{i}",
+            value=i,
             category="A" if i < 5 else "B",
         )
         for i in range(10)
@@ -158,7 +157,8 @@ def test__datapoint_dataframe__serde_text() -> None:
     df_expected = pd.DataFrame(
         dict(
             datapoint=[
-                dict(text=dp["text"], category=dp["category"], data_type=TestSampleType.TEXT) for dp in datapoints
+                dict(text=dp["text"], value=dp["value"], category=dp["category"], data_type=DatapointType.TEXT)
+                for dp in datapoints
             ],
         ),
     )
@@ -166,11 +166,19 @@ def test__datapoint_dataframe__serde_text() -> None:
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
 
-    df_expected = pd.DataFrame([dict(text=dp["text"], category=dp["category"]) for dp in datapoints])
+    df_expected = pd.DataFrame(datapoints)
     df_deserialized = _to_deserialized_dataframe(df_serialized)
-    assert sorted(df_deserialized.columns) == sorted(df_expected.columns)
+    assert_frame_equal(df_deserialized, df_expected)
 
-    assert_frame_equal(df_deserialized[df_expected.columns], df_expected)
+
+def test__datapoint_dataframe__columns_unlabeled() -> None:
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy())
+    df_deserialized = _to_deserialized_dataframe(df_serialized)
+
+    # Column class mismatch is expected due to json serialization
+    df_expected.rename(mapper=str, axis="columns", inplace=True)
+    assert_frame_equal(df_deserialized, df_expected)
 
 
 def test__datapoint_dataframe__empty() -> None:

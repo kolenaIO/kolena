@@ -35,6 +35,7 @@ from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
+from kolena.workflow import no_op_evaluator
 from kolena.workflow import test
 from kolena.workflow import TestCase
 from kolena.workflow import TestCases
@@ -92,6 +93,14 @@ def test__init(
     evaluator1 = DifferentDummyEvaluator(configurations=[DummyConfiguration(value="a")])
     test_run5 = TestRun(dummy_model, dummy_test_suites[0], evaluator1)
     assert test_run0._id != test_run5._id
+
+
+def test__init__missing_configuration(dummy_model: Model, dummy_test_suites: List[TestSuite]) -> None:
+    with pytest.raises(ValueError):
+        test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config)
+
+    with pytest.raises(ValueError):
+        test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, configurations=[])
 
 
 def test__load_test_samples(
@@ -229,7 +238,6 @@ def test__test__mark_crashed(
 def test__evaluator__unconfigured(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     class UnconfiguredDummyEvaluator(DummyEvaluator):
         def compute_test_suite_metrics(
@@ -343,16 +351,22 @@ def test__handle_nan_inf() -> None:
 def test__test__function_evaluator(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     test(dummy_model, dummy_test_suites[0], dummy_evaluator_function)
     TestRun(dummy_model, dummy_test_suites[0], dummy_evaluator_function)
 
 
+def test__test__noop_evaluator(
+    dummy_model: Model,
+    dummy_test_suites: List[TestSuite],
+) -> None:
+    test(dummy_model, dummy_test_suites[0], no_op_evaluator)
+    TestRun(dummy_model, dummy_test_suites[0], no_op_evaluator)
+
+
 def test__test__function_evaluator__with_skip(
     dummy_model: Model,
     dummy_test_suites: List[TestSuite],
-    dummy_test_samples: List[DummyTestSample],
 ) -> None:
     config = [DummyConfiguration(value="skip")]
     test(dummy_model, dummy_test_suites[0], dummy_evaluator_function_with_config, config)

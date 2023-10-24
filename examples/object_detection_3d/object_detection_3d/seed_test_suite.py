@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
-import os
 from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
@@ -40,7 +39,7 @@ def parse_args():
 
 
 def seed_test_suite(test_suite_name: str, test_samples: List[Tuple[TestSample, GroundTruth]]):
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     test_cases = TestCase.init_many([(test_suite_name, test_samples)], reset=True)
     test_suite = TestSuite(test_suite_name, test_cases=test_cases, reset=True)
