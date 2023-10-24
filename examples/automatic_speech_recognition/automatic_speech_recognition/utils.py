@@ -13,7 +13,9 @@
 # limitations under the License.
 import difflib
 import re
-from typing import Union, Dict, Any
+from typing import Any
+from typing import Dict
+from typing import Union
 
 from numwords_to_nums.numwords_to_nums import NumWordsToNum
 from workflow import GroundTruth

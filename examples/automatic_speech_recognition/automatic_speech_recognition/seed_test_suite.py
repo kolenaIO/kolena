@@ -122,19 +122,19 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
     df.columns = df.columns.str.replace(r"(\s|\.)+", "_", regex=True)  # sanitize column names to use underscores
 
     required_columns = {
-        'id',
-        'locator',
-        'text',
-        'inference_whisper_default',
-        'inference_wav2vec-base-960h',
-        'speaker_sex',
-        'duration_seconds',
-        'max_pitch',
-        'energy',
-        'zero_crossing_rate',
-        'word_count',
-        'longest_word_len',
-        'tempo'
+        "id",
+        "locator",
+        "text",
+        "inference_whisper_default",
+        "inference_wav2vec-base-960h",
+        "speaker_sex",
+        "duration_seconds",
+        "max_pitch",
+        "energy",
+        "zero_crossing_rate",
+        "word_count",
+        "longest_word_len",
+        "tempo",
     }
     assert all(required_column in set(df.columns) for required_column in required_columns)
 
