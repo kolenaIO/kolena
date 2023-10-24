@@ -70,7 +70,7 @@ def seed_test_run(
         df: pd.DataFrame,
     ) -> Callable[[TestSample], Inference]:
         def infer(sample: TestSample) -> Inference:
-            result = df.loc[df["id"] == sample.metadata["file_id"]]
+            result = df.loc[df["id"] == sample.metadata["id"]]
             transcription = result[f"inference_{mod}"].values[0]
             return Inference(
                 transcription=ClassificationLabel(transcription),
