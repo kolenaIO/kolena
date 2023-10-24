@@ -42,7 +42,7 @@ class Inference(BaseInference):
     transcription: ClassificationLabel
 
 
-_workflow, TestCase, TestSuite, Model = define_workflow("Speech Recognition", TestSample, GroundTruth, Inference)
+_workflow, TestCase, TestSuite, Model = define_workflow("Automatic Speech Recognition", TestSample, GroundTruth, Inference)
 
 
 @dataclass(frozen=True)

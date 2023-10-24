@@ -1,4 +1,4 @@
-# Example Integration: Speech Recognition
+# Example Integration: Automatic Speech Recognition
 This example integration uses the [Whisper](https://github.com/openai/whisper) and [Wav2Vec2](https://huggingface.co/facebook/wav2vec2-base) models, and [LibriSpeech dataset](https://www.openslr.org/12) to demonstrate how to test speech recognition problems on Kolena.
 
 ## Setup
@@ -17,7 +17,7 @@ The data for this example integration lives in the publicly accessible S3 bucket
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
 
-### Speech Recognition on LibriSpeech
+### Automatic Speech Recognition on LibriSpeech
 
 This project defines two scripts that perform the following operations:
 
