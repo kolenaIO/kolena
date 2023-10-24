@@ -30,6 +30,7 @@ nav:
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
+          - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
@@ -138,7 +139,11 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets:
       check_paths: true
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
       slugify: !!python/object/apply:pymdownx.slugs.slugify # NOTE: insiders only

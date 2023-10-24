@@ -52,29 +52,32 @@ To understand the formula, let's break down each component into their respective
 
 | Candidate | Reference |
 | --- | --- |
-| `Under the starry night, we danced with joy.` | `We danced with joy under the starry night.` |
+| `Under the starry night, we danced with glee.` | `We danced with joy under the starry night.` |
 
 ??? example "Step 1: Calculate FMean"
-    Our first step is trivial. Since both sentences contain the same words, our unigram precision and recall are both
-    1.0.
-    As a result, our FMean is $\frac{10 \times 1.0 \times 1.0}{1.0 + 9 \times 1.0} = 1$
+    Upon analysis, our precision is $\frac{7}{8} = 0.875$ and our recall is also $\frac{7}{8} = 0.875$.
+    As a result, our FMean is
+
+    $$
+    \frac{10 \times 0.875 \times 0.875}{0.875 + 9 \times 0.875} = 0.875
+    $$
 
 ??? example "Step 2: Calculate Word Order Penalty"
     We can break up our candidate sentence into two chunks to map it to our reference sentence.
 
-    Candidate: $\underbrace{\text{Under the starry night}}_{\text{Chunk 2}} \space \underbrace{\text{we danced with joy}}_{\text{Chunk 1}}$ <br>
-    Reference: $\underbrace{\text{We danced with joy}}_{\text{Chunk 1}} \space \underbrace{\text{under the starry night}}_{\text{Chunk 2}}$
+    Candidate: $\underbrace{\text{Under the starry night}}_{\text{Chunk 2}} \space \underbrace{\text{we danced with}}_{\text{Chunk 1}} \space\text{glee}$ <br>
+    Reference: $\underbrace{\text{We danced with}}_{\text{Chunk 1}} \space\text{joy}\space \underbrace{\text{under the starry night}}_{\text{Chunk 2}}$
 
-    Between the two chunks, we have matched 8 unigrams. This gives us a penalty score of $0.5 \times \frac{2}{8} = 0.125$.
+    Between the two chunks, we have matched 7 unigrams. This gives us a penalty score of $0.5 \times \frac{2}{7} = 0.143$.
 
 ??? example "Step 3: Calculate METEOR"
     With our Penalty and FMean calculated, we can proceed with calculating the METEOR score.
 
     $$
-    \text{METEOR} = 1 * (1 - 0.125) = 0.875.
+    \text{METEOR} = 0.875 * (1 - 0.143) = 0.750.
     $$
 
-    Not bad! We have a pretty high score for two sentences that are semantically the same but have different orders.
+    Not bad! We have a pretty high score for two sentences that are semantically very similar but have different orders.
 
 Lets try the same reference example with a slightly different candidate.
 
