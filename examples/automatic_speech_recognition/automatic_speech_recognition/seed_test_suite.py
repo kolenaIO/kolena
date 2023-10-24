@@ -147,7 +147,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
     for record in tqdm(df.itertuples(index=False), total=len(df)):
         test_sample = TestSample(
             locator=f"s3://{BUCKET}/{DATASET}/{record.locator}",
-            metadata={f: getattr(record, f) for f in (required_columns - non_metadata_columns)},
+            metadata={f: getattr(record, f) for f in required_columns - non_metadata_columns},
         )
         ground_truth = GroundTruth(transcription=ClassificationLabel(record.text))
         test_samples.append((test_sample, ground_truth))
