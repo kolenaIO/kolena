@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -22,7 +21,8 @@ import langid
 import numpy as np
 from jiwer import cer
 from jiwer import process_words
-from numwords_to_nums.numwords_to_nums import NumWordsToNum
+from utils import generate_diff_word_level
+from utils import preprocess_transcription
 from workflow import GroundTruth
 from workflow import Inference
 from workflow import TestCase
@@ -36,18 +36,25 @@ from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
+from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
-from kolena.workflow.annotation import ClassificationLabel
-
-from utils import generate_diff_word_level, preprocess_transcription
 
 
 def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
     gt = preprocess_transcription(gt)
     inf = preprocess_transcription(inf)
 
-    word_fp, (fn_count, fp_count, ins_count, del_count, sub_count, sub_list, ins_list, del_list) = generate_diff_word_level(gt, inf, mode="fp")
+    word_fp, (
+        fn_count,
+        fp_count,
+        ins_count,
+        del_count,
+        sub_count,
+        sub_list,
+        ins_list,
+        del_list,
+    ) = generate_diff_word_level(gt, inf, mode="fp")
     word_fn, _ = generate_diff_word_level(gt, inf, mode="fn")
 
     wer_metrics = process_words(gt, inf)
@@ -75,10 +82,21 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         DeletionCount=del_count,
         SubstitutionCount=sub_count,
         Language=language,
-
-        Substitutions = [ClassificationLabel(item) for sublist in sub_list for item in (sublist if isinstance(sublist, list) else [sublist])],
-        Insertions = [ClassificationLabel(item) for sublist in ins_list for item in (sublist if isinstance(sublist, list) else [sublist])],
-        Deletions = [ClassificationLabel(item) for sublist in del_list for item in (sublist if isinstance(sublist, list) else [sublist])],
+        Substitutions=[
+            ClassificationLabel(item)
+            for sublist in sub_list
+            for item in (sublist if isinstance(sublist, list) else [sublist])
+        ],
+        Insertions=[
+            ClassificationLabel(item)
+            for sublist in ins_list
+            for item in (sublist if isinstance(sublist, list) else [sublist])
+        ],
+        Deletions=[
+            ClassificationLabel(item)
+            for sublist in del_list
+            for item in (sublist if isinstance(sublist, list) else [sublist])
+        ],
     )
 
 

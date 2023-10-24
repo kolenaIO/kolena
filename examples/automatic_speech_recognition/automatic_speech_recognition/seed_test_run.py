@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Callable
@@ -26,11 +25,11 @@ from workflow import TestSample
 from workflow import TestSuite
 
 import kolena
-from kolena.workflow.test_run import test
 from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.test_run import test
 
-BUCKET = 'kolena-public-datasets'
-DATASET = 'LibriSpeech'
+BUCKET = "kolena-public-datasets"
+DATASET = "LibriSpeech"
 
 MODEL_MAP: Dict[str, Tuple[str, str]] = {
     "whisper-1-default": ("whisper-1-default", "whisper-1-default"),
@@ -53,7 +52,7 @@ COMMON_METADATA = {
     "id": "1272-128104-0000",
     "locator": "./dev-clean/1272/128104/1272-128104-0000.flac",
     "text": "mister quilter is the apostle of the middle classes and we are glad to welcome his gospel",
-    "speaker_sex": ' M ',
+    "speaker_sex": " M ",
     "duration_seconds": 5.855,
     "max_pitch": 107.211,
     "energy": 0.00381,
@@ -96,10 +95,10 @@ def seed_test_run(
         df: pd.DataFrame,
     ) -> Callable[[TestSample], Inference]:
         def infer(sample: TestSample) -> Inference:
-            result = df.loc[df["id"] == sample.metadata['file_id']]
+            result = df.loc[df["id"] == sample.metadata["file_id"]]
             transcription = result[f"inference_{mod[0]}"].values[0]
             return Inference(
-                transcription=ClassificationLabel(transcription)
+                transcription=ClassificationLabel(transcription),
             )
 
         return infer
@@ -148,7 +147,8 @@ if __name__ == "__main__":
         "model",
         type=str,
         choices=sorted(MODEL_MAP.keys()),
-        help="The name of the model to test.")
+        help="The name of the model to test.",
+    )
     ap.add_argument(
         "--test-suite",
         type=str,
