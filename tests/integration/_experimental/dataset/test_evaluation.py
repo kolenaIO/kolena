@@ -19,7 +19,6 @@ import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
-from pydantic.dataclasses import dataclass
 
 from kolena._experimental.dataset import fetch_evaluation_results
 from kolena._experimental.dataset import fetch_inferences
@@ -27,9 +26,9 @@ from kolena._experimental.dataset import register_dataset
 from kolena._experimental.dataset import test
 from kolena._experimental.dataset._evaluation import EVAL_FUNC_TYPE
 from kolena._experimental.dataset._evaluation import INFER_FUNC_TYPE
+from kolena._experimental.dataset._evaluation import TYPE_EVALUATION_CONFIG
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
-from kolena.workflow import EvaluatorConfiguration
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
@@ -40,16 +39,6 @@ def _assert_frame_equal(df1: pd.DataFrame, df2: pd.DataFrame, columns: Optional[
         assert_frame_equal(df1, df2)
     else:
         assert_frame_equal(df1[columns], df2[columns])
-
-
-@dataclass(frozen=True)
-class ThresholdConfiguration(EvaluatorConfiguration):
-    threshold: Optional[float] = None
-
-    def display_name(self) -> str:
-        if self.threshold is not None:
-            return f"Confidence Above Threshold (threshold={self.threshold})"
-        return "Max Confidence"
 
 
 def get_df_dp(n: int = 20) -> pd.DataFrame:
@@ -102,7 +91,7 @@ def get_eval_func(
     def eval_func(
         datapoints: pd.DataFrame,
         inferences: pd.DataFrame,
-        eval_config: ThresholdConfiguration,
+        eval_config: TYPE_EVALUATION_CONFIG,
     ) -> pd.DataFrame:
         _metrics = datapoints.set_index(id_col).join(df_mtr.set_index(id_col), how=how).reset_index()[columns]
         if keep_none:
@@ -125,12 +114,8 @@ def test__test() -> None:
     mtr_columns = ["score"]
 
     eval_configs = [
-        ThresholdConfiguration(
-            threshold=0.3,
-        ),
-        ThresholdConfiguration(
-            threshold=0.6,
-        ),
+        {"threshold": 0.3},
+        {"threshold": 0.6},
     ]
     test(
         dataset_name,
@@ -143,7 +128,7 @@ def test__test() -> None:
     df_by_eval = fetch_evaluation_results(dataset_name, model_name)
     assert len(df_by_eval) == 2
     assert sorted([cfg for cfg, *_ in df_by_eval], key=lambda x: x.get("threshold")) == sorted(
-        [dict(cfg._to_dict()) for cfg in eval_configs],
+        eval_configs,
         key=lambda x: x.get("threshold"),
     )
     expected_df_dp = df_dp[3:10].reset_index(drop=True)

@@ -19,15 +19,6 @@ from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
-
-try:
-    from typing import Protocol
-except ImportError:
-    from typing_extensions import Protocol
-try:
-    from typing import runtime_checkable
-except ImportError:
-    from typing_extensions import runtime_checkable
 from typing import Tuple
 from typing import Union
 
@@ -57,13 +48,7 @@ from kolena._utils.state import API_V2
 from kolena.errors import IncorrectUsageError
 
 
-@runtime_checkable
-class EvaluationConfiguration(Protocol):
-    def _to_dict(self) -> Dict[str, Any]:
-        ...
-
-
-TYPE_EVALUATION_CONFIG = Union[EvaluationConfiguration, Dict]
+TYPE_EVALUATION_CONFIG = Dict[str, Any]
 INFER_FUNC_TYPE = Callable[[pd.DataFrame], pd.DataFrame]
 EVAL_FUNC_TYPE = Callable[[pd.DataFrame, pd.DataFrame, Optional[TYPE_EVALUATION_CONFIG]], pd.DataFrame]
 
@@ -136,7 +121,7 @@ def _upload_metrics(
     df_metrics_by_eval = []
     for eval_config, df_metrics in all_metrics:
         df_metrics_eval = _to_serialized_dataframe(df_metrics, column=COL_METRICS)
-        df_metrics_eval["eval_config"] = json.dumps(eval_config._to_dict()) if eval_config is not None else None
+        df_metrics_eval["eval_config"] = json.dumps(eval_config) if eval_config is not None else None
         df_metrics_by_eval.append(pd.concat([df["inference_id"], df_metrics_eval], axis=1))
     df_metrics = (
         pd.concat(df_metrics_by_eval, ignore_index=True)
