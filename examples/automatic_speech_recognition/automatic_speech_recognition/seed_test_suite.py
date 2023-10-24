@@ -122,29 +122,32 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
     df.columns = df.columns.str.replace(r"(\s|\.)+", "_", regex=True)  # sanitize column names to use underscores
 
     required_columns = {
-        "id",
-        "locator",
-        "text",
-        "inference_whisper_default",
-        "inference_wav2vec-base-960h",
-        "speaker_sex",
-        "duration_seconds",
-        "tempo",
+        'id',
+        'locator',
+        'text',
+        'inference_whisper_default',
+        'inference_wav2vec-base-960h',
+        'speaker_sex',
+        'duration_seconds',
+        'max_pitch',
+        'energy',
+        'zero_crossing_rate',
+        'word_count',
+        'longest_word_len',
+        'tempo'
     }
     assert all(required_column in set(df.columns) for required_column in required_columns)
-    optional_columns = {
-        "max_pitch",
-        "energy",
-        "zero_crossing_rate",
-        "word_count",
-        "longest_word_len",
+
+    non_metadata_columns = {
+        "inference_whisper_default",
+        "inference_wav2vec-base-960h",
     }
 
     test_samples = []
     for record in tqdm(df.itertuples(index=False), total=len(df)):
         test_sample = TestSample(
             locator=f"s3://{BUCKET}/{DATASET}/{record.locator}",
-            metadata={f: getattr(record, f) for f in set(record._fields) - required_columns - optional_columns},
+            metadata={f: getattr(record, f) for f in (required_columns - non_metadata_columns)},
         )
         ground_truth = GroundTruth(transcription=ClassificationLabel(record.text))
         test_samples.append((test_sample, ground_truth))

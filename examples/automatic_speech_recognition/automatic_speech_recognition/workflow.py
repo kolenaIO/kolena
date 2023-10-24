@@ -43,7 +43,7 @@ class Inference(BaseInference):
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow(
-    "Automatic Speech Recognition",
+    "Speech Recognition",
     TestSample,
     GroundTruth,
     Inference,
