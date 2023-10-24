@@ -145,6 +145,8 @@ def _upload_metrics(
             columns=["inference_id", COL_METRICS],
         )
     )
+    if df_metrics["inference_id"].isnull().any():
+        raise IncorrectUsageError("cannot upload metrics without inference")
 
     load_uuid = init_upload().uuid
     upload_data_frame(df=df_metrics, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
