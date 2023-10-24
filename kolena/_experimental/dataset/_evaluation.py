@@ -55,7 +55,7 @@ EVAL_FUNC_TYPE = Callable[[pd.DataFrame, pd.DataFrame, Optional[TYPE_EVALUATION_
 
 def _fetch_dataset(dataset: str) -> pd.DataFrame:
     df_data_batch = list(_iter_dataset_raw(dataset))
-    return pd.concat(df_data_batch) if df_data_batch else pd.DataFrame(columns=["id", "datapoint"])
+    return pd.concat(df_data_batch) if df_data_batch else pd.DataFrame(columns=["id", COL_DATAPOINT])
 
 
 def _iter_inference_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
@@ -105,7 +105,7 @@ def fetch_inferences(dataset: str, model: str) -> Tuple[pd.DataFrame, pd.DataFra
 def _upload_inferences(model: str, df: pd.DataFrame) -> None:
     load_uuid = init_upload().uuid
     upload_data_frame(
-        df=df[["id", "inference"]],
+        df=df[["id", COL_INFERENCE]],
         batch_size=BatchSize.UPLOAD_RECORDS.value,
         load_uuid=load_uuid,
     )
@@ -114,14 +114,14 @@ def _upload_inferences(model: str, df: pd.DataFrame) -> None:
     krequests.raise_for_status(response)
 
 
-def _upload_metrics(
+def _process_metrics(
     df: pd.DataFrame,
     all_metrics: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame]],
-) -> int:
+) -> pd.DataFrame:
     df_metrics_by_eval = []
     for eval_config, df_metrics in all_metrics:
         df_metrics_eval = _to_serialized_dataframe(df_metrics, column=COL_METRICS)
-        df_metrics_eval["eval_config"] = json.dumps(eval_config) if eval_config is not None else None
+        df_metrics_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
         df_metrics_by_eval.append(pd.concat([df["inference_id"], df_metrics_eval], axis=1))
     df_metrics = (
         pd.concat(df_metrics_by_eval, ignore_index=True)
@@ -130,15 +130,21 @@ def _upload_metrics(
             columns=["inference_id", COL_METRICS],
         )
     )
-    if df_metrics["inference_id"].isnull().any():
+    return df_metrics
+
+
+def _upload_metrics(
+    df: pd.DataFrame,
+) -> int:
+    if df["inference_id"].isnull().any():
         raise IncorrectUsageError("cannot upload metrics without inference")
 
     load_uuid = init_upload().uuid
-    upload_data_frame(df=df_metrics, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+    upload_data_frame(df=df, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
     request = UploadMetricsRequest(uuid=load_uuid)
     response = krequests.post(EvaluationPath.UPLOAD_METRICS, json=asdict(request))
     krequests.raise_for_status(response)
-    return len(df_metrics)
+    return len(df)
 
 
 def fetch_evaluation_results(
@@ -225,5 +231,6 @@ def test(
             metrics.append(single_metrics)
             log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
 
-        n_uploaded_metrics = _upload_metrics(df_data, list(zip(eval_configs, metrics)))
+        df_metrics = _process_metrics(df_data, list(zip(eval_configs, metrics)))
+        n_uploaded_metrics = _upload_metrics(df_metrics)
         log.info(f"uploaded {n_uploaded_metrics} evaluation results")
