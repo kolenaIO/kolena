@@ -11,17 +11,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# noreorder
-from kolena._experimental.dataset._dataset import fetch_dataset
-from kolena._experimental.dataset._dataset import register_dataset
-from kolena._experimental.dataset._evaluation import fetch_evaluation_results
-from kolena._experimental.dataset._evaluation import fetch_inferences
-from kolena._experimental.dataset._evaluation import test
+from enum import Enum
 
-__all__ = [
-    "register_dataset",
-    "fetch_dataset",
-    "fetch_inferences",
-    "fetch_evaluation_results",
-    "test",
-]
+from pydantic.dataclasses import dataclass
+
+from kolena._api.v1.batched_load import BatchedLoad
+
+
+class Path(str, Enum):
+    UPLOAD_METRICS = "/evaluation/upload-metrics"
+    LOAD_METRICS = "/evaluation/load-metrics"
+
+
+@dataclass(frozen=True)
+class LoadMetricsRequest(BatchedLoad.BaseInitDownloadRequest):
+    model: str
+    dataset: str
+
+
+@dataclass(frozen=True)
+class UploadMetricsRequest:
+    uuid: str

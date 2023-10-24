@@ -14,16 +14,19 @@
 import json
 import random
 
+import numpy as np
 import pandas as pd
 import pytest
-from pandas._testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 
 from kolena._experimental.dataset._dataset import _infer_datatype
 from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
-from kolena._experimental.dataset._dataset import COL_DATAPOINT
 from kolena._experimental.dataset._dataset import DatapointType
+from kolena._experimental.dataset.common import COL_DATAPOINT
+from kolena._experimental.dataset.common import COL_INFERENCE
+from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -120,7 +123,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
             ],
         ),
     )
-    df_serialized = _to_serialized_dataframe(df)
+    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
 
@@ -140,7 +143,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
             for dp in datapoints
         ],
     )
-    df_deserialized = _to_deserialized_dataframe(df_serialized)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
     assert_frame_equal(df_deserialized, df_expected)
 
 
@@ -162,19 +165,19 @@ def test__datapoint_dataframe__serde_text() -> None:
             ],
         ),
     )
-    df_serialized = _to_serialized_dataframe(df)
+    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
 
     df_expected = pd.DataFrame(datapoints)
-    df_deserialized = _to_deserialized_dataframe(df_serialized)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
     assert_frame_equal(df_deserialized, df_expected)
 
 
 def test__datapoint_dataframe__columns_unlabeled() -> None:
     df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
-    df_serialized = _to_serialized_dataframe(df_expected.copy())
-    df_deserialized = _to_deserialized_dataframe(df_serialized)
+    df_serialized = _to_serialized_dataframe(df_expected.copy(), column=COL_DATAPOINT)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
 
     # Column class mismatch is expected due to json serialization
     df_expected.rename(mapper=str, axis="columns", inplace=True)
@@ -182,6 +185,38 @@ def test__datapoint_dataframe__columns_unlabeled() -> None:
 
 
 def test__datapoint_dataframe__empty() -> None:
-    df_serialized = _to_serialized_dataframe(pd.DataFrame())
+    df_serialized = _to_serialized_dataframe(pd.DataFrame(), column=COL_DATAPOINT)
     assert df_serialized.empty
     assert COL_DATAPOINT in df_serialized.columns
+
+
+def test__datapoint_dataframe__data_type_field_exist() -> None:
+    column_name = COL_DATAPOINT
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy(), column=column_name)
+    assert column_name in df_serialized.columns
+    for _, row in df_serialized.iterrows():
+        assert DATA_TYPE_FIELD in row[column_name]
+
+
+def test__inference_dataframe__serde_none() -> None:
+    column_name = COL_INFERENCE
+    data = [
+        ['{"city": "London"}'],
+        ['{"city": "Tokyo"}'],
+        [None],
+    ]
+    df_serialized = pd.DataFrame(data, columns=[column_name])
+
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["city"])
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
+    assert_frame_equal(df_deserialized, df_expected)
+
+
+def test__inference_dataframe__data_type_field_not_exist() -> None:
+    column_name = COL_INFERENCE
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy(), column=column_name)
+    assert column_name in df_serialized.columns
+    for _, row in df_serialized.iterrows():
+        assert DATA_TYPE_FIELD not in row[column_name]
