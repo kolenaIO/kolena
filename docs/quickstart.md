@@ -117,7 +117,7 @@ and run directly:
     Semantic Segmentation on class `Person` using the
     [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset
 
-- [:audio-workflow-20: Example: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/automatic_speech_recognition)
+- [:kolena-audio-workflow-20: Example: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/automatic_speech_recognition)
 
     ![Example image from the automatic speech recognition workflow.](assets/images/librispeech-workflow-example.png)
 
