@@ -44,26 +44,11 @@ from kolena.workflow.plot import CurvePlot
 
 
 def load_data(
-    test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+) -> Tuple[List[np.ndarray], [np.ndarray]]:
     data_loader = DataLoader()
-
-    batch_size = 32
-    n_batches = math.ceil(len(inferences) / batch_size)
-    print(f"processing {len(inferences)} images in {n_batches} batches...")
-
-    gt_masks = []
-    inf_probs = []
-    zipped_data = list(zip(test_samples, ground_truths, inferences))
-    for batch in progress_bar(np.array_split(zipped_data, n_batches)):
-        gt_masks_batch, inf_probs_batch = data_loader.load_batch(batch)
-        gt_masks.extend(gt_masks_batch)
-        inf_probs.extend(inf_probs_batch)
-
-    print(f"finished loading {len(inferences)} ground truth masks and inferences")
-    return gt_masks, inf_probs
+    return data_loader.load_batch(ground_truths, inferences)
 
 
 def apply_threshold(
@@ -188,7 +173,7 @@ def evaluate_semantic_segmentation(
     test_cases: TestCases,
     configuration: SegmentationConfiguration,
 ) -> EvaluationResults:
-    gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
+    gt_masks, inf_probs = zip(*load_data(ground_truths, inferences))
     inf_masks = apply_threshold(inf_probs, configuration.threshold)
 
     test_sample_metrics = compute_test_sample_metrics(test_samples, gt_masks, inf_masks, configuration.threshold)

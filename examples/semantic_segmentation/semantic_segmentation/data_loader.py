@@ -18,6 +18,7 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
+from tqdm import tqdm
 from pydantic.dataclasses import dataclass
 from semantic_segmentation.utils import create_bitmap
 from semantic_segmentation.utils import download_binary_array
@@ -45,28 +46,20 @@ ResultMasksByLocator = Tuple[str, ResultMask, ResultMask, ResultMask]
 
 class DataLoader:
     def __init__(self):
-        self.pool = ThreadPoolExecutor()
+        self.pool = ThreadPoolExecutor(max_workers=32)
 
     def load_batch(
         self,
-        batch: List[Tuple[TestSample, GroundTruth, Inference]],
+        ground_truths: List[GroundTruth],
+        inferences: List[Inference]
     ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
-        def load(ts: TestSample, gt: GroundTruth, inf: Inference) -> Tuple[str, np.ndarray, np.ndarray]:
+        def load(gt: GroundTruth, inf: Inference) -> Tuple[np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)
             gt_mask[gt_mask != 1] = 0  # binarize gt_mask
-            return ts.locator, gt_mask, inf_prob
+            return gt_mask, inf_prob
 
-        futures = [self.pool.submit(functools.partial(load, *item)) for item in batch]
-        successes, failures = wait(futures)
-        if len(failures) != 0:
-            exceptions = ", ".join([str(failure.exception()) for failure in failures])
-            raise RuntimeError(f"failed to load {len(failures)} samples: {exceptions}")
-
-        # splice together correct ordering
-        gt_by_locator = {result[0]: result[1] for result in [f.result() for f in successes]}
-        inf_by_locator = {result[0]: result[2] for result in [f.result() for f in successes]}
-        return [gt_by_locator[ts.locator] for ts, _, _ in batch], [inf_by_locator[ts.locator] for ts, _, _ in batch]
+        return tqdm(self.pool.map(load, ground_truths, inferences), total=len(ground_truths))
 
     def upload_batch(
         self,
@@ -101,7 +94,7 @@ class DataLoader:
 
 class ActivationMapUploader:
     def __init__(self):
-        self.pool = ThreadPoolExecutor(max_workers=32)
+        self.pool = ThreadPoolExecutor()
         self.futures = {}
 
     def wait(self) -> None:

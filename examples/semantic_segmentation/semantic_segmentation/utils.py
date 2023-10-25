@@ -26,6 +26,7 @@ from kolena.workflow.visualization import colorize_activation_map
 from kolena.workflow.visualization import encode_png
 
 s3 = boto3.client("s3")
+binary_array_cache: dict[str, np.ndarray] = {}
 
 
 def parse_s3_path(s3_path: str) -> Tuple[str, str]:
@@ -43,7 +44,7 @@ def download_mask(locator: str) -> np.ndarray:
     Download a mask stored on s3 and return it as a np array
     """
     bucket, key = parse_s3_path(locator)
-    with tempfile.NamedTemporaryFile() as f:
+    with tempfile.TemporaryFile() as f:
         s3.download_fileobj(bucket, key, f)
         data = skimage.io.imread(f)
         return data
@@ -55,11 +56,16 @@ def download_binary_array(locator: str) -> np.ndarray:
     NOTE: couldn't use `download_fileobj` as it was raising 'ValueError: cannot reshape array of size ... into
     shape (..., ...)' — seems like the download was incomplete
     """
+    if locator in binary_array_cache:
+        return binary_array_cache[locator]
+
     bucket, key = parse_s3_path(locator)
-    obj = boto3.resource("s3").Object(bucket, key)
-    with BytesIO(obj.get()["Body"].read()) as f:
+    obj_response = s3.get_object(Bucket=bucket, Key=key)
+    with BytesIO(obj_response["Body"].read()) as f:
         f.seek(0)
-        return np.load(f)
+        binary_array = np.load(f)
+        binary_array_cache[locator] = binary_array
+        return binary_array
 
 
 def upload_image_buffer(locator: str, io_buf: BytesIO) -> None:
