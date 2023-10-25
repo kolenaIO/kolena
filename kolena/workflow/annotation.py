@@ -36,6 +36,7 @@ from abc import ABCMeta
 from functools import reduce
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 from pydantic.dataclasses import dataclass
@@ -55,6 +56,7 @@ class _AnnotationType(DataType):
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
     LABEL = "LABEL"
+    TIME_SEGMENT = "TIME_SEGMENT"
 
     @staticmethod
     def _data_category() -> str:
@@ -326,6 +328,17 @@ class ScoredLabel(Label):
 
 ScoredClassificationLabel = ScoredLabel
 """Alias for [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class TimeSegment(Annotation):
+    start: float
+    end: float
+    group: Optional[str]
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.TIME_SEGMENT
 
 
 _ANNOTATION_TYPES = [
