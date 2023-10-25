@@ -25,8 +25,8 @@ from pydantic.types import StrictStr
 
 class EventAPI:
     class Path(str, Enum):
-        PROFILE = "/tracking/profile"
-        EVENT = "/tracking/event"
+        PROFILE = "/event/profile"
+        EVENT = "/event"
 
     class Event(str, Enum):
         # auth
