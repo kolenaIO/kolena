@@ -25,7 +25,7 @@ from typing import Callable
 import kolena
 from kolena._api.v1.client_log import ClientLog as API
 from kolena._api.v1.core import TestRun as CoreAPI
-from kolena._api.v1.event_tracking import Tracking as EventTrackingAPI
+from kolena._api.v1.event import EventAPI
 from kolena._utils import krequests
 from kolena._utils.state import _client_state
 
@@ -91,17 +91,17 @@ def report_crash(id: int, endpoint_path: str):
 
 
 def set_profile():
-    krequests.put(endpoint_path=EventTrackingAPI.Path.PROFILE)
+    krequests.put(endpoint_path=EventAPI.Path.PROFILE)
 
 
-def track_event(request: EventTrackingAPI.TrackEventRequest):
-    krequests.post(endpoint_path=EventTrackingAPI.Path.EVENT, json=dataclasses.asdict(request))
+def track_event(request: EventAPI.RecordEventRequest):
+    krequests.post(endpoint_path=EventAPI.Path.EVENT, json=dataclasses.asdict(request))
 
 
-def with_invocation_tracked(event_name: str):
+def with_event(event_name: str):
     """function decorator to track start and end of an event"""
 
-    def tracking_decorator(func: Callable) -> Callable:
+    def event_decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             if not _client_state.telemetry:
@@ -118,7 +118,7 @@ def with_invocation_tracked(event_name: str):
             finally:
                 event_metadata["duration"] = round((datetime.datetime.now() - start_time).total_seconds(), 3)
                 track_event(
-                    EventTrackingAPI.TrackEventRequest(
+                    EventAPI.RecordEventRequest(
                         event_name=event_name,
                         additional_metadata=event_metadata,
                     ),
@@ -126,4 +126,4 @@ def with_invocation_tracked(event_name: str):
 
         return wrapper
 
-    return tracking_decorator
+    return event_decorator

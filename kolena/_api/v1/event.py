@@ -18,17 +18,17 @@ from typing import Union
 
 from pydantic.dataclasses import dataclass
 from pydantic.types import StrictBool
-from pydantic.types import StrictInt
 from pydantic.types import StrictFloat
+from pydantic.types import StrictInt
 from pydantic.types import StrictStr
 
 
-class Tracking:
+class EventAPI:
     class Path(str, Enum):
         PROFILE = "/tracking/profile"
         EVENT = "/tracking/event"
 
-    class Events(str, Enum):
+    class Event(str, Enum):
         # auth
         GENERATE_TOKEN = "generate-token"
 
@@ -54,6 +54,6 @@ class Tracking:
         EXECUTE_TEST_RUN = "execute-test-run"
 
     @dataclass(frozen=True)
-    class TrackEventRequest:
+    class RecordEventRequest:
         event_name: str
         additional_metadata: Optional[Dict[str, Union[StrictInt, StrictFloat, StrictStr, StrictBool, None]]] = None

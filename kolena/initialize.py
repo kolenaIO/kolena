@@ -21,7 +21,7 @@ from urllib.parse import urlparse
 
 import pandas as pd
 
-from kolena._api.v1.event_tracking import Tracking as EventTrackingAPI
+from kolena._api.v1.event import EventAPI
 from kolena._utils import log
 from kolena._utils import state
 from kolena._utils.consts import KOLENA_TOKEN_ENV
@@ -137,7 +137,7 @@ def initialize(
 
     if derived_telemetry:
         set_profile()
-        track_event(EventTrackingAPI.TrackEventRequest(event_name=EventTrackingAPI.Events.GENERATE_TOKEN))
+        track_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.GENERATE_TOKEN))
 
     log.info("initialized")
     if verbose:
