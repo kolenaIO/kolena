@@ -9,7 +9,7 @@ hide:
 In this section, we'll get acquainted with the core concepts on Kolena, and learn in-depth about the various features
 offered. For a brief introduction, see the [Quickstart Guide](../quickstart.md) or the
 [Building a Workflow](../building-a-workflow.md) tutorial. For code-level API documentation, see the
-[API Reference Documentation](../reference/workflow) for the `kolena` Python client.
+[API Reference Documentation](./workflow.md) for the `kolena` Python client.
 
 <div class="grid cards" markdown>
 - [:kolena-workflow-16: Workflow](workflow.md)

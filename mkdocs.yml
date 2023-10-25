@@ -51,8 +51,8 @@ nav:
               - Plots: reference/workflow/plot.md
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
-              - <code>io-tools</code>: reference/workflow/io-tools.md
               - <code>visualization</code>: reference/workflow/visualization.md
+              - IO: reference/workflow/io.md
       - Pre-built Workflows:
           - Pre-built Workflows: reference/pre-built/index.md
           - Object Detection (2D): reference/pre-built/object-detection-2d.md
@@ -154,8 +154,8 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
       options:
         custom_icons:
           - docs/overrides/.icons
