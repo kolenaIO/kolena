@@ -16,21 +16,24 @@ Annotations are visualized in Kolena as overlays on top of [`TestSample`][kolena
 
 The following annotation types are available:
 
-- [`BoundingBox`][kolena.workflow.annotation.BoundingBox]
-- [`Polygon`][kolena.workflow.annotation.Polygon]
-- [`Polyline`][kolena.workflow.annotation.Polyline]
-- [`Keypoints`][kolena.workflow.annotation.Keypoints]
-- [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D]
-- [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask]
-- [`BitmapMask`][kolena.workflow.annotation.BitmapMask]
-- [`Label`][kolena.workflow.annotation.Label]
+| Annotation | Valid [`TestSample`][kolena.workflow.TestSample] Types |
+| --- | --- |
+| [`BoundingBox`][kolena.workflow.annotation.BoundingBox] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`Polygon`][kolena.workflow.annotation.Polygon] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`Polyline`][kolena.workflow.annotation.Polyline] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`Keypoints`][kolena.workflow.annotation.Keypoints] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`BitmapMask`][kolena.workflow.annotation.BitmapMask] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] | [`PointCloud`][kolena.workflow.PointCloud] |
+| [`Label`][kolena.workflow.annotation.Label] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video], [`PointCloud`][kolena.workflow.PointCloud], [`Text`][kolena.workflow.Text], [`Document`][kolena.workflow.Document], [`Audio`][kolena.workflow.Audio] |
+| [`TimeSegment`][kolena.workflow.annotation.TimeSegment] | [`Audio`][kolena.workflow.Audio] |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.workflow.annotation.BoundingBox] objects) present in the
 [`TestSample`][kolena.workflow.TestSample], [`GroundTruth`][kolena.workflow.GroundTruth],
 [`Inference`][kolena.workflow.Inference], or [`MetricsTestSample`][kolena.workflow.MetricsTestSample] objects are
 rendered on top of the image.
-"""
+"""  # noqa: E501
 import dataclasses
 from abc import ABCMeta
 from functools import reduce
@@ -362,4 +365,5 @@ _ANNOTATION_TYPES = [
     ScoredLabel,
     ClassificationLabel,
     ScoredClassificationLabel,
+    TimeSegment,
 ]
