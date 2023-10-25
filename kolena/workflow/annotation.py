@@ -54,7 +54,7 @@ class _AnnotationType(DataType):
     BOUNDING_BOX_3D = "BOUNDING_BOX_3D"
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
-    CLASSIFICATION_LABEL = "LABEL"
+    LABEL = "LABEL"
 
     @staticmethod
     def _data_category() -> str:
@@ -301,8 +301,8 @@ class BitmapMask(Annotation):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class ClassificationLabel(Annotation):
-    """Label of classification."""
+class Label(Annotation):
+    """Label, e.g. for classification."""
 
     label: str
     """String label for this classification."""
@@ -312,12 +312,20 @@ class ClassificationLabel(Annotation):
         return _AnnotationType.CLASSIFICATION_LABEL
 
 
+ClassificationLabel = Label
+"""Alias for [`Label`][kolena.workflow.annotation.Label]."""
+
+
 @dataclass(frozen=True, config=ValidatorConfig)
-class ScoredClassificationLabel(ClassificationLabel):
-    """Classification label with accompanying score."""
+class ScoredLabel(Label):
+    """Label with accompanying score."""
 
     score: float
     """Score associated with this label."""
+
+
+ScoredClassificationLabel = ScoredLabel
+"""Alias for [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]."""
 
 
 _ANNOTATION_TYPES = [
