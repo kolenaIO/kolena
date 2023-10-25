@@ -16,6 +16,7 @@ from concurrent.futures import wait
 
 from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import upload_image_buffer
+
 from kolena.workflow.visualization import colorize_activation_map
 from kolena.workflow.visualization import encode_png
 

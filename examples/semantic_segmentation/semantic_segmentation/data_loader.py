@@ -17,7 +17,6 @@ from typing import List
 from typing import Tuple
 
 import numpy as np
-from tqdm import tqdm
 from pydantic.dataclasses import dataclass
 from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import download_mask
@@ -27,6 +26,7 @@ from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestSample
 
+from kolena._utils.log import progress_bar
 from kolena.workflow.annotation import SegmentationMask
 
 
@@ -45,7 +45,9 @@ class DataLoader:
         self.pool = ThreadPoolExecutor(max_workers=32)
 
     def download_masks(
-        self, ground_truths: List[GroundTruth], inferences: List[Inference]
+        self,
+        ground_truths: List[GroundTruth],
+        inferences: List[Inference],
     ) -> Iterable[Tuple[np.ndarray, np.ndarray]]:
         def load(gt: GroundTruth, inf: Inference) -> Tuple[np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
@@ -53,7 +55,7 @@ class DataLoader:
             gt_mask[gt_mask != 1] = 0  # binarize gt_mask
             return gt_mask, inf_prob
 
-        return tqdm(self.pool.map(load, ground_truths, inferences), total=len(ground_truths))
+        return progress_bar(self.pool.map(load, ground_truths, inferences), total=len(ground_truths))
 
     def upload_masks(
         self,
@@ -78,8 +80,8 @@ class DataLoader:
             return tp, fp, fn
 
         return list(
-            tqdm(
+            progress_bar(
                 self.pool.map(upload, test_samples, gt_masks, inf_masks),
                 total=len(test_samples),
-            )
+            ),
         )

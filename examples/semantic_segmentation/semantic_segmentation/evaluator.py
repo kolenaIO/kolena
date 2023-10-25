@@ -32,6 +32,7 @@ from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSampleMetric
 from sklearn.metrics import average_precision_score
 
+from kolena._utils.log import info
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
@@ -46,7 +47,7 @@ def load_data(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Tuple[Iterable[np.ndarray], Iterable[np.ndarray]]:
-    print(f"downloading {len(ground_truths)} bit masks...")
+    info("downloading bit masks...")
     data_loader = DataLoader()
     return zip(*data_loader.download_masks(ground_truths, inferences))
 
@@ -99,7 +100,7 @@ def compute_test_sample_metrics(
     locator_prefix = f"s3://{out_bucket}/{DATASET}/results/{model_name}/{threshold:.2f}"
     data_loader = DataLoader()
 
-    print(f"uploading result masks for {len(test_samples)} samples...")
+    info("uploading result masks...")
     result_masks = data_loader.upload_masks(locator_prefix, test_samples, gt_masks, inf_masks)
 
     return [compute_image_metrics(gt, inf, result) for gt, inf, result in zip(gt_masks, inf_masks, result_masks)]
@@ -140,7 +141,11 @@ def compute_test_case_plots(
         f1s.append(f1)
 
     f1_curve = Curve(x=thresholds, y=f1s, extra=dict(Precision=precisions, Recall=recalls))
-    pr_curve = Curve(x=recalls[1:-1], y=precisions[1:-1], extra=dict(F1=f1s[1:-1], Threshold=thresholds[1:-1]))
+    pr_curve = Curve(
+        x=recalls[1:-1],
+        y=precisions[1:-1],
+        extra=dict(F1=f1s[1:-1], Threshold=thresholds[1:-1]),
+    )
     return [
         CurvePlot(
             title="F1 vs. Confidence Threshold",
@@ -148,7 +153,12 @@ def compute_test_case_plots(
             y_label="F1",
             curves=[f1_curve],
         ),
-        CurvePlot(title="Precision vs. Recall", x_label="Recall", y_label="Precision", curves=[pr_curve]),
+        CurvePlot(
+            title="Precision vs. Recall",
+            x_label="Recall",
+            y_label="Precision",
+            curves=[pr_curve],
+        ),
     ]
 
 
@@ -168,7 +178,7 @@ def evaluate_semantic_segmentation(
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
-        print(f"computing {test_case.name} test case metrics")
+        info(f"computing {test_case.name} test case metrics")
         y_true, y_pred = compute_sklearn_arrays(gt, inf)
         all_test_case_metrics.append((test_case, compute_test_case_metrics(y_true, y_pred, tsm)))
         all_test_case_plots.append((test_case, compute_test_case_plots(y_true, y_pred)))
