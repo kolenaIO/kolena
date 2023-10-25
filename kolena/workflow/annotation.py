@@ -336,7 +336,17 @@ class TimeSegment(Annotation):
     Segment of time in the associated audio or video file.
 
     When a `group` is specified, segments are displayed on Kolena with different colors for each group present in a
-    `List[TimeSegment]`.
+    `List[TimeSegment]`. Example usage:
+
+    ```py
+    transcription: List[TimeSegment] = [
+        LabeledTimeSegment(group="A", label="Knock, knock.", start=0, end=1),
+        LabeledTimeSegment(group="B", label="Who's there?", start=2, end=3),
+        LabeledTimeSegment(group="A", label="Example.", start=3.5, end=4),
+        LabeledTimeSegment(group="B", label="Example who?", start=4.5, end=5.5),
+        LabeledTimeSegment(group="A", label="Example illustrating two-person dialogue using `group`.", start=6, end=9),
+    ]
+    ```
     """
 
     start: float
