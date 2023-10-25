@@ -37,7 +37,6 @@ from abc import ABCMeta
 from functools import reduce
 from typing import Dict
 from typing import List
-from typing import Optional
 from typing import Tuple
 
 from pydantic.dataclasses import dataclass
@@ -333,17 +332,18 @@ ScoredClassificationLabel = ScoredLabel
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class TimeSegment(Annotation):
-    """Segment of time in the associated audio or video file."""
+    """
+    Segment of time in the associated audio or video file.
+
+    When a `group` is specified, segments are displayed on Kolena with different colors for each group present in a
+    `List[TimeSegment]`.
+    """
 
     start: float
     """Start time, in seconds, of this segment."""
 
     end: float
     """End time, in seconds, of this segment."""
-
-    # TODO: not great to have a required optional param
-    group: Optional[str]
-    """Optionally specify a group for this segment, e.g. speaker."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
