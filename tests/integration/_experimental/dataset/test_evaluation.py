@@ -140,6 +140,36 @@ def test__test() -> None:
         _assert_frame_equal(df_eval[3], expected_df_mtr, mtr_columns)
 
 
+def test__test__df_for_infer_and_eval() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__df_for_infer_and_eval")
+    model_name = with_test_prefix(f"{__file__}::test__test__df_for_infer_and_eval")
+    df_dp = get_df_dp()
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[3:10][dp_columns])
+
+    df_inf = get_df_inf()
+    df_mtr = get_df_mtr()
+    inf_columns = ["softmax_bitmap"]
+    mtr_columns = ["score"]
+
+    test(
+        dataset_name,
+        model_name,
+        infer=df_inf,
+        eval=df_mtr,
+    )
+
+    df_by_eval = fetch_evaluation_results(dataset_name, model_name)
+    assert len(df_by_eval) == 1
+    expected_df_dp = df_dp[3:10].reset_index(drop=True)
+    expected_df_inf = df_inf[3:10].reset_index(drop=True)
+    expected_df_mtr = df_mtr[3:10].reset_index(drop=True)
+    for df_eval in df_by_eval:
+        _assert_frame_equal(df_eval[1], expected_df_dp, dp_columns)
+        _assert_frame_equal(df_eval[2], expected_df_inf, inf_columns)
+        _assert_frame_equal(df_eval[3], expected_df_mtr, mtr_columns)
+
+
 def test__test__missing_inference() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__missing_inference")
     model_name = with_test_prefix(f"{__file__}::test__test__missing_inference")

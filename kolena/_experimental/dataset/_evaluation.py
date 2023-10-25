@@ -194,7 +194,7 @@ def _validate_common_columns(common_columns: List[str]) -> None:
 
 def _get_default_infer_func(df_inf: pd.DataFrame, join_keys: list[str]) -> INFER_FUNC_TYPE:
     def infer(datapoints: pd.DataFrame) -> pd.DataFrame:
-        inferences = datapoints[join_keys].merge(df_inf, on=join_keys)
+        inferences = datapoints[join_keys].merge(df_inf, how="left", on=join_keys)
         return inferences
 
     return infer
@@ -206,7 +206,7 @@ def _get_default_eval_func(df_metrics: pd.DataFrame, join_keys: list[str]) -> EV
         inferences: pd.DataFrame,
         eval_config: Optional[TYPE_EVALUATION_CONFIG],
     ) -> pd.DataFrame:
-        metrics = datapoints[join_keys].merge(df_metrics, on=join_keys)
+        metrics = datapoints[join_keys].merge(df_metrics, how="left", on=join_keys)
         return metrics
 
     return eval
@@ -263,7 +263,7 @@ def test(
 
     :return None: This function doesn't return anything.
     """
-    if infer:
+    if infer is not None:
         df_data = _fetch_dataset(dataset)
         df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
         log.info(f"fetched {len(df_data)} for dataset {dataset}")
@@ -275,7 +275,7 @@ def test(
         _upload_inferences(model, df_data)
         log.info(f"uploaded {len(df_inferences)} inferences")
 
-    if eval:
+    if eval is not None:
         if not isinstance(eval_configs, list):
             eval_configs = [eval_configs]
 
