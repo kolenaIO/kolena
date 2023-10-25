@@ -53,9 +53,7 @@ class DataLoader:
             gt_mask[gt_mask != 1] = 0  # binarize gt_mask
             return gt_mask, inf_prob
 
-        return tqdm(
-            self.pool.map(load, ground_truths, inferences), total=len(ground_truths)
-        )
+        return tqdm(self.pool.map(load, ground_truths, inferences), total=len(ground_truths))
 
     def upload_masks(
         self,
@@ -64,9 +62,7 @@ class DataLoader:
         gt_masks: List[np.ndarray],
         inf_masks: List[np.ndarray],
     ) -> List[ResultMasks]:
-        def upload(
-            ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray
-        ) -> ResultMasks:
+        def upload(ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray) -> ResultMasks:
             def upload_result_mask(category: str, mask: np.ndarray) -> ResultMask:
                 locator = f"{locator_prefix}/{category}/{ts.metadata['basename']}.png"
                 upload_image(locator, mask)

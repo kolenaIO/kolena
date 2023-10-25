@@ -100,14 +100,9 @@ def compute_test_sample_metrics(
     data_loader = DataLoader()
 
     print(f"uploading result masks for {len(test_samples)} samples...")
-    result_masks = data_loader.upload_masks(
-        locator_prefix, test_samples, gt_masks, inf_masks
-    )
+    result_masks = data_loader.upload_masks(locator_prefix, test_samples, gt_masks, inf_masks)
 
-    return [
-        compute_image_metrics(gt, inf, result)
-        for gt, inf, result in zip(gt_masks, inf_masks, result_masks)
-    ]
+    return [compute_image_metrics(gt, inf, result) for gt, inf, result in zip(gt_masks, inf_masks, result_masks)]
 
 
 def compute_test_case_metrics(
@@ -167,21 +162,15 @@ def evaluate_semantic_segmentation(
     gt_masks, inf_probs = load_data(ground_truths, inferences)
     inf_masks = apply_threshold(inf_probs, configuration.threshold)
 
-    test_sample_metrics = compute_test_sample_metrics(
-        test_samples, gt_masks, inf_masks, configuration.threshold
-    )
+    test_sample_metrics = compute_test_sample_metrics(test_samples, gt_masks, inf_masks, configuration.threshold)
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    for test_case, ts, gt, inf, tsm in test_cases.iter(
-        test_samples, gt_masks, inf_probs, test_sample_metrics
-    ):
+    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
         print(f"computing {test_case.name} test case metrics")
         y_true, y_pred = compute_sklearn_arrays(gt, inf)
-        all_test_case_metrics.append(
-            (test_case, compute_test_case_metrics(y_true, y_pred, tsm))
-        )
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(y_true, y_pred, tsm)))
         all_test_case_plots.append((test_case, compute_test_case_plots(y_true, y_pred)))
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
