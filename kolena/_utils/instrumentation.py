@@ -95,7 +95,7 @@ def set_profile():
 
 
 def track_event(request: EventTrackingAPI.TrackEventRequest):
-    krequests.post(endpoint_path=EventTrackingAPI.Path.EVENT, data=json.dumps(dataclasses.asdict(request)))
+    krequests.post(endpoint_path=EventTrackingAPI.Path.EVENT, json=dataclasses.asdict(request))
 
 
 def with_invocation_tracked(event_name: str):

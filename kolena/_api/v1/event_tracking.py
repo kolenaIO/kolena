@@ -14,8 +14,11 @@
 from enum import Enum
 from typing import Dict
 from typing import Optional
+from typing import Union
 
 from pydantic.dataclasses import dataclass
+from pydantic.types import StrictFloat
+from pydantic.types import StrictStr
 
 
 class Tracking:
@@ -51,4 +54,4 @@ class Tracking:
     @dataclass(frozen=True)
     class TrackEventRequest:
         event_name: str
-        additional_metadata: Optional[Dict[str, str]] = None
+        additional_metadata: Optional[Dict[str, Union[StrictFloat, StrictStr]]] = None
