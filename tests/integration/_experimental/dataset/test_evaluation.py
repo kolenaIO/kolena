@@ -157,6 +157,7 @@ def test__test__df_for_infer_and_eval() -> None:
         model_name,
         infer=df_inf,
         eval=df_mtr,
+        on="user_dp_id",
     )
 
     df_by_eval = fetch_evaluation_results(dataset_name, model_name)
