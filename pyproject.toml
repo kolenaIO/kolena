@@ -65,7 +65,7 @@ pytest-cov = "^4.0.0"
 pytest-depends = "^1.0.1"
 mkdocs = "^1.4.3"
 cairosvg = "^2.7.0"
-mkdocs-material = "^9.1.15"  # insiders fork installed out-of-band in docs/setup_insiders.sh
+mkdocs-material = "^9.4"  # insiders fork installed out-of-band in docs/setup_insiders.sh
 mkdocstrings = { version = ">0.20,<1", extras = ["python"] }
 mkdocs-git-committers-plugin-2 = "^1.1.2"
 mkdocs-git-revision-date-localized-plugin = "^1.2.0"
