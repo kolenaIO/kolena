@@ -73,13 +73,13 @@ This implementation is simplified and ignores details such as tokenizing the tes
 
 ### Interpretation
 
-Ideally, a lower perplexity is dersirable. Since perplexity a relative metric with no upperbound, it is best used
+Ideally, a lower perplexity is desirable. Since perplexity a relative metric with no upper bound, it is best used
 to compare similar models and configurations on a specific task and dataset to look for improvements in model
 performance.
 
 For context, the perplexity score of GPT-2 calculated on the wikitext dataset is 16.4541. The perplexity of
 LLaMA-2 7B calculated on its diverse test dataset is between 5.0 - 6.0. It is not uncommon to see your language
-model perform between between these ranges for text-generation tasks.
+model perform between these ranges for text-generation tasks.
 
 ### Example
 Assume we have a sentence-completion language model that uses a context-length of 4, and contains a very limited
@@ -131,7 +131,7 @@ vocabulary. Let's calculate the perplexity of the hypothetical model.
 While perplexity is a valuable metric for comparing and fine-tuning language models, it has its limitations and
 should always be used in conjunction with other evaluation metrics and methods.
 
-1. Perplexity is sensistive to the size and diversity of datasets. Since each dataset has its own distribution of
+1. Perplexity is sensitive to the size and diversity of datasets. Since each dataset has its own distribution of
 words and semantic nuances, a model that achieves low perplexity on one dataset may underperform on another. Thus,
 it is important to gauge perplexity on a diverse dataset with different types of texts.
 2. Perplexity is hard to absolutely interpret. Unlike metrics such as [BLEU](bleu.md) or [BERTScore](bertscore.md),
