@@ -23,7 +23,7 @@ The following annotation types are available:
 - [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D]
 - [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask]
 - [`BitmapMask`][kolena.workflow.annotation.BitmapMask]
-- [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]
+- [`Label`][kolena.workflow.annotation.Label]
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.workflow.annotation.BoundingBox] objects) present in the
@@ -54,7 +54,7 @@ class _AnnotationType(DataType):
     BOUNDING_BOX_3D = "BOUNDING_BOX_3D"
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
-    CLASSIFICATION_LABEL = "LABEL"
+    LABEL = "LABEL"
 
     @staticmethod
     def _data_category() -> str:
@@ -301,23 +301,31 @@ class BitmapMask(Annotation):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class ClassificationLabel(Annotation):
-    """Label of classification."""
+class Label(Annotation):
+    """Label, e.g. for classification."""
 
     label: str
     """String label for this classification."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
-        return _AnnotationType.CLASSIFICATION_LABEL
+        return _AnnotationType.LABEL
+
+
+ClassificationLabel = Label
+"""Alias for [`Label`][kolena.workflow.annotation.Label]."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class ScoredClassificationLabel(ClassificationLabel):
-    """Classification label with accompanying score."""
+class ScoredLabel(Label):
+    """Label with accompanying score."""
 
     score: float
     """Score associated with this label."""
+
+
+ScoredClassificationLabel = ScoredLabel
+"""Alias for [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]."""
 
 
 _ANNOTATION_TYPES = [
@@ -337,6 +345,8 @@ _ANNOTATION_TYPES = [
     ScoredLabeledBoundingBox3D,
     SegmentationMask,
     BitmapMask,
+    Label,
+    ScoredLabel,
     ClassificationLabel,
     ScoredClassificationLabel,
 ]
