@@ -42,7 +42,7 @@ from kolena.workflow import TestCases
 from kolena.workflow import TestRun
 from kolena.workflow import TestSample
 from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import Label
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
@@ -457,7 +457,7 @@ def test__dataobject_schema_mismatch() -> None:
     assert sorted(loaded_dummy_test_samples) == sorted(expected_alt_format)
 
     test_suite = GrabbagTestSuite(f"{name} test suite", test_cases=[test_case])
-    dummy_inferences = [GrabbagInference(value=i, mask=ClassificationLabel(label="cat", source=i)) for i in range(10)]
+    dummy_inferences = [GrabbagInference(value=i, mask=Label(label="cat", source=i)) for i in range(10)]
 
     # match inference to test sample
     model = GrabbagModel(f"{name} model", infer=lambda sample: dummy_inferences[int(sample.value)])
