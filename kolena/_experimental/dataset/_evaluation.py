@@ -192,7 +192,7 @@ def _validate_common_columns(common_columns: List[str]) -> None:
         raise ValueError("there is no common columns")
 
 
-def _get_default_infer_func(df_inf: pd.DataFrame, join_keys: list[str]) -> INFER_FUNC_TYPE:
+def _get_default_infer_func(df_inf: pd.DataFrame, join_keys: List[str]) -> INFER_FUNC_TYPE:
     def infer(datapoints: pd.DataFrame) -> pd.DataFrame:
         inferences = datapoints[join_keys].merge(df_inf, how="left", on=join_keys)
         return inferences
@@ -200,7 +200,7 @@ def _get_default_infer_func(df_inf: pd.DataFrame, join_keys: list[str]) -> INFER
     return infer
 
 
-def _get_default_eval_func(df_metrics: pd.DataFrame, join_keys: list[str]) -> EVAL_FUNC_TYPE:
+def _get_default_eval_func(df_metrics: pd.DataFrame, join_keys: List[str]) -> EVAL_FUNC_TYPE:
     def eval(
         datapoints: pd.DataFrame,
         inferences: pd.DataFrame,
