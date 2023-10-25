@@ -20,8 +20,8 @@ from typing import Tuple
 import numpy as np
 
 from kolena._utils import log
-from kolena.workflow.annotation import ClassificationLabel
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.metrics import f1_score
 from kolena.workflow.metrics import precision
 from kolena.workflow.metrics import recall
@@ -31,7 +31,7 @@ from kolena.workflow.plot import CurvePlot
 from kolena.workflow.plot import Histogram
 
 
-def get_label_confidence(label: str, inference_labels: List[ScoredClassificationLabel]) -> float:
+def get_label_confidence(label: str, inference_labels: List[ScoredLabel]) -> float:
     """
     Returns the confidence score of the specified `label` from a list of confidence scores for each label.
 
@@ -196,8 +196,8 @@ def _roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], Li
 
 
 def compute_roc_curves(
-    ground_truths: List[Optional[ClassificationLabel]],
-    inferences: List[List[ScoredClassificationLabel]],
+    ground_truths: List[Optional[Label]],
+    inferences: List[List[ScoredLabel]],
     labels: Optional[List[str]] = None,
     title: Optional[str] = None,
 ) -> Optional[CurvePlot]:
@@ -205,12 +205,11 @@ def compute_roc_curves(
     Computes OvR (one-vs-rest) ROC (receiver operating characteristic) curves for each class appears in `ground_truths`
     if not specified.
 
-    :param ground_truths: The list of ground truth
-        [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]. For binary classification, the negative
-        class can be `None`.
-    :param inferences: The list of inference
-        [`ScoredClassificationLabel`][kolena.workflow.annotation.ScoredClassificationLabel]. For `N`-class problems,
-        each inference is expected to contain `N` entries, one for each class and its associated confidence score.
+    :param ground_truths: The list of ground truth [`Label`][kolena.workflow.annotation.Label]. For binary
+        classification, the negative class can be `None`.
+    :param inferences: The list of inference [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]. For `N`-class
+        problems, each inference is expected to contain `N` entries, one for each class and its associated confidence
+        score.
     :param labels: The labels to plot. If not specified, classes appear in `ground_truths` are used. Use `labels` to
         specify the evaluating classes especially if `ground_truths` only have negative classes.
     :param title: The title of the plot.
@@ -257,8 +256,8 @@ def compute_roc_curves(
 
 
 def compute_threshold_curves(
-    ground_truths: List[Optional[ClassificationLabel]],
-    inferences: List[ScoredClassificationLabel],
+    ground_truths: List[Optional[Label]],
+    inferences: List[ScoredLabel],
     thresholds: Optional[List[float]] = None,
 ) -> Optional[List[Curve]]:
     """
@@ -268,17 +267,14 @@ def compute_threshold_curves(
 
     Expects `ground_truths` and `inferences` correspond to the same sample for the same given index.
 
-    :param ground_truths: The list of ground truth
-        [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]s. For binary classification, the
-        negative class can be `None`.
-    :param inferences: The list of inference
-        [`ScoredClassificationLabel`][kolena.workflow.annotation.ScoredClassificationLabel]s. The length of `inferences`
-        must match the length of `ground_truths`. The list should only include inferences of a specific class to plot
-        the threshold curves for.
+    :param ground_truths: The list of ground truth [`Label`][kolena.workflow.annotation.Label]s. For binary
+        classification, the negative class can be `None`.
+    :param inferences: The list of inference [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]s. The length of
+        `inferences` must match the length of `ground_truths`. The list should only include inferences of a specific
+        class to plot the threshold curves for.
     :param thresholds: The list of thresholds to plot with. If not specified, all the unique confidence scores are used
         as thresholds, including evenly spaced thresholds from 0 to 1 with 0.1 step.
-    :return: A list of [`Curve`][kolena.workflow.plot.Curve]s if there is any valid `Curve` computed;
-        otherwise, `None`.
+    :return: A list of [`Curve`][kolena.workflow.plot.Curve]s if there is any valid `Curve` computed; otherwise, `None`.
 
     """
     if len(ground_truths) != len(inferences):
