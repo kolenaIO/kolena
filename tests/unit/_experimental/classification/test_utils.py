@@ -25,8 +25,8 @@ from kolena._experimental.classification.utils import compute_threshold_curves
 from kolena._experimental.classification.utils import create_histogram
 from kolena._experimental.classification.utils import get_histogram_range
 from kolena._experimental.classification.utils import get_label_confidence
-from kolena.workflow.annotation import ClassificationLabel
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Histogram
 
@@ -35,25 +35,25 @@ from kolena.workflow.plot import Histogram
     "label, inference_labels, expected",
     [
         ("", [], 0),
-        ("a", [ScoredClassificationLabel("b", 0.1)], 0),
-        ("a", [ScoredClassificationLabel("a", 0.1)], 0.1),
+        ("a", [ScoredLabel("b", 0.1)], 0),
+        ("a", [ScoredLabel("a", 0.1)], 0.1),
         (
             "a",
             [
-                ScoredClassificationLabel("b", 0.1),
-                ScoredClassificationLabel("c", 0.2),
-                ScoredClassificationLabel("d", 0.3),
-                ScoredClassificationLabel("e", 0.4),
+                ScoredLabel("b", 0.1),
+                ScoredLabel("c", 0.2),
+                ScoredLabel("d", 0.3),
+                ScoredLabel("e", 0.4),
             ],
             0,
         ),
         (
             "a",
             [
-                ScoredClassificationLabel("c", 0.1),
-                ScoredClassificationLabel("b", 0.2),
-                ScoredClassificationLabel("a", 0.3),
-                ScoredClassificationLabel("d", 0.4),
+                ScoredLabel("c", 0.1),
+                ScoredLabel("b", 0.2),
+                ScoredLabel("a", 0.3),
+                ScoredLabel("d", 0.4),
             ],
             0.3,
         ),
@@ -61,7 +61,7 @@ from kolena.workflow.plot import Histogram
 )
 def test__get_label_confidence(
     label: str,
-    inference_labels: List[ScoredClassificationLabel],
+    inference_labels: List[ScoredLabel],
     expected: float,
 ) -> None:
     confidence = get_label_confidence(label, inference_labels)
@@ -327,48 +327,48 @@ def test__roc_curve__invalid() -> None:
         ([None, None], [], None),
         (
             [
-                ClassificationLabel(label="a"),
-                ClassificationLabel(label="b"),
+                Label(label="a"),
+                Label(label="b"),
             ],
             [
                 [
-                    ScoredClassificationLabel(label="a", score=1.0),
-                    ScoredClassificationLabel(label="b", score=0.0),
+                    ScoredLabel(label="a", score=1.0),
+                    ScoredLabel(label="b", score=0.0),
                 ],
                 [
-                    ScoredClassificationLabel(label="a", score=0.0),
-                    ScoredClassificationLabel(label="b", score=1.0),
+                    ScoredLabel(label="a", score=0.0),
+                    ScoredLabel(label="b", score=1.0),
                 ],
             ],
             None,
         ),
         (
             [
-                ClassificationLabel(label="a"),
-                ClassificationLabel(label="b"),
+                Label(label="a"),
+                Label(label="b"),
             ],
             [
                 [
-                    ScoredClassificationLabel(label="a", score=1.0),
-                    ScoredClassificationLabel(label="b", score=0.0),
+                    ScoredLabel(label="a", score=1.0),
+                    ScoredLabel(label="b", score=0.0),
                 ],
                 [
-                    ScoredClassificationLabel(label="a", score=0.0),
-                    ScoredClassificationLabel(label="b", score=1.0),
+                    ScoredLabel(label="a", score=0.0),
+                    ScoredLabel(label="b", score=1.0),
                 ],
             ],
             ["c", "d"],
         ),
         (
             [
-                ClassificationLabel(label="a"),
-                ClassificationLabel(label="a"),
-                ClassificationLabel(label="a"),
+                Label(label="a"),
+                Label(label="a"),
+                Label(label="a"),
             ],
             [
-                [ScoredClassificationLabel(label="a", score=1.0)],
-                [ScoredClassificationLabel(label="a", score=0.0)],
-                [ScoredClassificationLabel(label="a", score=0.0)],
+                [ScoredLabel(label="a", score=1.0)],
+                [ScoredLabel(label="a", score=0.0)],
+                [ScoredLabel(label="a", score=0.0)],
             ],
             None,
         ),
@@ -379,28 +379,26 @@ def test__roc_curve__invalid() -> None:
                 None,
             ],
             [
-                [ScoredClassificationLabel(label="a", score=1.0)],
-                [ScoredClassificationLabel(label="a", score=0.0)],
-                [ScoredClassificationLabel(label="a", score=0.0)],
+                [ScoredLabel(label="a", score=1.0)],
+                [ScoredLabel(label="a", score=0.0)],
+                [ScoredLabel(label="a", score=0.0)],
             ],
             None,
         ),
     ],
 )
 def test__compute_roc_curves__invalid(
-    gts: List[Optional[ClassificationLabel]],
-    infs: List[List[ScoredClassificationLabel]],
+    gts: List[Optional[Label]],
+    infs: List[List[ScoredLabel]],
     labels: Optional[List[str]],
 ) -> None:
     assert compute_roc_curves(gts, infs, labels=labels) is None
 
 
 def test__compute_roc_curves__binary() -> None:
-    ground_truths = [ClassificationLabel("1") if gt else None for gt in [1, 1, 0, 1, 0, 0, 1, 0, 1]]
+    ground_truths = [Label("1") if gt else None for gt in [1, 1, 0, 1, 0, 0, 1, 0, 1]]
 
-    inferences = [
-        [ScoredClassificationLabel(label="1", score=score)] for score in [0.3, 0.8, 0.5, 0.7, 0.1, 0.4, 0.9, 0.2, 0.6]
-    ]
+    inferences = [[ScoredLabel(label="1", score=score)] for score in [0.3, 0.8, 0.5, 0.7, 0.1, 0.4, 0.9, 0.2, 0.6]]
 
     roc_curves = compute_roc_curves(ground_truths, inferences)
     assert roc_curves.title == "Receiver Operating Characteristic"
@@ -414,15 +412,15 @@ def test__compute_roc_curves__binary() -> None:
 
 def test__compute_roc_curves__multiclass() -> None:
     ground_truths = [
-        ClassificationLabel("a"),
-        ClassificationLabel("b"),
-        ClassificationLabel("b"),
+        Label("a"),
+        Label("b"),
+        Label("b"),
     ]
 
     inferences = [
-        [ScoredClassificationLabel(label="a", score=0.9), ScoredClassificationLabel(label="b", score=0.1)],
-        [ScoredClassificationLabel(label="a", score=0.5), ScoredClassificationLabel(label="b", score=0.5)],
-        [ScoredClassificationLabel(label="a", score=0.4), ScoredClassificationLabel(label="b", score=0.6)],
+        [ScoredLabel(label="a", score=0.9), ScoredLabel(label="b", score=0.1)],
+        [ScoredLabel(label="a", score=0.5), ScoredLabel(label="b", score=0.5)],
+        [ScoredLabel(label="a", score=0.4), ScoredLabel(label="b", score=0.6)],
     ]
 
     roc_curves = compute_roc_curves(ground_truths, inferences)
@@ -442,23 +440,23 @@ def test__compute_roc_curves__multiclass() -> None:
     "gts, infs",
     [
         ([], []),
-        ([ClassificationLabel(1)], []),
+        ([Label(1)], []),
         (
-            [ClassificationLabel(0), ClassificationLabel(1)],
-            [ScoredClassificationLabel(label=1, score=0.0)],
+            [Label(0), Label(1)],
+            [ScoredLabel(label=1, score=0.0)],
         ),
         (
-            [ClassificationLabel(0), ClassificationLabel(1)],
+            [Label(0), Label(1)],
             [
-                ScoredClassificationLabel(label=1, score=0.0),
-                ScoredClassificationLabel(label=0, score=1.0),
+                ScoredLabel(label=1, score=0.0),
+                ScoredLabel(label=0, score=1.0),
             ],
         ),
     ],
 )
 def test__compute_threshold_curves__invalid(
-    gts: List[Optional[ClassificationLabel]],
-    infs: List[ScoredClassificationLabel],
+    gts: List[Optional[Label]],
+    infs: List[ScoredLabel],
 ) -> None:
     assert compute_threshold_curves(gts, infs) is None
 
@@ -467,16 +465,16 @@ def test__compute_threshold_curves__invalid(
     "gts, infs, thresholds, precisions, recalls, f1s",
     [
         (
-            [ClassificationLabel(0)],
-            [ScoredClassificationLabel(label=0, score=0.0)],
+            [Label(0)],
+            [ScoredLabel(label=0, score=0.0)],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ),
         (
-            [ClassificationLabel(0)],
-            [ScoredClassificationLabel(label=0, score=1.0)],
+            [Label(0)],
+            [ScoredLabel(label=0, score=1.0)],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -484,16 +482,16 @@ def test__compute_threshold_curves__invalid(
         ),
         (
             [
-                ClassificationLabel(0),
-                ClassificationLabel(0),
-                ClassificationLabel(0),
-                ClassificationLabel(0),
+                Label(0),
+                Label(0),
+                Label(0),
+                Label(0),
             ],
             [
-                ScoredClassificationLabel(label=0, score=0.2),
-                ScoredClassificationLabel(label=0, score=0.55),
-                ScoredClassificationLabel(label=0, score=0.6),
-                ScoredClassificationLabel(label=0, score=0.8),
+                ScoredLabel(label=0, score=0.2),
+                ScoredLabel(label=0, score=0.55),
+                ScoredLabel(label=0, score=0.6),
+                ScoredLabel(label=0, score=0.8),
             ],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0],
             [1, 1, 1, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0, 0],
@@ -502,16 +500,16 @@ def test__compute_threshold_curves__invalid(
         ),
         (
             [
-                ClassificationLabel(0),
-                ClassificationLabel(0),
-                ClassificationLabel(0),
-                ClassificationLabel(0),
+                Label(0),
+                Label(0),
+                Label(0),
+                Label(0),
             ],
             [
-                ScoredClassificationLabel(label=1, score=0.2),
-                ScoredClassificationLabel(label=1, score=0.55),
-                ScoredClassificationLabel(label=1, score=0.6),
-                ScoredClassificationLabel(label=1, score=0.8),
+                ScoredLabel(label=1, score=0.2),
+                ScoredLabel(label=1, score=0.55),
+                ScoredLabel(label=1, score=0.6),
+                ScoredLabel(label=1, score=0.8),
             ],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -520,16 +518,16 @@ def test__compute_threshold_curves__invalid(
         ),
         (
             [
-                ClassificationLabel(0),
-                ClassificationLabel(0),
-                ClassificationLabel(1),
-                ClassificationLabel(1),
+                Label(0),
+                Label(0),
+                Label(1),
+                Label(1),
             ],
             [
-                ScoredClassificationLabel(label=1, score=0.2),
-                ScoredClassificationLabel(label=1, score=0.55),
-                ScoredClassificationLabel(label=1, score=0.6),
-                ScoredClassificationLabel(label=1, score=0.8),
+                ScoredLabel(label=1, score=0.2),
+                ScoredLabel(label=1, score=0.55),
+                ScoredLabel(label=1, score=0.6),
+                ScoredLabel(label=1, score=0.8),
             ],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.55, 0.6, 0.7, 0.8, 0.9, 1.0],
             [1 / 2, 1 / 2, 1 / 2, 2 / 3, 2 / 3, 2 / 3, 2 / 3, 1, 1, 1, 0, 0],
@@ -539,8 +537,8 @@ def test__compute_threshold_curves__invalid(
     ],
 )
 def test__compute_threshold_curves(
-    gts: List[Optional[ClassificationLabel]],
-    infs: List[ScoredClassificationLabel],
+    gts: List[Optional[Label]],
+    infs: List[ScoredLabel],
     thresholds: List[float],
     precisions: List[float],
     recalls: List[float],
@@ -562,25 +560,25 @@ def test__compute_threshold_curves(
     "gts, infs, thresholds",
     [
         (
-            [ClassificationLabel(0)],
-            [ScoredClassificationLabel(label=0, score=0.0)],
+            [Label(0)],
+            [ScoredLabel(label=0, score=0.0)],
             [0, 1.0],
         ),
         (
-            [ClassificationLabel(0)],
-            [ScoredClassificationLabel(label=0, score=1.0)],
+            [Label(0)],
+            [ScoredLabel(label=0, score=1.0)],
             [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         ),
         (
-            [ClassificationLabel(0)],
-            [ScoredClassificationLabel(label=0, score=1.0)],
+            [Label(0)],
+            [ScoredLabel(label=0, score=1.0)],
             [0, 1.0, 0.8, 0.2],
         ),
     ],
 )
 def test__compute_threshold_curves__with_thresholds(
-    gts: List[Optional[ClassificationLabel]],
-    infs: List[ScoredClassificationLabel],
+    gts: List[Optional[Label]],
+    infs: List[ScoredLabel],
     thresholds: List[float],
 ) -> None:
     tol = 1e-9
