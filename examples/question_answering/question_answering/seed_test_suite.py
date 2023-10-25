@@ -26,7 +26,7 @@ from question_answering.workflow import TestSample
 from question_answering.workflow import TestSuite
 
 import kolena
-from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ClassificationLabel
 
 
 BUCKET = "kolena-public-datasets"
@@ -132,7 +132,7 @@ def main(args: Namespace) -> int:
                 other_answer_1=record.other_answer_1,
                 other_answer_2=record.other_answer_2,
                 other_answer_3=record.other_answer_3,
-                question_answer=Label(label=context_dict[str(record.data_id)][record.turn - 1]),
+                question_answer=ClassificationLabel(label=context_dict[str(record.data_id)][record.turn - 1]),
             ),
         )
         for record in df_metadata.itertuples(index=False)

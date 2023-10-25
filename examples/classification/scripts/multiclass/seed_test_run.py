@@ -26,7 +26,7 @@ from classification.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow import test
-from kolena.workflow.annotation import ScoredLabel
+from kolena.workflow.annotation import ScoredClassificationLabel
 
 BUCKET = "kolena-public-datasets"
 DATASET = "cifar10/test"
@@ -40,9 +40,9 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     def infer(test_sample: TestSample) -> Inference:
         sample_result = df_results[df_results["locator"] == test_sample.locator].iloc[0]
 
-        inferences: List[ScoredLabel] = []
+        inferences: List[ScoredClassificationLabel] = []
         for label in labels:
-            inferences.append(ScoredLabel(label=label, score=sample_result[label]))
+            inferences.append(ScoredClassificationLabel(label=label, score=sample_result[label]))
 
         inferences.sort(key=lambda x: x.score, reverse=True)
         return Inference(inferences=inferences)

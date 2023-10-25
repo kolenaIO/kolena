@@ -25,7 +25,7 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow import Text
-from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ClassificationLabel
 
 
 @dataclass(frozen=True)
@@ -67,7 +67,7 @@ class GroundTruth(BaseGroundTruth):
     other_answer_3: str
     """An alternative answer for the question."""
 
-    question_answer: Label
+    question_answer: ClassificationLabel
     """A label to display the question and answer with the story."""
 
 
@@ -75,7 +75,7 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for the Question Answering workflow."""
 
-    answer: Label
+    answer: ClassificationLabel
     """The model's generated answer."""
 
     clean_answer: str

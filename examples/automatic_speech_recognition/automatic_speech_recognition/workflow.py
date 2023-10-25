@@ -24,7 +24,7 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
-from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ClassificationLabel
 
 
 @dataclass(frozen=True)
@@ -34,12 +34,12 @@ class TestSample(Audio):
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
-    transcription: Label
+    transcription: ClassificationLabel
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    transcription: Label
+    transcription: ClassificationLabel
 
 
 _workflow, TestCase, TestSuite, Model = define_workflow(
@@ -68,9 +68,9 @@ class TestSampleMetric(MetricsTestSample):
     FalseNegativeText: str
     FalsePositiveText: str
 
-    Substitutions: List[Label]
-    Insertions: List[Label]
-    Deletions: List[Label]
+    Substitutions: List[ClassificationLabel]
+    Insertions: List[ClassificationLabel]
+    Deletions: List[ClassificationLabel]
 
     Language: str
 

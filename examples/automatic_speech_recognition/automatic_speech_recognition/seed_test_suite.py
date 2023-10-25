@@ -24,7 +24,7 @@ from workflow import TestSample
 from workflow import TestSuite
 
 import kolena
-from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ClassificationLabel
 
 BUCKET = "kolena-public-datasets"
 DATASET = "LibriSpeech"
@@ -149,7 +149,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
             locator=f"s3://{BUCKET}/{DATASET}/{record.locator}",
             metadata={f: getattr(record, f) for f in required_columns - non_metadata_columns},
         )
-        ground_truth = GroundTruth(transcription=Label(record.text))
+        ground_truth = GroundTruth(transcription=ClassificationLabel(record.text))
         test_samples.append((test_sample, ground_truth))
 
     test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)

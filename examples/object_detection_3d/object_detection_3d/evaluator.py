@@ -39,7 +39,7 @@ from kolena.workflow import MetricsTestCase as BaseMetricsTestCase
 from kolena.workflow import MetricsTestSample as BaseMetricsTestSample
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox3D
-from kolena.workflow.annotation import ScoredLabel
+from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox3D
 from kolena.workflow.plot import Curve
@@ -121,7 +121,7 @@ class UnmatchedScoredBoundingBox3D(ScoredLabeledBoundingBox3D):
 class MetricsTestSample(BaseMetricsTestSample):
     nInferences: int
     nValidObjects: int
-    thresholds: List[ScoredLabel]
+    thresholds: List[ScoredClassificationLabel]
     nMatchedInferences: int
     nMissedObjects: int
     nMismatchedInferences: int
@@ -254,7 +254,7 @@ class KITTI3DEvaluator(Evaluator):
                         nInferences=len(inf.bboxes_3d),
                         nValidObjects=sum(1 for ignore in ignored_gts_combined[i] if not ignore),
                         thresholds=[
-                            ScoredLabel(score=score, label=label)
+                            ScoredClassificationLabel(score=score, label=label)
                             for label, score in sorted(f1_optimal_thresholds.items())
                         ],
                         nMatchedInferences=len(TP_2D),
