@@ -19,7 +19,6 @@ from typing import List
 
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
-from semantic_segmentation.data_loader import ActivationMapUploader
 from semantic_segmentation.evaluator import evaluate_semantic_segmentation
 from semantic_segmentation.utils import sanitize_model_name
 from semantic_segmentation.workflow import Inference
@@ -36,15 +35,12 @@ from kolena.workflow.test_run import test
 
 def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str) -> None:
     sanitized_model_name = sanitize_model_name(model_name)
-    inference_locator_prefix = f"s3://{out_bucket}/{DATASET}/inferences/{sanitized_model_name}"
-    uploader = ActivationMapUploader()  # asynchronously batch and upload activation maps
+    s3_prefix = f"s3://{BUCKET}/{DATASET}"
 
     def infer(test_sample: TestSample) -> Inference:
         basename = test_sample.metadata["basename"]
-        prob_array_locator = f"s3://{BUCKET}/{DATASET}/results/{sanitized_model_name}/{basename}_person.npy"
-        activation_map_locator = f"{inference_locator_prefix}/activation/{basename}.png"
-        uploader.submit(prob_array_locator, activation_map_locator)
-
+        prob_array_locator = f"{s3_prefix}/results/{sanitized_model_name}/{basename}_person.npy"
+        activation_map_locator = f"{s3_prefix}/inferences/{sanitized_model_name}/activation/{basename}.png"
         return Inference(
             prob=BinaryAsset(prob_array_locator),
             activation_map=BitmapMask(locator=activation_map_locator),
@@ -62,8 +58,6 @@ def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str)
             configurations=configurations,
             reset=True,
         )
-
-    uploader.wait()
 
 
 def main(args: Namespace) -> int:
