@@ -29,6 +29,7 @@ from typing import Union
 import pandas as pd
 from pydantic import validate_arguments
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -40,6 +41,7 @@ from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
@@ -151,6 +153,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._id = response.test_run_id
         self._freeze()
 
+    @with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
     def run(self) -> None:
         """
         Run the testing process, first extracting inferences for all test samples in the test suite then performing

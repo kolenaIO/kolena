@@ -21,10 +21,13 @@ from urllib.parse import urlparse
 
 import pandas as pd
 
+from kolena._api.v1.event import EventAPI
 from kolena._utils import log
 from kolena._utils import state
 from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.endpoints import get_platform_url
+from kolena._utils.instrumentation import record_event
+from kolena._utils.instrumentation import set_profile
 from kolena._utils.instrumentation import upload_log
 from kolena._utils.state import _client_state
 from kolena.errors import InputValidationError
@@ -131,6 +134,10 @@ def initialize(
 
     if used_deprecated_signature:
         upload_log("Client attempted to use deprecated entity auth signature.", "warn")
+
+    if derived_telemetry:
+        set_profile()
+        record_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.GENERATE_TOKEN))
 
     log.info("initialized")
     if verbose:
