@@ -233,10 +233,8 @@ jobs:
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
-                  if [ ! -z "$TESTFILES" ]; then
-                    poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
-                      --junitxml=test-results/result.xml $TESTFILES
-                  fi
+                  poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
+                    --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
@@ -334,10 +332,21 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ detection, fr, workflow ]
               extras: ["none"]
           enabled: true
           parallelism: 4
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              pytest-group: [ classification ]  # classification does not have enough tests for parallelism of 4
+              extras: ["none"]
+          enabled: true
+          parallelism: 2
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
