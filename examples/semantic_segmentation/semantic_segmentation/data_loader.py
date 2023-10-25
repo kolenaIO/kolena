@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import functools
 from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import wait
+from typing import Iterable
 from typing import List
 from typing import Tuple
 
@@ -39,32 +38,35 @@ class ResultMask:
 
 
 ResultMasks = Tuple[ResultMask, ResultMask, ResultMask]
-ResultMasksByLocator = Tuple[str, ResultMask, ResultMask, ResultMask]
 
 
 class DataLoader:
     def __init__(self):
         self.pool = ThreadPoolExecutor(max_workers=32)
 
-    def load_batch(
-        self,
-        ground_truths: List[GroundTruth],
-        inferences: List[Inference]
-    ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+    def download_masks(
+        self, ground_truths: List[GroundTruth], inferences: List[Inference]
+    ) -> Iterable[Tuple[np.ndarray, np.ndarray]]:
         def load(gt: GroundTruth, inf: Inference) -> Tuple[np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)
             gt_mask[gt_mask != 1] = 0  # binarize gt_mask
             return gt_mask, inf_prob
 
-        return tqdm(self.pool.map(load, ground_truths, inferences), total=len(ground_truths))
+        return tqdm(
+            self.pool.map(load, ground_truths, inferences), total=len(ground_truths)
+        )
 
-    def upload_batch(
+    def upload_masks(
         self,
         locator_prefix: str,
-        batch: List[Tuple[TestSample, np.ndarray, np.ndarray]],
+        test_samples: List[TestSample],
+        gt_masks: List[np.ndarray],
+        inf_masks: List[np.ndarray],
     ) -> List[ResultMasks]:
-        def upload(ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray) -> ResultMasksByLocator:
+        def upload(
+            ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray
+        ) -> ResultMasks:
             def upload_result_mask(category: str, mask: np.ndarray) -> ResultMask:
                 locator = f"{locator_prefix}/{category}/{ts.metadata['basename']}.png"
                 upload_image(locator, mask)
@@ -77,14 +79,11 @@ class DataLoader:
             tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
             fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))
             fn = upload_result_mask("FN", np.where(gt_mask == inf_mask, 0, gt_mask))
-            return ts.locator, tp, fp, fn
+            return tp, fp, fn
 
-        futures = [self.pool.submit(functools.partial(upload, *item)) for item in batch]
-        successes, failures = wait(futures)
-        if len(failures) != 0:
-            exceptions = ", ".join([str(failure.exception()) for failure in failures])
-            raise RuntimeError(f"failed to upload {len(failures)} samples: {exceptions}")
-
-        # splice together correct ordering
-        result_masks_by_locator = {result[0]: tuple(result[1:]) for result in [f.result() for f in successes]}
-        return [result_masks_by_locator[ts.locator] for ts, _, _ in batch]
+        return list(
+            tqdm(
+                self.pool.map(upload, test_samples, gt_masks, inf_masks),
+                total=len(test_samples),
+            )
+        )

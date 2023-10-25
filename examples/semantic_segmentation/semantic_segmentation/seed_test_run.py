@@ -33,14 +33,20 @@ from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
 
 
-def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str) -> None:
+def seed_test_run(
+    model_name: str, test_suite_names: List[str], out_bucket: str
+) -> None:
     sanitized_model_name = sanitize_model_name(model_name)
     s3_prefix = f"s3://{BUCKET}/{DATASET}"
 
     def infer(test_sample: TestSample) -> Inference:
         basename = test_sample.metadata["basename"]
-        prob_array_locator = f"{s3_prefix}/results/{sanitized_model_name}/{basename}_person.npy"
-        activation_map_locator = f"{s3_prefix}/inferences/{sanitized_model_name}/activation/{basename}.png"
+        prob_array_locator = (
+            f"{s3_prefix}/results/{sanitized_model_name}/{basename}_person.npy"
+        )
+        activation_map_locator = (
+            f"{s3_prefix}/inferences/{sanitized_model_name}/activation/{basename}.png"
+        )
         return Inference(
             prob=BinaryAsset(prob_array_locator),
             activation_map=BitmapMask(locator=activation_map_locator),

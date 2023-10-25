@@ -36,7 +36,9 @@ class ActivationMapUploader:
             exceptions = ", ".join([str(failure.exception()) for failure in failures])
             raise RuntimeError(f"failed to load {len(failures)} samples: {exceptions}")
         elif len(successes) != len(self.futures):
-            raise RuntimeError(f"missing uploads for {len(self.futures) - len(successes)} activation maps")
+            raise RuntimeError(
+                f"missing uploads for {len(self.futures) - len(successes)} activation maps"
+            )
         else:
             print(f"completed upload of {len(self.futures)} activation maps")
 
@@ -49,7 +51,9 @@ class ActivationMapUploader:
         )
         self.futures[activation_map_locator] = future
 
-    def process_activation_map(self, prob_array_locator: str, activation_map_locator: str) -> None:
+    def process_activation_map(
+        self, prob_array_locator: str, activation_map_locator: str
+    ) -> None:
         prob_array = download_binary_array(prob_array_locator)
         bitmap = colorize_activation_map(prob_array)
         activation_map = encode_png(bitmap, mode="RGBA")
