@@ -91,11 +91,25 @@ def report_crash(id: int, endpoint_path: str):
 
 
 def set_profile():
-    krequests.put(endpoint_path=EventAPI.Path.PROFILE)
+    try:
+        krequests.put(endpoint_path=EventAPI.Path.PROFILE)
+    except Exception:
+        """
+        Attempting to set up event profile is best-effort. We don't want to have exceptions in that
+        process be thrown to the customer--instead they should get their original stacktrace.
+        """
+        ...
 
 
 def record_event(request: EventAPI.RecordEventRequest):
-    krequests.post(endpoint_path=EventAPI.Path.EVENT, json=dataclasses.asdict(request))
+    try:
+        krequests.post(endpoint_path=EventAPI.Path.EVENT, json=dataclasses.asdict(request))
+    except Exception:
+        """
+        Attempting to record event is best-effort. We don't want to have exceptions in that
+        process be thrown to the customer--instead they should get their original stacktrace.
+        """
+        ...
 
 
 def with_event(event_name: str):
