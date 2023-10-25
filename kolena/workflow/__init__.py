@@ -47,6 +47,7 @@ from .evaluator import EvaluatorConfiguration
 from .evaluator_function import BasicEvaluatorFunction
 from .evaluator_function import TestCases
 from .evaluator_function import EvaluationResults
+from .evaluator_function import no_op_evaluator
 from .test_run import TestRun
 from .test_run import test
 from .define_workflow import define_workflow
@@ -86,6 +87,7 @@ __all__ = [
     "BasicEvaluatorFunction",
     "TestCases",
     "EvaluationResults",
+    "no_op_evaluator",
     "TestRun",
     "test",
     "define_workflow",

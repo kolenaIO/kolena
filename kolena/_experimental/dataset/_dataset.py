@@ -23,20 +23,21 @@ import pandas as pd
 from kolena._api.v2.dataset import LoadDatapointsRequest
 from kolena._api.v2.dataset import Path
 from kolena._api.v2.dataset import RegisterRequest
+from kolena._experimental.dataset.common import COL_DATAPOINT
+from kolena._experimental.dataset.common import validate_batch_size
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
-from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow.io import _dataframe_object_serde
 
-COL_DATAPOINT = "datapoint"
+
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
 
@@ -91,17 +92,21 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     return DatapointType.CUSTOM.value
 
 
-def _to_serialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
+def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
-    result[DATA_TYPE_FIELD] = _infer_datatype(df)
-    result[COL_DATAPOINT] = result.to_dict("records")
-    result[COL_DATAPOINT] = result[COL_DATAPOINT].apply(lambda x: json.dumps(x))
+    if column == COL_DATAPOINT:
+        result[DATA_TYPE_FIELD] = _infer_datatype(df)
+    result[column] = result.to_dict("records")
+    result[column] = result[column].apply(lambda x: json.dumps(x))
 
-    return result[[COL_DATAPOINT]]
+    return result[[column]]
 
 
-def _to_deserialized_dataframe(df: pd.DataFrame) -> pd.DataFrame:
-    flattened = pd.json_normalize([json.loads(r[COL_DATAPOINT]) for r in df.to_dict("records")], max_level=0)
+def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    flattened = pd.json_normalize(
+        [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
+        max_level=0,
+    )
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     result = _dataframe_object_serde(flattened, _deserialize_dataobject)
 
@@ -114,11 +119,28 @@ def register_dataset(name: str, df: pd.DataFrame) -> None:
     """
     load_uuid = init_upload().uuid
 
-    df_serialized = _to_serialized_dataframe(df)
+    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
     request = RegisterRequest(name=name, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
+
+
+def _iter_dataset_raw(
+    name: str,
+    batch_size: int = BatchSize.LOAD_SAMPLES.value,
+) -> Iterator[pd.DataFrame]:
+    validate_batch_size(batch_size)
+    init_request = LoadDatapointsRequest(
+        name=name,
+        batch_size=batch_size,
+    )
+    yield from _BatchedLoader.iter_data(
+        init_request=init_request,
+        endpoint_path=Path.LOAD_DATAPOINTS.value,
+        df_class=None,
+        endpoint_api_version=API_V2,
+    )
 
 
 def iter_dataset(
@@ -126,26 +148,18 @@ def iter_dataset(
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
-    Get an interator over datapoints in the dataset.
+    Get an iterator over datapoints in the dataset.
     """
-    if batch_size <= 0:
-        raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
-    init_request = LoadDatapointsRequest(
-        name=name,
-        batch_size=batch_size,
-    )
-    for df_batch in _BatchedLoader.iter_data(
-        init_request=init_request,
-        endpoint_path=Path.LOAD_DATAPOINTS.value,
-        df_class=None,
-        endpoint_api_version=API_V2,
-    ):
-        yield _to_deserialized_dataframe(df_batch)
+    for df_batch in _iter_dataset_raw(name, batch_size):
+        yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
 
 
 def fetch_dataset(
     name: str,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> pd.DataFrame:
+    """
+    Fetch an entire dataset given its name.
+    """
     df_batches = list(iter_dataset(name, batch_size))
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()

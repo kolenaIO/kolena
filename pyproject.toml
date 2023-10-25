@@ -63,12 +63,12 @@ black = { version = "^22.1.0", allow-prereleases = true }
 pytest = "^7"
 pytest-cov = "^4.0.0"
 pytest-depends = "^1.0.1"
-mkdocs = "^1.4.3"
-cairosvg = "^2.7.0"
-mkdocs-material = "^9.1.15"  # insiders fork installed out-of-band in docs/setup_insiders.sh
-mkdocstrings = { version = ">0.20,<1", extras = ["python"] }
-mkdocs-git-committers-plugin-2 = "^1.1.2"
-mkdocs-git-revision-date-localized-plugin = "^1.2.0"
+mkdocs = { version = "^1.4.3", python = ">=3.8" }
+cairosvg = { version = "^2.7.0", python = ">=3.8" }
+mkdocs-material = { version = ">=9.2,<10", python = ">=3.8" }  # insiders fork installed out-of-band in docs/setup_insiders.sh
+mkdocstrings = { version = ">0.20,<1", extras = ["python"], python = ">=3.8" }
+mkdocs-git-committers-plugin-2 = { version = "^1", python = ">=3.8" }
+mkdocs-git-revision-date-localized-plugin = { version = "^1", python = ">=3.8" }
 
 [tool.poetry.scripts]
 kolena = 'kolena._utils.cli:run'
