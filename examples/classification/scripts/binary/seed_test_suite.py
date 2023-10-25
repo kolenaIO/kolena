@@ -23,7 +23,7 @@ from classification.workflow import TestSample
 from classification.workflow import TestSuite
 
 import kolena
-from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import Label
 
 BUCKET = "kolena-public-datasets"
 DATASET = "dogs-vs-cats"
@@ -42,7 +42,7 @@ def main(args: Namespace) -> int:
                 locator=record.locator,
                 metadata={f: getattr(record, f) for f in set(record._fields) - non_metadata_fields},
             ),
-            GroundTruth(classification=ClassificationLabel(record.label)),
+            GroundTruth(classification=Label(record.label)),
         )
         for record in df_metadata.itertuples(index=False)
     ]

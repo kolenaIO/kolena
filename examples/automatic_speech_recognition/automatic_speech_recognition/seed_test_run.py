@@ -24,7 +24,7 @@ from workflow import TestSample
 from workflow import TestSuite
 
 import kolena
-from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import Label
 from kolena.workflow.test_run import test
 
 BUCKET = "kolena-public-datasets"
@@ -73,7 +73,7 @@ def seed_test_run(
             result = df.loc[df["id"] == sample.metadata["id"]]
             transcription = result[f"inference_{mod}"].values[0]
             return Inference(
-                transcription=ClassificationLabel(transcription),
+                transcription=Label(transcription),
             )
 
         return infer

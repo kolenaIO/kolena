@@ -26,7 +26,7 @@ from question_answering.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow import test
-from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import Label
 
 MODELS = ["gpt-3.5-turbo-0301", "gpt-3.5-turbo", "gpt-4-0314", "gpt-4"]
 
@@ -54,7 +54,7 @@ def main(args: Namespace) -> int:
     def infer(test_sample: TestSample) -> Inference:
         result = inference_mapping[test_sample.data_id][test_sample.turn]
         return Inference(
-            answer=ClassificationLabel(label=result["answer"]),
+            answer=Label(label=result["answer"]),
             clean_answer=normalize_string(result["answer"]),
             wc_answer=result["wc_answer"],
             inference_prompt_tokens=result["inference_prompt_tokens"],

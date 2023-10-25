@@ -26,7 +26,7 @@ from classification.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow import test
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import ScoredLabel
 
 BUCKET = "kolena-public-datasets"
 DATASET = "dogs-vs-cats"
@@ -45,14 +45,14 @@ def seed_test_run(model_name: str, test_suite_names: List[str], multiclass: bool
             # equally important) — prediction for both labels are required.
             return Inference(
                 inferences=[
-                    ScoredClassificationLabel(label=POSITIVE_LABEL, score=sample_result["prediction"]),
-                    ScoredClassificationLabel(label=NEGATIVE_LABEL, score=1 - sample_result["prediction"]),
+                    ScoredLabel(label=POSITIVE_LABEL, score=sample_result["prediction"]),
+                    ScoredLabel(label=NEGATIVE_LABEL, score=1 - sample_result["prediction"]),
                 ],
             )
 
         return Inference(
             inferences=[
-                ScoredClassificationLabel(label=POSITIVE_LABEL, score=sample_result["prediction"]),
+                ScoredLabel(label=POSITIVE_LABEL, score=sample_result["prediction"]),
             ],
         )
 

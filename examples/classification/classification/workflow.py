@@ -26,8 +26,8 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
-from kolena.workflow.annotation import ClassificationLabel
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import Label
+from kolena.workflow.annotation import ScoredLabel
 
 
 @dataclass(frozen=True)
@@ -42,7 +42,7 @@ class TestSample(Image):
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for Classification workflow."""
 
-    classification: ClassificationLabel
+    classification: Label
     """
     The classfication label associated with an image.
 
@@ -54,7 +54,7 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for the multiclass classification workflow."""
 
-    inferences: List[ScoredClassificationLabel]
+    inferences: List[ScoredLabel]
     """
     The model inferences for an image. For `N`-class problems, `label` is expected to contain `N` entries, one for
     each class and its associated confidence score.
@@ -115,7 +115,7 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
     truth label.
     """
 
-    classification: ScoredClassificationLabel
+    classification: ScoredLabel
     """
     The model inference for this image.
     """
@@ -139,7 +139,7 @@ class TestSampleMetrics(MetricsTestSample):
     is_correct: bool
     """An indication of the `classification_label` matching the associated ground truth label."""
 
-    classification: Optional[ScoredClassificationLabel]
+    classification: Optional[ScoredLabel]
     """
     The model classification for this image. Empty when no inferences have a sufficient confidence score determined
     by the `ThresholdConfiguration`.

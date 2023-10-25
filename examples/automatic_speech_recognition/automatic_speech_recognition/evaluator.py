@@ -36,7 +36,7 @@ from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
-from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow.annotation import Label
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
 
@@ -73,17 +73,17 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         SubstitutionCount=diff["sub_count"],
         Language=language,
         Substitutions=[
-            ClassificationLabel(item)
+            Label(item)
             for sublist in diff["sub_list"]
             for item in (sublist if isinstance(sublist, list) else [sublist])
         ],
         Insertions=[
-            ClassificationLabel(item)
+            Label(item)
             for sublist in diff["ins_list"]
             for item in (sublist if isinstance(sublist, list) else [sublist])
         ],
         Deletions=[
-            ClassificationLabel(item)
+            Label(item)
             for sublist in diff["del_list"]
             for item in (sublist if isinstance(sublist, list) else [sublist])
         ],
