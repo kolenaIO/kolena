@@ -51,6 +51,9 @@ from kolena.errors import IncorrectUsageError
 TYPE_EVALUATION_CONFIG = Dict[str, Any]
 INFER_FUNC_TYPE = Callable[[pd.DataFrame], pd.DataFrame]
 EVAL_FUNC_TYPE = Callable[[pd.DataFrame, pd.DataFrame, Optional[TYPE_EVALUATION_CONFIG]], pd.DataFrame]
+TEST_INFER_TYPE = Optional[Union[INFER_FUNC_TYPE, pd.DataFrame]]
+TEST_EVAL_TYPE = Optional[Union[EVAL_FUNC_TYPE, pd.DataFrame]]
+TEST_EVAL_CONFIGS_TYPE = Optional[Union[TYPE_EVALUATION_CONFIG, List[TYPE_EVALUATION_CONFIG]]]
 
 
 def _fetch_dataset(dataset: str) -> pd.DataFrame:
@@ -184,12 +187,70 @@ def validate_data(left: pd.DataFrame, right: pd.DataFrame) -> None:
         raise IncorrectUsageError("numbers of rows between two dataframe do not match")
 
 
+def _validate_common_columns(common_columns: List[str]) -> None:
+    if len(common_columns) == 0:
+        raise ValueError("there is no common columns")
+
+
+def _get_default_infer_func(df_inf: pd.DataFrame, join_keys: list[str]) -> INFER_FUNC_TYPE:
+    def infer(datapoints: pd.DataFrame) -> pd.DataFrame:
+        inferences = datapoints[join_keys].merge(df_inf, on=join_keys)
+        return inferences
+
+    return infer
+
+
+def _get_default_eval_func(df_metrics: pd.DataFrame, join_keys: list[str]) -> EVAL_FUNC_TYPE:
+    def eval(
+        datapoints: pd.DataFrame,
+        inferences: pd.DataFrame,
+        eval_config: Optional[TYPE_EVALUATION_CONFIG],
+    ) -> pd.DataFrame:
+        metrics = datapoints[join_keys].merge(df_metrics, on=join_keys)
+        return metrics
+
+    return eval
+
+
+def _get_df_inferences(infer: TEST_INFER_TYPE, df_datapoints: pd.DataFrame) -> pd.DataFrame:
+    if isinstance(infer, pd.DataFrame):
+        common_columns = list(infer.columns.intersection(df_datapoints.columns))
+        try:
+            _validate_common_columns(common_columns)
+        except ValueError as exception:
+            raise IncorrectUsageError(
+                "invalid infer dataframe, please double check it or use infer func",
+            ) from exception
+        infer = _get_default_infer_func(infer, common_columns)
+
+    df_inferences = infer(df_datapoints)
+    return df_inferences
+
+
+def _get_single_df_metrics(
+    eval: TEST_INFER_TYPE,
+    df_datapoints: pd.DataFrame,
+    df_inferences: pd.DataFrame,
+    config: Optional[TYPE_EVALUATION_CONFIG],
+) -> pd.DataFrame:
+    if isinstance(eval, pd.DataFrame):
+        common_columns = list(eval.columns.intersection(df_datapoints.columns))
+        try:
+            _validate_common_columns(common_columns)
+        except ValueError as exception:
+            raise IncorrectUsageError("invalid eval dataframe, please double check it or use eval func") from exception
+        eval = _get_default_eval_func(eval, common_columns)
+
+    single_metrics = eval(df_datapoints, df_inferences, config)
+    return single_metrics
+
+
 def test(
     dataset: str,
     model: str,
-    infer: Optional[INFER_FUNC_TYPE] = None,
-    eval: Optional[EVAL_FUNC_TYPE] = None,
-    eval_configs: Optional[Union[TYPE_EVALUATION_CONFIG, List[TYPE_EVALUATION_CONFIG]]] = None,
+    infer: TEST_INFER_TYPE = None,
+    eval: TEST_EVAL_TYPE = None,
+    eval_configs: TEST_EVAL_CONFIGS_TYPE = None,
 ) -> None:
     """
     This function is used for running inference and evaluation on a given dataset using a specified model.
@@ -207,7 +268,7 @@ def test(
         df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
         log.info(f"fetched {len(df_data)} for dataset {dataset}")
 
-        df_inferences = infer(df_datapoints)
+        df_inferences = _get_df_inferences(infer, df_datapoints)
         validate_data(df_datapoints, df_inferences)
 
         df_data["inference"] = _to_serialized_dataframe(df_inferences, column=COL_INFERENCE)
@@ -226,7 +287,7 @@ def test(
         metrics = []
         for config in eval_configs:
             log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
-            single_metrics = eval(df_datapoints, df_inferences, config)
+            single_metrics = _get_single_df_metrics(eval, df_datapoints, df_inferences, config)
             validate_data(df_data, single_metrics)
             metrics.append(single_metrics)
             log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
