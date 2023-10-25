@@ -25,13 +25,10 @@ from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
-from kolena.workflow import MetricsTestSuite
 
 
 @dataclass(frozen=True)
 class TestSample(BaseTestSample):
-    """Test sample type for Recommender System Workflow"""
-
     user_id: int
     movie_id: int
     metadata: Metadata = dataclasses.field(default_factory=dict)
@@ -48,7 +45,7 @@ class Inference(BaseInference):
 
 
 workflow, TestCase, TestSuite, Model = define_workflow(
-    "Recommender System",
+    "Rating-Based Recommendation",
     TestSample,
     GroundTruth,
     Inference,
@@ -80,7 +77,7 @@ class TestCaseMetrics(MetricsTestCase):
 
 
 @dataclass(frozen=True)
-class RecommendationConfiguration(EvaluatorConfiguration):
+class ThresholdConfiguration(EvaluatorConfiguration):
     rating_threshold: float
 
     def display_name(self) -> str:

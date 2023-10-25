@@ -16,18 +16,19 @@ from typing import Optional
 from typing import Tuple
 
 import numpy as np
-from rating_prediction.workflow import ThresholdConfiguration
-from rating_prediction.workflow import GroundTruth
-from rating_prediction.workflow import Inference
-from rating_prediction.workflow import TestCase
-from rating_prediction.workflow import TestCaseMetrics
-from rating_prediction.workflow import TestSample
-from rating_prediction.workflow import TestSampleMetrics
-from sklearn.metrics import auc, average_precision_score, precision_recall_curve, roc_curve
+from sklearn.metrics import auc, precision_recall_curve, roc_curve
+
+from rating_based_recommendation.workflow import ThresholdConfiguration
+from rating_based_recommendation.workflow import GroundTruth
+from rating_based_recommendation.workflow import Inference
+from rating_based_recommendation.workflow import TestCase
+from rating_based_recommendation.workflow import TestCaseMetrics
+from rating_based_recommendation.workflow import TestSample
+from rating_based_recommendation.workflow import TestSampleMetrics
+from rating_based_recommendation.utils import create_histogram
 
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
-from kolena.workflow import Histogram
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
@@ -107,19 +108,7 @@ def compute_test_case_plots(
         )
     )
 
-    deltas = [tsm.Δ_rating for tsm in metrics]
-    min_data, max_data = min(deltas), max(deltas)
-    freq, bin_edges = np.histogram(deltas, bins=10, range=(min_data, max_data), density=True)
-
-    plots.append(
-        Histogram(
-            title="Delta Rating Distribution",
-            x_label="Δ_rating",
-            y_label="Frequency (%)",
-            buckets=list(bin_edges),
-            frequency=list(freq),
-        )
-    )
+    plots.append(create_histogram(metrics))
 
     gts_binary_labels = [int(gt.rating >= configuration.rating_threshold) for gt in ground_truths]
     infs = [inf.rating for inf in inferences]
@@ -150,7 +139,7 @@ def compute_test_case_plots(
     return plots
 
 
-def evaluate_rating_prediction(
+def evaluate_recommender(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
