@@ -94,7 +94,7 @@ def set_profile():
     krequests.put(endpoint_path=EventAPI.Path.PROFILE)
 
 
-def track_event(request: EventAPI.RecordEventRequest):
+def record_event(request: EventAPI.RecordEventRequest):
     krequests.post(endpoint_path=EventAPI.Path.EVENT, json=dataclasses.asdict(request))
 
 
@@ -117,7 +117,7 @@ def with_event(event_name: str):
                 raise e
             finally:
                 event_metadata["duration"] = round((datetime.datetime.now() - start_time).total_seconds(), 3)
-                track_event(
+                record_event(
                     EventAPI.RecordEventRequest(
                         event_name=event_name,
                         additional_metadata=event_metadata,

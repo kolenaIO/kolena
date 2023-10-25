@@ -26,8 +26,8 @@ from kolena._utils import log
 from kolena._utils import state
 from kolena._utils.consts import KOLENA_TOKEN_ENV
 from kolena._utils.endpoints import get_platform_url
+from kolena._utils.instrumentation import record_event
 from kolena._utils.instrumentation import set_profile
-from kolena._utils.instrumentation import track_event
 from kolena._utils.instrumentation import upload_log
 from kolena._utils.state import _client_state
 from kolena.errors import InputValidationError
@@ -137,7 +137,7 @@ def initialize(
 
     if derived_telemetry:
         set_profile()
-        track_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.GENERATE_TOKEN))
+        record_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.GENERATE_TOKEN))
 
     log.info("initialized")
     if verbose:
