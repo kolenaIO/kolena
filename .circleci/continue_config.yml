@@ -332,21 +332,10 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, workflow ]
+              pytest-group: [ detection, fr, classification, workflow ]
               extras: ["none"]
           enabled: true
-          parallelism: 4
-          requires:
-            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
-      - integration-test:
-          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
-          matrix:
-            parameters:
-              python-version: [ "3.9.18" ]
-              pytest-group: [ classification ]  # classification does not have enough tests for parallelism of 4
-              extras: ["none"]
-          enabled: true
-          parallelism: 2
+          parallelism: 3
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
