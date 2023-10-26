@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from concurrent.futures import ThreadPoolExecutor
-from typing import Iterable
+from typing import Iterator
 from typing import List
 from typing import Tuple
 
@@ -48,7 +48,7 @@ class DataLoader:
         self,
         ground_truths: List[GroundTruth],
         inferences: List[Inference],
-    ) -> Iterable[Tuple[np.ndarray, np.ndarray]]:
+    ) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
         def load(gt: GroundTruth, inf: Inference) -> Tuple[np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)
