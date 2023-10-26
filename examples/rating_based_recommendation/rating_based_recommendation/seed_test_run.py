@@ -33,15 +33,14 @@ DATASET = "movielens"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    # df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
-    df_results = pd.read_csv(f"/Users/andy/dev/movielens/ml-1m/results/predictions_{model_name}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         row = df_results[
             (df_results["userId"] == test_sample.user_id) & (df_results["movieId"] == test_sample.movie_id)
         ]
         rating = 0 if row.empty else row.prediction.values[0]
-        return Inference(rating=rating)
+        return Inference(pred_rating=round(rating, 2))
 
     model_descriptor = f"{model_name} [{DATASET}-10k]"
     model_metadata = dict(library="lenskit", dataset="movielens-1M")

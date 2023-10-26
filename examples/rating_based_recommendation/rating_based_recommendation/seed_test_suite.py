@@ -22,7 +22,12 @@ from rating_based_recommendation.workflow import GroundTruth
 from rating_based_recommendation.workflow import TestCase
 from rating_based_recommendation.workflow import TestSample
 from rating_based_recommendation.workflow import TestSuite
-from rating_based_recommendation.utils import ID_OCCUPATION_MAP, ID_AGE_MAP
+from rating_based_recommendation.utils import (
+    ID_OCCUPATION_MAP,
+    ID_AGE_MAP,
+    OCCUPATION_STRATIFICATION,
+    AGE_STRATIFICATION,
+)
 
 import kolena
 
@@ -69,7 +74,7 @@ def main(args: Namespace) -> int:
                 movie_id=record.movieId,
                 metadata={**metadata_by_movie_id[record.movieId], **metadata_by_user_id[record.userId]},
             ),
-            GroundTruth(rating=record.rating),
+            GroundTruth(real_rating=record.rating),
         )
         for record in df_ratings.itertuples(index=False)
     ]
@@ -109,21 +114,29 @@ def main(args: Namespace) -> int:
             "Film-Noir",
             "(no genres listed)",
         ],
-        age=ID_AGE_MAP.values(),
-        occupation=ID_OCCUPATION_MAP.values(),
+        age=AGE_STRATIFICATION.values(),
+        occupation=OCCUPATION_STRATIFICATION.values(),
+        gender=["M", "F"],
     )
 
     genre_ts_gt_splits = {item: [] for item in cateogry_subsets["genre"]}
     age_ts_gt_splits = {item: [] for item in cateogry_subsets["age"]}
     occupation_ts_gt_splits = {item: [] for item in cateogry_subsets["occupation"]}
+    gender_ts_gt_splits = {item: [] for item in cateogry_subsets["gender"]}
 
     for ts, gt in test_samples_and_ground_truths:
         for genre in ts.metadata["genres"]:
             genre_ts_gt_splits[genre].append((ts, gt))
-        age_ts_gt_splits[ts.metadata["age"]].append((ts, gt))
-        occupation_ts_gt_splits[ts.metadata["occupation"]].append((ts, gt))
+        age_ts_gt_splits[AGE_STRATIFICATION[ts.metadata["age"]]].append((ts, gt))
+        occupation_ts_gt_splits[OCCUPATION_STRATIFICATION[ts.metadata["occupation"]]].append((ts, gt))
+        gender_ts_gt_splits[ts.metadata["gender"]].append((ts, gt))
 
-    test_suites = dict(genre=genre_ts_gt_splits, age=age_ts_gt_splits, occupation=occupation_ts_gt_splits)
+    test_suites = dict(
+        genre=genre_ts_gt_splits,
+        age=age_ts_gt_splits,
+        occupation=occupation_ts_gt_splits,
+        gender=gender_ts_gt_splits,
+    )
 
     for cat, ts in test_suites.items():
         t2 = time.time()
@@ -148,19 +161,16 @@ if __name__ == "__main__":
     ap.add_argument(
         "--ratings_csv",
         type=str,
-        # default=f"s3://{BUCKET}/{DATASET}/meta/ratings.sample.csv",
-        default="/Users/andy/dev/movielens/ml-1m/meta/ratings.sample.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/ratings.sample.csv",
     )
     ap.add_argument(
         "--movies_csv",
         type=str,
-        # default=f"s3://{BUCKET}/{DATASET}/meta/movies.csv",
-        default="/Users/andy/dev/movielens/ml-1m/meta/movies.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/movies.csv",
     )
     ap.add_argument(
         "--users_csv",
         type=str,
-        # default=f"s3://{BUCKET}/{DATASET}/meta/users.csv",
-        default="/Users/andy/dev/movielens/ml-1m/meta/users.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/users.csv",
     )
     sys.exit(main(ap.parse_args()))

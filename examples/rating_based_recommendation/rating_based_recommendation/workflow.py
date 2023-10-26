@@ -20,15 +20,15 @@ from pydantic.dataclasses import dataclass
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
-from kolena.workflow import TestSample as BaseTestSample
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
+from kolena.workflow import Composite
 
 
 @dataclass(frozen=True)
-class TestSample(BaseTestSample):
+class TestSample(Composite):
     user_id: int
     movie_id: int
     metadata: Metadata = dataclasses.field(default_factory=dict)
@@ -36,12 +36,12 @@ class TestSample(BaseTestSample):
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
-    rating: float
+    real_rating: float
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    rating: float
+    pred_rating: float
 
 
 workflow, TestCase, TestSuite, Model = define_workflow(

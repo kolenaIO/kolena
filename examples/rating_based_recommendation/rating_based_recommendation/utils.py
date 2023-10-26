@@ -28,7 +28,52 @@ ID_OCCUPATION_MAP = {
     20: "writer",
 }
 
+PS = "Professional Services"
+MB = "Management and Business"
+SSI = "Support and Service Industry"
+ES = "Education and Students"
+CA = "Creative and Artistic"
+M = "Miscellaneous"
+
+OCCUPATION_STRATIFICATION = {
+    "academic/educator": PS,
+    "artist": CA,
+    "clerical/admin": M,
+    "college/grad student": ES,
+    "customer service": SSI,
+    "doctor/health care": PS,
+    "executive/managerial": MB,
+    "farmer": SSI,
+    "homemaker": SSI,
+    "K-12 student": ES,
+    "lawyer": PS,
+    "programmer": PS,
+    "retired": M,
+    "sales/marketing": MB,
+    "scientist": PS,
+    "self-employed": MB,
+    "technician/engineer": M,
+    "tradesman/craftsman": SSI,
+    "unemployed": M,
+    "writer": CA,
+    "other": M,
+}
+
 ID_AGE_MAP = {1: "Under 18", 18: "18-24", 25: "25-34", 35: "35-44", 45: "45-49", 50: "50-55", 56: "56+"}
+
+L25 = "Under 25"
+B25_50 = "25-50"
+U50 = "50+"
+
+AGE_STRATIFICATION = {
+    "Under 18": L25,
+    "18-24": L25,
+    "25-34": B25_50,
+    "35-44": B25_50,
+    "45-49": B25_50,
+    "50-55": U50,
+    "56+": U50,
+}
 
 
 def create_histogram(
@@ -45,7 +90,7 @@ def create_histogram(
 
     return Histogram(
         title="Delta Rating Distribution",
-        x_label="Δ_rating",
+        x_label="Δ_rating (predicted rating - real rating)",
         y_label="Frequency (%)",
         buckets=list(bin_edges),
         frequency=list(freq),
