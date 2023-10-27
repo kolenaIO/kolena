@@ -137,7 +137,7 @@ def initialize(
 
     if derived_telemetry:
         set_profile()
-        record_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.GENERATE_TOKEN))
+        record_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.INITIALIZE_SDK_CLIENT))
 
     log.info("initialized")
     if verbose:

@@ -30,7 +30,7 @@ class EventAPI:
 
     class Event(str, Enum):
         # auth
-        GENERATE_TOKEN = "generate-token"
+        INITIALIZE_SDK_CLIENT = "initialize-sdk-client"
 
         # test case
         CREATE_TEST_CASE = "create-test-case"
