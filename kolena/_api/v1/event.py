@@ -30,28 +30,28 @@ class EventAPI:
 
     class Event(str, Enum):
         # auth
-        INITIALIZE_SDK_CLIENT = "initialize-sdk-client"
+        INITIALIZE_SDK_CLIENT = "sdk-client-initialized"
 
         # test case
-        CREATE_TEST_CASE = "create-test-case"
-        LOAD_TEST_CASE = "load-test-case"
-        LOAD_TEST_CASE_SAMPLES = "load-test-case-samples"
-        EDIT_TEST_CASE = "edit-test-case"
-        INIT_MANY_TEST_CASES = "initialize-many-test-cases"
+        CREATE_TEST_CASE = "test-case-created"
+        LOAD_TEST_CASE = "test-case-loaded"
+        LOAD_TEST_CASE_SAMPLES = "test-case-samples-loaded"
+        EDIT_TEST_CASE = "test-case-edited"
+        INIT_MANY_TEST_CASES = "many-test-cases-initialized"
 
         # test suite
-        CREATE_TEST_SUITE = "create-test-suite"
-        LOAD_TEST_SUITE = "load-test-suite"
-        LOAD_ALL_TEST_SUITES = "load-all-test-suites"
-        EDIT_TEST_SUITE = "edit-test-suite"
-        LOAD_TEST_SUITE_SAMPLES = "load-test-suite-samples"
+        CREATE_TEST_SUITE = "test-suite-created"
+        LOAD_TEST_SUITE = "test-suite-loaded"
+        LOAD_ALL_TEST_SUITES = "all-test-suites-loaded"
+        EDIT_TEST_SUITE = "test-suite-edited"
+        LOAD_TEST_SUITE_SAMPLES = "test-suite-samples-loaded"
 
         # model
-        CREATE_MODEL = "create-model"
-        LOAD_MODEL = "load-model"
+        CREATE_MODEL = "model-created"
+        LOAD_MODEL = "model-loaded"
 
         # test run
-        EXECUTE_TEST_RUN = "execute-test-run"
+        EXECUTE_TEST_RUN = "test-run-executed"
 
     @dataclass(frozen=True)
     class RecordEventRequest:
