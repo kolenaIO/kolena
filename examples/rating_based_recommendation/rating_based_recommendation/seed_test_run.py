@@ -37,7 +37,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
     def infer(test_sample: TestSample) -> Inference:
         row = df_results[
-            (df_results["userId"] == test_sample.user_id) & (df_results["movieId"] == test_sample.movie_id)
+            (df_results["userId"] == int(test_sample.user_id.text)) & (df_results["movieId"] == test_sample.movie_id)
         ]
         rating = 0 if row.empty else row.prediction.values[0]
         return Inference(pred_rating=round(rating, 2))
@@ -73,7 +73,12 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"{DATASET}-10k :: genre", f"{DATASET}-10k :: age", f"{DATASET}-10k :: occupation"],
+        default=[
+            f"{DATASET}-10k :: genre",
+            f"{DATASET}-10k :: age",
+            f"{DATASET}-10k :: occupation",
+            f"{DATASET}-10k :: gender",
+        ],
         help="Name(s) of test suite(s) to test.",
     )
     sys.exit(main(ap.parse_args()))

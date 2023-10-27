@@ -44,7 +44,7 @@ def compute_per_sample(
     inference: Inference,
     configuration: ThresholdConfiguration,
 ) -> TestSampleMetrics:
-    is_relevant = ground_truth.real_rating >= configuration.rating_threshold
+    is_relevant = ground_truth.rating >= configuration.rating_threshold
     is_recommended = inference.pred_rating >= configuration.rating_threshold
 
     return TestSampleMetrics(
@@ -53,7 +53,7 @@ def compute_per_sample(
         is_FP=not is_relevant and is_recommended,
         is_FN=is_relevant and not is_recommended,
         is_TN=not is_relevant and not is_recommended,
-        Δ_rating=inference.pred_rating - ground_truth.real_rating,
+        Δ_rating=inference.pred_rating - ground_truth.rating,
     )
 
 
@@ -62,7 +62,7 @@ def compute_test_case_metrics(
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
 ) -> TestCaseMetrics:
-    ratings = np.array([gt.real_rating for gt in ground_truths])
+    ratings = np.array([gt.rating for gt in ground_truths])
     preds = np.array([inf.pred_rating for inf in inferences])
 
     rmse = np.sqrt(((preds - ratings) ** 2).mean())
@@ -110,7 +110,7 @@ def compute_test_case_plots(
 
     plots.append(create_histogram(metrics))
 
-    gts_binary_labels = [int(gt.real_rating >= configuration.rating_threshold) for gt in ground_truths]
+    gts_binary_labels = [int(gt.rating >= configuration.rating_threshold) for gt in ground_truths]
     infs = [inf.pred_rating for inf in inferences]
 
     precision, recall, _ = precision_recall_curve(gts_binary_labels, infs)

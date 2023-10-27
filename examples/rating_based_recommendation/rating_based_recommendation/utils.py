@@ -90,7 +90,7 @@ def create_histogram(
 
     return Histogram(
         title="Delta Rating Distribution",
-        x_label="Δ_rating (predicted rating - real rating)",
+        x_label="Δ_rating (inf - gt)",
         y_label="Frequency (%)",
         buckets=list(bin_edges),
         frequency=list(freq),

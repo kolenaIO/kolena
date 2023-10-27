@@ -30,6 +30,7 @@ from rating_based_recommendation.utils import (
 )
 
 import kolena
+from kolena.workflow import Text
 
 BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
@@ -56,10 +57,13 @@ def main(args: Namespace) -> int:
         return value
 
     metadata_by_movie_id = {}
+    movie_id_title = {}
     for record in df_movies.itertuples(index=False):
         fields = set(record._fields)
         fields.remove("movieId")
-        metadata_by_movie_id[record.movieId] = {f: process_metadata(record, f) for f in fields}
+        fields.remove("title")
+        metadata_by_movie_id[record.title] = {f: process_metadata(record, f) for f in fields}
+        movie_id_title[record.movieId] = record.title
 
     metadata_by_user_id = {}
     for record in df_users.itertuples(index=False):
@@ -70,11 +74,12 @@ def main(args: Namespace) -> int:
     test_samples_and_ground_truths = [
         (
             TestSample(
-                user_id=record.userId,
+                user_id=Text(text=str(record.userId)),
+                title=Text(text=movie_id_title[record.movieId]),
                 movie_id=record.movieId,
-                metadata={**metadata_by_movie_id[record.movieId], **metadata_by_user_id[record.userId]},
+                metadata={**metadata_by_movie_id[movie_id_title[record.movieId]], **metadata_by_user_id[record.userId]},
             ),
-            GroundTruth(real_rating=record.rating),
+            GroundTruth(rating=record.rating),
         )
         for record in df_ratings.itertuples(index=False)
     ]

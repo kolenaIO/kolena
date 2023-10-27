@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
-from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
@@ -25,18 +24,20 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import Composite
+from kolena.workflow import Text
 
 
 @dataclass(frozen=True)
 class TestSample(Composite):
-    user_id: int
+    user_id: Text
+    title: Text
     movie_id: int
     metadata: Metadata = dataclasses.field(default_factory=dict)
 
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
-    real_rating: float
+    rating: float
 
 
 @dataclass(frozen=True)
