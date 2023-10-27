@@ -75,6 +75,8 @@ class TestCaseMetrics(MetricsTestCase):
     Precision: float
     Recall: float
     F1: float
+    HighRatingFNR: float
+    LowRatingFPR: float
 
 
 @dataclass(frozen=True)

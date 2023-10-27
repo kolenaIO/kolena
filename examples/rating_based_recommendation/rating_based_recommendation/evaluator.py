@@ -73,6 +73,14 @@ def compute_test_case_metrics(
     fn = np.sum([tsm.is_FN for tsm in metrics])
     tn = np.sum([tsm.is_TN for tsm in metrics])
 
+    high_rating_fnr = np.sum(
+        [int(fn and gt.rating >= 5) for gt, fn in zip(ground_truths, [tsm.is_FN for tsm in metrics])]
+    ) / np.sum([r >= 5 for r in ratings])
+
+    low_rating_fpr = np.sum(
+        [int(fp and gt.rating <= 1) for gt, fp in zip(ground_truths, [tsm.is_FP for tsm in metrics])]
+    ) / np.sum([r <= 1 for r in ratings])
+
     return TestCaseMetrics(
         RMSE=rmse,
         MAE=mae,
@@ -84,6 +92,8 @@ def compute_test_case_metrics(
         Precision=precision(tp, fp),
         Recall=recall(tp, fn),
         F1=f1_score(tp, fp, fn),
+        HighRatingFNR=high_rating_fnr,
+        LowRatingFPR=low_rating_fpr,
     )
 
 
