@@ -73,13 +73,21 @@ def compute_test_case_metrics(
     fn = np.sum([tsm.is_FN for tsm in metrics])
     tn = np.sum([tsm.is_TN for tsm in metrics])
 
-    high_rating_fnr = np.sum(
-        [int(fn and gt.rating >= 5) for gt, fn in zip(ground_truths, [tsm.is_FN for tsm in metrics])]
-    ) / np.sum([r >= 5 for r in ratings])
+    n_high_ratings = np.sum([r >= 5 for r in ratings])
+    n_low_ratings = np.sum([r <= 1 for r in ratings])
+    high_rating_fnr, low_rating_fpr = 0, 0
 
-    low_rating_fpr = np.sum(
-        [int(fp and gt.rating <= 1) for gt, fp in zip(ground_truths, [tsm.is_FP for tsm in metrics])]
-    ) / np.sum([r <= 1 for r in ratings])
+    if n_high_ratings != 0:
+        high_rating_fnr = (
+            np.sum([int(fn and gt.rating >= 5) for gt, fn in zip(ground_truths, [tsm.is_FN for tsm in metrics])])
+            / n_high_ratings
+        )
+
+    if n_low_ratings != 0:
+        low_rating_fpr = (
+            np.sum([int(fp and gt.rating <= 1) for gt, fp in zip(ground_truths, [tsm.is_FP for tsm in metrics])])
+            / n_low_ratings
+        )
 
     return TestCaseMetrics(
         RMSE=rmse,
