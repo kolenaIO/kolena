@@ -16,27 +16,28 @@ from typing import Optional
 from typing import Tuple
 
 import numpy as np
-from sklearn.metrics import auc, precision_recall_curve, roc_curve
-
-from rating_based_recommendation.workflow import ThresholdConfiguration
+from rating_based_recommendation.utils import create_histogram
 from rating_based_recommendation.workflow import GroundTruth
 from rating_based_recommendation.workflow import Inference
 from rating_based_recommendation.workflow import TestCase
 from rating_based_recommendation.workflow import TestCaseMetrics
 from rating_based_recommendation.workflow import TestSample
 from rating_based_recommendation.workflow import TestSampleMetrics
-from rating_based_recommendation.utils import create_histogram
+from rating_based_recommendation.workflow import ThresholdConfiguration
+from sklearn.metrics import auc
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import roc_curve
 
+from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
-from kolena.workflow import ConfusionMatrix
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
+from kolena.workflow.metrics import accuracy
+from kolena.workflow.metrics import f1_score
 from kolena.workflow.metrics import precision
 from kolena.workflow.metrics import recall
-from kolena.workflow.metrics import f1_score
-from kolena.workflow.metrics import accuracy
 
 
 def compute_per_sample(
@@ -66,28 +67,32 @@ def compute_test_case_metrics(
     preds = np.array([inf.pred_rating for inf in inferences])
 
     rmse = np.sqrt(((preds - ratings) ** 2).mean())
-    mae = (np.abs(preds - ratings)).mean()
+    mae = np.abs(preds - ratings).mean()
 
     tp = np.sum([tsm.is_TP for tsm in metrics])
     fp = np.sum([tsm.is_FP for tsm in metrics])
     fn = np.sum([tsm.is_FN for tsm in metrics])
     tn = np.sum([tsm.is_TN for tsm in metrics])
 
-    n_high_ratings = np.sum([r >= 5 for r in ratings])
-    n_low_ratings = np.sum([r <= 1 for r in ratings])
-    high_rating_fnr, low_rating_fpr = 0, 0
-
-    if n_high_ratings != 0:
-        high_rating_fnr = (
-            np.sum([int(fn and gt.rating >= 5) for gt, fn in zip(ground_truths, [tsm.is_FN for tsm in metrics])])
-            / n_high_ratings
+    high_rating = np.sum([r >= 5 for r in ratings])
+    high_rating_fnr = (
+        np.sum(
+            [int(fn and gt.rating >= 5) for gt, fn in zip(ground_truths, [tsm.is_FN for tsm in metrics])],
         )
+        / high_rating
+        if high_rating != 0
+        else 0.0
+    )
 
-    if n_low_ratings != 0:
-        low_rating_fpr = (
-            np.sum([int(fp and gt.rating <= 1) for gt, fp in zip(ground_truths, [tsm.is_FP for tsm in metrics])])
-            / n_low_ratings
+    low_rating = np.sum([r <= 1 for r in ratings])
+    low_rating_fpr = (
+        np.sum(
+            [int(fp and gt.rating <= 1) for gt, fp in zip(ground_truths, [tsm.is_FP for tsm in metrics])],
         )
+        / low_rating
+        if low_rating != 0
+        else 0.0
+    )
 
     return TestCaseMetrics(
         RMSE=rmse,
@@ -123,7 +128,7 @@ def compute_test_case_plots(
             title="Rating Confusion Matrix",
             labels=["Recommended", "Not Recommended"],
             matrix=[[tp, fp], [fn, tn]],
-        )
+        ),
     )
 
     plots.append(create_histogram(metrics))
@@ -147,7 +152,7 @@ def compute_test_case_plots(
 
     plots.append(
         CurvePlot(
-            title=f"Receiver Operating Characteristic",
+            title="Receiver Operating Characteristic",
             x_label="False Positive Rate (FPR)",
             y_label="True Positive Rate (TPR)",
             curves=[Curve(x=list(fpr), y=list(tpr), label=f"AUC={roc_auc:.4f}")],

@@ -19,11 +19,11 @@ from typing import List
 
 import pandas as pd
 from rating_based_recommendation.evaluator import evaluate_recommender
-from rating_based_recommendation.workflow import ThresholdConfiguration
 from rating_based_recommendation.workflow import Inference
 from rating_based_recommendation.workflow import Model
 from rating_based_recommendation.workflow import TestSample
 from rating_based_recommendation.workflow import TestSuite
+from rating_based_recommendation.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow import test
@@ -33,7 +33,7 @@ DATASET = "movielens"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.sample.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         row = df_results[
