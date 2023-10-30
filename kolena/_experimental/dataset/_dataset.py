@@ -43,13 +43,13 @@ FIELD_TEXT = "text"
 
 
 class DatapointType(str, Enum):
-    CUSTOM = "DATAPOINT/CUSTOM"
     DOCUMENT = "DATAPOINT/DOCUMENT"
     IMAGE = "DATAPOINT/IMAGE"
     POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
     TEXT = "DATAPOINT/TEXT"
     VIDEO = "DATAPOINT/VIDEO"
     AUDIO = "DATAPOINT/AUDIO"
+    TABULAR = "DATAPOINT/TABULAR"
 
 
 _DATAPOINT_TYPE_MAP = {
@@ -80,7 +80,7 @@ def _infer_datatype_value(x: str) -> str:
     elif x.endswith(".pcd"):
         return DatapointType.POINT_CLOUD.value
 
-    return DatapointType.CUSTOM.value
+    return DatapointType.TABULAR.value
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
@@ -89,7 +89,7 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     elif FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
-    return DatapointType.CUSTOM.value
+    return DatapointType.TABULAR.value
 
 
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:

@@ -36,7 +36,7 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 @pytest.mark.parametrize(
     "uri,expected",
     [
-        ("s3://public/png", DatapointType.CUSTOM),
+        ("s3://public/png", DatapointType.TABULAR),
         ("/opt/test.png", DatapointType.IMAGE),
         ("https://kolena.io/demo.mp4", DatapointType.VIDEO),
         ("file:///var/mime.csv", DatapointType.DOCUMENT),
@@ -87,7 +87,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == DatapointType.CUSTOM
+        == DatapointType.TABULAR
     )
 
 
