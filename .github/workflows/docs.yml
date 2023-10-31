@@ -59,6 +59,12 @@ jobs:
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://trunk-docs.kolena.io"
 
+      - name: Publish 'kolena' documentation to production (S3)
+        if: inputs.environment == 'production'
+        run: |
+          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+          aws s3 sync ./site "s3://docs.kolena.io"
+
       - name: Publish 'kolena' documentation to production (docs.kolena.io)
         if: inputs.environment == 'production'
         run: |
