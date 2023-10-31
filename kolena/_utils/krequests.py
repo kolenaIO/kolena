@@ -57,7 +57,7 @@ MAX_RETRIES = Retry(total=3, connect=3, read=0, redirect=0, status=0, backoff_fa
 class JWTAuth(requests.auth.AuthBase):
     """Attaches JWT Authorization to the given Request object"""
 
-    def __init__(self, jwt: Optional[str]):
+    def __init__(self, jwt: str):
         self.jwt = jwt
 
     def __call__(self, r):
