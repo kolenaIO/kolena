@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "rating_based_recommendation"
+name = "Recommender System"
 version = "0.1.0"
-description = "Tabular Demo Workflow for Rating-Based Recommendation"
+description = "Tabular Demo Workflow for Recommender System"
 authors = ["Kolena Engineering <eng@kolena.io>"]
 license = "Apache-2.0"
 

@@ -1,8 +1,32 @@
 import numpy as np
 from typing import List
 
-from rating_based_recommendation.workflow import TestSampleMetrics
+from recommender_system.workflow import TestSampleMetrics
 from kolena.workflow import Histogram
+
+###### CONSTANTS ######
+GENRES = [
+    "Adventure",
+    "Animation",
+    "Children's",
+    "Comedy",
+    "Fantasy",
+    "Romance",
+    "Drama",
+    "Action",
+    "Crime",
+    "Thriller",
+    "Horror",
+    "Mystery",
+    "Sci-Fi",
+    "IMAX",
+    "Documentary",
+    "War",
+    "Musical",
+    "Western",
+    "Film-Noir",
+    "(no genres listed)",
+]
 
 ID_OCCUPATION_MAP = {
     0: "other",
@@ -28,13 +52,21 @@ ID_OCCUPATION_MAP = {
     20: "writer",
 }
 
+ID_AGE_MAP = {1: "Under 18", 18: "18-24", 25: "25-34", 35: "35-44", 45: "45-49", 50: "50-55", 56: "56+"}
+
+
+# Stratification Categories
 PS = "Professional Services"
 MB = "Management and Business"
 SSI = "Support and Service Industry"
 ES = "Education and Students"
 CA = "Creative and Artistic"
 M = "Miscellaneous"
+L25 = "Under 25"
+B25_50 = "25-50"
+U50 = "50+"
 
+# Stratifications Mapping
 OCCUPATION_STRATIFICATION = {
     "academic/educator": PS,
     "artist": CA,
@@ -59,12 +91,6 @@ OCCUPATION_STRATIFICATION = {
     "other": M,
 }
 
-ID_AGE_MAP = {1: "Under 18", 18: "18-24", 25: "25-34", 35: "35-44", 45: "45-49", 50: "50-55", 56: "56+"}
-
-L25 = "Under 25"
-B25_50 = "25-50"
-U50 = "50+"
-
 AGE_STRATIFICATION = {
     "Under 18": L25,
     "18-24": L25,
@@ -76,6 +102,7 @@ AGE_STRATIFICATION = {
 }
 
 
+###### Plot Functions ######
 def create_histogram(
     metrics: List[TestSampleMetrics],
 ) -> Histogram:

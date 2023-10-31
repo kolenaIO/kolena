@@ -18,11 +18,13 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-from rating_based_recommendation.workflow import GroundTruth
-from rating_based_recommendation.workflow import TestCase
-from rating_based_recommendation.workflow import TestSample
-from rating_based_recommendation.workflow import TestSuite
-from rating_based_recommendation.utils import (
+from recommender_system.workflow import GroundTruth
+from recommender_system.workflow import Movie
+from recommender_system.workflow import TestCase
+from recommender_system.workflow import TestSample
+from recommender_system.workflow import TestSuite
+from recommender_system.utils import (
+    GENRES,
     ID_OCCUPATION_MAP,
     ID_AGE_MAP,
     OCCUPATION_STRATIFICATION,
@@ -36,6 +38,18 @@ BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
 
 
+def process_metadata(record, f):
+    value = getattr(record, f)
+    if f == "genres":
+        return value.split("|")
+    elif f == "age":
+        return ID_AGE_MAP[value]
+    elif f == "occupation":
+        return ID_OCCUPATION_MAP[value]
+
+    return value
+
+
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
 
@@ -45,50 +59,44 @@ def main(args: Namespace) -> int:
     df_movies = pd.read_csv(args.movies_csv)
     df_users = pd.read_csv(args.users_csv)
 
-    def process_metadata(record, f):
-        value = getattr(record, f)
-        if f == "genres":
-            return value.split("|")
-        elif f == "age":
-            return ID_AGE_MAP[value]
-        elif f == "occupation":
-            return ID_OCCUPATION_MAP[value]
-
-        return value
-
-    metadata_by_movie_id = {}
-    movie_id_title = {}
+    movie_objects = {}
+    non_metadata_fields = {"movieId", "title"}
     for record in df_movies.itertuples(index=False):
         fields = set(record._fields)
-        fields.remove("movieId")
-        fields.remove("title")
-        metadata_by_movie_id[record.title] = {f: process_metadata(record, f) for f in fields}
-        movie_id_title[record.movieId] = record.title
+        movie_objects[record.movieId] = Movie(
+            label=record.title,
+            id=record.movieId,
+            metadata={f: process_metadata(record, f) for f in fields - non_metadata_fields},
+        )
 
     metadata_by_user_id = {}
+    non_metadata_fields = {"userId"}
     for record in df_users.itertuples(index=False):
         fields = set(record._fields)
-        fields.remove("userId")
-        metadata_by_user_id[record.userId] = {f: process_metadata(record, f) for f in fields}
+        metadata_by_user_id[record.userId] = {f: process_metadata(record, f) for f in fields - non_metadata_fields}
 
-    test_samples_and_ground_truths = [
-        (
-            TestSample(
-                user_id=Text(text=str(record.userId)),
-                title=Text(text=movie_id_title[record.movieId]),
-                movie_id=record.movieId,
-                metadata={**metadata_by_movie_id[movie_id_title[record.movieId]], **metadata_by_user_id[record.userId]},
-            ),
-            GroundTruth(rating=record.rating),
+    test_samples_and_ground_truths = []
+    unique_users = set(df_ratings["userId"])
+    for uid in unique_users:
+        samples = df_ratings[df_ratings["userId"] == uid].itertuples(index=False)
+        test_samples_and_ground_truths.append(
+            (
+                TestSample(
+                    user_id=uid,
+                    metadata=metadata_by_user_id[uid],  # TODO: Add likes genres
+                ),
+                GroundTruth(
+                    rated_movies=[movie_objects[sample.movieId] for sample in samples],
+                    ratings=[sample.rating for sample in samples],
+                ),
+            )
         )
-        for record in df_ratings.itertuples(index=False)
-    ]
 
     print(f"preparing {len(test_samples_and_ground_truths)} test samples")
 
     t1 = time.time()
     complete_test_case = TestCase(
-        name=f"complete :: {DATASET}-10k",
+        name=f"complete :: {DATASET}-small",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
@@ -97,28 +105,7 @@ def main(args: Namespace) -> int:
 
     # Metadata Test Cases
     cateogry_subsets = dict(
-        genre=[
-            "Adventure",
-            "Animation",
-            "Children's",
-            "Comedy",
-            "Fantasy",
-            "Romance",
-            "Drama",
-            "Action",
-            "Crime",
-            "Thriller",
-            "Horror",
-            "Mystery",
-            "Sci-Fi",
-            "IMAX",
-            "Documentary",
-            "War",
-            "Musical",
-            "Western",
-            "Film-Noir",
-            "(no genres listed)",
-        ],
+        genre=GENRES,
         age=AGE_STRATIFICATION.values(),
         occupation=OCCUPATION_STRATIFICATION.values(),
         gender=["M", "F"],
@@ -130,14 +117,15 @@ def main(args: Namespace) -> int:
     gender_ts_gt_splits = {item: [] for item in cateogry_subsets["gender"]}
 
     for ts, gt in test_samples_and_ground_truths:
-        for genre in ts.metadata["genres"]:
-            genre_ts_gt_splits[genre].append((ts, gt))
+        # for genre in ts.metadata["genres"]:
+        #     genre_ts_gt_splits[genre].append((ts, gt))
+
         age_ts_gt_splits[AGE_STRATIFICATION[ts.metadata["age"]]].append((ts, gt))
         occupation_ts_gt_splits[OCCUPATION_STRATIFICATION[ts.metadata["occupation"]]].append((ts, gt))
         gender_ts_gt_splits[ts.metadata["gender"]].append((ts, gt))
 
     test_suites = dict(
-        genre=genre_ts_gt_splits,
+        # genre=genre_ts_gt_splits,
         age=age_ts_gt_splits,
         occupation=occupation_ts_gt_splits,
         gender=gender_ts_gt_splits,
@@ -146,13 +134,13 @@ def main(args: Namespace) -> int:
     for cat, ts in test_suites.items():
         t2 = time.time()
         test_cases = TestCase.init_many(
-            [(f"{cat} :: {type} :: {DATASET}-10k", test_samples) for type, test_samples in ts.items()],
+            [(f"{cat} :: {type} :: {DATASET}-small", test_samples) for type, test_samples in ts.items()],
             reset=True,
         )
         print(f"created test case genre stratifications in {time.time() - t2:0.3f} seconds")
 
         test_suite = TestSuite(
-            name=f"{DATASET}-10k :: {cat}",
+            name=f"{DATASET}-small :: {cat}",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
