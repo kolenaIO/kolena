@@ -15,6 +15,7 @@ import uuid
 from http import HTTPStatus
 from typing import Any
 from typing import Dict
+from typing import Optional
 
 import requests
 from requests import HTTPError
@@ -52,9 +53,15 @@ CONNECTION_READ_TIMEOUT = 60 * 60  # Give kolena server 1 hour to respond to cli
 # Using the Retry object to configure a backoff which is not supported by using an int here.
 MAX_RETRIES = Retry(total=3, connect=3, read=0, redirect=0, status=0, backoff_factor=2)
 
-class NoOpAuth(requests.auth.AuthBase):
-    """Force requests to bypass `netrc` auth"""
+
+class JWTAuth(requests.auth.AuthBase):
+    """Attaches JWT Authorization to the given Request object"""
+
+    def __init__(self, jwt: Optional[str]):
+        self.jwt = jwt
+
     def __call__(self, r):
+        r.headers["Authorization"] = f"Bearer {self.jwt}"
         return r
 
 
@@ -62,13 +69,12 @@ class NoOpAuth(requests.auth.AuthBase):
 def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
     client_state = get_client_state()
     default_kwargs = {
-        "auth": NoOpAuth(),
+        "auth": JWTAuth(client_state.jwt_token),
         "timeout": (CONNECTION_CONNECT_TIMEOUT, CONNECTION_READ_TIMEOUT),
         "proxies": client_state.proxies,
     }
     default_headers = {
         "Content-Type": "application/json",
-        "Authorization": f"Bearer {client_state.jwt_token}",
         "X-Request-ID": uuid.uuid4().hex,
         "User-Agent": user_agent(client_name, client_version),
         "X-Kolena-Telemetry": str(client_state.telemetry),
