@@ -51,7 +51,7 @@ class GroundTruth(BaseGroundTruth):
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    recommendations: List[Movie]
+    recommendations: List[int]  # movie ids
     predicted_ratings: List[float]
 
 
@@ -65,12 +65,8 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    is_correct: bool
-    is_TP: bool
-    is_FP: bool
-    is_FN: bool
-    is_TN: bool
-    Δ_rating: float
+    Precision_k: float
+    # Recall_k: float
 
 
 @dataclass(frozen=True)
@@ -80,17 +76,13 @@ class TestCaseMetrics(MetricsTestCase):
     # Hit Metrics
     RMSE: float  # Root Mean Squared Error
     MAE: float  # Mean Absolute Error
-    Precision_k: float
-    Recall_k: float
-    TP: int
-    FP: int
-    FN: int
-    TN: int
-    F1: float
+    AvgPrecision_k: float  # Average Precision@k is the mean of each user P@k
+    # AvgRecall_k: float
+    # F1: float
 
-    # Ranking Metrics
-    mAP: float
-    NDCG: float  # Normalized Discounted Cumulative Gain
+    # # Ranking Metrics
+    # mAP: float
+    # NDCG: float  # Normalized Discounted Cumulative Gain
 
 
 @dataclass(frozen=True)
