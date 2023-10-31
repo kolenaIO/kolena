@@ -52,11 +52,17 @@ CONNECTION_READ_TIMEOUT = 60 * 60  # Give kolena server 1 hour to respond to cli
 # Using the Retry object to configure a backoff which is not supported by using an int here.
 MAX_RETRIES = Retry(total=3, connect=3, read=0, redirect=0, status=0, backoff_factor=2)
 
+class NoOpAuth(requests.auth.AuthBase):
+    """Force requests to bypass `netrc` auth"""
+    def __call__(self, r):
+        return r
+
 
 @kolena_initialized
 def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
     client_state = get_client_state()
     default_kwargs = {
+        "auth": NoOpAuth(),
         "timeout": (CONNECTION_CONNECT_TIMEOUT, CONNECTION_READ_TIMEOUT),
         "proxies": client_state.proxies,
     }
