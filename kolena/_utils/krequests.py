@@ -15,7 +15,6 @@ import uuid
 from http import HTTPStatus
 from typing import Any
 from typing import Dict
-from typing import Optional
 
 import requests
 from requests import HTTPError
