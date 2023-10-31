@@ -45,9 +45,9 @@ test suite.
 	> [!WARNING]
 	> This script has high memory usage(>20GB). If this is an issue, look into using https://github.com/grantjenks/python-diskcache
 
-3. [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py) demonstrates how to generate activation masks from
+3. An optional script, [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py) demonstrates how to generate activation maps from
 the aformentioned model inferences. If you wish to generate your own, use the `--out_bucket` argument to provide an AWS S3 bucket
-with write access for the activation masks can be written to.
+where the activation maps will be uploaded to.
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
