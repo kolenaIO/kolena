@@ -335,7 +335,6 @@ workflows:
               pytest-group: [ detection, fr, classification, workflow ]
               extras: ["none"]
           enabled: true
-          parallelism: 3
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -346,7 +345,6 @@ workflows:
               extras: ["metrics"]
           pytest-group: _experimental
           enabled: true
-          parallelism: 1
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
