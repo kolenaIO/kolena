@@ -164,8 +164,9 @@ The inference type and ground truth type for a workflow will often look very sim
 
 [Annotation][kolena.workflow.annotation.Annotation] types can be extended to include additional fields, when necessary.
 
-Consider the example of a [`Keypoints`][kolena.workflow.annotation.Keypoints] detection model that detects anywhere from
-0 to N keypoints arrays when provided an image. Each keypoints array has an associated class label and confidence value.
+Consider the example of a detection model that detects labeled bounding boxes when provided an image.
+The [ScoredLabeledBoundingBox][kolena.workflow.annotation.ScoredLabeledBoundingBox] represents a bounding box with a label and a confidence score.
+If you wanted to add fields found in COCO format annotations (area, isCrowd)
 This model's inference type could be defined as follows:
 
 ```python
@@ -173,17 +174,25 @@ from dataclasses import dataclass
 from typing import List
 
 from kolena.workflow import Inference
-from kolena.workflow.annotation import Keypoints
+from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 @dataclass(frozen=True)
-class ScoredLabeledKeypoints(Keypoints):
-    # points: List[Tuple[float, float]]  # inherited from Keypoints
-    score: float  # confidence score, between 0 and 1
-    label: str  # predicted class
+class CocoScoredLabeledBoundingBox(ScoredLabeledBoundingBox):
+    area: float  # area of bounding box
+    isCrowd: float  # annotation is for a single object or a multiple objects. Either 0 or 1
+
+    '''
+    The following fields are inherited from ScoredLabeledBoundingBox
+    top_left: Tuple[float, float]
+    bottom_right: Tuple[float, float]
+    score: float
+    label: str
+    '''
+
 
 @dataclass(frozen=True)
 class MyInference(Inference):
-    predictions: List[ScoredLabeledKeypoints]
+    predictions: List[CocoScoredLabeledBoundingBox]
 ```
 
 ### Deduplication
