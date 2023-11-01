@@ -28,6 +28,7 @@ from kolena._api.v2.evaluation import LoadMetricsRequest
 from kolena._api.v2.evaluation import Path as EvaluationPath
 from kolena._api.v2.evaluation import UploadMetricsRequest
 from kolena._api.v2.model import LoadInferencesRequest
+from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadInferencesRequest
 from kolena._experimental.dataset._dataset import _iter_dataset_raw
@@ -37,6 +38,7 @@ from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import COL_EVAL_CONFIG
 from kolena._experimental.dataset.common import COL_INFERENCE
 from kolena._experimental.dataset.common import COL_METRICS
+from kolena._experimental.dataset.common import COL_RESULT
 from kolena._experimental.dataset.common import validate_batch_size
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
@@ -84,6 +86,17 @@ def _iter_metrics_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.
     )
 
 
+def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
+    validate_batch_size(batch_size)
+    init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size)
+    yield from _BatchedLoader.iter_data(
+        init_request=init_request,
+        endpoint_path=Path.LOAD_RESULTS.value,
+        df_class=None,
+        endpoint_api_version=API_V2,
+    )
+
+
 def _fetch_inferences(dataset: str, model: str) -> pd.DataFrame:
     df_inference_batch = list(_iter_inference_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS))
     return (
@@ -104,6 +117,17 @@ def fetch_inferences(dataset: str, model: str) -> Tuple[pd.DataFrame, pd.DataFra
     df_inferences = _to_deserialized_dataframe(df_data, column=COL_INFERENCE)
 
     return df_datapoints, df_inferences
+
+
+def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
+    df_result_batch = list(_iter_result_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS))
+    return (
+        pd.concat(df_result_batch)
+        if df_result_batch
+        else pd.DataFrame(
+            columns=["datapoint_id", COL_DATAPOINT, COL_RESULT, COL_EVAL_CONFIG],
+        )
+    )
 
 
 def _upload_inferences(model: str, df: pd.DataFrame) -> None:
@@ -149,6 +173,19 @@ def _upload_metrics(
     response = krequests.post(EvaluationPath.UPLOAD_METRICS, json=asdict(request))
     krequests.raise_for_status(response)
     return len(df)
+
+
+def _upload_results(
+    df: pd.DataFrame,
+) -> int:
+    ...
+
+
+def fetch_results(
+    dataset: str,
+    model: str,
+) -> Tuple[pd.DataFrame, Tuple[Optional[Dict[str, Any]]], pd.DataFrame]:
+    ...
 
 
 def fetch_evaluation_results(
