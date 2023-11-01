@@ -166,8 +166,7 @@ The inference type and ground truth type for a workflow will often look very sim
 
 Consider the example of a detection model that detects labeled bounding boxes when provided an image.
 The [ScoredLabeledBoundingBox][kolena.workflow.annotation.ScoredLabeledBoundingBox] represents a bounding box with a label and a confidence score.
-If you wanted to add fields found in COCO format annotations (area, isCrowd)
-This model's inference type could be defined as follows:
+If you wanted to add fields found in COCO format annotations (area, isCrowd) then this model's inference type could be defined as follows:
 
 ```python
 from dataclasses import dataclass
@@ -183,10 +182,10 @@ class CocoScoredLabeledBoundingBox(ScoredLabeledBoundingBox):
 
     '''
     The following fields are inherited from ScoredLabeledBoundingBox
-    top_left: Tuple[float, float]
-    bottom_right: Tuple[float, float]
-    score: float
-    label: str
+    top_left: Tuple[float, float] # The top left vertex (in `(x, y)` pixel coordinates) of this bounding box.
+    bottom_right: Tuple[float, float] # The bottom right vertex (in `(x, y)` pixel coordinates) of this bounding box.
+    score: float  # The score (e.g. model confidence) associated with this bounding box.
+    label: str  # The label (e.g. model classification) associated with this bounding box.
     '''
 
 
