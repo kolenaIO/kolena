@@ -116,7 +116,7 @@ def fetch_results(
     """
     df = _fetch_results(dataset, model)
 
-    df_datapoints = _to_deserialized_dataframe(df, column=COL_DATAPOINT)
+    df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
     eval_configs = df[COL_EVAL_CONFIG].unique()
     df_results_by_eval = []
     for eval_config in eval_configs:
@@ -129,6 +129,14 @@ def fetch_results(
         )
 
     return df_datapoints, df_results_by_eval
+
+
+def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
+    n = len(configs)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if configs[i] == configs[j]:
+                raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
 def _validate_data(left: pd.DataFrame, right: pd.DataFrame) -> None:
@@ -175,15 +183,15 @@ def test(
     on: TEST_ON_TYPE = None,
 ) -> None:
     """
-    # TODO: docstring
-    This function is used for testing on a given dataset using a specified model.
+    This function is used for testing a specified model on a given dataset.
 
     :param dataset: The name of the dataset to be used.
     :param model: The name of the model to be used.
-    :param results: ...
-    :param on: ...
+    :param results: Either a DataFrame or a list of tuples, where each tuple consists of
+                    a eval configuration and a DataFrame.
+    :param on: The column(s) to merge on between datapoint DataFrame and result DataFrame
 
-    :return None: This function doesn't return anything.
+    :return None: This function doesn't return anything. It performs the test and uploads the results.
     """
     df_data = _fetch_dataset(dataset)
     df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
@@ -191,6 +199,8 @@ def test(
 
     if isinstance(results, pd.DataFrame):
         results = [(None, results)]
+
+    _validate_configs([cfg for cfg, _ in results])
 
     all_results = []
     for config, df_result_input in results:
