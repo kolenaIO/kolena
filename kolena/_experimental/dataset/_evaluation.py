@@ -191,7 +191,7 @@ def test(
                     a eval configuration and a DataFrame.
     :param on: The column(s) to merge on between datapoint DataFrame and result DataFrame
 
-    :return None: This function doesn't return anything. It performs the test and uploads the results.
+    :return None
     """
     df_data = _fetch_dataset(dataset)
     df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
@@ -204,11 +204,11 @@ def test(
 
     all_results = []
     for config, df_result_input in results:
-        log.info(f"start test with configuration {config}" if config else "start evaluation")
+        log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
         single_result = _get_single_df_result(df_datapoints, df_result_input, on)
         _validate_data(df_datapoints, single_result)
         all_results.append((config, single_result))
-        log.info(f"completed test with configuration {config}" if config else "completed evaluation")
+        log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
 
     df_results = _process_results(df_data, all_results)
     n_uploaded_results = _upload_results(model, df_results)
