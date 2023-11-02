@@ -341,54 +341,51 @@ def _get_single_df_metrics(
     return single_metrics
 
 
+def _get_single_df_result(
+    df_datapoints: pd.DataFrame,
+    df_result_input: pd.DataFrame,
+    on: TEST_ON_TYPE,
+) -> pd.DataFrame:
+    if not on:
+        return df_result_input
+
+    _validate_on(df_datapoints, df_result_input, on)
+    df_result = df_datapoints[on].merge(df_result_input, how="left", on=on)
+    return df_result
+
+
 def test(
     dataset: str,
     model: str,
-    infer: TEST_INFER_TYPE = None,
-    eval: TEST_EVAL_TYPE = None,
-    eval_configs: TEST_EVAL_CONFIGS_TYPE = None,
+    results: Union[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]],
     on: TEST_ON_TYPE = None,
 ) -> None:
     """
-    This function is used for running inference and evaluation on a given dataset using a specified model.
+    # TODO: docstring
+    This function is used for testing on a given dataset using a specified model.
 
     :param dataset: The name of the dataset to be used.
     :param model: The name of the model to be used.
-    :param infer: The inference function to be used. Defaults to None.
-    :param eval: The evaluation function to be used if any. Defaults to None.
-    :param eval_configs: The evaluation configurations to be used. Defaults to None.
+    :param results: ...
+    :param on: ...
 
     :return None: This function doesn't return anything.
     """
-    if infer is not None:
-        df_data = _fetch_dataset(dataset)
-        df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
-        log.info(f"fetched {len(df_data)} for dataset {dataset}")
+    df_data = _fetch_dataset(dataset)
+    df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
+    log.info(f"fetched {len(df_data)} for dataset {dataset}")
 
-        df_inferences = _get_df_inferences(infer, df_datapoints, on)
-        validate_data(df_datapoints, df_inferences)
+    if isinstance(results, pd.DataFrame):
+        results = [(None, results)]
 
-        df_data["inference"] = _to_serialized_dataframe(df_inferences, column=COL_INFERENCE)
-        _upload_inferences(model, df_data)
-        log.info(f"uploaded {len(df_inferences)} inferences")
+    all_results = []
+    for config, df_result_input in results:
+        log.info(f"start test with configuration {config}" if config else "start evaluation")
+        single_result = _get_single_df_result(df_datapoints, df_result_input, on)
+        validate_data(df_datapoints, single_result)
+        all_results.append((config, single_result))
+        log.info(f"completed test with configuration {config}" if config else "completed evaluation")
 
-    if eval is not None:
-        if not isinstance(eval_configs, list):
-            eval_configs = [eval_configs]
-
-        df_data = _fetch_inferences(dataset, model)
-        log.info(f"fetched {len(df_data)} inferences")
-        df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
-        df_inferences = _to_deserialized_dataframe(df_data, column=COL_INFERENCE)
-
-        metrics = []
-        for config in eval_configs:
-            log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
-            single_metrics = _get_single_df_metrics(eval, df_datapoints, df_inferences, config, on)
-            validate_data(df_data, single_metrics)
-            metrics.append(single_metrics)
-            log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
-
-        df_metrics = _process_metrics(df_data, list(zip(eval_configs, metrics)))
-        n_uploaded_metrics = _upload_metrics(df_metrics)
-        log.info(f"uploaded {n_uploaded_metrics} evaluation results")
+    df_results = _process_results(df_datapoints, all_results)
+    n_uploaded_results = _upload_results(model, df_results)
+    log.info(f"uploaded {n_uploaded_results} test results")
