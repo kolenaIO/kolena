@@ -31,6 +31,7 @@ from kolena._api.v2.model import LoadInferencesRequest
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadInferencesRequest
+from kolena._api.v2.model import UploadResultsRequest
 from kolena._experimental.dataset._dataset import _iter_dataset_raw
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
@@ -50,7 +51,7 @@ from kolena._utils.state import API_V2
 from kolena.errors import IncorrectUsageError
 
 
-TYPE_EVALUATION_CONFIG = Dict[str, Any]
+TYPE_EVALUATION_CONFIG = Optional[Dict[str, Any]]
 INFER_FUNC_TYPE = Callable[[pd.DataFrame], pd.DataFrame]
 EVAL_FUNC_TYPE = Callable[[pd.DataFrame, pd.DataFrame, Optional[TYPE_EVALUATION_CONFIG]], pd.DataFrame]
 TEST_INFER_TYPE = Optional[Union[INFER_FUNC_TYPE, pd.DataFrame]]
@@ -175,17 +176,66 @@ def _upload_metrics(
     return len(df)
 
 
+def _process_results(
+    df: pd.DataFrame,
+    all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame]],
+) -> pd.DataFrame:
+    df_results_by_eval = []
+    for eval_config, df_results in all_results:
+        df_results_eval = _to_serialized_dataframe(df_results, column=COL_RESULT)
+        df_results_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
+        df_results_by_eval.append(pd.concat([df["datapoint_id"], df_results_eval], axis=1))
+    df_results = (
+        pd.concat(df_results_by_eval, ignore_index=True)
+        if df_results_by_eval
+        else pd.DataFrame(
+            columns=["datapoint_id", COL_RESULT, COL_EVAL_CONFIG],
+        )
+    )
+    return df_results
+
+
 def _upload_results(
+    model: str,
     df: pd.DataFrame,
 ) -> int:
-    ...
+    load_uuid = init_upload().uuid
+    upload_data_frame(df=df, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+    request = UploadResultsRequest(model=model, uuid=load_uuid)
+    response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
+    krequests.raise_for_status(response)
+    return len(df)
 
 
 def fetch_results(
     dataset: str,
     model: str,
-) -> Tuple[pd.DataFrame, Tuple[Optional[Dict[str, Any]]], pd.DataFrame]:
-    ...
+) -> Tuple[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]]:
+    """
+    Fetch results given dataset name and model name.
+    """
+    df_results_batch = list(_iter_result_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS))
+    df = (
+        pd.concat(df_results_batch)
+        if df_results_batch
+        else pd.DataFrame(
+            columns=[COL_DATAPOINT, COL_RESULT, COL_EVAL_CONFIG],
+        )
+    )
+
+    df_datapoints = _to_deserialized_dataframe(df, column=COL_DATAPOINT)
+    eval_configs = df[COL_EVAL_CONFIG].unique()
+    df_results_by_eval = []
+    for eval_config in eval_configs:
+        df_matched = df[df[COL_EVAL_CONFIG] == eval_config if eval_config is not None else df[COL_EVAL_CONFIG].isnull()]
+        df_results_by_eval.append(
+            (
+                json.loads(eval_config) if eval_config is not None else None,
+                _to_deserialized_dataframe(df_matched, column=COL_RESULT),
+            ),
+        )
+
+    return df_datapoints, df_results_by_eval
 
 
 def fetch_evaluation_results(
