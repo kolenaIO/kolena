@@ -135,9 +135,8 @@ def initialize(
     if used_deprecated_signature:
         upload_log("Client attempted to use deprecated entity auth signature.", "warn")
 
-    if derived_telemetry:
-        set_profile()
-        record_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.INITIALIZE_SDK_CLIENT))
+    set_profile()
+    record_event(EventAPI.RecordEventRequest(event_name=EventAPI.Event.INITIALIZE_SDK_CLIENT))
 
     log.info("initialized")
     if verbose:
