@@ -20,6 +20,5 @@ def validate_batch_size(batch_size: int) -> None:
 
 
 COL_DATAPOINT = "datapoint"
-COL_INFERENCE = "inference"
-COL_METRICS = "metrics"
 COL_EVAL_CONFIG = "eval_config"
+COL_RESULT = "result"

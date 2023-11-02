@@ -19,8 +19,8 @@ from kolena._api.v1.batched_load import BatchedLoad
 
 
 class Path(str, Enum):
-    UPLOAD_INFERENCES = "/model/upload-inferences"
-    LOAD_INFERENCES = "/model/load-inferences"
+    UPLOAD_RESULTS = "/model/upload-results"
+    LOAD_RESULTS = "/model/load-results"
 
 
 @dataclass(frozen=True)
@@ -34,13 +34,13 @@ class IdRequest:
 
 
 @dataclass(frozen=True)
-class LoadInferencesRequest(BatchedLoad.BaseInitDownloadRequest):
+class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
     model: str
     dataset: str
 
 
 @dataclass(frozen=True)
-class UploadInferencesRequest:
+class UploadResultsRequest:
     model: str
     uuid: str
 
