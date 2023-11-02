@@ -27,6 +27,7 @@ from pydantic import validate_arguments
 
 from kolena._api.v1.core import TestCase as CoreAPI
 from kolena._api.v1.detection import TestCase as API
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
@@ -38,6 +39,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -125,6 +127,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         return obj
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.CREATE_TEST_CASE)
     def _create(
         cls,
         workflow: WorkflowType,
@@ -208,6 +211,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         return cls._create(cls._workflow, name, description, images)
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_TEST_CASE)
     def load(cls, name: str, version: Optional[int] = None) -> "BaseTestCase":
         """
         Load an existing test case with the provided name.
@@ -290,6 +294,7 @@ class BaseTestCase(ABC, Frozen, WithTelemetry):
         )
 
     @contextmanager
+    @with_event(event_name=EventAPI.Event.EDIT_TEST_CASE)
     def edit(self, reset: bool = False) -> Iterator[Editor]:
         """
         Edit this test case in a context:

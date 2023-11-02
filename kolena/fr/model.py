@@ -23,12 +23,14 @@ from typing import Union
 import numpy as np
 from pydantic.dataclasses import dataclass
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.fr import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
+from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.uninstantiable import Uninstantiable
 from kolena._utils.validators import validate_name
@@ -48,6 +50,7 @@ class Model(Uninstantiable["Model.Data"]):
         metadata: Dict[str, Any]
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.CREATE_MODEL)
     def create(cls, name: str, metadata: Dict[str, Any]) -> "Model":
         """
         Create a new model with the provided name and metadata.
@@ -66,6 +69,7 @@ class Model(Uninstantiable["Model.Data"]):
         return obj
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_MODEL)
     def load_by_name(cls, name: str) -> "Model":
         """
         Retrieve the existing model with the provided name.

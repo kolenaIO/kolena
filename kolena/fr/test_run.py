@@ -23,6 +23,7 @@ from pydantic.dataclasses import dataclass
 from tqdm import tqdm
 
 from kolena._api.v1.batched_load import BatchedLoad as LoadAPI
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.fr import Asset as AssetAPI
 from kolena._api.v1.fr import TestRun as API
 from kolena._utils import krequests
@@ -36,6 +37,7 @@ from kolena._utils.dataframes.validators import validate_df_record_count
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
@@ -75,6 +77,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
         model: Model.Data
         test_suites: List[TestSuite.Data]
 
+    @with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
     def __init__(self, model: Model, test_suite: TestSuite, reset: bool = False):
         if reset:
             log.warn("overwriting existing inferences from this model (reset=True)")
