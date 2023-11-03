@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
@@ -174,7 +173,7 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     complete_test_case = create_complete_transportation_case(args)
 

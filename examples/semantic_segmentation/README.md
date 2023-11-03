@@ -22,7 +22,7 @@ The data for this example integration lives in the publicly accessible S3 bucket
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
 
-This project defines two scripts that perform the following operations:
+This project defines three scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](semantic_segmentation/seed_test_suite.py) creates the following test suites:
 
@@ -42,6 +42,12 @@ test suite.
     The result masks will be stored under `s3://{args.out_bucket}/coco-stuff-10k/results/{args.model}` directory in
     your bucket.
 
+	> [!WARNING]
+	> This script has high memory usage(>20GB). If this is an issue, look into using https://github.com/grantjenks/python-diskcache
+
+3. An optional script, [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py) demonstrates how to generate activation maps from
+the aformentioned model inferences. If you wish to generate your own, use the `--out_bucket` argument to provide an AWS S3 bucket
+where the activation maps will be uploaded to.
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:

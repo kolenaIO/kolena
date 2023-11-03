@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import math
 import os
+from typing import Iterable
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -32,7 +32,7 @@ from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSampleMetric
 from sklearn.metrics import average_precision_score
 
-from kolena._utils.log import progress_bar
+from kolena._utils.log import info
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
@@ -44,26 +44,12 @@ from kolena.workflow.plot import CurvePlot
 
 
 def load_data(
-    test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
-) -> Tuple[List[np.ndarray], List[np.ndarray]]:
+) -> Tuple[Iterable[np.ndarray], Iterable[np.ndarray]]:
+    info("downloading bit masks...")
     data_loader = DataLoader()
-
-    batch_size = 32
-    n_batches = math.ceil(len(inferences) / batch_size)
-    print(f"processing {len(inferences)} images in {n_batches} batches...")
-
-    gt_masks = []
-    inf_probs = []
-    zipped_data = list(zip(test_samples, ground_truths, inferences))
-    for batch in progress_bar(np.array_split(zipped_data, n_batches)):
-        gt_masks_batch, inf_probs_batch = data_loader.load_batch(batch)
-        gt_masks.extend(gt_masks_batch)
-        inf_probs.extend(inf_probs_batch)
-
-    print(f"finished loading {len(inferences)} ground truth masks and inferences")
-    return gt_masks, inf_probs
+    return zip(*data_loader.download_masks(ground_truths, inferences))
 
 
 def apply_threshold(
@@ -112,28 +98,17 @@ def compute_test_sample_metrics(
     out_bucket = os.environ["KOLENA_OUT_BUCKET"]
     model_name = os.environ["KOLENA_MODEL_NAME"]
     locator_prefix = f"s3://{out_bucket}/{DATASET}/results/{model_name}/{threshold:.2f}"
-
     data_loader = DataLoader()
 
-    batch_size = 32
-    n_batches = math.ceil(len(test_samples) / batch_size)
-    print(f"computing {len(test_samples)} sample metrics in {n_batches} batches...")
+    info("uploading result masks...")
+    result_masks = data_loader.upload_masks(locator_prefix, test_samples, gt_masks, inf_masks)
 
-    result_masks = []
-    zipped_data = list(zip(test_samples, gt_masks, inf_masks))
-
-    for start_index in progress_bar(range(0, len(test_samples), batch_size)):
-        batch = zipped_data[start_index : min(len(test_samples), start_index + batch_size)]
-        result_masks_batch = data_loader.upload_batch(locator_prefix, batch)
-        result_masks.extend(result_masks_batch)
-
-    print(f"finished uploading result masks for {len(test_samples)} samples")
     return [compute_image_metrics(gt, inf, result) for gt, inf, result in zip(gt_masks, inf_masks, result_masks)]
 
 
 def compute_test_case_metrics(
-    gt_masks: List[np.ndarray],
-    inf_probs: List[np.ndarray],
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
     metrics: List[TestSampleMetric],
 ) -> TestCaseMetric:
     count_tps = sum(metric.CountTP for metric in metrics)
@@ -142,7 +117,6 @@ def compute_test_case_metrics(
     precision = compute_precision(count_tps, count_fps)
     recall = compute_recall(count_tps, count_fns)
     f1 = compute_f1_score(count_tps, count_fps, count_fns)
-    y_true, y_pred = compute_sklearn_arrays(gt_masks, inf_probs)
 
     return TestCaseMetric(
         Precision=precision,
@@ -153,12 +127,10 @@ def compute_test_case_metrics(
 
 
 def compute_test_case_plots(
-    gt_masks: List[np.ndarray],
-    inf_probs: List[np.ndarray],
+    y_true: np.ndarray,
+    y_pred: np.ndarray,
 ) -> Optional[List[Plot]]:
-    y_true, y_pred = compute_sklearn_arrays(gt_masks, inf_probs)
     thresholds = list(np.linspace(0.0, 1.0, 41))
-
     precisions = []
     recalls = []
     f1s = []
@@ -169,7 +141,11 @@ def compute_test_case_plots(
         f1s.append(f1)
 
     f1_curve = Curve(x=thresholds, y=f1s, extra=dict(Precision=precisions, Recall=recalls))
-    pr_curve = Curve(x=recalls[1:-1], y=precisions[1:-1], extra=dict(F1=f1s[1:-1], Threshold=thresholds[1:-1]))
+    pr_curve = Curve(
+        x=recalls[1:-1],
+        y=precisions[1:-1],
+        extra=dict(F1=f1s[1:-1], Threshold=thresholds[1:-1]),
+    )
     return [
         CurvePlot(
             title="F1 vs. Confidence Threshold",
@@ -177,7 +153,12 @@ def compute_test_case_plots(
             y_label="F1",
             curves=[f1_curve],
         ),
-        CurvePlot(title="Precision vs. Recall", x_label="Recall", y_label="Precision", curves=[pr_curve]),
+        CurvePlot(
+            title="Precision vs. Recall",
+            x_label="Recall",
+            y_label="Precision",
+            curves=[pr_curve],
+        ),
     ]
 
 
@@ -188,7 +169,7 @@ def evaluate_semantic_segmentation(
     test_cases: TestCases,
     configuration: SegmentationConfiguration,
 ) -> EvaluationResults:
-    gt_masks, inf_probs = load_data(test_samples, ground_truths, inferences)
+    gt_masks, inf_probs = load_data(ground_truths, inferences)
     inf_masks = apply_threshold(inf_probs, configuration.threshold)
 
     test_sample_metrics = compute_test_sample_metrics(test_samples, gt_masks, inf_masks, configuration.threshold)
@@ -197,9 +178,10 @@ def evaluate_semantic_segmentation(
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
-        print(f"computing {test_case.name} test case metrics")
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(gt, inf, tsm)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
+        info(f"computing {test_case.name} test case metrics")
+        y_true, y_pred = compute_sklearn_arrays(gt, inf)
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(y_true, y_pred, tsm)))
+        all_test_case_plots.append((test_case, compute_test_case_plots(y_true, y_pred)))
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(

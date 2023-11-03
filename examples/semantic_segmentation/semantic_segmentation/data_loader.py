@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import functools
 from concurrent.futures import ThreadPoolExecutor
-from concurrent.futures import wait
+from typing import Iterator
 from typing import List
 from typing import Tuple
 
@@ -27,6 +26,7 @@ from semantic_segmentation.workflow import Inference
 from semantic_segmentation.workflow import Label
 from semantic_segmentation.workflow import TestSample
 
+from kolena._utils.log import progress_bar
 from kolena.workflow.annotation import SegmentationMask
 
 
@@ -38,40 +38,33 @@ class ResultMask:
 
 
 ResultMasks = Tuple[ResultMask, ResultMask, ResultMask]
-ResultMasksByLocator = Tuple[str, ResultMask, ResultMask, ResultMask]
 
 
 class DataLoader:
     def __init__(self):
-        self.pool = ThreadPoolExecutor()
+        self.pool = ThreadPoolExecutor(max_workers=32)
 
-    def load_batch(
+    def download_masks(
         self,
-        batch: List[Tuple[TestSample, GroundTruth, Inference]],
-    ) -> Tuple[List[np.ndarray], List[np.ndarray]]:
-        def load(ts: TestSample, gt: GroundTruth, inf: Inference) -> Tuple[str, np.ndarray, np.ndarray]:
+        ground_truths: List[GroundTruth],
+        inferences: List[Inference],
+    ) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+        def load(gt: GroundTruth, inf: Inference) -> Tuple[np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)
             gt_mask[gt_mask != 1] = 0  # binarize gt_mask
-            return ts.locator, gt_mask, inf_prob
+            return gt_mask, inf_prob
 
-        futures = [self.pool.submit(functools.partial(load, *item)) for item in batch]
-        successes, failures = wait(futures)
-        if len(failures) != 0:
-            exceptions = ", ".join([str(failure.exception()) for failure in failures])
-            raise RuntimeError(f"failed to load {len(failures)} samples: {exceptions}")
+        return progress_bar(self.pool.map(load, ground_truths, inferences), total=len(ground_truths))
 
-        # splice together correct ordering
-        gt_by_locator = {result[0]: result[1] for result in [f.result() for f in successes]}
-        inf_by_locator = {result[0]: result[2] for result in [f.result() for f in successes]}
-        return [gt_by_locator[ts.locator] for ts, _, _ in batch], [inf_by_locator[ts.locator] for ts, _, _ in batch]
-
-    def upload_batch(
+    def upload_masks(
         self,
         locator_prefix: str,
-        batch: List[Tuple[TestSample, np.ndarray, np.ndarray]],
+        test_samples: List[TestSample],
+        gt_masks: List[np.ndarray],
+        inf_masks: List[np.ndarray],
     ) -> List[ResultMasks]:
-        def upload(ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray) -> ResultMasksByLocator:
+        def upload(ts: TestSample, gt_mask: np.ndarray, inf_mask: np.ndarray) -> ResultMasks:
             def upload_result_mask(category: str, mask: np.ndarray) -> ResultMask:
                 locator = f"{locator_prefix}/{category}/{ts.metadata['basename']}.png"
                 upload_image(locator, mask)
@@ -84,14 +77,11 @@ class DataLoader:
             tp = upload_result_mask("TP", np.where(gt_mask != inf_mask, 0, inf_mask))
             fp = upload_result_mask("FP", np.where(gt_mask == inf_mask, 0, inf_mask))
             fn = upload_result_mask("FN", np.where(gt_mask == inf_mask, 0, gt_mask))
-            return ts.locator, tp, fp, fn
+            return tp, fp, fn
 
-        futures = [self.pool.submit(functools.partial(upload, *item)) for item in batch]
-        successes, failures = wait(futures)
-        if len(failures) != 0:
-            exceptions = ", ".join([str(failure.exception()) for failure in failures])
-            raise RuntimeError(f"failed to upload {len(failures)} samples: {exceptions}")
-
-        # splice together correct ordering
-        result_masks_by_locator = {result[0]: tuple(result[1:]) for result in [f.result() for f in successes]}
-        return [result_masks_by_locator[ts.locator] for ts, _, _ in batch]
+        return list(
+            progress_bar(
+                self.pool.map(upload, test_samples, gt_masks, inf_masks),
+                total=len(test_samples),
+            ),
+        )

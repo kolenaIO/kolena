@@ -25,6 +25,7 @@ from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
+from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import SegmentationMask
 from kolena.workflow.asset import BinaryAsset
 
@@ -51,6 +52,11 @@ class Inference(BaseInference):
     prob: BinaryAsset
     """
     The numpy array of probabilities produced by model stored in `.npy` file.
+    """
+
+    activation_map: BitmapMask
+    """
+    The png encoded bitmap mask that corresponds to an activation map based on the probability array.
     """
 
 

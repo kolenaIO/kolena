@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -32,7 +31,7 @@ POSITIVE_LABEL = "dog"
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     df_metadata = pd.read_csv(args.dataset_csv)
 

@@ -22,6 +22,9 @@ import cv2
 import numpy as np
 import skimage
 
+from kolena.workflow.visualization import colorize_activation_map
+from kolena.workflow.visualization import encode_png
+
 s3 = boto3.client("s3")
 
 
@@ -40,7 +43,7 @@ def download_mask(locator: str) -> np.ndarray:
     Download a mask stored on s3 and return it as a np array
     """
     bucket, key = parse_s3_path(locator)
-    with tempfile.NamedTemporaryFile() as f:
+    with tempfile.TemporaryFile() as f:
         s3.download_fileobj(bucket, key, f)
         data = skimage.io.imread(f)
         return data
@@ -53,20 +56,24 @@ def download_binary_array(locator: str) -> np.ndarray:
     shape (..., ...)' — seems like the download was incomplete
     """
     bucket, key = parse_s3_path(locator)
-    obj = boto3.resource("s3").Object(bucket, key)
-    with BytesIO(obj.get()["Body"].read()) as f:
+    obj_response = s3.get_object(Bucket=bucket, Key=key)
+    with BytesIO(obj_response["Body"].read()) as f:
         f.seek(0)
         return np.load(f)
 
 
-def upload_image(locator: str, image: np.ndarray) -> None:
+def upload_image_buffer(locator: str, io_buf: BytesIO) -> None:
     bucket, key = parse_s3_path(locator)
+    s3.upload_fileobj(io_buf, bucket, key)
+
+
+def upload_image(locator: str, image: np.ndarray) -> None:
     success, buf = cv2.imencode(".png", image)
     if not success:
         raise RuntimeError("failed to encode image as PNG")
 
     io_buf = BytesIO(buf)
-    s3.upload_fileobj(io_buf, bucket, key)
+    upload_image_buffer(locator, io_buf)
 
 
 def sanitize_model_name(model_name: str) -> str:
@@ -99,3 +106,9 @@ def compute_precision_recall_f1(y_true: np.ndarray, y_pred: np.ndarray, threshol
     f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0.0 else 0.0
 
     return precision, recall, f1
+
+
+def create_bitmap(activation_map: np.ndarray) -> BytesIO:
+    bitmap = colorize_activation_map(activation_map)
+    image_buffer = encode_png(bitmap, mode="RGBA")
+    return image_buffer

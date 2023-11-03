@@ -30,6 +30,7 @@ import pytest
 
 from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
+from kolena.workflow import Audio
 from kolena.workflow import BaseVideo
 from kolena.workflow import Composite
 from kolena.workflow import Document
@@ -627,3 +628,13 @@ def test__instantiate__pointcloud(dataclass: Callable) -> None:
 
     locator = "s3://bucket/path/to/pointcloud.pcd"
     Tester(locator=locator, width=10, height=10)
+
+
+@pytest.mark.parametrize("dataclass", [dataclasses.dataclass, pydantic.dataclasses.dataclass])
+def test__instantiate__audio(dataclass: Callable) -> None:
+    @dataclass(frozen=True)
+    class Tester(Audio):
+        length: int
+
+    locator = "s3://bucket/path/to/audio.mp3"
+    Tester(locator=locator, length=10)

@@ -28,19 +28,25 @@ from semantic_segmentation.workflow import TestSample
 from semantic_segmentation.workflow import TestSuite
 
 import kolena
+from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
 
 
-def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
+def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str) -> None:
+    sanitized_model_name = sanitize_model_name(model_name)
+    s3_prefix = f"s3://{BUCKET}/{DATASET}"
+
     def infer(test_sample: TestSample) -> Inference:
         basename = test_sample.metadata["basename"]
-        locator = f"s3://{BUCKET}/{DATASET}/results/{sanitized_model_name}/{basename}_person.npy"
-        return Inference(prob=BinaryAsset(locator))
+        prob_array_locator = f"{s3_prefix}/results/{sanitized_model_name}/{basename}_person.npy"
+        activation_map_locator = f"{s3_prefix}/inferences/{sanitized_model_name}/activation/{basename}.png"
+        return Inference(
+            prob=BinaryAsset(prob_array_locator),
+            activation_map=BitmapMask(locator=activation_map_locator),
+        )
 
-    sanitized_model_name = sanitize_model_name(model_name)
     model = Model(f"{model_name}", infer=infer)
-
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         configurations = [SegmentationConfiguration(threshold=0.5)]
@@ -55,10 +61,10 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     os.environ["KOLENA_MODEL_NAME"] = str(args.model)
     os.environ["KOLENA_OUT_BUCKET"] = str(args.out_bucket)
-    seed_test_run(args.model, args.test_suites)
+    seed_test_run(args.model, args.test_suites, args.out_bucket)
     return 0
 
 

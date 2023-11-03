@@ -29,6 +29,7 @@ from typing import Union
 import pandas as pd
 from pydantic import validate_arguments
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -40,9 +41,11 @@ from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
+from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import Evaluator
@@ -105,6 +108,11 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if configurations is None:
             configurations = []
 
+        is_evaluator_class = isinstance(evaluator, Evaluator)
+        is_evaluator_function = evaluator is not None and not is_evaluator_class
+        if is_evaluator_function and _is_configured(evaluator) and len(configurations) == 0:
+            raise ValueError("evaluator requires configuration but no configurations provided")
+
         if model.workflow != test_suite.workflow:
             raise WorkflowMismatchError(
                 f"model workflow ({model.workflow}) does not match test suite workflow ({test_suite.workflow})",
@@ -118,15 +126,11 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.model = model
         self.test_suite = test_suite
         self.evaluator = evaluator
-        self.configurations = self.evaluator.configurations if isinstance(evaluator, Evaluator) else configurations
+        self.configurations = self.evaluator.configurations if is_evaluator_class else configurations
         self.reset = reset
 
         evaluator_display_name = (
-            None
-            if evaluator is None
-            else evaluator.display_name()
-            if isinstance(evaluator, Evaluator)
-            else evaluator.__name__
+            None if evaluator is None else evaluator.display_name() if is_evaluator_class else evaluator.__name__
         )
         api_configurations = (
             [_maybe_evaluator_configuration_to_api(config) for config in self.configurations]
@@ -149,6 +153,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._id = response.test_run_id
         self._freeze()
 
+    @with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
     def run(self) -> None:
         """
         Run the testing process, first extracting inferences for all test samples in the test suite then performing
@@ -321,7 +326,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info("uploading test suite metrics")
         self._upload_test_suite_metrics(test_suite_metrics)
 
-    def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> Dict[str, Any]:
+    def _perform_streamlined_evaluation(self, evaluator: BasicEvaluatorFunction) -> None:
         test_samples, ground_truths, inferences = [], [], []
         for sample, gt, inf in self._iter_all_inferences():
             test_samples.append(sample)
@@ -508,4 +513,8 @@ def test(
     :param configurations: A list of configurations to use when running the evaluator.
     :param reset: Overwrites existing inferences if set.
     """
+    if not test_suite.test_cases:
+        raise IncorrectUsageError(
+            f"test suite '{test_suite.name}' has no test cases, please add test cases" f" to the test suite",
+        )
     TestRun(model, test_suite, evaluator, configurations, reset).run()

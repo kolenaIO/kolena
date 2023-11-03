@@ -11,3 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from kolena.errors import InputValidationError
+
+
+def validate_batch_size(batch_size: int) -> None:
+    if batch_size <= 0:
+        raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
+
+
+COL_DATAPOINT = "datapoint"
+COL_EVAL_CONFIG = "eval_config"
+COL_RESULT = "result"
