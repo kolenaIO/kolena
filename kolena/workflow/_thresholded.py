@@ -13,6 +13,7 @@
 # limitations under the License.
 from abc import ABCMeta
 from dataclasses import dataclass
+from dataclasses import fields
 
 from kolena.workflow._datatypes import TypedDataObject
 
@@ -32,3 +33,9 @@ class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta
 
     def _data_type() -> str:
         return "METRICS/THRESHOLDED"
+
+    def __post_init__(self) -> None:
+        for field in fields(self):
+            field_value = getattr(self, field.name)
+            if isinstance(field_value, dict):
+                raise TypeError(f"Field '{field.name}' should not be a dictionary")

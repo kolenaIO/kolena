@@ -216,7 +216,7 @@ def test__validate_field__thresholded__no_initialize_threshold_invalid() -> None
         a: List[str]
 
     with pytest.raises(TypeError):
-        MyThresholdedMetrics(a=List["1"])
+        MyThresholdedMetrics(a=["1"])
 
 
 def test__validate_field__thresholded__avoid_reserved_field_name() -> None:
@@ -236,7 +236,7 @@ def test__validate_field__thresholded__invalid_dict_field() -> None:
         a: Dict[str, str]
 
     with pytest.raises(TypeError):
-        MyThresholdedMetrics(a=Dict["1", "1"])
+        MyThresholdedMetrics(threshold=1, a={"key": "value"})
 
 
 def test__validate_field__thresholded__invalid_nested_field() -> None:

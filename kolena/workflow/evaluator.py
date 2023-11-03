@@ -95,7 +95,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
         macro_F1: float
         mAP: float
         PerClass: List[PerClassMetrics]
-        ThresholdClass: Dict[str, PerClassMetrics]
+        ThresholdClass: List[ThresholdDataObjectClass]
     ```
 
     Any `str`-type fields (e.g. `Class` in the above example) will be used as identifiers when displaying nested metrics
@@ -278,17 +278,17 @@ def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -
     # validate that there is only one level of nesting
     for field_name, field_type in get_data_object_field_types(metrics_test_case_type).items():
         origin = get_origin(field_type)
-
+        if origin is not list:  # only need to check lists, as MetricsTestCase is only allowed in lists
+            continue
         # expand e.g. List[Union[MetricsA, MetricsB]] into [MetricsA, MetricsB]
-        if origin is list:
-            list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
-            for arg_type in list_arg_types:
-                if arg_type is None:
-                    raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
-                try:
-                    validate_scalar_data_object_type(arg_type)
-                except ValueError:
-                    raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
+        list_arg_types = [t for arg_type in get_args(field_type) for t in get_args(arg_type) or [arg_type]]
+        for arg_type in list_arg_types:
+            if arg_type is None:
+                raise ValueError(f"Unsupported optional metrics object in field '{field_name}'")
+            try:
+                validate_scalar_data_object_type(arg_type)
+            except ValueError:
+                raise ValueError(f"Unsupported doubly-nested metrics object in field '{field_name}'")
 
 
 def _validate_metrics_test_suite_type(metrics_test_suite_type: Type[DataObject]) -> None:
