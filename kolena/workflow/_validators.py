@@ -26,9 +26,9 @@ from kolena.errors import WorkflowMismatchError
 from kolena.workflow._datatypes import _SCALAR_TYPES
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import DataObject
-from kolena.workflow._thresholded import ThresholdedMetrics
 from kolena.workflow.annotation import _ANNOTATION_TYPES
 from kolena.workflow.asset import _ASSET_TYPES
+from kolena.workflow.thresholded import ThresholdedMetrics
 
 
 _SUPPORTED_FIELD_TYPES = [*_SCALAR_TYPES, *_ANNOTATION_TYPES, *_ASSET_TYPES, ThresholdedMetrics]

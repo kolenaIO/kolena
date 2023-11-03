@@ -14,7 +14,6 @@
 
 # noreorder
 from ._datatypes import DataObject
-from ._thresholded import ThresholdedMetrics
 from .test_sample import Audio
 from .test_sample import Metadata
 from .test_sample import Image
@@ -52,6 +51,7 @@ from .evaluator_function import no_op_evaluator
 from .test_run import TestRun
 from .test_run import test
 from .define_workflow import define_workflow
+from .thresholded import ThresholdedMetrics
 
 __all__ = [
     "DataObject",
