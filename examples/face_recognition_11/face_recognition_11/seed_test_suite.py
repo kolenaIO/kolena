@@ -20,10 +20,14 @@ from typing import Tuple
 
 import pandas as pd
 from face_recognition_11.workflow import GroundTruth
-from face_recognition_11.workflow import ImageWithMetadata
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
+from face_recognition_11.workflow import SingleImageGroundTruth
+
+from kolena.workflow import Image
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import Keypoints
 
 import kolena
 
@@ -43,7 +47,7 @@ def create_test_case_for_tag(
     test_samples = [
         (ts, gt)
         for ts, gt in test_samples_and_ground_truths
-        if ts.a.metadata[category] == value or ts.b.metadata[category] == value
+        if ts.metadata["a_" + category] == value or ts.metadata["b_" + category] == value
     ]
 
     test_case = TestCase(
@@ -71,16 +75,52 @@ def main(args: Namespace) -> int:
     test_samples_and_ground_truths = [
         (
             TestSample(
-                a=ImageWithMetadata(locator=row["locator_a"], metadata=metadata_by_locator[row["locator_a"]]),
-                b=ImageWithMetadata(locator=row["locator_b"], metadata=metadata_by_locator[row["locator_b"]]),
+                a=Image(locator=row["locator_a"]),
+                b=Image(locator=row["locator_b"]),
+                metadata={
+                    **{"a_" + k: v for k, v in metadata_by_locator[row["locator_a"]].items()},
+                    **{"b_" + k: v for k, v in metadata_by_locator[row["locator_b"]].items()},
+                },
             ),
-            GroundTruth(is_same=row["is_same"]),
+            GroundTruth(
+                is_same=row["is_same"],
+                a=SingleImageGroundTruth(
+                    bbox=BoundingBox(
+                        (row["a_min_x"], row["a_min_y"]),
+                        (row["a_max_x"], row["a_max_y"]),
+                    ),
+                    keypoints=Keypoints(
+                        [
+                            (row["a_right_eye_x"], row["a_right_eye_y"]),
+                            (row["a_left_eye_x"], row["a_left_eye_y"]),
+                            (row["a_nose_x"], row["a_nose_y"]),
+                            (row["a_mouth_right_x"], row["a_mouth_right_y"]),
+                            (row["a_mouth_left_x"], row["a_mouth_left_y"]),
+                        ],
+                    ),
+                ),
+                b=SingleImageGroundTruth(
+                    bbox=BoundingBox(
+                        (row["b_min_x"], row["b_min_y"]),
+                        (row["b_max_x"], row["b_max_y"]),
+                    ),
+                    keypoints=Keypoints(
+                        [
+                            (row["b_right_eye_x"], row["b_right_eye_y"]),
+                            (row["b_left_eye_x"], row["b_left_eye_y"]),
+                            (row["b_nose_x"], row["b_nose_y"]),
+                            (row["b_mouth_right_x"], row["b_mouth_right_y"]),
+                            (row["b_mouth_left_x"], row["b_mouth_left_y"]),
+                        ],
+                    ),
+                ),
+            ),
         )
-        for idx, row in df.iterrows()
+        for _, row in df.iterrows()
     ]
 
     complete_test_case = TestCase(
-        name=f"fr 1:1 complete :: {DATASET}",
+        name=f"fr 1:1 holistic complete :: {DATASET}",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
@@ -88,9 +128,13 @@ def main(args: Namespace) -> int:
     print(f"created baseline test case '{complete_test_case.name}'")
 
     # Metadata Test Cases
+    # demographic_subsets = dict(
+    #     race=["asian", "black", "indian", "middle eastern", "latino hispanic", "white"],  # ignore "unknown"
+    #     gender=["man", "woman"],  # ignore "unknown"
+    # )
+
     demographic_subsets = dict(
-        race=["asian", "black", "indian", "middle eastern", "latino hispanic", "white"],  # ignore "unknown"
-        gender=["man", "woman"],  # ignore "unknown"
+        gender=["man"],
     )
 
     test_cases: List[TestCase] = []
@@ -101,7 +145,7 @@ def main(args: Namespace) -> int:
             print(f"created test case '{test_case.name}'")
 
     test_suite = TestSuite(
-        name=f"fr 1:1 :: {DATASET}",
+        name=f"fr 1:1 holistic :: {DATASET}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
@@ -113,7 +157,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.50.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
     )
     ap.add_argument(

@@ -19,7 +19,7 @@ from typing import List
 
 import pandas as pd
 from face_recognition_11.evaluator import evaluate_face_recognition_11
-from face_recognition_11.workflow import FMRConfiguration
+from face_recognition_11.workflow import ThresholdConfiguration
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import Model
 from face_recognition_11.workflow import TestSample
@@ -35,7 +35,7 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.sample.csv")
+    df_results = pd.read_csv("preds.50.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         sample_results = df_results[
@@ -78,16 +78,16 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     print(f"Model: {model}")
 
     configurations = [
-        FMRConfiguration(false_match_rate=1e-1),
-        FMRConfiguration(false_match_rate=1e-2),
-        FMRConfiguration(false_match_rate=1e-3),
-        FMRConfiguration(false_match_rate=1e-4),
+        ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5),
+        # ThresholdConfiguration(false_match_rate=1e-2),
+        # ThresholdConfiguration(false_match_rate=1e-3),
+        # ThresholdConfiguration(false_match_rate=1e-4),
     ]
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
-        test(model, test_suite, evaluate_face_recognition_11, configurations)
+        test(model, test_suite, evaluate_face_recognition_11, configurations, reset=True)
 
 
 def main(args: Namespace) -> int:
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"fr 1:1 :: {DATASET}"],
+        default=[f"fr 1:1 holistic :: {DATASET}"],
         help="Name(s) of test suite(s) to test.",
     )
     sys.exit(main(ap.parse_args()))

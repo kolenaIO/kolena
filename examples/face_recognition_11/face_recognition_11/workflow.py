@@ -14,14 +14,16 @@
 # limitations under the License.
 import dataclasses
 from typing import Optional
+from typing import List
 
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
+from kolena.workflow import DataObject
 from kolena.workflow import Image
-from kolena.workflow import ImagePair
+from kolena.workflow import Composite
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
@@ -32,25 +34,17 @@ from kolena.workflow.annotation import Keypoints
 
 
 @dataclass(frozen=True)
-class ImageWithMetadata(Image):
-    """
-    An image belonging to an Image Pair containing the locator and metadata
-    for the Face Recognition 1:1 workflow.
-    """
+class TestSample(Image):
+    """Test sample type for Face Recognition 1:1 workflow."""
 
+    pairs: List[Image]
     metadata: Metadata = dataclasses.field(default_factory=dict)
-    """The metadata associated with an image in the image pair."""
 
 
 @dataclass(frozen=True)
-class TestSample(ImagePair):
-    """Test sample type for Face Recognition 1:1 workflow."""
-
-    a: ImageWithMetadata
-    """The locator and metadata associated with image A in the test sample."""
-
-    b: ImageWithMetadata
-    """The locator and metadata associated with image B in the test sample."""
+class SingleImageGroundTruth(DataObject):
+    bbox: BoundingBox
+    keypoints: Keypoints
 
 
 @dataclass(frozen=True)
@@ -59,6 +53,8 @@ class GroundTruth(BaseGroundTruth):
 
     is_same: bool
     """Whether to treat this image pair as a a genuine pair (True) or an imposter pair (False)."""
+    a: SingleImageGroundTruth
+    b: SingleImageGroundTruth
 
 
 @dataclass(frozen=True)
@@ -93,6 +89,16 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
+class KeypointSample(DataObject):
+    mse: float
+    Δ_nose: float
+    Δ_left_eye: float
+    Δ_right_eye: float
+    Δ_left_mouth: float
+    Δ_right_mouth: float
+
+
+@dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
     """
     Image-pair-level metrics for Face Recognition 1:1 workflow.
@@ -113,6 +119,44 @@ class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
 
     failure_to_enroll: bool
     """An indication of whether the model failed to infer."""
+
+    a_mse: float
+    a_Δ_nose: float
+    a_Δ_left_eye: float
+    a_Δ_right_eye: float
+    a_Δ_left_mouth: float
+    a_Δ_right_mouth: float
+    b_mse: float
+    b_Δ_nose: float
+    b_Δ_left_eye: float
+    b_Δ_right_eye: float
+    b_Δ_left_mouth: float
+    b_Δ_right_mouth: float
+
+
+@dataclass(frozen=True)
+class PerBBoxMetrics(MetricsTestCase):
+    Total: int
+    FTE: int
+    AvgIoU: float
+    Precision: float
+    Recall: float
+    F1: float
+    TP: int
+    FP: int
+    FN: int
+
+
+@dataclass(frozen=True)
+class PerKeypointMetrics(MetricsTestCase):
+    Total: int  # number of keypoints
+    FTE: int
+    MSE: float
+    AvgΔNose: float
+    AvgΔLeftEye: float
+    AvgΔRightEye: float
+    AvgΔLeftMouth: float
+    AvgΔRightMouth: float
 
 
 @dataclass(frozen=True)
@@ -163,6 +207,10 @@ class TestCaseMetrics(MetricsTestCase):
     PairFailureRate: float
     """The percentage of FTE across test samples within the test case."""
 
+    PerBBoxMetrics: List[PerBBoxMetrics]
+
+    PerKeypointMetrics: List[PerKeypointMetrics]
+
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
@@ -182,9 +230,9 @@ class TestSuiteMetrics(MetricsTestSuite):
 
 
 @dataclass(frozen=True)
-class FMRConfiguration(EvaluatorConfiguration):
+class ThresholdConfiguration(EvaluatorConfiguration):
     """
-    False Match Rate (FMR) configuration for Face Recognition 1:1 workflow.
+    Configuration for Face Recognition 1:1 workflow.
     """
 
     false_match_rate: Optional[float] = None
@@ -192,5 +240,7 @@ class FMRConfiguration(EvaluatorConfiguration):
     Specify a minimum FMR to apply for predictions.
     """
 
+    iou_threshold: Optional[float] = None
+
     def display_name(self) -> str:
-        return f"False Match Rate: {self.false_match_rate:.1e}"
+        return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold}"

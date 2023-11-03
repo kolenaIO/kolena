@@ -17,7 +17,7 @@ from typing import Tuple
 
 import numpy as np
 from face_recognition_11.utils import create_similiarity_histogram
-from face_recognition_11.workflow import FMRConfiguration
+from face_recognition_11.workflow import ThresholdConfiguration
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import TestCase
@@ -25,6 +25,10 @@ from face_recognition_11.workflow import TestCaseMetrics
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSampleMetrics
 from face_recognition_11.workflow import TestSuiteMetrics
+from face_recognition_11.workflow import PerBBoxMetrics
+from face_recognition_11.workflow import PerKeypointMetrics
+from face_recognition_11.workflow import KeypointSample
+from face_recognition_11.utils import compute_distances, calculate_mse_nmse
 
 from kolena.workflow import AxisConfig
 from kolena.workflow import Curve
@@ -32,6 +36,9 @@ from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
+from kolena.workflow.metrics import precision, recall, f1_score, iou
+
+from collections import defaultdict
 
 
 def compute_threshold(inferences: List[Tuple[GroundTruth, Inference]], fmr: float, eps: float = 1e-9) -> float:
@@ -50,6 +57,26 @@ def compute_per_sample(
     threshold: float,
 ) -> TestSampleMetrics:
     is_match, is_false_match, is_false_non_match = False, False, False
+    a_mse, a_Δ_nose, a_Δ_left_eye, a_Δ_right_eye, a_Δ_left_mouth, a_Δ_right_mouth = None, None, None, None, None, None
+    b_mse, b_Δ_nose, b_Δ_left_eye, b_Δ_right_eye, b_Δ_left_mouth, b_Δ_right_mouth = None, None, None, None, None, None
+
+    if inference.a_keypoints:
+        a_Δ_nose = compute_distances(ground_truth.a.keypoints.points[0], inference.b_keypoints.points[0])
+        a_Δ_left_eye = compute_distances(ground_truth.a.keypoints.points[1], inference.b_keypoints.points[1])
+        a_Δ_right_eye = compute_distances(ground_truth.a.keypoints.points[2], inference.b_keypoints.points[2])
+        a_Δ_left_mouth = compute_distances(ground_truth.a.keypoints.points[3], inference.b_keypoints.points[3])
+        a_Δ_right_mouth = compute_distances(ground_truth.a.keypoints.points[4], inference.b_keypoints.points[4])
+        distances = np.array([a_Δ_left_eye, a_Δ_right_eye, a_Δ_nose, a_Δ_left_mouth, a_Δ_right_mouth])
+        a_mse = calculate_mse_nmse(distances)
+
+    if inference.b_keypoints:
+        b_Δ_nose = compute_distances(ground_truth.a.keypoints.points[0], inference.b_keypoints.points[0])
+        b_Δ_left_eye = compute_distances(ground_truth.a.keypoints.points[1], inference.b_keypoints.points[1])
+        b_Δ_right_eye = compute_distances(ground_truth.a.keypoints.points[2], inference.b_keypoints.points[2])
+        b_Δ_left_mouth = compute_distances(ground_truth.a.keypoints.points[3], inference.b_keypoints.points[3])
+        b_Δ_right_mouth = compute_distances(ground_truth.a.keypoints.points[4], inference.b_keypoints.points[4])
+        distances = np.array([b_Δ_left_eye, b_Δ_right_eye, b_Δ_nose, b_Δ_left_mouth, b_Δ_right_mouth])
+        b_mse = calculate_mse_nmse(distances)
 
     if inference.similarity is None:
         if ground_truth.is_same:
@@ -60,6 +87,18 @@ def compute_per_sample(
             is_false_match=is_false_match,
             is_false_non_match=is_false_non_match,
             failure_to_enroll=True,
+            a_mse=a_mse,
+            a_Δ_nose=a_Δ_nose,
+            a_Δ_left_eye=a_Δ_left_eye,
+            a_Δ_right_eye=a_Δ_right_eye,
+            a_Δ_left_mouth=a_Δ_left_mouth,
+            a_Δ_right_mouth=a_Δ_right_mouth,
+            b_mse=b_mse,
+            b_Δ_nose=b_Δ_nose,
+            b_Δ_left_eye=b_Δ_left_eye,
+            b_Δ_right_eye=b_Δ_right_eye,
+            b_Δ_left_mouth=b_Δ_left_mouth,
+            b_Δ_right_mouth=b_Δ_right_mouth,
         )
 
     if inference.similarity > threshold:  # match
@@ -76,6 +115,70 @@ def compute_per_sample(
         is_false_match=is_false_match,
         is_false_non_match=is_false_non_match,
         failure_to_enroll=False,
+        a_mse=a_mse,
+        a_Δ_nose=a_Δ_nose,
+        a_Δ_left_eye=a_Δ_left_eye,
+        a_Δ_right_eye=a_Δ_right_eye,
+        a_Δ_left_mouth=a_Δ_left_mouth,
+        a_Δ_right_mouth=a_Δ_right_mouth,
+        b_mse=b_mse,
+        b_Δ_nose=b_Δ_nose,
+        b_Δ_left_eye=b_Δ_left_eye,
+        b_Δ_right_eye=b_Δ_right_eye,
+        b_Δ_left_mouth=b_Δ_left_mouth,
+        b_Δ_right_mouth=b_Δ_right_mouth,
+    )
+
+
+def compute_per_bbox_case(
+    ground_truths: List[GroundTruth], inferences: List[Inference], configuration: ThresholdConfiguration
+) -> PerBBoxMetrics:
+    n = np.sum(int(gt.a.bbox is not None) + int(gt.b.bbox is not None) for gt in ground_truths)
+    fte = np.sum(int(inf.a_bbox is None) + int(inf.b_bbox is None) for inf in inferences)
+
+    ious = []
+    for gt, inf in zip(ground_truths, inferences):
+        ious.append(iou(gt.a.bbox, inf.a_bbox))
+        ious.append(iou(gt.b.bbox, inf.b_bbox))
+
+    tp = np.sum([iou >= configuration.iou_threshold for iou in ious])
+    fp = np.sum([iou < configuration.iou_threshold for iou in ious])
+    fn = np.sum([iou == -1 for iou in ious])
+
+    return PerBBoxMetrics(
+        Total=n,
+        FTE=fte,
+        AvgIoU=np.mean(ious),
+        Precision=precision(tp, fp),
+        Recall=recall(tp, fn),
+        F1=f1_score(tp, fp, fn),
+        TP=tp,
+        FP=fp,
+        FN=fn,
+    )
+
+
+def compute_per_keypoint_case(
+    ground_truths: List[GroundTruth], inferences: List[Inference], metrics: List[TestSampleMetrics]
+) -> PerKeypointMetrics:
+    n = np.sum(int(gt.a.keypoints is not None) + int(gt.b.keypoints is not None) for gt in ground_truths)
+    fte = np.sum(int(inf.a_keypoints is None) + int(inf.b_keypoints is None) for inf in inferences)
+    mse = np.mean([tsm.a_mse for tsm in metrics] + [tsm.b_mse for tsm in metrics])
+    avg_Δ_nose = np.mean([tsm.a_Δ_nose for tsm in metrics] + [tsm.b_Δ_nose for tsm in metrics])
+    avg_Δ_left_eye = np.mean([tsm.a_Δ_left_eye for tsm in metrics] + [tsm.b_Δ_left_eye for tsm in metrics])
+    avg_Δ_right_eye = np.mean([tsm.a_Δ_right_eye for tsm in metrics] + [tsm.b_Δ_right_eye for tsm in metrics])
+    avg_Δ_left_mouth = np.mean([tsm.a_Δ_left_mouth for tsm in metrics] + [tsm.b_Δ_left_mouth for tsm in metrics])
+    avg_Δ_right_mouth = np.mean([tsm.a_Δ_right_mouth for tsm in metrics] + [tsm.b_Δ_right_mouth for tsm in metrics])
+
+    return PerKeypointMetrics(
+        Total=n,
+        FTE=fte,
+        MSE=mse,
+        AvgΔNose=avg_Δ_nose,
+        AvgΔLeftEye=avg_Δ_left_eye,
+        AvgΔRightEye=avg_Δ_right_eye,
+        AvgΔLeftMouth=avg_Δ_left_mouth,
+        AvgΔRightMouth=avg_Δ_right_mouth,
     )
 
 
@@ -85,6 +188,7 @@ def compute_test_case_metrics(
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
+    configuration: ThresholdConfiguration,
 ) -> TestCaseMetrics:
     n_genuine_pairs = np.sum([gt.is_same for gt in ground_truths])
     n_imposter_pairs = np.sum([not gt.is_same for gt in ground_truths])
@@ -101,6 +205,9 @@ def compute_test_case_metrics(
         unique_images.add(ts.a.locator)
         unique_images.add(ts.b.locator)
 
+    bbox_metrics = compute_per_bbox_case(ground_truths, inferences, configuration)
+    keypoint_metrics = compute_per_keypoint_case(ground_truths, inferences, metrics)
+
     return TestCaseMetrics(
         nImages=len(unique_images),
         nGenuinePairs=n_genuine_pairs,
@@ -114,6 +221,8 @@ def compute_test_case_metrics(
         FTER=(n_fte / len(unique_images)) * 100,
         PairFailures=n_pair_failures,
         PairFailureRate=(n_pair_failures / (n_genuine_pairs + n_imposter_pairs)) * 100,
+        PerBBoxMetrics=[bbox_metrics],
+        PerKeypointMetrics=[keypoint_metrics],
     )
 
 
@@ -175,7 +284,7 @@ def evaluate_face_recognition_11(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
     test_cases: TestCases,
-    configuration: FMRConfiguration,
+    configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
     threshold = compute_threshold(zip(ground_truths, inferences), configuration.false_match_rate)
 
@@ -185,10 +294,12 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    baseline = compute_test_case_metrics(test_samples, ground_truths, inferences, test_sample_metrics, 0)
+    baseline = compute_test_case_metrics(test_samples, ground_truths, inferences, test_sample_metrics, 0, configuration)
     baseline_fnmr = baseline.FNMR
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr)))
+        all_test_case_metrics.append(
+            (test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr, configuration))
+        )
         all_test_case_plots.append((test_case, compute_test_case_plots(gt, inf)))
 
     test_suite_metrics = compute_test_suite_metrics(baseline, threshold)

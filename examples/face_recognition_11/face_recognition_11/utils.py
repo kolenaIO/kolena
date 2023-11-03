@@ -11,13 +11,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import List
+from typing import List, Tuple
+import math
 
 import numpy as np
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
 
 from kolena.workflow import Histogram
+
+
+def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:
+    return math.sqrt(math.pow(point_a[0] - point_b[0], 2) + math.pow(point_a[1] - point_b[1], 2))
+
+
+def compute_distances(
+    point_a: Tuple[float, float],
+    point_b: Tuple[float, float],
+) -> Tuple[float, float]:
+    distance = compute_distance(point_a, point_b)
+    return distance
+
+
+def calculate_mse_nmse(distances: np.ndarray) -> Tuple[float, float]:
+    mse = np.mean(distances**2)
+    return mse
 
 
 def create_similiarity_histogram(
