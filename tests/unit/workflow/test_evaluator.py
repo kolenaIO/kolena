@@ -251,3 +251,29 @@ def test__validate__metrics_test_case__fail_overwrite_field() -> None:
         @dataclasses.dataclass(frozen=True)
         class MyThresholdedMetrics(ThresholdedMetrics):
             threshold: str  # overwrite type
+
+
+def test__validate__metrics_test_sample__with_thresholded_metric_field() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class MyThresholded(ThresholdedMetrics):
+        score: float
+
+    @dataclasses.dataclass(frozen=True)
+    class MyMetrics(MetricsTestSample):
+        thresholded_scores: List[MyThresholded]
+
+    sample = MyMetrics(
+        thresholded_scores=[
+            MyThresholded(threshold=0.1, score=0.5),
+            MyThresholded(threshold=0.5, score=0.6),
+            MyThresholded(threshold=0.9, score=0.7),
+        ],
+    )
+
+    assert len(sample.thresholded_scores) == 3
+    assert sample.thresholded_scores[0].threshold == 0.1
+    assert sample.thresholded_scores[0].score == 0.5
+    assert sample.thresholded_scores[1].threshold == 0.5
+    assert sample.thresholded_scores[1].score == 0.6
+    assert sample.thresholded_scores[2].threshold == 0.9
+    assert sample.thresholded_scores[2].score == 0.7
