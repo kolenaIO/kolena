@@ -29,6 +29,23 @@ class PreventThresholdOverrideMeta(ABCMeta, type):
 
 @dataclass(frozen=True)
 class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta):
+    """
+    A data class representing metrics that have a specified threshold.
+
+    This class does not allow dictionary objects as field values and ensures
+    that the threshold cannot be overridden.
+
+    Attributes:
+        threshold (float): The threshold value for the metrics.
+
+    Usage:
+        # Create an instance of ThresholdedMetrics
+        metrics = ThresholdedMetrics(threshold=0.5)
+
+    Raises:
+        TypeError: If any field value is a dictionary.
+    """
+
     threshold: float
 
     def _data_type() -> str:
