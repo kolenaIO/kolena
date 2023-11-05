@@ -99,6 +99,7 @@ class Label(Enum):
 
 
 class SegmentationConfiguration(EvaluatorConfiguration):
+    eval_level: int
     threshold: float
 
     def display_name(self) -> str:

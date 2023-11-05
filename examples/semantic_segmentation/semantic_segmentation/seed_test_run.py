@@ -33,7 +33,7 @@ from kolena.workflow.asset import BinaryAsset
 from kolena.workflow.test_run import test
 
 
-def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str) -> None:
+def seed_test_run(model_name: str, test_suite_names: List[str], eval_level: int) -> None:
     sanitized_model_name = sanitize_model_name(model_name)
     s3_prefix = f"s3://{BUCKET}/{DATASET}"
 
@@ -49,7 +49,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str], out_bucket: str)
     model = Model(f"{model_name}", infer=infer)
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
-        configurations = [SegmentationConfiguration(threshold=0.5)]
+        configurations = [SegmentationConfiguration(eval_level=eval_level, threshold=0.5)]
 
         test(
             model,
@@ -64,12 +64,17 @@ def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
     os.environ["KOLENA_MODEL_NAME"] = str(args.model)
     os.environ["KOLENA_OUT_BUCKET"] = str(args.out_bucket)
-    seed_test_run(args.model, args.test_suites, args.out_bucket)
+    seed_test_run(args.model, args.test_suites, args.eval_level)
     return 0
 
 
 if __name__ == "__main__":
     ap = ArgumentParser()
+    ap.add_argument(
+        "--eval_level",
+        default=100,
+        help="Number of points on precision/recall curve. Higher value will be more accurate, but require more compute",
+    )
     ap.add_argument(
         "--model",
         default="pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512",
