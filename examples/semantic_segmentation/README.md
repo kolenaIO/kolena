@@ -42,9 +42,6 @@ test suite.
     The result masks will be stored under `s3://{args.out_bucket}/coco-stuff-10k/results/{args.model}` directory in
     your bucket.
 
-	> [!WARNING]
-	> This script has high memory usage(>20GB). If this is an issue, look into using https://github.com/grantjenks/python-diskcache
-
 3. An optional script, [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py) demonstrates how to generate activation maps from
 the aformentioned model inferences. If you wish to generate your own, use the `--out_bucket` argument to provide an AWS S3 bucket
 where the activation maps will be uploaded to.
@@ -54,16 +51,17 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 semantic_segmentation/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--model MODEL]
-                        [--test_suites TEST_SUITES [TEST_SUITES ...]]
-                        --out_bucket OUT_BUCKET
+usage: seed_test_run.py [-h] [--eval_level EVAL_LEVEL] [--model MODEL]
+                        [--test_suites TEST_SUITES [TEST_SUITES ...]] --out_bucket OUT_BUCKET
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
+  --eval_level EVAL_LEVEL
+                        Number of points on precision/recall curve. Higher value will be more
+                        accurate, but require more compute
   --model MODEL         Name of model in directory to test
   --test_suites TEST_SUITES [TEST_SUITES ...]
                         Name(s) of test suite(s) to test.
   --out_bucket OUT_BUCKET
-                        Name of AWS S3 bucket with write access to
-                        upload result masks to.
+                        Name of AWS S3 bucket with write access to upload result masks to.
 ```
