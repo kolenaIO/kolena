@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import Any
 from typing import Dict
+from typing import Iterator
 from typing import Optional
 from unittest.mock import patch
 
@@ -31,6 +32,14 @@ DEFAULT_HEADERS = {
     "X-Kolena-Telemetry": "False",
 }
 DEFAULT_KWARGS = {"auth": None, "timeout": (15.05, 3600), "proxies": {}}
+
+
+@pytest.fixture(autouse=True)
+def clean_client_state() -> Iterator[None]:
+    try:
+        yield
+    finally:
+        _client_state.reset()
 
 
 @pytest.mark.parametrize(
@@ -58,7 +67,6 @@ def test__with_default_kwargs(
             assert dictionary[expected_key] == expected_val
 
     with patch("kolena._utils.state.get_token", return_value=FIXED_TOKEN_RESPONSE):
-        _client_state.reset()
         kolena.initialize("bar")
         # default kwargs should take priority and cannot be overriden by kwargs
         expected_kwargs = {**{key: kwargs[key] for key in kwargs if key != "headers"}, **DEFAULT_KWARGS}
