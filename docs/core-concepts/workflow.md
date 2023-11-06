@@ -185,6 +185,7 @@ class ScoredLabeledKeypoints(Keypoints):
 class MyInference(Inference):
     predictions: List[ScoredLabeledKeypoints]
 ```
+
 ### Deduplication
 
 Models are considered deterministic inputs from test samples to inferences. This means that, when testing in Kolena,
