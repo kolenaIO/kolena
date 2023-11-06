@@ -76,20 +76,43 @@ def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
     )
 
 
+def _drop_unprovided_result(
+    df_result_concat: pd.DataFrame,
+    df_result_input: pd.DataFrame,
+    on: TEST_ON_TYPE,
+) -> pd.DataFrame:
+    if not on:
+        return df_result_concat
+
+    if isinstance(on, str):
+        on = [on]
+
+    _validate_on(df_result_concat, df_result_input, on)
+    df_result_provided = df_result_input[on].merge(df_result_concat, how="inner", on=on)
+    return df_result_provided
+
+
 def _process_results(
     df: pd.DataFrame,
-    all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame]],
+    all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame, pd.DataFrame]],
+    df_datapoints: pd.DataFrame,
+    on: TEST_ON_TYPE,
 ) -> pd.DataFrame:
-    df_results_by_eval = []
-    for eval_config, df_results in all_results:
-        df_results_eval = _to_serialized_dataframe(df_results, column=COL_RESULT)
-        df_results_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
-        df_results_by_eval.append(pd.concat([df["datapoint_id"], df_results_eval], axis=1))
+    target_columns = ["datapoint_id", COL_RESULT, COL_EVAL_CONFIG]
+    df_result_by_eval = []
+    for eval_config, df_result, df_result_input in all_results:
+        df_result_eval = _to_serialized_dataframe(df_result, column=COL_RESULT)
+        df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
+
+        df_result_concat = pd.concat([df["datapoint_id"], df_datapoints, df_result_eval], axis=1)
+        df_result_concat = _drop_unprovided_result(df_result_concat, df_result_input, on)
+
+        df_result_by_eval.append(df_result_concat[target_columns])
     df_results = (
-        pd.concat(df_results_by_eval, ignore_index=True)
-        if df_results_by_eval
+        pd.concat(df_result_by_eval, ignore_index=True)
+        if df_result_by_eval
         else pd.DataFrame(
-            columns=["datapoint_id", COL_RESULT, COL_EVAL_CONFIG],
+            columns=target_columns,
         )
     )
     return df_results
@@ -202,14 +225,14 @@ def test(
 
     _validate_configs([cfg for cfg, _ in results])
 
-    all_results = []
+    all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame, pd.DataFrame]] = []
     for config, df_result_input in results:
         log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
         single_result = _get_single_df_result(df_datapoints, df_result_input, on)
         _validate_data(df_datapoints, single_result)
-        all_results.append((config, single_result))
+        all_results.append((config, single_result, df_result_input))
         log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
 
-    df_results = _process_results(df_data, all_results)
+    df_results = _process_results(df_data, all_results, df_datapoints, on)
     n_uploaded_results = _upload_results(model, df_results)
     log.info(f"uploaded {n_uploaded_results} test results")

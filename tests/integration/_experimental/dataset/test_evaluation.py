@@ -150,6 +150,53 @@ def test__test__multiple_eval_configs() -> None:
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
+def test__test__multiple_eval_configs__partial_uploading() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__partial_uploading")
+    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__partial_uploading")
+    df_dp = get_df_dp(10)
+    dp_columns = ["user_dp_id", "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[dp_columns])
+
+    df_result = get_df_result(10)
+    result_columns_1 = ["user_dp_id", "softmax_bitmap", "score"]
+    result_columns_2 = ["user_dp_id", "softmax_bitmap"]
+    df_result_1_p1 = df_result[:5][result_columns_1]
+    df_result_2_p1 = df_result[5:10][result_columns_2]
+    eval_config_1 = dict(threshold=0.1)
+    eval_config_2 = dict(threshold=0.2)
+
+    test(
+        dataset_name,
+        model_name,
+        [(eval_config_1, df_result_1_p1), (eval_config_2, df_result_2_p1)],
+        on="user_dp_id",
+    )
+
+    df_result_1_p2 = df_result[5:10][result_columns_1]
+    df_result_2_p2 = df_result[:5][result_columns_2]
+    test(
+        dataset_name,
+        model_name,
+        [(eval_config_1, df_result_1_p2), (eval_config_2, df_result_2_p2)],
+        on="user_dp_id",
+    )
+
+    fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
+    assert len(df_results_by_eval) == 2
+    expected_df_dp = df_dp.reset_index(drop=True)
+    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+
+    df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
+    fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
+    fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
+    assert fetched_eval_config_1 == eval_config_1
+    assert fetched_eval_config_2 == eval_config_2
+    expected_df_result_1 = df_result[result_columns_1].reset_index(drop=True)
+    expected_df_result_2 = df_result[result_columns_2].reset_index(drop=True)
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+
+
 def test__test__multiple_eval_configs__duplicate() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__duplicate")
     model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__duplicate")
