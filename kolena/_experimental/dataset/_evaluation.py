@@ -76,19 +76,19 @@ def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
     )
 
 
-def _drop_unprovided_results(
-    df_results_concat: pd.DataFrame,
+def _drop_unprovided_result(
+    df_result_concat: pd.DataFrame,
     df_result_input: pd.DataFrame,
     on: TEST_ON_TYPE,
 ) -> pd.DataFrame:
     if not on:
-        return df_results_concat
+        return df_result_concat
 
     if isinstance(on, str):
         on = [on]
 
-    _validate_on(df_results_concat, df_result_input, on)
-    df_result_provided = df_result_input[on].merge(df_results_concat, how="inner", on=on)
+    _validate_on(df_result_concat, df_result_input, on)
+    df_result_provided = df_result_input[on].merge(df_result_concat, how="inner", on=on)
     return df_result_provided
 
 
@@ -105,7 +105,7 @@ def _process_results(
         df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
 
         df_result_concat = pd.concat([df["datapoint_id"], df_datapoints, df_result_eval], axis=1)
-        df_result_concat = _drop_unprovided_results(df_result_concat, df_result_input, on)
+        df_result_concat = _drop_unprovided_result(df_result_concat, df_result_input, on)
 
         df_result_by_eval.append(df_result_concat[target_columns])
     df_results = (
