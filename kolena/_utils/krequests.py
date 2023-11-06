@@ -78,6 +78,8 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         "User-Agent": user_agent(client_name, client_version),
         "X-Kolena-Telemetry": str(client_state.telemetry),
     }
+    if client_state.additional_request_headers:
+        default_headers.update(client_state.additional_request_headers)
     return {
         **default_kwargs,
         **kwargs,

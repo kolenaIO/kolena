@@ -51,6 +51,7 @@ class _ClientState:
         verbose: bool = False,
         telemetry: bool = False,
         proxies: Optional[Dict[str, str]] = None,
+        additional_request_headers: Optional[Dict[str, Any]] = None,
     ):
         self.base_url: Optional[str] = None
         self.api_token: Optional[str] = None
@@ -59,6 +60,7 @@ class _ClientState:
         self.verbose: bool = False
         self.telemetry: bool = False
         self.proxies: Dict[str, str] = {}
+        self.additional_request_headers: Optional[Dict[str, Any]] = None
         self.update(
             base_url=base_url,
             api_token=api_token,
@@ -67,6 +69,7 @@ class _ClientState:
             verbose=verbose,
             telemetry=telemetry,
             proxies=proxies,
+            additional_request_headers=additional_request_headers,
         )
 
     def update(
@@ -78,6 +81,7 @@ class _ClientState:
         verbose: bool = False,
         telemetry: bool = False,
         proxies: Optional[Dict[str, str]] = None,
+        additional_request_headers: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.base_url = base_url or self.base_url
         self.api_token = api_token or self.api_token
@@ -86,6 +90,7 @@ class _ClientState:
         self.verbose = verbose
         self.telemetry = telemetry
         self.proxies = proxies or {}
+        self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
     def assert_initialized(self) -> None:
         if self.base_url is None:
@@ -102,6 +107,7 @@ class _ClientState:
         self.tenant = None
         self.verbose = False
         self.telemetry = False
+        self.additional_request_headers = None
 
 
 def _get_api_base_url() -> str:
