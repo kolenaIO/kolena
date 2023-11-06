@@ -37,7 +37,7 @@ from kolena.workflow.test_run import test
 MODEL_LIST: Dict[str, str] = {
     "yolo_r": f"YOLOR-D6 (modified CSP, {WORKFLOW})",
     "yolo_x": f"YOLOX (modified CSP-v5, {WORKFLOW})",
-    "mask_cnn": f"Mask R-CNN (Inception-ResNet-v2, {WORKFLOW})",
+    "mask_rcnn": f"Mask R-CNN (Inception-ResNet-v2, {WORKFLOW})",
     "faster_rcnn": f"Faster R-CNN (Inception-ResNet-v2, {WORKFLOW})",
     "yolo_v4s": f"Scaled YOLOv4 (CSP-DarkNet-53, {WORKFLOW})",
     "yolo_v3": f"YOLOv3 (DarkNet-53, {WORKFLOW})",
