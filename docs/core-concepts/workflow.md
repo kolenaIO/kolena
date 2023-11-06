@@ -164,36 +164,27 @@ The inference type and ground truth type for a workflow will often look very sim
 
 [Annotation][kolena.workflow.annotation.Annotation] types can be extended to include additional fields, when necessary.
 
-Consider the example of a detection model that detects labeled bounding boxes when provided an image.
-The [ScoredLabeledBoundingBox][kolena.workflow.annotation.ScoredLabeledBoundingBox] represents a bounding box with a label and a confidence score.
-If you wanted to add fields found in COCO format annotations (area, isCrowd) then this model's inference type could be defined as follows:
+Consider the example of a [`Keypoints`][kolena.workflow.annotation.Keypoints] detection model that detects anywhere from
+0 to N keypoints arrays when provided an image. Each keypoints array has an associated class label and confidence value.
+This model's inference type could be defined as follows:
 
 ```python
 from dataclasses import dataclass
 from typing import List
 
 from kolena.workflow import Inference
-from kolena.workflow.annotation import ScoredLabeledBoundingBox
+from kolena.workflow.annotation import Keypoints
 
 @dataclass(frozen=True)
-class CocoScoredLabeledBoundingBox(ScoredLabeledBoundingBox):
-    area: float  # area of bounding box
-    isCrowd: float  # annotation is for a single object or a multiple objects. Either 0 or 1
-
-    '''
-    The following fields are inherited from ScoredLabeledBoundingBox
-    top_left: Tuple[float, float] # The top left vertex (in `(x, y)` pixel coordinates) of this bounding box.
-    bottom_right: Tuple[float, float] # The bottom right vertex (in `(x, y)` pixel coordinates) of this bounding box.
-    score: float  # The score (e.g. model confidence) associated with this bounding box.
-    label: str  # The label (e.g. model classification) associated with this bounding box.
-    '''
-
+class ScoredLabeledKeypoints(Keypoints):
+    # points: List[Tuple[float, float]]  # inherited from Keypoints
+    score: float  # confidence score, between 0 and 1
+    label: str  # predicted class
 
 @dataclass(frozen=True)
 class MyInference(Inference):
-    predictions: List[CocoScoredLabeledBoundingBox]
+    predictions: List[ScoredLabeledKeypoints]
 ```
-
 ### Deduplication
 
 Models are considered deterministic inputs from test samples to inferences. This means that, when testing in Kolena,
