@@ -1,4 +1,19 @@
-from typing import Dict, Any, Optional
+# Copyright 2021-2023 Kolena Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+from typing import Any
+from typing import Dict
+from typing import Optional
 from unittest.mock import patch
 
 import pytest
@@ -9,25 +24,34 @@ from kolena._utils.state import _client_state
 from tests.unit.test_initialize import FIXED_TOKEN_RESPONSE
 
 
-DEFAULT_HEADERS = {"Content-Type": "application/json", "X-Request-ID": None, "User-Agent": None, "X-Kolena-Telemetry": "False"}
+DEFAULT_HEADERS = {
+    "Content-Type": "application/json",
+    "X-Request-ID": None,
+    "User-Agent": None,
+    "X-Kolena-Telemetry": "False",
+}
 DEFAULT_KWARGS = {"auth": None, "timeout": (15.05, 3600), "proxies": {}}
 
 
 @pytest.mark.parametrize(
     "kwargs, proxies, additional_request_headers",
     [
-     ({}, None, None),
-     ({}, {}, {}),
-     ({"url": "some-url", "data": {"key": "value"}}, None, None),
-     ({"timeout": (1, 60)}, None, None),  # attempt to override default args
-     ({}, {"http": "dummy-proxy"}, {}),
-     ({}, {}, {"some-header-key": "some-header-val"}),
-     ({}, {}, {"X-Kolena-Telemetry": "off"}),  # attempt to override default headers with client state
-     ({"headers": {"X-Kolena-Telemetry": "off"}}, {}, {}),  # attempt to override default headers with kwargs
-     ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {"X-Kolena-Telemetry": "off"})
-    ]
+        ({}, None, None),
+        ({}, {}, {}),
+        ({"url": "some-url", "data": {"key": "value"}}, None, None),
+        ({"timeout": (1, 60)}, None, None),  # attempt to override default args
+        ({}, {"http": "dummy-proxy"}, {}),
+        ({}, {}, {"some-header-key": "some-header-val"}),
+        ({}, {}, {"X-Kolena-Telemetry": "off"}),  # attempt to override default headers with client state
+        ({"headers": {"X-Kolena-Telemetry": "off"}}, {}, {}),  # attempt to override default headers with kwargs
+        ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {"X-Kolena-Telemetry": "off"}),
+    ],
 )
-def test__with_default_kwargs(kwargs: Dict[str, Any], proxies: Optional[Dict[str, str]], additional_request_headers: Optional[Dict[str, Any]]) -> None:
+def test__with_default_kwargs(
+    kwargs: Dict[str, Any],
+    proxies: Optional[Dict[str, str]],
+    additional_request_headers: Optional[Dict[str, Any]],
+) -> None:
     def _assert_dict_key_val(dictionary: Dict[str, Any], expected_key: str, expected_val: Optional[Any]) -> None:
         assert expected_key in dictionary
         if expected_val is not None:
