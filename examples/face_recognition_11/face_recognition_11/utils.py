@@ -38,17 +38,19 @@ def calculate_mse_nmse(distances: np.ndarray) -> Tuple[float, float]:
     return mse
 
 
-def create_similiarity_histogram(
+def create_similarity_histogram(
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Histogram:
-    genuine_values = [
-        inf.similarity for gt, inf in zip(ground_truths, inferences) if gt.is_same and inf.similarity is not None
-    ]
-
-    imposter_values = [
-        inf.similarity for gt, inf in zip(ground_truths, inferences) if not gt.is_same and inf.similarity is not None
-    ]
+    genuine_values = []
+    imposter_values = []
+    for gt, inf in zip(ground_truths, inferences):
+        for is_same, similarity in zip(gt.matches, inf.similarities):
+            if similarity is not None:
+                if is_same:
+                    genuine_values.append(similarity)
+                else:
+                    imposter_values.append(similarity)
 
     min_data = min(min(genuine_values), min(imposter_values))
     max_data = max(max(genuine_values), max(imposter_values))

@@ -31,53 +31,38 @@ from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
+from kolena.workflow.asset import ImageAsset
 
 
 @dataclass(frozen=True)
 class TestSample(Image):
     """Test sample type for Face Recognition 1:1 workflow."""
 
-    pairs: List[Image]
+    pairs: List[ImageAsset]
     metadata: Metadata = dataclasses.field(default_factory=dict)
-
-
-@dataclass(frozen=True)
-class SingleImageGroundTruth(DataObject):
-    bbox: BoundingBox
-    keypoints: Keypoints
 
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for Face Recognition 1:1 workflow."""
 
-    is_same: bool
-    """Whether to treat this image pair as a a genuine pair (True) or an imposter pair (False)."""
-    a: SingleImageGroundTruth
-    b: SingleImageGroundTruth
+    matches: List[bool]
+    bbox: BoundingBox
+    keypoints: Keypoints
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
     """Inference type for Face Recognition 1:1 workflow."""
 
-    a_bbox: Optional[BoundingBox] = None
-    """The bounding box associated with image A to be used for face recognition."""
-
-    a_keypoints: Optional[Keypoints] = None
-    """The keypoints associated with image A to be used for face recognition."""
-
-    b_bbox: Optional[BoundingBox] = None
-    """The bounding box associated with image B to be used for face recognition."""
-
-    b_keypoints: Optional[Keypoints] = None
-    """The keypoints associated with image B to be used for face recognition."""
-
-    similarity: float = None
+    similarities: List[Optional[float]]
     """
     The similarity score computed between the two embeddings in this image pair. Should be left empty when either
     image in the pair is a failure to enroll.
     """
+
+    bbox: Optional[BoundingBox]
+    keypoints: Optional[Keypoints]
 
 
 workflow, TestCase, TestSuite, Model = define_workflow(
@@ -99,43 +84,38 @@ class KeypointSample(DataObject):
 
 
 @dataclass(frozen=True)
-class TestSampleMetrics(MetricsTestSample):  # TODO: Include failure to enroll?
+class TestSampleMetrics(MetricsTestSample):
     """
     Image-pair-level metrics for Face Recognition 1:1 workflow.
     A test sample is can only be true for one of the following: match, false match (FM), or false non-match (FNM).
     If all categories are false then the sample is a true non-match.
     """
 
-    is_match: bool
+    is_match: List[bool]
     """
     An indication of whether the model correct classified a genuine pair as a genuine pair.
     """
 
-    is_false_match: bool
+    is_false_match: List[bool]
     """An indication of whether the model incorrectly classified an imposter pair as a genuine pair."""
 
-    is_false_non_match: bool
+    is_false_non_match: List[bool]
     """An indication of whether the model incorrectly classified an genuine pair as a imposter pair."""
 
-    failure_to_enroll: bool
+    failure_to_enroll: List[bool]
     """An indication of whether the model failed to infer."""
 
-    a_mse: float
-    a_Δ_nose: float
-    a_Δ_left_eye: float
-    a_Δ_right_eye: float
-    a_Δ_left_mouth: float
-    a_Δ_right_mouth: float
-    b_mse: float
-    b_Δ_nose: float
-    b_Δ_left_eye: float
-    b_Δ_right_eye: float
-    b_Δ_left_mouth: float
-    b_Δ_right_mouth: float
+    mse: float
+    Δ_nose: float
+    Δ_left_eye: float
+    Δ_right_eye: float
+    Δ_left_mouth: float
+    Δ_right_mouth: float
 
 
 @dataclass(frozen=True)
 class PerBBoxMetrics(MetricsTestCase):
+    Label: str
     Total: int
     FTE: int
     AvgIoU: float
@@ -149,6 +129,7 @@ class PerBBoxMetrics(MetricsTestCase):
 
 @dataclass(frozen=True)
 class PerKeypointMetrics(MetricsTestCase):
+    Label: str
     Total: int  # number of keypoints
     FTE: int
     MSE: float

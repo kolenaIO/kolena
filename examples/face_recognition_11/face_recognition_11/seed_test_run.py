@@ -35,44 +35,52 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv("preds.50.csv")
+    df_results = pd.read_csv("preds.sample.csv")
 
     def infer(test_sample: TestSample) -> Inference:
-        sample_results = df_results[
-            (df_results["locator_a"] == test_sample.a.locator) & (df_results["locator_b"] == test_sample.b.locator)
-        ].iloc[0]
+        similarities = []
+        for img in test_sample.pairs:
+            sample_results = df_results[
+                ((df_results["locator_a"] == test_sample.locator) | (df_results["locator_b"] == img.locator))
+                | ((df_results["locator_a"] == img.locator) | (df_results["locator_b"] == test_sample.locator))
+            ]
 
-        similarity = None if sample_results["failure"] else sample_results["similarity"]
+            similarity = sample_results["similarity"].values[0] if not sample_results["failure"].values[0] else None
+            similarities.append(similarity)
 
-        return Inference(
-            a_bbox=BoundingBox(
-                (sample_results["a_min_x"], sample_results["a_min_y"]),
-                (sample_results["a_max_x"], sample_results["a_max_y"]),
-            ),
-            a_keypoints=Keypoints(
+        if not df_results[df_results["locator_a"] == test_sample.locator].empty:
+            r = next(df_results[df_results["locator_a"] == test_sample.locator].itertuples(index=False))
+            min_x, min_y, max_x, max_y = r.a_min_x, r.a_min_y, r.a_max_x, r.a_max_y
+            right_eye_x, right_eye_y = r.a_right_eye_x, r.a_right_eye_y
+            left_eye_x, left_eye_y = r.a_left_eye_x, r.a_left_eye_y
+            nose_x, nose_y = r.a_nose_x, r.a_nose_y
+            mouth_right_x, mouth_right_y = r.a_mouth_right_x, r.a_mouth_right_y
+            mouth_left_x, mouth_left_y = r.a_mouth_left_x, r.a_mouth_left_y
+        elif not df_results[df_results["locator_b"] == test_sample.locator].empty:
+            r = next(df_results[df_results["locator_b"] == test_sample.locator].itertuples(index=False))
+            min_x, min_y, max_x, max_y = r.b_min_x, r.b_min_y, r.b_max_x, r.b_max_y
+            right_eye_x, right_eye_y = r.b_right_eye_x, r.b_right_eye_y
+            left_eye_x, left_eye_y = r.b_left_eye_x, r.b_left_eye_y
+            nose_x, nose_y = r.b_nose_x, r.b_nose_y
+            mouth_right_x, mouth_right_y = r.b_mouth_right_x, r.b_mouth_right_y
+            mouth_left_x, mouth_left_y = r.b_mouth_left_x, r.b_mouth_left_y
+
+        bbox = BoundingBox((min_x, min_y), (max_x, max_y)) if min_x else None
+        keypoints = (
+            Keypoints(
                 [
-                    (sample_results["a_right_eye_x"], sample_results["a_right_eye_y"]),
-                    (sample_results["a_left_eye_x"], sample_results["a_left_eye_y"]),
-                    (sample_results["a_nose_x"], sample_results["a_nose_y"]),
-                    (sample_results["a_mouth_right_x"], sample_results["a_mouth_right_y"]),
-                    (sample_results["a_mouth_left_x"], sample_results["a_mouth_left_y"]),
+                    (right_eye_x, right_eye_y),
+                    (left_eye_x, left_eye_y),
+                    (nose_x, nose_y),
+                    (mouth_right_x, mouth_right_y),
+                    (mouth_left_x, mouth_left_y),
                 ],
-            ),
-            b_bbox=BoundingBox(
-                (sample_results["b_min_x"], sample_results["b_min_y"]),
-                (sample_results["b_max_x"], sample_results["b_max_y"]),
-            ),
-            b_keypoints=Keypoints(
-                [
-                    (sample_results["b_right_eye_x"], sample_results["b_right_eye_y"]),
-                    (sample_results["b_left_eye_x"], sample_results["b_left_eye_y"]),
-                    (sample_results["b_nose_x"], sample_results["b_nose_y"]),
-                    (sample_results["b_mouth_right_x"], sample_results["b_mouth_right_y"]),
-                    (sample_results["b_mouth_left_x"], sample_results["b_mouth_left_y"]),
-                ],
-            ),
-            similarity=similarity,
+            )
+            if right_eye_x
+            else None
         )
+
+        return Inference(similarities=similarities, bbox=bbox, keypoints=keypoints)
 
     model = Model(f"{model_name} [{DATASET}]", infer=infer)
     print(f"Model: {model}")
