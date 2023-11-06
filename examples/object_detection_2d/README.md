@@ -30,7 +30,7 @@ This project defines two scripts that perform the following operations:
         `small`, `medium` and `large`.
 
 2. [`seed_test_run.py`](object_detection_2d/seed_test_run.py) tests the following models on the above test suites:
-  `yolo_r`, `yolo_x`, `mask_cnn`, `faster_rcnn`, `yolo_v4s`, and `yolo_v3`. Information about these models can be
+  `yolo_r`, `yolo_x`, `mask_rcnn`, `faster_rcnn`, `yolo_v4s`, and `yolo_v3`. Information about these models can be
   found in [`constants.py`](object_detection_2d/constants.py).
 
 Command line arguments are defined within each script to specify what model to use and what test suite to
@@ -38,7 +38,7 @@ Command line arguments are defined within each script to specify what model to u
 
 ```shell
 $ poetry run python3 object_detection_2d/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--test_suite TEST_SUITE] {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}
+usage: seed_test_run.py [-h] [--test_suite TEST_SUITE] {yolo_r,yolo_x,mask_rcnn,faster_rcnn,yolo_v4s,yolo_v3}
 
 positional arguments:
   {yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}

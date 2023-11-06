@@ -121,7 +121,7 @@ YOLO_V3 = {
 MODEL_METADATA: Dict[str, Dict[str, str]] = {
     "yolo_r": YOLO_R,
     "yolo_x": YOLO_X,
-    "mask_cnn": MASK_RCNN,
+    "mask_rcnn": MASK_RCNN,
     "faster_rcnn": FAST_RCNN,
     "yolo_v4s": YOLO_V4,
     "yolo_v3": YOLO_V3,

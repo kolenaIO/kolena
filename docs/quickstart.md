@@ -178,7 +178,7 @@ S3) into test cases by brightness and bounding box size. In this example will be
 ## Test a Model
 
 After we've created test suites, the final step is to test models on these test suites. The `object_detection_2d` example
-provides the following models to choose from `{yolo_r,yolo_x,mask_cnn,faster_rcnn,yolo_v4s,yolo_v3}` for this step:
+provides the following models to choose from `{yolo_r,yolo_x,mask_rcnn,faster_rcnn,yolo_v4s,yolo_v3}` for this step:
 
 ```shell
 poetry run python3 object_detection_2d/seed_test_run.py "yolo_v4s"
