@@ -30,20 +30,53 @@ class PreventThresholdOverrideMeta(ABCMeta, type):
 @dataclass(frozen=True)
 class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta):
     """
-    A data class representing metrics that have a specified threshold.
+    Represents metrics tied to a specific threshold.
 
-    This class does not allow dictionary objects as field values and ensures
-    that the threshold cannot be overridden.
+    `List[ThresholdedMetrics]` should be used as a field type within `MetricsTestSample` or
+    `MetricsTestCase` from the `kolena.workflow` module. This list is meant to hold metric values
+    associated with distinct thresholds. These metrics are expected to be uniform across `TestSample`
+    instances within a single test execution.
 
-    Attributes:
-        threshold (float): The threshold value for the metrics.
+    `ThresholdedMetrics` prohibits the use of dictionary objects as field values and guarantees that
+    the threshold values remain immutable once set. For application within a particular workflow,
+    subclassing is required to define relevant metrics fields.
 
-    Usage:
-        # Create an instance of ThresholdedMetrics
-        metrics = ThresholdedMetrics(threshold=0.5)
+    Usage example:
+
+    ```python
+    from kolena.workflow import MetricsTestSample
+    from kolena.workflow import ThresholdedMetrics
+
+    @dataclass(frozen=True)
+    class ClassThresholdedMetrics(ThresholdedMetrics):
+        precision: float
+        recall: float
+        f1: float
+
+    @dataclass(frozen=True)
+    class TestSampleMetrics(MetricsTestSample):
+        car: List[ClassThresholdedMetrics]
+        pedestrian: List[ClassThresholdedMetrics]
+
+    # Creating an instance of metrics
+    metric = TestSampleMetrics(
+        car=[
+            ClassThresholdedMetrics(threshold=0.3, precision=0.5, recall=0.8, f1=0.615),
+            ClassThresholdedMetrics(threshold=0.4, precision=0.6, recall=0.6, f1=0.6),
+            ClassThresholdedMetrics(threshold=0.5, precision=0.8, recall=0.4, f1=0.533),
+            # ...
+        ],
+        pedestrian=[
+            ClassThresholdedMetrics(threshold=0.3, precision=0.6, recall=0.9, f1=0.72),
+            ClassThresholdedMetrics(threshold=0.4, precision=0.7, recall=0.7, f1=0.7),
+            ClassThresholdedMetrics(threshold=0.5, precision=0.8, recall=0.6, f1=0.686),
+            # ...
+        ],
+    )
+    ```
 
     Raises:
-        TypeError: If any field value is a dictionary.
+        TypeError: If any of the field values is a dictionary.
     """
 
     threshold: float
