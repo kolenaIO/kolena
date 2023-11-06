@@ -89,7 +89,7 @@ class _ClientState:
         self.tenant = tenant or self.tenant
         self.verbose = verbose
         self.telemetry = telemetry
-        self.proxies = proxies or {}
+        self.proxies = proxies or self.proxies
         self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
     def assert_initialized(self) -> None:
@@ -108,6 +108,7 @@ class _ClientState:
         self.verbose = False
         self.telemetry = False
         self.additional_request_headers = None
+        self.proxies = {}
 
 
 def _get_api_base_url() -> str:

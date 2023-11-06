@@ -72,18 +72,19 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         "timeout": (CONNECTION_CONNECT_TIMEOUT, CONNECTION_READ_TIMEOUT),
         "proxies": client_state.proxies,
     }
-    default_headers = {
-        "Content-Type": "application/json",
-        "X-Request-ID": uuid.uuid4().hex,
-        "User-Agent": user_agent(client_name, client_version),
-        "X-Kolena-Telemetry": str(client_state.telemetry),
-    }
-    if client_state.additional_request_headers:
-        default_headers.update(client_state.additional_request_headers)
+    default_headers = client_state.additional_request_headers or {}
+    default_headers.update(
+        {
+            "Content-Type": "application/json",
+            "X-Request-ID": uuid.uuid4().hex,
+            "User-Agent": user_agent(client_name, client_version),
+            "X-Kolena-Telemetry": str(client_state.telemetry),
+        },
+    )
     return {
-        **default_kwargs,
         **kwargs,
-        "headers": {**default_headers, **kwargs.get("headers", {})},
+        **default_kwargs,
+        "headers": {**kwargs.get("headers", {}), **default_headers},
     }
 
 
