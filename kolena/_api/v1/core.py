@@ -16,6 +16,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 
 from pydantic.dataclasses import dataclass
 
@@ -28,6 +29,7 @@ class Model:
         name: str
         metadata: Dict[str, Any]
         workflow: str
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -38,6 +40,7 @@ class Model:
         id: int
         name: str
         metadata: Dict[str, Any]
+        tags: Set[str]
         workflow: str
 
     @dataclass(frozen=True)

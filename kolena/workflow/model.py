@@ -20,6 +20,7 @@ from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 from typing import TypeVar
 
@@ -75,6 +76,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
     metadata: Dict[str, Any]
     """Unstructured metadata associated with the model."""
 
+    tags: Set[str]
+    """Tags associated with this model."""
+
     infer: Optional[Callable[[TestSample], Inference]]
     """
     Function transforming a [`TestSample`][kolena.workflow.TestSample] for a workflow into an
@@ -96,6 +100,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         name: str,
         infer: Optional[Callable[[TestSample], Inference]] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[Set[str]] = None,
     ):
         if type(self) == Model:
             raise Exception("<Model> must be subclassed.")
@@ -104,8 +109,10 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             loaded = self.load(name, infer)
             if len(loaded.metadata.keys()) > 0 and loaded.metadata != metadata:
                 log.warn(f"mismatch in model metadata, using loaded metadata (loaded: {loaded.metadata})")
+            if len(loaded.tags) > 0 and loaded.tags != tags:
+                log.warn(f"mismatch in model tags, using loaded tags (loaded: {loaded.tags})")
         except NotFoundError:
-            loaded = self.create(name, infer, metadata)
+            loaded = self.create(name, infer, metadata, tags)
 
         self._populate_from_other(loaded)
 
@@ -116,6 +123,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         name: str,
         infer: Optional[Callable[[TestSample], Inference]] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[Set[str]] = None,
     ) -> "Model":
         """
         Create a new model.
@@ -123,11 +131,12 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param name: The unique name of the new model to create.
         :param infer: Optional inference function for this model.
         :param metadata: Optional unstructured metadata to store with this model.
+        :param tags: Optional set of tags to associate with this model.
         :return: The newly created model.
         """
         validate_name(name, FieldName.MODEL_NAME)
         metadata = metadata or {}
-        request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
+        request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name, tags=tags)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
@@ -193,6 +202,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             self._id = other._id
             self.name = other.name
             self.metadata = other.metadata
+            self.tags = other.tags
             self.workflow = other.workflow
             self.infer = other.infer
 
@@ -207,6 +217,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj._id = data.id
         obj.name = data.name
         obj.metadata = data.metadata
+        obj.tags = data.tags
         obj.infer = infer
         obj._freeze()
         return obj

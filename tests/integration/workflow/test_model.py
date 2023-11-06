@@ -30,17 +30,19 @@ from tests.integration.workflow.dummy import Model
 from tests.integration.workflow.dummy import TestSuite
 
 META_DATA = {"a": "b"}
+TAGS = {"c", "d"}
 
 
 def assert_model(model: Model, name: str) -> None:
     assert model.workflow == DUMMY_WORKFLOW
     assert model.name == name
     assert model.metadata == META_DATA
+    assert model.tags == TAGS
 
 
 def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test__create model")
-    assert_model(Model.create(name=name, infer=lambda x: None, metadata=META_DATA), name)
+    assert_model(Model.create(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS), name)
 
     with pytest.raises(Exception):
         Model.create(name)
@@ -52,7 +54,7 @@ def test__load() -> None:
     with pytest.raises(Exception):
         Model.load(name)
 
-    Model.create(name, infer=lambda x: None, metadata=META_DATA)
+    Model.create(name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
     assert_model(Model.load(name, infer=lambda x: None), name)
 
 
@@ -65,22 +67,22 @@ def test__load__mismatching_workflows() -> None:
 
 def test__init() -> None:
     name = with_test_prefix(f"{__file__}::test__init model")
-    model = Model(name=name, infer=lambda x: None, metadata=META_DATA)
+    model = Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
     assert_model(model, name)
 
     with pytest.raises(Exception):
         Model.create(name)
 
-    Model(name=name, infer=lambda x: None, metadata=META_DATA)
+    Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
 
     assert_model(Model.load(name, infer=lambda x: None), name)
 
-    updated_model = Model(name=name, infer=lambda x: None, metadata={"a": 13})
+    updated_model = Model(name=name, infer=lambda x: None, metadata={"a": 13}, tags={"e"})
     assert_model(updated_model, name)
 
 
-def test__init_no_meta() -> None:
-    name = with_test_prefix(f"{__file__}::test__init_no_meta")
+def test__init_no_optionals() -> None:
+    name = with_test_prefix(f"{__file__}::test__init_no_optionals")
     model = Model(name=name, infer=lambda x: None)
     loaded = Model.load(name, infer=lambda x: None)
 
