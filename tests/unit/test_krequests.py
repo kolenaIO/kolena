@@ -53,6 +53,7 @@ def clean_client_state() -> Iterator[None]:
         ({}, {}, {"some-header-key": "some-header-val"}),
         ({}, {}, {"X-Kolena-Telemetry": "off"}),  # attempt to override default headers with client state
         ({"headers": {"X-Kolena-Telemetry": "off"}}, {}, {}),  # attempt to override default headers with kwargs
+        ({"headers": {"Content-Type": "application/octet-stream"}}, {}, {}),  # should allow overriding Content-Type
         ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {"X-Kolena-Telemetry": "off"}),
     ],
 )
@@ -83,7 +84,7 @@ def test__with_default_kwargs(
         # values passed by kwargs should not override default args
         if "headers" in kwargs:
             for key in kwargs.get("headers"):
-                if key not in expected_headers:
+                if key not in expected_headers or key == "Content-Type":
                     expected_headers[key] = kwargs.get("headers")[key]
 
         default_kwargs = krequests._with_default_kwargs(**kwargs)
