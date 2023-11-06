@@ -29,6 +29,7 @@ from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import Polygon
 from kolena.workflow.annotation import Polyline
 from kolena.workflow.asset import ImageAsset
+from kolena.workflow.thresholded import ThresholdedMetrics
 
 
 def test__validate_data_object__invalid() -> None:
@@ -171,3 +172,82 @@ def test__validate_field__invalid() -> None:
 
     with pytest.raises(ValueError):
         validate_data_object_type(NestedTester)
+
+
+def test__validate_field__thresholded() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class MyThresholdedMetrics(ThresholdedMetrics):
+        a: List[str]
+        b: List[bool]
+        c: List[int]
+        d: List[float]
+        e: List[BoundingBox]
+        g: List[Polygon]
+        i: List[Keypoints]
+        j: List[Polyline]
+        k: List[Union[BoundingBox, BoundingBox]]  # Redundant Union can be simplified
+        l: float
+        m: int
+        n: str
+
+    MyThresholdedMetrics(
+        threshold=1.0,
+        a=["1"],
+        b=[True, False],
+        c=[1],
+        d=[1.0],
+        e=[BoundingBox((1, 1), (2, 2))],
+        g=[Polygon(points=[(0, 0), (1, 1), (2, 2), (0, 0)])],
+        i=[Keypoints(points=[(10, 10), (11, 11), (12, 12)])],
+        j=[Polyline(points=[(0, 0), (1, 1), (2, 2)])],
+        k=[
+            BoundingBox((1, 1), (2, 2)),
+            BoundingBox(top_left=[1, 1], bottom_right=[10, 10]),
+        ],
+        l=1.0,
+        m=1,
+        n="str",
+    )
+
+
+def test__validate_field__thresholded__no_initialize_threshold_invalid() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class MyThresholdedMetrics(ThresholdedMetrics):
+        a: List[str]
+
+    with pytest.raises(TypeError):
+        MyThresholdedMetrics(a=["1"])
+
+
+def test__validate_field__thresholded__avoid_reserved_field_name() -> None:
+    with pytest.raises(TypeError):
+
+        @dataclasses.dataclass(frozen=True)
+        class MyThresholdedMetrics(ThresholdedMetrics):
+            threshold: str
+            a: float
+
+        MyThresholdedMetrics(threshold="1", a=1.0)
+
+
+def test__validate_field__thresholded__invalid_dict_field() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class MyThresholdedMetrics(ThresholdedMetrics):
+        a: Dict[str, str]
+
+    with pytest.raises(TypeError):
+        MyThresholdedMetrics(threshold=1, a={"key": "value"})
+
+
+def test__validate_field__thresholded__invalid_nested_field() -> None:
+    @dataclasses.dataclass(frozen=True)
+    class Nested(DataObject):
+        a: float
+
+    @dataclasses.dataclass(frozen=True)
+    class MyThresholdedMetrics(ThresholdedMetrics):
+        a: Nested
+
+    with pytest.raises(TypeError):
+        n = Nested(a=1.0)
+        MyThresholdedMetrics(a=n)
