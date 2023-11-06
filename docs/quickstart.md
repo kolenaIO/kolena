@@ -173,12 +173,12 @@ page to view our newly created test suites.
 In this `object_detection_2d` example, we've created test suites stratifying the [COCO](https://cocodataset.org/#overview) 2014 validation set (which is stored as a CSV in
 S3) into test cases by brightness and bounding box size. In this example will be looking at the following labels:
 
-`["bicycle", "car","motorcycle", "bus", "train", "truck", "traffic light", "fire hydrant", "stop sign" ]`
+`["bicycle", "car", "motorcycle", "bus", "train", "truck", "traffic light", "fire hydrant", "stop sign"]`
 
 ## Test a Model
 
 After we've created test suites, the final step is to test models on these test suites. The `object_detection_2d` example
-provides the following models to choose from `{yolo_r,yolo_x,mask_rcnn,faster_rcnn,yolo_v4s,yolo_v3}` for this step:
+provides the following models to choose from `{yolo_r, yolo_x, mask_rcnn, faster_rcnn, yolo_v4s, yolo_v3}` for this step:
 
 ```shell
 poetry run python3 object_detection_2d/seed_test_run.py "yolo_v4s"
