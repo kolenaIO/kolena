@@ -81,6 +81,7 @@ def test__initialize__positional() -> None:
         assert _client_state.api_token == "bar"
         assert _client_state.jwt_token is not None
         assert not _client_state.telemetry
+        assert _client_state.additional_request_headers is None
 
 
 def test__initialize__telemetry() -> None:
@@ -89,6 +90,7 @@ def test__initialize__telemetry() -> None:
         assert _client_state.api_token == "bar"
         assert _client_state.jwt_token is not None
         assert _client_state.telemetry
+        assert _client_state.additional_request_headers is None
 
 
 def test__initialize__keyword() -> None:
@@ -96,6 +98,7 @@ def test__initialize__keyword() -> None:
         kolena.initialize(api_token="foo")
         assert _client_state.api_token == "foo"
         assert _client_state.jwt_token is not None
+        assert _client_state.additional_request_headers is None
 
 
 def test__initialize__deprecated_positional() -> None:
@@ -175,9 +178,15 @@ def test__kolena_session() -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
     token_2 = "token tenant two"
+    additional_headers = {"additional_header_key": "additional_header_val"}
 
-    def check_global_client_state(api_token: Optional[str], jwt_set: bool) -> None:
+    def check_global_client_state(
+        api_token: Optional[str],
+        jwt_set: bool,
+        additional_request_headers: Optional[Dict[str, Any]] = None,
+    ) -> None:
         assert _client_state.api_token == api_token
+        assert _client_state.additional_request_headers == additional_request_headers
         if jwt_set:
             assert _client_state.jwt_token is not None
         else:
@@ -188,23 +197,25 @@ def test__kolena_session() -> None:
             check_global_client_state(None, False)
             assert new_client_state.api_token == token_1
             assert new_client_state.jwt_token == mock_jwt(token_1)
+            _client_state.update(additional_request_headers=additional_headers)
+            check_global_client_state(None, False, additional_headers)
 
             with kolena_session(token_2) as inner_state:
-                check_global_client_state(None, False)
+                check_global_client_state(None, False, additional_headers)
                 assert inner_state.api_token == token_2
                 assert inner_state.jwt_token == mock_jwt(token_2)
                 assert new_client_state.api_token == token_1
                 assert new_client_state.jwt_token == mock_jwt(token_1)
 
             kolena.initialize(api_token=base_token)
-            check_global_client_state(base_token, True)
+            check_global_client_state(base_token, True, additional_headers)
 
             # context-client-state should be used in making SDK requests
             # white-boxy indirect verification
             assert get_client_state() == new_client_state
 
         # verify context closing does not change global client state
-        check_global_client_state(base_token, True)
+        check_global_client_state(base_token, True, additional_headers)
         assert get_client_state() == _client_state
 
 
