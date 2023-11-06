@@ -107,10 +107,9 @@ def evaluate_test_case(
     gt: List[np.ndarray],
     inf: List[np.ndarray],
     tsm: List[TestSampleMetric],
-    eval_level: int,
 ) -> Tuple[TestCaseMetric, List[CurvePlot]]:
     y_true, y_pred = compute_sklearn_arrays(gt, inf)
-    thresholds = list(np.linspace(0.0, 1.0, eval_level))
+    thresholds = list(np.linspace(0.0, 1.0, 100))
     precisions = []
     recalls = []
     f1s = []
@@ -180,7 +179,7 @@ def evaluate_semantic_segmentation(
     all_test_case_plots: List[Tuple[TestCase, List[CurvePlot]]] = []
     for test_case, _, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
         info(f"computing {test_case.name} test case metrics")
-        test_case_metrics, test_case_plots = evaluate_test_case(gt, inf, tsm, configuration.eval_level)
+        test_case_metrics, test_case_plots = evaluate_test_case(gt, inf, tsm)
         all_test_case_metrics.append((test_case, test_case_metrics))
         all_test_case_plots.append((test_case, test_case_plots))
 

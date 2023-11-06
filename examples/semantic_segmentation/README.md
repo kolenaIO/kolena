@@ -51,14 +51,11 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 semantic_segmentation/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--eval_level EVAL_LEVEL] [--model MODEL]
-                        [--test_suites TEST_SUITES [TEST_SUITES ...]] --out_bucket OUT_BUCKET
+usage: seed_test_run.py [-h] [--model MODEL] [--test_suites TEST_SUITES [TEST_SUITES ...]]
+                        --out_bucket OUT_BUCKET
 
 options:
   -h, --help            show this help message and exit
-  --eval_level EVAL_LEVEL
-                        Number of points on precision/recall curve. Higher value will be more
-                        accurate, but require more compute
   --model MODEL         Name of model in directory to test
   --test_suites TEST_SUITES [TEST_SUITES ...]
                         Name(s) of test suite(s) to test.
