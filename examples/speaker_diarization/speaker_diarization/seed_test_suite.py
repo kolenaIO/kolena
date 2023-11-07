@@ -73,6 +73,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         "Average_Amplitude",
         "Zero_Crossing_Rate",
         "Energy",
+        "Num_Speakers"
     }
     assert all(required_column in set(df.columns) for required_column in required_columns)
 
