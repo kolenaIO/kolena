@@ -33,7 +33,7 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
-from kolena.workflow.annotation import LabeledBoundingBox, ScoredLabel
+from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 
@@ -162,21 +162,26 @@ class ClassMetricsPerTestCase(MetricsTestCase):
 
 
 @dataclass(frozen=True)
-class TestCaseMetrics(MetricsTestCase):
-    PerClass: List[ClassMetricsPerTestCase]
+class TestCaseThresholdedMetrics(ThresholdedMetrics):
     Objects: int
     Inferences: int
     TP: int
     FN: int
     FP: int
+    micro_Precision: float
+    micro_Recall: float
+    micro_F1: float
+
+
+@dataclass(frozen=True)
+class TestCaseMetrics(MetricsTestCase):
+    PerClass: List[ClassMetricsPerTestCase]
+    Thresholded: List[TestCaseThresholdedMetrics]
     nIgnored: int
     macro_Precision: float
     macro_Recall: float
     macro_F1: float
     mean_AP: float
-    micro_Precision: float
-    micro_Recall: float
-    micro_F1: float
 
 
 @dataclass(frozen=True)
@@ -203,11 +208,6 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     """
     The minimum confidence score to consider for the evaluation. This is usually set to reduce noise by excluding
     inferences with low confidence score.
-    """
-
-    thresholds: List[float] = dataclasses.field(default_factory=list)
-    """
-    Specific fixed thresholds used for metrics evaluation.
     """
 
     def display_name(self) -> str:

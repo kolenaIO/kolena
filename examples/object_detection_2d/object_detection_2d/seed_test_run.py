@@ -35,12 +35,12 @@ from kolena.workflow.test_run import test
 
 
 MODEL_LIST: Dict[str, str] = {
-    "yolo_r": f"YOLOR-D6 (modified CSP, {WORKFLOW})",
-    "yolo_x": f"YOLOX (modified CSP-v5, {WORKFLOW})",
-    "mask_rcnn": f"Mask R-CNN (Inception-ResNet-v2, {WORKFLOW})",
-    "faster_rcnn": f"Faster R-CNN (Inception-ResNet-v2, {WORKFLOW})",
-    "yolo_v4s": f"Scaled YOLOv4 (CSP-DarkNet-53, {WORKFLOW})",
-    "yolo_v3": f"YOLOv3 (DarkNet-53, {WORKFLOW})",
+    "yolo_r": f"ANDREW YOLOR-D6 (modified CSP, {WORKFLOW})",
+    "yolo_x": f"ANDREW YOLOX (modified CSP-v5, {WORKFLOW})",
+    "mask_rcnn": f"ANDREW Mask R-CNN (Inception-ResNet-v2, {WORKFLOW})",
+    "faster_rcnn": f"ANDREW Faster R-CNN (Inception-ResNet-v2, {WORKFLOW})",
+    "yolo_v4s": f"ANDREW Scaled YOLOv4 (CSP-DarkNet-53, {WORKFLOW})",
+    "yolo_v3": f"ANDREW YOLOv3 (DarkNet-53, {WORKFLOW})",
 }
 
 # list of all test suites to run if a test suite is not specified
@@ -114,12 +114,7 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
     return ObjectDetectionEvaluator(
         configurations=[
             ThresholdConfiguration(
-                threshold_strategy=0.3,
-                iou_threshold=0.3,
-                min_confidence_score=0.2,
-            ),
-            ThresholdConfiguration(
-                threshold_strategy="F1-Optimal",
+                threshold_strategy="Specified",
                 iou_threshold=0.5,
                 min_confidence_score=0.0,
             ),
@@ -141,7 +136,7 @@ def seed_test_run(
 
     # runs the evaluation
     test_suite = TestSuite(test_suite_name)
-    test(model, test_suite, evaluator, reset=True)
+    test(model, test_suite, evaluator, reset=False)
 
 
 def main(args: Namespace) -> None:

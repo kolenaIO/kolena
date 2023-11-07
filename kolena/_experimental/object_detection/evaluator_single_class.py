@@ -34,6 +34,7 @@ from kolena._experimental.object_detection.utils import compute_f1_plot
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.utils import filter_inferences
+from kolena._experimental.object_detection.utils import get_thresholds
 from kolena._experimental.object_detection.workflow import TestCaseThresholdedMetricsSingleClass
 from kolena._experimental.object_detection.workflow import TestSampleThresholdedMetricsSingleClass
 from kolena.workflow import Evaluator
@@ -137,7 +138,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         )
         self.matchings_by_test_case[configuration.display_name()][test_case_name].append(bbox_matches)
 
-        return self.test_sample_metrics_single_class(bbox_matches, configuration.thresholds)
+        return self.test_sample_metrics_single_class(bbox_matches, get_thresholds())
 
     def compute_test_sample_metrics(
         self,
@@ -201,7 +202,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         if baseline_pr_curve is not None:
             average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
-        return self.test_case_metrics_single_class(configuration.thresholds, metrics, average_precision)
+        return self.test_case_metrics_single_class(get_thresholds(), metrics, average_precision)
 
     def compute_test_case_plots(
         self,

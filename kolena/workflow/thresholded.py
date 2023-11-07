@@ -15,6 +15,8 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from dataclasses import fields
 
+from kolena.workflow._datatypes import _register_data_type
+from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 
 
@@ -27,8 +29,16 @@ class PreventThresholdOverrideMeta(ABCMeta, type):
         return super().__new__(cls, name, bases, dct)
 
 
+class _MetricsType(DataType):
+    THRESHOLDED = "THRESHOLDED"
+
+    @staticmethod
+    def _data_category() -> str:
+        return "METRICS"
+
+
 @dataclass(frozen=True)
-class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta):
+class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresholdOverrideMeta):
     """
     Represents metrics tied to a specific threshold.
 
@@ -79,10 +89,14 @@ class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta
         TypeError: If any of the field values is a dictionary.
     """
 
+    def __init_subclass__(cls, **kwargs):
+        _register_data_type(cls)
+
     threshold: float
 
-    def _data_type() -> str:
-        return "METRICS/THRESHOLDED"
+    @classmethod
+    def _data_type(cls) -> _MetricsType:
+        return _MetricsType.THRESHOLDED
 
     def __post_init__(self) -> None:
         for field in fields(self):
