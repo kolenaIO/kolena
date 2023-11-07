@@ -204,7 +204,6 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        # f"{DATASET} :: audio length": seed_test_suite_by_length,
         f"{DATASET} :: average amplitude": seed_test_suite_by_avg_amp,
         f"{DATASET} :: zero crossing rate": seed_test_suite_by_zcr,
         f"{DATASET} :: energy": seed_test_suite_by_energy,
