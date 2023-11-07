@@ -66,7 +66,16 @@ def test__load__mismatching_workflows() -> None:
 
 
 def test__init() -> None:
-    name = with_test_prefix(f"{__file__}::test__init model")
+    name = with_test_prefix(f"{__file__}::test__init")
+    model = Model(name=name, infer=lambda x: None)
+    loaded = Model.load(name, infer=lambda x: None)
+
+    assert model.name == loaded.name
+    assert model.metadata == loaded.metadata
+
+
+def test__init_with_optionals() -> None:
+    name = with_test_prefix(f"{__file__}::test__init_with_optionals")
     model = Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
     assert_model(model, name)
 
@@ -78,16 +87,7 @@ def test__init() -> None:
     assert_model(Model.load(name, infer=lambda x: None), name)
 
     updated_model = Model(name=name, infer=lambda x: None, metadata={"a": 13}, tags={"e"})
-    assert_model(updated_model, name)
-
-
-def test__init_no_optionals() -> None:
-    name = with_test_prefix(f"{__file__}::test__init_no_optionals")
-    model = Model(name=name, infer=lambda x: None)
-    loaded = Model.load(name, infer=lambda x: None)
-
-    assert model.name == loaded.name
-    assert model.metadata == loaded.metadata
+    assert_model(updated_model, name)  # Model metadata and tags don't update
 
 
 def test__init__validate_name() -> None:
