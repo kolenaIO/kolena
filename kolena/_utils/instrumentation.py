@@ -118,8 +118,6 @@ def with_event(event_name: str):
     def event_decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
-            if not _client_state.telemetry:
-                return func(*args, **kwargs)
             # track duration of the call, and if failed record the exception class name
             start_time = datetime.datetime.now()
             event_metadata = {}

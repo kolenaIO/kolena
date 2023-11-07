@@ -19,7 +19,9 @@ from typing import Type
 
 from pydantic import validate_arguments
 
+from kolena._api.v1.event import EventAPI
 from kolena._utils import log
+from kolena._utils.instrumentation import with_event
 from kolena._utils.validators import ValidatorConfig
 from kolena.classification import InferenceModel
 from kolena.classification import Model
@@ -97,6 +99,7 @@ class TestRun(BaseTestRun):
 
 
 @validate_arguments(config=ValidatorConfig)
+@with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
 def test(
     model: InferenceModel,
     test_suite: TestSuite,
