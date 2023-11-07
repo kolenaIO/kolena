@@ -11,11 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
+
 import numpy as np
 from scipy import optimize
-from typing import List
-from workflow import GroundTruth, Inference
+from workflow import GroundTruth
+from workflow import Inference
+
 from kolena.workflow.annotation import LabeledTimeSegment
+
 
 def build_speaker_index(inf):
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
@@ -23,11 +27,13 @@ def build_speaker_index(inf):
     index = {speaker: i for i, speaker in enumerate(speaker_set)}
     return index
 
+
 def compute_intersection_length(A, B):
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
     max_start = max(A[1], B[1])
     min_end = min(A[2], B[2])
     return max(0.0, min_end - max_start)
+
 
 def build_cost_matrix(ref, inf):
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
@@ -39,8 +45,11 @@ def build_cost_matrix(ref, inf):
             i = ref_index[ref_element[0]]
             j = inf_index[hyp_element[0]]
             cost_matrix[i, j] += compute_intersection_length(
-                ref_element, hyp_element)
+                ref_element,
+                hyp_element,
+            )
     return cost_matrix
+
 
 def realign_labels(ref_df, inf_df):
     ref = [(row.speaker, row.starttime, row.endtime) for i, row in ref_df.iterrows()]
@@ -56,8 +65,9 @@ def realign_labels(ref_df, inf_df):
     mapping = {}
     for i in range(len(col_index)):
         mapping[inf_dict_inv[col_index[i]]] = ref_dict_inv[row_index[i]]
-    
-    inf_df['speaker'] = inf_df['speaker'].apply(lambda x: f"NA_{int(x)}" if x not in mapping.keys() else mapping[x])
+
+    inf_df["speaker"] = inf_df["speaker"].apply(lambda x: f"NA_{int(x)}" if x not in mapping.keys() else mapping[x])
+
 
 def calc_overlap(gt_start, gt_end, inf_start, inf_end):
     start = max(gt_start, inf_start)
@@ -65,15 +75,16 @@ def calc_overlap(gt_start, gt_end, inf_start, inf_end):
     return {
         "start": start,
         "end": end,
-        "dist": end - start
-    } 
+        "dist": end - start,
+    }
+
 
 def generate_tp(gt: GroundTruth, inf: Inference, identification=False):
     gt_idx = 0
     inf_idx = 0
 
     res = []
-    while(gt_idx < len(gt.transcription) and inf_idx < len(inf.transcription)):
+    while gt_idx < len(gt.transcription) and inf_idx < len(inf.transcription):
         gt_t = gt.transcription[gt_idx]
         inf_t = inf.transcription[inf_idx]
 
@@ -83,24 +94,25 @@ def generate_tp(gt: GroundTruth, inf: Inference, identification=False):
         if inf_t.start > gt_t.end:
             gt_idx += 1
             continue
-        
+
         if inf_t.end > gt_t.end:
-            if identification == False or inf_t.group == gt_t.group:
+            if not identification or inf_t.group == gt_t.group:
                 res.append(LabeledTimeSegment(start=max(inf_t.start, gt_t.start), end=gt_t.end, label=""))
             gt_idx += 1
 
         elif inf_t.end == gt_t.end:
-            if identification == False or inf_t.group == gt_t.group:
+            if not identification or inf_t.group == gt_t.group:
                 res.append(LabeledTimeSegment(start=max(inf_t.start, gt_t.start), end=gt_t.end, label=""))
             gt_idx += 1
             inf_idx += 1
-        
+
         elif inf_t.end < gt_t.end:
-            if identification == False or inf_t.group == gt_t.group:
+            if not identification or inf_t.group == gt_t.group:
                 res.append(LabeledTimeSegment(start=max(inf_t.start, gt_t.start), end=inf_t.end, label=""))
             inf_idx += 1
-    
+
     return res
+
 
 # going to remove this in the final PR
 def generate_fp(gt: GroundTruth, inf: Inference, identification=False):
@@ -108,7 +120,7 @@ def generate_fp(gt: GroundTruth, inf: Inference, identification=False):
     inf_idx = 0
 
     res = []
-    while(gt_idx < len(gt.transcription) and inf_idx < len(inf.transcription)):
+    while gt_idx < len(gt.transcription) and inf_idx < len(inf.transcription):
         gt_t = gt.transcription[gt_idx]
         inf_t = inf.transcription[inf_idx]
 
@@ -118,28 +130,37 @@ def generate_fp(gt: GroundTruth, inf: Inference, identification=False):
         if inf_t.start > gt_t.end:
             gt_idx += 1
             continue
-    
-            
+
         if inf_t.end > gt_t.end:
             if inf_t.start >= gt_t.start:
                 if gt_idx != len(gt.transcription) - 1:
-                    res.append(LabeledTimeSegment(gt_t.end, end=min(gt.transcription[gt_idx + 1].start, inf_t.end), label="")) #
+                    res.append(
+                        LabeledTimeSegment(gt_t.end, end=min(gt.transcription[gt_idx + 1].start, inf_t.end), label=""),
+                    )  #
                 else:
                     res.append(LabeledTimeSegment(gt_t.end, end=inf_t.end, label=""))
-                
+
                 if identification and inf_t.group != gt_t.group:
                     res.append(LabeledTimeSegment(inf_t.start, end=gt_t.end, label=""))
             else:
                 if gt_idx != 0:
-                    res.append(LabeledTimeSegment(start=max(inf_t.start, gt.transcription[gt_idx - 1].end), end=gt_t.start, label=""))
+                    res.append(
+                        LabeledTimeSegment(
+                            start=max(inf_t.start, gt.transcription[gt_idx - 1].end),
+                            end=gt_t.start,
+                            label="",
+                        ),
+                    )
                 else:
                     res.append(LabeledTimeSegment(start=inf_t.start, end=gt_t.start, label=""))
 
                 if gt_idx != len(gt.transcription) - 1:
-                    res.append(LabeledTimeSegment(gt_t.end, end=min(gt.transcription[gt_idx + 1].start, inf_t.end), label=""))
+                    res.append(
+                        LabeledTimeSegment(gt_t.end, end=min(gt.transcription[gt_idx + 1].start, inf_t.end), label=""),
+                    )
                 else:
                     res.append(LabeledTimeSegment(gt_t.end, end=inf_t.end, label=""))
-                
+
                 if identification and inf_t.group != gt_t.group:
                     res.append(LabeledTimeSegment(gt_t.start, end=gt_t.end, label=""))
             gt_idx += 1
@@ -147,23 +168,35 @@ def generate_fp(gt: GroundTruth, inf: Inference, identification=False):
         elif inf_t.end == gt_t.end:
             if inf_t.start < gt_t.start:
                 if gt_idx != 0:
-                    res.append(LabeledTimeSegment(start=max(inf_t.start, gt.transcription[gt_idx - 1].end), end=gt_t.start, label=""))
+                    res.append(
+                        LabeledTimeSegment(
+                            start=max(inf_t.start, gt.transcription[gt_idx - 1].end),
+                            end=gt_t.start,
+                            label="",
+                        ),
+                    )
                 else:
                     res.append(LabeledTimeSegment(start=inf_t.start, end=gt_t.start, label=""))
-                
+
                 if identification and inf_t.group != gt_t.group:
                     res.append(LabeledTimeSegment(inf_t.start, end=gt_t.end, label=""))
 
             gt_idx += 1
             inf_idx += 1
-        
+
         elif inf_t.end < gt_t.end:
             if inf_t.start < gt_t.start:
                 if gt_idx != 0:
-                    res.append(LabeledTimeSegment(start=max(inf_t.start, gt.transcription[gt_idx - 1].end), end=gt_t.start, label=""))
+                    res.append(
+                        LabeledTimeSegment(
+                            start=max(inf_t.start, gt.transcription[gt_idx - 1].end),
+                            end=gt_t.start,
+                            label="",
+                        ),
+                    )
                 else:
                     res.append(LabeledTimeSegment(start=inf_t.start, end=gt_t.start, label=""))
-                
+
                 if identification and inf_t.group != gt_t.group:
                     res.append(LabeledTimeSegment(gt_t.start, end=inf_t.end, label=""))
 
@@ -174,7 +207,7 @@ def generate_fp(gt: GroundTruth, inf: Inference, identification=False):
             del res[i]
         elif sample.end - sample.start <= 0.2:
             del res[i]
-    
+
     return res
 
 
@@ -187,16 +220,16 @@ def inv(gt: GroundTruth, inf: Inference):
         if ts[i + 1].start - ts[i].end > 0:
             if i == 0 or i == len(ts) - 2 or not ((ts[i - 1].end >= ts[i].end) or (ts[i + 2].start <= ts[i + 1].start)):
                 res.append(LabeledTimeSegment(start=ts[i].end, end=ts[i + 1].start, label=""))
-    
+
     if endpoint - ts[-1].end > 0:
         res.append(LabeledTimeSegment(start=ts[-1].end, end=endpoint, label=""))
-    
+
     return Inference(transcription=res)
 
 
 # work in progress
 def create_non_overlapping_segments(transcription: List[LabeledTimeSegment]):
-    res = [] # [(start, end), ...]
+    res = []  # [(start, end), ...]
     transcription = sorted(transcription, key=lambda x: x.start)
 
     for t in transcription:
@@ -210,8 +243,8 @@ def create_non_overlapping_segments(transcription: List[LabeledTimeSegment]):
                 start_idx = i
             if s <= end_time <= e:
                 end_idx = i
-        
-        assert(end_idx == start_idx or end_idx - start_idx == 1)
+
+        assert end_idx == start_idx or end_idx - start_idx == 1
 
         if start_idx == end_idx and end_idx == -1:
             # create own segment
@@ -228,6 +261,7 @@ def create_non_overlapping_segments(transcription: List[LabeledTimeSegment]):
         elif start_idx == end_idx:
             # interval already exists
             continue
+
 
 # work in progress
 def generate_identification_error(gt: GroundTruth, inf: Inference):

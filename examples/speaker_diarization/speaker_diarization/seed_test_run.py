@@ -18,11 +18,11 @@ from typing import Dict
 
 import pandas as pd
 from evaluator import evaluate_audio_recognition
+from utils import realign_labels
 from workflow import Inference
 from workflow import Model
 from workflow import TestSample
 from workflow import TestSuite
-from utils import realign_labels
 
 import kolena
 from kolena.workflow.annotation import LabeledTimeSegment
@@ -52,17 +52,18 @@ def seed_test_run(
     mod: str,
     test_suite: TestSuite,
     infs: pd.DataFrame,
-    align_speakers: bool
+    align_speakers: bool,
 ) -> None:
     def get_stored_inferences(
         df: pd.DataFrame,
     ) -> Callable[[TestSample], Inference]:
         def infer(sample: TestSample) -> Inference:
-            inference_path = sample.metadata['transcription_path'] \
-                                   .replace('audio/', f'{mod}_inferences/')
+            inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")
             inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/")
             if align_speakers:
-                gt_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}")
+                gt_df = pd.read_csv(
+                    f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}",
+                )
                 realign_labels(gt_df, inference_df)
 
             return Inference(
@@ -71,10 +72,10 @@ def seed_test_run(
                         start=row.starttime,
                         end=row.endtime,
                         label=row.text,
-                        group=row.speaker
+                        group=row.speaker,
                     )
                     for idx, row in inference_df.iterrows()
-                ]
+                ],
             )
 
         return infer

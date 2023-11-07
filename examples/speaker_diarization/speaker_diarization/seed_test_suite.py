@@ -17,14 +17,14 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from tqdm import tqdm
 from workflow import GroundTruth
 from workflow import TestCase
 from workflow import TestSample
 from workflow import TestSuite
-from tqdm import tqdm
 
 import kolena
-from kolena.workflow.annotation import ClassificationLabel, LabeledTimeSegment
+from kolena.workflow.annotation import LabeledTimeSegment
 
 BUCKET = "kolena-public-datasets"
 DATASET = "ICSI-corpus"
@@ -42,7 +42,7 @@ def seed_test_suite_by_length(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['audio_length'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["audio_length"])]
 
         new_ts = TestCase(
             f"audio length :: {name} :: {DATASET}",
@@ -71,7 +71,9 @@ def seed_test_suite_by_avg_amp(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['Average_Amplitude'])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["Average_Amplitude"])
+        ]
 
         new_ts = TestCase(
             f"average amplitude :: {name} :: {DATASET}",
@@ -100,7 +102,9 @@ def seed_test_suite_by_zcr(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['Zero_Crossing_Rate'])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["Zero_Crossing_Rate"])
+        ]
 
         new_ts = TestCase(
             f"zero crossing rate :: {name} :: {DATASET}",
@@ -129,7 +133,7 @@ def seed_test_suite_by_energy(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata['Energy'])]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["Energy"])]
 
         new_ts = TestCase(
             f"energy :: {name} :: {DATASET}",
@@ -145,6 +149,7 @@ def seed_test_suite_by_energy(
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
+
 def seed_complete_test_case(args: Namespace) -> TestCase:
     df = pd.read_csv(args.dataset_csv)
     df = df.where(pd.notnull(df), None)  # read missing cells as None
@@ -157,7 +162,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         "audio_length",
         "Average_Amplitude",
         "Zero_Crossing_Rate",
-        "Energy"
+        "Energy",
     }
     assert all(required_column in set(df.columns) for required_column in required_columns)
 
@@ -174,10 +179,15 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         else:
             transcription_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{record.transcription_path}")
         ground_truth = GroundTruth(
-            transcription=[LabeledTimeSegment(start=row.starttime,
-                                              end=row.endtime,
-                                              label=row.text,
-                                              group=row.speaker) for idx, row in transcription_df.iterrows()]
+            transcription=[
+                LabeledTimeSegment(
+                    start=row.starttime,
+                    end=row.endtime,
+                    label=row.text,
+                    group=row.speaker,
+                )
+                for idx, row in transcription_df.iterrows()
+            ],
         )
         test_samples.append((test_sample, ground_truth))
 
@@ -225,6 +235,5 @@ if __name__ == "__main__":
         default=True,
         help="Bool to indicate whether to use cleaned text data or not.",
     )
-
 
     main(ap.parse_args())

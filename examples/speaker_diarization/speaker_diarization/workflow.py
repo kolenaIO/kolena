@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
-from typing import Optional, List
+from typing import List
 
 from pydantic.dataclasses import dataclass
 
+from kolena.workflow import Audio
 from kolena.workflow import define_workflow
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Inference as BaseInference
@@ -23,9 +24,9 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
+from kolena.workflow.annotation import LabeledTimeSegment
+from kolena.workflow.annotation import TimeSegment
 
-from kolena.workflow import Audio
-from kolena.workflow.annotation import ClassificationLabel, TimeSegment, LabeledTimeSegment
 
 @dataclass(frozen=True)
 class TestSample(Audio):

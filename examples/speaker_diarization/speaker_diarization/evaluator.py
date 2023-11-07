@@ -11,14 +11,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import re
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
 
-import re
 import numpy as np
-from jiwer import cer, wer
+from jiwer import cer
+from jiwer import wer
+from pyannote.core import Annotation
+from pyannote.core import Segment
+from pyannote.metrics.detection import DetectionAccuracy
+from pyannote.metrics.detection import DetectionPrecision
+from pyannote.metrics.detection import DetectionRecall
+from pyannote.metrics.diarization import DiarizationCoverage
+from pyannote.metrics.diarization import DiarizationErrorRate
+from pyannote.metrics.diarization import DiarizationPurity
+from pyannote.metrics.diarization import JaccardErrorRate
+from pyannote.metrics.identification import IdentificationErrorRate
+from pyannote.metrics.identification import IdentificationPrecision
+from pyannote.metrics.identification import IdentificationRecall
+from utils import generate_fp
+from utils import generate_tp
+from utils import inv
 from workflow import GroundTruth
 from workflow import Inference
 from workflow import TestCase
@@ -32,16 +48,9 @@ from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
 from kolena.workflow import Plot
-from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.evaluator_function import TestCases
 
-from pyannote.core import Annotation, Segment
-from pyannote.metrics.diarization import DiarizationErrorRate, JaccardErrorRate, DiarizationPurity, DiarizationCoverage
-from pyannote.metrics.detection import DetectionAccuracy, DetectionPrecision, DetectionRecall
-from pyannote.metrics.identification import IdentificationErrorRate, IdentificationPrecision, IdentificationRecall
-
-from utils import generate_tp, generate_fp, inv
 
 def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
     reference = Annotation()
@@ -50,30 +59,25 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
     inference = Annotation()
     for row in inf.transcription:
         inference[Segment(row.start, row.end)] = row.group
-    
+
     gt_text = " ".join([row.label for row in gt.transcription])
-    inf_text= " ".join([row.label for row in inf.transcription])
+    inf_text = " ".join([row.label for row in inf.transcription])
     gt_text = re.sub(r"[^\w\s]", "", gt_text.lower())
     inf_text = re.sub(r"[^\w\s]", "", inf_text.lower())
-
 
     return TestSampleMetric(
         DiarizationErrorRate=DiarizationErrorRate()(reference, inference),
         JaccardErrorRate=JaccardErrorRate()(reference, inference),
         DiarizationPurity=DiarizationPurity()(reference, inference),
         DiarizationCoverage=DiarizationCoverage()(reference, inference),
-
         DetectionAccuracy=DetectionAccuracy()(reference, inference),
         DetectionPrecision=DetectionPrecision()(reference, inference),
         DetectionRecall=DetectionRecall()(reference, inference),
-
         IdentificationErrorRate=IdentificationErrorRate()(reference, inference),
         IdentificationPrecision=IdentificationPrecision()(reference, inference),
         IdentificationRecall=IdentificationRecall()(reference, inference),
-
         WordErrorRate=wer(gt_text, inf_text),
         CharacterErrorRate=cer(gt_text, inf_text),
-
         IdentificationError=generate_fp(gt, inf, identification=True),
         MissedSpeechError=generate_tp(gt, inv(inf, gt), identification=False),
     )
@@ -91,11 +95,9 @@ def compute_aggregate_metrics(
         JaccardErrorRate=sum([metric.JaccardErrorRate for metric in test_samples_metrics]) / n_samples,
         DiarizationPurity=sum([metric.DiarizationPurity for metric in test_samples_metrics]) / n_samples,
         DiarizationCoverage=sum([metric.DiarizationCoverage for metric in test_samples_metrics]) / n_samples,
-
         DetectionAccuracy=sum([metric.DetectionAccuracy for metric in test_samples_metrics]) / n_samples,
         DetectionPrecision=sum([metric.DetectionPrecision for metric in test_samples_metrics]) / n_samples,
         DetectionRecall=sum([metric.DetectionRecall for metric in test_samples_metrics]) / n_samples,
-
         IdentificationErrorRate=sum([metric.IdentificationErrorRate for metric in test_samples_metrics]) / n_samples,
         IdentificationPrecision=sum([metric.IdentificationPrecision for metric in test_samples_metrics]) / n_samples,
         IdentificationRecall=sum([metric.IdentificationRecall for metric in test_samples_metrics]) / n_samples,
@@ -185,9 +187,8 @@ def compute_test_suite_metrics(
     inferences: List[Inference],
     metrics: List[Tuple[TestCase, TestCaseMetric]],
 ) -> TestSuiteMetric:
-
     return TestSuiteMetric(
-        Diarizations=len(inferences)
+        Diarizations=len(inferences),
     )
 
 
