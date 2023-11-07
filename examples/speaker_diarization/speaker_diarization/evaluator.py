@@ -20,8 +20,6 @@ from typing import Union
 import numpy as np
 from jiwer import cer
 from jiwer import wer
-from pyannote.core import Annotation
-from pyannote.core import Segment
 from pyannote.metrics.detection import DetectionAccuracy
 from pyannote.metrics.detection import DetectionPrecision
 from pyannote.metrics.detection import DetectionRecall
@@ -32,9 +30,10 @@ from pyannote.metrics.diarization import JaccardErrorRate
 from pyannote.metrics.identification import IdentificationErrorRate
 from pyannote.metrics.identification import IdentificationPrecision
 from pyannote.metrics.identification import IdentificationRecall
-from utils import generate_fp
-from utils import generate_tp
-from utils import inv
+from utils import preprocess_text
+from utils import generate_annotation
+from utils import generate_missed_speech_error
+from utils import generate_identification_error
 from workflow import GroundTruth
 from workflow import Inference
 from workflow import TestCase
@@ -53,17 +52,11 @@ from kolena.workflow.evaluator_function import TestCases
 
 
 def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
-    reference = Annotation()
-    for row in gt.transcription:
-        reference[Segment(row.start, row.end)] = row.group
-    inference = Annotation()
-    for row in inf.transcription:
-        inference[Segment(row.start, row.end)] = row.group
+    reference = generate_annotation(gt.transcription)
+    inference = generate_annotation(inf.transcription)
 
-    gt_text = " ".join([row.label for row in gt.transcription])
-    inf_text = " ".join([row.label for row in inf.transcription])
-    gt_text = re.sub(r"[^\w\s]", "", gt_text.lower())
-    inf_text = re.sub(r"[^\w\s]", "", inf_text.lower())
+    gt_text = preprocess_text(gt.transcription)
+    inf_text = preprocess_text(inf.transcription)
 
     return TestSampleMetric(
         DiarizationErrorRate=DiarizationErrorRate()(reference, inference),
@@ -78,16 +71,14 @@ def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMe
         IdentificationRecall=IdentificationRecall()(reference, inference),
         WordErrorRate=wer(gt_text, inf_text),
         CharacterErrorRate=cer(gt_text, inf_text),
-        IdentificationError=generate_fp(gt, inf, identification=True),
-        MissedSpeechError=generate_tp(gt, inv(inf, gt), identification=False),
+        IdentificationError=generate_identification_error(gt, inf),
+        MissedSpeechError=generate_missed_speech_error(gt, inf),
     )
 
 
 def compute_aggregate_metrics(
     test_samples_metrics: List[TestSampleMetric],
     test_samples: List[TestSample],
-    ground_truths: List[GroundTruth],
-    inferences: List[Inference],
 ) -> TestCaseMetric:
     n_samples = len(test_samples)
     return TestCaseMetric(
@@ -170,29 +161,37 @@ def compute_metric_vs_metric_plot(
 
 
 def compute_test_case_plots(
-    complete_metrics: List[TestSampleMetric],
     test_case_metrics: List[TestSampleMetric],
     test_samples: List[TestSample],
 ) -> List[Plot]:
     return [
         compute_score_distribution_plot("DiarizationErrorRate", test_case_metrics, (0, 1, 20)),
-        compute_score_distribution_plot("JaccardErrorRate", test_case_metrics, (0, 1, 20)),
         compute_score_distribution_plot("DetectionAccuracy", test_case_metrics, (0, 1, 20)),
         compute_score_distribution_plot("IdentificationErrorRate", test_case_metrics, (0, 1, 20)),
+        compute_metric_vs_metric_plot(
+            "Average_Amplitude",
+            "DiarizationErrorRate",
+            test_samples,
+            test_case_metrics,
+            (
+                min([ts.metadata['Average_Amplitude'] for ts in test_samples]),
+                max([ts.metadata['Average_Amplitude'] for ts in test_samples]),
+                15
+            ),
+            metadata=True,
+        ),
     ]
 
 
 def compute_test_suite_metrics(
-    test_samples: List[TestSample],
     inferences: List[Inference],
-    metrics: List[Tuple[TestCase, TestCaseMetric]],
 ) -> TestSuiteMetric:
     return TestSuiteMetric(
         Diarizations=len(inferences),
     )
 
 
-def evaluate_audio_recognition(
+def evaluate_speaker_diarization(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
@@ -210,16 +209,16 @@ def evaluate_audio_recognition(
         test_sample_metrics,
     ):
         print(f"computing aggregate metrics for test case '{test_case.name}'...")
-        test_case_metrics = compute_aggregate_metrics(tc_ts_metrics, tc_test_samples, tc_gts, tc_infs)
+        test_case_metrics = compute_aggregate_metrics(tc_ts_metrics, tc_test_samples)
         all_test_case_metrics.append((test_case, test_case_metrics))
 
         print(f"computing plots for test case '{test_case.name}'...")
-        test_case_plots = compute_test_case_plots(test_sample_metrics, tc_ts_metrics, tc_test_samples)
+        test_case_plots = compute_test_case_plots(tc_ts_metrics, tc_test_samples)
         all_test_case_plots.append((test_case, test_case_plots))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
         metrics_test_case=all_test_case_metrics,
-        metrics_test_suite=compute_test_suite_metrics(test_samples, inferences, all_test_case_metrics),
+        metrics_test_suite=compute_test_suite_metrics(inferences),
         plots_test_case=all_test_case_plots,
     )

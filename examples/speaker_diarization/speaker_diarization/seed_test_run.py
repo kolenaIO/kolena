@@ -17,7 +17,7 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
-from evaluator import evaluate_audio_recognition
+from evaluator import evaluate_speaker_diarization
 from utils import realign_labels
 from workflow import Inference
 from workflow import Model
@@ -33,8 +33,6 @@ DATASET = "ICSI-corpus"
 
 TEST_SUITE_NAMES = [
     f"{DATASET} :: average amplitude",
-    f"{DATASET} :: zero crossing rate",
-    f"{DATASET} :: energy",
 ]
 
 MODEL_A = {
@@ -51,41 +49,33 @@ MODEL_METADATA: Dict[str, Dict[str, str]] = {
 def seed_test_run(
     mod: str,
     test_suite: TestSuite,
-    infs: pd.DataFrame,
     align_speakers: bool,
 ) -> None:
-    def get_stored_inferences(
-        df: pd.DataFrame,
-    ) -> Callable[[TestSample], Inference]:
-        def infer(sample: TestSample) -> Inference:
-            inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")
-            inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/")
-            if align_speakers:
-                gt_df = pd.read_csv(
-                    f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}",
-                )
-                realign_labels(gt_df, inference_df)
-
-            return Inference(
-                transcription=[
-                    LabeledTimeSegment(
-                        start=row.starttime,
-                        end=row.endtime,
-                        label=row.text,
-                        group=row.speaker,
-                    )
-                    for idx, row in inference_df.iterrows()
-                ],
+    def infer(sample: TestSample) -> Inference:
+        inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")
+        inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/")
+        if align_speakers:
+            gt_df = pd.read_csv(
+                f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}",
             )
+            realign_labels(gt_df, inference_df)
 
-        return infer
+        return Inference(
+            transcription=[
+                LabeledTimeSegment(
+                    start=row.starttime,
+                    end=row.endtime,
+                    label=row.text,
+                    group=row.speaker,
+                )
+                for idx, row in inference_df.iterrows()
+            ],
+        )
 
-    model_name = mod
-    print(f"working on {model_name} and {test_suite.name} v{test_suite.version}")
-    infer = get_stored_inferences(infs)
-    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[model_name]})
+    print(f"working on {mod} and {test_suite.name} v{test_suite.version}")
+    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[mod]})
 
-    test(model, test_suite, evaluate_audio_recognition, reset=True)
+    test(model, test_suite, evaluate_speaker_diarization, reset=True)
 
 
 def main(args: Namespace) -> None:
@@ -103,10 +93,10 @@ def main(args: Namespace) -> None:
         print("loading test suite")
         test_suites = [TestSuite.load(name) for name in TEST_SUITE_NAMES]
         for test_suite in test_suites:
-            seed_test_run(mod, test_suite, df_results, args.align_speakers)
+            seed_test_run(mod, test_suite, args.align_speakers)
     else:
         test_suite = TestSuite.load(args.test_suite)
-        seed_test_run(mod, test_suite, df_results, args.align_speakers)
+        seed_test_run(mod, test_suite, args.align_speakers)
 
 
 if __name__ == "__main__":
