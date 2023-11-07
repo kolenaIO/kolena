@@ -94,7 +94,6 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
         macro_F1: float
         mAP: float
         PerClass: List[PerClassMetrics]
-        ThresholdClass: List[ThresholdDataObjectClass]
     ```
 
     Any `str`-type fields (e.g. `Class` in the above example) will be used as identifiers when displaying nested metrics
@@ -269,10 +268,7 @@ def _validate_metrics_test_sample_type(metrics_test_sample_type: Type[MetricsTes
 
 
 def _validate_metrics_test_case_type(metrics_test_case_type: Type[DataObject]) -> None:
-    validate_scalar_data_object_type(
-        metrics_test_case_type,
-        supported_list_types=[MetricsTestCase],
-    )
+    validate_scalar_data_object_type(metrics_test_case_type, supported_list_types=[MetricsTestCase])
 
     # validate that there is only one level of nesting
     for field_name, field_type in get_data_object_field_types(metrics_test_case_type).items():
