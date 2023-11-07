@@ -41,10 +41,9 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         similarities = []
         for img in test_sample.pairs:
             sample_results = df_results[
-                ((df_results["locator_a"] == test_sample.locator) | (df_results["locator_b"] == img.locator))
-                | ((df_results["locator_a"] == img.locator) | (df_results["locator_b"] == test_sample.locator))
+                ((df_results["locator_a"] == test_sample.locator) & (df_results["locator_b"] == img.locator))
+                | ((df_results["locator_a"] == img.locator) & (df_results["locator_b"] == test_sample.locator))
             ]
-
             similarity = sample_results["similarity"].values[0] if not sample_results["failure"].values[0] else None
             similarities.append(similarity)
 

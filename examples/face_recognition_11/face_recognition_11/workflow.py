@@ -31,6 +31,7 @@ from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
+from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.asset import ImageAsset
 
 
@@ -74,43 +75,27 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
-class KeypointSample(DataObject):
-    mse: float
-    Δ_nose: float
-    Δ_left_eye: float
-    Δ_right_eye: float
-    Δ_left_mouth: float
-    Δ_right_mouth: float
+class PairSample(ImageAsset):
+    is_match: bool
+    is_false_match: bool
+    is_false_non_match: bool
+    failure_to_enroll: bool
+    similarity: Optional[float]
 
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    """
-    Image-pair-level metrics for Face Recognition 1:1 workflow.
-    A test sample is can only be true for one of the following: match, false match (FM), or false non-match (FNM).
-    If all categories are false then the sample is a true non-match.
-    """
-
-    is_match: List[bool]
-    """
-    An indication of whether the model correct classified a genuine pair as a genuine pair.
-    """
-
-    is_false_match: List[bool]
-    """An indication of whether the model incorrectly classified an imposter pair as a genuine pair."""
-
-    is_false_non_match: List[bool]
-    """An indication of whether the model incorrectly classified an genuine pair as a imposter pair."""
-
-    failure_to_enroll: List[bool]
-    """An indication of whether the model failed to infer."""
-
-    mse: float
-    Δ_nose: float
-    Δ_left_eye: float
-    Δ_right_eye: float
-    Δ_left_mouth: float
-    Δ_right_mouth: float
+    pair_samples: List[PairSample]
+    bbox_iou: ScoredClassificationLabel
+    bbox_tp: bool
+    bbox_fp: bool
+    bbox_fn: bool
+    keypoint_mse: ScoredClassificationLabel
+    keypoint_Δ_nose: float
+    keypoint_Δ_left_eye: float
+    keypoint_Δ_right_eye: float
+    keypoint_Δ_left_mouth: float
+    keypoint_Δ_right_mouth: float
 
 
 @dataclass(frozen=True)

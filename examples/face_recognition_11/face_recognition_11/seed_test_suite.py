@@ -99,32 +99,21 @@ def main(args: Namespace) -> int:
             ),
         )
 
-    test_samples = []
+    test_samples_and_ground_truths = list()
     for locator, pairs in images.items():
-        test_samples.append(
-            TestSample(locator=locator, pairs=[ImageAsset(p) for p in pairs], metadata=metadata_by_locator[locator])
-        )
+        ts = TestSample(locator=locator, pairs=[ImageAsset(p) for p in pairs], metadata=metadata_by_locator[locator])
 
-    ground_truths = []
-    for locator, pairs in images.items():
         matches = []
         for img in pairs:
             match = df[
-                ((df["locator_a"] == locator) | (df["locator_b"] == img))
-                | ((df["locator_b"] == locator) | (df["locator_a"] == img))
+                ((df["locator_a"] == locator) & (df["locator_b"] == img))
+                | ((df["locator_b"] == locator) & (df["locator_a"] == img))
             ]["is_same"].values[0]
             matches.append(match)
 
         bbox, keypoints = bbox_keypoints[locator]
-        ground_truths.append(
-            GroundTruth(
-                matches=matches,
-                bbox=bbox,
-                keypoints=keypoints,
-            )
-        )
-
-    test_samples_and_ground_truths = list(zip(test_samples, ground_truths))
+        gt = GroundTruth(matches=matches, bbox=bbox, keypoints=keypoints)
+        test_samples_and_ground_truths.append((ts, gt))
 
     complete_test_case = TestCase(
         name=f"fr 1:1 holistic complete :: {DATASET}",
