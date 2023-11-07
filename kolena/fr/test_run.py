@@ -77,7 +77,6 @@ class TestRun(ABC, Frozen, WithTelemetry):
         model: Model.Data
         test_suites: List[TestSuite.Data]
 
-    @with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
     def __init__(self, model: Model, test_suite: TestSuite, reset: bool = False):
         if reset:
             log.warn("overwriting existing inferences from this model (reset=True)")
@@ -303,6 +302,7 @@ class TestRun(ABC, Frozen, WithTelemetry):
 
 
 @validate_arguments(config=ValidatorConfig)
+@with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
 def test(model: InferenceModel, test_suite: TestSuite, reset: bool = False) -> None:
     """
     Test the provided [`InferenceModel`][kolena.fr.InferenceModel] on the provided [`TestSuite`][kolena.fr.TestSuite].

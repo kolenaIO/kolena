@@ -33,7 +33,6 @@ from pydantic import validate_arguments
 from kolena._api.v1.detection import CustomMetrics
 from kolena._api.v1.detection import Metrics
 from kolena._api.v1.detection import TestRun as API
-from kolena._api.v1.event import EventAPI
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -44,7 +43,6 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.datatypes import LoadableDataFrame
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
-from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
@@ -77,7 +75,6 @@ class BaseTestRun(ABC, Frozen, WithTelemetry):
     _LoadTestImagesDataFrameClass: Type[DFType] = DFType
 
     @validate_arguments(config=ValidatorConfig)
-    @with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
     def __init__(
         self,
         model: BaseModel,
