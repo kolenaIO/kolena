@@ -81,7 +81,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     ) -> TestSampleMetricsSingleClass:
         return TestSampleMetricsSingleClass(
             ignored=True,
-            thresholded=[],
+            Thresholded=[],
         )
 
     def test_sample_metrics_single_class(
@@ -114,7 +114,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             )
         return TestSampleMetricsSingleClass(
             ignored=False,
-            thresholded=thresholded_metrics,
+            Thresholded=thresholded_metrics,
         )
 
     def compute_image_metrics(

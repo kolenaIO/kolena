@@ -33,7 +33,7 @@ from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
-from kolena.workflow.annotation import LabeledBoundingBox
+from kolena.workflow.annotation import LabeledBoundingBox, ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 
@@ -110,7 +110,7 @@ class TestSampleThresholdedMetricsSingleClass(ThresholdedMetrics):
 @dataclass(frozen=True)
 class TestSampleMetricsSingleClass(MetricsTestSample):
     ignored: bool
-    thresholded: List[TestSampleThresholdedMetricsSingleClass]
+    Thresholded: List[TestSampleThresholdedMetricsSingleClass]
 
 
 @dataclass(frozen=True)
@@ -141,11 +141,15 @@ class TestSampleThresholdedMetrics(TestSampleThresholdedMetricsSingleClass):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    ...  # todo make dynamic
+    Thresholded: List[TestSampleThresholdedMetrics]
+    ignored: bool
 
 
 @dataclass(frozen=True)
-class ClassThresholdedMetricsPerTestCase(MetricsTestCase):
+class ClassMetricsPerTestCase(MetricsTestCase):
+    Class: str
+    nImages: int
+    Threshold: float
     Objects: int
     Inferences: int
     TP: int
@@ -154,23 +158,18 @@ class ClassThresholdedMetricsPerTestCase(MetricsTestCase):
     Precision: float
     Recall: float
     F1: float
-
-
-@dataclass(frozen=True)
-class ClassMetricsPerTestCase(MetricsTestCase):
-    Class: str
-    nImages: int
-    ClassThresholded: List[ClassThresholdedMetricsPerTestCase]
     AP: float
 
 
 @dataclass(frozen=True)
-class TestCaseThresholdedMetrics(MetricsTestCase):
+class TestCaseMetrics(MetricsTestCase):
+    PerClass: List[ClassMetricsPerTestCase]
     Objects: int
     Inferences: int
     TP: int
     FN: int
     FP: int
+    nIgnored: int
     macro_Precision: float
     macro_Recall: float
     macro_F1: float
@@ -178,13 +177,6 @@ class TestCaseThresholdedMetrics(MetricsTestCase):
     micro_Precision: float
     micro_Recall: float
     micro_F1: float
-
-
-@dataclass(frozen=True)
-class TestCaseMetrics(MetricsTestCase):
-    PerClass: List[ClassMetricsPerTestCase]
-    Thresholded: List[TestCaseThresholdedMetrics]
-    nIgnored: int
 
 
 @dataclass(frozen=True)
