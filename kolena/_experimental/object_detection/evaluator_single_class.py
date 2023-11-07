@@ -31,10 +31,11 @@ from kolena._experimental.object_detection import TestSuiteMetrics
 from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._experimental.object_detection.utils import compute_f1_plot
-from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.utils import filter_inferences
+from kolena._experimental.object_detection.workflow import TestCaseThresholdedMetricsSingleClass
+from kolena._experimental.object_detection.workflow import TestSampleThresholdedMetricsSingleClass
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
 from kolena.workflow.metrics import f1_score as compute_f1_score
@@ -77,48 +78,43 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
     def test_sample_metrics_ignored(
         self,
-        thresholds: float,
     ) -> TestSampleMetricsSingleClass:
         return TestSampleMetricsSingleClass(
-            TP=[],
-            FP=[],
-            FN=[],
-            count_TP=0,
-            count_FP=0,
-            count_FN=0,
-            has_TP=False,
-            has_FP=False,
-            has_FN=False,
             ignored=True,
-            max_confidence_above_t=None,
-            min_confidence_above_t=None,
-            thresholds=thresholds,
+            thresholded=[],
         )
 
     def test_sample_metrics_single_class(
         self,
         bbox_matches: InferenceMatches,
-        thresholds: float,
+        thresholds: List[float],
     ) -> TestSampleMetricsSingleClass:
-        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
-        fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
-        non_ignored_inferences = tp + fp
-        scores = [inf.score for inf in non_ignored_inferences]
+        thresholded_metrics = []
+        for threshold in thresholds:
+            tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
+            fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
+            fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
+            non_ignored_inferences = tp + fp
+            scores = [inf.score for inf in non_ignored_inferences]
+            thresholded_metrics.append(
+                TestSampleThresholdedMetricsSingleClass(
+                    threshold=threshold,
+                    TP=tp,
+                    FP=fp,
+                    FN=fn,
+                    count_TP=len(tp),
+                    count_FP=len(fp),
+                    count_FN=len(fn),
+                    has_TP=len(tp) > 0,
+                    has_FP=len(fp) > 0,
+                    has_FN=len(fn) > 0,
+                    max_confidence_above_t=max(scores) if len(scores) > 0 else None,
+                    min_confidence_above_t=min(scores) if len(scores) > 0 else None,
+                ),
+            )
         return TestSampleMetricsSingleClass(
-            TP=tp,
-            FP=fp,
-            FN=fn,
-            count_TP=len(tp),
-            count_FP=len(fp),
-            count_FN=len(fn),
-            has_TP=len(tp) > 0,
-            has_FP=len(fp) > 0,
-            has_FN=len(fn) > 0,
             ignored=False,
-            max_confidence_above_t=max(scores) if len(scores) > 0 else None,
-            min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            thresholds=thresholds,
+            thresholded=thresholded_metrics,
         )
 
     def compute_image_metrics(
@@ -129,9 +125,8 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         test_case_name: str,
     ) -> TestSampleMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
-        thresholds = self.get_confidence_thresholds(configuration)
         if inference.ignored:
-            return self.test_sample_metrics_ignored(thresholds)
+            return self.test_sample_metrics_ignored()
 
         bbox_matches: InferenceMatches = match_inferences(
             ground_truth.bboxes,
@@ -142,32 +137,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         )
         self.matchings_by_test_case[configuration.display_name()][test_case_name].append(bbox_matches)
 
-        return self.test_sample_metrics_single_class(bbox_matches, thresholds)
-
-    def compute_and_cache_f1_optimal_thresholds(
-        self,
-        configuration: ThresholdConfiguration,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-    ) -> None:
-        if configuration.threshold_strategy != "F1-Optimal":
-            return
-
-        if configuration.display_name() in self.threshold_cache.keys():
-            return
-
-        all_bbox_matches = [
-            match_inferences(
-                ground_truth.bboxes,
-                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
-                ignored_ground_truths=ground_truth.ignored_bboxes,
-                mode="pascal",
-                iou_threshold=configuration.iou_threshold,
-            )
-            for _, ground_truth, inference in inferences
-            if not inference.ignored
-        ]
-        optimal_thresholds = compute_optimal_f1_threshold(all_bbox_matches)
-        self.threshold_cache[configuration.display_name()] = max(configuration.min_confidence_score, optimal_thresholds)
+        return self.test_sample_metrics_single_class(bbox_matches, configuration.thresholds)
 
     def compute_test_sample_metrics(
         self,
@@ -176,34 +146,42 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> List[Tuple[TestSample, TestSampleMetricsSingleClass]]:
         assert configuration is not None, "must specify configuration"
-        # compute thresholds to cache values for subsequent steps
-        self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
     def test_case_metrics_single_class(
         self,
+        thresholds: List[float],
         metrics: List[TestSampleMetricsSingleClass],
         average_precision: float,
     ) -> TestCaseMetricsSingleClass:
-        tp_count = sum(im.count_TP for im in metrics)
-        fp_count = sum(im.count_FP for im in metrics)
-        fn_count = sum(im.count_FN for im in metrics)
+        thresholded_metrics = []
+        for i, threshold in enumerate(thresholds):
+            tp_count = sum(im.object[i].count_TP for im in metrics)
+            fp_count = sum(im.object[i].count_FP for im in metrics)
+            fn_count = sum(im.object[i].count_FN for im in metrics)
+
+            precision = compute_precision(tp_count, fp_count)
+            recall = compute_recall(tp_count, fn_count)
+            f1_score = compute_f1_score(tp_count, fp_count, fn_count)
+
+            thresholded_metrics.append(
+                TestCaseThresholdedMetricsSingleClass(
+                    threshold=threshold,
+                    Objects=tp_count + fn_count,
+                    Inferences=tp_count + fp_count,
+                    TP=tp_count,
+                    FN=fn_count,
+                    FP=fp_count,
+                    Precision=precision,
+                    Recall=recall,
+                    F1=f1_score,
+                ),
+            )
         ignored_count = sum(1 if im.ignored else 0 for im in metrics)
 
-        precision = compute_precision(tp_count, fp_count)
-        recall = compute_recall(tp_count, fn_count)
-        f1_score = compute_f1_score(tp_count, fp_count, fn_count)
-
         return TestCaseMetricsSingleClass(
-            Objects=tp_count + fn_count,
-            Inferences=tp_count + fp_count,
-            TP=tp_count,
-            FN=fn_count,
-            FP=fp_count,
+            ClassSpecific=thresholded_metrics,
             nIgnored=ignored_count,
-            Precision=precision,
-            Recall=recall,
-            F1=f1_score,
             AP=average_precision,
         )
 
@@ -223,7 +201,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         if baseline_pr_curve is not None:
             average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
-        return self.test_case_metrics_single_class(metrics, average_precision)
+        return self.test_case_metrics_single_class(configuration.thresholds, metrics, average_precision)
 
     def compute_test_case_plots(
         self,

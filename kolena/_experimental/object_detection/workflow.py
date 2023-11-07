@@ -24,7 +24,7 @@ from typing import Union
 
 from pydantic.dataclasses import dataclass
 
-from kolena.workflow import define_workflow
+from kolena.workflow import define_workflow, ThresholdedMetrics
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Image
@@ -34,7 +34,6 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
-from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
 
@@ -91,7 +90,7 @@ _, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
-class TestSampleMetricsSingleClass(MetricsTestSample):
+class TestSampleThresholdedMetricsSingleClass(ThresholdedMetrics):
     TP: List[ScoredLabeledBoundingBox]
     FP: List[ScoredLabeledBoundingBox]
     FN: List[LabeledBoundingBox]
@@ -103,75 +102,75 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
     has_TP: bool
     has_FP: bool
     has_FN: bool
-    ignored: bool
 
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
-    thresholds: float
 
 
 @dataclass(frozen=True)
-class TestCaseMetricsSingleClass(MetricsTestCase):
+class TestSampleMetricsSingleClass(MetricsTestSample):
+    ignored: bool
+    thresholded: List[TestSampleThresholdedMetricsSingleClass]
+
+
+@dataclass(frozen=True)
+class TestCaseThresholdedMetricsSingleClass(ThresholdedMetrics):
     Objects: int
     Inferences: int
     TP: int
     FN: int
     FP: int
-    nIgnored: int
     Precision: float
     Recall: float
     F1: float
+
+
+@dataclass(frozen=True)
+class TestCaseMetricsSingleClass(MetricsTestCase):
+    ClassSpecific: List[TestCaseThresholdedMetricsSingleClass]
+    nIgnored: int
     AP: float
 
 
 @dataclass(frozen=True)
-class TestSampleMetrics(MetricsTestSample):
-    TP: List[ScoredLabeledBoundingBox]
-    FP: List[ScoredLabeledBoundingBox]
-    FN: List[LabeledBoundingBox]
+class TestSampleThresholdedMetrics(TestSampleThresholdedMetricsSingleClass):
     Confused: List[ScoredLabeledBoundingBox]
-
-    count_TP: int
-    count_FP: int
-    count_FN: int
     count_Confused: int
-
-    has_TP: bool
-    has_FP: bool
-    has_FN: bool
     has_Confused: bool
-    ignored: bool
 
-    max_confidence_above_t: Optional[float]
-    min_confidence_above_t: Optional[float]
-    thresholds: List[ScoredLabel]
+
+@dataclass(frozen=True)
+class TestSampleMetrics(MetricsTestSample):
+    ...  # todo make dynamic
+
+
+@dataclass(frozen=True)
+class ClassThresholdedMetricsPerTestCase(MetricsTestCase):
+    Objects: int
+    Inferences: int
+    TP: int
+    FN: int
+    FP: int
+    Precision: float
+    Recall: float
+    F1: float
 
 
 @dataclass(frozen=True)
 class ClassMetricsPerTestCase(MetricsTestCase):
     Class: str
     nImages: int
-    Threshold: float
-    Objects: int
-    Inferences: int
-    TP: int
-    FN: int
-    FP: int
-    Precision: float
-    Recall: float
-    F1: float
+    ClassThresholded: List[ClassThresholdedMetricsPerTestCase]
     AP: float
 
 
 @dataclass(frozen=True)
-class TestCaseMetrics(MetricsTestCase):
-    PerClass: List[ClassMetricsPerTestCase]
+class TestCaseThresholdedMetrics(MetricsTestCase):
     Objects: int
     Inferences: int
     TP: int
     FN: int
     FP: int
-    nIgnored: int
     macro_Precision: float
     macro_Recall: float
     macro_F1: float
@@ -179,6 +178,13 @@ class TestCaseMetrics(MetricsTestCase):
     micro_Precision: float
     micro_Recall: float
     micro_F1: float
+
+
+@dataclass(frozen=True)
+class TestCaseMetrics(MetricsTestCase):
+    PerClass: List[ClassMetricsPerTestCase]
+    Thresholded: List[TestCaseThresholdedMetrics]
+    nIgnored: int
 
 
 @dataclass(frozen=True)
@@ -194,7 +200,7 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Specify a confidence and IoU threshold to apply to all classes.
     """
 
-    threshold_strategy: Union[Literal["F1-Optimal"], float] = "F1-Optimal"
+    threshold_strategy: Union[Literal["F1-Optimal"], Literal["Specified"], float] = "F1-Optimal"
     """The confidence threshold strategy. It can either be a fixed confidence threshold such as `0.3` or `0.75`, or
     the F1-optimal threshold by default."""
 
@@ -205,6 +211,11 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     """
     The minimum confidence score to consider for the evaluation. This is usually set to reduce noise by excluding
     inferences with low confidence score.
+    """
+
+    thresholds: List[float] = dataclasses.field(default_factory=list)
+    """
+    Specific fixed thresholds used for metrics evaluation.
     """
 
     def display_name(self) -> str:
