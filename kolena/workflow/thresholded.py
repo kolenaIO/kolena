@@ -75,8 +75,7 @@ class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta
     )
     ```
 
-    Raises:
-        TypeError: If any of the field values is a dictionary.
+    :raises TypeError: If any of the field values is a dictionary.
     """
 
     threshold: float
