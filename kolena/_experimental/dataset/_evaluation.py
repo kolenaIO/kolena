@@ -22,6 +22,7 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
+from pandas.errors import MergeError
 
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
@@ -194,7 +195,11 @@ def _align_datapoints_results(
         on = [on]
 
     _validate_on(df_datapoints, df_result_input, on)
-    df_result = df_datapoints[on].merge(df_result_input, how="left", on=on, validate="one_to_one")
+    try:
+        df_result = df_datapoints[on].merge(df_result_input, how="left", on=on, validate="one_to_one")
+    except MergeError as e:
+        raise IncorrectUsageError(f"merge key {on} is not unique") from e
+
     return df_result
 
 

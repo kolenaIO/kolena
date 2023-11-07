@@ -28,6 +28,7 @@ from kolena._experimental.dataset._evaluation import _align_datapoints_results
 from kolena._experimental.dataset._evaluation import _validate_data
 from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import COL_RESULT
+from kolena.errors import IncorrectUsageError
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
@@ -227,9 +228,9 @@ def test__dataframe__data_type_field_not_exist() -> None:
 def test__validate_datapoints_results_alignment() -> None:
     df_datapoints = pd.DataFrame(dict(text=["a", "a", "b", "c"], question=["foo", "bar", "cat", "dog"]))
     df_results = pd.DataFrame(
-        dict(text=["a", "a", "b", "c"], question=["foo", "bar", "cat", "dog"], answer=[1, 2, 3, 4]),
+        dict(text=["a", "a", "b"], question=["foo", "bar", "cat"], answer=[1, 2, 3]),
     )
-    with pytest.raises(pd.errors.MergeError):
+    with pytest.raises(IncorrectUsageError):
         _align_datapoints_results(df_datapoints, df_results, on="text")
 
     df_merged = _align_datapoints_results(df_datapoints, df_results, on=["text", "question"])
