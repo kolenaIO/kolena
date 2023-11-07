@@ -3668,7 +3668,7 @@
 </span> Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">#</a></h1>
 <p>Install Kolena to set up rigorous and repeatable model testing in minutes.</p>
 <p>In this quickstart guide, we'll use the
-<a href="https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation"><code>age_estimation</code></a> example integration to
+<a href="https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d"><code>object_detection_2d</code></a> example integration to
 demonstrate the how to curate test data and test models in Kolena.</p>
 <h2 id="install-kolena">Install <code>kolena</code><a class="headerlink" href="#install-kolena" title="Permanent link">#</a></h2>
 <p>Install the <code>kolena</code> Python package to programmatically interact with Kolena:</p>
@@ -3924,8 +3924,8 @@ dataset</p>
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/kolenaIO/kolena.git
 </span></code></pre></div>
 <p>With the repository cloned, let's set up the
-<a href="https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation"><code>age_estimation</code></a> example:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>kolena/examples/age_estimation
+<a href="https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d"><code>object_detection_2d</code></a> example:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">cd</span><span class="w"> </span>kolena/examples/object_detection_2d
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>poetry<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>poetry<span class="w"> </span>install
 </span></code></pre></div>
 <p>Now we're up and running and can start <a href="#create-test-suites">creating test suites</a> and
@@ -3936,7 +3936,7 @@ dataset</p>
 <li><code>seed_test_suite.py</code>: Create test cases and test suite(s) from a source dataset</li>
 <li><code>seed_test_run.py</code>: Test model(s) on the created test suites</li>
 </ol>
-<p>Before running <a href="https://github.com/kolenaIO/kolena/blob/trunk/examples/age_estimation/age_estimation/seed_test_suite.py"><code>seed_test_suite.py</code></a>,
+<p>Before running <a href="https://github.com/kolenaIO/kolena/blob/trunk/examples/object_detection_2d/object_detection_2d/seed_test_suite.py"><code>seed_test_suite.py</code></a>,
 let's first configure our environment by populating the <code>KOLENA_TOKEN</code>
 environment variable. Visit the <a href="https://app.kolena.io/redirect/developer"><span class="twemoji"><?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 17.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -3959,7 +3959,7 @@ generate an API token and copy and paste the code snippet into your environment:
 <div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">KOLENA_TOKEN</span><span class="o">=</span><span class="s2">&quot;********&quot;</span>
 </span></code></pre></div>
 <p>We can now create test suites using the provided seeding script:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>python3<span class="w"> </span>age_estimation/seed_test_suite.py
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>python3<span class="w"> </span>object_detection_2d/seed_test_suite.py
 </span></code></pre></div>
 <p>After this script has completed, we can visit the <a href="https://app.kolena.io/redirect/testing"><span class="twemoji"><?xml version="1.0" encoding="utf-8"?>
 <!-- Generator: Adobe Illustrator 18.1.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
@@ -3973,21 +3973,18 @@ generate an API token and copy and paste the code snippet into your environment:
 </svg>
 </span> Test Suites</a>
 page to view our newly created test suites.</p>
-<p>In this <code>age_estimation</code> example, we've created test suites stratifying the LFW dataset (which is stored as a CSV in
-S3) into test cases by age, estimated race, and estimated gender.</p>
+<p>In this <code>object_detection_2d</code> example, we've created test suites stratifying the <a href="https://cocodataset.org/#overview">COCO</a> 2014 validation set (which is stored as a CSV in
+S3) into test cases by brightness and bounding box size. In this example will be looking at the following labels:</p>
+<p><code>["bicycle", "car", "motorcycle", "bus", "train", "truck", "traffic light", "fire hydrant", "stop sign"]</code></p>
 <h2 id="test-a-model">Test a Model<a class="headerlink" href="#test-a-model" title="Permanent link">#</a></h2>
-<p>After we've created test suites, the final step is to test models on these test suites. The <code>age_estimation</code> example
-provides the <code>ssrnet</code> model for this step:</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>python3<span class="w"> </span>age_estimation/seed_test_run.py<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="s2">&quot;ssrnet&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="s2">&quot;age :: labeled-faces-in-the-wild [age estimation]&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">  </span><span class="s2">&quot;race :: labeled-faces-in-the-wild [age estimation]&quot;</span><span class="w"> </span><span class="se">\</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="s2">&quot;gender :: labeled-faces-in-the-wild [age estimation]&quot;</span>
+<p>After we've created test suites, the final step is to test models on these test suites. The <code>object_detection_2d</code> example
+provides the following models to choose from <code>{yolo_r, yolo_x, mask_rcnn, faster_rcnn, yolo_v4s, yolo_v3}</code> for this step:</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>poetry<span class="w"> </span>run<span class="w"> </span>python3<span class="w"> </span>object_detection_2d/seed_test_run.py<span class="w"> </span><span class="s2">&quot;yolo_v4s&quot;</span>
 </span></code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">Note: Testing additional models</p>
 <p>In this example, model results have already been extracted and are stored in CSV files in S3. To run a new model,
-plug it into the <code>infer</code> method in <a href="https://github.com/kolenaIO/kolena/blob/trunk/examples/age_estimation/age_estimation/seed_test_run.py"><code>seed_test_run.py</code></a>.</p>
+plug it into the <code>infer</code> method in <a href="https://github.com/kolenaIO/kolena/blob/trunk/examples/object_detection_2d/object_detection_2d/seed_test_run.py"><code>seed_test_run.py</code></a>.</p>
 </div>
 <p>Once this script has completed, click the results link in your console or visit
 <a href="https://app.kolena.io/redirect/results"><span class="twemoji"><?xml version="1.0" encoding="utf-8"?>
@@ -4009,8 +4006,8 @@ plug it into the <code>infer</code> method in <a href="https://github.com/kolena
 </span> Results</a> to view the test results for this newly tested model.</p>
 <h2 id="conclusion">Conclusion<a class="headerlink" href="#conclusion" title="Permanent link">#</a></h2>
 <p>In this quickstart, we used an example integration from <a href="https://github.com/kolenaIO/kolena">kolenaIO/kolena</a> to create
-test suites from the <a href="http://vis-www.cs.umass.edu/lfw/">Labeled Faces in the Wild (LFW)</a> dataset and test the
-open-source <code>ssrnet</code> model on these test suites.</p>
+test suites from the <a href="https://cocodataset.org/#overview">COCO</a> dataset and test the
+open-source <code>yolo_v4s</code> model on these test suites.</p>
 <p>This example shows us how to define an ML problem as a workflow for testing in Kolena, and can be arbitrarily extended
 with additional metrics, plots, visualizations, and data.</p>
 
@@ -4026,7 +4023,7 @@ with additional metrics, plots, visualizations, and data.</p>
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">October 24, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 6, 2023</span>
       </span>
     
     
