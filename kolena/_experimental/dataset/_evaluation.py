@@ -22,6 +22,7 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
+from pandas.errors import MergeError
 
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
@@ -41,7 +42,6 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
 from kolena.errors import IncorrectUsageError
-
 
 TYPE_EVALUATION_CONFIG = Optional[Dict[str, Any]]
 TEST_ON_TYPE = Optional[Union[str, List[str]]]
@@ -183,7 +183,7 @@ def _validate_on(left: pd.DataFrame, right: pd.DataFrame, on: TEST_ON_TYPE) -> N
                 raise IncorrectUsageError(f"column {col} doesn't exist in target dataframe")
 
 
-def _get_single_df_result(
+def _align_datapoints_results(
     df_datapoints: pd.DataFrame,
     df_result_input: pd.DataFrame,
     on: TEST_ON_TYPE,
@@ -195,7 +195,11 @@ def _get_single_df_result(
         on = [on]
 
     _validate_on(df_datapoints, df_result_input, on)
-    df_result = df_datapoints[on].merge(df_result_input, how="left", on=on)
+    try:
+        df_result = df_datapoints[on].merge(df_result_input, how="left", on=on, validate="one_to_one")
+    except MergeError as e:
+        raise IncorrectUsageError(f"merge key {on} is not unique") from e
+
     return df_result
 
 
@@ -228,7 +232,7 @@ def test(
     all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame, pd.DataFrame]] = []
     for config, df_result_input in results:
         log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
-        single_result = _get_single_df_result(df_datapoints, df_result_input, on)
+        single_result = _align_datapoints_results(df_datapoints, df_result_input, on)
         _validate_data(df_datapoints, single_result)
         all_results.append((config, single_result, df_result_input))
         log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
