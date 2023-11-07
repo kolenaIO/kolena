@@ -153,6 +153,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self._id = response.test_run_id
         self._freeze()
 
+    @with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
     def run(self) -> None:
         """
         Run the testing process, first extracting inferences for all test samples in the test suite then performing
@@ -486,7 +487,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
 
 @validate_arguments(config=ValidatorConfig)
-@with_event(event_name=EventAPI.Event.EXECUTE_TEST_RUN)
 def test(
     model: Model,
     test_suite: TestSuite,
