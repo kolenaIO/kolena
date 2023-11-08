@@ -35,7 +35,7 @@ def seed_test_suite_by_avg_amp(
     test_suite_name: str,
     complete_test_case: TestCase,
 ) -> TestSuite:
-    test_case_name_to_decision_logic_map = calculate_tertiles(complete_test_case, 'Average_Amplitude')
+    test_case_name_to_decision_logic_map = calculate_tertiles(complete_test_case, "Average_Amplitude")
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
@@ -53,7 +53,7 @@ def seed_test_suite_by_avg_amp(
         test_suite_name,
         test_cases=[complete_test_case, *test_cases],
         reset=True,
-        tags={DATASET}
+        tags={DATASET},
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 

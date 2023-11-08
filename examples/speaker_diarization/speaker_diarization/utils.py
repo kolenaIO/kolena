@@ -237,9 +237,9 @@ def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSe
 
 
 def calculate_tertiles(tc: TestCase, feature: str) -> dict:
-    '''
+    """
     Calculates the n-tiles of a feature stored in metadata.
-    '''
+    """
     feature_list = [ts.metadata[feature] for ts, gt in tc.iter_test_samples()]
     percentiles = [np.percentile(feature_list, i) for i in np.linspace(0, 100, 3)]
 
@@ -250,4 +250,3 @@ def calculate_tertiles(tc: TestCase, feature: str) -> dict:
     }
 
     return test_case_name_to_decision_logic_map
-
