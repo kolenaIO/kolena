@@ -63,10 +63,12 @@ def main(args: Namespace) -> int:
     df_metadata = pd.read_csv(args.metadata_csv)
 
     metadata_by_locator = {}
+    locator_normalization_factor = {}
+    non_metadata_fields = {"locator", "normalization_factor"}
     for record in df_metadata.itertuples(index=False):
         fields = set(record._fields)
-        fields.remove("locator")
-        metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields}
+        metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields - non_metadata_fields}
+        locator_normalization_factor[record.locator] = record.normalization_factor
 
     images = defaultdict(list)
     bbox_keypoints = {}
@@ -112,7 +114,9 @@ def main(args: Namespace) -> int:
             matches.append(match)
 
         bbox, keypoints = bbox_keypoints[locator]
-        gt = GroundTruth(matches=matches, bbox=bbox, keypoints=keypoints)
+        gt = GroundTruth(
+            matches=matches, bbox=bbox, keypoints=keypoints, normalization_factor=locator_normalization_factor[locator]
+        )
         test_samples_and_ground_truths.append((ts, gt))
 
     complete_test_case = TestCase(
@@ -128,6 +132,8 @@ def main(args: Namespace) -> int:
         race=["asian", "black", "indian", "middle eastern", "latino hispanic", "white"],  # ignore "unknown"
         gender=["man", "woman"],  # ignore "unknown"
     )
+
+    # demographic_subsets = dict(gender=["man"])
 
     test_cases: List[TestCase] = []
     for category, tags in demographic_subsets.items():

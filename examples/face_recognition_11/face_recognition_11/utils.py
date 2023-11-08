@@ -17,6 +17,7 @@ import math
 import numpy as np
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
+from face_recognition_11.workflow import TestSampleMetrics
 
 from kolena.workflow import Histogram
 
@@ -28,14 +29,37 @@ def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float])
 def compute_distances(
     point_a: Tuple[float, float],
     point_b: Tuple[float, float],
+    normalization_factor: float,
 ) -> Tuple[float, float]:
     distance = compute_distance(point_a, point_b)
-    return distance
+    return distance, distance / normalization_factor
 
 
-def calculate_mse_nmse(distances: np.ndarray) -> Tuple[float, float]:
+def calculate_mse_nmse(distances: np.ndarray, normalization_factor: float) -> Tuple[float, float]:
     mse = np.mean(distances**2)
-    return mse
+    nmse = math.sqrt(np.mean((distances / normalization_factor) ** 2))
+    return mse, nmse
+
+
+def create_iou_histogram(
+    metrics: List[TestSampleMetrics],
+) -> Histogram:
+    ious = [tsm.bbox_iou for tsm in metrics]
+    min_data, max_data = 0.0, 1.0
+
+    number_of_bins = 50
+    bin_size = (max_data - min_data) / number_of_bins
+    bin_edges = [min_data + i * bin_size for i in range(number_of_bins + 1)]
+
+    freq, bin_edges = np.histogram(ious, bins=bin_edges, density=True)
+
+    return Histogram(
+        title="Bounding Box Detection: IoU Distribution",
+        x_label="Intersection over Union (IoU)",
+        y_label="Frequency (%)",
+        buckets=list(bin_edges),
+        frequency=list(freq),
+    )
 
 
 def create_similarity_histogram(
@@ -52,8 +76,7 @@ def create_similarity_histogram(
                 else:
                     imposter_values.append(similarity)
 
-    min_data = min(min(genuine_values), min(imposter_values))
-    max_data = max(max(genuine_values), max(imposter_values))
+    min_data, max_data = 0.0, 0.5
 
     number_of_bins = 50
     bin_size = (max_data - min_data) / number_of_bins
@@ -64,7 +87,7 @@ def create_similarity_histogram(
 
     # histogram of the relative distribution of genuine and imposter pairs, bucketed by similarity score.
     similarity_dist = Histogram(
-        title="Similarity Distribution",
+        title="Recognition: Similarity Distribution",
         x_label="Similarity Score",
         y_label="Frequency (%)",
         buckets=list(bin_edges),

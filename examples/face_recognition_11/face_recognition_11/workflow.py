@@ -31,7 +31,7 @@ from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import ScoredClassificationLabel, ClassificationLabel
 from kolena.workflow.asset import ImageAsset
 
 
@@ -50,6 +50,7 @@ class GroundTruth(BaseGroundTruth):
     matches: List[bool]
     bbox: BoundingBox
     keypoints: Keypoints
+    normalization_factor: float
 
 
 @dataclass(frozen=True)
@@ -80,22 +81,33 @@ class PairSample(ImageAsset):
     is_false_match: bool
     is_false_non_match: bool
     failure_to_enroll: bool
-    similarity: Optional[float]
+    similarity: Optional[float] = None
 
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     pair_samples: List[PairSample]
-    bbox_iou: ScoredClassificationLabel
-    bbox_tp: bool
-    bbox_fp: bool
-    bbox_fn: bool
-    keypoint_mse: ScoredClassificationLabel
+    bbox_iou: float
+    bbox_TP: Optional[List[BoundingBox]]
+    bbox_FP: Optional[List[BoundingBox]]
+    bbox_FN: Optional[List[BoundingBox]]
+    bbox_has_tp: bool
+    bbox_has_fp: bool
+    bbox_has_fn: bool
+    bbox_fte: bool
+    keypoint_mse: float
+    keypoint_nmse: float
     keypoint_Δ_nose: float
     keypoint_Δ_left_eye: float
     keypoint_Δ_right_eye: float
     keypoint_Δ_left_mouth: float
     keypoint_Δ_right_mouth: float
+    keypoint_norm_Δ_nose: float
+    keypoint_norm_Δ_left_eye: float
+    keypoint_norm_Δ_right_eye: float
+    keypoint_norm_Δ_left_mouth: float
+    keypoint_norm_Δ_right_mouth: float
+    keypoint_fte: bool
 
 
 @dataclass(frozen=True)
@@ -194,6 +206,10 @@ class TestSuiteMetrics(MetricsTestSuite):
     FNMR: float
     """The threshold value of the baseline test case given a specific FMR."""
 
+    TotalFTE: int
+    TotalBBoxFTE: int
+    TotalKeypointFTE: int
+
 
 @dataclass(frozen=True)
 class ThresholdConfiguration(EvaluatorConfiguration):
@@ -201,12 +217,9 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     Configuration for Face Recognition 1:1 workflow.
     """
 
-    false_match_rate: Optional[float] = None
-    """
-    Specify a minimum FMR to apply for predictions.
-    """
-
-    iou_threshold: Optional[float] = None
+    false_match_rate: float = None
+    iou_threshold: float = None
+    nmse_threshold: float = None
 
     def display_name(self) -> str:
-        return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold}"
+        return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold} | NMSE threshold: {self.nmse_threshold}"

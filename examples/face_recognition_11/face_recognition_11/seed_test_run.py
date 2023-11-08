@@ -35,7 +35,7 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv("preds.sample.csv")
+    df_results = pd.read_csv(f"predictions_{model_name}.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         similarities = []
@@ -85,7 +85,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
     print(f"Model: {model}")
 
     configurations = [
-        ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5),
+        ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.8),
         # ThresholdConfiguration(false_match_rate=1e-2),
         # ThresholdConfiguration(false_match_rate=1e-3),
         # ThresholdConfiguration(false_match_rate=1e-4),
