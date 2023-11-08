@@ -157,7 +157,7 @@ class PerKeypointMetrics(MetricsTestCase):
 class TestCaseMetrics(MetricsTestCase):
     """Test-case-level aggregate metrics for Face Recognition workflow."""
 
-    nImages: int
+    TotalPairs: int
     nGenuinePairs: int
     nImposterPairs: int
     FM: int

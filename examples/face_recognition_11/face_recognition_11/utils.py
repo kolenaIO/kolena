@@ -11,15 +11,57 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import List, Tuple
+from typing import List, Tuple, Callable
 import math
 
 import numpy as np
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
-from face_recognition_11.workflow import TestSampleMetrics
+from face_recognition_11.workflow import TestSampleMetrics, TestSample
 
 from kolena.workflow import Histogram
+
+
+def compute_threshold(
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    fmr: float,
+    eps: float = 1e-9,
+) -> float:
+    func = lambda is_same, similarity, pair_sample: (is_same, similarity)
+    scores = filter_duplicates(func, test_samples, ground_truths, inferences)
+
+    imposter_scores = sorted(
+        [similarity if similarity is not None else 0.0 for match, similarity in scores if not match],
+        reverse=True,
+    )
+    threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
+    threshold = imposter_scores[threshold_idx] - eps
+    return threshold
+
+
+def filter_duplicates(
+    func: Callable,
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    metrics: List[TestSampleMetrics] = None,
+) -> List:
+    # address duplicates because of how we model
+    values = []
+    seen = []
+    for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
+        a = test_samples[i].locator
+        for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
+            b = test_samples[i].pairs[j].locator
+            pair = (a, b)
+            if pair not in seen:
+                values.append(func(is_same, similarity, metrics[i].pair_samples[j] if metrics is not None else None))
+                seen.append((a, b))
+                seen.append((b, a))
+
+    return values
 
 
 def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:
@@ -63,18 +105,26 @@ def create_iou_histogram(
 
 
 def create_similarity_histogram(
+    test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Histogram:
-    genuine_values = []
-    imposter_values = []
-    for gt, inf in zip(ground_truths, inferences):
-        for is_same, similarity in zip(gt.matches, inf.similarities):
-            if similarity is not None:
-                if is_same:
-                    genuine_values.append(similarity)
-                else:
-                    imposter_values.append(similarity)
+    genuine_values = [
+        similarity
+        for gt, inf in zip(ground_truths, inferences)
+        for is_same, similarity in zip(gt.matches, inf.similarities)
+        if is_same and similarity is not None
+    ]
+    imposter_values = [
+        similarity
+        for gt, inf in zip(ground_truths, inferences)
+        for is_same, similarity in zip(gt.matches, inf.similarities)
+        if not is_same and similarity is not None
+    ]
+
+    # address duplicates
+    genuine_values = np.unique(genuine_values)
+    imposter_values = np.unique(imposter_values)
 
     min_data, max_data = 0.0, 1.0
 

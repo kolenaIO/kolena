@@ -18,15 +18,21 @@ from face_recognition_11.seed_test_run import main as seed_test_run_main
 from face_recognition_11.seed_test_suite import main as seed_test_suite_main
 
 
+BUCKET = "kolena-public-datasets"
+DATASET = "labeled-faces-in-the-wild"
+
+
 def test__seed_test_suite__smoke() -> None:
     args = Namespace(
-        dataset_csv="3://kolena-public-datasets/labeled-faces-in-the-wild/meta/pairs.sample.csv",
-        metadata_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.csv",
+        dataset_csv=f"3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
+        metadata_csv=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 def test__seed_test_run__smoke() -> None:
-    args = Namespace(models=["deepface"], test_suites=["fr 1:1 :: labeled-faces-in-the-wild"])
+    args = Namespace(
+        models=["VGG-Face", "Facenet512"], test_suites=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"]
+    )
     seed_test_run_main(args)

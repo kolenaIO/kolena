@@ -27,7 +27,7 @@ from face_recognition_11.workflow import TestSuiteMetrics
 from face_recognition_11.workflow import PerBBoxMetrics
 from face_recognition_11.workflow import PerKeypointMetrics
 from face_recognition_11.workflow import PairSample
-from face_recognition_11.utils import compute_distances, calculate_mse_nmse
+from face_recognition_11.utils import compute_distances, calculate_mse_nmse, compute_threshold, filter_duplicates
 from face_recognition_11.utils import create_similarity_histogram, create_iou_histogram
 
 from kolena.workflow import ConfusionMatrix, BarPlot
@@ -41,28 +41,34 @@ from kolena.workflow.annotation import ScoredClassificationLabel, Classification
 from kolena.workflow.metrics import precision, recall, f1_score, iou
 
 
-def compute_threshold(ground_truths, inferences, fmr: float, eps: float = 1e-9) -> float:
-    total_matches = []
-    total_similarities = []
-    for sublist in ground_truths:
-        for item in sublist.matches:
-            total_matches.append(item)
+# def compute_threshold(
+#     test_samples: List[TestSample],
+#     ground_truths: List[GroundTruth],
+#     inferences: List[Inference],
+#     fmr: float,
+#     eps: float = 1e-9,
+# ) -> float:
+#     scores = []
 
-    for sublist in inferences:
-        for item in sublist.similarities:
-            total_similarities.append(item)
+#     # address duplicates because of how we model
+#     seen = []
+#     for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
+#         a = test_samples[i].locator
+#         for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
+#             b = test_samples[i].pairs[j].locator
+#             pair = (a, b)
+#             if pair not in seen:
+#                 scores.append((is_same, similarity))
+#                 seen.append((a, b))
+#                 seen.append((b, a))
 
-    imposter_scores = sorted(
-        [
-            similarity if similarity else 0.0
-            for match, similarity in zip(total_matches, total_similarities)
-            if not match
-        ],
-        reverse=True,
-    )
-    threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
-    threshold = imposter_scores[threshold_idx] - eps
-    return threshold
+#     imposter_scores = sorted(
+#         [similarity if similarity is not None else 0.0 for match, similarity in scores if not match],
+#         reverse=True,
+#     )
+#     threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
+#     threshold = imposter_scores[threshold_idx] - eps
+#     return threshold
 
 
 def compute_per_sample(
@@ -210,35 +216,58 @@ def compute_per_keypoint_case(ground_truths: List[GroundTruth], metrics: List[Te
         Label="Keypoints Detection",
         Total=np.sum([gt.keypoints is not None for gt in ground_truths]),
         FTE=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
-        MSE=np.mean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
-        NMSE=np.mean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
-        AvgΔNose=np.mean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),
-        AvgΔLeftEye=np.mean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),
-        AvgΔRightEye=np.mean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),
-        AvgΔLeftMouth=np.mean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),
-        AvgΔRightMouth=np.mean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),
-        AvgNormΔNose=np.mean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),
-        AvgNormΔLeftEye=np.mean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),
-        AvgNormΔRightEye=np.mean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),
-        AvgNormΔLeftMouth=np.mean([process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]),
-        AvgNormΔRightMouth=np.mean([process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]),
+        MSE=np.nanmean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
+        NMSE=np.nanmean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
+        AvgΔNose=np.nanmean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),
+        AvgΔLeftEye=np.nanmean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),
+        AvgΔRightEye=np.nanmean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),
+        AvgΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),
+        AvgΔRightMouth=np.nanmean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),
+        AvgNormΔNose=np.nanmean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),
+        AvgNormΔLeftEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),
+        AvgNormΔRightEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),
+        AvgNormΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]),
+        AvgNormΔRightMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]),
     )
 
 
 def compute_test_case_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
+    inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
 ) -> TestCaseMetrics:
-    n_genuine_pairs = np.sum([np.sum(gt.matches) for gt in ground_truths]) / 2
-    n_imposter_pairs = np.sum([np.sum(np.invert(gt.matches)) for gt in ground_truths]) / 2
+    def compute_pair_counts(is_same: bool, similarity: float, pair_sample: PairSample) -> Tuple:
+        # (genuine_pair, imposter_pair, n_fm, n_fnm, n_pair_failures)
+        return (
+            is_same,
+            not is_same,
+            pair_sample.is_false_match,
+            pair_sample.is_false_non_match,
+            pair_sample.failure_to_enroll,
+        )
 
-    n_fm, n_fnm, n_pair_failures = 0, 0, 0
-    for tsm in metrics:
-        n_fm += np.sum([ps.is_false_match for ps in tsm.pair_samples])
-        n_fnm += np.sum([ps.is_false_non_match for ps in tsm.pair_samples])
-        n_pair_failures += np.sum([ps.failure_to_enroll for ps in tsm.pair_samples])
+    pair_counts = filter_duplicates(compute_pair_counts, test_samples, ground_truths, inferences, metrics)
+    n_genuine_pairs = np.sum([i for i, _, _, _, _ in pair_counts])
+    n_imposter_pairs = np.sum([i for _, i, _, _, _ in pair_counts])
+    n_fm = np.sum([i for _, _, i, _, _ in pair_counts])
+    n_fnm = np.sum([i for _, _, _, i, _ in pair_counts])
+    n_pair_failures = np.sum([i for _, _, _, _, i in pair_counts])
+
+    # n_genuine_pairs = np.sum([gt.count_genuine_pair for gt in ground_truths]) / 2
+    # n_imposter_pairs = np.sum([gt.count_imposter_pair for gt in ground_truths]) / 2
+
+    # n_fm, n_fnm, n_pair_failures = 0, 0, 0
+    # for tsm in metrics:
+    #     n_fm += np.sum([ps.is_false_match for ps in tsm.pair_samples])
+    #     n_fnm += np.sum([ps.is_false_non_match for ps in tsm.pair_samples])
+    #     n_pair_failures += np.sum([ps.failure_to_enroll for ps in tsm.pair_samples])
+
+    # # address duplicates
+    # n_fm = n_fm / 2
+    # n_fnm = n_fnm / 2
+    # n_pair_failures = n_pair_failures / 2
 
     n_fte = np.sum([(tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align) for tsm in metrics])
 
@@ -246,7 +275,7 @@ def compute_test_case_metrics(
     keypoint_metrics = compute_per_keypoint_case(ground_truths, metrics)
 
     return TestCaseMetrics(
-        nImages=len(test_samples),
+        TotalPairs=n_genuine_pairs + n_imposter_pairs,
         nGenuinePairs=n_genuine_pairs,
         nImposterPairs=n_imposter_pairs,
         FM=n_fm,
@@ -264,9 +293,10 @@ def compute_test_case_metrics(
 
 
 def compute_test_case_plots(
-    metrics: List[TestSampleMetrics],
+    test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
+    metrics: List[TestSampleMetrics],
     configuration: ThresholdConfiguration,
 ) -> Optional[List[Plot]]:
     plots = []
@@ -299,7 +329,6 @@ def compute_test_case_plots(
         CurvePlot(
             title="Keypoint Detection: Alignment Failure Rate vs. NMSE Threshold",
             x_label="NMSE Threshold",
-            # x_config=AxisConfig(type="log"),
             y_label="Alignment Failure Rate",
             curves=[Curve(label="NMSE", x=x, y=y)],
         )
@@ -310,10 +339,10 @@ def compute_test_case_plots(
     FMR_upper = -1
     baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 50))
 
-    thresholds = [compute_threshold(ground_truths, inferences, fmr) for fmr in baseline_fmr_x]
+    thresholds = [compute_threshold(test_samples, ground_truths, inferences, fmr) for fmr in baseline_fmr_x]
 
-    n_genuine_pairs = np.sum([np.sum(gt.matches) for gt in ground_truths]) / 2
-    n_imposter_pairs = np.sum([np.sum(np.invert(gt.matches)) for gt in ground_truths]) / 2
+    # n_genuine_pairs = np.sum([gt.count_genuine_pair for gt in ground_truths]) / 2
+    # n_imposter_pairs = np.sum([gt.count_imposter_pair for gt in ground_truths]) / 2
 
     fnmr_y = list()
     fmr_y = list()
@@ -323,13 +352,18 @@ def compute_test_case_plots(
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
 
-        n_fm, n_fnm = 0, 0
-        for metric in tsm_for_one_threshold:
-            n_fm += np.sum([ps.is_false_match for ps in metric.pair_samples])
-            n_fnm += np.sum([ps.is_false_non_match for ps in metric.pair_samples])
+        # n_fm, n_fnm = 0, 0
+        # for metric in tsm_for_one_threshold:
+        #     n_fm += np.sum([ps.is_false_match for ps in metric.pair_samples])
+        #     n_fnm += np.sum([ps.is_false_non_match for ps in metric.pair_samples])
 
-        fnmr_y.append(n_fnm / n_genuine_pairs)
-        fmr_y.append(n_fm / n_imposter_pairs)
+        # # address duplicates
+        # n_fm = n_fm / 2
+        # n_fnm = n_fnm / 2
+
+        tcm = compute_test_case_metrics(test_samples, ground_truths, inferences, tsm_for_one_threshold, 0)
+        fnmr_y.append(tcm.FNMR)
+        fmr_y.append(tcm.FMR)
 
     plots.append(
         CurvePlot(
@@ -352,7 +386,7 @@ def compute_test_case_plots(
         )
     )
 
-    plots.append(create_similarity_histogram(ground_truths, inferences))
+    plots.append(create_similarity_histogram(test_samples, ground_truths, inferences))
 
     return plots
 
@@ -378,7 +412,7 @@ def evaluate_face_recognition_11(
     test_cases: TestCases,
     configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
-    threshold = compute_threshold(ground_truths, inferences, configuration.false_match_rate)
+    threshold = compute_threshold(test_samples, ground_truths, inferences, configuration.false_match_rate)
 
     # compute per-sample metrics for each test sample
     test_sample_metrics = [
@@ -389,11 +423,11 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    baseline = compute_test_case_metrics(test_samples, ground_truths, test_sample_metrics, 0)
+    baseline = compute_test_case_metrics(test_samples, ground_truths, inferences, test_sample_metrics, 0)
     baseline_fnmr = baseline.FNMR
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, tsm, baseline_fnmr)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(tsm, gt, inf, configuration)))
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr)))
+        all_test_case_plots.append((test_case, compute_test_case_plots(ts, gt, inf, tsm, configuration)))
 
     test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, baseline, threshold)
 

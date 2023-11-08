@@ -41,7 +41,7 @@ def create_test_case_for_tag(
     category: str,
     value: str,
 ) -> TestCase:
-    name = f"{category} :: {value} :: {DATASET}"
+    name = f"{category} :: {value} [FR]"
     description = f"demographic subset of {DATASET} with source data labeled as {category}={value}"
 
     # filter down to only test samples matching this demographic
@@ -125,7 +125,7 @@ def main(args: Namespace) -> int:
         test_samples_and_ground_truths.append((ts, gt))
 
     complete_test_case = TestCase(
-        name=f"fr 1:1 holistic complete :: {DATASET}",
+        name=f"{DATASET} :: complete [FR]",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,

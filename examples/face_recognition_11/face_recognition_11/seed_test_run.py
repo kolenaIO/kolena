@@ -84,7 +84,6 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
     metadata = dict(detector=detector)
     model = Model(f"{model_name} [FR]", infer=infer, metadata=metadata)
-    print(f"Model: {model}")
 
     configurations = [
         ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
