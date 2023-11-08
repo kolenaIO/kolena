@@ -200,7 +200,7 @@ def _align_datapoints_results(
     except MergeError as e:
         raise IncorrectUsageError(f"merge key {on} is not unique") from e
 
-    return df_result
+    return df_result.drop(columns=on)
 
 
 def test(
