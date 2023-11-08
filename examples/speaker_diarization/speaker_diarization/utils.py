@@ -241,12 +241,12 @@ def calculate_tertiles(tc: TestCase, feature: str) -> dict:
     Calculates the n-tiles of a feature stored in metadata.
     """
     feature_list = [ts.metadata[feature] for ts, gt in tc.iter_test_samples()]
-    percentiles = [np.percentile(feature_list, i) for i in np.linspace(0, 100, 3)]
+    percentiles = [np.percentile(feature_list, i) for i in np.linspace(0, 100, 4)]
 
     test_case_name_to_decision_logic_map = {
-        "1st tertile": lambda x: x < percentiles[0],
-        "2nd tertile": lambda x: percentiles[0] <= x < percentiles[1],
-        "3rd tertile": lambda x: percentiles[1] <= x,
+        "1st tertile": lambda x: x < percentiles[1],
+        "2nd tertile": lambda x: percentiles[1] <= x < percentiles[2],
+        "3rd tertile": lambda x: percentiles[2] <= x,
     }
 
     return test_case_name_to_decision_logic_map
