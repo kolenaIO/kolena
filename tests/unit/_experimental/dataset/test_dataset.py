@@ -225,7 +225,7 @@ def test__dataframe__data_type_field_not_exist() -> None:
         assert DATA_TYPE_FIELD not in row[column_name]
 
 
-def test__validate_datapoints_results_alignment() -> None:
+def test__datapoints_results_alignment() -> None:
     df_datapoints = pd.DataFrame(dict(text=["a", "a", "b", "c"], question=["foo", "bar", "cat", "dog"]))
     df_results = pd.DataFrame(
         dict(text=["a", "a", "b"], question=["foo", "bar", "cat"], answer=[1, 2, 3]),
@@ -235,3 +235,6 @@ def test__validate_datapoints_results_alignment() -> None:
 
     df_merged = _align_datapoints_results(df_datapoints, df_results, on=["text", "question"])
     _validate_data(df_datapoints, df_merged)
+
+    expected = pd.DataFrame(dict(answer=[1, 2, 3, np.nan]))
+    assert df_merged.equals(expected)
