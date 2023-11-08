@@ -43,13 +43,9 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 speaker_diarization/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--models MODELS [MODELS ...]]
-                        [--test_suites TEST_SUITES [TEST_SUITES ...]]
-
-optional arguments:
+usage: seed_test_run.py [-h] [--align-speakers ALIGN_SPEAKERS]
+options:
   -h, --help            show this help message and exit
-  --models MODELS [MODELS ...]
-                        Name(s) of model(s) in directory to test
-  --test_suites TEST_SUITES [TEST_SUITES ...]
-                        Name(s) of test suite(s) to test.
+  --align-speakers ALIGN_SPEAKERS
+                        Specify whether to perform speaker alignment between the GT and Inf in the preprocessing step.
 ```

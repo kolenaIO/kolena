@@ -80,31 +80,17 @@ def seed_test_run(
 def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
-    mod = args.model
-
-    if args.test_suite is None:
-        print("loading test suite")
-        test_suites = TestSuite.load_all(tags={DATASET})
-        for test_suite in test_suites:
-            seed_test_run(mod, test_suite, args.align_speakers)
-    else:
-        test_suite = TestSuite.load(args.test_suite)
+    mod = "gcp-stt-video"
+    
+    print("loading test suite")
+    test_suites = TestSuite.load_all(tags={DATASET})
+    print(test_suites)
+    for test_suite in test_suites:
         seed_test_run(mod, test_suite, args.align_speakers)
 
 
 if __name__ == "__main__":
     ap = ArgumentParser()
-    ap.add_argument(
-        "model",
-        type=str,
-        choices=sorted(MODEL_METADATA.keys()),
-        help="The name of the model to test.",
-    )
-    ap.add_argument(
-        "--test-suite",
-        type=str,
-        help="Optionally specify a test suite to test. Test against all available test suites when unspecified.",
-    )
     ap.add_argument(
         "--align-speakers",
         type=bool,
@@ -112,3 +98,4 @@ if __name__ == "__main__":
         help="Specify whether to perform speaker alignment between the GT and Inf in the preprocessing step.",
     )
     main(ap.parse_args())
+
