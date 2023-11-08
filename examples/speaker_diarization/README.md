@@ -1,5 +1,5 @@
 # Example Integration: Speaker Diarization
-This example integration uses the Google Cloud Speech-To-Text model, and [ICSI-Corpus dataset](https://groups.inf.ed.ac.uk/ami/icsi/) to demonstrate how to test speech recognition problems on Kolena.
+This example integration uses the Google Cloud Speech-To-Text model, and [ICSI-Corpus dataset](https://groups.inf.ed.ac.uk/ami/icsi/) to demonstrate how to test speaker diarization problems on Kolena.
 
 ## Setup
 
