@@ -84,7 +84,6 @@ def main(args: Namespace) -> None:
 
     print("loading test suite")
     test_suites = TestSuite.load_all(tags={DATASET})
-    print(test_suites)
     for test_suite in test_suites:
         seed_test_run(mod, test_suite, args.align_speakers)
 
