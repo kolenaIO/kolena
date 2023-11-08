@@ -33,7 +33,7 @@ This project defines two scripts that perform the following operations:
 
 2. [`seed_test_run.py`](speaker_diarization/seed_test_run.py) tests a specified model, e.g. `gcp-stt-video`, on the above test suite.
 
-    Run this command to evaluate the default models on the `ICSI-Corpus` test suite:
+    Run this command to evaluate the default model on the `ICSI-Corpus` test suite:
     ```shell
     poetry run python3 speaker_diarization/seed_test_run.py
     ```
