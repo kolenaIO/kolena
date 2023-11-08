@@ -81,7 +81,7 @@ def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
     mod = "gcp-stt-video"
-    
+
     print("loading test suite")
     test_suites = TestSuite.load_all(tags={DATASET})
     print(test_suites)
@@ -98,4 +98,3 @@ if __name__ == "__main__":
         help="Specify whether to perform speaker alignment between the GT and Inf in the preprocessing step.",
     )
     main(ap.parse_args())
-
