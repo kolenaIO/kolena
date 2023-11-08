@@ -13,7 +13,6 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import Callable
 from typing import Dict
 
 import pandas as pd
@@ -68,7 +67,7 @@ def seed_test_run(
                     label=row.text,
                     group=row.speaker,
                 )
-                for idx, row in inference_df.iterrows()
+                for _, row in inference_df.iterrows()
             ],
         )
 
@@ -82,12 +81,6 @@ def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
     mod = args.model
-    print("loading inference CSV")
-    csv_to_use = f"s3://{BUCKET}/{DATASET}/metadata.csv"
-    columns_of_interest = [
-        "audio_path",
-    ]
-    df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest)
 
     if args.test_suite is None:
         print("loading test suite")

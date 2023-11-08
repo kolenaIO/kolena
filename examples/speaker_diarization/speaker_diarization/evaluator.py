@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import re
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -30,10 +29,10 @@ from pyannote.metrics.diarization import JaccardErrorRate
 from pyannote.metrics.identification import IdentificationErrorRate
 from pyannote.metrics.identification import IdentificationPrecision
 from pyannote.metrics.identification import IdentificationRecall
-from utils import preprocess_text
 from utils import generate_annotation
-from utils import generate_missed_speech_error
 from utils import generate_identification_error
+from utils import generate_missed_speech_error
+from utils import preprocess_text
 from workflow import GroundTruth
 from workflow import Inference
 from workflow import TestCase
@@ -174,9 +173,9 @@ def compute_test_case_plots(
             test_samples,
             test_case_metrics,
             (
-                min([ts.metadata['Average_Amplitude'] for ts in test_samples]),
-                max([ts.metadata['Average_Amplitude'] for ts in test_samples]),
-                15
+                min([ts.metadata["Average_Amplitude"] for ts in test_samples]),
+                max([ts.metadata["Average_Amplitude"] for ts in test_samples]),
+                15,
             ),
             metadata=True,
         ),

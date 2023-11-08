@@ -11,21 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import re
 from typing import List
 from typing import Set
+from typing import Tuple
 
-import re
-import pandas as pd
 import numpy as np
-from scipy import optimize
-from typing import Tuple, List
-from workflow import GroundTruth, Inference
-from kolena.workflow.annotation import LabeledTimeSegment, TimeSegment
+import pandas as pd
 from pyannote.core import Annotation
 from pyannote.core import Segment
+from scipy import optimize
+from workflow import GroundTruth
+from workflow import Inference
+
+from kolena.workflow.annotation import LabeledTimeSegment
+from kolena.workflow.annotation import TimeSegment
 
 # allowed error (in seconds) when generating identification and missed speech errors.
 ERROR_THRESHOLD = 0.2
+
 
 def build_speaker_index(inf: List[Tuple[str, float, float]]) -> Set[str]:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
@@ -34,7 +38,7 @@ def build_speaker_index(inf: List[Tuple[str, float, float]]) -> Set[str]:
     return index
 
 
-def compute_intersection_length(A: List[Tuple[float, float]], B: List[Tuple[float, float]]) ->float:
+def compute_intersection_length(A: List[Tuple[float, float]], B: List[Tuple[float, float]]) -> float:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
     max_start = max(A[1], B[1])
     min_end = min(A[2], B[2])
@@ -58,9 +62,9 @@ def build_cost_matrix(ref, inf) -> dict:
 
 
 def realign_labels(ref_df: pd.DataFrame, inf_df: pd.DataFrame):
-    '''
+    """
     Aligns speaker labels using linear sum optimiztion
-    '''
+    """
     ref = [(row.speaker, row.starttime, row.endtime) for i, row in ref_df.iterrows()]
     inf = [(row.speaker, row.starttime, row.endtime) for i, row in inf_df.iterrows()]
     cost_matrix = build_cost_matrix(ref, inf)
@@ -79,34 +83,37 @@ def realign_labels(ref_df: pd.DataFrame, inf_df: pd.DataFrame):
 
 
 def generate_annotation(segments: List[TimeSegment]) -> Annotation:
-    '''
+    """
     Generates pyannote Annotation objects for calculating metrics
-    '''
+    """
     annotation = Annotation()
     for segment in segments:
         annotation[Segment(segment.start, segment.end)] = segment.group
-    
+
     return annotation
 
 
 def preprocess_text(segments: List[TimeSegment]) -> str:
-    '''
+    """
     Preprocess text by removing punctuation and combining transcriptions.
-    '''
+    """
     text = " ".join([segment.label for segment in segments])
     text = re.sub(r"[^\w\s]", "", text.lower())
     return text
 
 
-def create_non_overlapping_segments(transcription: List[LabeledTimeSegment], identity=None) -> List[Tuple[float, float]]:
-    '''
+def create_non_overlapping_segments(
+    transcription: List[LabeledTimeSegment],
+    identity=None,
+) -> List[Tuple[float, float]]:
+    """
     Takes in a list of TimeSegments (overlapping or not) and returns a non-overlapping segment list.
-    '''
-    res = [] # [(start, end), ...]
+    """
+    res = []  # [(start, end), ...]
     transcription = sorted(transcription, key=lambda x: x.start)
 
     for t in transcription:
-        if identity != None and t.group != identity:
+        if identity is not None and t.group != identity:
             continue
 
         start_time = t.start
@@ -136,14 +143,14 @@ def create_non_overlapping_segments(transcription: List[LabeledTimeSegment], ide
         elif start_idx == end_idx:
             # interval already exists
             continue
-    
+
     return res
-    
+
 
 def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> List[Tuple[float, float]]:
-    '''
+    """
     Takes in two intervals, GT and Inf, and removes the intersect of the two from inf.
-    '''
+    """
     inf_start, inf_end = inf
     gt_start, gt_end = gt
 
@@ -161,9 +168,9 @@ def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Li
 
 
 def generate_fp(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
-    '''
-    Generates false positive intervals between a GT and Inf interval list. 
-    '''
+    """
+    Generates false positive intervals between a GT and Inf interval list.
+    """
     res = inf.copy()
 
     i = 0
@@ -186,21 +193,21 @@ def generate_fp(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -
 
 
 def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeSegment]:
-    '''
+    """
     Highlights false positive speaker identifications.
-    '''
+    """
     unique_identities = set()
     for t in gt.transcription:
         unique_identities.add(t.group)
-    
+
     res = []
     for id in unique_identities:
         gt_no = create_non_overlapping_segments(gt.transcription, id)
         inf_no = create_non_overlapping_segments(inf.transcription, id)
-        
+
         for fp in generate_fp(gt_no, inf_no):
             res.append(fp)
-    
+
     i = 0
     while i != len(res):
         if res[i][1] - res[i][0] <= ERROR_THRESHOLD:
@@ -212,25 +219,25 @@ def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeS
 
 
 def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float, float]]:
-    '''
+    """
     Inverts time segments. Ex: [(start1, end1), (start2, end2)] -> [(end1, start2)]
-    '''
+    """
     res = []
 
     for i in range(len(segments) - 1):
         if segments[i + 1].start - segments[i].end > 0:
             res.append(segments[i + 1][0] - segments[i][1])
-    
+
     if end - segments[-1][1] > 0:
         res.append(segments[-1][1], end)
-    
+
     return res
 
 
 def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSegment]:
-    '''
+    """
     Highlights all missed speech.
-    '''
+    """
     gt = create_non_overlapping_segments(gt.transcription)
     inf = create_non_overlapping_segments(inf.transcription)
 

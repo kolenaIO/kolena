@@ -29,6 +29,7 @@ from kolena.workflow.annotation import LabeledTimeSegment
 BUCKET = "kolena-public-datasets"
 DATASET = "ICSI-corpus"
 
+
 def seed_test_suite_by_avg_amp(
     test_suite_name: str,
     complete_test_case: TestCase,
@@ -73,7 +74,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         "Average_Amplitude",
         "Zero_Crossing_Rate",
         "Energy",
-        "Num_Speakers"
+        "Num_Speakers",
     }
     assert all(required_column in set(df.columns) for required_column in required_columns)
 
