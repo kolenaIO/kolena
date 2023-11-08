@@ -18,6 +18,7 @@ from argparse import Namespace
 from typing import List
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import TestCase
@@ -115,7 +116,12 @@ def main(args: Namespace) -> int:
 
         bbox, keypoints = bbox_keypoints[locator]
         gt = GroundTruth(
-            matches=matches, bbox=bbox, keypoints=keypoints, normalization_factor=locator_normalization_factor[locator]
+            matches=matches,
+            bbox=bbox,
+            keypoints=keypoints,
+            normalization_factor=locator_normalization_factor[locator],
+            count_genuine_pair=np.sum(matches),
+            count_imposter_pair=np.sum(np.invert(matches)),
         )
         test_samples_and_ground_truths.append((ts, gt))
 
@@ -133,21 +139,22 @@ def main(args: Namespace) -> int:
         gender=["man", "woman"],  # ignore "unknown"
     )
 
-    # demographic_subsets = dict(gender=["man"])
-
-    test_cases: List[TestCase] = []
+    test_suites = defaultdict(list)
     for category, tags in demographic_subsets.items():
+        test_cases = []
         for tag in tags:
             test_case = create_test_case_for_tag(test_samples_and_ground_truths, category, tag)
             test_cases.append(test_case)
             print(f"created test case '{test_case.name}'")
+        test_suites[category] = test_cases
 
-    test_suite = TestSuite(
-        name=f"fr 1:1 holistic :: {DATASET}",
-        test_cases=[complete_test_case, *test_cases],
-        reset=True,
-    )
-    print(f"created test suite '{test_suite}'")
+    for test_suite_name, test_cases in test_suites.items():
+        test_suite = TestSuite(
+            name=f"{DATASET} :: {test_suite_name} [FR]",
+            test_cases=[complete_test_case, *test_cases],
+            reset=True,
+        )
+        print(f"created test suite '{test_suite}'")
 
 
 if __name__ == "__main__":

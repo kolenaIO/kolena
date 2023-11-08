@@ -88,6 +88,12 @@ def compute_per_sample(
     # Stage 2: Keypoints
 
     keypoint_fte = False
+    mse, nmse = None, None
+    Δ_nose, norm_Δ_nose = None, None
+    Δ_left_eye, norm_Δ_left_eye = None, None
+    Δ_right_eye, norm_Δ_right_eye = None, None
+    Δ_left_mouth, norm_Δ_left_mouth = None, None
+    Δ_right_mouth, norm_Δ_right_mouth = None, None
     if inference.keypoints is not None:
         normalization_factor = ground_truth.normalization_factor
         Δ_nose, norm_Δ_nose = compute_distances(
@@ -113,6 +119,7 @@ def compute_per_sample(
 
     # Stage 3: Recognition
     pair_samples = list()
+    count_fnm, count_fm, count_tm, count_tnm = 0, 0, 0, 0
     for i, (is_same, similarity) in enumerate(zip(ground_truth.matches, inference.similarities)):
         is_match, is_false_match, is_false_non_match, failure_to_enroll = False, False, False, False
         if similarity is None:
@@ -137,19 +144,28 @@ def compute_per_sample(
             similarity=similarity,
         )
         pair_samples.append(pair_sample)
+        count_fnm += is_false_non_match
+        count_fm += is_false_match
+        count_tm += is_match
+        count_tnm += not is_false_non_match and not is_false_match and not is_match
 
     return TestSampleMetrics(
         pair_samples=pair_samples,
-        bbox_iou=iou_value if iou_value is not None else 0.0,
+        count_FNM=count_fnm,
+        count_FM=count_fm,
+        count_TM=count_tm,
+        count_TNM=count_tnm,
+        similarity_threshold=threshold,
+        bbox_IoU=iou_value if iou_value is not None else 0.0,
         bbox_TP=[inference.bbox] if tp and inference.bbox is not None else [],
         bbox_FP=[inference.bbox] if fp and inference.bbox is not None else [],
         bbox_FN=[inference.bbox] if (not tp and not fp) and inference.bbox is not None else [],
-        bbox_has_tp=tp,
-        bbox_has_fp=fp,
-        bbox_has_fn=(not tp and not fp),
-        bbox_fte=bbox_fte,
-        keypoint_mse=mse,
-        keypoint_nmse=nmse,
+        bbox_has_TP=tp,
+        bbox_has_FP=fp,
+        bbox_has_FN=(not tp and not fp),
+        bbox_FTE=bbox_fte,
+        keypoint_MSE=mse,
+        keypoint_NMSE=nmse,
         keypoint_Δ_nose=Δ_nose,
         keypoint_Δ_left_eye=Δ_left_eye,
         keypoint_Δ_right_eye=Δ_right_eye,
@@ -160,7 +176,7 @@ def compute_per_sample(
         keypoint_norm_Δ_right_eye=norm_Δ_right_eye,
         keypoint_norm_Δ_left_mouth=norm_Δ_left_mouth,
         keypoint_norm_Δ_right_mouth=norm_Δ_right_mouth,
-        keypoint_fte=keypoint_fte,
+        keypoint_FTE=keypoint_fte,
     )
 
 
@@ -168,15 +184,15 @@ def compute_per_bbox_case(
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
 ) -> PerBBoxMetrics:
-    tp = np.sum([tsm.bbox_has_tp for tsm in metrics])
-    fp = np.sum([tsm.bbox_has_fp for tsm in metrics])
-    fn = np.sum([tsm.bbox_has_fn for tsm in metrics])
+    tp = np.sum([tsm.bbox_has_TP for tsm in metrics])
+    fp = np.sum([tsm.bbox_has_FP for tsm in metrics])
+    fn = np.sum([tsm.bbox_has_FN for tsm in metrics])
 
     return PerBBoxMetrics(
         Label="Bounding Box Detection",
         Total=np.sum([gt.bbox is not None for gt in ground_truths]),
-        FTE=np.sum([tsm.bbox_fte for tsm in metrics]),
-        AvgIoU=np.mean([tsm.bbox_iou for tsm in metrics]),
+        FTE=np.sum([tsm.bbox_FTE for tsm in metrics]),
+        AvgIoU=np.mean([tsm.bbox_IoU for tsm in metrics]),
         Precision=precision(tp, fp),
         Recall=recall(tp, fn),
         F1=f1_score(tp, fp, fn),
@@ -187,22 +203,25 @@ def compute_per_bbox_case(
 
 
 def compute_per_keypoint_case(ground_truths: List[GroundTruth], metrics: List[TestSampleMetrics]) -> PerKeypointMetrics:
+    def process_metric(metric):
+        return metric if metric is not None else 0.0
+
     return PerKeypointMetrics(
         Label="Keypoints Detection",
         Total=np.sum([gt.keypoints is not None for gt in ground_truths]),
-        FTE=np.sum([tsm.keypoint_fte for tsm in metrics]),
-        MSE=np.mean([tsm.keypoint_mse for tsm in metrics]),
-        NMSE=np.mean([tsm.keypoint_nmse for tsm in metrics]),
-        AvgΔNose=np.mean([tsm.keypoint_Δ_nose for tsm in metrics]),
-        AvgΔLeftEye=np.mean([tsm.keypoint_Δ_left_eye for tsm in metrics]),
-        AvgΔRightEye=np.mean([tsm.keypoint_Δ_right_eye for tsm in metrics]),
-        AvgΔLeftMouth=np.mean([tsm.keypoint_Δ_left_mouth for tsm in metrics]),
-        AvgΔRightMouth=np.mean([tsm.keypoint_Δ_right_mouth for tsm in metrics]),
-        AvgNormΔNose=np.mean([tsm.keypoint_norm_Δ_nose for tsm in metrics]),
-        AvgNormΔLeftEye=np.mean([tsm.keypoint_norm_Δ_left_eye for tsm in metrics]),
-        AvgNormΔRightEye=np.mean([tsm.keypoint_norm_Δ_right_eye for tsm in metrics]),
-        AvgNormΔLeftMouth=np.mean([tsm.keypoint_norm_Δ_left_mouth for tsm in metrics]),
-        AvgNormΔRightMouth=np.mean([tsm.keypoint_norm_Δ_right_mouth for tsm in metrics]),
+        FTE=np.sum([tsm.keypoint_FTE if tsm.keypoint_FTE is not None else 0.0 for tsm in metrics]),
+        MSE=np.nanmean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
+        NMSE=np.nanmean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
+        AvgΔNose=np.nanmean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),
+        AvgΔLeftEye=np.nanmean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),
+        AvgΔRightEye=np.nanmean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),
+        AvgΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),
+        AvgΔRightMouth=np.nanmean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),
+        AvgNormΔNose=np.nanmean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),
+        AvgNormΔLeftEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),
+        AvgNormΔRightEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),
+        AvgNormΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]),
+        AvgNormΔRightMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]),
     )
 
 
@@ -223,7 +242,7 @@ def compute_test_case_metrics(
         n_fnm += np.sum([ps.is_false_non_match for ps in tsm.pair_samples])
         n_pair_failures += np.sum([ps.failure_to_enroll for ps in tsm.pair_samples])
 
-    n_fte = np.sum([tsm.bbox_fte + tsm.keypoint_fte for tsm in metrics])
+    n_fte = np.sum([(tsm.bbox_FTE or tsm.keypoint_FTE) for tsm in metrics])
 
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
     keypoint_metrics = compute_per_keypoint_case(ground_truths, metrics)
@@ -255,9 +274,9 @@ def compute_test_case_plots(
     plots = []
 
     ### Plots for BBox ###
-    tp = np.sum([tsm.bbox_has_tp for tsm in metrics])
-    fp = np.sum([tsm.bbox_has_fp for tsm in metrics])
-    fn = np.sum([tsm.bbox_has_fn for tsm in metrics])
+    tp = np.sum([tsm.bbox_has_TP for tsm in metrics])
+    fp = np.sum([tsm.bbox_has_FP for tsm in metrics])
+    fn = np.sum([tsm.bbox_has_FN for tsm in metrics])
 
     plots.append(
         BarPlot(
@@ -275,7 +294,7 @@ def compute_test_case_plots(
         total = sum(1 for nm in nmses if nm is not None and nm > nmse_threshold)
         return total / len(nmses) if len(nmses) > 0 else 0
 
-    nmses = [mts.keypoint_nmse for mts in metrics]
+    nmses = [mts.keypoint_NMSE for mts in metrics]
     x = np.linspace(0, 0.5, 251).tolist()
     y = [compute_failure_rate(x_value, nmses) for x_value in x]
     plots.append(
@@ -348,9 +367,9 @@ def compute_test_suite_metrics(
         FM=baseline.FM,
         FNM=baseline.FNM,
         FNMR=(baseline.FNM / baseline.nGenuinePairs) * 100,
-        TotalFTE=np.sum([tsm.bbox_fte or tsm.keypoint_fte for tsm in metrics]),
-        TotalBBoxFTE=np.sum([tsm.bbox_fte for tsm in metrics]),
-        TotalKeypointFTE=np.sum([tsm.keypoint_fte for tsm in metrics]),
+        TotalFTE=np.sum([tsm.bbox_FTE or tsm.keypoint_FTE for tsm in metrics]),
+        TotalBBoxFTE=np.sum([tsm.bbox_FTE for tsm in metrics]),
+        TotalKeypointFTE=np.sum([tsm.keypoint_FTE for tsm in metrics]),
     )
 
 

@@ -44,7 +44,7 @@ def calculate_mse_nmse(distances: np.ndarray, normalization_factor: float) -> Tu
 def create_iou_histogram(
     metrics: List[TestSampleMetrics],
 ) -> Histogram:
-    ious = [tsm.bbox_iou for tsm in metrics]
+    ious = [tsm.bbox_IoU for tsm in metrics]
     min_data, max_data = 0.0, 1.0
 
     number_of_bins = 50

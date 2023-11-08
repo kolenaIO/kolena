@@ -81,11 +81,11 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
         return Inference(similarities=similarities, bbox=bbox, keypoints=keypoints)
 
-    model = Model(f"{model_name} [{DATASET}]", infer=infer)
+    model = Model(f"{model_name} [FR]", infer=infer)
     print(f"Model: {model}")
 
     configurations = [
-        ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.8),
+        ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
         # ThresholdConfiguration(false_match_rate=1e-2),
         # ThresholdConfiguration(false_match_rate=1e-3),
         # ThresholdConfiguration(false_match_rate=1e-4),
@@ -108,12 +108,12 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["deepface"],
+        default=["deepface", "facenet512"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--test_suites",
-        default=[f"fr 1:1 holistic :: {DATASET}"],
+        default=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"],
         help="Name(s) of test suite(s) to test.",
     )
     sys.exit(main(ap.parse_args()))

@@ -51,6 +51,8 @@ class GroundTruth(BaseGroundTruth):
     bbox: BoundingBox
     keypoints: Keypoints
     normalization_factor: float
+    count_genuine_pair: int
+    count_imposter_pair: int
 
 
 @dataclass(frozen=True)
@@ -87,27 +89,32 @@ class PairSample(ImageAsset):
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     pair_samples: List[PairSample]
-    bbox_iou: float
+    count_FNM: int
+    count_FM: int
+    count_TM: int
+    count_TNM: int
+    similarity_threshold: float
+    bbox_IoU: float
     bbox_TP: Optional[List[BoundingBox]]
     bbox_FP: Optional[List[BoundingBox]]
     bbox_FN: Optional[List[BoundingBox]]
-    bbox_has_tp: bool
-    bbox_has_fp: bool
-    bbox_has_fn: bool
-    bbox_fte: bool
-    keypoint_mse: float
-    keypoint_nmse: float
-    keypoint_Δ_nose: float
-    keypoint_Δ_left_eye: float
-    keypoint_Δ_right_eye: float
-    keypoint_Δ_left_mouth: float
-    keypoint_Δ_right_mouth: float
-    keypoint_norm_Δ_nose: float
-    keypoint_norm_Δ_left_eye: float
-    keypoint_norm_Δ_right_eye: float
-    keypoint_norm_Δ_left_mouth: float
-    keypoint_norm_Δ_right_mouth: float
-    keypoint_fte: bool
+    bbox_has_TP: bool
+    bbox_has_FP: bool
+    bbox_has_FN: bool
+    bbox_FTE: bool
+    keypoint_MSE: Optional[float]
+    keypoint_NMSE: Optional[float]
+    keypoint_Δ_nose: Optional[float]
+    keypoint_Δ_left_eye: Optional[float]
+    keypoint_Δ_right_eye: Optional[float]
+    keypoint_Δ_left_mouth: Optional[float]
+    keypoint_Δ_right_mouth: Optional[float]
+    keypoint_norm_Δ_nose: Optional[float]
+    keypoint_norm_Δ_left_eye: Optional[float]
+    keypoint_norm_Δ_right_eye: Optional[float]
+    keypoint_norm_Δ_left_mouth: Optional[float]
+    keypoint_norm_Δ_right_mouth: Optional[float]
+    keypoint_FTE: bool
 
 
 @dataclass(frozen=True)
@@ -130,11 +137,17 @@ class PerKeypointMetrics(MetricsTestCase):
     Total: int  # number of keypoints
     FTE: int
     MSE: float
+    NMSE: float
     AvgΔNose: float
     AvgΔLeftEye: float
     AvgΔRightEye: float
     AvgΔLeftMouth: float
     AvgΔRightMouth: float
+    AvgNormΔNose: float
+    AvgNormΔLeftEye: float
+    AvgNormΔRightEye: float
+    AvgNormΔLeftMouth: float
+    AvgNormΔRightMouth: float
 
 
 @dataclass(frozen=True)
