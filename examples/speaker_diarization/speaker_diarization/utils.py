@@ -245,8 +245,8 @@ def calculate_tertiles(tc: TestCase, feature: str) -> dict:
 
     test_case_name_to_decision_logic_map = {
         "1st tertile": lambda x: x < percentiles[0],
-        "2nd tertile": lambda x: percentiles[1] <= x < percentiles[2],
-        "3rd tertile": lambda x: percentiles[2] <= x,
+        "2nd tertile": lambda x: percentiles[0] <= x < percentiles[1],
+        "3rd tertile": lambda x: percentiles[1] <= x,
     }
 
     return test_case_name_to_decision_logic_map
