@@ -24,5 +24,7 @@ arbitrary ML problem.
   [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
 - [Semantic Segmentation](./semantic_segmentation): semantic segmentation using the
   [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset
-- [Automatic Speech Recognition](./automatic_speech_recognition/): automatic speed recognition using the
+- [Automatic Speech Recognition](./automatic_speech_recognition/): automatic speech recognition using the
   [LibriSpeech dataset](https://www.openslr.org/12) dataset
+- [Speaker Diarization](./speaker_diarization/): speaker diarization using the
+  [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset

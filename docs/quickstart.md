@@ -123,8 +123,17 @@ and run directly:
 
     ---
 
-    Automatic speech recognition using the using the
+    Automatic speech recognition using the
     [LibriSpeech](https://www.openslr.org/12) dataset
+
+- [:kolena-diarization-workflow-20: Example: Speaker Diarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/speaker_diarization)
+
+    ![Example image from the speaker diarization workflow.](assets/images/speaker-diarization-example.png)
+
+    ---
+
+    Speaker Diarization using the
+    [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset
 
 </div>
 
