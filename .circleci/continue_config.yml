@@ -62,6 +62,7 @@ jobs:
             equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
+                no_output_timeout: 30m
                 name: Install Dependencies
                 command: |
                   poetry config installer.max-workers 4
