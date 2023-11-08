@@ -23,8 +23,8 @@ from pyannote.core import Segment
 from scipy import optimize
 from workflow import GroundTruth
 from workflow import Inference
+from workflow import TestCase
 
-from kolena.workflow.annotation import LabeledTimeSegment
 from kolena.workflow.annotation import TimeSegment
 
 # allowed error (in seconds) when generating identification and missed speech errors.
@@ -45,7 +45,7 @@ def compute_intersection_length(A: List[Tuple[float, float]], B: List[Tuple[floa
     return max(0.0, min_end - max_start)
 
 
-def build_cost_matrix(ref, inf) -> dict:
+def build_cost_matrix(ref: List[Tuple[str, float, float]], inf: List[Tuple[str, float, float]]) -> np.ndarray:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
     ref_index = build_speaker_index(ref)
     inf_index = build_speaker_index(inf)
@@ -103,7 +103,7 @@ def preprocess_text(segments: List[TimeSegment]) -> str:
 
 
 def create_non_overlapping_segments(
-    transcription: List[LabeledTimeSegment],
+    transcription: List[TimeSegment],
     identity=None,
 ) -> List[Tuple[float, float]]:
     """
@@ -182,8 +182,7 @@ def generate_fp(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -
                 del res[i]
                 i -= 1
                 break
-
-            if removed is not None:
+            else:
                 del res[i]
                 for r in reversed(removed):
                     res.insert(i, r)
@@ -204,18 +203,11 @@ def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeS
     for id in unique_identities:
         gt_no = create_non_overlapping_segments(gt.transcription, id)
         inf_no = create_non_overlapping_segments(inf.transcription, id)
+        res.extend(generate_fp(gt_no, inf_no))
 
-        for fp in generate_fp(gt_no, inf_no):
-            res.append(fp)
+    res = [r for r in res if r[1] - r[0] <= ERROR_THRESHOLD]
 
-    i = 0
-    while i != len(res):
-        if res[i][1] - res[i][0] <= ERROR_THRESHOLD:
-            del res[i]
-            i -= 1
-        i += 1
-
-    return [LabeledTimeSegment(start=r[0], end=r[1], label="") for r in res]
+    return [TimeSegment(start=r[0], end=r[1]) for r in res]
 
 
 def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float, float]]:
@@ -241,4 +233,21 @@ def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSe
     gt = create_non_overlapping_segments(gt.transcription)
     inf = create_non_overlapping_segments(inf.transcription)
 
-    return [LabeledTimeSegment(start=r[0], end=r[1], label="") for r in generate_fp(inf, gt)]
+    return [TimeSegment(start=r[0], end=r[1]) for r in generate_fp(inf, gt)]
+
+
+def calculate_tertiles(tc: TestCase, feature: str) -> dict:
+    '''
+    Calculates the n-tiles of a feature stored in metadata.
+    '''
+    feature_list = [ts.metadata[feature] for ts, gt in tc.iter_test_samples()]
+    percentiles = [np.percentile(feature_list, i) for i in np.linspace(0, 100, 3)]
+
+    test_case_name_to_decision_logic_map = {
+        "1st tertile": lambda x: x < percentiles[0],
+        "2nd tertile": lambda x: percentiles[1] <= x < percentiles[2],
+        "3rd tertile": lambda x: percentiles[2] <= x,
+    }
+
+    return test_case_name_to_decision_logic_map
+

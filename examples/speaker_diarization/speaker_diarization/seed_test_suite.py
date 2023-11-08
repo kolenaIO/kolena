@@ -18,6 +18,7 @@ from typing import Dict
 
 import pandas as pd
 from tqdm import tqdm
+from utils import calculate_tertiles
 from workflow import GroundTruth
 from workflow import TestCase
 from workflow import TestSample
@@ -34,12 +35,7 @@ def seed_test_suite_by_avg_amp(
     test_suite_name: str,
     complete_test_case: TestCase,
 ) -> TestSuite:
-    test_case_name_to_decision_logic_map = {
-        "1st tertile": lambda x: x < 0.0549,
-        "2nd tertile": lambda x: 0.0549 <= x < 0.102,
-        "3rd tertile": lambda x: 0.102 <= x,
-    }
-
+    test_case_name_to_decision_logic_map = calculate_tertiles(complete_test_case, 'Average_Amplitude')
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
@@ -57,6 +53,7 @@ def seed_test_suite_by_avg_amp(
         test_suite_name,
         test_cases=[complete_test_case, *test_cases],
         reset=True,
+        tags={DATASET}
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
@@ -81,16 +78,11 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
     test_samples = []
 
     for record in tqdm(df.itertuples(index=False), total=len(df)):
-        if record.transcription_path == "audio/Btr001/interval7.csv":
-            continue
         test_sample = TestSample(
             locator=f"s3://{BUCKET}/{DATASET}/{record.audio_path}",
             metadata={f: getattr(record, f) for f in required_columns},
         )
-        if args.cleaned:
-            transcription_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{record.transcription_path[:-4] + '_cleaned.csv'}")
-        else:
-            transcription_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{record.transcription_path}")
+        transcription_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{record.transcription_path[:-4] + '_cleaned.csv'}")
         ground_truth = GroundTruth(
             transcription=[
                 LabeledTimeSegment(
@@ -139,12 +131,6 @@ if __name__ == "__main__":
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
-    )
-    ap.add_argument(
-        "--cleaned",
-        type=bool,
-        default=True,
-        help="Bool to indicate whether to use cleaned text data or not.",
     )
 
     main(ap.parse_args())
