@@ -34,29 +34,30 @@ BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
 
 
-def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"predictions_{model_name}.csv")
+def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -> None:
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         similarities = []
         for img in test_sample.pairs:
-            sample_results = df_results[
-                ((df_results["locator_a"] == test_sample.locator) & (df_results["locator_b"] == img.locator))
-                | ((df_results["locator_a"] == img.locator) & (df_results["locator_b"] == test_sample.locator))
-            ]
+            # assume no image pair with itself
+            query = df["locator_a"].isin([test_sample.locator, img.locator]) & df["locator_b"].isin(
+                [test_sample.locator, img.locator]
+            )
+            sample_results = df[query]
             similarity = sample_results["similarity"].values[0] if not sample_results["failure"].values[0] else None
             similarities.append(similarity)
 
-        if not df_results[df_results["locator_a"] == test_sample.locator].empty:
-            r = next(df_results[df_results["locator_a"] == test_sample.locator].itertuples(index=False))
+        if not df[df["locator_a"] == test_sample.locator].empty:
+            r = next(df[df["locator_a"] == test_sample.locator].itertuples(index=False))
             min_x, min_y, max_x, max_y = r.a_min_x, r.a_min_y, r.a_max_x, r.a_max_y
             right_eye_x, right_eye_y = r.a_right_eye_x, r.a_right_eye_y
             left_eye_x, left_eye_y = r.a_left_eye_x, r.a_left_eye_y
             nose_x, nose_y = r.a_nose_x, r.a_nose_y
             mouth_right_x, mouth_right_y = r.a_mouth_right_x, r.a_mouth_right_y
             mouth_left_x, mouth_left_y = r.a_mouth_left_x, r.a_mouth_left_y
-        elif not df_results[df_results["locator_b"] == test_sample.locator].empty:
-            r = next(df_results[df_results["locator_b"] == test_sample.locator].itertuples(index=False))
+        elif not df[df["locator_b"] == test_sample.locator].empty:
+            r = next(df[df["locator_b"] == test_sample.locator].itertuples(index=False))
             min_x, min_y, max_x, max_y = r.b_min_x, r.b_min_y, r.b_max_x, r.b_max_y
             right_eye_x, right_eye_y = r.b_right_eye_x, r.b_right_eye_y
             left_eye_x, left_eye_y = r.b_left_eye_x, r.b_left_eye_y
@@ -81,14 +82,12 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
         return Inference(similarities=similarities, bbox=bbox, keypoints=keypoints)
 
-    model = Model(f"{model_name} [FR]", infer=infer)
+    metadata = dict(detector=detector)
+    model = Model(f"{model_name} [FR]", infer=infer, metadata=metadata)
     print(f"Model: {model}")
 
     configurations = [
         ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
-        # ThresholdConfiguration(false_match_rate=1e-2),
-        # ThresholdConfiguration(false_match_rate=1e-3),
-        # ThresholdConfiguration(false_match_rate=1e-4),
     ]
 
     for test_suite_name in test_suite_names:
@@ -99,8 +98,8 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-    for model_name in args.models:
-        seed_test_run(model_name, args.test_suites)
+    for model_name, detector in zip(args.models, args.detectors):
+        seed_test_run(model_name, detector, args.test_suites)
     return 0
 
 
@@ -108,8 +107,13 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["deepface", "facenet512"],
+        default=["VGG-Face", "Facenet512"],
         help="Name(s) of model(s) in directory to test",
+    )
+    ap.add_argument(
+        "--detectors",
+        default=["MTCNN", "yolov8n-face"],
+        help="Name(s) of detectors(s) used with corresponding model(s).",
     )
     ap.add_argument(
         "--test_suites",

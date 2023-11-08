@@ -57,14 +57,9 @@ class GroundTruth(BaseGroundTruth):
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    """Inference type for Face Recognition 1:1 workflow."""
+    """Inference type for Face Recognition workflow."""
 
     similarities: List[Optional[float]]
-    """
-    The similarity score computed between the two embeddings in this image pair. Should be left empty when either
-    image in the pair is a failure to enroll.
-    """
-
     bbox: Optional[BoundingBox]
     keypoints: Optional[Keypoints]
 
@@ -79,15 +74,19 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class PairSample(ImageAsset):
+    """Test-sample-level aggregate metrics for each Image Pair."""
+
     is_match: bool
     is_false_match: bool
     is_false_non_match: bool
     failure_to_enroll: bool
-    similarity: Optional[float] = None
+    similarity: Optional[float]
 
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
+    """Test-sample-level aggregate metrics for Face Recognition workflow."""
+
     pair_samples: List[PairSample]
     count_FNM: int
     count_FM: int
@@ -101,7 +100,7 @@ class TestSampleMetrics(MetricsTestSample):
     bbox_has_TP: bool
     bbox_has_FP: bool
     bbox_has_FN: bool
-    bbox_FTE: bool
+    bbox_failure_to_enroll: bool
     keypoint_MSE: Optional[float]
     keypoint_NMSE: Optional[float]
     keypoint_Δ_nose: Optional[float]
@@ -114,11 +113,13 @@ class TestSampleMetrics(MetricsTestSample):
     keypoint_norm_Δ_right_eye: Optional[float]
     keypoint_norm_Δ_left_mouth: Optional[float]
     keypoint_norm_Δ_right_mouth: Optional[float]
-    keypoint_FTE: bool
+    keypoint_failure_to_align: bool
 
 
 @dataclass(frozen=True)
 class PerBBoxMetrics(MetricsTestCase):
+    """Nested test-case-level aggregate metrics for Face Detection."""
+
     Label: str
     Total: int
     FTE: int
@@ -133,6 +134,8 @@ class PerBBoxMetrics(MetricsTestCase):
 
 @dataclass(frozen=True)
 class PerKeypointMetrics(MetricsTestCase):
+    """Nested test-case-level aggregate metrics for Keypoint Detection."""
+
     Label: str
     Total: int  # number of keypoints
     FTE: int
@@ -152,73 +155,32 @@ class PerKeypointMetrics(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    """Test-case-level aggregate metrics for Face Recognition 1:1 workflow."""
+    """Test-case-level aggregate metrics for Face Recognition workflow."""
 
     nImages: int
-    """Total number of unique images within this test case."""
-
     nGenuinePairs: int
-    """Total number of genuine pairs within this test case."""
-
     nImposterPairs: int
-    """Total number of imposter pairs within this test case."""
-
     FM: int
-    """Total number of false matches within this test case."""
-
     FMR: float
-    """
-    The percentage of imposter pairs that are incorrectly classified as genuine pairs
-    (i.e. similarity is above threshold) within this test case.
-    """
-
     FNM: int
-    """Total number of false non-matches within this test case."""
-
     FNMR: float
-    """
-    The percentage of genuine pairs that are incorrectly classified as imposter pairs
-    (i.e. similarity is below threshold) within this test case.
-    """
-
     ΔFNMR: float
-    """
-    The percentage difference of each test case compared to the baseline.
-    """
-
     FTE: int
-    """Total number of failure to enroll (FTE) across images within this test case."""
-
     FTER: float
-    """The percentage of FTE across images that exist within the test case."""
-
     PairFailures: int
-    """Total number of failure to enroll (FTE) across test samples within this test case."""
-
     PairFailureRate: float
-    """The percentage of FTE across test samples within the test case."""
-
     PerBBoxMetrics: List[PerBBoxMetrics]
-
     PerKeypointMetrics: List[PerKeypointMetrics]
 
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
-    """Test-suite-level metrics for Face Recognition 1:1 workflow."""
+    """Test-suite-level metrics for Face Recognition workflow."""
 
     Threshold: float
-    """The threshold value of the baseline test case given a specific FMR."""
-
     FM: int
-    """The total number of false matches in a """
-
     FNM: int
-    """The threshold value of the baseline test case given a specific FMR."""
-
     FNMR: float
-    """The threshold value of the baseline test case given a specific FMR."""
-
     TotalFTE: int
     TotalBBoxFTE: int
     TotalKeypointFTE: int
@@ -227,12 +189,12 @@ class TestSuiteMetrics(MetricsTestSuite):
 @dataclass(frozen=True)
 class ThresholdConfiguration(EvaluatorConfiguration):
     """
-    Configuration for Face Recognition 1:1 workflow.
+    Configuration for Face Recognition workflow.
     """
 
-    false_match_rate: float = None
-    iou_threshold: float = None
-    nmse_threshold: float = None
+    false_match_rate: float
+    iou_threshold: float
+    nmse_threshold: float
 
     def display_name(self) -> str:
         return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold} | NMSE threshold: {self.nmse_threshold}"

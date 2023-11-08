@@ -87,7 +87,7 @@ def compute_per_sample(
 
     # Stage 2: Keypoints
 
-    keypoint_fte = False
+    keypoint_fta = False
     mse, nmse = None, None
     Δ_nose, norm_Δ_nose = None, None
     Δ_left_eye, norm_Δ_left_eye = None, None
@@ -115,7 +115,7 @@ def compute_per_sample(
         mse, nmse = calculate_mse_nmse(distances, normalization_factor)
 
     if not bbox_fte and (inference.keypoints is None or nmse >= configuration.nmse_threshold):
-        keypoint_fte = True
+        keypoint_fta = True
 
     # Stage 3: Recognition
     pair_samples = list()
@@ -163,7 +163,7 @@ def compute_per_sample(
         bbox_has_TP=tp,
         bbox_has_FP=fp,
         bbox_has_FN=(not tp and not fp),
-        bbox_FTE=bbox_fte,
+        bbox_failure_to_enroll=bbox_fte,
         keypoint_MSE=mse,
         keypoint_NMSE=nmse,
         keypoint_Δ_nose=Δ_nose,
@@ -176,7 +176,7 @@ def compute_per_sample(
         keypoint_norm_Δ_right_eye=norm_Δ_right_eye,
         keypoint_norm_Δ_left_mouth=norm_Δ_left_mouth,
         keypoint_norm_Δ_right_mouth=norm_Δ_right_mouth,
-        keypoint_FTE=keypoint_fte,
+        keypoint_failure_to_align=keypoint_fta,
     )
 
 
@@ -191,7 +191,7 @@ def compute_per_bbox_case(
     return PerBBoxMetrics(
         Label="Bounding Box Detection",
         Total=np.sum([gt.bbox is not None for gt in ground_truths]),
-        FTE=np.sum([tsm.bbox_FTE for tsm in metrics]),
+        FTE=np.sum([tsm.bbox_failure_to_enroll for tsm in metrics]),
         AvgIoU=np.mean([tsm.bbox_IoU for tsm in metrics]),
         Precision=precision(tp, fp),
         Recall=recall(tp, fn),
@@ -209,29 +209,27 @@ def compute_per_keypoint_case(ground_truths: List[GroundTruth], metrics: List[Te
     return PerKeypointMetrics(
         Label="Keypoints Detection",
         Total=np.sum([gt.keypoints is not None for gt in ground_truths]),
-        FTE=np.sum([tsm.keypoint_FTE if tsm.keypoint_FTE is not None else 0.0 for tsm in metrics]),
-        MSE=np.nanmean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
-        NMSE=np.nanmean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
-        AvgΔNose=np.nanmean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),
-        AvgΔLeftEye=np.nanmean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),
-        AvgΔRightEye=np.nanmean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),
-        AvgΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),
-        AvgΔRightMouth=np.nanmean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),
-        AvgNormΔNose=np.nanmean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),
-        AvgNormΔLeftEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),
-        AvgNormΔRightEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),
-        AvgNormΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]),
-        AvgNormΔRightMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]),
+        FTE=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
+        MSE=np.mean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
+        NMSE=np.mean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
+        AvgΔNose=np.mean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),
+        AvgΔLeftEye=np.mean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),
+        AvgΔRightEye=np.mean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),
+        AvgΔLeftMouth=np.mean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),
+        AvgΔRightMouth=np.mean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),
+        AvgNormΔNose=np.mean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),
+        AvgNormΔLeftEye=np.mean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),
+        AvgNormΔRightEye=np.mean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),
+        AvgNormΔLeftMouth=np.mean([process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]),
+        AvgNormΔRightMouth=np.mean([process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]),
     )
 
 
 def compute_test_case_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
-    inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
-    configuration: ThresholdConfiguration,
 ) -> TestCaseMetrics:
     n_genuine_pairs = np.sum([np.sum(gt.matches) for gt in ground_truths]) / 2
     n_imposter_pairs = np.sum([np.sum(np.invert(gt.matches)) for gt in ground_truths]) / 2
@@ -242,7 +240,7 @@ def compute_test_case_metrics(
         n_fnm += np.sum([ps.is_false_non_match for ps in tsm.pair_samples])
         n_pair_failures += np.sum([ps.failure_to_enroll for ps in tsm.pair_samples])
 
-    n_fte = np.sum([(tsm.bbox_FTE or tsm.keypoint_FTE) for tsm in metrics])
+    n_fte = np.sum([(tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align) for tsm in metrics])
 
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
     keypoint_metrics = compute_per_keypoint_case(ground_truths, metrics)
@@ -252,14 +250,14 @@ def compute_test_case_metrics(
         nGenuinePairs=n_genuine_pairs,
         nImposterPairs=n_imposter_pairs,
         FM=n_fm,
-        FMR=(n_fm / n_imposter_pairs) * 100,
+        FMR=n_fm / n_imposter_pairs,
         FNM=n_fnm,
-        FNMR=(n_fnm / n_genuine_pairs) * 100,
-        ΔFNMR=(n_fnm / n_genuine_pairs) * 100 - baseline_fnmr,
+        FNMR=n_fnm / n_genuine_pairs,
+        ΔFNMR=(n_fnm / n_genuine_pairs) - baseline_fnmr,
         FTE=n_fte,
-        FTER=(n_fte / len(test_samples)) * 100,
+        FTER=n_fte / len(test_samples),
         PairFailures=n_pair_failures,
-        PairFailureRate=(n_pair_failures / (n_genuine_pairs + n_imposter_pairs)) * 100,
+        PairFailureRate=n_pair_failures / (n_genuine_pairs + n_imposter_pairs),
         PerBBoxMetrics=[bbox_metrics],
         PerKeypointMetrics=[keypoint_metrics],
     )
@@ -330,7 +328,7 @@ def compute_test_case_plots(
             n_fm += np.sum([ps.is_false_match for ps in metric.pair_samples])
             n_fnm += np.sum([ps.is_false_non_match for ps in metric.pair_samples])
 
-        fnmr_y.append((n_fnm / n_genuine_pairs) * 100)
+        fnmr_y.append(n_fnm / n_genuine_pairs)
         fmr_y.append(n_fm / n_imposter_pairs)
 
     plots.append(
@@ -366,10 +364,10 @@ def compute_test_suite_metrics(
         Threshold=threshold,
         FM=baseline.FM,
         FNM=baseline.FNM,
-        FNMR=(baseline.FNM / baseline.nGenuinePairs) * 100,
-        TotalFTE=np.sum([tsm.bbox_FTE or tsm.keypoint_FTE for tsm in metrics]),
-        TotalBBoxFTE=np.sum([tsm.bbox_FTE for tsm in metrics]),
-        TotalKeypointFTE=np.sum([tsm.keypoint_FTE for tsm in metrics]),
+        FNMR=baseline.FNM / baseline.nGenuinePairs,
+        TotalFTE=np.sum([tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align for tsm in metrics]),
+        TotalBBoxFTE=np.sum([tsm.bbox_failure_to_enroll for tsm in metrics]),
+        TotalKeypointFTE=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
     )
 
 
@@ -391,12 +389,10 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    baseline = compute_test_case_metrics(test_samples, ground_truths, inferences, test_sample_metrics, 0, configuration)
+    baseline = compute_test_case_metrics(test_samples, ground_truths, test_sample_metrics, 0)
     baseline_fnmr = baseline.FNMR
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append(
-            (test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr, configuration))
-        )
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, tsm, baseline_fnmr)))
         all_test_case_plots.append((test_case, compute_test_case_plots(tsm, gt, inf, configuration)))
 
     test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, baseline, threshold)

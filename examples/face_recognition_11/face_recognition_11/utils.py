@@ -76,7 +76,7 @@ def create_similarity_histogram(
                 else:
                     imposter_values.append(similarity)
 
-    min_data, max_data = 0.0, 0.5
+    min_data, max_data = 0.0, 1.0
 
     number_of_bins = 50
     bin_size = (max_data - min_data) / number_of_bins

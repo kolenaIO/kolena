@@ -108,10 +108,9 @@ def main(args: Namespace) -> int:
 
         matches = []
         for img in pairs:
-            match = df[
-                ((df["locator_a"] == locator) & (df["locator_b"] == img))
-                | ((df["locator_b"] == locator) & (df["locator_a"] == img))
-            ]["is_same"].values[0]
+            # assume no image pair with itself
+            query = df["locator_a"].isin([locator, img]) & df["locator_b"].isin([locator, img])
+            match = df[query]["is_same"].values[0]
             matches.append(match)
 
         bbox, keypoints = bbox_keypoints[locator]
