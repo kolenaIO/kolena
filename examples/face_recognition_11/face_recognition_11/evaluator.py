@@ -65,7 +65,7 @@ def compute_per_sample(
         else None
     )
 
-    if iou_value is not None:
+    if iou_value is not None and inference.bbox is not None:
         tp = iou_value >= configuration.iou_threshold
         fp = iou_value < configuration.iou_threshold
         fn = inference.bbox is None or not tp

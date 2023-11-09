@@ -49,14 +49,14 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
             similarities.append(similarity)
 
         if not df[df["locator_a"] == test_sample.locator].empty:
-            r = next(df[df["locator_a"] == test_sample.locator].itertuples(index=False))
+            r = df[df["locator_a"] == test_sample.locator].iloc[0]
             pair = "a"
         elif not df[df["locator_b"] == test_sample.locator].empty:
-            r = next(df[df["locator_b"] == test_sample.locator].iterrows(index=False))
+            r = df[df["locator_b"] == test_sample.locator].iloc[0]
             pair = "b"
 
         bbox = (
-            BoundingBox((r[f"{pair}_min_x"], r[f"{pair}_min_y"]), (r[f"{pair}_min_x"], r[f"{pair}_max_y"]))
+            BoundingBox((r[f"{pair}_min_x"], r[f"{pair}_min_y"]), (r[f"{pair}_max_x"], r[f"{pair}_max_y"]))
             if r[f"{pair}_min_x"] is not None and not np.isnan(r[f"{pair}_min_x"])
             else None
         )
@@ -87,7 +87,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
-        test(model, test_suite, evaluate_face_recognition_11, configurations)
+        test(model, test_suite, evaluate_face_recognition_11, configurations, reset=True)
 
 
 def main(args: Namespace) -> int:
