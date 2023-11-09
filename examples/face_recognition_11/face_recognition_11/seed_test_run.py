@@ -50,33 +50,28 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
         if not df[df["locator_a"] == test_sample.locator].empty:
             r = next(df[df["locator_a"] == test_sample.locator].itertuples(index=False))
-            min_x, min_y, max_x, max_y = r.a_min_x, r.a_min_y, r.a_max_x, r.a_max_y
-            right_eye_x, right_eye_y = r.a_right_eye_x, r.a_right_eye_y
-            left_eye_x, left_eye_y = r.a_left_eye_x, r.a_left_eye_y
-            nose_x, nose_y = r.a_nose_x, r.a_nose_y
-            mouth_right_x, mouth_right_y = r.a_mouth_right_x, r.a_mouth_right_y
-            mouth_left_x, mouth_left_y = r.a_mouth_left_x, r.a_mouth_left_y
+            pair = "a"
         elif not df[df["locator_b"] == test_sample.locator].empty:
-            r = next(df[df["locator_b"] == test_sample.locator].itertuples(index=False))
-            min_x, min_y, max_x, max_y = r.b_min_x, r.b_min_y, r.b_max_x, r.b_max_y
-            right_eye_x, right_eye_y = r.b_right_eye_x, r.b_right_eye_y
-            left_eye_x, left_eye_y = r.b_left_eye_x, r.b_left_eye_y
-            nose_x, nose_y = r.b_nose_x, r.b_nose_y
-            mouth_right_x, mouth_right_y = r.b_mouth_right_x, r.b_mouth_right_y
-            mouth_left_x, mouth_left_y = r.b_mouth_left_x, r.b_mouth_left_y
+            r = next(df[df["locator_b"] == test_sample.locator].iterrows(index=False))
+            pair = "b"
 
-        bbox = BoundingBox((min_x, min_y), (max_x, max_y)) if min_x else None
+        bbox = (
+            BoundingBox((r[f"{pair}_min_x"], r[f"{pair}_min_y"]), (r[f"{pair}_min_x"], r[f"{pair}_max_y"]))
+            if r[f"{pair}_min_x"]
+            else None
+        )
+
         keypoints = (
             Keypoints(
                 [
-                    (right_eye_x, right_eye_y),
-                    (left_eye_x, left_eye_y),
-                    (nose_x, nose_y),
-                    (mouth_right_x, mouth_right_y),
-                    (mouth_left_x, mouth_left_y),
-                ],
+                    (r[f"{pair}_right_eye_x"], r[f"{pair}_right_eye_y"]),
+                    (r[f"{pair}_left_eye_x"], r[f"{pair}_left_eye_y"]),
+                    (r[f"{pair}_nose_x"], r[f"{pair}_nose_y"]),
+                    (r[f"{pair}_mouth_right_x"], r[f"{pair}_mouth_right_y"]),
+                    (r[f"{pair}_mouth_left_x"], r[f"{pair}_mouth_left_y"]),
+                ]
             )
-            if right_eye_x
+            if r[f"{pair}right_eye_x"]
             else None
         )
 
