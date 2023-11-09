@@ -87,12 +87,13 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
     configurations = [
         ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
+        ThresholdConfiguration(false_match_rate=1e-4, iou_threshold=0.5, nmse_threshold=0.5),
     ]
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
-        test(model, test_suite, evaluate_face_recognition_11, configurations, reset=True)
+        test(model, test_suite, evaluate_face_recognition_11, configurations)
 
 
 def main(args: Namespace) -> int:
@@ -106,12 +107,14 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["VGG-Face", "Facenet512"],
+        # default=["VGG-Face", "Facenet512"],
+        default=["VGG-Face"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--detectors",
-        default=["MTCNN", "yolov8n-face"],
+        # default=["MTCNN", "yolov8n-face"],
+        default=["MTCNN"],
         help="Name(s) of detectors(s) used with corresponding model(s).",
     )
     ap.add_argument(

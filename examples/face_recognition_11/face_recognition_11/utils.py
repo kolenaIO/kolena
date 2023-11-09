@@ -30,18 +30,21 @@ def compute_threshold(
     eps: float = 1e-9,
 ) -> float:
     func = lambda is_same, similarity, pair_sample: (is_same, similarity)
-    scores = filter_duplicates(func, test_samples, ground_truths, inferences)
-
+    scores = filter_duplicate(func, test_samples, ground_truths, inferences)
     imposter_scores = sorted(
         [similarity if similarity is not None else 0.0 for match, similarity in scores if not match],
         reverse=True,
     )
     threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
     threshold = imposter_scores[threshold_idx] - eps
+
+    # print(f"imposter_scores length: {len(imposter_scores)}")
+    # print(f"threshold: {threshold}")
+    # print(f"threshold_idx: {threshold_idx}")
     return threshold
 
 
-def filter_duplicates(
+def filter_duplicate(
     func: Callable,
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
@@ -52,14 +55,12 @@ def filter_duplicates(
     values = []
     seen = []
     for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
-        a = test_samples[i].locator
         for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
-            b = test_samples[i].pairs[j].locator
-            pair = (a, b)
+            pair = (test_samples[i].locator, test_samples[i].pairs[j].locator)
             if pair not in seen:
                 values.append(func(is_same, similarity, metrics[i].pair_samples[j] if metrics is not None else None))
-                seen.append((a, b))
-                seen.append((b, a))
+                seen.append(pair)
+                seen.append(pair[::-1])
 
     return values
 

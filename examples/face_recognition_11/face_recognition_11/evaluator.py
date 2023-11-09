@@ -14,6 +14,7 @@
 from typing import List
 from typing import Optional
 from typing import Tuple
+from collections import defaultdict
 
 import numpy as np
 from face_recognition_11.workflow import ThresholdConfiguration
@@ -27,7 +28,7 @@ from face_recognition_11.workflow import TestSuiteMetrics
 from face_recognition_11.workflow import PerBBoxMetrics
 from face_recognition_11.workflow import PerKeypointMetrics
 from face_recognition_11.workflow import PairSample
-from face_recognition_11.utils import compute_distances, calculate_mse_nmse, compute_threshold, filter_duplicates
+from face_recognition_11.utils import compute_distances, calculate_mse_nmse, compute_threshold
 from face_recognition_11.utils import create_similarity_histogram, create_iou_histogram
 
 from kolena.workflow import ConfusionMatrix, BarPlot
@@ -39,36 +40,6 @@ from kolena.workflow import Plot
 from kolena.workflow import TestCases
 from kolena.workflow.annotation import ScoredClassificationLabel, ClassificationLabel
 from kolena.workflow.metrics import precision, recall, f1_score, iou
-
-
-# def compute_threshold(
-#     test_samples: List[TestSample],
-#     ground_truths: List[GroundTruth],
-#     inferences: List[Inference],
-#     fmr: float,
-#     eps: float = 1e-9,
-# ) -> float:
-#     scores = []
-
-#     # address duplicates because of how we model
-#     seen = []
-#     for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
-#         a = test_samples[i].locator
-#         for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
-#             b = test_samples[i].pairs[j].locator
-#             pair = (a, b)
-#             if pair not in seen:
-#                 scores.append((is_same, similarity))
-#                 seen.append((a, b))
-#                 seen.append((b, a))
-
-#     imposter_scores = sorted(
-#         [similarity if similarity is not None else 0.0 for match, similarity in scores if not match],
-#         reverse=True,
-#     )
-#     threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
-#     threshold = imposter_scores[threshold_idx] - eps
-#     return threshold
 
 
 def compute_per_sample(
@@ -234,42 +205,34 @@ def compute_per_keypoint_case(ground_truths: List[GroundTruth], metrics: List[Te
 def compute_test_case_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
-    inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
+    unique_pairs: List[Tuple],
 ) -> TestCaseMetrics:
-    def compute_pair_counts(is_same: bool, similarity: float, pair_sample: PairSample) -> Tuple:
-        # (genuine_pair, imposter_pair, n_fm, n_fnm, n_pair_failures)
-        return (
-            is_same,
-            not is_same,
-            pair_sample.is_false_match,
-            pair_sample.is_false_non_match,
-            pair_sample.failure_to_enroll,
-        )
+    genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
 
-    pair_counts = filter_duplicates(compute_pair_counts, test_samples, ground_truths, inferences, metrics)
-    n_genuine_pairs = np.sum([i for i, _, _, _, _ in pair_counts])
-    n_imposter_pairs = np.sum([i for _, i, _, _, _ in pair_counts])
-    n_fm = np.sum([i for _, _, i, _, _ in pair_counts])
-    n_fnm = np.sum([i for _, _, _, i, _ in pair_counts])
-    n_pair_failures = np.sum([i for _, _, _, _, i in pair_counts])
+    for ts, gt in zip(test_samples, ground_truths):
+        for pair, match in zip(ts.pairs, gt.matches):
+            ab = (ts.locator, pair.locator)
+            genuine_pairs[ab] = genuine_pairs[ab] = match
+            imposter_pairs[ab] = imposter_pairs[ab[::-1]] = not match
 
-    # n_genuine_pairs = np.sum([gt.count_genuine_pair for gt in ground_truths]) / 2
-    # n_imposter_pairs = np.sum([gt.count_imposter_pair for gt in ground_truths]) / 2
+    for ts, tsm in zip(test_samples, metrics):
+        for pair, tsm_pair in zip(ts.pairs, tsm.pair_samples):
+            ab = (ts.locator, pair.locator)
+            fm[ab] = fm[ab[::-1]] = tsm_pair.is_false_match
+            fnm[ab] = fnm[ab[::-1]] = tsm_pair.is_false_non_match
+            pair_failures[ab] = pair_failures[ab[::-1]] = tsm_pair.failure_to_enroll
+            fte[ab] = fte[(ab[::-1])] = (
+                tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align or tsm_pair.failure_to_enroll
+            )
 
-    # n_fm, n_fnm, n_pair_failures = 0, 0, 0
-    # for tsm in metrics:
-    #     n_fm += np.sum([ps.is_false_match for ps in tsm.pair_samples])
-    #     n_fnm += np.sum([ps.is_false_non_match for ps in tsm.pair_samples])
-    #     n_pair_failures += np.sum([ps.failure_to_enroll for ps in tsm.pair_samples])
-
-    # # address duplicates
-    # n_fm = n_fm / 2
-    # n_fnm = n_fnm / 2
-    # n_pair_failures = n_pair_failures / 2
-
-    n_fte = np.sum([(tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align) for tsm in metrics])
+    n_genuine_pairs = np.sum([genuine_pairs[pair] for pair in unique_pairs])
+    n_imposter_pairs = np.sum([imposter_pairs[pair] for pair in unique_pairs])
+    n_fm = np.sum([fm[pair] for pair in unique_pairs])
+    n_fnm = np.sum([fnm[pair] for pair in unique_pairs])
+    n_pair_failures = np.sum([pair_failures[pair] for pair in unique_pairs])
+    n_fte = np.sum([fte[pair] for pair in unique_pairs])
 
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
     keypoint_metrics = compute_per_keypoint_case(ground_truths, metrics)
@@ -298,6 +261,7 @@ def compute_test_case_plots(
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     configuration: ThresholdConfiguration,
+    unique_pairs: List[Tuple],
 ) -> Optional[List[Plot]]:
     plots = []
 
@@ -341,9 +305,6 @@ def compute_test_case_plots(
 
     thresholds = [compute_threshold(test_samples, ground_truths, inferences, fmr) for fmr in baseline_fmr_x]
 
-    # n_genuine_pairs = np.sum([gt.count_genuine_pair for gt in ground_truths]) / 2
-    # n_imposter_pairs = np.sum([gt.count_imposter_pair for gt in ground_truths]) / 2
-
     fnmr_y = list()
     fmr_y = list()
 
@@ -352,16 +313,7 @@ def compute_test_case_plots(
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
 
-        # n_fm, n_fnm = 0, 0
-        # for metric in tsm_for_one_threshold:
-        #     n_fm += np.sum([ps.is_false_match for ps in metric.pair_samples])
-        #     n_fnm += np.sum([ps.is_false_non_match for ps in metric.pair_samples])
-
-        # # address duplicates
-        # n_fm = n_fm / 2
-        # n_fnm = n_fnm / 2
-
-        tcm = compute_test_case_metrics(test_samples, ground_truths, inferences, tsm_for_one_threshold, 0)
+        tcm = compute_test_case_metrics(test_samples, ground_truths, tsm_for_one_threshold, 0, unique_pairs)
         fnmr_y.append(tcm.FNMR)
         fmr_y.append(tcm.FMR)
 
@@ -412,6 +364,9 @@ def evaluate_face_recognition_11(
     test_cases: TestCases,
     configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
+    pairs = set([(ts.locator, pair.locator) for ts in test_samples for pair in ts.pairs])
+    unique_pairs = set((a, b) if a <= b else (b, a) for a, b in pairs)
+
     threshold = compute_threshold(test_samples, ground_truths, inferences, configuration.false_match_rate)
 
     # compute per-sample metrics for each test sample
@@ -423,11 +378,17 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    baseline = compute_test_case_metrics(test_samples, ground_truths, inferences, test_sample_metrics, 0)
-    baseline_fnmr = baseline.FNMR
-    for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts, gt, inf, tsm, baseline_fnmr)))
-        all_test_case_plots.append((test_case, compute_test_case_plots(ts, gt, inf, tsm, configuration)))
+    baseline = compute_test_case_metrics(test_samples, ground_truths, test_sample_metrics, 0, unique_pairs)
+    fnmr = baseline.FNMR
+    for test_case, ts_subset, gt, inf, tsm in test_cases.iter(
+        test_samples, ground_truths, inferences, test_sample_metrics
+    ):
+        pairs = set([(ts.locator, pair.locator) for ts in ts_subset for pair in ts.pairs])
+        unique_pairs = set((a, b) if a <= b else (b, a) for a, b in pairs)
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, fnmr, unique_pairs)))
+        all_test_case_plots.append(
+            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, unique_pairs))
+        )
 
     test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, baseline, threshold)
 
