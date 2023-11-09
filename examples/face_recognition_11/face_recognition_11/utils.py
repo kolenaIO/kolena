@@ -58,12 +58,10 @@ def get_unique_pairs(test_samples: List[TestSample]) -> List[Tuple[str, str]]:
     return unique_pairs
 
 
-def get_pair_counts(
-    test_samples: List[TestSample],
-    ground_truths: List[GroundTruth],
-    metrics: List[TestSampleMetrics],
-    unique_pairs: List[Tuple[str, str]],
+def compute_pair_metrics(
+    test_samples: List[TestSample], ground_truths: List[GroundTruth], metrics: List[TestSampleMetrics]
 ) -> Tuple[list, list, list, list, list, list]:
+    unique_pairs = get_unique_pairs(test_samples)
     genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
 
     for ts, gt in zip(test_samples, ground_truths):

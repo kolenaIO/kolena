@@ -21,8 +21,7 @@ from face_recognition_11.utils import compute_distances
 from face_recognition_11.utils import compute_threshold
 from face_recognition_11.utils import create_iou_histogram
 from face_recognition_11.utils import create_similarity_histogram
-from face_recognition_11.utils import get_pair_counts
-from face_recognition_11.utils import get_unique_pairs
+from face_recognition_11.utils import compute_pair_metrics
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import PairSample
@@ -223,13 +222,9 @@ def compute_test_case_metrics(
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
-    unique_pairs: List[Tuple],
 ) -> TestCaseMetrics:
-    n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte = get_pair_counts(
-        test_samples,
-        ground_truths,
-        metrics,
-        unique_pairs,
+    n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte = compute_pair_metrics(
+        test_samples, ground_truths, metrics
     )
 
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
@@ -259,7 +254,6 @@ def compute_test_case_plots(
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     configuration: ThresholdConfiguration,
-    unique_pairs: List[Tuple[str, str]],
 ) -> Optional[List[Plot]]:
     plots = []
 
@@ -311,11 +305,8 @@ def compute_test_case_plots(
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
 
-        n_genuine, n_imposter, n_fm, n_fnm, _, _ = get_pair_counts(
-            test_samples,
-            ground_truths,
-            tsm_for_one_threshold,
-            unique_pairs,
+        n_genuine, n_imposter, n_fm, n_fnm, _, _ = compute_pair_metrics(
+            test_samples, ground_truths, tsm_for_one_threshold
         )
         fnmr_y.append(n_fnm / n_genuine)
         fmr_y.append(n_fm / n_imposter)
@@ -371,8 +362,6 @@ def evaluate_face_recognition_11(
     test_cases: TestCases,
     configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
-    unique_pairs = get_unique_pairs(test_samples)
-
     threshold = compute_threshold(test_samples, ground_truths, inferences, configuration.false_match_rate)
 
     # compute per-sample metrics for each test sample
@@ -384,7 +373,7 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    n_genuine, _, n_fm, n_fnm, _, _ = get_pair_counts(test_samples, ground_truths, test_sample_metrics, unique_pairs)
+    n_genuine, _, n_fm, n_fnm, _, _ = compute_pair_metrics(test_samples, ground_truths, test_sample_metrics)
     fnmr = n_fnm / n_genuine
     for test_case, ts_subset, gt, inf, tsm in test_cases.iter(
         test_samples,
@@ -392,10 +381,9 @@ def evaluate_face_recognition_11(
         inferences,
         test_sample_metrics,
     ):
-        unique_pairs = get_unique_pairs(ts_subset)
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, fnmr, unique_pairs)))
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, fnmr)))
         all_test_case_plots.append(
-            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, unique_pairs)),
+            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration)),
         )
 
     test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, n_fm, n_fnm, fnmr, threshold)
