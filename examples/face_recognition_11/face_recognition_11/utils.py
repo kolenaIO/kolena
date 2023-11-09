@@ -74,7 +74,7 @@ def compute_pair_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
-) -> Tuple[list, list, list, list, list, list]:
+) -> Tuple[int, int, int, int, int, int]:
     unique_pairs = get_unique_pairs(test_samples)
     genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
 
