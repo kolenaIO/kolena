@@ -2,7 +2,7 @@
 
 !!! info inline end "Requirements"
 
-    It is important to note that perplexity can only be calculated using autoregressive language models.
+    It is important to note that perplexity can only be calculated using [autoregressive language models](#autoregressive-language-model-info).
 
 Perplexity is a metric commonly used in natural language processing to evaluate the quality of language models,
 particularly in the context of text generation. Unlike metrics such as [BLEU](bleu.md) or [BERT](bertscore.md),
@@ -15,9 +15,11 @@ language model is not confident in its text generation — that is, the model is
 perplexity indicates that the language model is confident in its generation.
 
 ??? note "Note: Perplexity can only be calculated for autoregressive language models"
-    Autoregressive language models, such as GPT and LLaMA, are language models that work by generating one token at a time, based on a set number of preceding tokens. Simply put, it is a model that outputs a probability distribution of words
-    given some preceding context, selects the word with the highest probability to be the next word in the sentence,
-    then reruns the same process with the generated word as part of the preceding context.
+    <section id="autoregressive-language-model-info">
+    Autoregressive language models, such as GPT and LLaMA, are language models that work by generating one token at a time, based on a set number of preceding tokens.
+    </section>
+
+    To generate an output, it analyzes the words that come before it and calculates the likelihood of different words being the next one. Then, it picks the word with the highest chance of being correct for the next part of the sentence. After that, it repeats the entire process, using the newly selected word as part of the context for the next prediction.
 
     For example, if the preceding generated text is "Hello, today is a great day to" and our context length is set
     to 6 preceding words, our model's output distribution might look like the following:
@@ -36,7 +38,7 @@ if this doesn't make sense, we'll break it down!).
 
 $$
 \begin{align*}
-\text{Perplexity} &= \exp{\{ -\frac{1}{t} \sum^t_i \log p_\theta (x_i | x_\text{context}) \}}
+\text{Perplexity} &= \exp{( -\frac{1}{t} \sum^t_i \log p_\theta (x_i | x_\text{context}) )}
 \end{align*}
 $$
 
@@ -60,7 +62,7 @@ for example in test_dataset:
     word_count += 1
 
 # Calculate the exponential of the negative log likelihood averaged over the
-#     number of words
+# number of words
 perplexity = e ^ (-total_log_likelihood / word_count)
 ```
 
@@ -77,10 +79,10 @@ LLaMA-2 7B calculated on its diverse test dataset is between 5.0 - 6.0. It is no
 model perform between these ranges for text-generation tasks.
 
 ### Example
-Assume we have a sentence-completion language model that uses a context-length of 4, and contains a very limited
+Assume we have a sentence-completion language model that uses a context-length of 4 and has a very limited
 vocabulary. Let's calculate the perplexity of the hypothetical model.
 
-| Reference | Input |
+| Ground Truth | Context |
 | | |
 | `The curious cat explored the mysterious, overgrown garden`. | `The curious cat explored...` |
 
@@ -104,20 +106,20 @@ vocabulary. Let's calculate the perplexity of the hypothetical model.
     Our total log likelihood is:
 
     $$
-    log(0.45) + log(0.2) + log(0.7) + log(0.05) = -2.502
+    log(0.45) + log(0.2) + log(0.7) + log(0.05) \approx -2.502
     $$
 
     Thus, our perplexity is given by:
 
     $$
     \begin{align*}
-    \text{Perplexity} &= exp{\{ \frac{-2.502}{4} \}} \\
-                      &= 0.535
+    \text{Perplexity} &\approx \exp{( \frac{2.502}{4} )} \\
+                      &\approx 1.869
     \end{align*}
     $$
 
     Note that in reality, the assigned output probabilities may be much lower due to models having extremely large
-    vocabularies. So, a perplexity of 0.535 may not be realistic and representative of an actual language model.
+    vocabularies. So, a perplexity of 1.869 may not be realistic and representative of an actual language model.
 
 
 
