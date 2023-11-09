@@ -57,7 +57,12 @@ def compute_per_sample(
 ) -> TestSampleMetrics:
     # Stage 1: Detection
 
-    bbox_fte, tp, fp, fn = False, False, False, False, False
+    bbox_fte, tp, fp, fn = (
+        False,
+        False,
+        False,
+        False,
+    )
 
     iou_value = (
         iou(ground_truth.bbox, inference.bbox)
