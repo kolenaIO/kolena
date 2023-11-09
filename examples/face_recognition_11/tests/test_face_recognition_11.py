@@ -34,7 +34,7 @@ def test__seed_test_suite__smoke() -> None:
 def test__seed_test_run__smoke() -> None:
     args = Namespace(
         models=["VGG-Face", "Facenet512"],
-        default=["MTCNN", "yolov8n-face"],
+        detectors=["MTCNN", "yolov8n-face"],
         test_suites=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"],
     )
     seed_test_run_main(args)

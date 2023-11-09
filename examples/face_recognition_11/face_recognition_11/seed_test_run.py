@@ -91,7 +91,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     for model_name, detector in zip(args.models, args.detectors):
         seed_test_run(model_name, detector, args.test_suites)
     return 0

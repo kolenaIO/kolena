@@ -56,20 +56,22 @@ def compute_per_sample(
     test_sample: TestSample = None,
 ) -> TestSampleMetrics:
     # Stage 1: Detection
+    if inference.bbox is None:
+        bbox_fte = True
+
     iou_value = (
         iou(ground_truth.bbox, inference.bbox)
         if (ground_truth.bbox is not None and inference.bbox is not None)
-        else 0.0
+        else None
     )
-    bbox_fte, tp, fp = False, False, False
-    if iou_value != 0.0:
+    bbox_fte, tp, fp, fn = False, False, False, False
+
+    if iou_value is not None:
         tp = iou_value >= configuration.iou_threshold
         fp = iou_value < configuration.iou_threshold
-    else:
-        bbox_fte = True
+        fn = inference.bbox is None or not tp
 
     # Stage 2: Keypoints
-
     keypoint_fta = False
     mse, nmse = None, None
     Δ_nose, norm_Δ_nose = None, None
@@ -112,7 +114,6 @@ def compute_per_sample(
 
     # Stage 3: Recognition
     pair_samples = list()
-    count_fnm, count_fm, count_tm, count_tnm = 0, 0, 0, 0
     for i, (is_same, similarity) in enumerate(zip(ground_truth.matches, inference.similarities)):
         is_match, is_false_match, is_false_non_match, failure_to_enroll = False, False, False, False
         if similarity is None:
@@ -146,12 +147,12 @@ def compute_per_sample(
         count_TNM=np.sum([not is_false_non_match and not is_false_match and not is_match for pair in pair_samples]),
         similarity_threshold=threshold,
         bbox_IoU=iou_value if iou_value is not None else 0.0,
-        bbox_TP=[inference.bbox] if tp and inference.bbox is not None else [],
-        bbox_FP=[inference.bbox] if fp and inference.bbox is not None else [],
-        bbox_FN=[inference.bbox] if (not tp and not fp) and inference.bbox is not None else [],
+        bbox_TP=[inference.bbox] if tp and not bbox_fte else [],
+        bbox_FP=[inference.bbox] if fp and not bbox_fte else [],
+        bbox_FN=[inference.bbox] if fn and not bbox_fte else [],
         bbox_has_TP=tp,
         bbox_has_FP=fp,
-        bbox_has_FN=not tp and not fp,
+        bbox_has_FN=fn,
         bbox_failure_to_enroll=bbox_fte,
         keypoint_MSE=mse,
         keypoint_NMSE=nmse,
@@ -376,7 +377,11 @@ def evaluate_face_recognition_11(
         )
 
     test_suite_metrics = compute_test_suite_metrics(
-        test_sample_metrics, pair_metrics.fm, pair_metrics.fnm, pair_metrics.fnmr, threshold
+        test_sample_metrics,
+        pair_metrics.fm,
+        pair_metrics.fnm,
+        pair_metrics.fnmr,
+        threshold,
     )
 
     return EvaluationResults(
