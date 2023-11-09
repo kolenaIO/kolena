@@ -139,7 +139,7 @@ def main(args: Namespace) -> int:
 
     for test_suite_name, test_cases in test_suites.items():
         test_suite = TestSuite(
-            name=f"{DATASET}-test :: {test_suite_name} [FR]",
+            name=f"{DATASET} :: {test_suite_name} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
