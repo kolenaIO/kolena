@@ -20,7 +20,6 @@ from typing import List
 
 import pytest
 
-from kolena.classification.multiclass import TestSuite as MulticlassTestSuite
 from kolena.detection import TestSuite as DetectionTestSuite
 from kolena.errors import NameConflictError
 from kolena.errors import WorkflowMismatchError
@@ -154,11 +153,12 @@ def test__load__mismatching_workflows() -> None:
 def test__load_all(with_init: None) -> None:
     workflow = with_test_prefix(f"{__file__}::test__load_all workflow")
     _, TestCase, TestSuite, _ = define_workflow(workflow, DummyTestSample, DummyGroundTruth, DummyInference)
+    _, _, TestSuite2, _ = define_workflow(f"{workflow} 2", DummyTestSample, DummyGroundTruth, DummyInference)
     name = with_test_prefix(f"{__file__}::test__load_all test suite")
     test_suite0 = TestSuite(f"{name} 0")  # no tags, version 0
     test_suite1 = TestSuite(f"{name} 1", tags={name, f"{name} 1"})  # has tags, version 0
     test_suite2 = TestSuite(f"{name} 2", tags={name, f"{name} 2"}, test_cases=[TestCase(name)])  # tags, v1
-    MulticlassTestSuite(name, tags={name})  # create another kolena.workflow test suite with a different workflow
+    TestSuite2(name, tags={name})  # create another kolena.workflow test suite with a different workflow
     assert TestSuite.load_all() == [test_suite0, test_suite1, test_suite2]
     assert TestSuite.load_all(tags={name}) == [test_suite1, test_suite2]
     assert TestSuite.load_all(tags={name, f"{name} 1"}) == [test_suite1]

@@ -12,7 +12,7 @@ can be tested can be modeled as a workflow in Kolena.
 Examples of workflows include:
 
 <div class="grid cards" markdown>
-- [:kolena-keypoint-detection-20: Keypoint Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection) using images
+- [:kolena-widget-20: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d) using images
 - [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization) using articles/documents
 - [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) (regression) using images
 - [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos

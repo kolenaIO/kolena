@@ -19,7 +19,7 @@ from typing import Tuple
 import pytest
 
 from kolena.workflow.annotation import LabeledBoundingBox
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
@@ -90,7 +90,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 ignored=False,
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
-                thresholds=[ScoredClassificationLabel("a", 0.5)],
+                thresholds=[ScoredLabel("a", 0.5)],
             ),
         ),
         (
@@ -120,7 +120,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 ignored=False,
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
-                thresholds=[ScoredClassificationLabel("a", 0.5)],
+                thresholds=[ScoredLabel("a", 0.5)],
             ),
         ),
         (
@@ -180,7 +180,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 ignored=False,
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
-                thresholds=[ScoredClassificationLabel(label="b", score=0.3)],
+                thresholds=[ScoredLabel(label="b", score=0.3)],
             ),
         ),
         (
@@ -210,7 +210,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 ignored=False,
                 max_confidence_above_t=0.8,
                 min_confidence_above_t=0.8,
-                thresholds=[ScoredClassificationLabel(label="a", score=0.5)],
+                thresholds=[ScoredLabel(label="a", score=0.5)],
             ),
         ),
         (
@@ -243,7 +243,7 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 ignored=False,
                 max_confidence_above_t=0.7,
                 min_confidence_above_t=0.6,
-                thresholds=[ScoredClassificationLabel("a", 0.5)],
+                thresholds=[ScoredLabel("a", 0.5)],
             ),
         ),
         (
@@ -328,10 +328,10 @@ TestSuiteMetrics = object_detection.TestSuiteMetrics
                 max_confidence_above_t=0.99,
                 min_confidence_above_t=0.1,
                 thresholds=[
-                    ScoredClassificationLabel(label="a", score=0.5),
-                    ScoredClassificationLabel(label="b", score=0.2),
-                    ScoredClassificationLabel(label="c", score=0.99),
-                    ScoredClassificationLabel(label="d", score=0.0),
+                    ScoredLabel(label="a", score=0.5),
+                    ScoredLabel(label="b", score=0.2),
+                    ScoredLabel(label="c", score=0.99),
+                    ScoredLabel(label="d", score=0.0),
                 ],
             ),
         ),

@@ -27,7 +27,7 @@ test_suite_version = os.environ["KOLENA_TEST_SUITE_VERSION"]
 env_token = "KOLENA_TOKEN"
 
 print(f"initializing with environment variables ${env_token}")
-kolena.initialize(os.environ[env_token], verbose=True)
+kolena.initialize(verbose=True)
 
 model = Model(model_name)
 print(f"using model: {model}")

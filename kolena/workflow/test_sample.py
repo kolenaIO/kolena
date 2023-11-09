@@ -113,6 +113,7 @@ class _TestSampleType(DataType):
     DOCUMENT = "DOCUMENT"
     COMPOSITE = "COMPOSITE"
     POINT_CLOUD = "POINT_CLOUD"
+    AUDIO = "AUDIO"
     CUSTOM = "CUSTOM"
 
     @staticmethod
@@ -286,7 +287,19 @@ class PointCloud(TestSample):
         return _TestSampleType.POINT_CLOUD
 
 
-_TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo, Document, PointCloud]
+@dataclass(frozen=True, config=ValidatorConfig)
+class Audio(TestSample):
+    """An audio file located in a cloud bucket or served at a URL."""
+
+    locator: str
+    """URL (e.g. S3, HTTPS) of the audio file."""
+
+    @classmethod
+    def _data_type(cls) -> _TestSampleType:
+        return _TestSampleType.AUDIO
+
+
+_TEST_SAMPLE_BASE_TYPES = [Composite, Image, Text, BaseVideo, Document, PointCloud, Audio]
 
 
 def _validate_test_sample_type(test_sample_type: Type[TestSample], recurse: bool = True) -> None:
