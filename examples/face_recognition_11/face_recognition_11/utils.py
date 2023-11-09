@@ -24,6 +24,18 @@ from face_recognition_11.workflow import TestSampleMetrics
 from kolena.workflow import Histogram
 
 
+class PairMetrics:
+    def __init__(self, n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte):
+        self.genuine_pairs = n_genuine_pairs
+        self.imposter_pairs = n_imposter_pairs
+        self.fm = n_fm
+        self.fmr = n_fm / n_imposter_pairs
+        self.fnm = n_fnm
+        self.fnmr = n_fnm / n_genuine_pairs
+        self.pair_failures = n_pair_failures
+        self.fte = n_fte
+
+
 def compute_threshold(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
@@ -32,22 +44,17 @@ def compute_threshold(
     eps: float = 1e-9,
 ) -> float:
     # address duplicates
-    scores = []
-    seen = []
-    for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
-        for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
-            pair = (test_samples[i].locator, test_samples[i].pairs[j].locator)
-            if pair not in seen:
-                scores.append((is_same, similarity))
-                seen.append(pair)
-                seen.append(pair[::-1])
-
+    scores = [
+        (match, similarity)
+        for gt, inf in zip(ground_truths, inferences)
+        for match, similarity in zip(gt.matches, inf.similarities)
+    ]
     imposter_scores = sorted(
         [similarity if similarity is not None else 0.0 for match, similarity in scores if not match],
         reverse=True,
     )
-    threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
-    threshold = imposter_scores[threshold_idx] - eps
+    threshold_idx = int(round(fmr * len(imposter_scores) / 2) - 1)
+    threshold = imposter_scores[threshold_idx * 2] - eps
     return threshold
 
 
@@ -74,7 +81,7 @@ def compute_pair_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
-) -> Tuple[int, int, int, int, int, int]:
+) -> PairMetrics:
     unique_pairs = get_unique_pairs(test_samples)
     genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
 
@@ -101,7 +108,7 @@ def compute_pair_metrics(
     n_pair_failures = np.sum([pair_failures[pair] for pair in unique_pairs])
     n_fte = np.sum([fte[pair] for pair in unique_pairs])
 
-    return (n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte)
+    return PairMetrics(n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte)
 
 
 def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:

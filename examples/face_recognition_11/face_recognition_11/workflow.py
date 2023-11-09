@@ -184,7 +184,7 @@ class TestSuiteMetrics(MetricsTestSuite):
     FNMR: float
     TotalFTE: int
     TotalBBoxFTE: int
-    TotalKeypointFTE: int
+    TotalKeypointFTA: int
 
 
 @dataclass(frozen=True)

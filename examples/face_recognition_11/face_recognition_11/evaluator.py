@@ -137,17 +137,13 @@ def compute_per_sample(
             similarity=similarity,
         )
         pair_samples.append(pair_sample)
-        count_fnm += is_false_non_match
-        count_fm += is_false_match
-        count_tm += is_match
-        count_tnm += not is_false_non_match and not is_false_match and not is_match
 
     return TestSampleMetrics(
         pair_samples=pair_samples,
-        count_FNM=count_fnm,
-        count_FM=count_fm,
-        count_TM=count_tm,
-        count_TNM=count_tnm,
+        count_FNM=np.sum([pair.is_false_non_match for pair in pair_samples]),
+        count_FM=np.sum([pair.is_false_match for pair in pair_samples]),
+        count_TM=np.sum([pair.is_match for pair in pair_samples]),
+        count_TNM=np.sum([not is_false_non_match and not is_false_match and not is_match for pair in pair_samples]),
         similarity_threshold=threshold,
         bbox_IoU=iou_value if iou_value is not None else 0.0,
         bbox_TP=[inference.bbox] if tp and inference.bbox is not None else [],
@@ -224,28 +220,23 @@ def compute_test_case_metrics(
     metrics: List[TestSampleMetrics],
     baseline_fnmr: float,
 ) -> TestCaseMetrics:
-    n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte = compute_pair_metrics(
-        test_samples,
-        ground_truths,
-        metrics,
-    )
-
+    pair_metrics = compute_pair_metrics(test_samples, ground_truths, metrics)
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
     keypoint_metrics = compute_per_keypoint_case(ground_truths, metrics)
 
     return TestCaseMetrics(
-        TotalPairs=n_genuine_pairs + n_imposter_pairs,
-        nGenuinePairs=n_genuine_pairs,
-        nImposterPairs=n_imposter_pairs,
-        FM=n_fm,
-        FMR=n_fm / n_imposter_pairs,
-        FNM=n_fnm,
-        FNMR=n_fnm / n_genuine_pairs,
-        ΔFNMR=(n_fnm / n_genuine_pairs) - baseline_fnmr,
-        FTE=n_fte,
-        FTER=n_fte / len(test_samples),
-        PairFailures=n_pair_failures,
-        PairFailureRate=n_pair_failures / (n_genuine_pairs + n_imposter_pairs),
+        TotalPairs=pair_metrics.genuine_pairs + pair_metrics.imposter_pairs,
+        nGenuinePairs=pair_metrics.genuine_pairs,
+        nImposterPairs=pair_metrics.imposter_pairs,
+        FM=pair_metrics.fm,
+        FMR=pair_metrics.fmr,
+        FNM=pair_metrics.fnm,
+        FNMR=pair_metrics.fnmr,
+        ΔFNMR=pair_metrics.fnmr - baseline_fnmr,
+        FTE=pair_metrics.fte,
+        FTER=pair_metrics.fte / len(test_samples),
+        PairFailures=pair_metrics.pair_failures,
+        PairFailureRate=pair_metrics.pair_failures / (pair_metrics.genuine_pairs + pair_metrics.imposter_pairs),
         PerBBoxMetrics=[bbox_metrics],
         PerKeypointMetrics=[keypoint_metrics],
     )
@@ -300,27 +291,20 @@ def compute_test_case_plots(
 
     baseline_fmr_x = [baseline_fmr for baseline_fmr, _ in baseline_thresholds]
     thresholds = [threshold for _, threshold in baseline_thresholds]
-    print(thresholds)
     for threshold in thresholds:
         tsm_for_one_threshold = [
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
 
-        n_genuine, n_imposter, n_fm, n_fnm, _, _ = compute_pair_metrics(
-            test_samples,
-            ground_truths,
-            tsm_for_one_threshold,
-        )
-        fnmr_y.append(n_fnm / n_genuine)
-        fmr_y.append(n_fm / n_imposter)
-
-    print(fnmr_y)
+        pair_metrics = compute_pair_metrics(test_samples, ground_truths, tsm_for_one_threshold)
+        fnmr_y.append(pair_metrics.fnmr)
+        fmr_y.append(pair_metrics.fmr)
 
     plots.append(
         CurvePlot(
             title="Recognition: Test Case FNMR vs. Baseline FMR",
             x_label="Baseline False Match Rate",
-            y_label="Test Case False Non-Match Rate (%)",
+            y_label="Test Case False Non-Match Rate",
             x_config=AxisConfig(type="log"),
             curves=[Curve(x=baseline_fmr_x, y=fnmr_y, extra=dict(Threshold=thresholds))],
         ),
@@ -356,7 +340,7 @@ def compute_test_suite_metrics(
         FNMR=fnmr,
         TotalFTE=np.sum([tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align for tsm in metrics]),
         TotalBBoxFTE=np.sum([tsm.bbox_failure_to_enroll for tsm in metrics]),
-        TotalKeypointFTE=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
+        TotalKeypointFTA=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
     )
 
 
@@ -378,21 +362,22 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    n_genuine, _, n_fm, n_fnm, _, _ = compute_pair_metrics(test_samples, ground_truths, test_sample_metrics)
+    pair_metrics = compute_pair_metrics(test_samples, ground_truths, test_sample_metrics)
     baseline_thresholds = compute_baseline_thresholds(test_samples, ground_truths, inferences, -4, -1, 50)
-    fnmr = n_fnm / n_genuine
     for test_case, ts_subset, gt, inf, tsm in test_cases.iter(
         test_samples,
         ground_truths,
         inferences,
         test_sample_metrics,
     ):
-        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, fnmr)))
+        all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, pair_metrics.fnmr)))
         all_test_case_plots.append(
             (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, baseline_thresholds)),
         )
 
-    test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, n_fm, n_fnm, fnmr, threshold)
+    test_suite_metrics = compute_test_suite_metrics(
+        test_sample_metrics, pair_metrics.fm, pair_metrics.fnm, pair_metrics.fnmr, threshold
+    )
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),

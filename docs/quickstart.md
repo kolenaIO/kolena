@@ -33,6 +33,14 @@ and run directly:
 
 <div class="grid cards" markdown>
 
+- [:kolena-face-recognition-20: Example: Face Recognition 1:1 ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/face_recognition_11)
+
+    ![Example image from Face Recognition 1:1 Workflow.](assets/images/fr.jpg)
+
+    ---
+
+    End-to-end face recognition 1:1 using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset.
+
 - [:kolena-age-estimation-20: Example: Age Estimation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
 
     ![Example images from the Labeled Faces in the Wild dataset.](assets/images/LFW.jpg)

@@ -71,7 +71,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
                     (r[f"{pair}_mouth_left_x"], r[f"{pair}_mouth_left_y"]),
                 ]
             )
-            if r[f"{pair}right_eye_x"]
+            if r[f"{pair}_right_eye_x"]
             else None
         )
 
@@ -82,7 +82,6 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
     configurations = [
         ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
-        ThresholdConfiguration(false_match_rate=1e-4, iou_threshold=0.5, nmse_threshold=0.5),
     ]
 
     for test_suite_name in test_suite_names:

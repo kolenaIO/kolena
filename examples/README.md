@@ -24,3 +24,4 @@ arbitrary ML problem.
   [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
 - [Semantic Segmentation](./semantic_segmentation): semantic segmentation using the
   [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset
+- [Face Recognition 1:1](./face_recognition_11/): End-to-end face recognition one-to-one using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
