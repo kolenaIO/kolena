@@ -300,7 +300,7 @@ def compute_test_case_plots(
 
     baseline_fmr_x = [baseline_fmr for baseline_fmr, _ in baseline_thresholds]
     thresholds = [threshold for _, threshold in baseline_thresholds]
-    for _, threshold in thresholds:
+    for threshold in thresholds:
         tsm_for_one_threshold = [
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
