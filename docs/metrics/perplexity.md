@@ -4,7 +4,7 @@
 
     It is important to note that perplexity can only be calculated using [autoregressive language models](#autoregressive-language-model-info).
 
-Perplexity is a metric commonly used in natural language processing to evaluate the quality of language models,
+Perplexity is a metric commonly used in natural language generation to evaluate the quality of language models,
 particularly in the context of text generation. Unlike metrics such as [BLEU](bleu.md) or [BERT](bertscore.md),
 perplexity doesn't directly measure the quality of generated text by comparing it with reference texts. Instead,
 perplexity assesses the "confidence" or "surprise" of a language model in predicting the next word in a sequence of words.
@@ -16,10 +16,14 @@ perplexity indicates that the language model is confident in its generation.
 
 ??? note "Note: Perplexity can only be calculated for autoregressive language models"
     <section id="autoregressive-language-model-info">
-    Autoregressive language models, such as GPT and LLaMA, are language models that work by generating one token at a time, based on a set number of preceding tokens.
+    Autoregressive language models, such as GPT and LLaMA, are language models that work by generating one token at a
+    time, based on a set number of preceding tokens.
     </section>
 
-    To generate an output, it analyzes the words that come before it and calculates the likelihood of different words being the next one. Then, it picks the word with the highest chance of being correct for the next part of the sentence. After that, it repeats the entire process, using the newly selected word as part of the context for the next prediction.
+    To generate an output, it analyzes the words that come before it and calculates the likelihood of different words
+    being the next one. Then, it picks the word with the highest chance of being correct for the next part of the
+    sentence. After that, it repeats the entire process, using the newly selected word as part of the context for
+    the next prediction.
 
     For example, if the preceding generated text is "Hello, today is a great day to" and our context length is set
     to 6 preceding words, our model's output distribution might look like the following:
