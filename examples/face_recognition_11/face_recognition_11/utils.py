@@ -61,7 +61,7 @@ def compute_baseline_thresholds(
 ) -> List[Tuple[float, float]]:
     baseline_fmr_x = list(np.logspace(lower_range, upper_range, num_thresholds))
     baseline_thresholds = [compute_threshold(test_samples, ground_truths, inferences, fmr) for fmr in baseline_fmr_x]
-    return zip(baseline_fmr_x, baseline_thresholds)
+    return list(zip(baseline_fmr_x, baseline_thresholds))
 
 
 def get_unique_pairs(test_samples: List[TestSample]) -> List[Tuple[str, str]]:
@@ -74,7 +74,7 @@ def compute_pair_metrics(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     metrics: List[TestSampleMetrics],
-) -> Tuple[list, list, list, list, list, list]:
+) -> Tuple[float, float, float, float, float, float]:
     unique_pairs = get_unique_pairs(test_samples)
     genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
 
