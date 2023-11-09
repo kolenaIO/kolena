@@ -178,7 +178,8 @@ def test__kolena_session() -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
     token_2 = "token tenant two"
-    additional_headers = {"additional_header_key": "additional_header_val"}
+    additional_headers_1 = {"additional_header_key_one": "additional_header_val_one"}
+    additional_headers_2 = {"additional_header_key_two": "additional_header_val_two"}
 
     def check_global_client_state(
         api_token: Optional[str],
@@ -197,25 +198,26 @@ def test__kolena_session() -> None:
             check_global_client_state(None, False)
             assert new_client_state.api_token == token_1
             assert new_client_state.jwt_token == mock_jwt(token_1)
-            _client_state.update(additional_request_headers=additional_headers)
-            check_global_client_state(None, False, additional_headers)
+            _client_state.update(additional_request_headers=additional_headers_1)
+            check_global_client_state(None, False, additional_headers_1)
 
-            with kolena_session(token_2) as inner_state:
-                check_global_client_state(None, False, additional_headers)
+            with kolena_session(token_2, additional_request_headers=additional_headers_2) as inner_state:
+                check_global_client_state(None, False, additional_headers_1)
                 assert inner_state.api_token == token_2
                 assert inner_state.jwt_token == mock_jwt(token_2)
+                assert inner_state.additional_request_headers == additional_headers_2
                 assert new_client_state.api_token == token_1
                 assert new_client_state.jwt_token == mock_jwt(token_1)
 
             kolena.initialize(api_token=base_token)
-            check_global_client_state(base_token, True, additional_headers)
+            check_global_client_state(base_token, True, additional_headers_1)
 
             # context-client-state should be used in making SDK requests
             # white-boxy indirect verification
             assert get_client_state() == new_client_state
 
         # verify context closing does not change global client state
-        check_global_client_state(base_token, True, additional_headers)
+        check_global_client_state(base_token, True, additional_headers_1)
         assert get_client_state() == _client_state
 
 
