@@ -18,8 +18,6 @@ from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
-from kolena.workflow import Composite
-from kolena.workflow import DataObject
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
@@ -30,9 +28,7 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import Keypoints
-from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.asset import ImageAsset
 
 
@@ -198,4 +194,5 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     nmse_threshold: float
 
     def display_name(self) -> str:
-        return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold} | NMSE threshold: {self.nmse_threshold}"
+        return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold} | "
+        "NMSE threshold: {self.nmse_threshold}"
