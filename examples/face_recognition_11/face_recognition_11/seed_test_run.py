@@ -16,6 +16,7 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
 
+import numpy as np
 import pandas as pd
 from face_recognition_11.evaluator import evaluate_face_recognition_11
 from face_recognition_11.workflow import Inference
@@ -56,7 +57,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
         bbox = (
             BoundingBox((r[f"{pair}_min_x"], r[f"{pair}_min_y"]), (r[f"{pair}_min_x"], r[f"{pair}_max_y"]))
-            if r[f"{pair}_min_x"]
+            if r[f"{pair}_min_x"] is not None and not np.isnan(r[f"{pair}_min_x"])
             else None
         )
 
@@ -70,7 +71,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
                     (r[f"{pair}_mouth_left_x"], r[f"{pair}_mouth_left_y"]),
                 ],
             )
-            if r[f"{pair}_right_eye_x"]
+            if r[f"{pair}_right_eye_x"] is not None and not np.isnan(r[f"{pair}_right_eye_x"])
             else None
         )
 

@@ -90,7 +90,7 @@ class TestSampleMetrics(MetricsTestSample):
     count_TM: int
     count_TNM: int
     similarity_threshold: float
-    bbox_IoU: float
+    bbox_IoU: Optional[float]
     bbox_TP: Optional[List[BoundingBox]]
     bbox_FP: Optional[List[BoundingBox]]
     bbox_FN: Optional[List[BoundingBox]]
