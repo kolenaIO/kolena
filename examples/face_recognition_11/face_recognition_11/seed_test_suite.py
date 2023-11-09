@@ -130,7 +130,6 @@ def main(args: Namespace) -> int:
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
-    print(f"created baseline test case '{complete_test_case.name}'")
 
     # Metadata Test Cases
     demographic_subsets = dict(

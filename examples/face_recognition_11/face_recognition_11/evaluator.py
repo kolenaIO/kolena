@@ -186,7 +186,7 @@ def compute_per_keypoint_case(ground_truths: List[GroundTruth], metrics: List[Te
     return PerKeypointMetrics(
         Label="Keypoints Detection",
         Total=np.sum([gt.keypoints is not None for gt in ground_truths]),
-        FTE=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
+        FTA=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
         MSE=np.nanmean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
         NMSE=np.nanmean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
         AvgΔNose=np.nanmean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),

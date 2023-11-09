@@ -107,14 +107,12 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        # default=["VGG-Face", "Facenet512"],
-        default=["VGG-Face"],
+        default=["VGG-Face", "Facenet512"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--detectors",
-        # default=["MTCNN", "yolov8n-face"],
-        default=["MTCNN"],
+        default=["MTCNN", "yolov8n-face"],
         help="Name(s) of detectors(s) used with corresponding model(s).",
     )
     ap.add_argument(

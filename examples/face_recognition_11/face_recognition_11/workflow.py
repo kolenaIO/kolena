@@ -138,7 +138,7 @@ class PerKeypointMetrics(MetricsTestCase):
 
     Label: str
     Total: int  # number of keypoints
-    FTE: int
+    FTA: int
     MSE: float
     NMSE: float
     AvgΔNose: float
