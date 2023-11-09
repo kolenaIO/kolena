@@ -61,6 +61,7 @@ def main(args: Namespace) -> int:
 
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
+    df_bbox_keypoints = pd.read_csv(args.bbox_keypoints_csv)
 
     metadata_by_locator = {}
     locator_normalization_factor = {}
@@ -70,36 +71,28 @@ def main(args: Namespace) -> int:
         metadata_by_locator[record.locator] = {f: getattr(record, f) for f in fields - non_metadata_fields}
         locator_normalization_factor[record.locator] = record.normalization_factor
 
+    bboxes = {}
+    keypoints = {}
+    for record in df_bbox_keypoints.itertuples(index=False):
+        fields = set(record._fields)
+        bboxes[record.locator] = BoundingBox(
+            top_left=(record.min_x, record.min_y),
+            bottom_right=(record.max_x, record.max_y),
+        )
+        keypoints[record.locator] = Keypoints(
+            points=[
+                (record.right_eye_x, record.right_eye_y),
+                (record.left_eye_x, record.left_eye_y),
+                (record.nose_x, record.nose_y),
+                (record.mouth_right_x, record.mouth_right_y),
+                (record.mouth_left_x, record.mouth_left_y),
+            ],
+        )
+
     images = defaultdict(list)
-    bbox_keypoints = {}
     for record in df.itertuples(index=False):
         images[record.locator_a].append(record.locator_b)
         images[record.locator_b].append(record.locator_a)
-
-        bbox_keypoints[record.locator_a] = (
-            BoundingBox(top_left=(record.a_min_x, record.a_min_y), bottom_right=(record.a_max_x, record.a_max_y)),
-            Keypoints(
-                points=[
-                    (record.a_right_eye_x, record.a_right_eye_y),
-                    (record.a_left_eye_x, record.a_left_eye_y),
-                    (record.a_nose_x, record.a_nose_y),
-                    (record.a_mouth_right_x, record.a_mouth_right_y),
-                    (record.a_mouth_left_x, record.a_mouth_left_y),
-                ],
-            ),
-        )
-        bbox_keypoints[record.locator_b] = (
-            BoundingBox(top_left=(record.b_min_x, record.b_min_y), bottom_right=(record.b_max_x, record.b_max_y)),
-            Keypoints(
-                points=[
-                    (record.b_right_eye_x, record.b_right_eye_y),
-                    (record.b_left_eye_x, record.b_left_eye_y),
-                    (record.b_nose_x, record.b_nose_y),
-                    (record.b_mouth_right_x, record.b_mouth_right_y),
-                    (record.b_mouth_left_x, record.b_mouth_left_y),
-                ],
-            ),
-        )
 
     test_samples_and_ground_truths = list()
     for locator, pairs in images.items():
@@ -112,11 +105,10 @@ def main(args: Namespace) -> int:
             match = df[query]["is_same"].values[0]
             matches.append(match)
 
-        bbox, keypoints = bbox_keypoints[locator]
         gt = GroundTruth(
             matches=matches,
-            bbox=bbox,
-            keypoints=keypoints,
+            bbox=bboxes[locator],
+            keypoints=keypoints[locator],
             normalization_factor=locator_normalization_factor[locator],
             count_genuine_pair=np.sum(matches),
             count_imposter_pair=np.sum(np.invert(matches)),
@@ -147,7 +139,7 @@ def main(args: Namespace) -> int:
 
     for test_suite_name, test_cases in test_suites.items():
         test_suite = TestSuite(
-            name=f"{DATASET} :: {test_suite_name} [FR]",
+            name=f"{DATASET}-test :: {test_suite_name} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
@@ -161,6 +153,12 @@ if __name__ == "__main__":
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
+    )
+    ap.add_argument(
+        "--bbox_keypoints_csv",
+        type=str,
+        default=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.csv",
+        help="CSV file containing bbox and keypoints for each image. See default CSV for details.",
     )
     ap.add_argument(
         "--metadata_csv",
