@@ -180,6 +180,7 @@ def test__kolena_session() -> None:
     token_2 = "token tenant two"
     additional_headers_1 = {"additional_header_key_one": "additional_header_val_one"}
     additional_headers_2 = {"additional_header_key_two": "additional_header_val_two"}
+    proxies_2 = {"http": "dummy-proxy"}
 
     def check_global_client_state(
         api_token: Optional[str],
@@ -198,16 +199,27 @@ def test__kolena_session() -> None:
             check_global_client_state(None, False)
             assert new_client_state.api_token == token_1
             assert new_client_state.jwt_token == mock_jwt(token_1)
+            assert new_client_state.additional_request_headers is None
+            assert new_client_state.proxies == {}
             _client_state.update(additional_request_headers=additional_headers_1)
             check_global_client_state(None, False, additional_headers_1)
 
-            with kolena_session(token_2, additional_request_headers=additional_headers_2) as inner_state:
+            with kolena_session(
+                token_2,
+                additional_request_headers=additional_headers_2,
+                proxies=proxies_2,
+            ) as inner_state:
                 check_global_client_state(None, False, additional_headers_1)
                 assert inner_state.api_token == token_2
                 assert inner_state.jwt_token == mock_jwt(token_2)
                 assert inner_state.additional_request_headers == additional_headers_2
+                assert inner_state.proxies == proxies_2
+
+                # outer client state should stay the same
                 assert new_client_state.api_token == token_1
                 assert new_client_state.jwt_token == mock_jwt(token_1)
+                assert new_client_state.additional_request_headers is None
+                assert new_client_state.proxies == {}
 
             kolena.initialize(api_token=base_token)
             check_global_client_state(base_token, True, additional_headers_1)

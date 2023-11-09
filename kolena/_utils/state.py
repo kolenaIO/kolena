@@ -172,6 +172,7 @@ def kolena_session(
     api_token: str,
     base_url: Optional[str] = None,
     additional_request_headers: Optional[Dict[str, Any]] = None,
+    proxies: Optional[Dict[str, str]] = None,
 ) -> Iterator[_ClientState]:
     base_url = base_url or _get_api_base_url()
     init_response = get_token(api_token, base_url)
@@ -181,6 +182,7 @@ def kolena_session(
         jwt_token=init_response.access_token,
         tenant=init_response.tenant,
         additional_request_headers=additional_request_headers,
+        proxies=proxies,
     )
     token = CLIENT_STATE.set(client_state)
 
