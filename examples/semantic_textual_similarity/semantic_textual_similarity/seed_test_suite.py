@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 
@@ -57,7 +56,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     complete_test_case = seed_complete_test_case(args)
     test_suite = TestSuite(
         f"{DATASET}",

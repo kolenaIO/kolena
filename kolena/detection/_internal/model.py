@@ -30,6 +30,7 @@ from pydantic import validate_arguments
 
 from kolena._api.v1.core import Model as CoreAPI
 from kolena._api.v1.detection import Model as API
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
@@ -39,6 +40,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -97,6 +99,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
 
     @classmethod
     @validate_arguments(config=ValidatorConfig)
+    @with_event(event_name=EventAPI.Event.CREATE_MODEL)
     def _create(cls, workflow: WorkflowType, name: str, metadata: Dict[str, Any]) -> CoreAPI.EntityData:
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=workflow.value)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
@@ -107,6 +110,7 @@ class BaseModel(ABC, Frozen, WithTelemetry):
 
     @classmethod
     @validate_arguments(config=ValidatorConfig)
+    @with_event(event_name=EventAPI.Event.LOAD_MODEL)
     def _load_by_name(cls, name: str) -> CoreAPI.EntityData:
         request = CoreAPI.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD_BY_NAME.value, data=json.dumps(dataclasses.asdict(request)))
