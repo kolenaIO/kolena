@@ -19,11 +19,11 @@ from typing import List
 
 import pandas as pd
 from face_recognition_11.evaluator import evaluate_face_recognition_11
-from face_recognition_11.workflow import ThresholdConfiguration
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import Model
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
+from face_recognition_11.workflow import ThresholdConfiguration
 
 import kolena
 from kolena.workflow import test
@@ -42,7 +42,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
         for img in test_sample.pairs:
             # assume no image pair with itself
             query = df["locator_a"].isin([test_sample.locator, img.locator]) & df["locator_b"].isin(
-                [test_sample.locator, img.locator]
+                [test_sample.locator, img.locator],
             )
             sample_results = df[query]
             similarity = sample_results["similarity"].values[0] if not sample_results["failure"].values[0] else None

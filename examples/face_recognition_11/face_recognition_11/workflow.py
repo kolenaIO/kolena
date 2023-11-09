@@ -13,25 +13,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
-from typing import Optional
 from typing import List
+from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
+from kolena.workflow import Composite
+from kolena.workflow import DataObject
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
-from kolena.workflow import DataObject
 from kolena.workflow import Image
-from kolena.workflow import Composite
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import Keypoints
-from kolena.workflow.annotation import ScoredClassificationLabel, ClassificationLabel
+from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.asset import ImageAsset
 
 

@@ -14,32 +14,38 @@
 from typing import List
 from typing import Optional
 from typing import Tuple
-from collections import defaultdict
 
 import numpy as np
-from face_recognition_11.workflow import ThresholdConfiguration
+from face_recognition_11.utils import calculate_mse_nmse
+from face_recognition_11.utils import compute_distances
+from face_recognition_11.utils import compute_threshold
+from face_recognition_11.utils import create_iou_histogram
+from face_recognition_11.utils import create_similarity_histogram
+from face_recognition_11.utils import get_pair_counts
+from face_recognition_11.utils import get_unique_pairs
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
+from face_recognition_11.workflow import PairSample
+from face_recognition_11.workflow import PerBBoxMetrics
+from face_recognition_11.workflow import PerKeypointMetrics
 from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestCaseMetrics
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSampleMetrics
 from face_recognition_11.workflow import TestSuiteMetrics
-from face_recognition_11.workflow import PerBBoxMetrics
-from face_recognition_11.workflow import PerKeypointMetrics
-from face_recognition_11.workflow import PairSample
-from face_recognition_11.utils import compute_distances, calculate_mse_nmse, compute_threshold
-from face_recognition_11.utils import create_similarity_histogram, create_iou_histogram
+from face_recognition_11.workflow import ThresholdConfiguration
 
-from kolena.workflow import ConfusionMatrix, BarPlot
 from kolena.workflow import AxisConfig
+from kolena.workflow import BarPlot
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
-from kolena.workflow.annotation import ScoredClassificationLabel, ClassificationLabel
-from kolena.workflow.metrics import precision, recall, f1_score, iou
+from kolena.workflow.metrics import f1_score
+from kolena.workflow.metrics import iou
+from kolena.workflow.metrics import precision
+from kolena.workflow.metrics import recall
 
 
 def compute_per_sample(
@@ -74,19 +80,29 @@ def compute_per_sample(
     if inference.keypoints is not None:
         normalization_factor = ground_truth.normalization_factor
         Δ_nose, norm_Δ_nose = compute_distances(
-            ground_truth.keypoints.points[0], inference.keypoints.points[0], normalization_factor
+            ground_truth.keypoints.points[0],
+            inference.keypoints.points[0],
+            normalization_factor,
         )
         Δ_left_eye, norm_Δ_left_eye = compute_distances(
-            ground_truth.keypoints.points[1], inference.keypoints.points[1], normalization_factor
+            ground_truth.keypoints.points[1],
+            inference.keypoints.points[1],
+            normalization_factor,
         )
         Δ_right_eye, norm_Δ_right_eye = compute_distances(
-            ground_truth.keypoints.points[2], inference.keypoints.points[2], normalization_factor
+            ground_truth.keypoints.points[2],
+            inference.keypoints.points[2],
+            normalization_factor,
         )
         Δ_left_mouth, norm_Δ_left_mouth = compute_distances(
-            ground_truth.keypoints.points[3], inference.keypoints.points[3], normalization_factor
+            ground_truth.keypoints.points[3],
+            inference.keypoints.points[3],
+            normalization_factor,
         )
         Δ_right_mouth, norm_Δ_right_mouth = compute_distances(
-            ground_truth.keypoints.points[4], inference.keypoints.points[4], normalization_factor
+            ground_truth.keypoints.points[4],
+            inference.keypoints.points[4],
+            normalization_factor,
         )
         distances = np.array([Δ_left_eye, Δ_right_eye, Δ_nose, Δ_left_mouth, Δ_right_mouth])
         mse, nmse = calculate_mse_nmse(distances, normalization_factor)
@@ -209,30 +225,12 @@ def compute_test_case_metrics(
     baseline_fnmr: float,
     unique_pairs: List[Tuple],
 ) -> TestCaseMetrics:
-    genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
-
-    for ts, gt in zip(test_samples, ground_truths):
-        for pair, match in zip(ts.pairs, gt.matches):
-            ab = (ts.locator, pair.locator)
-            genuine_pairs[ab] = genuine_pairs[ab[::-1]] = match
-            imposter_pairs[ab] = imposter_pairs[ab[::-1]] = not match
-
-    for ts, tsm in zip(test_samples, metrics):
-        for pair, tsm_pair in zip(ts.pairs, tsm.pair_samples):
-            ab = (ts.locator, pair.locator)
-            fm[ab] = fm[ab[::-1]] = tsm_pair.is_false_match
-            fnm[ab] = fnm[ab[::-1]] = tsm_pair.is_false_non_match
-            pair_failures[ab] = pair_failures[ab[::-1]] = tsm_pair.failure_to_enroll
-            fte[ab] = fte[(ab[::-1])] = (
-                tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align or tsm_pair.failure_to_enroll
-            )
-
-    n_genuine_pairs = np.sum([genuine_pairs[pair] for pair in unique_pairs])
-    n_imposter_pairs = np.sum([imposter_pairs[pair] for pair in unique_pairs])
-    n_fm = np.sum([fm[pair] for pair in unique_pairs])
-    n_fnm = np.sum([fnm[pair] for pair in unique_pairs])
-    n_pair_failures = np.sum([pair_failures[pair] for pair in unique_pairs])
-    n_fte = np.sum([fte[pair] for pair in unique_pairs])
+    n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte = get_pair_counts(
+        test_samples,
+        ground_truths,
+        metrics,
+        unique_pairs,
+    )
 
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
     keypoint_metrics = compute_per_keypoint_case(ground_truths, metrics)
@@ -261,7 +259,7 @@ def compute_test_case_plots(
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     configuration: ThresholdConfiguration,
-    unique_pairs: List[Tuple],
+    unique_pairs: List[Tuple[str, str]],
 ) -> Optional[List[Plot]]:
     plots = []
 
@@ -277,7 +275,7 @@ def compute_test_case_plots(
             y_label="Count",
             labels=["TP", "FP", "FN"],
             values=[tp, fp, fn],
-        )
+        ),
     )
     plots.append(create_iou_histogram(metrics))
 
@@ -295,7 +293,7 @@ def compute_test_case_plots(
             x_label="NMSE Threshold",
             y_label="Alignment Failure Rate",
             curves=[Curve(label="NMSE", x=x, y=y)],
-        )
+        ),
     )
 
     ### Plots for Face Recognition ###
@@ -313,9 +311,14 @@ def compute_test_case_plots(
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
 
-        tcm = compute_test_case_metrics(test_samples, ground_truths, tsm_for_one_threshold, 0, unique_pairs)
-        fnmr_y.append(tcm.FNMR)
-        fmr_y.append(tcm.FMR)
+        n_genuine, n_imposter, n_fm, n_fnm, _, _ = get_pair_counts(
+            test_samples,
+            ground_truths,
+            tsm_for_one_threshold,
+            unique_pairs,
+        )
+        fnmr_y.append(n_fnm / n_genuine)
+        fmr_y.append(n_fm / n_imposter)
 
     plots.append(
         CurvePlot(
@@ -324,7 +327,7 @@ def compute_test_case_plots(
             y_label="Test Case False Non-Match Rate (%)",
             x_config=AxisConfig(type="log"),
             curves=[Curve(x=baseline_fmr_x, y=fnmr_y, extra=dict(Threshold=thresholds))],
-        )
+        ),
     )
 
     plots.append(
@@ -335,7 +338,7 @@ def compute_test_case_plots(
             x_config=AxisConfig(type="log"),
             y_config=AxisConfig(type="log"),
             curves=[Curve(x=baseline_fmr_x, y=fmr_y, extra=dict(Threshold=thresholds))],
-        )
+        ),
     )
 
     plots.append(create_similarity_histogram(test_samples, ground_truths, inferences))
@@ -344,13 +347,17 @@ def compute_test_case_plots(
 
 
 def compute_test_suite_metrics(
-    metrics: List[TestSampleMetrics], baseline: TestCaseMetrics, threshold: float
+    metrics: List[TestSampleMetrics],
+    fm: int,
+    fnm: int,
+    fnmr: float,
+    threshold: float,
 ) -> TestSuiteMetrics:
     return TestSuiteMetrics(
         Threshold=threshold,
-        FM=baseline.FM,
-        FNM=baseline.FNM,
-        FNMR=baseline.FNM / baseline.nGenuinePairs,
+        FM=fm,
+        FNM=fnm,
+        FNMR=fnmr,
         TotalFTE=np.sum([tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align for tsm in metrics]),
         TotalBBoxFTE=np.sum([tsm.bbox_failure_to_enroll for tsm in metrics]),
         TotalKeypointFTE=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
@@ -364,8 +371,7 @@ def evaluate_face_recognition_11(
     test_cases: TestCases,
     configuration: ThresholdConfiguration,
 ) -> EvaluationResults:
-    pairs = set([(ts.locator, pair.locator) for ts in test_samples for pair in ts.pairs])
-    unique_pairs = set((a, b) if a <= b else (b, a) for a, b in pairs)
+    unique_pairs = get_unique_pairs(test_samples)
 
     threshold = compute_threshold(test_samples, ground_truths, inferences, configuration.false_match_rate)
 
@@ -378,19 +384,21 @@ def evaluate_face_recognition_11(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
-    baseline = compute_test_case_metrics(test_samples, ground_truths, test_sample_metrics, 0, unique_pairs)
-    fnmr = baseline.FNMR
+    n_genuine, _, n_fm, n_fnm, _, _ = get_pair_counts(test_samples, ground_truths, test_sample_metrics, unique_pairs)
+    fnmr = n_fnm / n_genuine
     for test_case, ts_subset, gt, inf, tsm in test_cases.iter(
-        test_samples, ground_truths, inferences, test_sample_metrics
+        test_samples,
+        ground_truths,
+        inferences,
+        test_sample_metrics,
     ):
-        pairs = set([(ts.locator, pair.locator) for ts in ts_subset for pair in ts.pairs])
-        unique_pairs = set((a, b) if a <= b else (b, a) for a, b in pairs)
+        unique_pairs = get_unique_pairs(ts_subset)
         all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, fnmr, unique_pairs)))
         all_test_case_plots.append(
-            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, unique_pairs))
+            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, unique_pairs)),
         )
 
-    test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, baseline, threshold)
+    test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, n_fm, n_fnm, fnmr, threshold)
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),

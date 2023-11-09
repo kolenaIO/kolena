@@ -15,6 +15,7 @@ import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
+from collections import defaultdict
 from typing import List
 from typing import Tuple
 
@@ -25,12 +26,10 @@ from face_recognition_11.workflow import TestCase
 from face_recognition_11.workflow import TestSample
 from face_recognition_11.workflow import TestSuite
 
+import kolena
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 from kolena.workflow.asset import ImageAsset
-from collections import defaultdict
-
-import kolena
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
@@ -86,7 +85,7 @@ def main(args: Namespace) -> int:
                     (record.a_nose_x, record.a_nose_y),
                     (record.a_mouth_right_x, record.a_mouth_right_y),
                     (record.a_mouth_left_x, record.a_mouth_left_y),
-                ]
+                ],
             ),
         )
         bbox_keypoints[record.locator_b] = (
@@ -98,7 +97,7 @@ def main(args: Namespace) -> int:
                     (record.b_nose_x, record.b_nose_y),
                     (record.b_mouth_right_x, record.b_mouth_right_y),
                     (record.b_mouth_left_x, record.b_mouth_left_y),
-                ]
+                ],
             ),
         )
 

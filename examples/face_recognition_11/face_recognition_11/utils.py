@@ -11,13 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import List, Tuple, Callable
 import math
+from typing import Callable
+from typing import List
+from typing import Tuple
 
 import numpy as np
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
-from face_recognition_11.workflow import TestSampleMetrics, TestSample
+from face_recognition_11.workflow import TestSample
+from face_recognition_11.workflow import TestSampleMetrics
 
 from kolena.workflow import Histogram
 
@@ -29,40 +32,64 @@ def compute_threshold(
     fmr: float,
     eps: float = 1e-9,
 ) -> float:
-    func = lambda is_same, similarity, pair_sample: (is_same, similarity)
-    scores = filter_duplicate(func, test_samples, ground_truths, inferences)
+    # address duplicates
+    scores = []
+    seen = []
+    for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
+        for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
+            pair = (test_samples[i].locator, test_samples[i].pairs[j].locator)
+            if pair not in seen:
+                scores.append((is_same, similarity))
+                seen.append(pair)
+                seen.append(pair[::-1])
+
     imposter_scores = sorted(
         [similarity if similarity is not None else 0.0 for match, similarity in scores if not match],
         reverse=True,
     )
     threshold_idx = int(round(fmr * len(imposter_scores)) - 1)
     threshold = imposter_scores[threshold_idx] - eps
-
-    # print(f"imposter_scores length: {len(imposter_scores)}")
-    # print(f"threshold: {threshold}")
-    # print(f"threshold_idx: {threshold_idx}")
     return threshold
 
 
-def filter_duplicate(
-    func: Callable,
+def get_unique_pairs(test_samples: List[TestSample]) -> List[Tuple[str, str]]:
+    pairs = {(ts.locator, pair.locator) for ts in test_samples for pair in ts.pairs}
+    unique_pairs = {(a, b) if a <= b else (b, a) for a, b in pairs}
+    return unique_pairs
+
+
+def get_pair_counts(
     test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
-    inferences: List[Inference],
-    metrics: List[TestSampleMetrics] = None,
-) -> List:
-    # address duplicates because of how we model
-    values = []
-    seen = []
-    for i, (gt, inf) in enumerate(zip(ground_truths, inferences)):
-        for j, (is_same, similarity) in enumerate(zip(gt.matches, inf.similarities)):
-            pair = (test_samples[i].locator, test_samples[i].pairs[j].locator)
-            if pair not in seen:
-                values.append(func(is_same, similarity, metrics[i].pair_samples[j] if metrics is not None else None))
-                seen.append(pair)
-                seen.append(pair[::-1])
+    metrics: List[TestSampleMetrics],
+    unique_pairs: List[Tuple[str, str]],
+) -> Tuple[list, list, list, list, list, list]:
+    genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
 
-    return values
+    for ts, gt in zip(test_samples, ground_truths):
+        for pair, match in zip(ts.pairs, gt.matches):
+            ab = (ts.locator, pair.locator)
+            genuine_pairs[ab] = genuine_pairs[ab[::-1]] = match
+            imposter_pairs[ab] = imposter_pairs[ab[::-1]] = not match
+
+    for ts, tsm in zip(test_samples, metrics):
+        for pair, tsm_pair in zip(ts.pairs, tsm.pair_samples):
+            ab = (ts.locator, pair.locator)
+            fm[ab] = fm[ab[::-1]] = tsm_pair.is_false_match
+            fnm[ab] = fnm[ab[::-1]] = tsm_pair.is_false_non_match
+            pair_failures[ab] = pair_failures[ab[::-1]] = tsm_pair.failure_to_enroll
+            fte[ab] = fte[(ab[::-1])] = (
+                tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align or tsm_pair.failure_to_enroll
+            )
+
+    n_genuine_pairs = np.sum([genuine_pairs[pair] for pair in unique_pairs])
+    n_imposter_pairs = np.sum([imposter_pairs[pair] for pair in unique_pairs])
+    n_fm = np.sum([fm[pair] for pair in unique_pairs])
+    n_fnm = np.sum([fnm[pair] for pair in unique_pairs])
+    n_pair_failures = np.sum([pair_failures[pair] for pair in unique_pairs])
+    n_fte = np.sum([fte[pair] for pair in unique_pairs])
+
+    return (n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte)
 
 
 def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:
