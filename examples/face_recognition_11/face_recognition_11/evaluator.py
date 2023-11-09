@@ -214,7 +214,7 @@ def compute_test_case_metrics(
     for ts, gt in zip(test_samples, ground_truths):
         for pair, match in zip(ts.pairs, gt.matches):
             ab = (ts.locator, pair.locator)
-            genuine_pairs[ab] = genuine_pairs[ab] = match
+            genuine_pairs[ab] = genuine_pairs[ab[::-1]] = match
             imposter_pairs[ab] = imposter_pairs[ab[::-1]] = not match
 
     for ts, tsm in zip(test_samples, metrics):
