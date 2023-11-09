@@ -169,7 +169,9 @@ def get_token(
 
 @contextlib.contextmanager
 def kolena_session(
-    api_token: str, base_url: Optional[str] = None, additional_request_headers: Optional[Dict[str, Any]] = None
+    api_token: str,
+    base_url: Optional[str] = None,
+    additional_request_headers: Optional[Dict[str, Any]] = None,
 ) -> Iterator[_ClientState]:
     base_url = base_url or _get_api_base_url()
     init_response = get_token(api_token, base_url)
