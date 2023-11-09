@@ -237,12 +237,12 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     @with_event(event_name=EventAPI.Event.LOAD_ALL_TEST_SUITES)
     def load_all(cls, *, tags: Optional[Set[str]] = None) -> List["TestSuite"]:
         """
-        Load the latest version of all non-archived test suites with this workflow.
+        Load the latest version of all test suites with this workflow.
 
         :param tags: Optionally specify a set of tags to apply as a filter. The loaded test suites will include only
             test suites with tags matching each of these specified tags, i.e.
             `test_suite.tags.intersection(tags) == tags`.
-        :return: The latest version of all non-archived test suites, with matching tags when specified.
+        :return: The latest version of all test suites, with matching tags when specified.
         """
         cls._validate_workflow()
         request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
