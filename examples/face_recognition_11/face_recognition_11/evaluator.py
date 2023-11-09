@@ -112,7 +112,6 @@ def compute_per_sample(
 
     # Stage 3: Recognition
     pair_samples = list()
-    count_fnm, count_fm, count_tm, count_tnm = 0, 0, 0, 0
     for i, (is_same, similarity) in enumerate(zip(ground_truth.matches, inference.similarities)):
         is_match, is_false_match, is_false_non_match, failure_to_enroll = False, False, False, False
         if similarity is None:
@@ -376,7 +375,11 @@ def evaluate_face_recognition_11(
         )
 
     test_suite_metrics = compute_test_suite_metrics(
-        test_sample_metrics, pair_metrics.fm, pair_metrics.fnm, pair_metrics.fnmr, threshold
+        test_sample_metrics,
+        pair_metrics.fm,
+        pair_metrics.fnm,
+        pair_metrics.fnmr,
+        threshold,
     )
 
     return EvaluationResults(
