@@ -69,7 +69,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
                     (r[f"{pair}_nose_x"], r[f"{pair}_nose_y"]),
                     (r[f"{pair}_mouth_right_x"], r[f"{pair}_mouth_right_y"]),
                     (r[f"{pair}_mouth_left_x"], r[f"{pair}_mouth_left_y"]),
-                ]
+                ],
             )
             if r[f"{pair}_right_eye_x"]
             else None
