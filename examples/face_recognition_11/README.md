@@ -30,7 +30,7 @@ This project defines two scripts that perform the following operations:
     poetry run python3 face_recognition_11/seed_test_suite.py
     ```
 
-    > **_NOTE:_**  Face bounding box and keypoint ground truths are not originally from LFW. They are collected from RetinaFace. Also, a sample size of 10K from LFW is used as the dataset instead.
+    > **NOTE:**  Face bounding box and keypoint ground truths are inferred from RetinaFace as they are not provided in LFW dataset. Also, for the demo purpose, we have subsampled 10,000 pairs, made up of 9,983 images, from LFW.
 
 2. [`seed_test_run.py`](face_recognition_11/seed_test_run.py) tests multiple face recognition models against the test suite above.
 
