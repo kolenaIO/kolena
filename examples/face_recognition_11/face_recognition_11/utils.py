@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import math
-from typing import Callable
 from typing import List
 from typing import Tuple
 
@@ -52,6 +51,19 @@ def compute_threshold(
     return threshold
 
 
+def compute_baseline_thresholds(
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    lower_range: int,
+    upper_range: int,
+    num_thresholds: int,
+) -> List[Tuple[float, float]]:
+    baseline_fmr_x = list(np.logspace(lower_range, upper_range, num_thresholds))
+    baseline_thresholds = [compute_threshold(test_samples, ground_truths, inferences, fmr) for fmr in baseline_fmr_x]
+    return zip(baseline_fmr_x, baseline_thresholds)
+
+
 def get_unique_pairs(test_samples: List[TestSample]) -> List[Tuple[str, str]]:
     pairs = {(ts.locator, pair.locator) for ts in test_samples for pair in ts.pairs}
     unique_pairs = {(a, b) if a <= b else (b, a) for a, b in pairs}
@@ -59,7 +71,9 @@ def get_unique_pairs(test_samples: List[TestSample]) -> List[Tuple[str, str]]:
 
 
 def compute_pair_metrics(
-    test_samples: List[TestSample], ground_truths: List[GroundTruth], metrics: List[TestSampleMetrics]
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    metrics: List[TestSampleMetrics],
 ) -> Tuple[list, list, list, list, list, list]:
     unique_pairs = get_unique_pairs(test_samples)
     genuine_pairs, imposter_pairs, fm, fnm, pair_failures, fte = {}, {}, {}, {}, {}, {}
@@ -76,7 +90,7 @@ def compute_pair_metrics(
             fm[ab] = fm[ab[::-1]] = tsm_pair.is_false_match
             fnm[ab] = fnm[ab[::-1]] = tsm_pair.is_false_non_match
             pair_failures[ab] = pair_failures[ab[::-1]] = tsm_pair.failure_to_enroll
-            fte[ab] = fte[(ab[::-1])] = (
+            fte[ab] = fte[ab[::-1]] = (
                 tsm.bbox_failure_to_enroll or tsm.keypoint_failure_to_align or tsm_pair.failure_to_enroll
             )
 
@@ -131,7 +145,6 @@ def create_iou_histogram(
 
 
 def create_similarity_histogram(
-    test_samples: List[TestSample],
     ground_truths: List[GroundTruth],
     inferences: List[Inference],
 ) -> Histogram:
@@ -141,6 +154,7 @@ def create_similarity_histogram(
         for is_same, similarity in zip(gt.matches, inf.similarities)
         if is_same and similarity is not None
     ]
+
     imposter_values = [
         similarity
         for gt, inf in zip(ground_truths, inferences)

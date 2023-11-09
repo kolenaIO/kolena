@@ -17,11 +17,12 @@ from typing import Tuple
 
 import numpy as np
 from face_recognition_11.utils import calculate_mse_nmse
+from face_recognition_11.utils import compute_baseline_thresholds
 from face_recognition_11.utils import compute_distances
+from face_recognition_11.utils import compute_pair_metrics
 from face_recognition_11.utils import compute_threshold
 from face_recognition_11.utils import create_iou_histogram
 from face_recognition_11.utils import create_similarity_histogram
-from face_recognition_11.utils import compute_pair_metrics
 from face_recognition_11.workflow import GroundTruth
 from face_recognition_11.workflow import Inference
 from face_recognition_11.workflow import PairSample
@@ -154,7 +155,7 @@ def compute_per_sample(
         bbox_FN=[inference.bbox] if (not tp and not fp) and inference.bbox is not None else [],
         bbox_has_TP=tp,
         bbox_has_FP=fp,
-        bbox_has_FN=(not tp and not fp),
+        bbox_has_FN=not tp and not fp,
         bbox_failure_to_enroll=bbox_fte,
         keypoint_MSE=mse,
         keypoint_NMSE=nmse,
@@ -224,7 +225,9 @@ def compute_test_case_metrics(
     baseline_fnmr: float,
 ) -> TestCaseMetrics:
     n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte = compute_pair_metrics(
-        test_samples, ground_truths, metrics
+        test_samples,
+        ground_truths,
+        metrics,
     )
 
     bbox_metrics = compute_per_bbox_case(ground_truths, metrics)
@@ -254,10 +257,11 @@ def compute_test_case_plots(
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
     configuration: ThresholdConfiguration,
+    baseline_thresholds: List[Tuple[float, float]],
 ) -> Optional[List[Plot]]:
     plots = []
 
-    ### Plots for BBox ###
+    # Plots for BBox
     tp = np.sum([tsm.bbox_has_TP for tsm in metrics])
     fp = np.sum([tsm.bbox_has_FP for tsm in metrics])
     fn = np.sum([tsm.bbox_has_FN for tsm in metrics])
@@ -273,7 +277,7 @@ def compute_test_case_plots(
     )
     plots.append(create_iou_histogram(metrics))
 
-    ### Plots for Keypoints ###
+    # Plots for Keypoints
     def compute_failure_rate(nmse_threshold: float, nmses: List[Optional[float]]) -> float:
         total = sum(1 for nm in nmses if nm is not None and nm > nmse_threshold)
         return total / len(nmses) if len(nmses) > 0 else 0
@@ -290,23 +294,20 @@ def compute_test_case_plots(
         ),
     )
 
-    ### Plots for Face Recognition ###
-    FMR_lower = -4
-    FMR_upper = -1
-    baseline_fmr_x = list(np.logspace(FMR_lower, FMR_upper, 50))
-
-    thresholds = [compute_threshold(test_samples, ground_truths, inferences, fmr) for fmr in baseline_fmr_x]
-
+    # Plots for Face Recognition
     fnmr_y = list()
     fmr_y = list()
 
-    for threshold in thresholds:
+    baseline_fmr_x = [baseline_fmr for baseline_fmr, _ in baseline_thresholds]
+    for _, threshold in baseline_thresholds:
         tsm_for_one_threshold = [
             compute_per_sample(gt, inf, threshold, configuration) for gt, inf in zip(ground_truths, inferences)
         ]
 
         n_genuine, n_imposter, n_fm, n_fnm, _, _ = compute_pair_metrics(
-            test_samples, ground_truths, tsm_for_one_threshold
+            test_samples,
+            ground_truths,
+            tsm_for_one_threshold,
         )
         fnmr_y.append(n_fnm / n_genuine)
         fmr_y.append(n_fm / n_imposter)
@@ -317,7 +318,7 @@ def compute_test_case_plots(
             x_label="Baseline False Match Rate",
             y_label="Test Case False Non-Match Rate (%)",
             x_config=AxisConfig(type="log"),
-            curves=[Curve(x=baseline_fmr_x, y=fnmr_y, extra=dict(Threshold=thresholds))],
+            curves=[Curve(x=baseline_fmr_x, y=fnmr_y, extra=dict(Threshold=baseline_thresholds))],
         ),
     )
 
@@ -328,11 +329,11 @@ def compute_test_case_plots(
             y_label="Test Case False Match Rate",
             x_config=AxisConfig(type="log"),
             y_config=AxisConfig(type="log"),
-            curves=[Curve(x=baseline_fmr_x, y=fmr_y, extra=dict(Threshold=thresholds))],
+            curves=[Curve(x=baseline_fmr_x, y=fmr_y, extra=dict(Threshold=baseline_thresholds))],
         ),
     )
 
-    plots.append(create_similarity_histogram(test_samples, ground_truths, inferences))
+    plots.append(create_similarity_histogram(ground_truths, inferences))
 
     return plots
 
@@ -374,6 +375,7 @@ def evaluate_face_recognition_11(
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
     all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
     n_genuine, _, n_fm, n_fnm, _, _ = compute_pair_metrics(test_samples, ground_truths, test_sample_metrics)
+    baseline_thresholds = compute_baseline_thresholds(test_samples, ground_truths, inferences, -4, -1, 50)
     fnmr = n_fnm / n_genuine
     for test_case, ts_subset, gt, inf, tsm in test_cases.iter(
         test_samples,
@@ -383,7 +385,7 @@ def evaluate_face_recognition_11(
     ):
         all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, fnmr)))
         all_test_case_plots.append(
-            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration)),
+            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, baseline_thresholds)),
         )
 
     test_suite_metrics = compute_test_suite_metrics(test_sample_metrics, n_fm, n_fnm, fnmr, threshold)
