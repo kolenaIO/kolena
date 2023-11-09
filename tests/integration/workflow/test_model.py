@@ -18,6 +18,7 @@ import pytest
 from kolena.detection import Model as DetectionModel
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import TestRun
+from kolena.workflow.define_workflow import define_workflow
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
 from tests.integration.workflow.conftest import dummy_inference
@@ -25,6 +26,7 @@ from tests.integration.workflow.conftest import DummyConfiguration
 from tests.integration.workflow.conftest import DummyEvaluator
 from tests.integration.workflow.dummy import DUMMY_WORKFLOW
 from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyInference
 from tests.integration.workflow.dummy import DummyTestSample
 from tests.integration.workflow.dummy import Model
 from tests.integration.workflow.dummy import TestSuite
@@ -56,6 +58,24 @@ def test__load() -> None:
 
     Model.create(name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
     assert_model(Model.load(name, infer=lambda x: None), name)
+
+
+def test__load_all() -> None:
+    def no_op_infer(*_):
+        return
+
+    name = with_test_prefix(f"{__file__}::test__load_all")
+    _, _, _, model = define_workflow(f"{name} workflow 1", DummyTestSample, DummyGroundTruth, DummyInference)
+    _, _, _, model_diff = define_workflow(f"{name} workflow 2", DummyTestSample, DummyGroundTruth, DummyInference)
+    tag1, tag2, tag1_2 = f"{name} 1", f"{name} 2", f"{name} 1+2"
+    model1 = model(name=name + "1", infer=no_op_infer, tags={tag1, tag1_2})
+    model2 = model(name=name + "2", infer=no_op_infer, tags={tag2, tag1_2})
+    model3 = model(name=name + "3", infer=no_op_infer)
+    model_diff(name=name, infer=no_op_infer, tags={tag1, tag2, tag1_2})  # Model in different workflow
+    assert model.load_all(infer=no_op_infer) == [model1, model2, model3]
+    assert model.load_all(infer=no_op_infer, tags={tag1_2}) == [model1, model2]
+    assert model.load_all(infer=no_op_infer, tags={tag1, tag1_2}) == [model1]
+    assert model.load_all(tags={"does_not_exist"}) == []
 
 
 def test__load__mismatching_workflows() -> None:

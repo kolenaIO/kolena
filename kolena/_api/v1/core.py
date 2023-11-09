@@ -36,6 +36,11 @@ class Model:
         name: str
 
     @dataclass(frozen=True)
+    class LoadAllRequest:
+        workflow: str
+        tags: Optional[List[str]] = None
+
+    @dataclass(frozen=True)
     class EntityData:
         id: int
         name: str
@@ -44,8 +49,15 @@ class Model:
         workflow: str
 
     @dataclass(frozen=True)
+    class LoadAllResponse:
+        models: List["Model.EntityData"]
+
+    @dataclass(frozen=True)
     class DeleteRequest:
         id: int
+
+
+Model.LoadAllResponse.__pydantic_model__.update_forward_refs()
 
 
 @dataclass(frozen=True)

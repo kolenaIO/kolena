@@ -159,6 +159,33 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info(f"loaded model '{name}' ({get_model_url(obj._id)})")
         return obj
 
+    @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_ALL_MODEL)
+    def load_all(
+        cls,
+        *,
+        infer: Optional[Callable[[TestSample], Inference]] = None,
+        tags: Optional[Set[str]] = None,
+    ) -> List["Model"]:
+        """
+        Load all models with this workflow.
+
+        :param infer: Optionally provide an inference function for the returned models.
+        :param tags: Optionally specify a set of tags to apply as a filter. The loaded models will include only
+            models with tags matching each of these specified tags, i.e.
+            `model.tags.intersection(tags) == tags`.
+        :return: The models within this workflow, filtered by tags when specified.
+        """
+        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
+        res = krequests.put(endpoint_path=API.Path.LOAD_ALL.value, data=json.dumps(dataclasses.asdict(request)))
+        krequests.raise_for_status(res)
+        data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
+        models = [cls._from_data_with_infer(model, infer) for model in data.models]
+        tags_quoted = {f"'{t}'" for t in tags or {}}
+        tags_message = f" with tag{'s' if len(tags) > 1 else ''} {', '.join(tags_quoted)}" if tags else ""
+        log.info(f"loaded {len(models)} '{cls.workflow.name}' models{tags_message}")
+        return models
+
     @validate_arguments(config=ValidatorConfig)
     def load_inferences(self, test_case: TestCase) -> List[Tuple[TestSample, GroundTruth, Inference]]:
         """
@@ -216,6 +243,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj = cls.__new__(cls)
         obj._id = data.id
         obj.name = data.name
+        obj.workflow = data.workflow
         obj.metadata = data.metadata
         obj.tags = data.tags
         obj.infer = infer
