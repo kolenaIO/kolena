@@ -54,8 +54,8 @@ def recall_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
 def mrr_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
     score = 0.0
     for item in actual:
-        rank_q = predicted.index(item) if item in predicted else 0
-        score += 1 / rank_q
+        rank_q = predicted.index(item) if item in predicted else 0.0
+        score += (1.0 / rank_q) if rank_q != 0.0 else 0.0
 
     return score / len(actual)
 

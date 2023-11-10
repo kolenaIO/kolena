@@ -43,8 +43,6 @@ def compute_per_sample(
     ratings = [movie.score for movie in ground_truth.rated_movies]
     predictions = [movie.score for movie in inference.recommendations]
 
-    print(predictions)
-
     k = configuration.k
     if len(predictions) > k:
         predictions = predictions[:k]
@@ -56,6 +54,7 @@ def compute_per_sample(
     return TestSampleMetrics(
         RMSE=rmse,
         MAE=mae,
+        R2=0,
         AP=avg_precision_at_k(ratings, predictions, k),
         MAP=mean_avg_precision_at_k(ratings, predictions, k),
         MRR=mrr_at_k(ratings, predictions, k),
@@ -90,7 +89,7 @@ def compute_test_case_plots(
     metrics: List[TestSampleMetrics],
     configuration: RecommenderConfiguration,
 ) -> Optional[List[Plot]]:
-    return NotImplementedError
+    return []
 
 
 def evaluate_recommender(

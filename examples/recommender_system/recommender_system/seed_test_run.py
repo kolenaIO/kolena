@@ -54,7 +54,7 @@ def seed_test_run(model_name: str, test_suites: List[str]) -> None:
 
     for test_suite_name in test_suites:
         test_suite = TestSuite.load(test_suite_name)
-        test(model, test_suite, evaluate_recommender, configurations, reset=True)
+        test(model, test_suite, evaluate_recommender, configurations)
 
 
 def main(args: Namespace) -> int:

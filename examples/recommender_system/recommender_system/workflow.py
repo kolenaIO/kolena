@@ -77,7 +77,6 @@ class TestSampleMetrics(MetricsTestSample):
     F1_k: float
     precision_k: float
     recall_k: float
-    avg_Δ_rating: float
 
 
 @dataclass(frozen=True)
@@ -103,11 +102,11 @@ class RecommenderConfiguration(EvaluatorConfiguration):
     k: int
     """Number of items recommended to the user."""
 
-    revelancy_method: Union[Literal["Top-K"], Literal["Timestep"]] = "Top-K"
+    relevancy_method: Union[Literal["Top-K"], Literal["Timestep"]] = "Top-K"
     """The method to use to extract relevant items from the recommendation list."""
 
     def display_name(self) -> str:
         if self.revelancy_method == "Top-K":
-            return f"Revelancy Method: Top-K (k={self.k})"
+            return f"Relevancy Method: Top-K (k={self.k})"
 
-        return f"Revelancy Method: {self.revelancy_method}"
+        return f"Relevancy Method: {self.revelancy_method}"
