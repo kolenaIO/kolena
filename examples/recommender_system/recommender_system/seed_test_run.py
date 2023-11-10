@@ -21,10 +21,10 @@ import pandas as pd
 from recommender_system.evaluator import evaluate_recommender
 from recommender_system.workflow import Inference
 from recommender_system.workflow import Model
+from recommender_system.workflow import Movie
+from recommender_system.workflow import RecommenderConfiguration
 from recommender_system.workflow import TestSample
 from recommender_system.workflow import TestSuite
-from recommender_system.workflow import TopKConfiguration
-from recommender_system.workflow import Movie
 
 import kolena
 from kolena.workflow import test
@@ -39,25 +39,20 @@ def process_metadata(record, f):
 
 def seed_test_run(model_name: str, test_suites: List[str]) -> None:
     # df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.sample.csv")
-    df_results = pd.read_csv("predictions_knn.10.csv")
+    df_results = pd.read_csv("predictions_knn.50.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         filtered = df_results[df_results["userId"] == test_sample.user_id]
         samples = filtered.sort_values(by=["rank"]).itertuples(index=False)
 
-        return Inference(
-            recommendations=[sample.movieId for sample in samples],
-            predicted_ratings=[sample.prediction for sample in samples],
-        )
+        return Inference(recommendations=[Movie(score=sample.prediction, id=sample.movieId) for sample in samples])
 
     model_descriptor = f"{model_name} [{DATASET}-small]"
     model_metadata = dict(library="lenskit", dataset="movielens-1M")
 
     model = Model(name=model_descriptor, infer=infer, metadata=model_metadata)
 
-    print(f"Model: {model}")
-
-    configurations = [TopKConfiguration(k=10), TopKConfiguration(k=5)]
+    configurations = [RecommenderConfiguration(k=10)]
 
     for test_suite_name in test_suites:
         test_suite = TestSuite.load(test_suite_name)
@@ -83,9 +78,9 @@ if __name__ == "__main__":
         "--test_suites",
         default=[
             # f"{DATASET}-small :: genre",
-            f"{DATASET}-small :: age",
-            f"{DATASET}-small :: occupation",
-            f"{DATASET}-small :: gender",
+            f"{DATASET} :: age",
+            f"{DATASET} :: occupation",
+            f"{DATASET} :: gender",
         ],
         help="Name(s) of test suite(s) to test.",
     )

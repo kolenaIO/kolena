@@ -14,27 +14,31 @@
 # limitations under the License.
 import dataclasses
 from typing import List
+from typing import Literal
+from typing import Optional
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
-from kolena.workflow import TestSample as BaseTestSample
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
-from kolena.workflow import Composite
-from kolena.workflow import Text
-from kolena.workflow.annotation import ClassificationLabel
+from kolena.workflow import TestSample as BaseTestSample
+from kolena.workflow.annotation import ScoredClassificationLabel
 
 
 @dataclass(frozen=True)
-class Movie(ClassificationLabel):
-    label: str  # movie title
+class Movie(ScoredClassificationLabel):
+    """A User-Movie pair denoting details about the movie and the users associated rating."""
+
+    label: Optional[str]  # movie title
+    score: int  # rating
     id: int
-    metadata: Metadata = dataclasses.field(default_factory=dict)
+    metadata: Optional[Metadata] = dataclasses.field(default_factory=dict)
 
 
 @dataclass(frozen=True)
@@ -46,13 +50,11 @@ class TestSample(BaseTestSample):
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
     rated_movies: List[Movie]
-    ratings: List[float]
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
-    recommendations: List[int]  # movie ids
-    predicted_ratings: List[float]
+    recommendations: List[Movie]
 
 
 workflow, TestCase, TestSuite, Model = define_workflow(
@@ -65,8 +67,16 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    Precision_k: float
-    # Recall_k: float
+    RMSE: float
+    MAE: float
+    R2: float
+    MAP: float
+    MRR: float
+    NDCG: float
+    F1_k: float
+    precision_k: float
+    recall_k: float
+    avg_Δ_rating: float
 
 
 @dataclass(frozen=True)
@@ -74,21 +84,28 @@ class TestCaseMetrics(MetricsTestCase):
     """Test Case level metrics"""
 
     # Hit Metrics
-    RMSE: float  # Root Mean Squared Error
-    MAE: float  # Mean Absolute Error
-    AvgPrecision_k: float  # Average Precision@k is the mean of each user P@k
-    # AvgRecall_k: float
-    # F1: float
+    AvgRMSE: float  # Root Mean Squared Error
+    AvgMAE: float  # Mean Absolute Error
+    AvgR2: float  # R Squared
 
-    # # Ranking Metrics
-    # mAP: float
-    # NDCG: float  # Normalized Discounted Cumulative Gain
+    # Ranking Metrics
+    AvgMAP: float  # Mean Average Precision
+    AvgMRR: float  # Mean Reciprocal Rank
+    AvgNDCG: float  # Normalized Discounted Cumulative Gain
+    AvgPrecision_k: float  # Average Precision@k is the mean of each user P@k
+    AvgRecall_k: float  # Average Recall@k is the mean of each user R@k
 
 
 @dataclass(frozen=True)
-class TopKConfiguration(EvaluatorConfiguration):
+class RecommenderConfiguration(EvaluatorConfiguration):
     k: int
     """Number of items recommended to the user."""
 
+    revelancy_method: Union[Literal["Top-K"], Literal["Timestep"]] = "Top-K"
+    """The method to use to extract relevant items from the recommendation list."""
+
     def display_name(self) -> str:
-        return f"Top K = {self.k}"
+        if self.revelancy_method == "Top-K":
+            return f"Revelancy Method: Top-K (k={self.k})"
+
+        return f"Revelancy Method: {self.revelancy_method}"
