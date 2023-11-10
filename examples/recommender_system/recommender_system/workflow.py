@@ -70,6 +70,7 @@ class TestSampleMetrics(MetricsTestSample):
     RMSE: float
     MAE: float
     R2: float
+    AP: float
     MAP: float
     MRR: float
     NDCG: float
@@ -89,6 +90,7 @@ class TestCaseMetrics(MetricsTestCase):
     AvgR2: float  # R Squared
 
     # Ranking Metrics
+    AvgAP: float
     AvgMAP: float  # Mean Average Precision
     AvgMRR: float  # Mean Reciprocal Rank
     AvgNDCG: float  # Normalized Discounted Cumulative Gain

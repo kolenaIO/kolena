@@ -12,30 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import List
+from typing import Tuple
 
 import numpy as np
+from recommender_system.workflow import GroundTruth
+from recommender_system.workflow import Inference
+
+
+def compute_errors(ground_truth: GroundTruth, inference: Inference) -> Tuple[float, float]:
+    movie_score_map = {movie.id: movie.score for movie in inference.recommendations}
+    rmse = np.sqrt(
+        np.mean(
+            [
+                np.square(movie.score - movie_score_map[movie.id])
+                for movie in ground_truth.rated_movies
+                if movie.id in movie_score_map.keys()
+            ],
+        ),
+    )
+    mae = np.mean(
+        [
+            np.abs(movie.score - movie_score_map[movie.id])
+            for movie in ground_truth.rated_movies
+            if movie.id in movie_score_map.keys()
+        ],
+    )
+
+    return rmse, mae
 
 
 def precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
-    if len(predicted) > k:
-        predicted = predicted[:k]
-
     relevant_items = len(set(predicted).intersection(actual))
     return relevant_items / k
 
 
 def recall_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
-    if len(predicted) > k:
-        predicted = predicted[:k]
-
     relevant_items = len(set(predicted).intersection(actual))
     return relevant_items / len(actual)
 
 
 def mrr_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
-    if len(predicted) > k:
-        predicted = predicted[:k]
-
     score = 0.0
     for item in actual:
         rank_q = predicted.index(item) if item in predicted else 0

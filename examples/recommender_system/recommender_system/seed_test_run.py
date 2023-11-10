@@ -45,14 +45,16 @@ def seed_test_run(model_name: str, test_suites: List[str]) -> None:
         filtered = df_results[df_results["userId"] == test_sample.user_id]
         samples = filtered.sort_values(by=["rank"]).itertuples(index=False)
 
-        return Inference(recommendations=[Movie(score=sample.prediction, id=sample.movieId) for sample in samples])
+        return Inference(
+            recommendations=[Movie(label=None, score=sample.prediction, id=sample.movieId) for sample in samples],
+        )
 
-    model_descriptor = f"{model_name} [{DATASET}-small]"
+    model_descriptor = f"{model_name} [{DATASET}]"
     model_metadata = dict(library="lenskit", dataset="movielens-1M")
 
     model = Model(name=model_descriptor, infer=infer, metadata=model_metadata)
 
-    configurations = [RecommenderConfiguration(k=10)]
+    configurations = [RecommenderConfiguration(k=5)]
 
     for test_suite_name in test_suites:
         test_suite = TestSuite.load(test_suite_name)
@@ -77,7 +79,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--test_suites",
         default=[
-            # f"{DATASET}-small :: genre",
+            # f"{DATASET} :: genre",
             f"{DATASET} :: age",
             f"{DATASET} :: occupation",
             f"{DATASET} :: gender",

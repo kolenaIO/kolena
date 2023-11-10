@@ -17,6 +17,7 @@ from typing import Tuple
 
 import numpy as np
 from recommender_system.metrics import avg_precision_at_k
+from recommender_system.metrics import compute_errors
 from recommender_system.metrics import mean_avg_precision_at_k
 from recommender_system.metrics import mrr_at_k
 from recommender_system.metrics import precision_at_k
@@ -41,18 +42,25 @@ def compute_per_sample(
 ) -> TestSampleMetrics:
     ratings = np.array([movie.score for movie in ground_truth.rated_movies])
     predictions = np.array([movie.score for movie in inference.recommendations])
-    pk = precision_at_k(ratings, predictions, configuration.k)
-    rk = recall_at_k(ratings, predictions, configuration.k)
+
+    k = configuration.k
+    if len(predictions) > k:
+        predictions = predictions[:k]
+
+    pk = precision_at_k(ratings, predictions, k)
+    rk = recall_at_k(ratings, predictions, k)
+    rmse, mae = compute_errors(ground_truth, inference)
 
     return TestSampleMetrics(
-        RMSE=np.sqrt(((predictions - ratings) ** 2).mean()),
-        MAE=np.abs(predictions - ratings).mean(),
-        MAP=avg_precision_at_k(ratings, predictions, configuration.k),
-        MRR=mrr_at_k(ratings, predictions, configuration.k),
-        NDCG=mean_avg_precision_at_k(ratings, predictions, configuration.k),
+        RMSE=rmse,
+        MAE=mae,
+        AP=avg_precision_at_k(ratings, predictions, k),
+        MAP=mean_avg_precision_at_k(ratings, predictions, k),
+        MRR=mrr_at_k(ratings, predictions, k),
+        NDCG=0,
         F1_k=2 * pk * rk / (pk + rk),
-        precision_k=precision_at_k(ratings, predictions, configuration.k),
-        recall_k=recall_at_k(ratings, predictions, configuration.k),
+        precision_k=precision_at_k(ratings, predictions, k),
+        recall_k=recall_at_k(ratings, predictions, k),
         avg_Δ_rating=np.mean([predictions - ratings]),
     )
 
@@ -66,6 +74,7 @@ def compute_test_case_metrics(
         AvgRMSE=np.mean([tsm.RMSE for tsm in metrics]),
         AvgMAE=np.mean([tsm.MAE for tsm in metrics]),
         AvgR2=np.mean([tsm.R2 for tsm in metrics]),
+        AvgAP=np.mean([tsm.AP for tsm in metrics]),
         AvgMAP=np.mean([tsm.MAP for tsm in metrics]),
         AvgMRR=np.mean([tsm.MRR for tsm in metrics]),
         AvgNDCG=np.mean([tsm.NDCG for tsm in metrics]),
