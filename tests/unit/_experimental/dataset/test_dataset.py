@@ -14,16 +14,22 @@
 import json
 import random
 
+import numpy as np
 import pandas as pd
 import pytest
-from pandas._testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 
 from kolena._experimental.dataset._dataset import _infer_datatype
 from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
-from kolena._experimental.dataset._dataset import COL_DATAPOINT
-from kolena._experimental.dataset._dataset import TestSampleType
+from kolena._experimental.dataset._dataset import DatapointType
+from kolena._experimental.dataset._evaluation import _align_datapoints_results
+from kolena._experimental.dataset._evaluation import _validate_data
+from kolena._experimental.dataset.common import COL_DATAPOINT
+from kolena._experimental.dataset.common import COL_RESULT
+from kolena.errors import IncorrectUsageError
+from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -33,13 +39,13 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 @pytest.mark.parametrize(
     "uri,expected",
     [
-        ("s3://public/png", TestSampleType.CUSTOM),
-        ("/opt/test.png", TestSampleType.IMAGE),
-        ("https://kolena.io/demo.mp4", TestSampleType.VIDEO),
-        ("file:///var/mime.csv", TestSampleType.DOCUMENT),
-        ("test.pcd", TestSampleType.POINT_CLOUD),
-        ("gcp://summary.pdf", TestSampleType.DOCUMENT),
-        ("//my.mp3", TestSampleType.CUSTOM),
+        ("s3://public/png", DatapointType.TABULAR),
+        ("/opt/test.png", DatapointType.IMAGE),
+        ("https://kolena.io/demo.mp4", DatapointType.VIDEO),
+        ("file:///var/mime.csv", DatapointType.DOCUMENT),
+        ("test.pcd", DatapointType.POINT_CLOUD),
+        ("gcp://summary.pdf", DatapointType.DOCUMENT),
+        ("//my.mp3", DatapointType.AUDIO),
     ],
 )
 def test__infer_datatype_value(uri: str, expected: str) -> None:
@@ -54,7 +60,7 @@ def test__infer_datatype() -> None:
             ),
         ),
     ).equals(
-        pd.Series([TestSampleType.DOCUMENT, TestSampleType.IMAGE, TestSampleType.VIDEO, TestSampleType.POINT_CLOUD]),
+        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
     )
     assert _infer_datatype(
         pd.DataFrame(
@@ -64,7 +70,7 @@ def test__infer_datatype() -> None:
             ),
         ),
     ).equals(
-        pd.Series([TestSampleType.DOCUMENT, TestSampleType.IMAGE, TestSampleType.VIDEO, TestSampleType.POINT_CLOUD]),
+        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
     )
     assert (
         _infer_datatype(
@@ -74,7 +80,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == TestSampleType.TEXT
+        == DatapointType.TEXT
     )
     assert (
         _infer_datatype(
@@ -84,7 +90,7 @@ def test__infer_datatype() -> None:
                 ),
             ),
         )
-        == TestSampleType.CUSTOM
+        == DatapointType.TABULAR
     )
 
 
@@ -114,13 +120,13 @@ def test__datapoint_dataframe__serde_locator() -> None:
                     category=dp["category"],
                     bboxes=[bbox._to_dict() for bbox in dp["bboxes"]],
                     label=dp["label"]._to_dict(),
-                    data_type=TestSampleType.IMAGE,
+                    data_type=DatapointType.IMAGE,
                 )
                 for dp in datapoints
             ],
         ),
     )
-    df_serialized = _to_serialized_dataframe(df)
+    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
 
@@ -140,16 +146,15 @@ def test__datapoint_dataframe__serde_locator() -> None:
             for dp in datapoints
         ],
     )
-    df_deserialized = _to_deserialized_dataframe(df_serialized)
-    assert sorted(df_deserialized.columns) == sorted(df_expected.columns)
-
-    assert_frame_equal(df_deserialized[df_expected.columns], df_expected)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
+    assert_frame_equal(df_deserialized, df_expected)
 
 
 def test__datapoint_dataframe__serde_text() -> None:
     datapoints = [
         dict(
             text=f"foo-{i}",
+            value=i,
             category="A" if i < 5 else "B",
         )
         for i in range(10)
@@ -158,22 +163,78 @@ def test__datapoint_dataframe__serde_text() -> None:
     df_expected = pd.DataFrame(
         dict(
             datapoint=[
-                dict(text=dp["text"], category=dp["category"], data_type=TestSampleType.TEXT) for dp in datapoints
+                dict(text=dp["text"], value=dp["value"], category=dp["category"], data_type=DatapointType.TEXT)
+                for dp in datapoints
             ],
         ),
     )
-    df_serialized = _to_serialized_dataframe(df)
+    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
 
-    df_expected = pd.DataFrame([dict(text=dp["text"], category=dp["category"]) for dp in datapoints])
-    df_deserialized = _to_deserialized_dataframe(df_serialized)
-    assert sorted(df_deserialized.columns) == sorted(df_expected.columns)
+    df_expected = pd.DataFrame(datapoints)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
+    assert_frame_equal(df_deserialized, df_expected)
 
-    assert_frame_equal(df_deserialized[df_expected.columns], df_expected)
+
+def test__datapoint_dataframe__columns_unlabeled() -> None:
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy(), column=COL_DATAPOINT)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
+
+    # Column class mismatch is expected due to json serialization
+    df_expected.rename(mapper=str, axis="columns", inplace=True)
+    assert_frame_equal(df_deserialized, df_expected)
 
 
 def test__datapoint_dataframe__empty() -> None:
-    df_serialized = _to_serialized_dataframe(pd.DataFrame())
+    df_serialized = _to_serialized_dataframe(pd.DataFrame(), column=COL_DATAPOINT)
     assert df_serialized.empty
     assert COL_DATAPOINT in df_serialized.columns
+
+
+def test__datapoint_dataframe__data_type_field_exist() -> None:
+    column_name = COL_DATAPOINT
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy(), column=column_name)
+    assert column_name in df_serialized.columns
+    for _, row in df_serialized.iterrows():
+        assert DATA_TYPE_FIELD in row[column_name]
+
+
+def test__dataframe__serde_none() -> None:
+    column_name = COL_RESULT
+    data = [
+        ['{"city": "London"}'],
+        ['{"city": "Tokyo"}'],
+        [None],
+    ]
+    df_serialized = pd.DataFrame(data, columns=[column_name])
+
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["city"])
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
+    assert_frame_equal(df_deserialized, df_expected)
+
+
+def test__dataframe__data_type_field_not_exist() -> None:
+    column_name = COL_RESULT
+    df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
+    df_serialized = _to_serialized_dataframe(df_expected.copy(), column=column_name)
+    assert column_name in df_serialized.columns
+    for _, row in df_serialized.iterrows():
+        assert DATA_TYPE_FIELD not in row[column_name]
+
+
+def test__datapoints_results_alignment() -> None:
+    df_datapoints = pd.DataFrame(dict(text=["a", "a", "b", "c"], question=["foo", "bar", "cat", "dog"]))
+    df_results = pd.DataFrame(
+        dict(text=["a", "a", "b"], question=["foo", "bar", "cat"], answer=[1, 2, 3]),
+    )
+    with pytest.raises(IncorrectUsageError):
+        _align_datapoints_results(df_datapoints, df_results, on="text")
+
+    df_merged = _align_datapoints_results(df_datapoints, df_results, on=["text", "question"])
+    _validate_data(df_datapoints, df_merged)
+
+    expected = pd.DataFrame(dict(answer=[1, 2, 3, np.nan]))
+    assert df_merged.equals(expected)

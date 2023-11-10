@@ -43,7 +43,7 @@ def download_mask(locator: str) -> np.ndarray:
     Download a mask stored on s3 and return it as a np array
     """
     bucket, key = parse_s3_path(locator)
-    with tempfile.NamedTemporaryFile() as f:
+    with tempfile.TemporaryFile() as f:
         s3.download_fileobj(bucket, key, f)
         data = skimage.io.imread(f)
         return data
@@ -56,8 +56,8 @@ def download_binary_array(locator: str) -> np.ndarray:
     shape (..., ...)' — seems like the download was incomplete
     """
     bucket, key = parse_s3_path(locator)
-    obj = boto3.resource("s3").Object(bucket, key)
-    with BytesIO(obj.get()["Body"].read()) as f:
+    obj_response = s3.get_object(Bucket=bucket, Key=key)
+    with BytesIO(obj_response["Body"].read()) as f:
         f.seek(0)
         return np.load(f)
 

@@ -14,23 +14,24 @@
 """
 Annotations are visualized in Kolena as overlays on top of [`TestSample`][kolena.workflow.TestSample] objects.
 
-The following annotation types are available:
-
-- [`BoundingBox`][kolena.workflow.annotation.BoundingBox]
-- [`Polygon`][kolena.workflow.annotation.Polygon]
-- [`Polyline`][kolena.workflow.annotation.Polyline]
-- [`Keypoints`][kolena.workflow.annotation.Keypoints]
-- [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D]
-- [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask]
-- [`BitmapMask`][kolena.workflow.annotation.BitmapMask]
-- [`ClassificationLabel`][kolena.workflow.annotation.ClassificationLabel]
+| Annotation | Valid [`TestSample`][kolena.workflow.TestSample] Types |
+| --- | --- |
+| [`BoundingBox`][kolena.workflow.annotation.BoundingBox] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] | [`PointCloud`][kolena.workflow.PointCloud] |
+| [`Polygon`][kolena.workflow.annotation.Polygon] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`Polyline`][kolena.workflow.annotation.Polyline] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`Keypoints`][kolena.workflow.annotation.Keypoints] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`BitmapMask`][kolena.workflow.annotation.BitmapMask] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`Label`][kolena.workflow.annotation.Label] | [`Text`][kolena.workflow.Text], [`Document`][kolena.workflow.Document], [`Image`][kolena.workflow.Image], [`PointCloud`][kolena.workflow.PointCloud], [`Audio`][kolena.workflow.Audio], [`Video`][kolena.workflow.Video] |
+| [`TimeSegment`][kolena.workflow.annotation.TimeSegment] | [`Audio`][kolena.workflow.Audio], [`Video`][kolena.workflow.Video] |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.workflow.annotation.BoundingBox] objects) present in the
 [`TestSample`][kolena.workflow.TestSample], [`GroundTruth`][kolena.workflow.GroundTruth],
 [`Inference`][kolena.workflow.Inference], or [`MetricsTestSample`][kolena.workflow.MetricsTestSample] objects are
 rendered on top of the image.
-"""
+"""  # noqa: E501
 import dataclasses
 from abc import ABCMeta
 from functools import reduce
@@ -54,7 +55,8 @@ class _AnnotationType(DataType):
     BOUNDING_BOX_3D = "BOUNDING_BOX_3D"
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
-    CLASSIFICATION_LABEL = "LABEL"
+    LABEL = "LABEL"
+    TIME_SEGMENT = "TIME_SEGMENT"
 
     @staticmethod
     def _data_category() -> str:
@@ -301,23 +303,88 @@ class BitmapMask(Annotation):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class ClassificationLabel(Annotation):
-    """Label of classification."""
+class Label(Annotation):
+    """Label, e.g. for classification."""
 
     label: str
     """String label for this classification."""
 
     @staticmethod
     def _data_type() -> _AnnotationType:
-        return _AnnotationType.CLASSIFICATION_LABEL
+        return _AnnotationType.LABEL
+
+
+ClassificationLabel = Label
+"""Alias for [`Label`][kolena.workflow.annotation.Label]."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class ScoredClassificationLabel(ClassificationLabel):
-    """Classification label with accompanying score."""
+class ScoredLabel(Label):
+    """Label with accompanying score."""
 
     score: float
     """Score associated with this label."""
+
+
+ScoredClassificationLabel = ScoredLabel
+"""Alias for [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class TimeSegment(Annotation):
+    """
+    Segment of time in the associated audio or video file.
+
+    When a `group` is specified, segments are displayed on Kolena with different colors for each group present in a
+    `List[TimeSegment]`. Example usage:
+
+    ```py
+    transcription: List[TimeSegment] = [
+        LabeledTimeSegment(group="A", label="Knock, knock.", start=0, end=1),
+        LabeledTimeSegment(group="B", label="Who's there?", start=2, end=3),
+        LabeledTimeSegment(group="A", label="Example.", start=3.5, end=4),
+        LabeledTimeSegment(group="B", label="Example who?", start=4.5, end=5.5),
+        LabeledTimeSegment(group="A", label="Example illustrating two-person dialogue using `group`.", start=6, end=9),
+    ]
+    ```
+    """
+
+    start: float
+    """Start time, in seconds, of this segment."""
+
+    end: float
+    """End time, in seconds, of this segment."""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.TIME_SEGMENT
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class LabeledTimeSegment(TimeSegment):
+    """Time segment with accompanying label, e.g. audio transcription."""
+
+    label: str
+    """The label associated with this time segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredTimeSegment(TimeSegment):
+    """Time segment with additional float score, representing e.g. model prediction confidence."""
+
+    score: float
+    """The score associated with this time segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredLabeledTimeSegment(TimeSegment):
+    """Time segment with accompanying label and score."""
+
+    label: str
+    """The label associated with this time segment."""
+
+    score: float
+    """The score associated with this time segment."""
 
 
 _ANNOTATION_TYPES = [
@@ -337,6 +404,12 @@ _ANNOTATION_TYPES = [
     ScoredLabeledBoundingBox3D,
     SegmentationMask,
     BitmapMask,
+    Label,
+    ScoredLabel,
     ClassificationLabel,
     ScoredClassificationLabel,
+    TimeSegment,
+    LabeledTimeSegment,
+    ScoredTimeSegment,
+    ScoredLabeledTimeSegment,
 ]

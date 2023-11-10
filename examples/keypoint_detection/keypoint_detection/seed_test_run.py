@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from random import randint
@@ -56,7 +55,7 @@ def main() -> None:
     ap = ArgumentParser()
     ap.add_argument("model_name", type=str, help="Name of model to test.")
     ap.add_argument("test_suite", type=str, default="none", help="Name of the test suite to run.")
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     run(ap.parse_args())
 

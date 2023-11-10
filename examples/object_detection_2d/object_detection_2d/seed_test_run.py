@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Callable
@@ -38,7 +37,7 @@ from kolena.workflow.test_run import test
 MODEL_LIST: Dict[str, str] = {
     "yolo_r": f"YOLOR-D6 (modified CSP, {WORKFLOW})",
     "yolo_x": f"YOLOX (modified CSP-v5, {WORKFLOW})",
-    "mask_cnn": f"Mask R-CNN (Inception-ResNet-v2, {WORKFLOW})",
+    "mask_rcnn": f"Mask R-CNN (Inception-ResNet-v2, {WORKFLOW})",
     "faster_rcnn": f"Faster R-CNN (Inception-ResNet-v2, {WORKFLOW})",
     "yolo_v4s": f"Scaled YOLOv4 (CSP-DarkNet-53, {WORKFLOW})",
     "yolo_v3": f"YOLOv3 (DarkNet-53, {WORKFLOW})",
@@ -150,7 +149,7 @@ def main(args: Namespace) -> None:
     model_full_name = MODEL_LIST[model_alias]
 
     # run evaluation on test suites
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     metadata_by_image = load_results(model_alias)
 

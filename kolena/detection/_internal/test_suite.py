@@ -28,12 +28,14 @@ from pydantic import validate_arguments
 
 import kolena._api.v1.core as CoreAPI
 from kolena._api.v1.detection import TestSuite as API
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.workflow import WorkflowType
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -106,6 +108,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             self.test_cases = other.test_cases
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.CREATE_TEST_SUITE)
     def _create(
         cls,
         workflow: WorkflowType,
@@ -175,6 +178,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
         return cls._create(cls._workflow, name, description, test_cases)
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_TEST_SUITE)
     def load(cls, name: str, version: Optional[int] = None) -> "BaseTestSuite":
         """
         Load an existing test suite with the provided name.
@@ -270,6 +274,7 @@ class BaseTestSuite(ABC, Frozen, WithTelemetry):
             return self._description != self._initial_description or self._initial_test_case_ids != test_case_ids
 
     @contextmanager
+    @with_event(event_name=EventAPI.Event.EDIT_TEST_SUITE)
     def edit(self, reset: bool = False) -> Iterator[Editor]:
         """
         Edit this test suite in a context:
