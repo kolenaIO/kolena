@@ -28,3 +28,4 @@ arbitrary ML problem.
   [LibriSpeech dataset](https://www.openslr.org/12) dataset
 - [Speaker Diarization](./speaker_diarization/): speaker diarization using the
   [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset
+- [Face Recognition 1:1](./face_recognition_11/): End-to-end face recognition one-to-one using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
