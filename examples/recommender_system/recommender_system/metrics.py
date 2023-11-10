@@ -62,27 +62,7 @@ def mrr_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
 
 def avg_precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
     # https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/average_precision.py
-    """
-    Computes the average precision at k.
-
-    This function computes the average prescision at k between two lists of
-    items.
-
-    Parameters
-    ----------
-    actual : list
-             A list of elements that are to be predicted (order doesn't matter)
-    predicted : list
-                A list of predicted elements (order does matter)
-    k : int, optional
-        The maximum number of predicted elements
-
-    Returns
-    -------
-    score : double
-            The average precision at k over the input lists
-
-    """
+    """Order matters"""
     if len(predicted) > k:
         predicted = predicted[:k]
 
@@ -102,27 +82,6 @@ def avg_precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> 
 
 def mean_avg_precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
     # https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/average_precision.py
-    """
-    Computes the mean average precision at k.
 
-    This function computes the mean average prescision at k between two lists
-    of lists of items.
-
-    Parameters
-    ----------
-    actual : list
-             A list of lists of elements that are to be predicted
-             (order doesn't matter in the lists)
-    predicted : list
-                A list of lists of predicted elements
-                (order matters in the lists)
-    k : int, optional
-        The maximum number of predicted elements
-
-    Returns
-    -------
-    score : double
-            The mean average precision at k over the input lists
-
-    """
-    return np.mean([avg_precision_at_k(a, p, k) for a, p in zip(actual, predicted)])
+    # return np.mean([avg_precision_at_k(actual, predicted, k) for k in range(k)])
+    return 0

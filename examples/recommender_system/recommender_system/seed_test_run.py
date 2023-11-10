@@ -33,10 +33,6 @@ BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
 
 
-def process_metadata(record, f):
-    return getattr(record, f) if f != "genres" else getattr(record, f).split("|")
-
-
 def seed_test_run(model_name: str, test_suites: List[str]) -> None:
     # df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.sample.csv")
     df_results = pd.read_csv("predictions_knn.50.csv")
@@ -58,7 +54,6 @@ def seed_test_run(model_name: str, test_suites: List[str]) -> None:
 
     for test_suite_name in test_suites:
         test_suite = TestSuite.load(test_suite_name)
-        print(f"Test Suite: {test_suite}")
         test(model, test_suite, evaluate_recommender, configurations, reset=True)
 
 

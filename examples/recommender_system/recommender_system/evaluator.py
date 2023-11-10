@@ -40,8 +40,10 @@ def compute_per_sample(
     inference: Inference,
     configuration: RecommenderConfiguration,
 ) -> TestSampleMetrics:
-    ratings = np.array([movie.score for movie in ground_truth.rated_movies])
-    predictions = np.array([movie.score for movie in inference.recommendations])
+    ratings = [movie.score for movie in ground_truth.rated_movies]
+    predictions = [movie.score for movie in inference.recommendations]
+
+    print(predictions)
 
     k = configuration.k
     if len(predictions) > k:
@@ -61,7 +63,6 @@ def compute_per_sample(
         F1_k=2 * pk * rk / (pk + rk),
         precision_k=precision_at_k(ratings, predictions, k),
         recall_k=recall_at_k(ratings, predictions, k),
-        avg_Δ_rating=np.mean([predictions - ratings]),
     )
 
 
