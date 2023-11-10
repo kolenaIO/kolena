@@ -194,4 +194,8 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     nmse_threshold: float
 
     def display_name(self) -> str:
-        return f"False Match Rate: {self.false_match_rate:.1e} | IoU Threshold: {self.iou_threshold} | NMSE threshold: {self.nmse_threshold}"
+        return (
+            f"False Match Rate: {self.false_match_rate:.1e} "
+            f"| IoU Threshold: {self.iou_threshold} "
+            f"| NMSE threshold: {self.nmse_threshold}"
+        )
