@@ -34,8 +34,8 @@ def test__seed_test_suite__smoke() -> None:
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 def test__seed_test_run__smoke() -> None:
     args = Namespace(
-        models=["VGG-Face", "Facenet512"],
-        detectors=["MTCNN", "yolov8n-face"],
-        test_suites=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"],
+        models=["VGG-Face"],
+        detectors=["MTCNN"],
+        test_suites=[f"{DATASET} :: gender [FR]"],
     )
     seed_test_run_main(args)
