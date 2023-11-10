@@ -134,7 +134,7 @@ class PerKeypointMetrics(MetricsTestCase):
     """Nested test-case-level aggregate metrics for Keypoint Detection."""
 
     Label: str
-    Total: int  # number of keypoints
+    Total: int
     FTA: int
     MSE: float
     NMSE: float
