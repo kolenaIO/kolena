@@ -15,6 +15,8 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from dataclasses import fields
 
+from kolena.workflow._datatypes import _register_data_type
+from kolena.workflow._datatypes import DataType
 from kolena.workflow._datatypes import TypedDataObject
 
 
@@ -27,8 +29,16 @@ class PreventThresholdOverrideMeta(ABCMeta, type):
         return super().__new__(cls, name, bases, dct)
 
 
+class _MetricsType(DataType):
+    THRESHOLDED = "THRESHOLDED"
+
+    @staticmethod
+    def _data_category() -> str:
+        return "METRICS"
+
+
 @dataclass(frozen=True)
-class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta):
+class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresholdOverrideMeta):
     """
     Represents metrics tied to a specific threshold.
 
@@ -81,10 +91,30 @@ class ThresholdedMetrics(TypedDataObject, metaclass=PreventThresholdOverrideMeta
 
     threshold: float
 
-    def _data_type() -> str:
-        return "METRICS/THRESHOLDED"
+    def __init_subclass__(cls, **kwargs):
+        """
+        Registers the subclass in the system, allowing it to be recognized and utilized
+        within the broader workflow infrastructure.
+        """
+        _register_data_type(cls)
+
+    @classmethod
+    def _data_type(cls) -> _MetricsType:
+        """
+        Returns the type of metrics represented by this class.
+
+        Returns:
+            _MetricsType: An enumeration value indicating the type of metrics.
+        """
+        return _MetricsType.THRESHOLDED
 
     def __post_init__(self) -> None:
+        """
+        Post-initialization processing to ensure data integrity.
+
+        Checks each field to ensure no dictionary types are used, raising TypeError if violated.
+        This maintains the integrity and expected structure of the data.
+        """
         for field in fields(self):
             field_value = getattr(self, field.name)
             if isinstance(field_value, dict):

@@ -431,3 +431,7 @@ def compute_average_precision(precisions: List[float], recalls: List[float]) -> 
     for i in recall_changed_indices:
         ap += (recalls[i] - recalls[i - 1]) * precisions[i]
     return ap
+
+
+def get_thresholds() -> List[float]:
+    return list(np.linspace(0, 1, 101))

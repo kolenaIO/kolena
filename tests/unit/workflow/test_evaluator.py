@@ -22,13 +22,13 @@ from typing import Union
 import pydantic
 import pytest
 
+from kolena._experimental.workflow.thresholded import ThresholdedMetrics
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Polyline
 from kolena.workflow.evaluator import MetricsTestCase
 from kolena.workflow.evaluator import MetricsTestSample
 from kolena.workflow.evaluator import MetricsTestSuite
-from kolena.workflow.thresholded import ThresholdedMetrics
 
 
 def test__validate__metrics_test_sample() -> None:

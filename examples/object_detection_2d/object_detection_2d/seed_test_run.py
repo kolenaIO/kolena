@@ -114,12 +114,7 @@ def setup_evaluator() -> ObjectDetectionEvaluator:
     return ObjectDetectionEvaluator(
         configurations=[
             ThresholdConfiguration(
-                threshold_strategy=0.3,
-                iou_threshold=0.3,
-                min_confidence_score=0.2,
-            ),
-            ThresholdConfiguration(
-                threshold_strategy="F1-Optimal",
+                threshold_strategy="Specified",
                 iou_threshold=0.5,
                 min_confidence_score=0.0,
             ),
@@ -141,7 +136,7 @@ def seed_test_run(
 
     # runs the evaluation
     test_suite = TestSuite(test_suite_name)
-    test(model, test_suite, evaluator, reset=True)
+    test(model, test_suite, evaluator, reset=False)
 
 
 def main(args: Namespace) -> None:
