@@ -22,6 +22,7 @@ from typing import Union
 import pydantic
 import pytest
 
+from kolena._experimental.workflow.thresholded import ThresholdedMetrics
 from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Polyline
