@@ -25,6 +25,9 @@ parameters:
   example:
     type: boolean
     default: false
+  token_count:
+    type: integer
+    default: 4
 
 executors:
   python:
@@ -211,7 +214,8 @@ jobs:
       - run:
           name: Set KOLENA_TOKEN with round robin
           command: |
-            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % 4))
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
             export KOLENA_TOKEN=${!token}
       - when:
           condition:
@@ -284,7 +288,8 @@ jobs:
       - run:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
-            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % 4))
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
             export KOLENA_TOKEN=${!token}
             poetry run pytest -vv tests
   example-evaluator:
