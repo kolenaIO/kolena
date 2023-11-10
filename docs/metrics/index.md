@@ -158,8 +158,9 @@ biases, and its intended uses.
     ---
 
     Perplexity is a metric commonly used in natural language processing to evaluate the quality of language models,
-    particularly in the context of text generation. Rather than measuring textual similarity between a reference and
-    candidate text, it measures the "uncertainty" of a model's output distribution.
+    particularly in the context of text generation. Unlike metrics such as BLEU or BERT, perplexity doesn't directly
+    measure the quality of generated text by comparing it with reference texts. Instead, perplexity assesses the
+    "confidence" or "surprise" of a language model in predicting the next word in a sequence of words.
 
 
 - [ROUGE-N](rouge-n.md)
