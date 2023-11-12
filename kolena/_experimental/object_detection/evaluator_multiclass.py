@@ -281,10 +281,24 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         metrics: List[TestSampleMetrics],
     ) -> TestCaseMetrics:
         ignored_count = sum(1 if im.ignored else 0 for im in metrics)
+
+        # Calculate mean AP for each metric and store in list
+        mean_aps = [
+            np.mean(
+                [
+                    threshold_metric.count_TP / (threshold_metric.count_TP + threshold_metric.count_FP)
+                    if (threshold_metric.count_TP + threshold_metric.count_FP) > 0
+                    else 0
+                    for threshold_metric in metric.Thresholded
+                ],
+            )
+            for metric in metrics
+        ]
+
         return TestCaseMetrics(
             PerClass=per_class_metrics,
             nIgnored=ignored_count,
-            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,
+            mean_AP=np.mean(mean_aps) if mean_aps else 0.0,  # Calculate mean AP across all metrics
         )
 
     def compute_test_case_metrics(
