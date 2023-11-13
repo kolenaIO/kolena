@@ -62,6 +62,7 @@ def main(args: Namespace) -> int:
     def infer(test_sample: TestSample) -> Inference:
         return Inference(
             answers=inference_map[test_sample.question],
+            num_answers=len(inference_map[test_sample.question]),
             missing_answer=len(inference_map[test_sample.question]) == 0,
         )
 

@@ -24,7 +24,6 @@ from kolena.workflow import Inference as BaseInference
 from kolena.workflow import Metadata
 from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
-from kolena.workflow import MetricsTestSuite
 from kolena.workflow import Text
 from kolena.workflow.annotation import Label
 
@@ -67,6 +66,7 @@ class Inference(BaseInference):
     """Inference type for the Question Answering workflow."""
 
     answers: List[Answer]
+    num_answers: int
     missing_answer: bool
 
 
@@ -79,15 +79,37 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
+class AnswerResult(Label):
+    """Metrics for each answer from a Question Answering model."""
+
+    BART: float
+    BERT_prec: float
+    BERT_rec: float
+    BERT_f1: float
+    BLEURT: float
+    METEOR: float
+
+
+@dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     """Sample-level metrics for the Question Answering workflow."""
+
+    fail_to_answer: bool
+    answers: List[AnswerResult]
+    best_answer_by_BART: Optional[AnswerResult]
+    best_answer_by_BERT_f1: Optional[AnswerResult]
+    best_answer_by_BLEURT: Optional[AnswerResult]
+    best_answer_by_METEOR: Optional[AnswerResult]
+    best_overall: Optional[AnswerResult]
 
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
     """Test-case-level aggregate metrics for the Question Answering workflow."""
 
-
-@dataclass(frozen=True)
-class TestSuiteMetrics(MetricsTestSuite):
-    """Test-suite-level metrics for the Question Answering workflow."""
+    Questions: int
+    Failures: int
+    BART: float  # from overall_best
+    BERT_f1: float  # from overall_best
+    BLEURT: float  # from overall_best
+    METEOR: float  # from overall_best
