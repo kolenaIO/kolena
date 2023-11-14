@@ -31,7 +31,6 @@ nav:
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
           - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
-          - ThresholdedMetrics: advanced-usage/thresholded-metrics.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
@@ -46,6 +45,7 @@ nav:
           - <code>TestSuite</code>: reference/workflow/test-suite.md
           - <code>Model</code>: reference/workflow/model.md
           - <code>test</code>: reference/workflow/test-run.md
+          - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
           - Utilities:
               - Annotations: reference/workflow/annotation.md
               - Assets: reference/workflow/asset.md
