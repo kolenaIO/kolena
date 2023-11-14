@@ -31,6 +31,7 @@ nav:
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
           - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
+          - ThresholdedMetrics: advanced-usage/thresholded-metrics.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
@@ -57,7 +58,6 @@ nav:
           - Pre-built Workflows: reference/pre-built/index.md
           - Object Detection (2D): reference/pre-built/object-detection-2d.md
           - Classification: reference/pre-built/classification.md
-          - ThresholdedMetrics: reference/pre-built/thresholded-metrics.md
           - Legacy Definitions:
               - Legacy Definitions: reference/legacy/index.md
               - <code>classification</code>: reference/legacy/built-in/classification.md

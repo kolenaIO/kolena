@@ -1,15 +1,19 @@
 ---
-icon: kolena/metrics-16
+icon: kolena/test-suite-16
 status: new
 ---
 
-# :kolena-metrics-20: Thresholded Metrics
+# :kolena-test-suite-20: ThresholdedMetrics
 
-!!! tip "Key Component"
+!!! example "Experimental Feature"
 
-    `ThresholdedMetrics` is a fundamental class in the Kolena workflow for handling metrics tied to specific thresholds. It ensures data integrity and consistency across various metrics evaluations.
+    This pre-built workflow is an experimental feature. Experimental features are under active development and may
+    occasionally undergo API-breaking changes.
 
-Thresholded Metrics are an essential aspect of evaluating and comparing the performance of models, especially in scenarios where different threshold values can significantly impact the interpretation of the model's effectiveness.
+Thresholded Metrics play a crucial role in specific contexts of model evaluation, particularly when the performance
+of models is assessed based on varying threshold values. In such scenarios, these metrics are vital for accurately
+interpreting the effectiveness of the models, as different thresholds can lead to markedly different performance
+outcomes.
 
 Here is an example of how `ThresholdedMetrics` can be used within a workflow:
 
@@ -17,11 +21,13 @@ Here is an example of how `ThresholdedMetrics` can be used within a workflow:
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import ThresholdedMetrics
 
+
 @dataclass(frozen=True)
 class ClassThresholdedMetrics(ThresholdedMetrics):
     precision: float
     recall: float
     f1: float
+
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
@@ -39,3 +45,4 @@ metric = TestSampleMetrics(
         # ...
     ],
 )
+```
