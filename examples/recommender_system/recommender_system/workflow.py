@@ -106,7 +106,7 @@ class RecommenderConfiguration(EvaluatorConfiguration):
     """The method to use to extract relevant items from the recommendation list."""
 
     def display_name(self) -> str:
-        if self.revelancy_method == "Top-K":
+        if self.relevancy_method == "Top-K":
             return f"Relevancy Method: Top-K (k={self.k})"
 
-        return f"Relevancy Method: {self.revelancy_method}"
+        return f"Relevancy Method: {self.relevancy_method}"

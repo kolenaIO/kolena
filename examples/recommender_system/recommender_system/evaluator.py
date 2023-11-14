@@ -40,12 +40,17 @@ def compute_per_sample(
     inference: Inference,
     configuration: RecommenderConfiguration,
 ) -> TestSampleMetrics:
-    ratings = [movie.score for movie in ground_truth.rated_movies]
-    predictions = [movie.score for movie in inference.recommendations]
+    # ratings = [movie.score for movie in ground_truth.rated_movies]
+    # predictions = [movie.score for movie in inference.recommendations]
+    ratings = [movie.id for movie in ground_truth.rated_movies]
+    predictions = [movie.id for movie in inference.recommendations]
 
     k = configuration.k
     if len(predictions) > k:
         predictions = predictions[:k]
+
+    print(ratings)
+    print(predictions)
 
     pk = precision_at_k(ratings, predictions, k)
     rk = recall_at_k(ratings, predictions, k)
@@ -59,9 +64,10 @@ def compute_per_sample(
         MAP=mean_avg_precision_at_k(ratings, predictions, k),
         MRR=mrr_at_k(ratings, predictions, k),
         NDCG=0,
-        F1_k=2 * pk * rk / (pk + rk),
-        precision_k=precision_at_k(ratings, predictions, k),
-        recall_k=recall_at_k(ratings, predictions, k),
+        # F1_k=2 * pk * rk / (pk + rk),
+        F1_k=0,
+        precision_k=pk,
+        recall_k=rk,
     )
 
 

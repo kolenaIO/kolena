@@ -21,6 +21,7 @@ from recommender_system.workflow import Inference
 
 def compute_errors(ground_truth: GroundTruth, inference: Inference) -> Tuple[float, float]:
     movie_score_map = {movie.id: movie.score for movie in inference.recommendations}
+    print(movie_score_map)
     rmse = np.sqrt(
         np.mean(
             [

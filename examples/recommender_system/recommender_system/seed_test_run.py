@@ -19,6 +19,7 @@ from typing import List
 
 import pandas as pd
 from recommender_system.evaluator import evaluate_recommender
+from recommender_system.utils import process_metadata
 from recommender_system.workflow import Inference
 from recommender_system.workflow import Model
 from recommender_system.workflow import Movie
@@ -33,16 +34,32 @@ BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
 
 
-def seed_test_run(model_name: str, test_suites: List[str]) -> None:
+def seed_test_run(model_name: str, test_suites: List[str], movies_csv: str) -> None:
     # df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.sample.csv")
     df_results = pd.read_csv("predictions_knn.50.csv")
+    df_movies = pd.read_csv(movies_csv)
+
+    movie_metadata, id_title_map = {}, {}
+    non_metadata_fields = {"movieId", "title"}
+    for record in df_movies.itertuples(index=False):
+        fields = set(record._fields)
+        movie_metadata[record.movieId] = {f: process_metadata(record, f) for f in fields - non_metadata_fields}
+        id_title_map[record.movieId] = record.title
 
     def infer(test_sample: TestSample) -> Inference:
         filtered = df_results[df_results["userId"] == test_sample.user_id]
         samples = filtered.sort_values(by=["rank"]).itertuples(index=False)
 
         return Inference(
-            recommendations=[Movie(label=None, score=sample.prediction, id=sample.movieId) for sample in samples],
+            recommendations=[
+                Movie(
+                    label=id_title_map[sample.movieId],
+                    score=sample.prediction,
+                    id=sample.movieId,
+                    metadata=movie_metadata[sample.movieId],
+                )
+                for sample in samples
+            ],
         )
 
     model_descriptor = f"{model_name} [{DATASET}]"
@@ -60,7 +77,7 @@ def seed_test_run(model_name: str, test_suites: List[str]) -> None:
 def main(args: Namespace) -> int:
     kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
     for model_name in args.models:
-        seed_test_run(model_name, args.test_suites)
+        seed_test_run(model_name, args.test_suites, args.movies_csv)
     return 0
 
 
@@ -76,9 +93,14 @@ if __name__ == "__main__":
         default=[
             # f"{DATASET} :: genre",
             f"{DATASET} :: age",
-            f"{DATASET} :: occupation",
-            f"{DATASET} :: gender",
+            # f"{DATASET} :: occupation",
+            # f"{DATASET} :: gender",
         ],
         help="Name(s) of test suite(s) to test.",
+    )
+    ap.add_argument(
+        "--movies_csv",
+        type=str,
+        default=f"s3://{BUCKET}/{DATASET}/meta/movies.csv",
     )
     sys.exit(main(ap.parse_args()))

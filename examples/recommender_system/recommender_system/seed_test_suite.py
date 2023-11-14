@@ -20,9 +20,8 @@ from argparse import Namespace
 import pandas as pd
 from recommender_system.utils import AGE_STRATIFICATION
 from recommender_system.utils import GENRES
-from recommender_system.utils import ID_AGE_MAP
-from recommender_system.utils import ID_OCCUPATION_MAP
 from recommender_system.utils import OCCUPATION_STRATIFICATION
+from recommender_system.utils import process_metadata
 from recommender_system.workflow import GroundTruth
 from recommender_system.workflow import Movie
 from recommender_system.workflow import TestCase
@@ -30,6 +29,9 @@ from recommender_system.workflow import TestSample
 from recommender_system.workflow import TestSuite
 
 import kolena
+
+# from recommender_system.utils import ID_AGE_MAP
+# from recommender_system.utils import ID_OCCUPATION_MAP
 
 BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
@@ -43,17 +45,6 @@ def main(args: Namespace) -> int:
     df_ratings = pd.read_csv(args.ratings_csv)
     df_movies = pd.read_csv(args.movies_csv)
     df_users = pd.read_csv(args.users_csv)
-
-    def process_metadata(record, f):
-        value = getattr(record, f)
-        if f == "genres":
-            return value.split("|")
-        elif f == "age":
-            return ID_AGE_MAP[value]
-        elif f == "occupation":
-            return ID_OCCUPATION_MAP[value]
-
-        return value
 
     movie_metadata, id_title_map = {}, {}
     non_metadata_fields = {"movieId", "title"}
