@@ -1,4 +1,4 @@
-# ThresholdedMetrics
+# `kolena._experimental.workflow.ThresholdedMetrics`
 
 !!! example "Experimental Feature"
 
