@@ -42,8 +42,8 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
     """
     Represents metrics tied to a specific threshold.
 
-    `List[ThresholdedMetrics]` should be used as a field type within `MetricsTestSample` or
-    `MetricsTestCase` from the `kolena.workflow` module. This list is meant to hold metric values
+    `List[ThresholdedMetrics]` should be used as a field type within `MetricsTestSample`
+    from the `kolena.workflow` module. This list is meant to hold metric values
     associated with distinct thresholds. These metrics are expected to be uniform across `TestSample`
     instances within a single test execution.
 

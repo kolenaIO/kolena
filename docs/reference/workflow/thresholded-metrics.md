@@ -1,9 +1,4 @@
----
-icon: kolena/test-suite-16
-status: new
----
-
-# :kolena-test-suite-20: ThresholdedMetrics
+# ThresholdedMetrics
 
 !!! example "Experimental Feature"
 
