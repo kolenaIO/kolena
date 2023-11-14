@@ -55,7 +55,7 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
 
     ```python
     from kolena.workflow import MetricsTestSample
-    from kolena.workflow import ThresholdedMetrics
+    from kolena._experimental.workflow import ThresholdedMetrics
 
     @dataclass(frozen=True)
     class ClassThresholdedMetrics(ThresholdedMetrics):
