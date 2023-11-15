@@ -118,7 +118,7 @@ def main(args: Namespace) -> int:
         )
         test_samples_and_ground_truths.append((ts, gt))
 
-    print(f"========= {time.time() - t2:0.3f} seconds")  # 21.299 seconds
+    print(f"{time.time() - t2:0.3f} seconds")  # 21.299 seconds
 
     t2 = time.time()
 
@@ -129,7 +129,7 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
-    print(f"--------- {time.time() - t2:0.3f} seconds")
+    print(f"{time.time() - t2:0.3f} seconds")
 
     # Metadata Test Cases
     demographic_subsets = dict(
@@ -145,7 +145,7 @@ def main(args: Namespace) -> int:
                 if ts.metadata[category] == tag:
                     test_case_subsets[category][tag].append((ts, gt))
 
-    print(f">>>>>> {time.time() - t2:0.3f} seconds")
+    print(f"{time.time() - t2:0.3f} seconds")
 
     for category, tags in test_case_subsets.items():
         t1 = time.time()
