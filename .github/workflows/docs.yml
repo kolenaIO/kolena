@@ -64,6 +64,3 @@ jobs:
         run: |
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://docs.kolena.io"
-        env:
-          DD_RUM_CLIENT_TOKEN: ${{ vars.DD_RUM_CLIENT_TOKEN }}
-          DD_RUM_APPLICATION_ID: ${{ vars.DD_RUM_APPLICATION_ID }}
