@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
+import time
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
@@ -58,6 +59,10 @@ def create_test_case_for_tag(
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
+    t0 = time.time()
+
+    t2 = time.time()
+
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
     df_bbox_keypoints = pd.read_csv(args.bbox_keypoints_csv)
@@ -73,7 +78,6 @@ def main(args: Namespace) -> int:
     bboxes = {}
     keypoints = {}
     for record in df_bbox_keypoints.itertuples(index=False):
-        fields = set(record._fields)
         bboxes[record.locator] = BoundingBox(
             top_left=(record.min_x, record.min_y),
             bottom_right=(record.max_x, record.max_y),
@@ -83,8 +87,8 @@ def main(args: Namespace) -> int:
                 (record.right_eye_x, record.right_eye_y),
                 (record.left_eye_x, record.left_eye_y),
                 (record.nose_x, record.nose_y),
-                (record.mouth_right_x, record.mouth_right_y),
-                (record.mouth_left_x, record.mouth_left_y),
+                (record.right_mouth_x, record.right_mouth_y),
+                (record.left_mouth_x, record.left_mouth_y),
             ],
         )
 
@@ -114,6 +118,10 @@ def main(args: Namespace) -> int:
         )
         test_samples_and_ground_truths.append((ts, gt))
 
+    print(f"========= {time.time() - t2:0.3f} seconds")  # 21.299 seconds
+
+    t2 = time.time()
+
     complete_test_case = TestCase(
         name=f"{DATASET} :: complete [FR]",
         description=f"All images in {DATASET} dataset",
@@ -121,28 +129,46 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
+    print(f"--------- {time.time() - t2:0.3f} seconds")
+
     # Metadata Test Cases
     demographic_subsets = dict(
         race=["asian", "black", "indian", "middle eastern", "latino hispanic", "white"],  # ignore "unknown"
         gender=["man", "woman"],  # ignore "unknown"
     )
+    test_case_subsets = defaultdict(lambda: defaultdict(list))
 
-    test_suites = defaultdict(list)
-    for category, tags in demographic_subsets.items():
+    t2 = time.time()
+    for ts, gt in test_samples_and_ground_truths:
+        for category, tags in demographic_subsets.items():
+            for tag in tags:
+                if ts.metadata[category] == tag:
+                    test_case_subsets[category][tag].append((ts, gt))
+
+    print(f">>>>>> {time.time() - t2:0.3f} seconds")
+
+    for category, tags in test_case_subsets.items():
+        t1 = time.time()
         test_cases = []
-        for tag in tags:
-            test_case = create_test_case_for_tag(test_samples_and_ground_truths, category, tag)
-            test_cases.append(test_case)
-            print(f"created test case '{test_case.name}'")
-        test_suites[category] = test_cases
-
-    for test_suite_name, test_cases in test_suites.items():
+        for tag, test_samples in tags.items():
+            name = f"{category} :: {tag} [FR]"
+            description = f"demographic subset of {DATASET} with source data labeled as {category}={tag}"
+            test_cases.append(
+                TestCase(
+                    name=name,
+                    description=description,
+                    test_samples=test_samples,
+                    reset=True,
+                ),
+            )
         test_suite = TestSuite(
-            name=f"{DATASET} :: {test_suite_name} [FR]",
+            name=f"{DATASET} :: {category} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
-        print(f"created test suite '{test_suite}'")
+        print(f"created test suite '{test_suite}' in {time.time() - t1:0.3f} seconds")
+
+    print(f"completed seeding in {time.time() - t0:0.3f} seconds")
 
 
 if __name__ == "__main__":
