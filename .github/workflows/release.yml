@@ -49,15 +49,10 @@ jobs:
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
 
-      - name: Build 'kolena' documentation and push to GitHub Pages
+      - name: Publish 'kolena' documentation to production (S3)
         run: |
-          git config user.name 'kolenabot'
-          git config user.email 'bot@kolena.io'
-          ./docs/setup_insiders.sh
-          poetry run mkdocs gh-deploy --verbose --strict --remote-branch release/docs --config-file mkdocs.insiders.yml
-        env:
-          DD_RUM_CLIENT_TOKEN: ${{ vars.DD_RUM_CLIENT_TOKEN }}
-          DD_RUM_APPLICATION_ID: ${{ vars.DD_RUM_APPLICATION_ID }}
+          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+          aws s3 sync ./site "s3://docs.kolena.io"
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
