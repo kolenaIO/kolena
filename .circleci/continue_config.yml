@@ -25,6 +25,9 @@ parameters:
   example:
     type: boolean
     default: false
+  token_count:
+    type: integer
+    default: 4
 
 executors:
   python:
@@ -154,16 +157,14 @@ jobs:
           steps:
             - run:
                 name: Run unit tests
-                command: |
-                  poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run metrics unit tests
-                command: |
-                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           # Generate coverage only from one Python version
           condition:
@@ -173,8 +174,7 @@ jobs:
           steps:
             - run:
                 name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
+                command: poetry run coverage xml --data-file .coverage
             - codecov/upload:
                 file: coverage.xml
                 flags: integration
@@ -211,6 +211,12 @@ jobs:
       - checkout
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Set KOLENA_TOKEN with round robin
+          command: |
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
       - when:
           condition:
             and:
@@ -224,7 +230,6 @@ jobs:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
                 command: |
-                  export KOLENA_TOKEN=${KOLENA_TOKEN}
                   TEST_GROUP="<< parameters.pytest-group >>"
                   if [ "$TEST_GROUP" = "misc" ]; then
                     TESTFILES=$(circleci tests glob tests/integration/test_*.py |
@@ -241,9 +246,7 @@ jobs:
           steps:
             - run:
                 name: Run experimental metrics integration tests
-                command: |
-                  export KOLENA_TOKEN=${KOLENA_TOKEN}
-                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
+                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
           condition:
@@ -253,8 +256,7 @@ jobs:
           steps:
             - run:
                 name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
+                command: poetry run coverage xml --data-file .coverage
             - codecov/upload:
                 file: coverage.xml
             - store_test_results:
@@ -282,12 +284,13 @@ jobs:
           poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
-          command: |
-            poetry run pre-commit run -a
+          command: poetry run pre-commit run -a
       - run:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
             poetry run pytest -vv tests
   example-evaluator:
     docker:
@@ -299,8 +302,7 @@ jobs:
           version: 20.10.14
       - run:
           name: Build evaluator
-          command: |
-            examples/text_summarization/docker/build.sh
+          command: examples/text_summarization/docker/build.sh
 
 workflows:
   ci:
@@ -335,6 +337,7 @@ workflows:
               pytest-group: [ detection, fr, classification, workflow ]
               extras: ["none"]
           enabled: true
+          parallelism: 3
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -371,7 +374,7 @@ workflows:
       - example-test:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering ]
+              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11 ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
   example-evaluator:

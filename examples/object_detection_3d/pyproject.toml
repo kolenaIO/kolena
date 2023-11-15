@@ -6,8 +6,8 @@ authors = ["Kolena Engineering <eng@kolena.io>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
-kolena = ">=0.76.0,<1"
+python = ">=3.8,<3.11"
+kolena = ">=0.94.0,<1"
 pydantic = ">=1.10,<2.0"
 openmim = "^0.3.9"
 mmcv-lite = ">=2.0.0rc4"
