@@ -96,11 +96,11 @@ class TestSampleMetrics(MetricsTestSample):
 
     fail_to_answer: bool
     answers: List[AnswerResult]
-    best_answer_by_BART: Optional[AnswerResult]
-    best_answer_by_BERT_f1: Optional[AnswerResult]
-    best_answer_by_BLEURT: Optional[AnswerResult]
-    best_answer_by_METEOR: Optional[AnswerResult]
-    best_overall: Optional[AnswerResult]
+    best_answer_by_BART: Optional[AnswerResult] = None
+    best_answer_by_BERT_f1: Optional[AnswerResult] = None
+    best_answer_by_BLEURT: Optional[AnswerResult] = None
+    best_answer_by_METEOR: Optional[AnswerResult] = None
+    best_overall: Optional[AnswerResult] = None
 
 
 @dataclass(frozen=True)

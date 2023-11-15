@@ -25,14 +25,13 @@ from question_answering.truthful_qa.workflow import TestCase
 from question_answering.truthful_qa.workflow import TestCaseMetrics
 from question_answering.truthful_qa.workflow import TestSample
 from question_answering.truthful_qa.workflow import TestSampleMetrics
-from question_answering.utils import mean_metric
 from tqdm import tqdm
 
 from kolena.workflow import EvaluationResults
 from kolena.workflow import TestCases
 
 
-bart_scorer = BARTScorer(device="cuda:0", checkpoint="facebook/bart-large-cnn")
+bart_scorer = BARTScorer(device="cpu", checkpoint="facebook/bart-large-cnn")
 bert_scorer = evaluate.load("bertscore")
 bleurt_scorer = evaluate.load("bleurt", module_type="metric")
 meteor_scorer = evaluate.load("meteor")
@@ -47,12 +46,13 @@ def compute_metrics(gt: str, inf: str) -> AnswerResult:
     )
 
     return AnswerResult(
-        BART=bart_scorer.score([inf], [gt]),
+        label=inf,
+        BART=bart_scorer.score([inf], [gt])[0],
         BERT_prec=bertscore_results["precision"][0],
         BERT_rec=bertscore_results["recall"][0],
         BERT_f1=bertscore_results["f1"][0],
-        BLEURT=bleurt_scorer.compute([inf], [gt])["scores"][0],
-        METEOR=meteor_scorer.compute([inf], [gt])["meteor"],
+        BLEURT=bleurt_scorer.compute(predictions=[inf], references=[gt])["scores"][0],
+        METEOR=meteor_scorer.compute(predictions=[inf], references=[gt])["meteor"],
     )
 
 
@@ -60,19 +60,20 @@ def compute_test_sample_metrics(
     gt: GroundTruth,
     inf: Inference,
 ) -> TestSampleMetrics:
-    answers = [compute_metrics(gt.best_answer, inf_answer) for inf_answer in inf.answers]
-
-    best_answers = dict()
-    for metric in ["BART", "BERT_f1", "BLEURT", "METEOR"]:
-        best_answers[metric] = max(answers, key=attrgetter(metric))
-
-    best_overall = max(set(best_answers.values()), key=best_answers.count)
+    answers = [compute_metrics(gt.best_answer, inf_answer.label) for inf_answer in inf.answers]
 
     if len(answers) == 0:
         return TestSampleMetrics(
             fail_to_answer=True,
             answers=[],
         )
+
+    best_answers = dict()
+    for metric in ["BART", "BERT_f1", "BLEURT", "METEOR"]:
+        best_answers[metric] = max(answers, key=attrgetter(metric))
+
+    best_answers_values = list(best_answers.values())
+    best_overall = max(best_answers_values, key=best_answers_values.count)
 
     return TestSampleMetrics(
         fail_to_answer=False,
@@ -91,10 +92,10 @@ def compute_test_case_metrics(
     return TestCaseMetrics(
         Questions=len(metrics),
         Failures=np.sum([m.fail_to_answer for m in metrics]),
-        BART=mean_metric("BART", metrics),
-        BERT_f1=mean_metric("BERT_f1", metrics),
-        BLEURT=mean_metric("BLEURT", metrics),
-        METEOR=mean_metric("METEOR", metrics),
+        BART=np.mean([getattr(m.best_overall, "BART") for m in metrics if m.best_overall is not None]),
+        BERT_f1=np.mean([getattr(m.best_overall, "BERT_f1") for m in metrics if m.best_overall is not None]),
+        BLEURT=np.mean([getattr(m.best_overall, "BLEURT") for m in metrics if m.best_overall is not None]),
+        METEOR=np.mean([getattr(m.best_overall, "METEOR") for m in metrics if m.best_overall is not None]),
     )
 
 

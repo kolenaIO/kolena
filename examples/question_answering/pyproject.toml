@@ -18,8 +18,11 @@ evaluate = "^0.4.0"
 bert-score = "^0.3.13"
 rouge-score = "^0.1.2"
 #meteor = "^0.4.0"
-#bleurt = "^0.4.0"
-#bart_score = { git = "https://github.com/neulab/BARTScore.git", branch = "main" }
+sentencepiece = "0.1.99"
+tf-slim = "1.1"
+scipy = "^1.11.3"
+tensorflow = "2.14.0"
+bleurt = { git = "https://github.com/google-research/bleurt.git" }
 
 
 [tool.poetry.group.dev.dependencies]
