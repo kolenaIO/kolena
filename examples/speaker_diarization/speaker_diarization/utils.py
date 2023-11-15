@@ -155,15 +155,20 @@ def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Li
     gt_start, gt_end = gt
 
     if inf_end < gt_start or inf_start > gt_end:
+        # No overlap
         return [inf]
 
     if inf_start < gt_start and inf_end > gt_end:
+        # Return the two ends
         return [[inf_start, gt_start], [gt_end, inf_end]]
     elif inf_start >= gt_start and inf_end <= gt_end:
+        # Entirely overlapped
         return None
     elif inf_start < gt_start:
+        # Only return the left end
         return [[inf_start, gt_start]]
     else:
+        # Only return the right end
         return [[gt_end, inf_end]]
 
 
@@ -204,10 +209,11 @@ def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeS
         gt_no = create_non_overlapping_segments(gt.transcription, id)
         inf_no = create_non_overlapping_segments(inf.transcription, id)
         res.extend(generate_fp(gt_no, inf_no))
+        res.extend(generate_fp(inf_no, gt_no))
 
-    res = [r for r in res if r[1] - r[0] <= ERROR_THRESHOLD]
+    res = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in res]
+    return [TimeSegment(start=r[0], end=r[1]) for r in create_non_overlapping_segments(res)]
 
 
 def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float, float]]:
