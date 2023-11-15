@@ -243,9 +243,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj = cls.__new__(cls)
         obj._id = data.id
         obj.name = data.name
-        obj.workflow = data.workflow
         obj.metadata = data.metadata
         obj.tags = data.tags
+        obj.workflow = cls.workflow
         obj.infer = infer
         obj._freeze()
         return obj

@@ -35,6 +35,10 @@ META_DATA = {"a": "b"}
 TAGS = {"c", "d"}
 
 
+def no_op_infer(*_):
+    return
+
+
 def assert_model(model: Model, name: str) -> None:
     assert model.workflow == DUMMY_WORKFLOW
     assert model.name == name
@@ -56,14 +60,11 @@ def test__load() -> None:
     with pytest.raises(Exception):
         Model.load(name)
 
-    Model.create(name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
-    assert_model(Model.load(name, infer=lambda x: None), name)
+    model = Model.create(name, infer=no_op_infer, metadata=META_DATA, tags=TAGS)
+    assert model == Model.load(name, infer=no_op_infer)
 
 
 def test__load_all() -> None:
-    def no_op_infer(*_):
-        return
-
     name = with_test_prefix(f"{__file__}::test__load_all")
     _, _, _, model = define_workflow(f"{name} workflow 1", DummyTestSample, DummyGroundTruth, DummyInference)
     _, _, _, model_diff = define_workflow(f"{name} workflow 2", DummyTestSample, DummyGroundTruth, DummyInference)
@@ -87,11 +88,10 @@ def test__load__mismatching_workflows() -> None:
 
 def test__init() -> None:
     name = with_test_prefix(f"{__file__}::test__init")
-    model = Model(name=name, infer=lambda x: None)
-    loaded = Model.load(name, infer=lambda x: None)
+    model = Model(name=name, infer=no_op_infer)
+    loaded = Model.load(name, infer=no_op_infer)
 
-    assert model.name == loaded.name
-    assert model.metadata == loaded.metadata
+    assert model == loaded
 
 
 def test__init_with_optionals() -> None:
