@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://docs.kolena.io/reference/workflow/inference/">
+        <link rel="canonical" href="https://docs.kolena.io/reference/workflow/thresholded-metrics/">
       
       
-        <link rel="prev" href="../ground-truth/">
+        <link rel="prev" href="../test-run/">
       
       
-        <link rel="next" href="../evaluator/">
+        <link rel="next" href="../annotation/">
       
       
         
@@ -26,7 +26,7 @@
       <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.6+insiders-4.42.2">
     
     
-<title>Inference · Testing with Kolena</title>
+<title>ThresholdedMetrics · Testing with Kolena</title>
 
     
       <link rel="stylesheet" href="../../../assets/stylesheets/main.62ccb7e6.min.css">
@@ -90,17 +90,17 @@
 
   
 <meta property="og:type" content="website" />
-<meta property="og:title" content="<code>Inference</code> - Testing with Kolena" />
+<meta property="og:title" content="<code>ThresholdedMetrics</code> - Testing with Kolena" />
 <meta property="og:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="og:image" content="https://docs.kolena.io/assets/images/social/reference/workflow/inference.png" />
+<meta property="og:image" content="https://docs.kolena.io/assets/images/social/reference/workflow/thresholded-metrics.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:url" content="https://docs.kolena.io/reference/workflow/inference/" />
+<meta property="og:url" content="https://docs.kolena.io/reference/workflow/thresholded-metrics/" />
 <meta property="twitter:card" content="summary_large_image" />
-<meta property="twitter:title" content="<code>Inference</code> - Testing with Kolena" />
+<meta property="twitter:title" content="<code>ThresholdedMetrics</code> - Testing with Kolena" />
 <meta property="twitter:description" content="Python client for Kolena's machine learning testing platform" />
-<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/reference/workflow/inference.png" />
+<meta property="twitter:image" content="https://docs.kolena.io/assets/images/social/reference/workflow/thresholded-metrics.png" />
 </head>
   
   
@@ -120,7 +120,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#kolenaworkflowinference" class="md-skip">
+        <a href="#kolena_experimentalworkflowthresholdedmetrics" class="md-skip">
           Skip to content
         </a>
       
@@ -155,7 +155,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              <code>Inference</code>
+              <code>ThresholdedMetrics</code>
             
           </span>
         </div>
@@ -1688,35 +1688,9 @@
                 
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    
-  
-    <code>Inference</code>
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../inference/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -1731,37 +1705,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#kolena.workflow.inference.Inference" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;Inference
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1901,9 +1844,35 @@
                 
   
   
+    
   
-    <li class="md-nav__item">
-      <a href="../thresholded-metrics/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    
+  
+    <code>ThresholdedMetrics</code>
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1918,6 +1887,65 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ThresholdedMetrics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" ThresholdedMetrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics.__init_subclass__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__init_subclass__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics.__post_init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3526,13 +3554,41 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#kolena.workflow.inference.Inference" class="md-nav__link">
+  <a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;Inference
+        <code class="doc-symbol doc-symbol-toc doc-symbol-class"></code>&nbsp;ThresholdedMetrics
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label=" ThresholdedMetrics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics.__init_subclass__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__init_subclass__
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics.__post_init__" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        <code class="doc-symbol doc-symbol-toc doc-symbol-method"></code>&nbsp;__post_init__
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -3599,7 +3655,7 @@
                   
 
   
-    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/reference/workflow/inference.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/kolenaIO/kolena/edit/trunk/docs/reference/workflow/thresholded-metrics.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4v-2m10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1 2.1 2.1Z"/></svg>
     </a>
@@ -3607,7 +3663,16 @@
   
 
 
-<h1 id="kolenaworkflowinference"><code>kolena.workflow.Inference</code><a class="headerlink" href="#kolenaworkflowinference" title="Permanent link">#</a></h1>
+<h1 id="kolena_experimentalworkflowthresholdedmetrics"><code>kolena._experimental.workflow.ThresholdedMetrics</code><a class="headerlink" href="#kolena_experimentalworkflowthresholdedmetrics" title="Permanent link">#</a></h1>
+<div class="admonition example">
+<p class="admonition-title">Experimental Feature</p>
+<p>This pre-built workflow is an experimental feature. Experimental features are under active development and may
+occasionally undergo API-breaking changes.</p>
+</div>
+<p>Thresholded Metrics play a crucial role in specific contexts of model evaluation, particularly when the performance
+of models is assessed based on varying threshold values. In such scenarios, these metrics are vital for accurately
+interpreting the effectiveness of the models, as different thresholds can lead to markedly different performance
+outcomes.</p>
 
 
 <div class="doc doc-object doc-module">
@@ -3616,20 +3681,6 @@
 
 
   <div class="doc doc-contents first">
-  
-      <p>The output from a <a class="autorefs autorefs-internal" href="../model/#kolena.workflow.model.Model"><code>Model</code></a>. In other words, a model is a deterministic transformation from a
-<a class="autorefs autorefs-internal" href="../test-sample/#kolena.workflow.test_sample.TestSample"><code>TestSample</code></a> to an <a class="autorefs autorefs-internal" href="#kolena.workflow.inference.Inference"><code>Inference</code></a>.</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">kolena.workflow</span> <span class="kn">import</span> <span class="n">Inference</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kn">from</span> <span class="nn">kolena.workflow.annotation</span> <span class="kn">import</span> <span class="n">Keypoints</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="k">class</span> <span class="nc">PoseEstimate</span><span class="p">(</span><span class="n">Inference</span><span class="p">):</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">skeleton</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Keypoints</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># leave empty if nothing is detected</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="n">confidence</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-</span></code></pre></div>
 
 
 
@@ -3650,54 +3701,125 @@
 
 
 
-<h2 id="kolena.workflow.inference.Inference" class="doc doc-heading">
-<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>Inference</code>
+<h2 id="kolena._experimental.workflow.thresholded.ThresholdedMetrics" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <code>ThresholdedMetrics</code>
 
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
 
-<a href="#kolena.workflow.inference.Inference" class="headerlink" title="Permanent link">#</a></h2>
+<a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics" class="headerlink" title="Permanent link">#</a></h2>
 
 
   <div class="doc doc-contents ">
           <p class="doc doc-class-bases">
-            Bases: <code><span title="kolena.workflow._datatypes.DataObject">DataObject</span></code></p>
+            Bases: <code><span title="kolena.workflow._datatypes.TypedDataObject">TypedDataObject</span>[<span title="kolena._experimental.workflow.thresholded._MetricsType">_MetricsType</span>]</code></p>
 
   
-      <p>The inference produced by a model.</p>
-<p>Typically the structure of this object closely mirrors the structure of the
-<a class="autorefs autorefs-internal" href="../ground-truth/#kolena.workflow.ground_truth.GroundTruth"><code>GroundTruth</code></a> for a workflow, but this is not a requirement.</p>
-<p>During evaluation, the <a class="autorefs autorefs-internal" href="../test-sample/#kolena.workflow.test_sample.TestSample"><code>TestSample</code></a> objects, ground truth objects, and these inference
-objects are provided to the <a class="autorefs autorefs-internal" href="../evaluator/#kolena.workflow.evaluator.Evaluator"><code>Evaluator</code></a> implementation to compute metrics.</p>
-<p>This object may contain any combination of scalars (e.g. <code>str</code>, <code>float</code>),
-<a class="autorefs autorefs-internal" href="../annotation/#kolena.workflow.annotation.Annotation"><code>Annotation</code></a> objects, or lists of these objects.</p>
-<p>A model processing a <a class="autorefs autorefs-internal" href="../test-sample/#kolena.workflow.test_sample.Composite"><code>Composite</code></a> test sample can produce an inference result for each
-of its elements. To associate an inference result to each test sample element, put the attributes and/or annotations
-inside a <code>DataObject</code> and use the same attribute name as that used in the <a class="autorefs autorefs-internal" href="../test-sample/#kolena.workflow.test_sample.Composite"><code>Composite</code></a>
-test sample.</p>
-<p>Continue with the example given in <a class="autorefs autorefs-internal" href="../test-sample/#kolena.workflow.test_sample.Composite"><code>Composite</code></a>, where the <code>FacePairSample</code> test sample
-type is defined using a pair of images under the <code>source</code> and <code>target</code> members, we can design a corresponding
-inference type with image-level annotations defined in the <code>FaceRegion</code> object:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">kolena.workflow</span> <span class="kn">import</span> <span class="n">DataObject</span><span class="p">,</span> <span class="n">Inference</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kn">from</span> <span class="nn">kolena.workflow.annotation</span> <span class="kn">import</span> <span class="n">BoundingBox</span><span class="p">,</span> <span class="n">Keypoints</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="k">class</span> <span class="nc">FaceRegion</span><span class="p">(</span><span class="n">DataObject</span><span class="p">):</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">bounding_box</span><span class="p">:</span> <span class="n">BoundingBox</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="n">keypoints</span><span class="p">:</span> <span class="n">Keypoints</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="k">class</span> <span class="nc">FacePair</span><span class="p">(</span><span class="n">Inference</span><span class="p">):</span>
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">source</span><span class="p">:</span> <span class="n">FaceRegion</span>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="n">target</span><span class="p">:</span> <span class="n">FaceRegion</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>    <span class="n">similarity</span><span class="p">:</span> <span class="nb">float</span>
+      <p>Represents metrics tied to a specific threshold.</p>
+<p><code>List[ThresholdedMetrics]</code> should be used as a field type within <code>MetricsTestSample</code>
+from the <code>kolena.workflow</code> module. This list is meant to hold metric values
+associated with distinct thresholds. These metrics are expected to be uniform across <code>TestSample</code>
+instances within a single test execution.</p>
+<p><code>ThresholdedMetrics</code> prohibits the use of dictionary objects as field values and guarantees that
+the threshold values remain immutable once set. For application within a particular workflow,
+subclassing is required to define relevant metrics fields.</p>
+<p>Usage example:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span> <span class="nn">kolena.workflow</span> <span class="kn">import</span> <span class="n">MetricsTestSample</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span> <span class="nn">kolena._experimental.workflow</span> <span class="kn">import</span> <span class="n">ThresholdedMetrics</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="k">class</span> <span class="nc">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">ThresholdedMetrics</span><span class="p">):</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">precision</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">recall</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">f1</span><span class="p">:</span> <span class="nb">float</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="k">class</span> <span class="nc">TestSampleMetrics</span><span class="p">(</span><span class="n">MetricsTestSample</span><span class="p">):</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>    <span class="n">car</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassThresholdedMetrics</span><span class="p">]</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>    <span class="n">pedestrian</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ClassThresholdedMetrics</span><span class="p">]</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="c1"># Creating an instance of metrics</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="n">metric</span> <span class="o">=</span> <span class="n">TestSampleMetrics</span><span class="p">(</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>    <span class="n">car</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>        <span class="n">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">recall</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">0.615</span><span class="p">),</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>        <span class="n">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">recall</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">0.6</span><span class="p">),</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>        <span class="n">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">recall</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">0.533</span><span class="p">),</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>        <span class="c1"># ...</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>    <span class="p">],</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>    <span class="n">pedestrian</span><span class="o">=</span><span class="p">[</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>        <span class="n">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">recall</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">0.72</span><span class="p">),</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>        <span class="n">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">recall</span><span class="o">=</span><span class="mf">0.7</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">0.7</span><span class="p">),</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>        <span class="n">ClassThresholdedMetrics</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">recall</span><span class="o">=</span><span class="mf">0.6</span><span class="p">,</span> <span class="n">f1</span><span class="o">=</span><span class="mf">0.686</span><span class="p">),</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>        <span class="c1"># ...</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>    <span class="p">],</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="p">)</span>
 </span></code></pre></div>
-<p>This way, it is clear which bounding boxes and keypoints are associated to which image in the test sample.</p>
+<p>Raises:
+    TypeError: If any of the field values is a dictionary.</p>
 
 
 
 
 
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="kolena._experimental.workflow.thresholded.ThresholdedMetrics.__init_subclass__" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics.__init_subclass__" class="headerlink" title="Permanent link">#</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Registers the subclass in the system, allowing it to be recognized and utilized
+within the broader workflow infrastructure.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="kolena._experimental.workflow.thresholded.ThresholdedMetrics.__post_init__" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <code class="highlight language-python"><span class="n">__post_init__</span><span class="p">()</span></code>
+
+<a href="#kolena._experimental.workflow.thresholded.ThresholdedMetrics.__post_init__" class="headerlink" title="Permanent link">#</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Post-initialization processing to ensure data integrity.</p>
+<p>Checks each field to ensure no dictionary types are used, raising TypeError if violated.
+This maintains the integrity and expected structure of the data.</p>
+
+  </div>
+
+</div>
+
+
+
+  </div>
 
   </div>
 
@@ -3725,7 +3847,7 @@ inference type with image-level annotations defined in the <code>FaceRegion</cod
         <span class="md-icon" title="Last update">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 13.1c-.1 0-.3.1-.4.2l-1 1 2.1 2.1 1-1c.2-.2.2-.6 0-.8l-1.3-1.3c-.1-.1-.2-.2-.4-.2m-1.9 1.8-6.1 6V23h2.1l6.1-6.1-2.1-2M12.5 7v5.2l4 2.4-1 1L11 13V7h1.5M11 21.9c-5.1-.5-9-4.8-9-9.9C2 6.5 6.5 2 12 2c5.3 0 9.6 4.1 10 9.3-.3-.1-.6-.2-1-.2s-.7.1-1 .2C19.6 7.2 16.2 4 12 4c-4.4 0-8 3.6-8 8 0 4.1 3.1 7.5 7.1 7.9l-.1.2v1.8Z"/></svg>
         </span>
-        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">June 8, 2023</span>
+        <span class="git-revision-date-localized-plugin git-revision-date-localized-plugin-date">November 14, 2023</span>
       </span>
     
     
@@ -3738,9 +3860,9 @@ inference type with image-level annotations defined in the <code>FaceRegion</cod
         <span>GitHub</span>
         <nav>
           
-            <a href="https://github.com/gordonhart" class="md-author" title="@gordonhart">
+            <a href="https://github.com/diegokolena" class="md-author" title="@diegokolena">
               
-              <img src="https://avatars.githubusercontent.com/u/9648886?size=72" alt="gordonhart">
+              <img src="https://avatars.githubusercontent.com/u/145356418?size=72" alt="diegokolena">
             </a>
           
           
@@ -3773,7 +3895,7 @@ inference type with image-level annotations defined in the <code>FaceRegion</cod
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../ground-truth/" class="md-footer__link md-footer__link--prev" aria-label="Previous: &lt;code&gt;GroundTruth&lt;/code&gt;">
+          <a href="../test-run/" class="md-footer__link md-footer__link--prev" aria-label="Previous: &lt;code&gt;test&lt;/code&gt;">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -3783,20 +3905,20 @@ inference type with image-level annotations defined in the <code>FaceRegion</cod
                 Previous
               </span>
               <div class="md-ellipsis">
-                <code>GroundTruth</code>
+                <code>test</code>
               </div>
             </div>
           </a>
         
         
           
-          <a href="../evaluator/" class="md-footer__link md-footer__link--next" aria-label="Next: &lt;code&gt;Evaluator&lt;/code&gt;">
+          <a href="../annotation/" class="md-footer__link md-footer__link--next" aria-label="Next: Annotations">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                <code>Evaluator</code>
+                Annotations
               </div>
             </div>
             <div class="md-footer__button md-icon">
