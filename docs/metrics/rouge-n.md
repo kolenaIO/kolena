@@ -8,9 +8,10 @@
 ROUGE-N (**R**ecall-**O**riented **U**nderstudy for **G**isting **E**valuation), a metric within the broader ROUGE
 metric collection, is a vital metric in the field of natural language processing and text evaluation. It assesses the
 quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts, and
-ranges between 0 and 1. A score of 0 indicates no overlap between candidate and reference texts, whereas a perfect score of 1 indicates perfect overlap. ROUGE-N provides insights into the ability of a system to capture essential content and
-linguistic nuances, making it an important and versatile tool used in many NLP workflows. As the name implies, it
-is a recall-based metric — a complement to the precision-based BLEU score.
+ranges between 0 and 1. A score of 0 indicates no overlap between candidate and reference texts, whereas a perfect
+score of 1 indicates perfect overlap. ROUGE-N provides insights into the ability of a system to capture essential
+content and linguistic nuances, making it an important and versatile tool used in many NLP workflows. As the name
+implies, it is a recall-based metric — a complement to the precision-based BLEU score.
 
 ## Implementation Details
 Formally, ROUGE-N is an n-gram recall between a candidate and a set of reference texts. That is, ROUGE-N calculates the
