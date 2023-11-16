@@ -33,7 +33,7 @@ and run directly:
 
 <div class="grid cards" markdown>
 
-- [:kolena-face-recognition-20: Example: Face Recognition 1:1 ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/face_recognition_11)
+- [:kolena-fr-20: Example: Face Recognition 1:1 ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/face_recognition_11)
 
     ![Example image from Face Recognition 1:1 Workflow.](assets/images/fr11.jpg)
 

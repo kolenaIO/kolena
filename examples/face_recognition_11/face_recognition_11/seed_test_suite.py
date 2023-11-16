@@ -37,7 +37,6 @@ def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
     t0 = time.time()
-
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
     df_bbox_keypoints = pd.read_csv(args.bbox_keypoints_csv)

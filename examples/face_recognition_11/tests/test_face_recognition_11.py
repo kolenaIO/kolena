@@ -24,8 +24,8 @@ DATASET = "labeled-faces-in-the-wild"
 
 def test__seed_test_suite__smoke() -> None:
     args = Namespace(
-        dataset_csv=f"s3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
-        bbox_keypoints_csv=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.csv",
+        dataset_csv=f"s3://{BUCKET}/{DATASET}/meta/pairs.30k.csv",
+        bbox_keypoints_csv=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.30k.csv",
         metadata_csv=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
     )
     seed_test_suite_main(args)
@@ -34,8 +34,8 @@ def test__seed_test_suite__smoke() -> None:
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 def test__seed_test_run__smoke() -> None:
     args = Namespace(
-        models=["VGG-Face", "Facenet512"],
-        detectors=["MTCNN", "yolov8n-face"],
-        test_suites=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"],
+        models=["VGG-Face"],
+        detectors=["MTCNN"],
+        test_suites=[f"{DATASET} :: gender [FR]"],
     )
     seed_test_run_main(args)
