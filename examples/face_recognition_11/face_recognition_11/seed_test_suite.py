@@ -16,8 +16,6 @@ import time
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
-from typing import List
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -35,33 +33,10 @@ BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
 
 
-def create_test_case_for_tag(
-    test_samples_and_ground_truths: List[Tuple[TestCase, GroundTruth]],
-    category: str,
-    value: str,
-) -> TestCase:
-    name = f"{category} :: {value} [FR]"
-    description = f"demographic subset of {DATASET} with source data labeled as {category}={value}"
-
-    # filter down to only test samples matching this demographic
-    test_samples = [(ts, gt) for ts, gt in test_samples_and_ground_truths if ts.metadata[category] == value]
-
-    test_case = TestCase(
-        name=name,
-        description=description,
-        test_samples=test_samples,
-        reset=True,
-    )
-
-    return test_case
-
-
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
     t0 = time.time()
-
-    t2 = time.time()
 
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
@@ -118,18 +93,12 @@ def main(args: Namespace) -> int:
         )
         test_samples_and_ground_truths.append((ts, gt))
 
-    print(f"{time.time() - t2:0.3f} seconds")  # 21.299 seconds
-
-    t2 = time.time()
-
     complete_test_case = TestCase(
         name=f"{DATASET} :: complete [FR]",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
-
-    print(f"{time.time() - t2:0.3f} seconds")
 
     # Metadata Test Cases
     demographic_subsets = dict(
@@ -138,17 +107,13 @@ def main(args: Namespace) -> int:
     )
     test_case_subsets = defaultdict(lambda: defaultdict(list))
 
-    t2 = time.time()
     for ts, gt in test_samples_and_ground_truths:
         for category, tags in demographic_subsets.items():
             for tag in tags:
                 if ts.metadata[category] == tag:
                     test_case_subsets[category][tag].append((ts, gt))
 
-    print(f"{time.time() - t2:0.3f} seconds")
-
     for category, tags in test_case_subsets.items():
-        t1 = time.time()
         test_cases = []
         for tag, test_samples in tags.items():
             name = f"{category} :: {tag} [FR]"
@@ -161,12 +126,11 @@ def main(args: Namespace) -> int:
                     reset=True,
                 ),
             )
-        test_suite = TestSuite(
+        TestSuite(
             name=f"{DATASET} :: {category} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
-        print(f"created test suite '{test_suite}' in {time.time() - t1:0.3f} seconds")
 
     print(f"completed seeding in {time.time() - t0:0.3f} seconds")
 
@@ -176,13 +140,13 @@ if __name__ == "__main__":
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/pairs.30k.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
     )
     ap.add_argument(
         "--bbox_keypoints_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.csv",
+        default=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.30k.csv",
         help="CSV file containing bbox and keypoints for each image. See default CSV for details.",
     )
     ap.add_argument(
