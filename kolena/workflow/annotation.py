@@ -16,15 +16,23 @@ Annotations are visualized in Kolena as overlays on top of [`TestSample`][kolena
 
 | Annotation | Valid [`TestSample`][kolena.workflow.TestSample] Types |
 | --- | --- |
-| [`BoundingBox`][kolena.workflow.annotation.BoundingBox] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
+| [`BoundingBox`][kolena.workflow.annotation.BoundingBox] | [`Image`][kolena.workflow.Image], [`Video`][
+kolena.workflow.Video] |
 | [`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] | [`PointCloud`][kolena.workflow.PointCloud] |
 | [`Polygon`][kolena.workflow.annotation.Polygon] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
-| [`Polyline`][kolena.workflow.annotation.Polyline] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
-| [`Keypoints`][kolena.workflow.annotation.Keypoints] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
-| [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
-| [`BitmapMask`][kolena.workflow.annotation.BitmapMask] | [`Image`][kolena.workflow.Image], [`Video`][kolena.workflow.Video] |
-| [`Label`][kolena.workflow.annotation.Label] | [`Text`][kolena.workflow.Text], [`Document`][kolena.workflow.Document], [`Image`][kolena.workflow.Image], [`PointCloud`][kolena.workflow.PointCloud], [`Audio`][kolena.workflow.Audio], [`Video`][kolena.workflow.Video] |
-| [`TimeSegment`][kolena.workflow.annotation.TimeSegment] | [`Audio`][kolena.workflow.Audio], [`Video`][kolena.workflow.Video] |
+| [`Polyline`][kolena.workflow.annotation.Polyline] | [`Image`][kolena.workflow.Image], [`Video`][
+kolena.workflow.Video] |
+| [`Keypoints`][kolena.workflow.annotation.Keypoints] | [`Image`][kolena.workflow.Image], [`Video`][
+kolena.workflow.Video] |
+| [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask] | [`Image`][kolena.workflow.Image],
+[`Video`][kolena.workflow.Video] |
+| [`BitmapMask`][kolena.workflow.annotation.BitmapMask] | [`Image`][kolena.workflow.Image], [`Video`][
+kolena.workflow.Video] |
+| [`Label`][kolena.workflow.annotation.Label] | [`Text`][kolena.workflow.Text], [`Document`][
+kolena.workflow.Document], [`Image`][kolena.workflow.Image], [`PointCloud`][kolena.workflow.PointCloud],
+[`Audio`][kolena.workflow.Audio], [`Video`][kolena.workflow.Video] |
+| [`TimeSegment`][kolena.workflow.annotation.TimeSegment] | [`Audio`][kolena.workflow.Audio], [`Video`][
+kolena.workflow.Video] |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.workflow.annotation.BoundingBox] objects) present in the
@@ -57,6 +65,7 @@ class _AnnotationType(DataType):
     BITMAP_MASK = "BITMAP_MASK"
     LABEL = "LABEL"
     TIME_SEGMENT = "TIME_SEGMENT"
+    UTTERANCE = "UTTERANCE"
 
     @staticmethod
     def _data_category() -> str:
@@ -387,6 +396,33 @@ class ScoredLabeledTimeSegment(TimeSegment):
     """The score associated with this time segment."""
 
 
+@dataclass(frozen=True, config=ValidatorConfig)
+class Utterance(Annotation):
+    """
+    Segment of time in the associated audio or video file.
+
+    When a `group` is specified, segments are displayed on Kolena with different colors for each group present in a
+    `List[TimeSegment]`. Example usage:
+
+    ```py
+    conversation: List[Utterance] = [
+        Utterance(group="system", text="You are a polite assistant"),
+        Utterance(group="user", text="In what country is Normandy located?"),
+        Utterance(group="system", text="France"),
+        Utterance(group="user", text="When were the Normans in Normandy?"),
+        Utterance(group="system", text="10th and 11th centuries"),
+    ]
+    ```
+    """
+
+    text: str
+    """content"""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.UTTERANCE
+
+
 _ANNOTATION_TYPES = [
     BoundingBox,
     LabeledBoundingBox,
@@ -412,4 +448,5 @@ _ANNOTATION_TYPES = [
     LabeledTimeSegment,
     ScoredTimeSegment,
     ScoredLabeledTimeSegment,
+    Utterance,
 ]
