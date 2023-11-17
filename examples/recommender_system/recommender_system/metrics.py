@@ -56,51 +56,64 @@ def compute_errors(ground_truth: GroundTruth, inference: Inference, k: int) -> T
 
 
 def compute_classification_metrics(ground_truth: GroundTruth, inference: Inference, threshold: int, k: int) -> float:
-    ratings = {movie.id for movie in ground_truth.rated_movies}
-    predictions = {movie.id for movie in inference.recommendations}
+    rated_movies = ground_truth.rated_movies
+    recommendations = inference.recommendations
+
+    if len(recommendations) > k:
+        recommendations = recommendations[:k]
+
+    ratings = {movie.id for movie in rated_movies}
+    predictions = {movie.id for movie in recommendations}
 
     relevant_movies = len(predictions.intersection(ratings))
     precision_at_k = relevant_movies / k
     recall_at_k = relevant_movies / len(ratings)
 
-    liked = {movie.id for movie in ground_truth.rated_movies if movie.score >= threshold}
+    if len(rated_movies) > k:
+        rated_movies = rated_movies[:k]
+
+    liked = {movie.id for movie in rated_movies if movie.score >= threshold}
+    not_liked = {movie.id for movie in rated_movies if movie.score < threshold}
 
     tp = len(predictions.intersection(liked))  # recommended & liked
-    fp = len(predictions.difference(liked))  # recommended & not liked
+    fp = len(predictions.intersection(not_liked))  # recommended & not liked
     fn = len(liked.difference(predictions))  # not recommended & liked
     tn = k - (tp + fp + fn)  # not recommended & not liked
 
     return ClassificationMetrics(precision_at_k, recall_at_k, tp, fp, fn, tn)
 
 
-def mrr(actual: List[int], predicted: List[int], k: int) -> float:
+def mrr(ratings: List[int], predictions: List[int], k: int) -> float:
+    if len(predictions) > k:
+        predictions = predictions[:k]
+
     score = 0.0
-    for item in actual:
-        rank_q = predicted.index(item) if item in predicted else 0.0
+    for item in ratings:
+        rank_q = predictions.index(item) if item in predictions else 0.0
         score += (1.0 / rank_q) if rank_q != 0.0 else 0.0
 
-    return score / len(actual)
+    return score / len(ratings)
 
 
-def avg_precision_at_k(actual: List[int], predicted: List[int], k: int) -> float:
+def avg_precision_at_k(ratings: List[int], predictions: List[int], k: int) -> float:
     # https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/average_precision.py
-    """Order matters"""
-    if len(predicted) > k:
-        predicted = predicted[:k]
+    if len(predictions) > k:
+        predictions = predictions[:k]
 
     score = 0.0
     num_hits = 0.0
 
-    for i, p in enumerate(predicted):
-        if p in actual and p not in predicted[:i]:
+    for i, p in enumerate(predictions):
+        if p in ratings and p not in predictions[:i]:
             num_hits += 1.0
             score += num_hits / (i + 1.0)
 
-    if not actual:
+    if not ratings:
         return 0.0
 
-    return score / min(len(actual), k)
+    return score / min(len(ratings), k)
 
 
-def mean_avg_precision_at_k(actual: List[int], predicted: List[int], k: int) -> float:
-    return np.mean([avg_precision_at_k(actual, predicted, k) for k in range(1, k)])
+def mean_avg_precision_at_k(ratings: List[int], predictions: List[int], k: int) -> float:
+    # https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/average_precision.py
+    return np.mean([avg_precision_at_k(ratings, predictions, k) for k in range(1, k)])

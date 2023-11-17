@@ -30,9 +30,6 @@ from recommender_system.workflow import TestSuite
 
 import kolena
 
-# from recommender_system.utils import ID_AGE_MAP
-# from recommender_system.utils import ID_OCCUPATION_MAP
-
 BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
 

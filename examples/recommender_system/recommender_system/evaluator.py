@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import defaultdict
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -28,14 +29,10 @@ from recommender_system.workflow import TestCase
 from recommender_system.workflow import TestCaseMetrics
 from recommender_system.workflow import TestSample
 from recommender_system.workflow import TestSampleMetrics
-from sklearn.metrics import auc
 from sklearn.metrics import ndcg_score
-from sklearn.metrics import precision_recall_curve
-from sklearn.metrics import roc_curve
 
+from kolena.workflow import BarPlot
 from kolena.workflow import ConfusionMatrix
-from kolena.workflow import Curve
-from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
@@ -52,12 +49,6 @@ def compute_per_sample(
     predictions = [movie.id for movie in inference.recommendations]
 
     k = configuration.k
-    if len(predictions) > k:
-        predictions = predictions[:k]
-
-    if len(ratings) > k:
-        ratings = ratings[:k]
-
     metrics = compute_classification_metrics(ground_truth, inference, configuration.threshold, k)
     rmse, mae = compute_errors(ground_truth, inference, k)
 
@@ -120,38 +111,20 @@ def compute_test_case_plots(
         ),
     )
 
-    k = configuration.k
-    gts_binary_labels = [
-        int(movie.score >= configuration.threshold) for gt in ground_truths for movie in gt.rated_movies
-    ]
-    infs = [movie.score for inf in inferences for movie in inf.recommendations]
-
-    if len(gts_binary_labels) > k:
-        gts_binary_labels = gts_binary_labels[:k]
-
-    if len(infs) > k:
-        infs = infs[:k]
-
-    precision, recall, _ = precision_recall_curve(gts_binary_labels, infs)
+    # novelty
+    popularity_metrics = defaultdict(int)
+    for gt in ground_truths:
+        for movie in gt.rated_movies:
+            popularity_metrics[movie.id] += 1
+    sorted_popularity = dict(sorted(popularity_metrics.items(), key=lambda item: item[1], reverse=True))
 
     plots.append(
-        CurvePlot(
-            title="Precision vs. Recall",
-            x_label="Recall",
-            y_label="Precision",
-            curves=[Curve(x=list(recall), y=list(precision))],
-        ),
-    )
-
-    fpr, tpr, _ = roc_curve(gts_binary_labels, infs)
-    roc_auc = auc(fpr, tpr)
-
-    plots.append(
-        CurvePlot(
-            title="Receiver Operating Characteristic",
-            x_label="False Positive Rate (FPR)",
-            y_label="True Positive Rate (TPR)",
-            curves=[Curve(x=list(fpr), y=list(tpr), label=f"AUC={roc_auc:.4f}")],
+        BarPlot(
+            title="Novelty",
+            x_label="Movie",
+            y_label="Popularity",
+            labels=list(sorted_popularity.keys()),
+            values=list(sorted_popularity.values()),
         ),
     )
 
