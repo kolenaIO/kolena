@@ -13,10 +13,11 @@ Users may set up this functionality by extracting and uploading the correspondin
 
 ## Example
 
-The `kolena/kolenaIO` contains a runnable [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/search_embeddings)
-of integration code for embeddings extraction and upload.
-This builds off the data uploaded in the [age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
-example workflow, and is best run after this data has been uploaded to your Kolena platform.
+The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
+[example](https://github.com/kolenaIO/kolena/tree/trunk/examples/search_embeddings) of integration code for embeddings
+extraction and upload. This builds off the data uploaded in the
+[age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) example workflow, and is best
+run after this data has been uploaded to your Kolena environment.
 
 ## How to Set Up Natural Language Search
 
