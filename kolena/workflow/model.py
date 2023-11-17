@@ -139,7 +139,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name, tags=tags)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        obj = cls._from_data(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
         log.info(f"created model '{name}' ({get_model_url(obj._id)})")
         return obj
 
@@ -155,7 +155,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         request = CoreAPI.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        obj = cls._from_data(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
         log.info(f"loaded model '{name}' ({get_model_url(obj._id)})")
         return obj
 
@@ -164,13 +164,11 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
     def load_all(
         cls,
         *,
-        infer: Optional[Callable[[TestSample], Inference]] = None,
         tags: Optional[Set[str]] = None,
     ) -> List["Model"]:
         """
         Load all models with this workflow.
 
-        :param infer: Optionally provide an inference function for the returned models.
         :param tags: Optionally specify a set of tags to apply as a filter. The loaded models will include only
             models with tags matching each of these specified tags, i.e.
             `model.tags.intersection(tags) == tags`.
@@ -180,7 +178,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         res = krequests.put(endpoint_path=API.Path.LOAD_ALL.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
-        models = [cls._from_data_with_infer(model, infer) for model in data.models]
+        models = [cls._from_data(model) for model in data.models]
         tags_quoted = {f"'{t}'" for t in tags or {}}
         tags_message = f" with tag{'s' if len(tags) > 1 else ''} {', '.join(tags_quoted)}" if tags else ""
         log.info(f"loaded {len(models)} '{cls.workflow.name}' models{tags_message}")
@@ -234,7 +232,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             self.infer = other.infer
 
     @classmethod
-    def _from_data_with_infer(
+    def _from_data(
         cls,
         data: CoreAPI.EntityData,
         infer: Optional[Callable[[TestSample], Inference]] = None,

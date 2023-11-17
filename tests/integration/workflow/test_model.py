@@ -35,10 +35,6 @@ META_DATA = {"a": "b"}
 TAGS = {"c", "d"}
 
 
-def no_op_infer(*_):
-    return
-
-
 def assert_model(model: Model, name: str) -> None:
     assert model.workflow == DUMMY_WORKFLOW
     assert model.name == name
@@ -60,8 +56,8 @@ def test__load() -> None:
     with pytest.raises(Exception):
         Model.load(name)
 
-    model = Model.create(name, infer=no_op_infer, metadata=META_DATA, tags=TAGS)
-    assert model == Model.load(name, infer=no_op_infer)
+    model = Model.create(name, metadata=META_DATA, tags=TAGS)
+    assert model == Model.load(name)
 
 
 def test__load_all() -> None:
@@ -69,13 +65,13 @@ def test__load_all() -> None:
     _, _, _, model = define_workflow(f"{name} workflow 1", DummyTestSample, DummyGroundTruth, DummyInference)
     _, _, _, model_diff = define_workflow(f"{name} workflow 2", DummyTestSample, DummyGroundTruth, DummyInference)
     tag1, tag2, tag1_2 = f"{name} 1", f"{name} 2", f"{name} 1+2"
-    model1 = model(name=name + "1", infer=no_op_infer, tags={tag1, tag1_2})
-    model2 = model(name=name + "2", infer=no_op_infer, tags={tag2, tag1_2})
-    model3 = model(name=name + "3", infer=no_op_infer)
-    model_diff(name=name, infer=no_op_infer, tags={tag1, tag2, tag1_2})  # Model in different workflow
-    assert model.load_all(infer=no_op_infer) == [model1, model2, model3]
-    assert model.load_all(infer=no_op_infer, tags={tag1_2}) == [model1, model2]
-    assert model.load_all(infer=no_op_infer, tags={tag1, tag1_2}) == [model1]
+    model1 = model(name=name + "1", tags={tag1, tag1_2})
+    model2 = model(name=name + "2", tags={tag2, tag1_2})
+    model3 = model(name=name + "3")
+    model_diff(name=name, tags={tag1, tag2, tag1_2})  # Model in different workflow
+    assert model.load_all() == [model1, model2, model3]
+    assert model.load_all(tags={tag1_2}) == [model1, model2]
+    assert model.load_all(tags={tag1, tag1_2}) == [model1]
     assert model.load_all(tags={"does_not_exist"}) == []
 
 
@@ -88,8 +84,8 @@ def test__load__mismatching_workflows() -> None:
 
 def test__init() -> None:
     name = with_test_prefix(f"{__file__}::test__init")
-    model = Model(name=name, infer=no_op_infer)
-    loaded = Model.load(name, infer=no_op_infer)
+    model = Model(name=name)
+    loaded = Model.load(name)
 
     assert model == loaded
 
