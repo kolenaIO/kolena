@@ -36,7 +36,7 @@ DATASET = "movielens"
 
 def seed_test_run(model_name: str, test_suites: List[str], movies_csv: str) -> None:
     # df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.sample.csv")
-    df_results = pd.read_csv("predictions_knn.50.csv")
+    df_results = pd.read_csv(f"predictions_{model_name}.csv")
     df_movies = pd.read_csv(movies_csv)
 
     movie_metadata, id_title_map = {}, {}
@@ -47,8 +47,8 @@ def seed_test_run(model_name: str, test_suites: List[str], movies_csv: str) -> N
         id_title_map[record.movieId] = record.title
 
     def infer(test_sample: TestSample) -> Inference:
-        filtered = df_results[df_results["userId"] == test_sample.user_id]
-        samples = filtered.sort_values(by=["rank"]).itertuples(index=False)
+        user_recommendations = df_results[df_results["userId"] == test_sample.user_id]
+        sorted_recs = user_recommendations.sort_values(by=["prediction"], ascending=False)
 
         return Inference(
             recommendations=[
@@ -58,7 +58,7 @@ def seed_test_run(model_name: str, test_suites: List[str], movies_csv: str) -> N
                     id=sample.movieId,
                     metadata=movie_metadata[sample.movieId],
                 )
-                for sample in samples
+                for sample in sorted_recs.itertuples(index=False)
             ],
         )
 
@@ -67,11 +67,11 @@ def seed_test_run(model_name: str, test_suites: List[str], movies_csv: str) -> N
 
     model = Model(name=model_descriptor, infer=infer, metadata=model_metadata)
 
-    configurations = [RecommenderConfiguration(k=5)]
+    configurations = [RecommenderConfiguration(k=10)]
 
     for test_suite_name in test_suites:
         test_suite = TestSuite.load(test_suite_name)
-        test(model, test_suite, evaluate_recommender, configurations)
+        test(model, test_suite, evaluate_recommender, configurations, reset=False)
 
 
 def main(args: Namespace) -> int:
@@ -85,13 +85,12 @@ if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["knn"],
+        default=["dummy"],
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
         "--test_suites",
         default=[
-            # f"{DATASET} :: genre",
             f"{DATASET} :: age",
             # f"{DATASET} :: occupation",
             # f"{DATASET} :: gender",

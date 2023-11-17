@@ -67,7 +67,7 @@ def main(args: Namespace) -> int:
             (
                 TestSample(
                     user_id=uid,
-                    metadata=metadata_by_user_id[uid],  # TODO: Add likes genres
+                    metadata=metadata_by_user_id[uid],
                 ),
                 GroundTruth(
                     rated_movies=[
@@ -100,21 +100,16 @@ def main(args: Namespace) -> int:
         gender=["M", "F"],
     )
 
-    # genre_ts_gt_splits = {item: [] for item in cateogry_subsets["genre"]}
     age_ts_gt_splits = {item: [] for item in cateogry_subsets["age"]}
     occupation_ts_gt_splits = {item: [] for item in cateogry_subsets["occupation"]}
     gender_ts_gt_splits = {item: [] for item in cateogry_subsets["gender"]}
 
     for ts, gt in test_samples_and_ground_truths:
-        # for genre in ts.metadata["genres"]:
-        #     genre_ts_gt_splits[genre].append((ts, gt))
-
         age_ts_gt_splits[AGE_STRATIFICATION[ts.metadata["age"]]].append((ts, gt))
         occupation_ts_gt_splits[OCCUPATION_STRATIFICATION[ts.metadata["occupation"]]].append((ts, gt))
         gender_ts_gt_splits[ts.metadata["gender"]].append((ts, gt))
 
     test_suites = dict(
-        # genre=genre_ts_gt_splits,
         age=age_ts_gt_splits,
         occupation=occupation_ts_gt_splits,
         gender=gender_ts_gt_splits,

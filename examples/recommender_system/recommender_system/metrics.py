@@ -19,9 +19,22 @@ from recommender_system.workflow import GroundTruth
 from recommender_system.workflow import Inference
 
 
-def compute_errors(ground_truth: GroundTruth, inference: Inference) -> Tuple[float, float]:
-    movie_score_map = {movie.id: movie.score for movie in inference.recommendations}
-    print(movie_score_map)
+class ClassificationMetrics:
+    def __init__(self, precision_at_k, recall_at_k, tp, fp, fn, tn):
+        self.pk = precision_at_k
+        self.rk = recall_at_k
+        self.tp = tp
+        self.fp = fp
+        self.fn = fn
+        self.tn = tn
+
+
+def compute_errors(ground_truth: GroundTruth, inference: Inference, k: int) -> Tuple[float, float]:
+    predictions = inference.recommendations
+    if len(predictions) > k:
+        predictions = predictions[:k]
+
+    movie_score_map = {movie.id: movie.score for movie in predictions}
     rmse = np.sqrt(
         np.mean(
             [
@@ -42,17 +55,25 @@ def compute_errors(ground_truth: GroundTruth, inference: Inference) -> Tuple[flo
     return rmse, mae
 
 
-def precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
-    relevant_items = len(set(predicted).intersection(actual))
-    return relevant_items / k
+def compute_classification_metrics(ground_truth: GroundTruth, inference: Inference, threshold: int, k: int) -> float:
+    ratings = {movie.id for movie in ground_truth.rated_movies}
+    predictions = {movie.id for movie in inference.recommendations}
+
+    relevant_movies = len(predictions.intersection(ratings))
+    precision_at_k = relevant_movies / k
+    recall_at_k = relevant_movies / len(ratings)
+
+    liked = {movie.id for movie in ground_truth.rated_movies if movie.score >= threshold}
+
+    tp = len(predictions.intersection(liked))  # recommended & liked
+    fp = len(predictions.difference(liked))  # recommended & not liked
+    fn = len(liked.difference(predictions))  # not recommended & liked
+    tn = k - (tp + fp + fn)  # not recommended & not liked
+
+    return ClassificationMetrics(precision_at_k, recall_at_k, tp, fp, fn, tn)
 
 
-def recall_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
-    relevant_items = len(set(predicted).intersection(actual))
-    return relevant_items / len(actual)
-
-
-def mrr_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
+def mrr(actual: List[int], predicted: List[int], k: int) -> float:
     score = 0.0
     for item in actual:
         rank_q = predicted.index(item) if item in predicted else 0.0
@@ -61,7 +82,7 @@ def mrr_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
     return score / len(actual)
 
 
-def avg_precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
+def avg_precision_at_k(actual: List[int], predicted: List[int], k: int) -> float:
     # https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/average_precision.py
     """Order matters"""
     if len(predicted) > k:
@@ -81,8 +102,5 @@ def avg_precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> 
     return score / min(len(actual), k)
 
 
-def mean_avg_precision_at_k(actual: List[int], predicted: List[int], k: int = 10) -> float:
-    # https://github.com/benhamner/Metrics/blob/master/Python/ml_metrics/average_precision.py
-
-    # return np.mean([avg_precision_at_k(actual, predicted, k) for k in range(k)])
-    return 0
+def mean_avg_precision_at_k(actual: List[int], predicted: List[int], k: int) -> float:
+    return np.mean([avg_precision_at_k(actual, predicted, k) for k in range(1, k)])

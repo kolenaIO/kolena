@@ -69,7 +69,6 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 class TestSampleMetrics(MetricsTestSample):
     RMSE: float
     MAE: float
-    R2: float
     AP: float
     MAP: float
     MRR: float
@@ -77,6 +76,10 @@ class TestSampleMetrics(MetricsTestSample):
     F1_k: float
     precision_k: float
     recall_k: float
+    count_TP: int
+    count_FP: int
+    count_FN: int
+    count_TN: int
 
 
 @dataclass(frozen=True)
@@ -86,7 +89,6 @@ class TestCaseMetrics(MetricsTestCase):
     # Hit Metrics
     AvgRMSE: float  # Root Mean Squared Error
     AvgMAE: float  # Mean Absolute Error
-    AvgR2: float  # R Squared
 
     # Ranking Metrics
     AvgAP: float
@@ -101,6 +103,9 @@ class TestCaseMetrics(MetricsTestCase):
 class RecommenderConfiguration(EvaluatorConfiguration):
     k: int
     """Number of items recommended to the user."""
+
+    threshold: int = 3
+    """Rating threshold"""
 
     relevancy_method: Union[Literal["Top-K"], Literal["Timestep"]] = "Top-K"
     """The method to use to extract relevant items from the recommendation list."""
