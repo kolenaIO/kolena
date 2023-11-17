@@ -228,7 +228,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             self.name = other.name
             self.metadata = other.metadata
             self.tags = other.tags
-            self.workflow = other.workflow
             self.infer = other.infer
 
     @classmethod
@@ -243,7 +242,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj.name = data.name
         obj.metadata = data.metadata
         obj.tags = data.tags
-        obj.workflow = cls.workflow
         obj.infer = infer
         obj._freeze()
         return obj
