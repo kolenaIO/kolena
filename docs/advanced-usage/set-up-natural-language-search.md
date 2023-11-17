@@ -13,10 +13,11 @@ Users may set up this functionality by extracting and uploading the correspondin
 
 ## Example
 
-The `kolena/kolenaIO` contains a runnable [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/search_embeddings)
-of integration code for embeddings extraction and upload.
-This builds off the data uploaded in the [age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
-example workflow, and is best run after this data has been uploaded to your Kolena platform.
+The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
+[example](https://github.com/kolenaIO/kolena/tree/trunk/examples/search_embeddings) for embeddings extraction and
+upload. This builds off the data uploaded in the
+[age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) example workflow, and is best
+run after this data has been uploaded to your Kolena environment.
 
 ## How to Set Up Natural Language Search
 
@@ -46,6 +47,11 @@ Copy the `kolena_embeddings-*.*.*.tar.gz` file (provided by your Kolena contact)
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:
 ```python
+from typing import Iterable
+from typing import Tuple
+
+from PIL import Image
+
 def extract_and_upload_embeddings(locators_and_images: Iterable[Tuple[str, Image.Image]], batch_size: int = 50) -> None:
     """
     Extract and upload a list of search embeddings corresponding to sample locators.
@@ -55,7 +61,7 @@ def extract_and_upload_embeddings(locators_and_images: Iterable[Tuple[str, Image
         the Kolena platform).
     :param batch_size: Batch size for number of images to extract embeddings for simultaneously. Defaults to 50 to
         avoid having too many file handlers open at once.
-    ""
+    """
 ```
 
 ### Step 2: Load Images for Extraction
