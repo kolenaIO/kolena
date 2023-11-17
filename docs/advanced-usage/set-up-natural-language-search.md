@@ -47,6 +47,11 @@ Copy the `kolena_embeddings-*.*.*.tar.gz` file (provided by your Kolena contact)
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:
 ```python
+from typing import Iterable
+from typing import Tuple
+
+from PIL import Image
+
 def extract_and_upload_embeddings(locators_and_images: Iterable[Tuple[str, Image.Image]], batch_size: int = 50) -> None:
     """
     Extract and upload a list of search embeddings corresponding to sample locators.
