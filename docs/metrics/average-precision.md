@@ -52,9 +52,8 @@ slightly differently for both.
 
 Let’s consider the following simple example:
 
-![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
-![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
-
+![example legends](../assets/images/metrics-bbox-legend-gt-light.svg#only-light)
+![example legends](../assets/images/metrics-bbox-legend-gt-dark.svg#only-dark)
 ![object detection example](../assets/images/metrics-ap-od-example-light.svg#only-light)
 ![object detection example](../assets/images/metrics-ap-od-example-dark.svg#only-dark)
 
@@ -70,7 +69,7 @@ by their confidence score in descending order.
 | A | 0.70 | FP | 2 | 2 | 0.5 | 0.4 |
 | J | 0.54 | FP | 2 | 3 | 0.4 | 0.4 |
 | D | 0.54 | TP | 3 | 3 | 0.5 | 0.6 |
-| I | 0.38 | FP | 4 | 3 | 0.571 | 0.8 |
+| I | 0.38 | TP | 4 | 3 | 0.571 | 0.8 |
 | C | 0.2 | FP | 4 | 4 | 0.5 | 0.8 |
 | F | 0.2 | FP | 4 | 5 | 0.444 | 0.8 |
 | G | 0.1 | TP | 5 | 5 | 0.5 | 1.0 |
