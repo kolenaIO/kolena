@@ -114,7 +114,7 @@ def evaluator_register(
     aws_assume_role: Optional[str] = None,
     api_token: Optional[str] = None,
 ) -> None:
-    kolena.initialize(api_token)
+    kolena.initialize(api_token=api_token)
     evaluator = kolena.workflow.workflow.register_evaluator(workflow, evaluator_name, image, secret, aws_assume_role)
     print(f"Image {image} successfully registered for workflow {workflow} evaluator {evaluator_name}.")
     print(json.dumps(dataclasses.asdict(evaluator), indent=2))
@@ -124,7 +124,7 @@ def evaluator_register(
 @add_options(_shared_options)
 @add_options(_shared_evaluator_options)
 def evaluator_list(workflow: str, api_token: Optional[str] = None) -> None:
-    kolena.initialize(api_token)
+    kolena.initialize(api_token=api_token)
     evaluators = kolena.workflow.workflow.list_evaluators(workflow)
     for evaluator in evaluators:
         print(f"evaluator_name='{evaluator.name}', image='{evaluator.image}', created='{evaluator.created}'")
@@ -146,7 +146,7 @@ def evaluator_list(workflow: str, api_token: Optional[str] = None) -> None:
     default=False,
 )
 def evaluator_get(workflow: str, evaluator_name: str, include_secret: bool, api_token: Optional[str] = None) -> None:
-    kolena.initialize(api_token)
+    kolena.initialize(api_token=api_token)
     try:
         evaluator = kolena.workflow.workflow.get_evaluator(workflow, evaluator_name, include_secret)
     except NotFoundError:
@@ -166,7 +166,7 @@ def evaluator_get(workflow: str, evaluator_name: str, include_secret: bool, api_
     help="repository name",
 )
 def repository_create(name: str, api_token: Optional[str] = None) -> None:
-    kolena.initialize(api_token)
+    kolena.initialize(api_token=api_token)
     try:
         repository.create(name)
     except Exception as e:

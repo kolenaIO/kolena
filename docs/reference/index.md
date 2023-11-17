@@ -15,7 +15,7 @@ This section contains detailed API reference documentation for `kolena`.
 
     Initialize client sessions
 
-- [`kolena.errors`](errors)
+- [`kolena.errors`](errors.md)
 
     ---
 

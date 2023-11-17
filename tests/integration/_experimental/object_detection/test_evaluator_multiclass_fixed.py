@@ -17,7 +17,7 @@ from typing import Tuple
 import pytest
 
 from kolena.workflow.annotation import LabeledBoundingBox
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Curve
@@ -328,10 +328,10 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             max_confidence_above_t=1,
             min_confidence_above_t=0.7,
             thresholds=[
-                ScoredClassificationLabel("a", 0.5),
-                ScoredClassificationLabel("b", 0.5),
-                ScoredClassificationLabel("c", 0.5),
-                ScoredClassificationLabel("d", 0.5),
+                ScoredLabel("a", 0.5),
+                ScoredLabel("b", 0.5),
+                ScoredLabel("c", 0.5),
+                ScoredLabel("d", 0.5),
             ],
         ),
     ),
@@ -363,8 +363,8 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             max_confidence_above_t=1,
             min_confidence_above_t=0.7,
             thresholds=[
-                ScoredClassificationLabel("a", 0.5),
-                ScoredClassificationLabel("b", 0.5),
+                ScoredLabel("a", 0.5),
+                ScoredLabel("b", 0.5),
             ],
         ),
     ),
@@ -393,8 +393,8 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             max_confidence_above_t=0.6,
             min_confidence_above_t=0.5,
             thresholds=[
-                ScoredClassificationLabel("a", 0.5),
-                ScoredClassificationLabel("b", 0.5),
+                ScoredLabel("a", 0.5),
+                ScoredLabel("b", 0.5),
             ],
         ),
     ),
@@ -427,8 +427,8 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             max_confidence_above_t=1,
             min_confidence_above_t=0.8,
             thresholds=[
-                ScoredClassificationLabel("a", 0.5),
-                ScoredClassificationLabel("b", 0.5),
+                ScoredLabel("a", 0.5),
+                ScoredLabel("b", 0.5),
             ],
         ),
     ),
@@ -454,7 +454,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=1,
-            thresholds=[ScoredClassificationLabel("a", 0.5)],
+            thresholds=[ScoredLabel("a", 0.5)],
         ),
     ),
     (
@@ -479,7 +479,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.9,
-            thresholds=[ScoredClassificationLabel("a", 0.5), ScoredClassificationLabel("b", 0.5)],
+            thresholds=[ScoredLabel("a", 0.5), ScoredLabel("b", 0.5)],
         ),
     ),
     (
@@ -504,8 +504,8 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.8,
             thresholds=[
-                ScoredClassificationLabel("a", 0.5),
-                ScoredClassificationLabel("c", 0.5),
+                ScoredLabel("a", 0.5),
+                ScoredLabel("c", 0.5),
             ],
         ),
     ),
@@ -551,10 +551,10 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             max_confidence_above_t=1,
             min_confidence_above_t=0.5,
             thresholds=[
-                ScoredClassificationLabel("a", 0.5),
-                ScoredClassificationLabel("b", 0.5),
-                ScoredClassificationLabel("c", 0.5),
-                ScoredClassificationLabel("e", 0.5),
+                ScoredLabel("a", 0.5),
+                ScoredLabel("b", 0.5),
+                ScoredLabel("c", 0.5),
+                ScoredLabel("e", 0.5),
             ],
         ),
     ),
@@ -594,7 +594,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.6,
-            thresholds=[ScoredClassificationLabel("b", 0.5), ScoredClassificationLabel("e", 0.5)],
+            thresholds=[ScoredLabel("b", 0.5), ScoredLabel("e", 0.5)],
         ),
     ),
     (

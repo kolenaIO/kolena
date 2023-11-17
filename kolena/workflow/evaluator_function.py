@@ -246,3 +246,31 @@ class _TestCases(TestCases):
 def _is_configured(evaluator: BasicEvaluatorFunction) -> bool:
     param_values = list(signature(evaluator).parameters.values())
     return len(param_values) == 5 and issubclass(param_values[4].annotation, EvaluatorConfiguration)
+
+
+def no_op_evaluator(
+    test_samples: List[TestSample],
+    ground_truths: List[GroundTruth],
+    inferences: List[Inference],
+    test_cases: TestCases,
+) -> EvaluationResults:
+    """
+    A no-op implementation of the Kolena [`Evaluator`][kolena.workflow.Evaluator] that will bypass evaluation but
+    make [`Inference`][kolena.workflow.Inference]s accessible in the platform.
+
+    ```python
+    from kolena.workflow import no_op_evaluator
+    from kolena.workflow import test
+
+    test(model, test_suite, no_op_evaluator)
+    ```
+    """
+    test_sample_metrics = [BaseMetricsTestSample() for _ in test_samples]
+    test_case_metrics = [
+        (tc, MetricsTestCase())
+        for tc, *_ in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics)
+    ]
+    return EvaluationResults(
+        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
+        metrics_test_case=test_case_metrics,
+    )
