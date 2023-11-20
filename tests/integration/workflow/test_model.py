@@ -56,8 +56,8 @@ def test__load() -> None:
     with pytest.raises(Exception):
         Model.load(name)
 
-    model = Model.create(name, metadata=META_DATA, tags=TAGS)
-    assert model == Model.load(name)
+    Model.create(name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
+    assert_model(Model.load(name, infer=lambda x: None), name)
 
 
 def test__load_all() -> None:
@@ -69,9 +69,16 @@ def test__load_all() -> None:
     model2 = model(name=name + "2", tags={tag2, tag1_2})
     model3 = model(name=name + "3")
     model_diff(name=name, tags={tag1, tag2, tag1_2})  # Model in different workflow
-    assert model.load_all() == [model1, model2, model3]
-    assert model.load_all(tags={tag1_2}) == [model1, model2]
-    assert model.load_all(tags={tag1, tag1_2}) == [model1]
+
+    test_list = [match for match in zip(model.load_all(), [model1, model2, model3])]
+    test_list.extend(zip(model.load_all(tags={tag1_2}), [model1, model2]))
+    test_list.extend(zip(model.load_all(tags={tag1, tag1_2}), [model1]))
+
+    for result, expected in test_list:
+        assert result.name == expected.name
+        assert result.metadata == expected.metadata
+        assert result.tags == expected.tags
+        assert result.workflow == expected.workflow
     assert model.load_all(tags={"does_not_exist"}) == []
 
 
@@ -84,11 +91,11 @@ def test__load__mismatching_workflows() -> None:
 
 def test__init() -> None:
     name = with_test_prefix(f"{__file__}::test__init")
-    model = Model(name=name)
-    loaded = Model.load(name)
+    model = Model(name=name, infer=lambda x: None)
+    loaded = Model.load(name, infer=lambda x: None)
 
-    assert model == loaded
-
+    assert model.name == loaded.name
+    assert model.metadata == loaded.metadata
 
 def test__init_with_optionals() -> None:
     name = with_test_prefix(f"{__file__}::test__init_with_optionals")

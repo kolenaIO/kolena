@@ -228,6 +228,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             self.name = other.name
             self.metadata = other.metadata
             self.tags = other.tags
+            self.workflow = other.workflow
             self.infer = other.infer
 
     @classmethod
