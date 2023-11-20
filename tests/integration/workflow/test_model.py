@@ -97,6 +97,7 @@ def test__init() -> None:
     assert model.name == loaded.name
     assert model.metadata == loaded.metadata
 
+
 def test__init_with_optionals() -> None:
     name = with_test_prefix(f"{__file__}::test__init_with_optionals")
     model = Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
