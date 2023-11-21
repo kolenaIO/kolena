@@ -172,9 +172,10 @@ def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Li
         return [[gt_end, inf_end]]
 
 
-def generate_fp(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+def generate_error(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
     """
-    Generates false positive intervals between a GT and Inf interval list.
+    Generates error intervals between a GT and Inf interval list.
+    generate_error(gt, inf) returns the false positives, whereas generate_error(inf, gt) returns the false negatives.
     """
     res = inf.copy()
 
@@ -208,8 +209,8 @@ def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeS
     for id in unique_identities:
         gt_no = create_non_overlapping_segments(gt.transcription, id)
         inf_no = create_non_overlapping_segments(inf.transcription, id)
-        res.extend(generate_fp(gt_no, inf_no))
-        res.extend(generate_fp(inf_no, gt_no))
+        res.extend(generate_error(gt_no, inf_no))
+        res.extend(generate_error(inf_no, gt_no))
 
     res = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
 
