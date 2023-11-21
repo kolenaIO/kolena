@@ -240,7 +240,7 @@ def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSe
     gt = create_non_overlapping_segments(gt.transcription)
     inf = create_non_overlapping_segments(inf.transcription)
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in generate_fp(inf, gt)]
+    return [TimeSegment(start=r[0], end=r[1]) for r in generate_error(inf, gt)]
 
 
 def calculate_tertiles(tc: TestCase, feature: str) -> dict:
