@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
-import time
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
@@ -36,7 +35,6 @@ DATASET = "labeled-faces-in-the-wild"
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
-    t0 = time.time()
     df = pd.read_csv(args.dataset_csv)
     df_metadata = pd.read_csv(args.metadata_csv)
     df_bbox_keypoints = pd.read_csv(args.bbox_keypoints_csv)
@@ -130,8 +128,6 @@ def main(args: Namespace) -> int:
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
-
-    print(f"completed seeding in {time.time() - t0:0.3f} seconds")
 
 
 if __name__ == "__main__":
