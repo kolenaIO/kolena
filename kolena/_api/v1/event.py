@@ -49,6 +49,7 @@ class EventAPI:
         # model
         CREATE_MODEL = "sdk-model-created"
         LOAD_MODEL = "sdk-model-loaded"
+        LOAD_ALL_MODEL = "sdk-all-models-loaded"
 
         # test run
         EXECUTE_TEST_RUN = "sdk-test-run-executed"
