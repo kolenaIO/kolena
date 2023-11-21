@@ -155,21 +155,27 @@ def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Li
     gt_start, gt_end = gt
 
     if inf_end < gt_start or inf_start > gt_end:
+        # No overlap
         return [inf]
 
     if inf_start < gt_start and inf_end > gt_end:
+        # Return the two ends
         return [[inf_start, gt_start], [gt_end, inf_end]]
     elif inf_start >= gt_start and inf_end <= gt_end:
+        # Entirely overlapped
         return None
     elif inf_start < gt_start:
+        # Only return the left end
         return [[inf_start, gt_start]]
     else:
+        # Only return the right end
         return [[gt_end, inf_end]]
 
 
-def generate_fp(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+def generate_error(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
     """
-    Generates false positive intervals between a GT and Inf interval list.
+    Generates error intervals between a GT and Inf interval list.
+    generate_error(gt, inf) returns the false positives, whereas generate_error(inf, gt) returns the false negatives.
     """
     res = inf.copy()
 
@@ -203,11 +209,12 @@ def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeS
     for id in unique_identities:
         gt_no = create_non_overlapping_segments(gt.transcription, id)
         inf_no = create_non_overlapping_segments(inf.transcription, id)
-        res.extend(generate_fp(gt_no, inf_no))
+        res.extend(generate_error(gt_no, inf_no))
+        res.extend(generate_error(inf_no, gt_no))
 
-    res = [r for r in res if r[1] - r[0] <= ERROR_THRESHOLD]
+    res = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in res]
+    return [TimeSegment(start=r[0], end=r[1]) for r in create_non_overlapping_segments(res)]
 
 
 def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float, float]]:
@@ -233,7 +240,7 @@ def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSe
     gt = create_non_overlapping_segments(gt.transcription)
     inf = create_non_overlapping_segments(inf.transcription)
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in generate_fp(inf, gt)]
+    return [TimeSegment(start=r[0], end=r[1]) for r in generate_error(inf, gt)]
 
 
 def calculate_tertiles(tc: TestCase, feature: str) -> dict:
