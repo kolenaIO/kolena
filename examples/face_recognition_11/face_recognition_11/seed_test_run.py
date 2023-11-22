@@ -67,8 +67,8 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
                     (r[f"{pair}_right_eye_x"], r[f"{pair}_right_eye_y"]),
                     (r[f"{pair}_left_eye_x"], r[f"{pair}_left_eye_y"]),
                     (r[f"{pair}_nose_x"], r[f"{pair}_nose_y"]),
-                    (r[f"{pair}_mouth_right_x"], r[f"{pair}_mouth_right_y"]),
-                    (r[f"{pair}_mouth_left_x"], r[f"{pair}_mouth_left_y"]),
+                    (r[f"{pair}_right_mouth_x"], r[f"{pair}_right_mouth_y"]),
+                    (r[f"{pair}_left_mouth_x"], r[f"{pair}_left_mouth_y"]),
                 ],
             )
             if r[f"{pair}_right_eye_x"] is not None and not np.isnan(r[f"{pair}_right_eye_x"])
@@ -77,8 +77,8 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
         return Inference(similarities=similarities, bbox=bbox, keypoints=keypoints)
 
-    metadata = dict(detector=detector)
-    model = Model(f"{model_name} [FR]", infer=infer, metadata=metadata)
+    metadata = dict(model=model_name, detector=detector)
+    model = Model(f"{model_name} + {detector} [FR]", infer=infer, metadata=metadata)
 
     configurations = [
         ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
@@ -86,7 +86,6 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
-        print(f"Test Suite: {test_suite}")
         test(model, test_suite, evaluate_face_recognition_11, configurations, reset=True)
 
 
@@ -106,7 +105,7 @@ if __name__ == "__main__":
     )
     ap.add_argument(
         "--detectors",
-        default=["MTCNN", "yolov8n-face"],
+        default=["MTCNN", "HOG"],
         help="Name(s) of detectors(s) used with corresponding model(s).",
     )
     ap.add_argument(
