@@ -16,7 +16,8 @@ from typing import Tuple
 
 import pytest
 
-from kolena.workflow.annotation import LabeledPolygon, ScoredLabel
+from kolena.workflow.annotation import LabeledPolygon
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Curve
@@ -417,7 +418,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
                 LabeledPolygon([(3, 3), (3, 4), (4, 3), (4, 4)], "c"),
                 LabeledPolygon([(1, 1), (1, 2), (2, 1), (2, 2)], "a"),
             ],
-            Confused=[ScoredLabeledPolygon([(7.0, 7.0), (7.0, 8.0), (8.0, 7.0), (8.0, 8.0)], 'b', 0.9)],
+            Confused=[ScoredLabeledPolygon([(7.0, 7.0), (7.0, 8.0), (8.0, 7.0), (8.0, 8.0)], "b", 0.9)],
             count_TP=1,
             count_FP=1,
             count_FN=3,
@@ -527,7 +528,6 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetrics]]
             thresholds=[],
         ),
     ),
-
 ]
 
 

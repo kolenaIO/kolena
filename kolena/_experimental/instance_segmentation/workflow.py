@@ -78,7 +78,7 @@ class Inference(BaseInference):
     """
     ignored: bool = False
     """
-    Whether the image (and its associated inference `polygons`) should be ignored in evaluating the results of the model.
+    Whether the image (and associated inference `polygons`) should be ignored in evaluating the results of the model.
     """
 
 
@@ -190,7 +190,8 @@ class TestSuiteMetrics(MetricsTestSuite):
 @dataclass(frozen=True)
 class ThresholdConfiguration(EvaluatorConfiguration):
     """
-    Confidence and [IoU ↗](../../metrics/iou.md) threshold configuration for the pre-built 2D Instance Segmentation workflow.
+    Confidence and [IoU ↗](../../metrics/iou.md) threshold configuration for the pre-built
+    2D Instance Segmentation workflow.
     Specify a confidence and IoU threshold to apply to all classes.
     """
 

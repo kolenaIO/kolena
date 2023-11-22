@@ -49,8 +49,8 @@ from kolena.workflow.metrics import recall as compute_recall
 
 class MulticlassInstanceSegmentationEvaluator(Evaluator):
     """
-    The `MulticlassInstanceSegmentationEvaluator` transforms inferences into metrics for the instance segmentation workflow for
-    multiple classes.
+    The `MulticlassInstanceSegmentationEvaluator` transforms inferences into metrics for the instance segmentation
+    workflow for multiple classes.
 
     When a [`ThresholdConfiguration`][kolena._experimental.instance_segmentation.workflow.ThresholdConfiguration] is
     configured to use an F1-Optimal threshold strategy, the evaluator requires that the first test case retrieved for
