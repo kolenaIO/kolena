@@ -65,3 +65,13 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     krequests.raise_for_status(res)
     data = from_dict(data_class=API.UploadEmbeddingsResponse, data=res.json())
     log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
+
+
+def get_embedding_models() -> API.GetEmbeddingsModelResponse:
+    """
+    Get the name and pre-signed url to the model and vocabulary configured for embedding search
+    """
+    res = krequests.get(endpoint_path=API.Path.MODEL.value)
+    krequests.raise_for_status(res)
+    data = from_dict(data_class=API.GetEmbeddingsModelResponse, data=res.json())
+    return data

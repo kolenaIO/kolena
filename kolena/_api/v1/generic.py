@@ -170,6 +170,7 @@ class Workflow:
 class Search:
     class Path(str, Enum):
         EMBEDDINGS = "/generic/search/embeddings"
+        MODEL = "/generic/search/embeddings/model"
 
     @dataclass(frozen=True)
     class UploadEmbeddingsRequest(BatchedLoad.WithLoadUUID):
@@ -178,6 +179,13 @@ class Search:
     @dataclass(frozen=True)
     class UploadEmbeddingsResponse:
         n_samples: int
+
+    @dataclass(frozen=True)
+    class GetEmbeddingsModelResponse:
+        model: str
+        model_url: str  # presigned url for model
+        vocabulary: str
+        vocabulary_url: str  # presigned url for vocabulary
 
 
 Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
