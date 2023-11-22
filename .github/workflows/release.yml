@@ -51,6 +51,7 @@ jobs:
 
       - name: Publish 'kolena' documentation to production (S3)
         run: |
+          ./docs/setup_insiders.sh
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://docs.kolena.io"
           aws cloudfront create-invalidation --no-cli-pager --distribution-id ${{ secrets.DOC_DISTRIBUTION_ID }} --paths "/*"
