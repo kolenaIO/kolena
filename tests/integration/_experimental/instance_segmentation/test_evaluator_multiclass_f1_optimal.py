@@ -33,7 +33,9 @@ from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 
-instance_segmentation = pytest.importorskip("kolena._experimental.instance_segmentation", reason="requires kolena[metrics] extra")
+instance_segmentation = pytest.importorskip(
+    "kolena._experimental.instance_segmentation", reason="requires kolena[metrics] extra"
+)
 InstanceSegmentationEvaluator = instance_segmentation.InstanceSegmentationEvaluator
 TestCase = instance_segmentation.TestCase
 ClassMetricsPerTestCase = instance_segmentation.ClassMetricsPerTestCase
