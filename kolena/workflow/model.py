@@ -70,24 +70,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
     [`define_workflow`][kolena.workflow.define_workflow.define_workflow].
     """
 
-    name: str
-    """Unique name of the model."""
-
-    metadata: Dict[str, Any]
-    """Unstructured metadata associated with the model."""
-
-    tags: Set[str]
-    """Tags associated with this model."""
-
-    infer: Optional[Callable[[TestSample], Inference]]
-    """
-    Function transforming a [`TestSample`][kolena.workflow.TestSample] for a workflow into an
-    [`Inference`][kolena.workflow.Inference] object. Required when using [`test`][kolena.workflow.test] or
-    [`TestRun.run`][kolena.workflow.TestRun.run].
-    """
-
-    _id: int
-
     @telemetry
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "workflow"):
@@ -114,7 +96,20 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         except NotFoundError:
             loaded = self.create(name, infer, metadata, tags)
 
-        self._populate_from_other(loaded)
+        with self._unfrozen():
+            self._id = loaded._id
+            self.name = loaded.name
+            """Unique name of the model."""
+            self.metadata = loaded.metadata
+            """Unstructured metadata associated with the model."""
+            self.tags = loaded.tags
+            """Tags associated with this model."""
+            self.infer = loaded.infer
+            """
+            Function transforming a [`TestSample`][kolena.workflow.TestSample] for a workflow into an
+            [`Inference`][kolena.workflow.Inference] object. Required when using [`test`][kolena.workflow.test] or
+            [`TestRun.run`][kolena.workflow.TestRun.run].
+            """
 
     @classmethod
     @with_event(event_name=EventAPI.Event.CREATE_MODEL)
@@ -222,14 +217,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
                 yield test_sample, ground_truth, inference
         log.info(f"loaded inferences from model '{self.name}' on test case '{test_case.name}'")
 
-    def _populate_from_other(self, other: "Model") -> None:
-        with self._unfrozen():
-            self._id = other._id
-            self.name = other.name
-            self.metadata = other.metadata
-            self.tags = other.tags
-            self.workflow = other.workflow
-            self.infer = other.infer
 
     @classmethod
     def _from_data(

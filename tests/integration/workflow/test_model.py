@@ -34,6 +34,9 @@ from tests.integration.workflow.dummy import TestSuite
 META_DATA = {"a": "b"}
 TAGS = {"c", "d"}
 
+def no_op_infer():
+    pass
+
 
 def assert_model(model: Model, name: str) -> None:
     assert model.workflow == DUMMY_WORKFLOW
@@ -44,7 +47,7 @@ def assert_model(model: Model, name: str) -> None:
 
 def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test__create model")
-    assert_model(Model.create(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS), name)
+    assert_model(Model.create(name=name, infer=no_op_infer, metadata=META_DATA, tags=TAGS), name)
 
     with pytest.raises(Exception):
         Model.create(name)
@@ -56,8 +59,8 @@ def test__load() -> None:
     with pytest.raises(Exception):
         Model.load(name)
 
-    Model.create(name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
-    assert_model(Model.load(name, infer=lambda x: None), name)
+    model = Model.create(name, metadata=META_DATA, tags=TAGS)
+    assert Model.load(name) == model
 
 
 def test__load_all() -> None:
@@ -70,15 +73,9 @@ def test__load_all() -> None:
     model3 = model(name=name + "3")
     model_diff(name=name, tags={tag1, tag2, tag1_2})  # Model in different workflow
 
-    test_list = [match for match in zip(model.load_all(), [model1, model2, model3])]
-    test_list.extend(zip(model.load_all(tags={tag1_2}), [model1, model2]))
-    test_list.extend(zip(model.load_all(tags={tag1, tag1_2}), [model1]))
-
-    for result, expected in test_list:
-        assert result.name == expected.name
-        assert result.metadata == expected.metadata
-        assert result.tags == expected.tags
-        assert result.workflow == expected.workflow
+    assert model.load_all() == [model1, model2, model3]
+    assert model.load_all(tags={tag1_2}) == [model1, model2]
+    assert model.load_all(tags={tag1, tag1_2}) == [model1]
     assert model.load_all(tags={"does_not_exist"}) == []
 
 
@@ -91,32 +88,31 @@ def test__load__mismatching_workflows() -> None:
 
 def test__init() -> None:
     name = with_test_prefix(f"{__file__}::test__init")
-    model = Model(name=name, infer=lambda x: None)
-    loaded = Model.load(name, infer=lambda x: None)
+    model = Model(name=name, infer=no_op_infer)
+    loaded = Model.load(name, infer=no_op_infer)
 
-    assert model.name == loaded.name
-    assert model.metadata == loaded.metadata
+    assert model == loaded
 
 
 def test__init_with_optionals() -> None:
     name = with_test_prefix(f"{__file__}::test__init_with_optionals")
-    model = Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
+    model = Model(name=name, infer=no_op_infer, metadata=META_DATA, tags=TAGS)
     assert_model(model, name)
 
     with pytest.raises(Exception):
         Model.create(name)
 
-    Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
+    Model(name=name, infer=no_op_infer, metadata=META_DATA, tags=TAGS)
 
-    assert_model(Model.load(name, infer=lambda x: None), name)
+    assert_model(Model.load(name), name)
 
-    updated_model = Model(name=name, infer=lambda x: None, metadata={"a": 13}, tags={"e"})
+    updated_model = Model(name=name, infer=no_op_infer, metadata={"a": 13}, tags={"e"})
     assert_model(updated_model, name)  # Model metadata and tags don't update
 
 
 def test__init__validate_name() -> None:
     with pytest.raises(ValueError):
-        Model(name=" ", infer=lambda x: None, metadata=META_DATA)
+        Model(name=" ", infer=no_op_infer, metadata=META_DATA)
 
 
 def test__load_inferences__empty(dummy_test_suites: List[TestSuite]) -> None:
