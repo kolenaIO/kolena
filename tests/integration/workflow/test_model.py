@@ -34,6 +34,7 @@ from tests.integration.workflow.dummy import TestSuite
 META_DATA = {"a": "b"}
 TAGS = {"c", "d"}
 
+
 def no_op_infer():
     pass
 

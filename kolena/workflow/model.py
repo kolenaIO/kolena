@@ -217,7 +217,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
                 yield test_sample, ground_truth, inference
         log.info(f"loaded inferences from model '{self.name}' on test case '{test_case.name}'")
 
-
     @classmethod
     def _from_data(
         cls,
