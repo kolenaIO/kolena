@@ -41,6 +41,13 @@ API_URL_ENV_VAR = "KOLENA_API_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
 
 
+class NoOpAuth(requests.auth.AuthBase):
+    """Provide no-op Auth to disable requests using .netrc"""
+
+    def __call__(self, r):
+        return r
+
+
 class _ClientState:
     def __init__(
         self,
@@ -155,6 +162,7 @@ def get_token(
     request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
     r = requests.put(
         get_endpoint_with_baseurl(base_url, "token/login"),
+        auth=NoOpAuth(),
         json=dataclasses.asdict(request),
         proxies=proxies,
     )
