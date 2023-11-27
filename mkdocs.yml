@@ -121,7 +121,6 @@ theme:
     - content.code.copy
     - content.tabs.link
     - navigation.indexes
-    - navigation.instant
     - navigation.footer
     - navigation.sections
     - navigation.tabs
