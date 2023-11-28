@@ -27,7 +27,7 @@ FPR is often used in conjuction with [TPR (recall)](./recall.md). By measuring b
 of a model's performance can be drawn.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`FPR` ↗][kolena.workflow.metrics.fpr]
+- :kolena-manual-16: API Reference: [`fpr` ↗][kolena.workflow.metrics.fpr]
 </div>
 
 

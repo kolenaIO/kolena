@@ -92,10 +92,6 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
     threshold: float
 
     def __init_subclass__(cls, **kwargs):
-        """
-        Registers the subclass in the system, allowing it to be recognized and utilized
-        within the broader workflow infrastructure.
-        """
         _register_data_type(cls)
 
     @classmethod
@@ -109,12 +105,6 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
         return _MetricsType.THRESHOLDED
 
     def __post_init__(self) -> None:
-        """
-        Post-initialization processing to ensure data integrity.
-
-        Checks each field to ensure no dictionary types are used, raising TypeError if violated.
-        This maintains the integrity and expected structure of the data.
-        """
         for field in fields(self):
             field_value = getattr(self, field.name)
             if isinstance(field_value, dict):
