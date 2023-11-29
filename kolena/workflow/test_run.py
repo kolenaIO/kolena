@@ -403,8 +403,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     def _extract_thresholded_metrics(
         self,
-        records: List[Tuple[Dict[str, Any], Dict[str, Any]]],
-    ) -> [List[tuple[Dict[str, Any], Dict[str, Any]]], List[Tuple[Dict[str, Any], Dict[str, Any]]]]:
+        records: List[Tuple[Dict[str, Any], Dict[str, Any]]]
+    ) -> Tuple[List[Tuple[Dict[str, Any], Dict[str, Any]]], List[Tuple[Dict[str, Any], Dict[str, Any]]]]:
         updated_records = []
         removed_items = []
 
