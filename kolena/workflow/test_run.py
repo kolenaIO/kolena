@@ -401,6 +401,34 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSampleDataFrame,
         )
 
+    def _extract_thresholded_metrics(
+        self,
+        records: list[tuple[Dict[str, Any], Dict[str, Any]]],
+    ) -> [list[tuple[Dict[str, Any], Dict[str, Any]]], list[tuple[Dict[str, Any], Dict[str, Any]]]]:
+        updated_records = []
+        removed_items = []
+
+        for first_record, second_record in records:
+            # Track keys to remove from second_record after iteration
+            keys_to_remove = []
+
+            for key, value in second_record.items():
+                if isinstance(value, list):
+                    for item in value:
+                        if item.get("data_type") == "METRICS/THRESHOLDED":
+                            # Include first item of the tuple in the removed items
+                            removed_item = (first_record, {key: item})
+                            removed_items.append(removed_item)
+                    keys_to_remove.append(key)
+
+            # Remove identified keys from second_record
+            for key in keys_to_remove:
+                second_record.pop(key, None)
+
+            updated_records.append((first_record, second_record))
+
+        return updated_records, removed_items
+
     @validate_arguments(config=ValidatorConfig)
     def _upload_test_sample_metrics(
         self,
@@ -409,6 +437,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         configuration: Optional[EvaluatorConfiguration],
     ) -> None:
         metrics_records = [(ts._to_dict(), ts_metrics._to_dict()) for ts, ts_metrics in metrics]
+        metrics_records, thresholded_metrics = self._extract_thresholded_metrics(metrics_records)
         df = pd.DataFrame(metrics_records, columns=["test_sample", "metrics"])
         df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
         df_serializable = df_validated.as_serializable()
@@ -427,6 +456,28 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)
+
+        if len(thresholded_metrics) > 0:
+            log.info("Uploading thresholded metrics")
+            df = pd.DataFrame(thresholded_metrics, columns=["test_sample", "metrics"])
+            df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
+            df_serializable = df_validated.as_serializable()
+            log.info(df_serializable)
+
+            init_response = init_upload()
+            upload_data_frame_chunk(df_serializable, init_response.uuid)
+
+            request = API.UploadTestSampleMetricsThresholdedRequest(
+                uuid=init_response.uuid,
+                test_run_id=self._id,
+                test_case_id=test_case._id if test_case is not None else None,
+                configuration=_maybe_evaluator_configuration_to_api(configuration),
+            )
+            res = krequests.put(
+                endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED.value,
+                data=json.dumps(dataclasses.asdict(request)),
+            )
+            krequests.raise_for_status(res)
 
     def _upload_test_case_metrics(
         self,
