@@ -374,7 +374,7 @@ workflows:
       - example-test:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11 ]
+              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
   example-evaluator:
