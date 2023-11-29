@@ -1,13 +1,13 @@
 # WER, CER, and MER
 Word Error Rate (WER), Character Error Rate (CER), and Match Error Rate (MER) are essential metrics used in the
 evaluation of speech recognition and natural language processing systems. From a high level, they each quantify
-the similarity between reference and candidate texts, with zero being a perfect score. However, each of the metrics
+the similarity between reference and candidate texts, with zero being a perfect score. While word and character
+error rate can be infinitely high, match error rate is always between 0 and 1. Each of these metrics
 have their nuances that reveal different errors within texts.
 
-## Word Error Rate
-Word Error Rate is a fundamental metric that measures the accuracy of a candidate text by considering three types
-of errors — substitutions, deletions, and insertions. Word-level errors surface mispredicted words, and it can be
-useful to visualize common word-level failures to flesh out weaknesses in a model.
+## Substitutions, Deletions, and Insertions
+The building blocks of each metric include substitution, deletion, and insertion errors. These errors reveal different
+failures in candidate texts, and are aggregated to calculate the word, character, and match error rate.
 
 ??? example "Substitution Errors"
     Substitutions occur when a candidate text contains a word or sequence of words that is different from the
@@ -53,6 +53,11 @@ useful to visualize common word-level failures to flesh out weaknesses in a mode
 
     In the above example, there is 1 word-level insertion and 8 character-level insertions.
 
+## Word Error Rate
+Word Error Rate is a fundamental metric that measures the accuracy of a candidate text by considering three types
+of errors — substitutions, deletions, and insertions. Word-level errors surface mispredicted words, and it can be
+useful to visualize common word-level failures to flesh out weaknesses in a model.
+
 Formally, it is defined as the rate of word-level errors in a candidate text.
 
 $$
@@ -64,16 +69,16 @@ Let's calculate the word error rate between the following reference and candidat
 
 | <b>Reference</b> | <b>Candidate</b> |
 | | |
-|  `The bard sang the ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed the ancient melodies, transcending meadows into sonnets for soulful grace.` |
+|  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into sonnets for enhanced soulful grace.` |
 
 ??? example "Step 1. Count Errors"
     Highlighting the <b><big>substitution</big></b>, <u><big>deletion</big></u>, and <i><big>insertion</big></i> errors, we can count each type of error:
 
     <code>
-    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> the ancient melodies <u><big>of nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for <u><big>enhanced</big></u> soulful grace.
+    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</big></u> <big><u>nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
     </code>
 
-    In our candidate text, we have 2 substitutions, 1 insertion, and 4 deletions.
+    In our candidate text, we have 2 substitutions, 1 insertion, and 3 deletions.
 
 ??? example "Step 2. Calculate WER"
     With each errors counted, we can calculate our WER. Using the formula,
@@ -81,13 +86,14 @@ Let's calculate the word error rate between the following reference and candidat
     $$
     \begin{align*}
     \text{WER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Words in Reference}} \\
-               &= \frac{2 + 4 + 1}{17} \\
-               &= 0.412
+               &= \frac{2 + 3 + 1}{16} \\
+               &= \frac{6}{16} \\
+               &= 0.375
     \end{align*}
     $$
 
 
-    we arrive at a WER of 0.412 for our candidate text.
+    we arrive at a WER of 0.375 for our candidate text.
 
 
 It is important to note that WER's range is not bounded above by 1. If we had a reference of "`hello`" and
@@ -109,16 +115,16 @@ Let's calculate the character error rate using the same reference and candidate 
 
 | <b>Reference</b> | <b>Candidate</b> |
 | | |
-|  `The bard sang the ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed the ancient melodies, transcending meadows into sonnets for soulful grace.` |
+|  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into enhanced sonnets for soulful grace.` |
 
 ??? example "Step 1. Count Errors"
     Highlighting the <b><big>substitution</big></b>, <u><big>deletion</big></u>, and <i><big>insertion</big></i> errors, we can count each type of error:
 
     <code>
-    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> the ancient melodies <u><big>of nature</big></u>, trans<b><big>cending</big></b> <u><big>tranquil</big></u> meadows into sonnets for <u><big>enhanced</big></u> soulful grace.
+    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</u></big> <u><big>nature</big></u>, trans<b><big>cending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
     </code>
 
-    In our candidate text, we have 7 substitutions, 6 insertions, and 24 deletions.
+    In our candidate text, we have 13 substitutions, 6 insertions, and 16 deletions.
 
 ??? example "Step 2. Calculate CER"
     With each errors counted, we can calculate our CER. Using the formula,
@@ -126,13 +132,14 @@ Let's calculate the character error rate using the same reference and candidate 
     $$
     \begin{align*}
     \text{WER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Characters in Reference}} \\
-               &= \frac{7 + 6 + 24}{99} \\
-               &= 0.373
+               &= \frac{13 + 6 + 16}{110} \\
+               &= \frac{35}{110} \\
+               &= 0.318
     \end{align*}
     $$
 
 
-    we arrive at a CER of 0.373 for our candidate text. Note that the CER is lower than the WER calculated
+    we arrive at a CER of 0.318 for our candidate text. Note that the CER is lower than the WER calculated
     in the last step. Although the errors are similar between the two calculations, the character-level
     substitution only replaces `trans`, whereas the word-level substitution replaces the entire `transforming`
     — showing that our model could be weak at recognizing the specific phonemes coming after trans-. However,
@@ -150,7 +157,7 @@ While WER and CER focus on errors, Match Error Rate takes a slightly different a
 on correct matches. Similar to WER, it is calculated using word-level substitutions, deletions, and insertions.
 
 $$
-\text{MER} = \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Matches}}
+\text{MER} = \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}}
 $$
 
 ### Example
@@ -158,30 +165,31 @@ Let's calculate the match error rate using the same reference and candidate text
 
 | <b>Reference</b> | <b>Candidate</b> |
 | | |
-|  `The bard sang the ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed the ancient melodies, transcending meadows into sonnets for soulful grace.` |
+|  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into enhanced sonnets for soulful grace.` |
 
 ??? example "Step 1. Count Errors"
     Highlighting the <b><big>substitution</big></b>, <u><big>deletion</big></u>, and <i><big>insertion</big></i> errors, we can count each type of error:
 
     <code>
-    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> the ancient melodies <u><big>of nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for <u><big>enhanced</big></u> soulful grace.
+    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</u></big> <u><big>nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
     </code>
 
-    In our candidate text, we have 2 substitutions, 1 insertion, and 4 deletions.
+    In our candidate text, we have 2 substitutions, 1 insertion, and 3 deletions.
 
 ??? example "Step 2. Calculate MER"
     With each errors counted, we can calculate our MER. Using the formula,
 
     $$
     \begin{align*}
-    \text{MER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Matches}} \\
-               &= \frac{2 + 4 + 1}{2 + 4 + 1 + 11} \\
-               &= 0.389
+    \text{MER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}} \\
+               &= \frac{2 + 3 + 1}{2 + 3 + 1 + 11} \\
+               &= \frac{6}{17} \\
+               &= 0.353
     \end{align*}
     $$
 
 
-    we arrive at a MER of 0.389 for our candidate text. This is roughly in line with what we had for CER and WER.
+    we arrive at a MER of 0.353 for our candidate text. This is roughly in line with what we had for CER and WER.
 
 
 In general, all three metrics are similar, yet reveal slightly different hidden errors within the candidate text.
