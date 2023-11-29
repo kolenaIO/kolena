@@ -13,128 +13,82 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Optional
 
-import pandas as pd
-from rag_qa.seed_dataset import BUCKET
+from rag_qa.constants import HALU_DIALOG
+from rag_qa.constants import HALU_QA
+from rag_qa.constants import HALU_SUMMARIZATION
+from rag_qa.constants import SQUAD2_DEV
+from rag_qa.data_loader import HALU_MODELS
+from rag_qa.data_loader import load_halu_dialog_results
+from rag_qa.data_loader import load_halu_qa_results
+from rag_qa.data_loader import load_halu_summarization_results
+from rag_qa.data_loader import load_squad_dev_results
+from rag_qa.data_loader import SQUAD_MODELS
 
 import kolena
 from kolena._experimental.dataset import test
 
 
-def submit_squad_dev() -> None:
-    model = "IE-Net (ensemble)"
-    # model = "FPNet (ensemble)"
-    result_json = pd.read_json(f"s3://{BUCKET}/SQuAD2/results/{model}.json")
-    result = pd.DataFrame([dict(id=id, answer=ans) for id, ans in result_json.items()])
-    test("SQuAD 2.0 Dev", model, result, on="id")
+def submit_squad_dev(model: str, dataset: Optional[str] = None) -> None:
+    dataset = dataset or "SQuAD 2.0 Dev"
+    result = load_squad_dev_results(model)
+    test(dataset, model, result, on="id")
 
 
-def submit_qa() -> None:
-    qa_results = pd.read_json(f"s3://{BUCKET}/HaLuEval/evaluation/qa/qa_gpt-3.5-turbo_result.json", lines=True)
-    kolena.initialize()
+def submit_qa(model: str, dataset: Optional[str] = None) -> None:
+    dataset = dataset or "HaLuEval qa"
+    qa_results, config = load_halu_qa_results(model)
 
-    with open("evaluation/qa/qa_evaluation_instruction.txt") as f:
-        instruction = f.read()
-
-    system_prompt = (
-        "You are a hallucination detector. You MUST determine if the provided answer contains "
-        "hallucination or not for the question based on the world knowledge. The answer you provided "
-        'MUST be "Yes" or "No"'
-    )
-    user_prompt = instruction + "\n\n#Question#: <question>" + "\n#Answer#: <answer>" + "\n#Your Judgement#: "
-
-    test(
-        "HaLuEval qa",
-        "gpt-3.5-turbo",
-        [
-            (
-                dict(system_promt=system_prompt, user_prompt=user_prompt),
-                qa_results.rename(columns={"knowledge": "text"}),
-            ),
-        ],
-        on=["text", "question"],
-    )
+    test(dataset, model, [(config, qa_results.rename(columns={"knowledge": "text"}))], on=["text", "question"])
     print(qa_results.shape)
 
 
-def submit_dialogue() -> None:
-    # dialogue = pd.read_json("data/dialogue_data.json", lines=True)
-    dialogue_results = pd.read_json(
-        f"s3://{BUCKET}/HaLuEval/evaluation/dialogue/dialogue_gpt-3.5-turbo_results.json",
-        lines=True,
-    )
+def submit_dialogue(model: str, dataset: Optional[str] = None) -> None:
+    dataset = dataset or "HaLuEval dialogue"
+    dialogue_results, config = load_halu_dialog_results(model)
 
-    with open("evaluation/dialogue/dialogue_evaluation_instruction.txt") as f:
-        instruction = f.read()
-
-    system_prompt = (
-        "You are a response judge. You MUST determine if the provided response contains non-factual or "
-        'hallucinated information. The answer you give MUST be "Yes" or "No"'
-    )
-    user_prompt = instruction + "\n\n#Dialogue History#: <dialog>" + "\n#Response#: <response>" + "\n#Your Judgement#: "
-
-    kolena.initialize()
-    test(
-        "HaLuEval dialogue",
-        "gpt-3.5-turbo",
-        [
-            (
-                dict(system_prompt=system_prompt, user_prompt=user_prompt),
-                dialogue_results.rename(columns={"knowledge": "text"}),
-            ),
-        ],
-        on=["text", "dialogue_history"],
-    )
+    test(dataset, model, [(config, dialogue_results)], on=["text", "dialogue_history"])
     print(dialogue_results.shape)
 
 
-def submit_summarization() -> None:
-    summarization_results = pd.read_json(
-        "evaluation/summarization/summarization_gpt-3.5-turbo_results.json",
-        lines=True,
-    )
+def submit_summarization(model: str, dataset: Optional[str] = None) -> None:
+    dataset = dataset or "HaLuEval summarization"
+    summarization_results, config = load_halu_summarization_results(model)
 
-    with open("evaluation/summarization/summarization_evaluation_instruction.txt") as f:
-        instruction = f.read()
-
-    system_prompt = (
-        "You are a summary judge. You MUST determine if the provided summary contains non-factual "
-        'or hallucinated information. The answer you give MUST be "Yes" or "No"'
-    )
-    user_prompt = instruction + "\n\n#Document#: <document>" + "\n#Summary#: <summary>" + "\n#Your Judgement#: "
-
-    test(
-        "HaLuEval summarization",
-        "gpt-3.5-turbo",
-        [
-            (
-                dict(system_promt=system_prompt, user_prompt=user_prompt),
-                summarization_results.rename(columns={"document": "text"}),
-            ),
-        ],
-        on=["text"],
-    )
+    # TODO: this does not work yet because of non-trivial join between data and result json
+    test(dataset, model, [(config, summarization_results)], on=["text"])
     print(summarization_results.shape)
 
 
+proc = {
+    "squad2-dev": submit_squad_dev,
+    "halu-qa": submit_qa,
+    "halu-dialog": submit_dialogue,
+    "halu-summarization": submit_summarization,
+}
+
+
 def main(args: Namespace) -> None:
-    kolena.initialize()
+    kolena.initialize(verbose=True)
+
+    proc[args.benchmark](args.model, args.dataset_name)
 
 
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--benchmark",
-        choices=["squad2-dev", "squad2-train", "halu-qa", "halu-dialog", "halu-summarization"],
+        choices=[SQUAD2_DEV, HALU_QA, HALU_DIALOG, HALU_SUMMARIZATION],
         required=True,
         help="Name of the benchmark to seed.",
     )
     ap.add_argument(
         "--model",
-        choices=["squad2-dev", "squad2-train", "halu-qa", "halu-dialog", "halu-summarization"],
+        choices=SQUAD_MODELS + HALU_MODELS,
         required=True,
-        help="Name of the benchmark to seed.",
+        help="Name of the model to seed.",
     )
-    ap.add_argument("--dataset-name", help="")
+    ap.add_argument("--dataset-name", help="dataset name")
 
     main(ap.parse_args())
