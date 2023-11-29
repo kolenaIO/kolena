@@ -19,17 +19,17 @@ from typing import Union
 import langcodes
 import langid
 import numpy as np
+from automatic_speech_recognition.utils import generate_diff_word_level
+from automatic_speech_recognition.utils import preprocess_transcription
+from automatic_speech_recognition.workflow import GroundTruth
+from automatic_speech_recognition.workflow import Inference
+from automatic_speech_recognition.workflow import TestCase
+from automatic_speech_recognition.workflow import TestCaseMetric
+from automatic_speech_recognition.workflow import TestSample
+from automatic_speech_recognition.workflow import TestSampleMetric
+from automatic_speech_recognition.workflow import TestSuiteMetric
 from jiwer import cer
 from jiwer import process_words
-from utils import generate_diff_word_level
-from utils import preprocess_transcription
-from workflow import GroundTruth
-from workflow import Inference
-from workflow import TestCase
-from workflow import TestCaseMetric
-from workflow import TestSample
-from workflow import TestSampleMetric
-from workflow import TestSuiteMetric
 
 from kolena.workflow import AxisConfig
 from kolena.workflow import Curve

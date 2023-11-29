@@ -16,12 +16,12 @@ from argparse import Namespace
 from typing import Dict
 
 import pandas as pd
-from evaluator import evaluate_speaker_diarization
-from utils import realign_labels
-from workflow import Inference
-from workflow import Model
-from workflow import TestSample
-from workflow import TestSuite
+from speaker_diarization.evaluator import evaluate_speaker_diarization
+from speaker_diarization.utils import realign_labels
+from speaker_diarization.workflow import Inference
+from speaker_diarization.workflow import Model
+from speaker_diarization.workflow import TestSample
+from speaker_diarization.workflow import TestSuite
 
 import kolena
 from kolena.workflow.annotation import LabeledTimeSegment

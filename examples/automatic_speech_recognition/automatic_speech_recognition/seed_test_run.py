@@ -17,11 +17,11 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
-from evaluator import evaluate_audio_recognition
-from workflow import Inference
-from workflow import Model
-from workflow import TestSample
-from workflow import TestSuite
+from automatic_speech_recognition.evaluator import evaluate_audio_recognition
+from automatic_speech_recognition.workflow import Inference
+from automatic_speech_recognition.workflow import Model
+from automatic_speech_recognition.workflow import TestSample
+from automatic_speech_recognition.workflow import TestSuite
 
 import kolena
 from kolena.workflow.annotation import ClassificationLabel

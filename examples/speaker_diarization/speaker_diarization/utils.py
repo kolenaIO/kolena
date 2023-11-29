@@ -21,9 +21,9 @@ import pandas as pd
 from pyannote.core import Annotation
 from pyannote.core import Segment
 from scipy import optimize
-from workflow import GroundTruth
-from workflow import Inference
-from workflow import TestCase
+from speaker_diarization.workflow import GroundTruth
+from speaker_diarization.workflow import Inference
+from speaker_diarization.workflow import TestCase
 
 from kolena.workflow.annotation import TimeSegment
 
