@@ -11,19 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from pydantic.dataclasses import dataclass
-
-from kolena.workflow import define_workflow
-from kolena.workflow import EvaluatorConfiguration
-from kolena.workflow import GroundTruth
-from kolena.workflow import Inference
-from kolena.workflow import Text
-
-workflow, TestCase, TestSuite, Model = define_workflow("Retrieval Augmented Generation", Text, GroundTruth, Inference)
-
-
-@dataclass(frozen=True)
-class Configuration(EvaluatorConfiguration):
-    # leverage DataObject __str__
-    def display_name(self) -> str:
-        return self.__str__()

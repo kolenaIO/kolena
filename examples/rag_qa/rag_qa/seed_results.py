@@ -23,7 +23,7 @@ from rag_qa.data_loader import HALU_MODELS
 from rag_qa.data_loader import load_halu_dialog_results
 from rag_qa.data_loader import load_halu_qa_results
 from rag_qa.data_loader import load_halu_summarization_results
-from rag_qa.data_loader import load_squad_dev_results
+from rag_qa.data_loader import load_squad2_dev_results
 from rag_qa.data_loader import SQUAD_MODELS
 
 import kolena
@@ -32,7 +32,7 @@ from kolena._experimental.dataset import test
 
 def submit_squad_dev(model: str, dataset: Optional[str] = None) -> None:
     dataset = dataset or "SQuAD 2.0 Dev"
-    result = load_squad_dev_results(model)
+    result, _ = load_squad2_dev_results(model)
     test(dataset, model, result, on="id")
 
 
@@ -40,7 +40,7 @@ def submit_qa(model: str, dataset: Optional[str] = None) -> None:
     dataset = dataset or "HaLuEval qa"
     qa_results, config = load_halu_qa_results(model)
 
-    test(dataset, model, [(config, qa_results.rename(columns={"knowledge": "text"}))], on=["text", "question"])
+    test(dataset, model, [(config, qa_results)], on=["text", "question"])
     print(qa_results.shape)
 
 

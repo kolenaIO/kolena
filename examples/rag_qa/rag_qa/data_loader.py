@@ -52,7 +52,7 @@ def load_squad2_dev() -> pd.DataFrame:
     return dev
 
 
-def load_squad_dev_results(model: str) -> pd.DataFrame:
+def load_squad2_dev_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     assert model in SQUAD_MODELS
     result = (
         pd.read_json(f"s3://{BUCKET}/SQuAD2/results/{model}.json", orient="index")
@@ -61,7 +61,7 @@ def load_squad_dev_results(model: str) -> pd.DataFrame:
         )
         .rename(columns={0: "answer"})
     )
-    return result
+    return result, {}
 
 
 def load_squad2_train() -> pd.DataFrame:

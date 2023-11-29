@@ -33,11 +33,6 @@ from rag_qa.workflow import TestSuite
 import kolena
 from kolena.workflow import Text
 
-
-def clean_name(name: str) -> str:
-    return name[9:] if name.startswith("metadata_") else name
-
-
 data_loader = OrderedDict(
     [
         (SQUAD2_DEV, load_squad2_dev),
