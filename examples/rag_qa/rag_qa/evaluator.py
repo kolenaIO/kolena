@@ -75,7 +75,7 @@ def compute_test_sample_metrics(gt: str, inf: str, configuration: Configuration)
 def compute_test_case_metrics(
     metrics: List[MetricsTestSample],
 ) -> MetricsTestCase:
-    return MetricsTestSample(
+    return MetricsTestCase(
         BERT_prec=mean_metric("BERT_prec", metrics),
         BERT_rec=mean_metric("BERT_rec", metrics),
         BERT_f1=mean_metric("BERT_f1", metrics),
