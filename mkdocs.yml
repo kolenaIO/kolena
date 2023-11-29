@@ -87,7 +87,6 @@ nav:
         - metrics/meteor.md
         - metrics/perplexity.md
         - metrics/rouge-n.md
-      - Speech Processing:
         - metrics/wer-cer-mer.md
   - Help & FAQ:
       - Help & FAQ: faq/index.md

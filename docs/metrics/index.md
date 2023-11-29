@@ -171,11 +171,6 @@ biases, and its intended uses.
     the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
     ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
 
-</div>
-
-## Speech Processing
-
-<div class="grid cards" markdown>
 
 - [Word, Character, and Match Error Rate](wer-cer-mer.md)
 

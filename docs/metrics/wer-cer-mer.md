@@ -55,8 +55,9 @@ failures in candidate texts, and are aggregated to calculate the word, character
 
 ## Word Error Rate
 Word Error Rate is a fundamental metric that measures the accuracy of a candidate text by considering three types
-of errors — substitutions, deletions, and insertions. Word-level errors surface mispredicted words, and it can be
-useful to visualize common word-level failures to flesh out weaknesses in a model.
+of errors — [substitutions, deletions, and insertions](#substitutions-deletions-and-insertions). Word-level errors 
+surface mispredicted words, and it can be useful to visualize common word-level failures to flesh out weaknesses 
+in a model.
 
 Formally, it is defined as the rate of word-level errors in a candidate text.
 
@@ -78,7 +79,7 @@ Let's calculate the word error rate between the following reference and candidat
     The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</big></u> <big><u>nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
     </code>
 
-    In our candidate text, we have 2 substitutions, 1 insertion, and 3 deletions.
+    In our candidate text, we have 2 substitutions, 3 deletions, and 1 insertion.
 
 ??? example "Step 2. Calculate WER"
     With each errors counted, we can calculate our WER. Using the formula,
@@ -102,9 +103,10 @@ we have 2 errors in the candidate and 1 word in the reference. Generally speakin
 to 0 as possible.
 
 ## Character Error Rate
-Character Error Rate is another metric that measures the accuracy of a candidate text through substitutions,
-deletions, and insertions. Unlike word-level errors, character-level errors are useful in surfacing mispronunciations
-and erroneous phonemes. CER is defined as the rate of character-level errors in a candidate text.
+Character Error Rate is another metric that measures the accuracy of a candidate text through [substitutions, 
+deletions, and insertions](#substitutions-deletions-and-insertions). Unlike word-level errors, character-level 
+errors are useful in surfacing mispronunciations and erroneous phonemes. CER is defined as the rate of 
+character-level errors in a candidate text.
 
 $$
 \text{CER} = \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Characters in Reference}}
@@ -124,15 +126,15 @@ Let's calculate the character error rate using the same reference and candidate 
     The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</u></big> <u><big>nature</big></u>, trans<b><big>cending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
     </code>
 
-    In our candidate text, we have 13 substitutions, 6 insertions, and 16 deletions.
+    In our candidate text, we have 13 substitutions, 16 deletions, and 6 insertions.
 
 ??? example "Step 2. Calculate CER"
     With each errors counted, we can calculate our CER. Using the formula,
 
     $$
     \begin{align*}
-    \text{WER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Characters in Reference}} \\
-               &= \frac{13 + 6 + 16}{110} \\
+    \text{CER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Characters in Reference}} \\
+               &= \frac{13 + 16 + 6}{110} \\
                &= \frac{35}{110} \\
                &= 0.318
     \end{align*}
@@ -154,7 +156,7 @@ at the word level.
 
 ## Match Error Rate
 While WER and CER focus on errors, Match Error Rate takes a slightly different approach by placing more emphasis
-on correct matches. Similar to WER, it is calculated using word-level substitutions, deletions, and insertions.
+on correct matches. Similar to WER, it is calculated using word-level [substitutions, deletions, and insertions](#substitutions-deletions-and-insertions).
 
 $$
 \text{MER} = \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}}
@@ -174,7 +176,7 @@ Let's calculate the match error rate using the same reference and candidate text
     The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</u></big> <u><big>nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
     </code>
 
-    In our candidate text, we have 2 substitutions, 1 insertion, and 3 deletions.
+    In our candidate text, we have 2 substitutions, 3 deletions, and 1 insertion.
 
 ??? example "Step 2. Calculate MER"
     With each errors counted, we can calculate our MER. Using the formula,
