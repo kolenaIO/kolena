@@ -406,7 +406,7 @@ class MulticlassInstanceSegmentationEvaluator(Evaluator):
         average_precisions = [tcm.mean_AP for _, tcm in metrics]
         return self.test_suite_metrics(unique_locators, average_precisions)
 
-    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
+    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
         if configuration.threshold_strategy == "F1-Optimal":
             return self.threshold_cache[configuration.display_name()]
         else:

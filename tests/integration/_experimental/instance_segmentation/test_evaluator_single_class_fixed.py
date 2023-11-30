@@ -234,7 +234,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.7,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -261,7 +261,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.7,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -285,7 +285,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.6,
             min_confidence_above_t=0.5,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -313,7 +313,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=0.8,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -337,7 +337,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1,
             min_confidence_above_t=1,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -361,7 +361,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.9,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -382,7 +382,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.8,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -400,7 +400,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=True,
             max_confidence_above_t=None,
             min_confidence_above_t=None,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
     (
@@ -418,7 +418,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=True,
             max_confidence_above_t=None,
             min_confidence_above_t=None,
-            thresholds=0.5,
+            threshold=0.5,
         ),
     ),
 ]
@@ -555,7 +555,7 @@ def test__instance_segmentation__multiclass_evaluator__fixed() -> None:
         ],
         configuration=config,
     )
-    assert test_suite_metrics == TestSuiteMetrics(n_images=len(TEST_DATA), mean_AP=200 / 343)
+    assert test_suite_metrics == TestSuiteMetrics(n_images=len(TEST_DATA), mean_AP=200 / 343, threshold=config.threshold_strategy)
 
     # test suite metrics - two
     test_suite_metrics_dup = eval.compute_test_suite_metrics(
@@ -566,4 +566,4 @@ def test__instance_segmentation__multiclass_evaluator__fixed() -> None:
         ],
         configuration=config,
     )
-    assert test_suite_metrics_dup == TestSuiteMetrics(n_images=len(TEST_DATA), mean_AP=200 / 343)
+    assert test_suite_metrics_dup == TestSuiteMetrics(n_images=len(TEST_DATA), mean_AP=200 / 343, threshold=config.threshold_strategy)

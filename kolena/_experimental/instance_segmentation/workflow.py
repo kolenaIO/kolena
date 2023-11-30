@@ -107,7 +107,7 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
 
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
-    thresholds: float
+    threshold: float
 
 
 @dataclass(frozen=True)
@@ -185,6 +185,7 @@ class TestCaseMetrics(MetricsTestCase):
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     mean_AP: float
+    threshold: Union[float, None] = None
 
 
 @dataclass(frozen=True)
