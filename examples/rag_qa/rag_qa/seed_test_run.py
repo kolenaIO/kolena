@@ -121,6 +121,8 @@ def main(args: Namespace) -> None:
 
     benchmark = args.benchmark
     test_suite_name = args.test_suite or benchmark
+    if args.sample_count:
+        test_suite_name = f"{test_suite_name} ({args.sample_count})"
     df, config = results_loader[args.benchmark](args.model)
     keys = key_columns[benchmark]
     df = df.set_index(keys)
@@ -146,6 +148,7 @@ if __name__ == "__main__":
         help="Name of the benchmark to test.",
     )
     ap.add_argument("--model", choices=SQUAD_MODELS + HALU_MODELS, help="Name of the model to test.")
+    ap.add_argument("--sample-count", default=0, type=int, help="Number of samples in the test-suite.")
     ap.add_argument("--test_suite", help="Name of the test suite to test.")
 
     main(ap.parse_args())

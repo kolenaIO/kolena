@@ -30,24 +30,39 @@ import kolena
 from kolena._experimental.dataset import register_dataset
 
 
-def seed_squad2_dev():
-    register_dataset("SQuAD 2.0 Dev", load_squad2_dev())
+def seed_squad2_dev(sample_count: int = 0):
+    dataset = "SQuAD 2.0 Dev"
+    if sample_count:
+        dataset = f"{dataset} ({sample_count})"
+    register_dataset(dataset, load_squad2_dev(sample_count))
 
 
-def seed_squad2_train():
-    register_dataset("SQuAD 2.0 Train", load_squad2_train())
+def seed_squad2_train(sample_count: int = 0):
+    dataset = "SQuAD 2.0 Train"
+    if sample_count:
+        dataset = f"{dataset} ({sample_count})"
+    register_dataset(dataset, load_squad2_train(sample_count))
 
 
-def seed_halu_qa():
-    register_dataset("HaLuEval qa", load_halu_qa())
+def seed_halu_qa(sample_count: int = 0):
+    dataset = "HaLuEval qa"
+    if sample_count:
+        dataset = f"{dataset} ({sample_count})"
+    register_dataset(dataset, load_halu_qa())
 
 
-def seed_halu_dialog():
-    register_dataset("HaLuEval dialogue", load_halu_dialog())
+def seed_halu_dialog(sample_count: int = 0):
+    dataset = "HaLuEval dialogue"
+    if sample_count:
+        dataset = f"{dataset} ({sample_count})"
+    register_dataset(dataset, load_halu_dialog())
 
 
-def seed_halu_summarization():
-    register_dataset("HaLuEval summarization", load_halu_summarization())
+def seed_halu_summarization(sample_count: int = 0):
+    dataset = "HaLuEval summarization"
+    if sample_count:
+        dataset = f"{dataset} ({sample_count})"
+    register_dataset(dataset, load_halu_summarization())
 
 
 proc = OrderedDict(
@@ -65,12 +80,12 @@ def main(args: Namespace) -> None:
     benchmark = args.benchmark
     kolena.initialize(verbose=True)
     if benchmark:
-        proc[benchmark]()
+        proc[benchmark](args.sample_count)
     else:
         # seed all
         for dataset, func in proc.items():
             print(f"seeding {dataset}")
-            func()
+            func(args.sample_count)
 
 
 if __name__ == "__main__":
@@ -80,5 +95,6 @@ if __name__ == "__main__":
         choices=[SQUAD2_DEV, SQUAD2_TRAIN, HALU_QA, HALU_DIALOG, HALU_SUMMARIZATION],
         help="Name of the benchmark to seed.",
     )
+    ap.add_argument("--sample-count", default=0, type=int, help="Number of samples")
 
     main(ap.parse_args())

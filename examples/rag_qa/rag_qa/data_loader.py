@@ -21,11 +21,13 @@ from rag_qa.evaluation_prompts import dialogue_instruction
 from rag_qa.evaluation_prompts import qa_instruction
 from rag_qa.evaluation_prompts import summarization_instruction
 
+from kolena.workflow.annotation import Utterance
+
 SQUAD_MODELS = ["IE-Net (ensemble)", "FPNet (ensemble)"]
 HALU_MODELS = ["gpt-3.5-turbo"]
 
 
-def load_squad2_dev() -> pd.DataFrame:
+def load_squad2_dev(sample_count: int = 0) -> pd.DataFrame:
     dev_json = pd.read_json(f"s3://{BUCKET}/SQuAD2/dev-v2.0.json")
 
     dev = pd.DataFrame(
@@ -35,9 +37,12 @@ def load_squad2_dev() -> pd.DataFrame:
                 "context": p["context"],
                 "question": qas["question"],
                 "id": qas["id"],
-                "answers": qas["answers"],
+                "answers": [Utterance(text=answer["text"], start=answer["answer_start"]) for answer in qas["answers"]],
                 "is_impossible": qas["is_impossible"],
-                "plausible_answers": qas.get("plausible_answers", None),
+                "plausible_answers": [
+                    Utterance(text=answer["text"], start=answer["answer_start"])
+                    for answer in qas.get("plausible_answers", [])
+                ],
             }
             for r in dev_json["data"]
             for p in r["paragraphs"]
@@ -49,7 +54,7 @@ def load_squad2_dev() -> pd.DataFrame:
         lambda x: "Context:\n{}\n\nQuestion\n{}".format(x["context"], x["question"]),
         axis=1,
     )
-    return dev
+    return dev[:sample_count] if sample_count else dev
 
 
 def load_squad2_dev_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
@@ -64,7 +69,7 @@ def load_squad2_dev_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     return result, {}
 
 
-def load_squad2_train() -> pd.DataFrame:
+def load_squad2_train(sample_count: int = 0) -> pd.DataFrame:
     train_json = pd.read_json(f"s3://{BUCKET}/SQuAD2/train-v2.0.json")
 
     train = pd.DataFrame(
@@ -74,12 +79,15 @@ def load_squad2_train() -> pd.DataFrame:
                 "context": p["context"],
                 "question": qas["question"],
                 "id": qas["id"],
-                "answers": qas["answers"],
+                "answers": [Utterance(text=answer["text"], start=answer["answer_start"]) for answer in qas["answers"]],
                 "is_impossible": qas["is_impossible"],
-                "plausible_answers": qas.get(
-                    "plausible_answers",
-                    None,
-                ),
+                "plausible_answers": [
+                    Utterance(text=answer["text"], start=answer["answer_start"])
+                    for answer in qas.get(
+                        "plausible_answers",
+                        [],
+                    )
+                ],
             }
             for r in train_json["data"]
             for p in r["paragraphs"]
@@ -94,12 +102,12 @@ def load_squad2_train() -> pd.DataFrame:
         ),
         axis=1,
     )
-    return train
+    return train[:sample_count] if sample_count else train
 
 
-def load_halu_qa() -> pd.DataFrame:
-    qa = pd.read_json(f"s3://{BUCKET}/HaLuEval/data/qa_data.json", lines=True)
-    return qa.rename(columns={"knowledge": "text"})
+def load_halu_qa(sample_count: int = 0) -> pd.DataFrame:
+    qa = pd.read_json(f"s3://{BUCKET}/HaLuEval/data/qa_data.json", lines=True).rename(columns={"knowledge": "text"})
+    return qa[:sample_count] if sample_count else qa
 
 
 def load_halu_qa_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
@@ -121,9 +129,11 @@ def load_halu_qa_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     )
 
 
-def load_halu_dialog() -> pd.DataFrame:
-    dialogue = pd.read_json(f"s3://{BUCKET}/HaLuEval/data/dialogue_data.json", lines=True)
-    return dialogue.rename(columns={"knowledge": "text"})
+def load_halu_dialog(sample_count: int = 0) -> pd.DataFrame:
+    dialogue = pd.read_json(f"s3://{BUCKET}/HaLuEval/data/dialogue_data.json", lines=True).rename(
+        columns={"knowledge": "text"},
+    )
+    return dialogue[:sample_count] if sample_count else dialogue
 
 
 def load_halu_dialog_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
@@ -144,9 +154,11 @@ def load_halu_dialog_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:
     return dialogue_results, dict(system_prompt=system_prompt, user_prompt=user_prompt)
 
 
-def load_halu_summarization() -> pd.DataFrame:
-    summarization = pd.read_json(f"s3://{BUCKET}/HaLuEval/data/summarization_data.json", lines=True)
-    return summarization.rename(columns={"document": "text"})
+def load_halu_summarization(sample_count: int = 0) -> pd.DataFrame:
+    summarization = pd.read_json(f"s3://{BUCKET}/HaLuEval/data/summarization_data.json", lines=True).rename(
+        columns={"document": "text"},
+    )
+    return summarization[:sample_count] if sample_count else summarization
 
 
 def load_halu_summarization_results(model: str) -> Tuple[pd.DataFrame, Dict[str, Any]]:

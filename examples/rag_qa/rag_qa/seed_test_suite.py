@@ -52,13 +52,15 @@ df_gt_columns = {
 }
 
 
-def seed_benchmark(benchmark: str, test_suite: Optional[str] = None) -> None:
-    df = data_loader[benchmark]()
+def seed_benchmark(benchmark: str, sample_count: int = 0, test_suite: Optional[str] = None) -> None:
+    df = data_loader[benchmark](sample_count)
     gt_columns = df_gt_columns[benchmark]
     ts_columns = [col for col in df.columns if col not in gt_columns]
     test_samples = df[ts_columns].to_dict(orient="records")
     ground_truths = df[gt_columns].to_dict(orient="records")
     test_suite_name = test_suite or benchmark
+    if sample_count:
+        test_suite_name = f"{test_suite_name} ({sample_count})"
 
     # Create a list of every test sample with its ground truth
     test_samples_and_ground_truths = [(Text(**ts), GroundTruth(**gt)) for ts, gt in zip(test_samples, ground_truths)]
@@ -77,11 +79,11 @@ def main(args: Namespace) -> None:
 
     benchmark = args.benchmark
     if benchmark:
-        seed_benchmark(benchmark, args.test_suite)
+        seed_benchmark(benchmark, sample_count=args.sample_count, test_suite=args.test_suite)
     else:
         # seed all datasets
         for dataset in data_loader.keys():
-            seed_benchmark(dataset)
+            seed_benchmark(dataset, sample_count=args.sample_count)
 
 
 if __name__ == "__main__":
@@ -91,5 +93,6 @@ if __name__ == "__main__":
         choices=[SQUAD2_DEV, SQUAD2_TRAIN, HALU_QA, HALU_DIALOG, HALU_SUMMARIZATION],
         help="Name of the benchmark to seed.",
     )
+    ap.add_argument("--sample-count", default=0, type=int, help="Number of samples")
     ap.add_argument("--test-suite", help="test suite name to create")
     main(ap.parse_args())
