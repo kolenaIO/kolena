@@ -539,7 +539,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
     od_single = SingleClassObjectDetectionEvaluator()
     result = od_single.test_sample_metrics_single_class(
         bbox_matches=bbox_matches,
-        thresholds=thresholds,
+        threshold=thresholds,
     )
     assert expected == result
 

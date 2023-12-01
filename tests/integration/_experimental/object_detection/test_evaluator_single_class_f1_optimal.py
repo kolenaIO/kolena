@@ -61,7 +61,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1.0,
             min_confidence_above_t=0.7,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -85,7 +85,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1.0,
             min_confidence_above_t=0.7,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -108,7 +108,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.6,
             min_confidence_above_t=0.1,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -136,7 +136,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1.0,
             min_confidence_above_t=0.8,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -157,7 +157,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=1.0,
             min_confidence_above_t=0.4,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -179,7 +179,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.9,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -200,7 +200,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=False,
             max_confidence_above_t=0.9,
             min_confidence_above_t=0.8,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -218,7 +218,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=True,
             max_confidence_above_t=None,
             min_confidence_above_t=None,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
     (
@@ -236,7 +236,7 @@ EXPECTED_COMPUTE_TEST_SAMPLE_METRICS: List[Tuple[TestSample, TestSampleMetricsSi
             ignored=True,
             max_confidence_above_t=None,
             min_confidence_above_t=None,
-            thresholds=0.1,
+            threshold=0.1,
         ),
     ),
 ]

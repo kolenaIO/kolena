@@ -60,7 +60,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     """
     Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
     F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
-    hit this cache and use the previously computed population level confidence thresholds.
+    hit this cache and use the previously computed population level confidence threshold.
     """
 
     locators_by_test_case: Dict[str, List[str]] = {}
@@ -77,7 +77,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
     def test_sample_metrics_ignored(
         self,
-        thresholds: float,
+        threshold: float,
     ) -> TestSampleMetricsSingleClass:
         return TestSampleMetricsSingleClass(
             TP=[],
@@ -92,17 +92,17 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             ignored=True,
             max_confidence_above_t=None,
             min_confidence_above_t=None,
-            thresholds=thresholds,
+            threshold=threshold,
         )
 
     def test_sample_metrics_single_class(
         self,
         bbox_matches: InferenceMatches,
-        thresholds: float,
+        threshold: float,
     ) -> TestSampleMetricsSingleClass:
-        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
-        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
-        fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= threshold]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= threshold]
+        fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < threshold]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
         return TestSampleMetricsSingleClass(
@@ -118,7 +118,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             ignored=False,
             max_confidence_above_t=max(scores) if len(scores) > 0 else None,
             min_confidence_above_t=min(scores) if len(scores) > 0 else None,
-            thresholds=thresholds,
+            threshold=threshold,
         )
 
     def compute_image_metrics(
@@ -129,9 +129,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         test_case_name: str,
     ) -> TestSampleMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
-        thresholds = self.get_confidence_thresholds(configuration)
+        threshold = self.get_confidence_threshold(configuration)
         if inference.ignored:
-            return self.test_sample_metrics_ignored(thresholds)
+            return self.test_sample_metrics_ignored(threshold)
 
         bbox_matches: InferenceMatches = match_inferences(
             ground_truth.bboxes,
@@ -142,9 +142,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         )
         self.matchings_by_test_case[configuration.display_name()][test_case_name].append(bbox_matches)
 
-        return self.test_sample_metrics_single_class(bbox_matches, thresholds)
+        return self.test_sample_metrics_single_class(bbox_matches, threshold)
 
-    def compute_and_cache_f1_optimal_thresholds(
+    def compute_and_cache_f1_optimal_threshold(
         self,
         configuration: ThresholdConfiguration,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],
@@ -166,8 +166,8 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
             for _, ground_truth, inference in inferences
             if not inference.ignored
         ]
-        optimal_thresholds = compute_optimal_f1_threshold(all_bbox_matches)
-        self.threshold_cache[configuration.display_name()] = max(configuration.min_confidence_score, optimal_thresholds)
+        optimal_threshold = compute_optimal_f1_threshold(all_bbox_matches)
+        self.threshold_cache[configuration.display_name()] = max(configuration.min_confidence_score, optimal_threshold)
 
     def compute_test_sample_metrics(
         self,
@@ -176,8 +176,8 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> List[Tuple[TestSample, TestSampleMetricsSingleClass]]:
         assert configuration is not None, "must specify configuration"
-        # compute thresholds to cache values for subsequent steps
-        self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
+        # compute threshold to cache values for subsequent steps
+        self.compute_and_cache_f1_optimal_threshold(configuration, inferences)
         return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
     def test_case_metrics_single_class(
@@ -248,10 +248,16 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
         return plots
 
-    def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float]) -> TestSuiteMetrics:
+    def test_suite_metrics(
+        self,
+        unique_locators: Set[str],
+        average_precisions: List[float],
+        threshold: float,
+    ) -> TestSuiteMetrics:
         return TestSuiteMetrics(
             n_images=len(unique_locators),
             mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+            threshold=threshold,
         )
 
     def compute_test_suite_metrics(
@@ -263,9 +269,10 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
         average_precisions = [tcm.AP for _, tcm in metrics]
-        return self.test_suite_metrics(unique_locators, average_precisions)
+        threshold = self.get_confidence_threshold(configuration)
+        return self.test_suite_metrics(unique_locators, average_precisions, threshold)
 
-    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
+    def get_confidence_threshold(self, configuration: ThresholdConfiguration) -> float:
         if configuration.threshold_strategy == "F1-Optimal":
             return self.threshold_cache[configuration.display_name()]
         else:
