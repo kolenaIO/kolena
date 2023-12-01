@@ -248,7 +248,12 @@ class SingleClassInstanceSegmentationEvaluator(Evaluator):
 
         return plots
 
-    def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float], threshold: float) -> TestSuiteMetrics:
+    def test_suite_metrics(
+        self,
+        unique_locators: Set[str],
+        average_precisions: List[float],
+        threshold: float,
+    ) -> TestSuiteMetrics:
         return TestSuiteMetrics(
             n_images=len(unique_locators),
             mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
