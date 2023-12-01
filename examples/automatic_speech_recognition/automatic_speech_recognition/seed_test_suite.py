@@ -17,11 +17,11 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from automatic_speech_recognition.workflow import GroundTruth
+from automatic_speech_recognition.workflow import TestCase
+from automatic_speech_recognition.workflow import TestSample
+from automatic_speech_recognition.workflow import TestSuite
 from tqdm import tqdm
-from workflow import GroundTruth
-from workflow import TestCase
-from workflow import TestSample
-from workflow import TestSuite
 
 import kolena
 from kolena.workflow.annotation import ClassificationLabel

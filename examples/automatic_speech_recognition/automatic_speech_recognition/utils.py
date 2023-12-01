@@ -17,9 +17,9 @@ from typing import Any
 from typing import Dict
 from typing import Union
 
+from automatic_speech_recognition.workflow import GroundTruth
+from automatic_speech_recognition.workflow import Inference
 from numwords_to_nums.numwords_to_nums import NumWordsToNum
-from workflow import GroundTruth
-from workflow import Inference
 
 
 def generate_diff_word_level(reference: str, candidate: str) -> Dict[str, Any]:

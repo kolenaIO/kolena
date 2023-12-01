@@ -17,12 +17,12 @@ from typing import Callable
 from typing import Dict
 
 import pandas as pd
+from speaker_diarization.utils import calculate_tertiles
+from speaker_diarization.workflow import GroundTruth
+from speaker_diarization.workflow import TestCase
+from speaker_diarization.workflow import TestSample
+from speaker_diarization.workflow import TestSuite
 from tqdm import tqdm
-from utils import calculate_tertiles
-from workflow import GroundTruth
-from workflow import TestCase
-from workflow import TestSample
-from workflow import TestSuite
 
 import kolena
 from kolena.workflow.annotation import LabeledTimeSegment
