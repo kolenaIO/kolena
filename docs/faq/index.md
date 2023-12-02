@@ -77,9 +77,9 @@ If you don't see your question here, please reach out to us on Slack or at
     entries to the **Authorized Users** table.
 
     There are three levels of user roles:
-        Reader: can view all content for an organization.
-        Member: can view, create, and edit content for an organization.
-        Admin: can view, create, edit, and delete content for an organization and can manage users.
+        **Reader**: can view all content for an organization.
+        **Member**: can view, create, and edit content for an organization.
+        **Admin**: can view, create, edit, and delete content for an organization and can manage users.
 
     Note that this page is only visible for organization administrators.
 
