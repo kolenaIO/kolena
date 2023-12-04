@@ -38,7 +38,7 @@ from kolena.workflow.annotation import LabeledBoundingBox
 
 
 def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
-    s3 = s3fs.S3FileSystem()
+    s3 = s3fs.S3FileSystem(anon=True)
 
     try:
         with s3.open(S3_ANNOTATION_FILE_PATH, "r") as file:
