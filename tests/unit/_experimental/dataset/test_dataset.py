@@ -23,6 +23,7 @@ from kolena._experimental.dataset._dataset import _infer_datatype
 from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
+from kolena._experimental.dataset._dataset import add_datatype
 from kolena._experimental.dataset._dataset import DatapointType
 from kolena._experimental.dataset._evaluation import _align_datapoints_results
 from kolena._experimental.dataset._evaluation import _validate_data
@@ -50,6 +51,43 @@ from kolena.workflow.annotation import ScoredClassificationLabel
 )
 def test__infer_datatype_value(uri: str, expected: str) -> None:
     assert _infer_datatype_value(uri) == expected
+
+
+def test__add_datatype() -> None:
+    df = pd.DataFrame(
+        dict(
+            locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+        ),
+    )
+    add_datatype(df)
+    assert df[DATA_TYPE_FIELD].equals(
+        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
+    )
+
+
+def test__add_datatype__composite() -> None:
+    composite_dataset = pd.DataFrame(
+        {
+            "a.text": [
+                "A plane is taking off.",
+                "A man is playing a large flute.",
+                "A man is spreading shredded cheese on a pizza.",
+            ],
+            "b.text": [
+                "An air plane is taking off.",
+                "A man is playing a flute.",
+                "A man is spreading shredded cheese on an uncooked pizza.",
+            ],
+            "similarity": [5.0, 3.799999952316284, 3.799999952316284],
+        },
+    )
+    add_datatype(composite_dataset)
+    for data_type in composite_dataset[DATA_TYPE_FIELD]:
+        assert data_type == DatapointType.COMPOSITE
+    for data_type in composite_dataset["a." + DATA_TYPE_FIELD]:
+        assert data_type == DatapointType.TEXT
+    for data_type in composite_dataset["b." + DATA_TYPE_FIELD]:
+        assert data_type == DatapointType.TEXT
 
 
 def test__infer_datatype() -> None:

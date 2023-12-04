@@ -86,7 +86,11 @@ def _infer_datatype_value(x: str) -> str:
 
 def add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
-    prefixes = {column.rsplit(sep=".", maxsplit=1)[0] + "." for column in df.columns.values if "." in column}
+    prefixes = {
+        column.rsplit(sep=".", maxsplit=1)[0] + "."
+        for column in df.columns.values
+        if isinstance(column, str) and "." in column
+    }
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
         for prefix in prefixes:
