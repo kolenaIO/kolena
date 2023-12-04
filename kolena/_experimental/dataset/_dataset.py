@@ -44,6 +44,7 @@ FIELD_TEXT = "text"
 
 class DatapointType(str, Enum):
     AUDIO = "DATAPOINT/AUDIO"
+    COMPOSITE = "DATAPOINT/COMPOSITE"
     DOCUMENT = "DATAPOINT/DOCUMENT"
     IMAGE = "DATAPOINT/IMAGE"
     POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
@@ -83,10 +84,21 @@ def _infer_datatype_value(x: str) -> str:
     return DatapointType.TABULAR.value
 
 
-def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
-    if FIELD_LOCATOR in df.columns:
-        return df[FIELD_LOCATOR].apply(_infer_datatype_value)
-    elif FIELD_TEXT in df.columns:
+def add_datatype(df: pd.DataFrame) -> None:
+    """Adds `data_type` column(s) to input DataFrame."""
+    prefixes = {column.rsplit(sep=".", maxsplit=1)[0] + "." for column in df.columns.values if "." in column}
+    if prefixes:
+        df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
+        for prefix in prefixes:
+            df[prefix + DATA_TYPE_FIELD] = _infer_datatype(df.filter(regex=f"^{prefix}", axis=1), prefix=prefix)
+    else:
+        df[DATA_TYPE_FIELD] = _infer_datatype(df)
+
+
+def _infer_datatype(df: pd.DataFrame, prefix: str = "") -> Union[pd.DataFrame, str]:
+    if prefix + FIELD_LOCATOR in df.columns:
+        return df[prefix + FIELD_LOCATOR].apply(_infer_datatype_value)
+    elif prefix + FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
     return DatapointType.TABULAR.value
@@ -95,7 +107,7 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
     if column == COL_DATAPOINT:
-        result[DATA_TYPE_FIELD] = _infer_datatype(df)
+        add_datatype(result)
     result[column] = result.to_dict("records")
     result[column] = result[column].apply(lambda x: json.dumps(x))
 
