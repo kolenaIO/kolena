@@ -90,11 +90,11 @@ Additional logging can be configured by specifying `initialize(..., verbose=True
 
 `kolena` is compatible with all active Python versions.
 
-| :fontawesome-brands-python: Python Version                        | :kolena-logo: Compatible `kolena` Versions   |
-| ----------------------------------------------------------------- |-------------------------------------------------|
-| 3.11                                                              | ≥0.69                                           |
-| 3.10                                                              | _All Versions_                                  |
-| 3.9                                                               | _All Versions_                                  |
-| 3.8                                                               | _All Versions_                                  |
-| 3.7                                                               | _All Versions_                                  |
-| 3.6 (EOL: [December 2021](https://devguide.python.org/versions/)) | ≤0.46                                           |
+| :fontawesome-brands-python: Python Version                        | :kolena-logo: Compatible `kolena` Versions |
+|-------------------------------------------------------------------|--------------------------------------------|
+| 3.11                                                              | ≥0.69                                      |
+| 3.10                                                              | _All Versions_                             |
+| 3.9                                                               | _All Versions_                             |
+| 3.8                                                               | _All Versions_                             |
+| 3.7 (EOL: [June 2023](https://devguide.python.org/versions/))     | ≤0.98                                      |
+| 3.6 (EOL: [December 2021](https://devguide.python.org/versions/)) | ≤0.46                                      |
