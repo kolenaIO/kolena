@@ -248,10 +248,16 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
         return plots
 
-    def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float]) -> TestSuiteMetrics:
+    def test_suite_metrics(
+        self,
+        unique_locators: Set[str],
+        average_precisions: List[float],
+        threshold: Optional[float] = None,
+    ) -> TestSuiteMetrics:
         return TestSuiteMetrics(
             n_images=len(unique_locators),
             mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+            threshold=threshold,
         )
 
     def compute_test_suite_metrics(
@@ -263,7 +269,8 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
         average_precisions = [tcm.AP for _, tcm in metrics]
-        return self.test_suite_metrics(unique_locators, average_precisions)
+        threshold = self.get_confidence_thresholds(configuration)
+        return self.test_suite_metrics(unique_locators, average_precisions, threshold)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
         if configuration.threshold_strategy == "F1-Optimal":

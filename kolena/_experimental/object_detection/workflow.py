@@ -34,8 +34,10 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
+from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
+from kolena.workflow.annotation import ScoredLabeledPolygon
 
 
 @dataclass(frozen=True)
@@ -50,15 +52,17 @@ class TestSample(Image):
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for the pre-built 2D Object Detection workflow."""
 
-    bboxes: List[LabeledBoundingBox]
+    bboxes: List[Union[LabeledBoundingBox, LabeledPolygon]]
     """
-    The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es associated with an image.
+    The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es or
+    [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon]s associated with an image.
     """
 
-    ignored_bboxes: List[LabeledBoundingBox] = dataclasses.field(default_factory=list)
+    ignored_bboxes: List[Union[LabeledBoundingBox, LabeledPolygon]] = dataclasses.field(default_factory=list)
     """
-    The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es to be ignored in evaluation
-    associated with an image.
+    The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es or
+    [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon]s to be ignored in evaluation associated with an
+    image.
     """
 
     n_bboxes: int = dataclasses.field(default_factory=lambda: 0)
@@ -71,11 +75,12 @@ class GroundTruth(BaseGroundTruth):
 class Inference(BaseInference):
     """Inference type for the pre-built 2D Object Detection workflow."""
 
-    bboxes: List[ScoredLabeledBoundingBox]
+    bboxes: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
     """
-    The inference [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox]es associated with
-    an image.
+    The inference [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox]es or
+    [`ScoredLabeledPolygon`][kolena.workflow.annotation.ScoredLabeledPolygon]s associated with an image.
     """
+
     ignored: bool = False
     """
     Whether the image (and its associated inference `bboxes`) should be ignored in evaluating the results of the model.
@@ -92,9 +97,9 @@ _, TestCase, TestSuite, Model = define_workflow(
 
 @dataclass(frozen=True)
 class TestSampleMetricsSingleClass(MetricsTestSample):
-    TP: List[ScoredLabeledBoundingBox]
-    FP: List[ScoredLabeledBoundingBox]
-    FN: List[LabeledBoundingBox]
+    TP: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
+    FP: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
+    FN: List[Union[LabeledBoundingBox, LabeledPolygon]]
 
     count_TP: int
     count_FP: int
@@ -126,10 +131,10 @@ class TestCaseMetricsSingleClass(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
-    TP: List[ScoredLabeledBoundingBox]
-    FP: List[ScoredLabeledBoundingBox]
-    FN: List[LabeledBoundingBox]
-    Confused: List[ScoredLabeledBoundingBox]
+    TP: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
+    FP: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
+    FN: List[Union[LabeledBoundingBox, LabeledPolygon]]
+    Confused: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
 
     count_TP: int
     count_FP: int
@@ -185,6 +190,7 @@ class TestCaseMetrics(MetricsTestCase):
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     mean_AP: float
+    threshold: Optional[float] = None
 
 
 @dataclass(frozen=True)
