@@ -953,7 +953,7 @@ def test__object_detection__single_class__test_case_metrics_single_class(
         ),
     ],
 )
-def test__object_detection__multiclass__object_matches_and_count_for_one_label(
+def test__object_detection__multiclass__bbox_matches_and_count_for_one_label(
     test_name: str,
     matchings: List[MulticlassInferenceMatches],
     label: str,
