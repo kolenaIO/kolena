@@ -20,3 +20,12 @@ arbitrary ML problem.
   Binary Classification on image data from [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
 - [Semantic Textual Similarity](./semantic_textual_similarity): semantic textual similarity using the
   [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
+- [Question Answering](./question_answering): question answering using the
+  [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
+- [Semantic Segmentation](./semantic_segmentation): semantic segmentation using the
+  [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset
+- [Automatic Speech Recognition](./automatic_speech_recognition/): automatic speech recognition using the
+  [LibriSpeech dataset](https://www.openslr.org/12) dataset
+- [Speaker Diarization](./speaker_diarization/): speaker diarization using the
+  [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset
+- [Face Recognition 1:1](./face_recognition_11/): End-to-end face recognition one-to-one using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset

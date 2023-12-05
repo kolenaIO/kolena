@@ -73,7 +73,7 @@ from .workflow import Model, TestSuite
 
 
 def main() -> None:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     model = Model(os.environ["KOLENA_MODEL_NAME"])
     test_suite = TestSuite.load(

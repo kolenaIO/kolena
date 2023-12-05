@@ -1,8 +1,3 @@
----
-search:
-  exclude: true
----
-
 # Average Precision
 
 Average precision (AP) summarizes a [precision-recall (PR) curve](./pr-curve.md) into a single value representing the average of all
@@ -27,8 +22,8 @@ metric used across popular object detection benchmarks such as [PASCAL VOC 2012]
 
 ## Implementation Details
 
-The general definition of AP is finding the approximation of the area under the PR curve. The actual area under the
-curve, where $p(r)$ is the precision at recall $r$, can be defined:
+The general definition of AP is finding the approximation of the area under the [PR curve](./pr-curve.md). The actual
+area under the curve, where $p(r)$ is the precision at recall $r$, can be defined:
 
 $$
 \text{AP} = \int_{0}^{1} p(r)dr
@@ -57,10 +52,10 @@ slightly differently for both.
 
 Let’s consider the following simple example:
 
-![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
-![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
-
-![object detection example](../assets/images/metrics-ap-od-example.png)
+![example legends](../assets/images/metrics-bbox-legend-gt-light.svg#only-light)
+![example legends](../assets/images/metrics-bbox-legend-gt-dark.svg#only-dark)
+![object detection example](../assets/images/metrics-ap-od-example-light.svg#only-light)
+![object detection example](../assets/images/metrics-ap-od-example-dark.svg#only-dark)
 
 The above three images show a total of four ground truth objects, all of which are matched with an inference bounding box
 based on the [Intersection over Union (IoU)](./iou.md) scores. Let’s look at each inference bounding box and sort them
@@ -69,15 +64,15 @@ by their confidence score in descending order.
 | Inference | <nobr>Confidence ↓</nobr> | TP/FP | cumsum(TP) | cumsum(FP) | Precision | Recall |
 | --- | --- | --- | --- | --- | --- | --- |
 | H | 0.99 | TP | 1 | 0 | 1.0 | 0.2 |
-| A | 0.88 | TP | 2 | 0 | 1.0 | 0.4 |
-| D | 0.72 | FP | 2 | 1 | 0.667 | 0.4 |
-| B | 0.70 | FP | 2 | 2 | 0.5 | 0.4 |
-| G | 0.54 | FP | 2 | 3 | 0.4 | 0.4 |
-| E | 0.54 | TP | 3 | 3 | 0.5 | 0.6 |
-| I | 0.38 | FP | 4 | 3 | 0.571 | 0.8 |
+| B | 0.88 | TP | 2 | 0 | 1.0 | 0.4 |
+| E | 0.72 | FP | 2 | 1 | 0.667 | 0.4 |
+| A | 0.70 | FP | 2 | 2 | 0.5 | 0.4 |
+| J | 0.54 | FP | 2 | 3 | 0.4 | 0.4 |
+| D | 0.54 | TP | 3 | 3 | 0.5 | 0.6 |
+| I | 0.38 | TP | 4 | 3 | 0.571 | 0.8 |
 | C | 0.2 | FP | 4 | 4 | 0.5 | 0.8 |
 | F | 0.2 | FP | 4 | 5 | 0.444 | 0.8 |
-| J | 0.1 | TP | 5 | 5 | 0.5 | 1.0 |
+| G | 0.1 | TP | 5 | 5 | 0.5 | 1.0 |
 
 !!! info inline end "Guides: TP/FP Counts in Object Detection"
 
@@ -98,7 +93,8 @@ greater than or equal to the threshold) count as positive inferences.
 
 Now that we have the precision and recall defined at each threshold, let’s plot the PR curve:
 
-![object detection example - PR curve](../assets/images/metrics-ap-od-pr.png)
+![object detection example - PR curve](../assets/images/metrics-ap-od-pr-light.svg#only-light)
+![object detection example - PR curve](../assets/images/metrics-ap-od-pr-dark.svg#only-dark)
 
 Notice the zigzag pattern, often referred to as “**wiggles**” — the precision goes down with FPs and goes up again with TPs as the
 recall increases. It is a common practice to first smooth out the wiggles before calculating the AP metric by taking the
@@ -111,7 +107,8 @@ $$
 
 The PR curve is re-plotted using the interpolated precisions (see orange line in the plot below).
 
-![object detection example - PR curve with interpolation](../assets/images/metrics-ap-od-pr-interpolation.png)
+![object detection example - PR curve with interpolation](../assets/images/metrics-ap-od-pr-interpolation-light.svg#only-light)
+![object detection example - PR curve with interpolation](../assets/images/metrics-ap-od-pr-interpolation-dark.svg#only-dark)
 
 <div class="grid" markdown>
 The precisions (y-values) of the smoothed out curve, the orange line on the plot above, are
@@ -152,7 +149,8 @@ The 11-point interpolated AP was used in the PASCAL VOC until a new AP calculati
 now, which was adopted in 2010. This interpolation uses the average of the maximum precision values for 11 linearly spaced
 recall values from 0.0 to 1.0:
 
-![object detection example — 11 interpolation](../assets/images/metrics-ap-od-pr-11.png)
+![object detection example — 11 interpolation](../assets/images/metrics-ap-od-pr-11-light.svg#only-light)
+![object detection example — 11 interpolation](../assets/images/metrics-ap-od-pr-11-dark.svg#only-dark)
 
 When the precisions at certain recall values become extremely small, they are exempted from the AP calculation.
 The intention of using this 11-point interpolation, according to the
@@ -190,7 +188,8 @@ where
 Let’s consider the following example of retrieving similar images to the query from a database of images with different
 shapes and colors:
 
-![information retrieval example](../assets/images/metrics-ap-ir-example.png)
+![information retrieval example](../assets/images/metrics-ap-ir-example-light.svg#only-light)
+![information retrieval example](../assets/images/metrics-ap-ir-example-dark.svg#only-dark)
 
 The retrieved images are the complete list of images from the database that are ranked by their similarity scores,
 which are predicted from the model, where the left-most image is the most similar to the query image.
@@ -228,7 +227,8 @@ limitations. Let's make sure to understand these limitations before using the me
 
     Consider the following three plots:
 
-    ![limitation #2 example](../assets/images/metrics-ap-limitation2.png)
+    ![limitation #2 example](../assets/images/metrics-ap-limitation2-light.svg#only-light)
+    ![limitation #2 example](../assets/images/metrics-ap-limitation2-dark.svg#only-dark)
 
     These three plots show very different characteristic, but their APs are exactly the same for all of them.
     Thus, relying solely on the AP metric is not enough. We recommend plotting the PR curve along with the AP metric
@@ -253,7 +253,8 @@ limitations. Let's make sure to understand these limitations before using the me
     scenario, the curve will be missing the tail part, but because the metric considers the entire recall domain, any
     curves that end early will result in a lower average precision score.
 
-    ![limitation #5 example](../assets/images/metrics-ap-limitation5.png)
+    ![limitation #5 example](../assets/images/metrics-ap-limitation5-light.svg#only-light)
+    ![limitation #5 example](../assets/images/metrics-ap-limitation5-dark.svg#only-dark)
 
     The plot above shows PR curves of two models: one extending to the recall value of `1.0` and the other one extending
     only to `0.6`. Since a large portion of the area under the curve corresponds to the tail of the curve, model 2

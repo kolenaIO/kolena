@@ -4,7 +4,7 @@ icon: simple/googlecloud
 
 # Connecting Cloud Storage: <nobr>:simple-googlecloud: Google Cloud Storage</nobr>
 
-Kolena connects with [Google Cloud Storage S3](https://cloud.google.com/storage) to load files (e.g. images, videos,
+Kolena connects with [Google Cloud Storage](https://cloud.google.com/storage) to load files (e.g. images, videos,
 documents) directly into your browser for visualization. In this tutorial, we'll learn how to establish an integration
 between Kolena and Google Cloud Storage.
 

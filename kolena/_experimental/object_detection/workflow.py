@@ -35,7 +35,7 @@ from kolena.workflow import MetricsTestSample
 from kolena.workflow import MetricsTestSuite
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledPolygon
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledPolygon
 
@@ -149,7 +149,7 @@ class TestSampleMetrics(MetricsTestSample):
 
     max_confidence_above_t: Optional[float]
     min_confidence_above_t: Optional[float]
-    thresholds: List[ScoredClassificationLabel]
+    thresholds: List[ScoredLabel]
 
 
 @dataclass(frozen=True)

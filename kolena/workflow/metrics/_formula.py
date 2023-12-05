@@ -57,7 +57,7 @@ def precision(true_positives: int, false_positives: int) -> float:
 
 def recall(true_positives: int, false_negatives: int) -> float:
     """
-    Recall represents the proportion of ground truths that were successfully predicted.
+    Recall (TPR or sensitivity) represents the proportion of ground truths that were successfully predicted.
 
     $$
     \\text{Recall} = \\frac{\\text{# True Positives}}{\\text{# True Positives} + \\text{# False Negatives}}
@@ -99,3 +99,42 @@ def f1_score(true_positives: int, false_positives: int, false_negatives: int) ->
     rec = recall(true_positives, false_negatives)
     denominator = prec + rec
     return 2 * prec * rec / denominator if denominator > 0 else 0
+
+
+def fpr(true_negatives: int, false_positives: int) -> float:
+    """
+    False positive rate represents the proportion of negative ground truths that were incorrectly predicted as positive
+    by the model.
+
+    $$
+    \\text{FPR} = \\frac{\\text{# False Positives}}{\\text{# False Positives} + \\text{# True Negatives}}
+    $$
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [False Positive Rate ↗](../../metrics/fpr.md)
+    </div>
+
+    :param true_negatives: Number of true negatives.
+    :param false_positives: Number of false positives.
+    """
+    denominator = true_negatives + false_positives
+    return false_positives / denominator if denominator > 0 else 0
+
+
+def specificity(true_negatives: int, false_positives: int) -> float:
+    """
+    Specificity (TNR) represents the proportion of negative ground truths that were correctly predicted.
+
+    $$
+    \\text{Specificity} = \\frac{\\text{# True Negatives}}{\\text{# True Negatives} + \\text{# False Positives}}
+    $$
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Specificity ↗](../../metrics/specificity.md)
+    </div>
+
+    :param true_negatives: Number of true negatives.
+    :param false_positives: Number of false positives.
+    """
+    denominator = true_negatives + false_positives
+    return true_negatives / denominator if denominator > 0 else 0

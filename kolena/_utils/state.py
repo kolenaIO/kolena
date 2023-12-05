@@ -33,10 +33,19 @@ from kolena.errors import InvalidTokenError
 from kolena.errors import UnauthenticatedError
 from kolena.errors import UninitializedError
 
-API_VERSION = "v1"
+API_V1 = "v1"
+API_V2 = "v2"
+DEFAULT_API_VERSION = API_V1
 API_URL = "https://api.kolena.io"
 API_URL_ENV_VAR = "KOLENA_API_URL"
 CLIENT_STATE = contextvars.ContextVar("client_state")
+
+
+class NoOpAuth(requests.auth.AuthBase):
+    """Provide no-op Auth to disable requests using .netrc"""
+
+    def __call__(self, r):
+        return r
 
 
 class _ClientState:
@@ -49,6 +58,7 @@ class _ClientState:
         verbose: bool = False,
         telemetry: bool = False,
         proxies: Optional[Dict[str, str]] = None,
+        additional_request_headers: Optional[Dict[str, Any]] = None,
     ):
         self.base_url: Optional[str] = None
         self.api_token: Optional[str] = None
@@ -57,6 +67,7 @@ class _ClientState:
         self.verbose: bool = False
         self.telemetry: bool = False
         self.proxies: Dict[str, str] = {}
+        self.additional_request_headers: Optional[Dict[str, Any]] = None
         self.update(
             base_url=base_url,
             api_token=api_token,
@@ -65,6 +76,7 @@ class _ClientState:
             verbose=verbose,
             telemetry=telemetry,
             proxies=proxies,
+            additional_request_headers=additional_request_headers,
         )
 
     def update(
@@ -76,6 +88,7 @@ class _ClientState:
         verbose: bool = False,
         telemetry: bool = False,
         proxies: Optional[Dict[str, str]] = None,
+        additional_request_headers: Optional[Dict[str, Any]] = None,
     ) -> None:
         self.base_url = base_url or self.base_url
         self.api_token = api_token or self.api_token
@@ -83,7 +96,8 @@ class _ClientState:
         self.tenant = tenant or self.tenant
         self.verbose = verbose
         self.telemetry = telemetry
-        self.proxies = proxies or {}
+        self.proxies = proxies or self.proxies
+        self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
     def assert_initialized(self) -> None:
         if self.base_url is None:
@@ -100,6 +114,8 @@ class _ClientState:
         self.tenant = None
         self.verbose = False
         self.telemetry = False
+        self.additional_request_headers = None
+        self.proxies = {}
 
 
 def _get_api_base_url() -> str:
@@ -133,8 +149,8 @@ def kolena_initialized(func: Callable) -> Callable:
     return wrapper
 
 
-def get_endpoint_with_baseurl(base_url: str, endpoint_path: str) -> str:
-    return f"{base_url}/{API_VERSION}/{endpoint_path.lstrip('/')}"
+def get_endpoint_with_baseurl(base_url: str, endpoint_path: str, api_version: int = DEFAULT_API_VERSION) -> str:
+    return f"{base_url}/{api_version}/{endpoint_path.lstrip('/')}"
 
 
 def get_token(
@@ -146,6 +162,7 @@ def get_token(
     request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
     r = requests.put(
         get_endpoint_with_baseurl(base_url, "token/login"),
+        auth=NoOpAuth(),
         json=dataclasses.asdict(request),
         proxies=proxies,
     )
@@ -159,7 +176,12 @@ def get_token(
 
 
 @contextlib.contextmanager
-def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[_ClientState]:
+def kolena_session(
+    api_token: str,
+    base_url: Optional[str] = None,
+    additional_request_headers: Optional[Dict[str, Any]] = None,
+    proxies: Optional[Dict[str, str]] = None,
+) -> Iterator[_ClientState]:
     base_url = base_url or _get_api_base_url()
     init_response = get_token(api_token, base_url)
     client_state = _ClientState(
@@ -167,6 +189,8 @@ def kolena_session(api_token: str, base_url: Optional[str] = None) -> Iterator[_
         api_token=api_token,
         jwt_token=init_response.access_token,
         tenant=init_response.tenant,
+        additional_request_headers=additional_request_headers,
+        proxies=proxies,
     )
     token = CLIENT_STATE.set(client_state)
 

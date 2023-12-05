@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
@@ -20,11 +19,11 @@ from typing import List
 from typing import Tuple
 
 import pandas as pd
+from question_answering.utils import normalize_string
 from question_answering.workflow import GroundTruth
 from question_answering.workflow import TestCase
 from question_answering.workflow import TestSample
 from question_answering.workflow import TestSuite
-from utils import normalize_string
 
 import kolena
 from kolena.workflow.annotation import ClassificationLabel
@@ -91,13 +90,13 @@ def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
 
     df_metadata = pd.read_csv(args.dataset_csv)
     context_dict = defaultdict(list)
 
     # Store the conversation context for each story (data_id)
-    for index, row in df_metadata.iterrows():
+    for _, row in df_metadata.iterrows():
         data_id = row["data_id"]
         question = row["question"]
         answer = row["metadata_answer"]

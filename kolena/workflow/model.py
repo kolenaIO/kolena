@@ -20,12 +20,14 @@ from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
+from typing import Set
 from typing import Tuple
 from typing import TypeVar
 
 from pydantic import validate_arguments
 
 from kolena._api.v1.core import Model as CoreAPI
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import Model as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -35,6 +37,7 @@ from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import telemetry
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -46,8 +49,8 @@ from kolena.workflow import TestCase
 from kolena.workflow import TestSample as BaseTestSample
 from kolena.workflow._datatypes import TestSampleDataFrame
 from kolena.workflow._validators import assert_workflows_match
+from kolena.workflow.test_sample import _METADATA_KEY
 from kolena.workflow.workflow import Workflow
-
 
 TestSample = TypeVar("TestSample", bound=BaseTestSample)
 
@@ -73,6 +76,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
     metadata: Dict[str, Any]
     """Unstructured metadata associated with the model."""
 
+    tags: Set[str]
+    """Tags associated with this model."""
+
     infer: Optional[Callable[[TestSample], Inference]]
     """
     Function transforming a [`TestSample`][kolena.workflow.TestSample] for a workflow into an
@@ -94,6 +100,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         name: str,
         infer: Optional[Callable[[TestSample], Inference]] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[Set[str]] = None,
     ):
         if type(self) == Model:
             raise Exception("<Model> must be subclassed.")
@@ -102,17 +109,21 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             loaded = self.load(name, infer)
             if len(loaded.metadata.keys()) > 0 and loaded.metadata != metadata:
                 log.warn(f"mismatch in model metadata, using loaded metadata (loaded: {loaded.metadata})")
+            if len(loaded.tags) > 0 and loaded.tags != tags:
+                log.warn(f"mismatch in model tags, using loaded tags (loaded: {loaded.tags})")
         except NotFoundError:
-            loaded = self.create(name, infer, metadata)
+            loaded = self.create(name, infer, metadata, tags)
 
         self._populate_from_other(loaded)
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.CREATE_MODEL)
     def create(
         cls,
         name: str,
         infer: Optional[Callable[[TestSample], Inference]] = None,
         metadata: Optional[Dict[str, Any]] = None,
+        tags: Optional[Set[str]] = None,
     ) -> "Model":
         """
         Create a new model.
@@ -120,18 +131,20 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         :param name: The unique name of the new model to create.
         :param infer: Optional inference function for this model.
         :param metadata: Optional unstructured metadata to store with this model.
+        :param tags: Optional set of tags to associate with this model.
         :return: The newly created model.
         """
         validate_name(name, FieldName.MODEL_NAME)
         metadata = metadata or {}
-        request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name)
+        request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name, tags=tags)
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        obj = cls._from_data(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
         log.info(f"created model '{name}' ({get_model_url(obj._id)})")
         return obj
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_MODEL)
     def load(cls, name: str, infer: Optional[Callable[[TestSample], Inference]] = None) -> "Model":
         """
         Load an existing model.
@@ -142,9 +155,34 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         request = CoreAPI.LoadByNameRequest(name=name)
         res = krequests.put(endpoint_path=API.Path.LOAD.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
-        obj = cls._from_data_with_infer(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
+        obj = cls._from_data(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
         log.info(f"loaded model '{name}' ({get_model_url(obj._id)})")
         return obj
+
+    @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_ALL_MODEL)
+    def load_all(
+        cls,
+        *,
+        tags: Optional[Set[str]] = None,
+    ) -> List["Model"]:
+        """
+        Load all models with this workflow.
+
+        :param tags: Optionally specify a set of tags to apply as a filter. The loaded models will include only
+            models with tags matching each of these specified tags, i.e.
+            `model.tags.intersection(tags) == tags`.
+        :return: The models within this workflow, filtered by tags when specified.
+        """
+        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
+        res = krequests.put(endpoint_path=API.Path.LOAD_ALL.value, data=json.dumps(dataclasses.asdict(request)))
+        krequests.raise_for_status(res)
+        data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
+        models = [cls._from_data(model) for model in data.models]
+        tags_quoted = {f"'{t}'" for t in tags or {}}
+        tags_message = f" with tag{'s' if len(tags) > 1 else ''} {', '.join(tags_quoted)}" if tags else ""
+        log.info(f"loaded {len(models)} '{cls.workflow.name}' models{tags_message}")
+        return models
 
     @validate_arguments(config=ValidatorConfig)
     def load_inferences(self, test_case: TestCase) -> List[Tuple[TestSample, GroundTruth, Inference]]:
@@ -176,7 +214,9 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSampleDataFrame,
         ):
             for record in df_batch.itertuples():
-                test_sample = self.workflow.test_sample_type._from_dict(record.test_sample)
+                test_sample = self.workflow.test_sample_type._from_dict(
+                    {**record.test_sample, _METADATA_KEY: record.test_sample_metadata},
+                )
                 ground_truth = self.workflow.ground_truth_type._from_dict(record.ground_truth)
                 inference = self.workflow.inference_type._from_dict(record.inference)
                 yield test_sample, ground_truth, inference
@@ -187,11 +227,12 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             self._id = other._id
             self.name = other.name
             self.metadata = other.metadata
+            self.tags = other.tags
             self.workflow = other.workflow
             self.infer = other.infer
 
     @classmethod
-    def _from_data_with_infer(
+    def _from_data(
         cls,
         data: CoreAPI.EntityData,
         infer: Optional[Callable[[TestSample], Inference]] = None,
@@ -201,6 +242,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj._id = data.id
         obj.name = data.name
         obj.metadata = data.metadata
+        obj.tags = data.tags
         obj.infer = infer
         obj._freeze()
         return obj

@@ -24,12 +24,14 @@ from typing import Optional
 from deprecation import deprecated
 from pydantic import validate_arguments
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.fr import TestSuite as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -121,6 +123,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         self._data = new_data
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.CREATE_TEST_SUITE)
     def create(
         cls,
         name: str,
@@ -148,6 +151,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
         return obj
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_TEST_SUITE)
     def load(cls, name: str, version: Optional[int] = None) -> "TestSuite":
         """
         Load an existing test suite with the provided name.
@@ -327,6 +331,7 @@ class TestSuite(ABC, Frozen, WithTelemetry):
             self._edited = True
 
     @contextmanager
+    @with_event(event_name=EventAPI.Event.EDIT_TEST_SUITE)
     def edit(self, reset: bool = False) -> Iterator[Editor]:
         """
         Context-managed way to perform many modification options on a test suite and commit the results when the context

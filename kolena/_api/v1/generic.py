@@ -26,6 +26,7 @@ class Model:
     class Path(str, Enum):
         CREATE = "/generic/model/create"
         LOAD = "/generic/model/load"
+        LOAD_ALL = "/generic/model/load-all"
         DELETE = "/generic/model/delete"
         LOAD_INFERENCES = "/generic/model/load-inferences"
 

@@ -61,7 +61,7 @@ Certain metrics computation functionality depends on additional packages like
 
 ## Initialization
 
-Once you have `kolena` installed, initialize a session with `kolena.initialize(token)`.
+Once you have `kolena` installed, initialize a session with `kolena.initialize(api_token=token)`.
 
 From the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page, generate an API token and set
 the `KOLENA_TOKEN` environment variable:
@@ -73,10 +73,9 @@ export KOLENA_TOKEN="********"
 With the `KOLENA_TOKEN` environment variable set, initialize a client session:
 
 ```python
-import os
 import kolena
 
-kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+kolena.initialize(verbose=True)
 ```
 
 By default, sessions have static scope and persist until the interpreter is exited.
@@ -91,11 +90,11 @@ Additional logging can be configured by specifying `initialize(..., verbose=True
 
 `kolena` is compatible with all active Python versions.
 
-| :fontawesome-brands-python: Python Version                        | Compatible `kolena` Versions |
-| ----------------------------------------------------------------- | ---------------------------- |
-| 3.11                                                              | ≥0.69                        |
-| 3.10                                                              | _All Versions_               |
-| 3.9                                                               | _All Versions_               |
-| 3.8                                                               | _All Versions_               |
-| 3.7                                                               | _All Versions_               |
-| 3.6 (EOL: [December 2021](https://devguide.python.org/versions/)) | ≤0.46                        |
+| :fontawesome-brands-python: Python Version                        | :kolena-logo: Compatible `kolena` Versions   |
+| ----------------------------------------------------------------- |-------------------------------------------------|
+| 3.11                                                              | ≥0.69                                           |
+| 3.10                                                              | _All Versions_                                  |
+| 3.9                                                               | _All Versions_                                  |
+| 3.8                                                               | _All Versions_                                  |
+| 3.7                                                               | _All Versions_                                  |
+| 3.6 (EOL: [December 2021](https://devguide.python.org/versions/)) | ≤0.46                                           |

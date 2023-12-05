@@ -25,21 +25,37 @@ parameters:
   example:
     type: boolean
     default: false
+  token_count:
+    type: integer
+    default: 4
+
+executors:
+  python:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9.18"
+      resource-class:
+        type: string
+        default: "small"
+    docker:
+      - image: cimg/python:<< parameters.python-version >>
+    resource_class: << parameters.resource-class >>
+    environment:
+      POETRY_CACHE_DIR: /home/circleci/project/.poetry
 
 jobs:
   ci-base:
     parameters:
       python-version:
         type: string
-        default: "3.9"
+        default: "3.9.18"
       extras:
         type: string
         default: "none"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
     steps:
       - checkout
       - restore_cache:
@@ -72,19 +88,21 @@ jobs:
     parameters:
       python-version:
         type: string
-        default: "3.9"
+        default: "3.9.18"
       extras:
         type: string
         default: "none"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
     steps:
       - checkout
       - restore_cache:
+          name: Restore Poetry cache
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - restore_cache:
+          name: Restore MkDocs cache
+          key: mkdocs-cache
       - run:
           name: Install system-level dependencies
           command: |
@@ -103,20 +121,22 @@ jobs:
           command: |
             ./docs/setup_insiders.sh
             poetry run mkdocs build --config-file mkdocs.insiders.yml
+      - save_cache:
+          key: mkdocs-cache
+          paths:
+            - .cache
 
   unit-test:
     parameters:
       python-version:
         type: string
-        default: "3.9"
+        default: "3.9.18"
       extras:
         type: string
         default: "none"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
     steps:
       - checkout
       - restore_cache:
@@ -126,9 +146,9 @@ jobs:
       - when:
           condition:
             not:
-              or:
-                - equal: [ "3.10", << parameters.python-version >> ]
-                - equal: [ "3.11", << parameters.python-version >> ]
+              matches:
+                pattern: "^3\\.(10|11).*$"
+                value: << parameters.python-version >>
           steps:
             - run: poetry run pre-commit run -a
       - when:
@@ -137,25 +157,24 @@ jobs:
           steps:
             - run:
                 name: Run unit tests
-                command: |
-                  poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run metrics unit tests
-                command: |
-                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           # Generate coverage only from one Python version
           condition:
-            equal: [ "3.9", << parameters.python-version >> ]
+            matches:
+                pattern: "^3\\.9.*$"
+                value: << parameters.python-version >>
           steps:
             - run:
                 name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
+                command: poetry run coverage xml --data-file .coverage
             - codecov/upload:
                 file: coverage.xml
                 flags: integration
@@ -177,11 +196,9 @@ jobs:
       extras:
         type: string
         default: "none"
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: small
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
     parallelism: << parameters.parallelism >>
     steps:
       - when:
@@ -194,6 +211,12 @@ jobs:
       - checkout
       - restore_cache:
           key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Set KOLENA_TOKEN with round robin
+          command: |
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
       - when:
           condition:
             and:
@@ -207,8 +230,6 @@ jobs:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
                 command: |
-                  export KOLENA_TOKEN=${KOLENA_TOKEN}
-                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
                   TEST_GROUP="<< parameters.pytest-group >>"
                   if [ "$TEST_GROUP" = "misc" ]; then
                     TESTFILES=$(circleci tests glob tests/integration/test_*.py |
@@ -225,19 +246,17 @@ jobs:
           steps:
             - run:
                 name: Run experimental metrics integration tests
-                command: |
-                  export KOLENA_TOKEN=${KOLENA_TOKEN}
-                  export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
-                  poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
+                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
           condition:
-            equal: [ "3.9", << parameters.python-version >> ]
+            matches:
+              pattern: "^3\\.9.*$"
+              value: << parameters.python-version >>
           steps:
             - run:
                 name: Coverage
-                command: |
-                  poetry run coverage xml --data-file .coverage
+                command: poetry run coverage xml --data-file .coverage
             - codecov/upload:
                 file: coverage.xml
             - store_test_results:
@@ -247,14 +266,15 @@ jobs:
     parameters:
       python-version:
         type: string
-        default: "3.9"
+        default: "3.9.18"
       subproject:
         type: string
       resource-class:
         type: string
-    docker:
-      - image: cimg/python:<< parameters.python-version >>
-    resource_class: << parameters.resource-class >>
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
+      resource-class: << parameters.resource-class >>
     working_directory: ~/project/examples/<< parameters.subproject >>
     steps:
       - checkout:
@@ -264,13 +284,13 @@ jobs:
           poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
-          command: |
-            poetry run pre-commit run -a
+          command: poetry run pre-commit run -a
       - run:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
-            export KOLENA_TOKEN=${KOLENA_TOKEN}
-            export KOLENA_CLIENT_BASE_URL=${KOLENA_CLIENT_BASE_URL}
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
             poetry run pytest -vv tests
   example-evaluator:
     docker:
@@ -282,8 +302,7 @@ jobs:
           version: 20.10.14
       - run:
           name: Build evaluator
-          command: |
-            examples/text_summarization/docker/build.sh
+          command: examples/text_summarization/docker/build.sh
 
 workflows:
   ci:
@@ -292,13 +311,13 @@ workflows:
           name: ci-base-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+              python-version: [ "3.7.17", "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
               extras: ["none", "metrics"]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
+              python-version: [ "3.7.17", "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
               extras: ["none", "metrics"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
@@ -306,7 +325,7 @@ workflows:
           name: docs-<< matrix.python-version >>
           matrix:
             parameters:
-              python-version: [ "3.9" ]
+              python-version: [ "3.9.18" ]
               extras: ["none"]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
@@ -314,29 +333,28 @@ workflows:
           name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.9" ]
+              python-version: [ "3.9.18" ]
               pytest-group: [ detection, fr, classification, workflow ]
               extras: ["none"]
           enabled: true
-          parallelism: 4
+          parallelism: 3
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
           name: integration-test-experimental-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.9" ]
+              python-version: [ "3.9.18" ]
               extras: ["metrics"]
           pytest-group: _experimental
           enabled: true
-          parallelism: 1
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
           name: integration-test-misc-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.9" ]
+              python-version: [ "3.9.18" ]
               extras: ["none"]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
@@ -352,13 +370,13 @@ workflows:
             parameters:
               subproject: [ text_summarization ]
               resource-class: [ large ]
-              python-version: [ "3.9" ]
+              python-version: [ "3.9.18" ]
       - example-test:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification ]
+              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]
               resource-class: [ small ]
-              python-version: [ "3.9" ]
+              python-version: [ "3.9.18" ]
   example-evaluator:
     when:
       condition:

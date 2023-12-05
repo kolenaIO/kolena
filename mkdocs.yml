@@ -25,10 +25,12 @@ nav:
               - Amazon S3: advanced-usage/connecting-cloud-storage/amazon-s3.md
               - S3-Compatible APIs: advanced-usage/connecting-cloud-storage/s3-compatible.md
               - Google Cloud Storage: advanced-usage/connecting-cloud-storage/google-cloud-storage.md
+              - Azure Blob Storage: advanced-usage/connecting-cloud-storage/azure-blob-storage.md
               - HTTP Basic: advanced-usage/connecting-cloud-storage/http-basic.md
           - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
           - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
+          - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
@@ -49,7 +51,9 @@ nav:
               - Plots: reference/workflow/plot.md
               - <code>define_workflow</code>: reference/workflow/define-workflow.md
               - <code>metrics</code>: reference/workflow/metrics.md
+              - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
               - <code>visualization</code>: reference/workflow/visualization.md
+              - IO: reference/workflow/io.md
       - Pre-built Workflows:
           - Pre-built Workflows: reference/pre-built/index.md
           - Object Detection (2D): reference/pre-built/object-detection-2d.md
@@ -63,13 +67,26 @@ nav:
   - Metrics Glossary:
       - Metrics Glossary: metrics/index.md
       - metrics/accuracy.md
+      - metrics/average-precision.md
       - metrics/averaging-methods.md
+      - metrics/confusion-matrix.md
       - metrics/f1-score.md
-      - metrics/geometry-matching.md
-      - metrics/iou.md
+      - metrics/fpr.md
       - metrics/precision.md
+      - metrics/pr-curve.md
       - metrics/recall.md
+      - metrics/roc-curve.md
+      - metrics/specificity.md
       - metrics/tp-fp-fn-tn.md
+      - Computer Vision:
+        - metrics/geometry-matching.md
+        - metrics/iou.md
+      - Natural Language Processing:
+        - metrics/bertscore.md
+        - metrics/bleu.md
+        - metrics/meteor.md
+        - metrics/perplexity.md
+        - metrics/rouge-n.md
   - Help & FAQ:
       - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
@@ -104,7 +121,6 @@ theme:
     - content.code.copy
     - content.tabs.link
     - navigation.indexes
-    - navigation.instant
     - navigation.footer
     - navigation.sections
     - navigation.tabs
@@ -124,7 +140,11 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.snippets:
       check_paths: true
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+          - name: mermaid
+            class: mermaid
+            format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
       slugify: !!python/object/apply:pymdownx.slugs.slugify # NOTE: insiders only
@@ -135,8 +155,8 @@ markdown_extensions:
   - attr_list
   - md_in_html
   - pymdownx.emoji:
-      emoji_index: !!python/name:materialx.emoji.twemoji
-      emoji_generator: !!python/name:materialx.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
       options:
         custom_icons:
           - docs/overrides/.icons
@@ -157,6 +177,7 @@ extra_javascript:
 
 plugins:
   social: # render social media cards for copy+paste
+    cache_dir: .cache/plugin/social/free
   search:
     lang: en
   git-revision-date-localized:
@@ -192,5 +213,5 @@ extra:
       link: https://app.kolena.io
       name: Kolena Platform
   dd_rum:
-    client_token: !ENV [DD_RUM_CLIENT_TOKEN, blank]
-    application_id: !ENV [DD_RUM_APPLICATION_ID, blank]
+    client_token: !ENV [ DD_RUM_CLIENT_TOKEN, blank ]
+    application_id: !ENV [ DD_RUM_APPLICATION_ID, blank ]

@@ -18,6 +18,7 @@ import pytest
 from kolena.detection import Model as DetectionModel
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import TestRun
+from kolena.workflow.define_workflow import define_workflow
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
 from tests.integration.workflow.conftest import dummy_inference
@@ -25,22 +26,25 @@ from tests.integration.workflow.conftest import DummyConfiguration
 from tests.integration.workflow.conftest import DummyEvaluator
 from tests.integration.workflow.dummy import DUMMY_WORKFLOW
 from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyInference
 from tests.integration.workflow.dummy import DummyTestSample
 from tests.integration.workflow.dummy import Model
 from tests.integration.workflow.dummy import TestSuite
 
 META_DATA = {"a": "b"}
+TAGS = {"c", "d"}
 
 
 def assert_model(model: Model, name: str) -> None:
     assert model.workflow == DUMMY_WORKFLOW
     assert model.name == name
     assert model.metadata == META_DATA
+    assert model.tags == TAGS
 
 
 def test__create() -> None:
     name = with_test_prefix(f"{__file__}::test__create model")
-    assert_model(Model.create(name=name, infer=lambda x: None, metadata=META_DATA), name)
+    assert_model(Model.create(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS), name)
 
     with pytest.raises(Exception):
         Model.create(name)
@@ -52,8 +56,30 @@ def test__load() -> None:
     with pytest.raises(Exception):
         Model.load(name)
 
-    Model.create(name, infer=lambda x: None, metadata=META_DATA)
+    Model.create(name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
     assert_model(Model.load(name, infer=lambda x: None), name)
+
+
+def test__load_all() -> None:
+    name = with_test_prefix(f"{__file__}::test__load_all")
+    _, _, _, model = define_workflow(f"{name} workflow 1", DummyTestSample, DummyGroundTruth, DummyInference)
+    _, _, _, model_diff = define_workflow(f"{name} workflow 2", DummyTestSample, DummyGroundTruth, DummyInference)
+    tag1, tag2, tag1_2 = f"{name} 1", f"{name} 2", f"{name} 1+2"
+    model1 = model(name=name + "1", tags={tag1, tag1_2})
+    model2 = model(name=name + "2", tags={tag2, tag1_2})
+    model3 = model(name=name + "3")
+    model_diff(name=name, tags={tag1, tag2, tag1_2})  # Model in different workflow
+
+    test_list = [match for match in zip(model.load_all(), [model1, model2, model3])]
+    test_list.extend(zip(model.load_all(tags={tag1_2}), [model1, model2]))
+    test_list.extend(zip(model.load_all(tags={tag1, tag1_2}), [model1]))
+
+    for result, expected in test_list:
+        assert result.name == expected.name
+        assert result.metadata == expected.metadata
+        assert result.tags == expected.tags
+        assert result.workflow == expected.workflow
+    assert model.load_all(tags={"does_not_exist"}) == []
 
 
 def test__load__mismatching_workflows() -> None:
@@ -64,28 +90,28 @@ def test__load__mismatching_workflows() -> None:
 
 
 def test__init() -> None:
-    name = with_test_prefix(f"{__file__}::test__init model")
-    model = Model(name=name, infer=lambda x: None, metadata=META_DATA)
-    assert_model(model, name)
-
-    with pytest.raises(Exception):
-        Model.create(name)
-
-    Model(name=name, infer=lambda x: None, metadata=META_DATA)
-
-    assert_model(Model.load(name, infer=lambda x: None), name)
-
-    updated_model = Model(name=name, infer=lambda x: None, metadata={"a": 13})
-    assert_model(updated_model, name)
-
-
-def test__init_no_meta() -> None:
-    name = with_test_prefix(f"{__file__}::test__init_no_meta")
+    name = with_test_prefix(f"{__file__}::test__init")
     model = Model(name=name, infer=lambda x: None)
     loaded = Model.load(name, infer=lambda x: None)
 
     assert model.name == loaded.name
     assert model.metadata == loaded.metadata
+
+
+def test__init_with_optionals() -> None:
+    name = with_test_prefix(f"{__file__}::test__init_with_optionals")
+    model = Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
+    assert_model(model, name)
+
+    with pytest.raises(Exception):
+        Model.create(name)
+
+    Model(name=name, infer=lambda x: None, metadata=META_DATA, tags=TAGS)
+
+    assert_model(Model.load(name, infer=lambda x: None), name)
+
+    updated_model = Model(name=name, infer=lambda x: None, metadata={"a": 13}, tags={"e"})
+    assert_model(updated_model, name)  # Model metadata and tags don't update
 
 
 def test__init__validate_name() -> None:

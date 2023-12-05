@@ -25,6 +25,7 @@ import pandas as pd
 from deprecation import deprecated
 from pydantic import validate_arguments
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.fr import TestCase as API
 from kolena._utils import krequests
 from kolena._utils import log
@@ -35,6 +36,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
+from kolena._utils.instrumentation import with_event
 from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
@@ -123,6 +125,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         self._data = new_data
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.CREATE_TEST_CASE)
     def create(
         cls,
         name: str,
@@ -149,6 +152,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
         return obj
 
     @classmethod
+    @with_event(event_name=EventAPI.Event.LOAD_TEST_CASE)
     def load(cls, name: str, version: Optional[int] = None) -> "TestCase":
         """
         Load an existing test case with the provided name.
@@ -294,6 +298,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
             )
 
     @contextmanager
+    @with_event(event_name=EventAPI.Event.EDIT_TEST_CASE)
     def edit(self, reset: bool = False) -> Iterator[Editor]:
         """
         Edit this test case in a context:
@@ -307,7 +312,7 @@ class TestCase(ABC, Frozen, WithTelemetry):
 
         Changes are committed to the Kolena platform when the context is exited.
 
-        :param reset: Clear any and all test samples currently in the test case.
+        :param reset: Clear all existing test samples in the test case.
         """
         editor = self.Editor(self.description, reset)
 

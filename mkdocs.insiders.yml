@@ -30,7 +30,6 @@ theme:
     - content.code.copy
     - content.tabs.link
     - navigation.indexes
-    - navigation.instant
     - navigation.footer
     - navigation.sections
     - navigation.tabs
@@ -49,6 +48,7 @@ extra:
 
 plugins:
   social:
+    cache_dir: .cache/plugin/social/insiders
     cards_layout: custom
     cards_layout_dir: docs/layouts
   typeset:

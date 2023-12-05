@@ -18,7 +18,7 @@ hide:
 ## Quick Links
 
 <div class="grid cards" markdown>
-- :kolena-classification-20: [`kolena.classification`](built-in/classification)
+- :kolena-classification-20: [`kolena.classification`](built-in/classification.md)
 
     !["Dog" classification example from the Dogs vs. Cats dataset.](../../assets/images/classification-dog.jpg)
 
@@ -26,7 +26,7 @@ hide:
 
     Binary classification of images
 
-- :kolena-detection-20: [`kolena.detection`](built-in/detection)
+- :kolena-detection-20: [`kolena.detection`](built-in/detection.md)
 
     ![Object detection example from the Common Objects in Context (COCO) dataset.](../../assets/images/detection-airplane.jpg)
 
@@ -34,7 +34,7 @@ hide:
 
     Object detection and instance segmentation of images
 
-- :kolena-fr-20: [`kolena.fr`](built-in/fr)
+- :kolena-fr-20: [`kolena.fr`](built-in/fr.md)
 
     ![Example Face Recognition (1:1) image pair from the Labeled Faces in the Wild dataset.](../../assets/images/face-recognition.jpg)
 

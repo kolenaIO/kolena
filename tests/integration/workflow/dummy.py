@@ -14,6 +14,7 @@
 from dataclasses import field
 from typing import Dict
 
+from pydantic import Extra
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
@@ -41,6 +42,26 @@ class DummyGroundTruth(GroundTruth):
 @dataclass(frozen=True, order=True)
 class DummyInference(Inference):
     score: float
+
+
+class LocalConfig:
+    extra = Extra.allow
+
+
+@dataclass(frozen=True, order=True, config=LocalConfig)
+class GrabbagTestSample(Image):
+    value: int
+
+
+@dataclass(frozen=True, order=True, config=LocalConfig)
+class GrabbagGroundTruth(GroundTruth):
+    label: str
+    value: int
+
+
+@dataclass(frozen=True, order=True, config=LocalConfig)
+class GrabbagInference(Inference):
+    ...
 
 
 DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(

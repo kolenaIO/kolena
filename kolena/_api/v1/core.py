@@ -16,6 +16,7 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Set
 
 from pydantic.dataclasses import dataclass
 
@@ -28,21 +29,35 @@ class Model:
         name: str
         metadata: Dict[str, Any]
         workflow: str
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
         name: str
 
     @dataclass(frozen=True)
+    class LoadAllRequest:
+        workflow: str
+        tags: Optional[List[str]] = None
+
+    @dataclass(frozen=True)
     class EntityData:
         id: int
         name: str
         metadata: Dict[str, Any]
+        tags: Set[str]
         workflow: str
+
+    @dataclass(frozen=True)
+    class LoadAllResponse:
+        models: List["Model.EntityData"]
 
     @dataclass(frozen=True)
     class DeleteRequest:
         id: int
+
+
+Model.LoadAllResponse.__pydantic_model__.update_forward_refs()
 
 
 @dataclass(frozen=True)

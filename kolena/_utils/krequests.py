@@ -25,6 +25,7 @@ from urllib3.util import Retry
 from kolena import __name__ as client_name
 from kolena import __version__ as client_version
 from kolena._utils.endpoints import get_endpoint
+from kolena._utils.state import DEFAULT_API_VERSION
 from kolena._utils.state import get_client_state
 from kolena._utils.state import kolena_initialized
 from kolena.errors import IncorrectUsageError
@@ -52,53 +53,88 @@ CONNECTION_READ_TIMEOUT = 60 * 60  # Give kolena server 1 hour to respond to cli
 MAX_RETRIES = Retry(total=3, connect=3, read=0, redirect=0, status=0, backoff_factor=2)
 
 
+class JWTAuth(requests.auth.AuthBase):
+    """Attaches JWT Authorization to the given Request object"""
+
+    def __init__(self, jwt: str):
+        self.jwt = jwt
+
+    def __call__(self, r):
+        r.headers["Authorization"] = f"Bearer {self.jwt}"
+        return r
+
+
 @kolena_initialized
 def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
     client_state = get_client_state()
     default_kwargs = {
+        "auth": JWTAuth(client_state.jwt_token),
         "timeout": (CONNECTION_CONNECT_TIMEOUT, CONNECTION_READ_TIMEOUT),
         "proxies": client_state.proxies,
     }
-    default_headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {client_state.jwt_token}",
-        "X-Request-ID": uuid.uuid4().hex,
-        "User-Agent": user_agent(client_name, client_version),
-    }
+    default_headers = client_state.additional_request_headers or {}
+    default_headers.update(
+        {
+            "Content-Type": "application/json",
+            "X-Request-ID": uuid.uuid4().hex,
+            "User-Agent": user_agent(client_name, client_version),
+            "X-Kolena-Telemetry": str(client_state.telemetry),
+        },
+    )
+    # allow requests to override Content-Type as needed by for example file uploads
+    if "Content-Type" in kwargs.get("headers", {}):
+        default_headers["Content-Type"] = kwargs.get("headers")["Content-Type"]
     return {
-        **default_kwargs,
         **kwargs,
-        "headers": {**default_headers, **kwargs.get("headers", {})},
+        **default_kwargs,
+        "headers": {**kwargs.get("headers", {}), **default_headers},
     }
 
 
 @kolena_initialized
-def get(endpoint_path: str, params: Any = None, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def get(
+    endpoint_path: str,
+    params: Any = None,
+    api_version: int = DEFAULT_API_VERSION,
+    **kwargs: Any,
+) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.get(url=url, params=params, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
-def post(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def post(
+    endpoint_path: str,
+    data: Any = None,
+    json: Any = None,
+    api_version: int = DEFAULT_API_VERSION,
+    **kwargs: Any,
+) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.post(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
-def put(endpoint_path: str, data: Any = None, json: Any = None, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def put(
+    endpoint_path: str,
+    data: Any = None,
+    json: Any = None,
+    api_version: int = DEFAULT_API_VERSION,
+    **kwargs: Any,
+) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return s.put(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
 @kolena_initialized
-def delete(endpoint_path: str, **kwargs: Any) -> requests.Response:
-    url = get_endpoint(endpoint_path=endpoint_path)
+def delete(endpoint_path: str, api_version: int = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
+    url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
         return requests.delete(url=url, **_with_default_kwargs(**kwargs))

@@ -39,7 +39,7 @@ from kolena._experimental.object_detection.utils import compute_pr_plot_multicla
 from kolena._experimental.object_detection.utils import filter_inferences
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics import MulticlassInferenceMatches
@@ -119,7 +119,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             inf.label for inf in object_matches.unmatched_inf
         }
         fields = [
-            ScoredClassificationLabel(label=label, score=thresholds[label])
+            ScoredLabel(label=label, score=thresholds[label])
             for label in sorted(thresholds.keys())
             if label in inference_labels
         ]

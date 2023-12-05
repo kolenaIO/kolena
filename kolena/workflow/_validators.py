@@ -20,6 +20,7 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
+from kolena._experimental.workflow.thresholded import ThresholdedMetrics
 from kolena._utils.datatypes import get_args
 from kolena._utils.datatypes import get_origin
 from kolena.errors import WorkflowMismatchError
@@ -29,7 +30,7 @@ from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import _ANNOTATION_TYPES
 from kolena.workflow.asset import _ASSET_TYPES
 
-_SUPPORTED_FIELD_TYPES = [*_SCALAR_TYPES, *_ANNOTATION_TYPES, *_ASSET_TYPES]
+_SUPPORTED_FIELD_TYPES = [*_SCALAR_TYPES, *_ANNOTATION_TYPES, *_ASSET_TYPES, ThresholdedMetrics]
 
 
 def assert_workflows_match(workflow_expected: str, workflow_provided: str) -> None:
