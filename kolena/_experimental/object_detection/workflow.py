@@ -83,7 +83,7 @@ class Inference(BaseInference):
 
     ignored: bool = False
     """
-    Whether the image (and its associated inference `objects`) should be ignored in evaluating the results of the model.
+    Whether the image (and its associated inference `bboxes`) should be ignored in evaluating the results of the model.
     """
 
 
@@ -190,7 +190,7 @@ class TestCaseMetrics(MetricsTestCase):
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     mean_AP: float
-    threshold: Union[float, None] = None
+    threshold: Optional[float] = None
 
 
 @dataclass(frozen=True)
