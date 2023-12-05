@@ -102,21 +102,21 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
 
     def test_sample_metrics(
         self,
-        object_matches: MulticlassInferenceMatches,
+        bbox_matches: MulticlassInferenceMatches,
         thresholds: Dict[str, float],
     ) -> TestSampleMetrics:
-        tp = [inf for _, inf in object_matches.matched if inf.score >= thresholds[inf.label]]
-        fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
-        fn = [gt for gt, _ in object_matches.unmatched_gt] + [
-            gt for gt, inf in object_matches.matched if inf.score < thresholds[inf.label]
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
+        fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
+            gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
         ]
         confused = [
-            inf for _, inf in object_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]
+            inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]
         ]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
-        inference_labels = {inf.label for _, inf in object_matches.matched} | {
-            inf.label for inf in object_matches.unmatched_inf
+        inference_labels = {inf.label for _, inf in bbox_matches.matched} | {
+            inf.label for inf in bbox_matches.unmatched_inf
         }
         fields = [
             ScoredLabel(label=label, score=thresholds[label])
@@ -155,19 +155,19 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             return self.test_sample_metrics_ignored()
 
         filtered_inferences = filter_inferences(
-            inferences=inference.objects,
+            inferences=inference.bboxes,
             confidence_score=configuration.min_confidence_score,
         )
-        object_matches: MulticlassInferenceMatches = match_inferences_multiclass(
-            ground_truth.objects,
+        bbox_matches: MulticlassInferenceMatches = match_inferences_multiclass(
+            ground_truth.bboxes,
             filtered_inferences,
-            ignored_ground_truths=ground_truth.ignored_objects,
+            ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        self.matchings_by_test_case[configuration.display_name()][test_case_name].append(object_matches)
+        self.matchings_by_test_case[configuration.display_name()][test_case_name].append(bbox_matches)
 
-        return self.test_sample_metrics(object_matches, thresholds)
+        return self.test_sample_metrics(bbox_matches, thresholds)
 
     def compute_and_cache_f1_optimal_thresholds(
         self,
@@ -180,18 +180,18 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         if configuration.display_name() in self.threshold_cache.keys():
             return
 
-        all_object_matches = [
+        all_bbox_matches = [
             match_inferences_multiclass(
-                ground_truth.objects,
-                filter_inferences(inferences=inference.objects, confidence_score=configuration.min_confidence_score),
-                ignored_ground_truths=ground_truth.ignored_objects,
+                ground_truth.bboxes,
+                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
+                ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
             )
             for _, ground_truth, inference in inferences
             if not inference.ignored
         ]
-        optimal_thresholds = compute_optimal_f1_threshold_multiclass(all_object_matches)
+        optimal_thresholds = compute_optimal_f1_threshold_multiclass(all_bbox_matches)
         self.threshold_cache[configuration.display_name()] = defaultdict(
             lambda: configuration.min_confidence_score,
             optimal_thresholds,
@@ -208,7 +208,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
         return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
 
-    def object_matches_and_count_for_one_label(
+    def bbox_matches_and_count_for_one_label(
         self,
         matchings: List[MulticlassInferenceMatches],
         label: str,
@@ -234,13 +234,13 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             if sample_flag:
                 samples_count += 1
 
-        object_matches_for_one_label = MulticlassInferenceMatches(
+        bbox_matches_for_one_label = MulticlassInferenceMatches(
             matched=match_matched,
             unmatched_gt=match_unmatched_gt,
             unmatched_inf=match_unmatched_inf,
         )
 
-        return object_matches_for_one_label, samples_count
+        return bbox_matches_for_one_label, samples_count
 
     def class_metrics_per_test_case(
         self,
@@ -285,7 +285,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         label: str,
         thresholds: Dict[str, float],
     ) -> ClassMetricsPerTestCase:
-        class_matches, samples_count = self.object_matches_and_count_for_one_label(matchings, label)
+        class_matches, samples_count = self.bbox_matches_and_count_for_one_label(matchings, label)
 
         average_precision = 0.0
         baseline_pr_curve = compute_pr_curve([class_matches])
@@ -329,16 +329,16 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     ) -> TestCaseMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
-        all_object_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
         # compute nested metrics per class
-        labels = {gt.label for _, gts, _ in inferences for gt in gts.objects} | {
-            inf.label for _, _, infs in inferences for inf in infs.objects
+        labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
+            inf.label for _, _, infs in inferences for inf in infs.bboxes
         }
         per_class_metrics: List[ClassMetricsPerTestCase] = []
         for label in sorted(labels):
-            metrics_per_class = self.compute_aggregate_label_metrics(all_object_matches, label, thresholds)
+            metrics_per_class = self.compute_aggregate_label_metrics(all_bbox_matches, label, thresholds)
             per_class_metrics.append(metrics_per_class)
 
         return self.test_case_metrics(per_class_metrics, metrics)
@@ -352,15 +352,15 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
-        all_object_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
 
         # clean matching for confusion matrix
         match_matched = [
-            (gt, inf) for match in all_object_matches for gt, inf in match.matched if inf.score >= thresholds[inf.label]
+            (gt, inf) for match in all_bbox_matches for gt, inf in match.matched if inf.score >= thresholds[inf.label]
         ]
         match_unmatched_gt = [
             (gt, inf)
-            for match in all_object_matches
+            for match in all_bbox_matches
             for gt, inf in match.unmatched_gt
             if inf is not None and inf.score >= thresholds[inf.label]
         ]
@@ -377,8 +377,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             filter(
                 None,
                 [
-                    compute_f1_plot_multiclass(all_object_matches),
-                    compute_pr_plot_multiclass(all_object_matches),
+                    compute_f1_plot_multiclass(all_bbox_matches),
+                    compute_pr_plot_multiclass(all_bbox_matches),
                     compute_confusion_matrix_plot(confusion_matrix_matchings),
                 ],
             ),

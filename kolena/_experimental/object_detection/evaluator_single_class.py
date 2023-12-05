@@ -97,12 +97,12 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
 
     def test_sample_metrics_single_class(
         self,
-        object_matches: InferenceMatches,
+        bbox_matches: InferenceMatches,
         thresholds: float,
     ) -> TestSampleMetricsSingleClass:
-        tp = [inf for _, inf in object_matches.matched if inf.score >= thresholds]
-        fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
-        fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
+        tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
+        fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
+        fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
         non_ignored_inferences = tp + fp
         scores = [inf.score for inf in non_ignored_inferences]
         return TestSampleMetricsSingleClass(
@@ -133,16 +133,16 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         if inference.ignored:
             return self.test_sample_metrics_ignored(thresholds)
 
-        object_matches: InferenceMatches = match_inferences(
-            ground_truth.objects,
-            filter_inferences(inferences=inference.objects, confidence_score=configuration.min_confidence_score),
-            ignored_ground_truths=ground_truth.ignored_objects,
+        bbox_matches: InferenceMatches = match_inferences(
+            ground_truth.bboxes,
+            filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
+            ignored_ground_truths=ground_truth.ignored_bboxes,
             mode="pascal",
             iou_threshold=configuration.iou_threshold,
         )
-        self.matchings_by_test_case[configuration.display_name()][test_case_name].append(object_matches)
+        self.matchings_by_test_case[configuration.display_name()][test_case_name].append(bbox_matches)
 
-        return self.test_sample_metrics_single_class(object_matches, thresholds)
+        return self.test_sample_metrics_single_class(bbox_matches, thresholds)
 
     def compute_and_cache_f1_optimal_thresholds(
         self,
@@ -155,18 +155,18 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         if configuration.display_name() in self.threshold_cache.keys():
             return
 
-        all_object_matches = [
+        all_bbox_matches = [
             match_inferences(
-                ground_truth.objects,
-                filter_inferences(inferences=inference.objects, confidence_score=configuration.min_confidence_score),
-                ignored_ground_truths=ground_truth.ignored_objects,
+                ground_truth.bboxes,
+                filter_inferences(inferences=inference.bboxes, confidence_score=configuration.min_confidence_score),
+                ignored_ground_truths=ground_truth.ignored_bboxes,
                 mode="pascal",
                 iou_threshold=configuration.iou_threshold,
             )
             for _, ground_truth, inference in inferences
             if not inference.ignored
         ]
-        optimal_thresholds = compute_optimal_f1_threshold(all_object_matches)
+        optimal_thresholds = compute_optimal_f1_threshold(all_bbox_matches)
         self.threshold_cache[configuration.display_name()] = max(configuration.min_confidence_score, optimal_thresholds)
 
     def compute_test_sample_metrics(
@@ -215,11 +215,11 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestCaseMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
-        all_object_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
         self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
 
         average_precision = 0.0
-        baseline_pr_curve = compute_pr_curve(all_object_matches)
+        baseline_pr_curve = compute_pr_curve(all_bbox_matches)
         if baseline_pr_curve is not None:
             average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
 
@@ -233,25 +233,31 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        all_object_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
 
         plots: Optional[List[Plot]] = []
         plots.extend(
             filter(
                 None,
                 [
-                    compute_pr_plot(all_object_matches),
-                    compute_f1_plot(all_object_matches),
+                    compute_pr_plot(all_bbox_matches),
+                    compute_f1_plot(all_bbox_matches),
                 ],
             ),
         )
 
         return plots
 
-    def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float]) -> TestSuiteMetrics:
+    def test_suite_metrics(
+        self,
+        unique_locators: Set[str],
+        average_precisions: List[float],
+        threshold: Optional[float] = None,
+    ) -> TestSuiteMetrics:
         return TestSuiteMetrics(
             n_images=len(unique_locators),
             mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+            threshold=threshold,
         )
 
     def compute_test_suite_metrics(
@@ -263,7 +269,8 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
         unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
         average_precisions = [tcm.AP for _, tcm in metrics]
-        return self.test_suite_metrics(unique_locators, average_precisions)
+        threshold = self.get_confidence_thresholds(configuration)
+        return self.test_suite_metrics(unique_locators, average_precisions, threshold)
 
     def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
         if configuration.threshold_strategy == "F1-Optimal":

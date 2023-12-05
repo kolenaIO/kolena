@@ -52,30 +52,30 @@ class TestSample(Image):
 class GroundTruth(BaseGroundTruth):
     """Ground truth type for the pre-built 2D Object Detection workflow."""
 
-    objects: List[Union[LabeledBoundingBox, LabeledPolygon]]
+    bboxes: List[Union[LabeledBoundingBox, LabeledPolygon]]
     """
     The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es or
     [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon]s associated with an image.
     """
 
-    ignored_objects: List[Union[LabeledBoundingBox, LabeledPolygon]] = dataclasses.field(default_factory=list)
+    ignored_bboxes: List[Union[LabeledBoundingBox, LabeledPolygon]] = dataclasses.field(default_factory=list)
     """
     The ground truth [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox]es or
     [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon]s to be ignored in evaluation associated with an
     image.
     """
 
-    n_objects: int = dataclasses.field(default_factory=lambda: 0)
+    n_bboxes: int = dataclasses.field(default_factory=lambda: 0)
 
     def __post_init__(self):
-        object.__setattr__(self, "n_objects", len(self.objects))
+        object.__setattr__(self, "n_bboxes", len(self.bboxes))
 
 
 @dataclass(frozen=True)
 class Inference(BaseInference):
     """Inference type for the pre-built 2D Object Detection workflow."""
 
-    objects: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
+    bboxes: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]
     """
     The inference [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox]es or
     [`ScoredLabeledPolygon`][kolena.workflow.annotation.ScoredLabeledPolygon]s associated with an image.
@@ -190,6 +190,7 @@ class TestCaseMetrics(MetricsTestCase):
 class TestSuiteMetrics(MetricsTestSuite):
     n_images: int
     mean_AP: float
+    threshold: Union[float, None] = None
 
 
 @dataclass(frozen=True)

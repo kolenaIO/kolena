@@ -56,16 +56,16 @@ def _compute_sklearn_arrays(
 ) -> Tuple[np.ndarray, np.ndarray]:
     y_true: List[int] = []
     y_score: List[float] = []
-    for image_object_matches in all_matches:
-        for _, object_inf in image_object_matches.matched:  # TP (if above threshold)
+    for image_bbox_matches in all_matches:
+        for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
             y_true.append(1)
-            y_score.append(object_inf.score)
-        for _ in image_object_matches.unmatched_gt:  # FN
+            y_score.append(bbox_inf.score)
+        for _ in image_bbox_matches.unmatched_gt:  # FN
             y_true.append(1)
             y_score.append(-1)
-        for object_inf in image_object_matches.unmatched_inf:  # FP (if above threshold)
+        for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
             y_true.append(0)
-            y_score.append(object_inf.score)
+            y_score.append(bbox_inf.score)
     return np.array(y_true), np.array(y_score)
 
 
@@ -312,12 +312,12 @@ def _compute_sklearn_arrays_by_class(
 
     labels: Set[str] = set()
     for match in all_matches:
-        for _, object_inf in match.matched:
-            labels.add(object_inf.label)
-        for object_gt, _ in match.unmatched_gt:
-            labels.add(object_gt.label)
-        for object_inf in match.unmatched_inf:
-            labels.add(object_inf.label)
+        for _, bbox_inf in match.matched:
+            labels.add(bbox_inf.label)
+        for bbox_gt, _ in match.unmatched_gt:
+            labels.add(bbox_gt.label)
+        for bbox_inf in match.unmatched_inf:
+            labels.add(bbox_inf.label)
 
     for label in labels:
         filtered_matchings = [

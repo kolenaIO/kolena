@@ -41,7 +41,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(112, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
@@ -49,7 +49,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.9),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.8),
@@ -60,7 +60,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(113, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
@@ -68,7 +68,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1.1, 1), (2.1, 2), "a", 0.9),
                 ScoredLabeledBoundingBox((3.3, 3), (4.3, 4), "a", 0.8),
                 ScoredLabeledBoundingBox((5.5, 5), (6.5, 6), "a", 0.7),
@@ -79,7 +79,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(114, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
@@ -87,7 +87,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.6),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.5),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.4),
@@ -98,7 +98,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(115, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
@@ -106,7 +106,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 1),
                 ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 1),
                 ScoredLabeledBoundingBox((0, 0), (1, 1), "a", 0.9),
@@ -121,7 +121,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(116, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
@@ -129,7 +129,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 1),
                 ScoredLabeledBoundingBox((7, 7), (8, 8), "a", 0.4),
             ],
@@ -138,7 +138,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(117, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
@@ -146,7 +146,7 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.9),
                 ScoredLabeledBoundingBox((7, 7), (9, 9), "a", 0.9),
@@ -156,17 +156,17 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(118, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
             ],
-            ignored_objects=[
+            ignored_bboxes=[
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
                 LabeledBoundingBox((7, 7), (8, 8), "a"),
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.8),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.1),
@@ -177,28 +177,28 @@ TEST_DATA: List[Tuple[TestSample, GroundTruth, Inference]] = [
     (
         TestSample(locator=fake_locator(119, "OD")),
         GroundTruth(
-            objects=[],
-            ignored_objects=[],
+            bboxes=[],
+            ignored_bboxes=[],
         ),
         Inference(
-            objects=[],
+            bboxes=[],
             ignored=True,
         ),
     ),
     (
         TestSample(locator=fake_locator(120, "OD")),
         GroundTruth(
-            objects=[
+            bboxes=[
                 LabeledBoundingBox((1, 1), (2, 2), "a"),
                 LabeledBoundingBox((3, 3), (4, 4), "a"),
             ],
-            ignored_objects=[
+            ignored_bboxes=[
                 LabeledBoundingBox((5, 5), (6, 6), "a"),
                 LabeledBoundingBox((7, 7), (8, 8), "a"),
             ],
         ),
         Inference(
-            objects=[
+            bboxes=[
                 ScoredLabeledBoundingBox((1, 1), (2, 2), "a", 0.9),
                 ScoredLabeledBoundingBox((3, 3), (4, 4), "a", 0.8),
                 ScoredLabeledBoundingBox((5, 5), (6, 6), "a", 0.1),

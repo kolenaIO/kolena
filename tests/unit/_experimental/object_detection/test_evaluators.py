@@ -347,7 +347,7 @@ def test__object_detection__multiclass__test_sample_metrics(
 
     od_multi = MulticlassObjectDetectionEvaluator()
     result = od_multi.test_sample_metrics(
-        object_matches=object_matches,
+        bbox_matches=object_matches,
         thresholds=thresholds,
     )
     assert expected == result
@@ -538,7 +538,7 @@ def test__object_detection__single_class__test_sample_metrics_single_class(
 
     od_single = SingleClassObjectDetectionEvaluator()
     result = od_single.test_sample_metrics_single_class(
-        object_matches=object_matches,
+        bbox_matches=object_matches,
         thresholds=thresholds,
     )
     assert expected == result
@@ -962,7 +962,7 @@ def test__object_detection__multiclass__object_matches_and_count_for_one_label(
     from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
 
     od_multi = MulticlassObjectDetectionEvaluator()
-    result = od_multi.object_matches_and_count_for_one_label(
+    result = od_multi.bbox_matches_and_count_for_one_label(
         matchings=matchings,
         label=label,
     )
