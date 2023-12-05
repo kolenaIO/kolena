@@ -66,6 +66,10 @@ def test__add_datatype() -> None:
 
 
 def test__add_datatype__composite() -> None:
+    def assert_datatype(dataset: pd.DataFrame, expected_datatype: DatapointType, prefix: str = "") -> None:
+        for value in dataset[prefix + DATA_TYPE_FIELD]:
+            assert value == expected_datatype
+
     composite_dataset = pd.DataFrame(
         {
             "a.text": [
@@ -73,21 +77,22 @@ def test__add_datatype__composite() -> None:
                 "A man is playing a large flute.",
                 "A man is spreading shredded cheese on a pizza.",
             ],
-            "b.text": [
-                "An air plane is taking off.",
-                "A man is playing a flute.",
-                "A man is spreading shredded cheese on an uncooked pizza.",
-            ],
-            "similarity": [5.0, 3.799999952316284, 3.799999952316284],
         },
     )
     add_datatype(composite_dataset)
-    for data_type in composite_dataset[DATA_TYPE_FIELD]:
-        assert data_type == DatapointType.COMPOSITE
-    for data_type in composite_dataset["a." + DATA_TYPE_FIELD]:
-        assert data_type == DatapointType.TEXT
-    for data_type in composite_dataset["b." + DATA_TYPE_FIELD]:
-        assert data_type == DatapointType.TEXT
+    assert_datatype(composite_dataset, DatapointType.COMPOSITE)
+    assert_datatype(composite_dataset, DatapointType.TEXT, prefix="a.")
+
+    composite_dataset["b.text"] = [
+        "An air plane is taking off.",
+        "A man is playing a flute.",
+        "A man is spreading shredded cheese on an uncooked pizza.",
+    ]
+    composite_dataset["similarity"] = [5.0, 3.799999952316284, 3.799999952316284]
+    add_datatype(composite_dataset)
+    assert_datatype(composite_dataset, DatapointType.COMPOSITE)
+    assert_datatype(composite_dataset, DatapointType.TEXT, prefix="a.")
+    assert_datatype(composite_dataset, DatapointType.TEXT, prefix="b.")
 
 
 def test__infer_datatype() -> None:
