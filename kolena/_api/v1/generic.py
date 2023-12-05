@@ -117,7 +117,7 @@ class TestRun:
         configuration: Optional["TestRun.EvaluatorConfiguration"]
 
     @dataclass(frozen=True)
-    class UploadTestSampleMetricsThresholdedRequest(BatchedLoad.WithLoadUUID):
+    class UploadTestSampleThresholdedMetricsRequest(BatchedLoad.WithLoadUUID):
         test_run_id: int
         test_case_id: Optional[int]
         configuration: Optional["TestRun.EvaluatorConfiguration"]
@@ -140,7 +140,7 @@ class TestRun:
 
 TestRun.CreateOrRetrieveRequest.__pydantic_model__.update_forward_refs()  # type: ignore
 TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
-TestRun.UploadTestSampleMetricsThresholdedRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+TestRun.UploadTestSampleThresholdedMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 class Workflow:

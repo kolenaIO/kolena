@@ -466,7 +466,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             init_response = init_upload()
             upload_data_frame_chunk(df_serializable, init_response.uuid)
 
-            request = API.UploadTestSampleMetricsThresholdedRequest(
+            request = API.UploadTestSampleThresholdedMetricsRequest(
                 uuid=init_response.uuid,
                 test_run_id=self._id,
                 test_case_id=test_case._id if test_case is not None else None,
