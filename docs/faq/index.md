@@ -28,6 +28,12 @@ If you don't see your question here, please reach out to us on Slack or at
     We're constantly adding new data types and annotation types — if you don't see what you're looking for, reach out
     to us and we'll happily extend our system to support your use case.
 
+??? faq "Does Kolena support file versioning?"
+
+    If you are using Amazon S3 or Google Cloud Storage, Kolena supports file versioning for your test samples. Simply
+    enable bucket versioning on your [S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html) or [GCS](https://cloud.google.com/storage/docs/object-versioning)
+    and make sure to pass the version id as part of the locator. See the examples in [`kolena.workflow.TestSample`][kolena.workflow.TestSample]
+
 ??? faq "Do I have to upload my datasets to Kolena?"
 
     No. Kolena doesn't store your data (images, videos, documents, 3D assetes, etc.) directly, only URLs pointing to
