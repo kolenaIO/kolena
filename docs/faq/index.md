@@ -69,8 +69,17 @@ If you don't see your question here, please reach out to us on Slack or at
 
     To retrieve a service user API token that is not scoped to a specific username, please reach out to us on Slack or
     at [contact@kolena.io](mailto:contact@kolena.io).
+    
+??? faq "Does Kolena support file/asset versioning?"
 
-??? faq "How can I add new users to my organization?"
+    If you are using Amazon S3 or Google Cloud Storage to store your files, Kolena supports file versioning. Simply 
+    enable versioning on your bucket and include the versionID (or generation number) where you provide locator values.
+    Examples: 
+    s3://kolena-public-datasets/cifar10/test/imgs/kingfisher.png?versionId=VU.laH0OfgqrLIgN8avTtvLwiiKjKP7D
+    gs://kolena-dev-data/versions/image.png?generation=1701352005168905
+
+    
+??? faq "How can I add new users to my organization?
 
     Administrators for your organization can add new users and grant users administrator privileges by visiting the
     [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization) page and adding
