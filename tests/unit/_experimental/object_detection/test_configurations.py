@@ -38,9 +38,9 @@ SingleClassObjectDetectionEvaluator = evaluator_single_class.SingleClassObjectDe
 
 @pytest.mark.metrics
 def test__object_detection__multiple_configurations__multiclass() -> None:
-    ground_truth = GroundTruth(objects=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
+    ground_truth = GroundTruth(bboxes=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
     inference = Inference(
-        objects=[ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="b", score=random.random())],
+        bboxes=[ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="b", score=random.random())],
     )
 
     config_one = ThresholdConfiguration(
@@ -78,9 +78,9 @@ def test__object_detection__multiple_configurations__multiclass() -> None:
 
 @pytest.mark.metrics
 def test__object_detection__multiple_configurations__single_class() -> None:
-    ground_truth = GroundTruth(objects=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
+    ground_truth = GroundTruth(bboxes=[LabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="a")])
     inference = Inference(
-        objects=[ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="b", score=random.random())],
+        bboxes=[ScoredLabeledBoundingBox(top_left=(0, 0), bottom_right=(1, 1), label="b", score=random.random())],
     )
 
     config_one = ThresholdConfiguration(
