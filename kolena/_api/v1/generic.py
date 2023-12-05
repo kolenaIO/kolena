@@ -68,7 +68,7 @@ class TestRun:
         LOAD_INFERENCES = "/generic/test-run/load-test-sample-inferences"
         UPLOAD_INFERENCES = "/generic/test-run/upload-inferences"
         UPLOAD_TEST_SAMPLE_METRICS = "/generic/test-run/upload-test-sample-metrics"
-        UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED = "/generic/test-run/upload-test-sample-metrics-thresholded"
+        UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED = "/generic/test-run/upload-test-sample-thresholded-metrics"
         UPLOAD_TEST_CASE_METRICS = "/generic/test-run/upload-test-case-metrics"
         UPLOAD_TEST_CASE_PLOTS = "/generic/test-run/upload-test-case-plots"
         UPLOAD_TEST_SUITE_METRICS = "/generic/test-run/upload-test-suite-metrics"
