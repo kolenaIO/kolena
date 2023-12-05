@@ -47,9 +47,9 @@ SingleClassObjectDetectionEvaluator = evaluator_single_class.SingleClassObjectDe
 def test__object_detection__multiple_configurations__multiclass__polygon() -> None:
     polygon_gt = LabeledPolygon(points=[(0, 0), (10, 0), (10, 10), (0, 10)], label="a")
     polygon_inf = ScoredLabeledPolygon([(0, 0), (10, 0), (10.1, 10.1), (10, 10), (0, 10)], "b", 0.9)
-    ground_truth = GroundTruth(objects=[polygon_gt])
+    ground_truth = GroundTruth(bboxes=[polygon_gt])
     inference = Inference(
-        objects=[polygon_inf],
+        bboxes=[polygon_inf],
     )
 
     config_one = ThresholdConfiguration(
@@ -87,9 +87,9 @@ def test__object_detection__multiple_configurations__multiclass__polygon() -> No
 def test__object_detection__multiple_configurations__single_class__polygon() -> None:
     polygon_gt = LabeledPolygon(points=[(0, 0), (10, 0), (10, 10), (0, 10)], label="a")
     polygon_inf = ScoredLabeledPolygon([(0, 0), (10, 0), (10.1, 10.1), (10, 10), (0, 10)], "b", 0.9)
-    ground_truth = GroundTruth(objects=[polygon_gt])
+    ground_truth = GroundTruth(bboxes=[polygon_gt])
     inference = Inference(
-        objects=[polygon_inf],
+        bboxes=[polygon_inf],
     )
 
     config_one = ThresholdConfiguration(
@@ -260,20 +260,20 @@ def test__object_detection__compute_and_cache_f1_optimal_thresholds__polygon() -
     inferences: List[Tuple[TestSample, GroundTruth, Inference]] = [
         (
             TestSample(locator="s3://bucket/fake0.png"),
-            GroundTruth(objects=[LabeledPolygon([(0, 0), (10, 10), (10, 0)], "a")]),
-            Inference(objects=[ScoredLabeledPolygon([(0, 0), (10, 10), (10, 0)], "a", 0.9)]),
+            GroundTruth(bboxes=[LabeledPolygon([(0, 0), (10, 10), (10, 0)], "a")]),
+            Inference(bboxes=[ScoredLabeledPolygon([(0, 0), (10, 10), (10, 0)], "a", 0.9)]),
         ),
         (
             TestSample(locator="s3://bucket/fake1.png"),
             GroundTruth(
-                objects=[
+                bboxes=[
                     LabeledPolygon([(0, 30), (10, 40), (10, 30)], "a"),
                     LabeledPolygon([(30, 30), (10, 40), (10, 30)], "a"),
                     LabeledPolygon([(0, 30), (10, 40), (10, 30)], "a"),
                 ],
             ),
             Inference(
-                objects=[
+                bboxes=[
                     ScoredLabeledPolygon([(0, 30), (10, 40), (10, 30)], "a", 0.9),
                     ScoredLabeledPolygon([(1, 30), (10, 40), (10, 30)], "a", 0.8),
                     ScoredLabeledPolygon([(30, 30), (10, 40), (10, 30)], "a", 0.7),
@@ -297,20 +297,20 @@ def test__object_detection__compute_and_cache_f1_optimal_thresholds__polygon__mu
     inferences: List[Tuple[TestSample, GroundTruth, Inference]] = [
         (
             TestSample(locator="s3://bucket/fake0.png"),
-            GroundTruth(objects=[LabeledPolygon([(0, 0), (10, 10), (10, 0)], "a")]),
-            Inference(objects=[ScoredLabeledPolygon([(0, 0), (10, 10), (10, 0)], "a", 0.9)]),
+            GroundTruth(bboxes=[LabeledPolygon([(0, 0), (10, 10), (10, 0)], "a")]),
+            Inference(bboxes=[ScoredLabeledPolygon([(0, 0), (10, 10), (10, 0)], "a", 0.9)]),
         ),
         (
             TestSample(locator="s3://bucket/fake1.png"),
             GroundTruth(
-                objects=[
+                bboxes=[
                     LabeledPolygon([(0, 30), (10, 40), (10, 30)], "a"),
                     LabeledPolygon([(30, 30), (10, 40), (10, 30)], "b"),
                     LabeledPolygon([(0, 30), (10, 40), (10, 30)], "a"),
                 ],
             ),
             Inference(
-                objects=[
+                bboxes=[
                     ScoredLabeledPolygon([(0, 30), (10, 40), (10, 30)], "a", 0.9),
                     ScoredLabeledPolygon([(1, 30), (10, 40), (10, 30)], "a", 0.8),
                     ScoredLabeledPolygon([(30, 30), (10, 40), (10, 30)], "b", 0.7),
