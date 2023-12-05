@@ -554,7 +554,11 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         ],
         configuration=config,
     )
-    assert test_suite_metrics == TestSuiteMetrics(n_images=len(TEST_DATA), mean_AP=200 / 351)
+    assert test_suite_metrics == TestSuiteMetrics(
+        n_images=len(TEST_DATA),
+        mean_AP=200 / 351,
+        threshold=config.threshold_strategy,
+    )
 
     # test suite metrics - two
     test_suite_metrics_dup = eval.compute_test_suite_metrics(
@@ -565,4 +569,8 @@ def test__object_detection__multiclass_evaluator__fixed() -> None:
         ],
         configuration=config,
     )
-    assert test_suite_metrics_dup == TestSuiteMetrics(n_images=len(TEST_DATA), mean_AP=200 / 351)
+    assert test_suite_metrics_dup == TestSuiteMetrics(
+        n_images=len(TEST_DATA),
+        mean_AP=200 / 351,
+        threshold=config.threshold_strategy,
+    )
