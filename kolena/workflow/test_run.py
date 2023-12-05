@@ -462,7 +462,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df = pd.DataFrame(thresholded_metrics, columns=["test_sample", "metrics"])
             df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
             df_serializable = df_validated.as_serializable()
-            log.info(df_serializable)
 
             init_response = init_upload()
             upload_data_frame_chunk(df_serializable, init_response.uuid)
