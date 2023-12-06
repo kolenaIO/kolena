@@ -45,6 +45,10 @@ Copy this JSON.
 
     You will require IAM write permissions within your AWS account to perform the next step.
 
+!!! note "Note: Enabling file versioning"
+
+    If you have previously  setup your integration and recently enabled file versioning please make sure your Access Policy JSON contains the `s3:GetObjectVersion` Action.
+
 In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
 
 1. Click the "Create Policy" button and select the "JSON" tab.
