@@ -73,8 +73,8 @@ If you don't see your question here, please reach out to us on Slack or at
 ??? faq "Does Kolena support file versioning?"
 
     If you are using Amazon S3 or Google Cloud Storage, Kolena supports file versioning for any linked `locator` files.
-    This includes [test samples][kolena.workflow.TestSample], [assets][kolena.workflow.asset], as well as certain
-    [annotation][kolena.workflow.annotation] types. Simply enable bucket versioning on your
+    This includes [test samples](../reference/workflow/test-sample), [assets](../reference/workflow/asset), as well as
+    certain [annotation](../reference/workflow/annotation) types. Simply enable bucket versioning on your
     [S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html) or
     [GCS](https://cloud.google.com/storage/docs/object-versioning) bucket and make sure to pass the `versionId` (S3)
     or `generation` (GCS) as part of the `locator`.

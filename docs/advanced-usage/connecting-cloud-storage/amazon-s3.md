@@ -45,16 +45,16 @@ Copy this JSON.
 
     You will require IAM write permissions within your AWS account to perform the next step.
 
-!!! note "Note: Enabling file versioning"
-
-    If you have previously configured an S3 integration and would like to enable file versioning, update your existing
-    policy to include permissions for the `s3:GetObjectVersion` Action.
-
 In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
 
 1. Click the "Create Policy" button and select the "JSON" tab.
 2. Paste the "Access Policy JSON" copied previously.
 3. Click through the "Next" buttons, adding the desired name, description, and tags.
+
+!!! note "Note: Enabling File Versioning"
+
+    If you have previously configured an S3 integration and would like to enable file versioning, update your existing
+    policy to include permissions for the `s3:GetObjectVersion` Action.
 
 ### Step 3: Create a Role For Kolena to Assume
 
