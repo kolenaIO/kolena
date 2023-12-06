@@ -47,7 +47,8 @@ Copy this JSON.
 
 !!! note "Note: Enabling file versioning"
 
-    If you have previously  setup your integration and recently enabled file versioning please make sure your Access Policy JSON contains the `s3:GetObjectVersion` Action.
+    If you have previously configured an S3 integration and would like to enable file versioning, update your existing
+    policy to include permissions for the `s3:GetObjectVersion` Action.
 
 In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
 
