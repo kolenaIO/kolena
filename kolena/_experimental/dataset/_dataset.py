@@ -16,6 +16,7 @@ import mimetypes
 from dataclasses import asdict
 from enum import Enum
 from typing import Iterator
+from typing import List
 from typing import Union
 
 import pandas as pd
@@ -25,6 +26,7 @@ from kolena._api.v2.dataset import Path
 from kolena._api.v2.dataset import RegisterRequest
 from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import validate_batch_size
+from kolena._experimental.dataset.common import validate_id_fields
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
@@ -113,15 +115,17 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     return result
 
 
-def register_dataset(name: str, df: pd.DataFrame) -> None:
+def register_dataset(name: str, df: pd.DataFrame, id_fields: List[str]) -> None:
     """
-    Create or update a dataset with datapoints.
+    Create or update a dataset with datapoints and id_fields.
     """
+    validate_id_fields(df, id_fields)
+
     load_uuid = init_upload().uuid
 
     df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
-    request = RegisterRequest(name=name, uuid=load_uuid)
+    request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
 
