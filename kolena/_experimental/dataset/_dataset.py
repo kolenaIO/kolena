@@ -113,7 +113,7 @@ def _format_composite(df: pd.DataFrame, prefix: str, sep: str) -> None:
     composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
     composite = df.loc[:, composite_columns]
     df.drop(columns=composite_columns, inplace=True)
-    composite.rename(columns=lambda col: col.removeprefix(prefix + sep), inplace=True)
+    composite.rename(columns=lambda col: col.split(sep)[-1], inplace=True)
     composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
     df[prefix] = composite.to_dict("records")
     df[prefix] = df[prefix].apply(json.dumps)
