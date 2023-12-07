@@ -19,17 +19,21 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
+from .data import a_text
+from .data import b_text
+from kolena._experimental.dataset._dataset import _add_datatype
+from kolena._experimental.dataset._dataset import _flatten_composite
 from kolena._experimental.dataset._dataset import _infer_datatype
 from kolena._experimental.dataset._dataset import _infer_datatype_value
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
-from kolena._experimental.dataset._dataset import add_datatype
 from kolena._experimental.dataset._dataset import DatapointType
 from kolena._experimental.dataset._evaluation import _align_datapoints_results
 from kolena._experimental.dataset._evaluation import _validate_data
 from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import COL_RESULT
 from kolena.errors import IncorrectUsageError
+from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
@@ -59,40 +63,92 @@ def test__add_datatype() -> None:
             locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
         ),
     )
-    add_datatype(df)
+    _add_datatype(df)
     assert df[DATA_TYPE_FIELD].equals(
         pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
     )
 
 
 def test__add_datatype__composite() -> None:
-    def assert_datatype(dataset: pd.DataFrame, expected_datatype: DatapointType, prefix: str = "") -> None:
-        for value in dataset[prefix + DATA_TYPE_FIELD]:
-            assert value == expected_datatype
+    composite_dataset = pd.DataFrame(
+        {
+            "a.text": a_text,
+        },
+    )
+    _add_datatype(composite_dataset)
+
+    assert "a.text" not in composite_dataset
+    assert (composite_dataset[DATA_TYPE_FIELD] == DatapointType.COMPOSITE).all()
+    for val, exp in zip(composite_dataset["a"], a_text):
+        a = json.loads(val)
+        assert a["text"] == exp
+        assert a[DATA_TYPE_FIELD] == DatapointType.TEXT
+
+    similarity = [5.0, 3.799999952316284, 3.799999952316284]
+    composite_dataset = pd.DataFrame(
+        {
+            "a.text": a_text,
+            "b.text": b_text,
+            "similarity": similarity,
+        },
+    )
+    _add_datatype(composite_dataset)
+
+    assert (composite_dataset[DATA_TYPE_FIELD] == DatapointType.COMPOSITE).all()
+    assert (composite_dataset["similarity"] == similarity).all()
+    for val, exp in zip(composite_dataset["a"], a_text):
+        a = json.loads(val)
+        assert a["text"] == exp
+        assert a[DATA_TYPE_FIELD] == DatapointType.TEXT
+    for val, exp in zip(composite_dataset["b"], b_text):
+        b = json.loads(val)
+        assert b["text"] == exp
+        assert b[DATA_TYPE_FIELD] == DatapointType.TEXT
+
+
+def test__flatten_composite():
+    composite_dataset = pd.DataFrame(
+        {
+            "a": [json.dumps({"text": text, DATA_TYPE_FIELD: DatapointType.TEXT}) for text in a_text],
+            "b": [json.dumps({"text": text, DATA_TYPE_FIELD: DatapointType.TEXT}) for text in b_text],
+            "c": [
+                json.dumps({"text": text}) for text in zip(a_text, b_text)
+            ],  # Should not flatten because no DATA_TYPE_FIELD
+            DATA_TYPE_FIELD: DatapointType.COMPOSITE,
+        },
+    )
+    composite_dataset = _flatten_composite(composite_dataset)
+
+    expected = pd.DataFrame(
+        {
+            "a.text": a_text,
+            f"a.{DATA_TYPE_FIELD}": DatapointType.TEXT,
+            "b.text": b_text,
+            f"b.{DATA_TYPE_FIELD}": DatapointType.TEXT,
+            "c": [json.dumps({"text": text}) for text in zip(a_text, b_text)],
+            DATA_TYPE_FIELD: DatapointType.COMPOSITE,
+        },
+    )
+    assert (composite_dataset.sort_index(axis=1) == expected.sort_index(axis=1)).all().all()
+
+
+def test__add_datatype__invalid():
+    composite_dataset = pd.DataFrame(
+        {
+            "a": [i for i in range(5)],
+            "a.locator": [f"{i}.png" for i in range(5)],
+        },
+    )
+    with pytest.raises(InputValidationError):
+        _add_datatype(composite_dataset)
 
     composite_dataset = pd.DataFrame(
         {
-            "a.text": [
-                "A plane is taking off.",
-                "A man is playing a large flute.",
-                "A man is spreading shredded cheese on a pizza.",
-            ],
+            "too.many.dots": [i for i in range(5)],
         },
     )
-    add_datatype(composite_dataset)
-    assert_datatype(composite_dataset, DatapointType.COMPOSITE)
-    assert_datatype(composite_dataset, DatapointType.TEXT, prefix="a.")
-
-    composite_dataset["b.text"] = [
-        "An air plane is taking off.",
-        "A man is playing a flute.",
-        "A man is spreading shredded cheese on an uncooked pizza.",
-    ]
-    composite_dataset["similarity"] = [5.0, 3.799999952316284, 3.799999952316284]
-    add_datatype(composite_dataset)
-    assert_datatype(composite_dataset, DatapointType.COMPOSITE)
-    assert_datatype(composite_dataset, DatapointType.TEXT, prefix="a.")
-    assert_datatype(composite_dataset, DatapointType.TEXT, prefix="b.")
+    with pytest.raises(InputValidationError):
+        _add_datatype(composite_dataset)
 
 
 def test__infer_datatype() -> None:

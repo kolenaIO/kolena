@@ -16,6 +16,7 @@ import mimetypes
 from dataclasses import asdict
 from enum import Enum
 from typing import Iterator
+from typing import Set
 from typing import Union
 
 import pandas as pd
@@ -31,6 +32,7 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
+from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
@@ -84,25 +86,44 @@ def _infer_datatype_value(x: str) -> str:
     return DatapointType.TABULAR.value
 
 
-def add_datatype(df: pd.DataFrame) -> None:
+def _add_datatype(df: pd.DataFrame, sep: str = ".") -> None:
     """Adds `data_type` column(s) to input DataFrame."""
     prefixes = {
-        column.rsplit(sep=".", maxsplit=1)[0] + "."
+        column.rsplit(sep=sep, maxsplit=1)[0]
         for column in df.columns.values
-        if isinstance(column, str) and "." in column
+        if isinstance(column, str) and sep in column
     }
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
-        for prefix in prefixes:
-            df[prefix + DATA_TYPE_FIELD] = _infer_datatype(df.filter(regex=f"^{prefix}", axis=1), prefix=prefix)
+        _format_composite(df, prefixes, sep)
     else:
         df[DATA_TYPE_FIELD] = _infer_datatype(df)
 
 
-def _infer_datatype(df: pd.DataFrame, prefix: str = "") -> Union[pd.DataFrame, str]:
-    if prefix + FIELD_LOCATOR in df.columns:
-        return df[prefix + FIELD_LOCATOR].apply(_infer_datatype_value)
-    elif prefix + FIELD_TEXT in df.columns:
+def _format_composite(df: pd.DataFrame, prefixes: Set[str], sep: str) -> None:
+    for prefix in prefixes:
+        if prefix in df.columns:
+            raise InputValidationError(
+                f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
+            )
+        if sep in prefix:
+            raise InputValidationError(
+                f"More than one delimeter '{sep}' in {prefix=}.",
+            )
+
+        composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
+        composite = df.loc[:, composite_columns]
+        df.drop(columns=composite_columns, inplace=True)
+        composite.rename(columns=lambda col: col.removeprefix(prefix + sep), inplace=True)
+        composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
+        df[prefix] = composite.to_dict("records")
+        df[prefix] = df[prefix].apply(json.dumps)
+
+
+def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
+    if FIELD_LOCATOR in df.columns:
+        return df[FIELD_LOCATOR].apply(_infer_datatype_value)
+    elif FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
     return DatapointType.TABULAR.value
@@ -111,7 +132,7 @@ def _infer_datatype(df: pd.DataFrame, prefix: str = "") -> Union[pd.DataFrame, s
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
     if column == COL_DATAPOINT:
-        add_datatype(result)
+        _add_datatype(result)
     result[column] = result.to_dict("records")
     result[column] = result[column].apply(lambda x: json.dumps(x))
 
@@ -123,10 +144,25 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
         max_level=0,
     )
+    flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
-    result = _dataframe_object_serde(flattened, _deserialize_dataobject)
+    return _dataframe_object_serde(flattened, _deserialize_dataobject)
 
-    return result
+
+def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
+    for key, value in df.iloc[0].items():
+        try:
+            value = isinstance(value, str) and json.loads(value)
+        except json.JSONDecodeError:
+            pass
+
+        if isinstance(value, dict) and DATA_TYPE_FIELD in value:
+            flattened = pd.json_normalize([json.loads(s) for s in df[key]]).rename(
+                columns=lambda col: f"{key}.{col}",
+            )
+            df = df.join(flattened)
+            df.drop(columns=[key], inplace=True)
+    return df
 
 
 def register_dataset(name: str, df: pd.DataFrame) -> None:

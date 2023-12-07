@@ -88,6 +88,7 @@ def test__register_dataset__composite() -> None:
             "b.word_count": 2 * i,
             "a.char_length": 10 * i,
             "b.char_length": 15 * i,
+            "c": {"text": "nested " * i, "word_count": 3 * i, "char_length": 7 * i},
             "total_word_count": 3 * i,
             "total_char_length": 25 * i,
             "word_count_diff": i,
@@ -100,7 +101,8 @@ def test__register_dataset__composite() -> None:
     df = pd.DataFrame(datapoints[:10], columns=columns)
     register_dataset(name, df)
 
-    loaded_datapoints = fetch_dataset(name).sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
+    loaded_datapoints = fetch_dataset(name)
+    loaded_datapoints = loaded_datapoints.sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
     assert_frame_equal(df, loaded_datapoints)
 
     # update dataset
