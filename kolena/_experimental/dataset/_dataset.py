@@ -107,7 +107,7 @@ def _format_composite(df: pd.DataFrame, prefix: str, sep: str) -> None:
         )
     if sep in prefix:
         raise InputValidationError(
-            f"More than one delimeter '{sep}' in {prefix=}.",
+            f"More than one delimeter '{sep}' in prefix: '{prefix}'.",
         )
 
     composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
