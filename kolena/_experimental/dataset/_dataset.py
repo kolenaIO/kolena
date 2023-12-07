@@ -16,7 +16,6 @@ import mimetypes
 from dataclasses import asdict
 from enum import Enum
 from typing import Iterator
-from typing import Set
 from typing import Union
 
 import pandas as pd
@@ -95,29 +94,29 @@ def _add_datatype(df: pd.DataFrame, sep: str = ".") -> None:
     }
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
-        _format_composite(df, prefixes, sep)
+        for prefix in prefixes:
+            _format_composite(df, prefix, sep)
     else:
         df[DATA_TYPE_FIELD] = _infer_datatype(df)
 
 
-def _format_composite(df: pd.DataFrame, prefixes: Set[str], sep: str) -> None:
-    for prefix in prefixes:
-        if prefix in df.columns:
-            raise InputValidationError(
-                f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
-            )
-        if sep in prefix:
-            raise InputValidationError(
-                f"More than one delimeter '{sep}' in {prefix=}.",
-            )
+def _format_composite(df: pd.DataFrame, prefix: str, sep: str) -> None:
+    if prefix in df.columns:
+        raise InputValidationError(
+            f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
+        )
+    if sep in prefix:
+        raise InputValidationError(
+            f"More than one delimeter '{sep}' in {prefix=}.",
+        )
 
-        composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
-        composite = df.loc[:, composite_columns]
-        df.drop(columns=composite_columns, inplace=True)
-        composite.rename(columns=lambda col: col.removeprefix(prefix + sep), inplace=True)
-        composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
-        df[prefix] = composite.to_dict("records")
-        df[prefix] = df[prefix].apply(json.dumps)
+    composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
+    composite = df.loc[:, composite_columns]
+    df.drop(columns=composite_columns, inplace=True)
+    composite.rename(columns=lambda col: col.removeprefix(prefix + sep), inplace=True)
+    composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
+    df[prefix] = composite.to_dict("records")
+    df[prefix] = df[prefix].apply(json.dumps)
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
