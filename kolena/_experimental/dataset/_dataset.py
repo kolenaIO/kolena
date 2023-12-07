@@ -41,6 +41,7 @@ from kolena.workflow.io import _dataframe_object_serde
 
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
+SEP = "."
 
 
 class DatapointType(str, Enum):
@@ -85,35 +86,35 @@ def _infer_datatype_value(x: str) -> str:
     return DatapointType.TABULAR.value
 
 
-def _add_datatype(df: pd.DataFrame, sep: str = ".") -> None:
+def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
     prefixes = {
-        column.rsplit(sep=sep, maxsplit=1)[0]
+        column.rsplit(sep=SEP, maxsplit=1)[0]
         for column in df.columns.values
-        if isinstance(column, str) and sep in column
+        if isinstance(column, str) and SEP in column
     }
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
         for prefix in prefixes:
-            _format_composite(df, prefix, sep)
+            _format_composite(df, prefix)
     else:
         df[DATA_TYPE_FIELD] = _infer_datatype(df)
 
 
-def _format_composite(df: pd.DataFrame, prefix: str, sep: str) -> None:
+def _format_composite(df: pd.DataFrame, prefix: str) -> None:
     if prefix in df.columns:
         raise InputValidationError(
             f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
         )
-    if sep in prefix:
+    if SEP in prefix:
         raise InputValidationError(
-            f"More than one delimeter '{sep}' in prefix: '{prefix}'.",
+            f"More than one delimeter '{SEP}' in prefix: '{prefix}'.",
         )
 
     composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
     composite = df.loc[:, composite_columns]
     df.drop(columns=composite_columns, inplace=True)
-    composite.rename(columns=lambda col: col.split(sep)[-1], inplace=True)
+    composite.rename(columns=lambda col: col.split(SEP)[-1], inplace=True)
     composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
     df[prefix] = composite.to_dict("records")
     df[prefix] = df[prefix].apply(json.dumps)
