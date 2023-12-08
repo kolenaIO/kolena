@@ -7,9 +7,6 @@ icon: kolena/comparison-16
 Kolena supports natural language and similar image search across [`Image`][kolena.workflow.Image] data previously registered to the platform.
 Users may set up this functionality by extracting and uploading the corresponding search embeddings using a Kolena provided package.
 
-!!! note end
-    Kolena supports search embedding extraction and upload as an opt-in feature for our customers.
-    Please message your point of contact for the latest relevant extractor package.
 
 ## Example
 
