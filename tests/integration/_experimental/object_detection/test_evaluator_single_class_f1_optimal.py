@@ -294,13 +294,14 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         configuration=config,
     )
 
-    assert config.display_name() in eval.evaluator.threshold_cache
-    assert eval.evaluator.threshold_cache[config.display_name()] == 0.1
-    assert len(eval.evaluator.matchings_by_test_case) != 0
-    assert len(eval.evaluator.matchings_by_test_case[config.display_name()]) != 0
+    evaluator = eval._get_evaluator(config)
+    assert config.display_name() in evaluator.threshold_cache
+    assert evaluator.threshold_cache[config.display_name()] == 0.1
+    assert len(evaluator.matchings_by_test_case) != 0
+    assert len(evaluator.matchings_by_test_case[config.display_name()]) != 0
     num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
     assert (
-        len(eval.evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
+        len(evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
         == len(TEST_DATA) - num_of_ignored
     )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
@@ -312,8 +313,8 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
         configuration=config,
     )
 
-    assert TEST_CASE.name in eval.evaluator.locators_by_test_case
-    assert len(eval.evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
+    assert TEST_CASE.name in evaluator.locators_by_test_case
+    assert len(evaluator.locators_by_test_case[TEST_CASE.name]) == len(TEST_DATA)
     assert_test_case_metrics_equals_expected(test_case_metrics, EXPECTED_COMPUTE_TEST_CASE_METRICS)
 
     # test case plots only use the cached values
