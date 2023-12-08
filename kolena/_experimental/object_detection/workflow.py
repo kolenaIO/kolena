@@ -213,8 +213,16 @@ class ThresholdConfiguration(EvaluatorConfiguration):
     inferences with low confidence score.
     """
 
+    multiclass: Optional[bool] = None
+    """Optional flag to choose whether the SingleClass or Multiclass evaluator is run.
+    If unset, the evaluator is determined based on the number of distinct labels in test data."""
+
     def display_name(self) -> str:
+        evaluator_name = ""
+        if self.multiclass is not None:
+            evaluator_name = "Multiclass, " if self.multiclass else "SingleClass, "
         return (
+            f"{evaluator_name}"
             f"Confidence Threshold: {self.threshold_strategy}, "
             f"IoU: {self.iou_threshold}, "
             f"min confidence ≥ {self.min_confidence_score}"

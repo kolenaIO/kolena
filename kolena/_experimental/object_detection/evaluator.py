@@ -45,13 +45,9 @@ class ObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    # The evaluator class to use for single or multiclass object detection
-    evaluator: Optional[
-        Union[
-            SingleClassObjectDetectionEvaluator,
-            MulticlassObjectDetectionEvaluator,
-        ]
-    ] = None
+    single_class_evaluator = SingleClassObjectDetectionEvaluator()
+    multiclass_evaluator = MulticlassObjectDetectionEvaluator()
+    dynamic_evaluator: Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator, None] = None
 
     def compute_test_sample_metrics(
         self,
@@ -61,17 +57,17 @@ class ObjectDetectionEvaluator(Evaluator):
     ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
         assert configuration is not None, "must specify configuration"
 
-        # Use complete test case to determine workflow, single class or multiclass
-        if self.evaluator is None:
+        if configuration.multiclass is None:
             labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
                 inf.label for _, _, infs in inferences for inf in infs.bboxes
             }
             if len(labels) >= 2:
-                self.evaluator = MulticlassObjectDetectionEvaluator()
+                self.dynamic_evaluator = self.multiclass_evaluator
             else:
-                self.evaluator = SingleClassObjectDetectionEvaluator()
+                self.dynamic_evaluator = self.single_class_evaluator
 
-        return self.evaluator.compute_test_sample_metrics(
+        evaluator = self._get_evaluator(configuration)
+        return evaluator.compute_test_sample_metrics(
             test_case=test_case,
             inferences=inferences,
             configuration=configuration,
@@ -85,7 +81,9 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Union[TestCaseMetrics, TestCaseMetricsSingleClass]:
         assert configuration is not None, "must specify configuration"
-        return self.evaluator.compute_test_case_metrics(
+
+        evaluator = self._get_evaluator(configuration)
+        return evaluator.compute_test_case_metrics(
             test_case=test_case,
             inferences=inferences,
             metrics=metrics,
@@ -100,7 +98,9 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        return self.evaluator.compute_test_case_plots(
+
+        evaluator = self._get_evaluator(configuration)
+        return evaluator.compute_test_case_plots(
             test_case=test_case,
             inferences=inferences,
             metrics=metrics,
@@ -114,8 +114,20 @@ class ObjectDetectionEvaluator(Evaluator):
         configuration: Optional[ThresholdConfiguration] = None,
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
-        return self.evaluator.compute_test_suite_metrics(
+
+        evaluator = self._get_evaluator(configuration)
+        return evaluator.compute_test_suite_metrics(
             test_suite=test_suite,
             metrics=metrics,
             configuration=configuration,
         )
+
+    def _get_evaluator(
+        self,
+        configuration: Optional[ThresholdConfiguration],
+    ) -> Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator]:
+        assert configuration is not None, "must specify configuration"
+
+        if configuration.multiclass is None:
+            return self.dynamic_evaluator
+        return self.multiclass_evaluator if configuration.multiclass else self.single_class_evaluator
