@@ -10,7 +10,7 @@ data has already been uploaded to your Kolena platform.
 
 1. Ensure that data for the [`age_estimation`](../age_estimation) workflow has been seeded through calling the
 [`seed_test_suite.py`](../age_estimation/age_estimation/seed_test_suite.py) script.
-2. Copy the `kolena_embeddings-*.*.*.tar.gz` file (provided by your Kolena contact) to the `./local_packages` directory to a file named `kolena_embeddings.tar.gz`.
+2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.io/advanced-usage/set-up-natural-language-search/#poetry)
 3. This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. Install project
 dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 

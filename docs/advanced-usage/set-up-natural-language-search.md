@@ -30,19 +30,27 @@ Uploading embeddings to Kolena can be done in three simple steps:
 Let's take a look at each step with example code snippets.
 
 ### Step 1: Install `kolena_embeddings` Package
-
-Copy the `kolena_embeddings-*.*.*.tar.gz` file (provided by your Kolena contact) to your working directory, and install it as a dependency.
+The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
+on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
 
 === "`pip`"
 
     ```shell
-    pip install ./kolena_embeddings-*.*.*.tar.gz
+    pip install --extra-index-url="https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 === "`poetry`"
+    Add the following to your `pyproject.toml`
+    ```shell
+    [[tool.poetry.source]]
+    name = "kolena-embeddings"
+    url = "https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories"
+    priority = "supplemental"
+    ```
+    Run the following command
 
     ```shell
-    poetry add ./kolena_embeddings-*.*.*.tar.gz
+    poetry add kolena_embeddings
     ```
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:
