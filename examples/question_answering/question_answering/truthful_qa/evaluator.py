@@ -125,7 +125,7 @@ def compute_test_sample_metrics(
     selfcheck_scores = compute_selfcheck_scores(ts, inf)
     consistency_scores = compute_selfcheck_prompt_scores(ts, inf)
 
-    selfcheck_bertscore_threshold = 0.4
+    selfcheck_bertscore_threshold = 0.45
     selfcheck_ngram_threshold = 3.5
     selfcheck_prompt_threshold = 0.75
 
