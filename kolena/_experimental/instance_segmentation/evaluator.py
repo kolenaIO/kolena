@@ -46,8 +46,9 @@ class InstanceSegmentationEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    def __init__(self):
+    def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
         self.evaluator = ObjectDetectionEvaluator()
+        super().__init__(configurations)
 
     def compute_test_sample_metrics(
         self,
