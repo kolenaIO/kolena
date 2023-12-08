@@ -65,7 +65,29 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
-    TestSuite(DATASET, test_cases=[complete_test_case], reset=True)
+    test_cases = []
+
+    test_cases.append(
+        TestCase(
+            f"adversarial :: {DATASET}",
+            test_samples=[
+                (ts, gt) for ts, gt in test_samples_and_ground_truths if ts.metadata["type"] == "Adversarial"
+            ],
+            reset=True,
+        ),
+    )
+
+    test_cases.append(
+        TestCase(
+            f"non-adversarial :: {DATASET}",
+            test_samples=[
+                (ts, gt) for ts, gt in test_samples_and_ground_truths if ts.metadata["type"] == "Non-Adversarial"
+            ],
+            reset=True,
+        ),
+    )
+
+    TestSuite(DATASET, test_cases=[complete_test_case, *test_cases], reset=True)
 
     return 0
 

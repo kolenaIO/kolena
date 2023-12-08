@@ -26,6 +26,7 @@ from kolena.workflow import MetricsTestCase
 from kolena.workflow import MetricsTestSample
 from kolena.workflow import Text
 from kolena.workflow.annotation import Label
+from kolena.workflow.asset import PlainTextAsset
 
 
 @dataclass(frozen=True)
@@ -65,9 +66,14 @@ class Answer(Label):
 class Inference(BaseInference):
     """Inference type for the Question Answering workflow."""
 
-    answers: List[Answer]
-    num_answers: int
     missing_answer: bool
+    answers: List[Label]
+    answer: Optional[Label] = None
+    answer_with_top5_logprob: Optional[Label] = None
+    selfcheck_metrics: Optional[PlainTextAsset] = None
+    probabilities_metrics: Optional[PlainTextAsset] = None
+    consistency_metrics: Optional[PlainTextAsset] = None
+    is_hallucination: Optional[bool] = None
 
 
 workflow, TestCase, TestSuite, Model = define_workflow(
@@ -79,28 +85,23 @@ workflow, TestCase, TestSuite, Model = define_workflow(
 
 
 @dataclass(frozen=True)
-class AnswerResult(Label):
-    """Metrics for each answer from a Question Answering model."""
-
-    BART: float
-    BERT_prec: float
-    BERT_rec: float
-    BERT_f1: float
-    BLEURT: float
-    METEOR: float
-
-
-@dataclass(frozen=True)
 class TestSampleMetrics(MetricsTestSample):
     """Sample-level metrics for the Question Answering workflow."""
 
     fail_to_answer: bool
-    answers: List[AnswerResult]
-    best_answer_by_BART: Optional[AnswerResult] = None
-    best_answer_by_BERT_f1: Optional[AnswerResult] = None
-    best_answer_by_BLEURT: Optional[AnswerResult] = None
-    best_answer_by_METEOR: Optional[AnswerResult] = None
-    best_overall: Optional[AnswerResult] = None
+    is_hallucination_by_logprob: Optional[bool] = None
+    is_hallucination_by_entropy: Optional[bool] = None
+    average_logprob: Optional[float] = None  # 1 - Avg(logP)
+    average_entropy: Optional[float] = None  # Avg(H)
+    min_logprob: Optional[float] = None  # 1 - Max(-logP)
+    max_entropy: Optional[float] = None  # Max(H)
+    is_hallucination_by_selfcheck_bertscore: Optional[bool] = None
+    is_hallucination_by_selfcheck_ngram: Optional[bool] = None
+    selfcheck_bertscore: Optional[float] = None
+    selfcheck_ngram: Optional[float] = None
+    is_hallucination_by_selfcheck_prompt: Optional[bool] = None
+    selfcheck_prompt: Optional[float] = None
+    selfcheck_prompt_reasons: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
@@ -109,7 +110,12 @@ class TestCaseMetrics(MetricsTestCase):
 
     Questions: int
     Failures: int
-    BART: float  # from overall_best
-    BERT_f1: float  # from overall_best
-    BLEURT: float  # from overall_best
-    METEOR: float  # from overall_best
+    FactualityScoreLogProb: float
+    FactualityScoreEntropy: float
+    FactualityScoreSelfcheckBert: float
+    FactualityScoreSelfcheckNGram: float
+    MetricsAccuracyLogProb: float
+    MetricsAccuracyEntropy: float
+    MetricsAccuracySelfcheckBert: float
+    MetricsAccuracySelfcheckNGram: float
+    MetricsAccuracySelfcheckPrompt: float
