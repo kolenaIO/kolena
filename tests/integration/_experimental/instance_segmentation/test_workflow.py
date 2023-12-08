@@ -22,7 +22,10 @@ from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 
-instance_segmentation = pytest.importorskip("kolena._experimental.instance_segmentation", reason="requires kolena[metrics] extra")
+instance_segmentation = pytest.importorskip(
+    "kolena._experimental.instance_segmentation",
+    reason="requires kolena[metrics] extra",
+)
 GroundTruth = instance_segmentation.GroundTruth
 Inference = instance_segmentation.Inference
 Model = instance_segmentation.Model
