@@ -19,9 +19,9 @@ failures in candidate texts, and are aggregated to calculate the word, character
     Candidate: `Amidst the emerald shadow, butterflies whistled secrets on the breeze.` <br>
 
     <b>Word-level Substitutions</b>: <br>
-    <code>Amidst the emerald <b><big>shadow</big></b>, butterflies <b><big>whistled</big></b> secrets <b><big>on</big></b> the breeze.</code> <br>
+    <code>Amidst the emerald <span class="mg-color-substitution"><big>shadow</big></span>, butterflies <span class="mg-color-substitution"><big>whistled</big></span> secrets <span class="mg-color-substitution"><big>on</big></span> the breeze.</code> <br>
     <b>Character-level Substitutions</b>: <br>
-    <code>Amidst the emerald <b><big>sh</big></b>adow, butterflies <b><big>whistl</big></b>ed secrets <b><big>o</big></b>n the breeze.</code> <br>
+    <code>Amidst the emerald <span class="mg-color-substitution"><big>sh</big></span>adow, butterflies <span class="mg-color-substitution"><big>whistl</big></span>ed secrets <span class="mg-color-substitution"><big>o</big></span>n the breeze.</code> <br>
 
     In the above example, there are 3 word-level substitutions and 9 character-level substitutions.
 
@@ -33,9 +33,9 @@ failures in candidate texts, and are aggregated to calculate the word, character
     Candidate: `Amidst the emerald meadow, butterflies whispered.` <br>
 
     <b>Word-level Deletions</b>: <br>
-    <code>Amidst the emerald meadow, butterflies whispered <u><big>secrets in the breeze</big></u>.</code> <br>
+    <code>Amidst the emerald meadow, butterflies whispered <span class="mg-color-deletion"><big>secrets in the breeze</big></span>.</code> <br>
     <b>Character-level Deletions</b>: <br>
-    <code>Amidst the emerald meadow, butterflies whispered <u><big>secrets in the breeze</big></u>.</code> <br>
+    <code>Amidst the emerald meadow, butterflies whispered <span class="mg-color-deletion"><big>secrets in the breeze</big></span>.</code> <br>
 
     In the above example, there are 4 word-level deletions and 18 character-level deletions.
 
@@ -47,16 +47,16 @@ failures in candidate texts, and are aggregated to calculate the word, character
     Candidate: `Amidst the emerald meadow, butterflies whispered ethereal secrets in the breeze.` <br>
 
     <b>Word-level Insertions</b>: <br>
-    <code>Amidst the emerald meadow, butterflies whispered <i><big>ethereal</big></i> secrets in the breeze.</code> <br>
+    <code>Amidst the emerald meadow, butterflies whispered <span class="mg-color-insertion"><big>ethereal</big></span> secrets in the breeze.</code> <br>
     <b>Character-level Insertions</b>: <br>
-    <code>Amidst the emerald meadow, butterflies whispered <i><big>ethereal</big></i> secrets in the breeze.</code> <br>
+    <code>Amidst the emerald meadow, butterflies whispered <span class="mg-color-insertion"><big>ethereal</big></span> secrets in the breeze.</code> <br>
 
     In the above example, there is 1 word-level insertion and 8 character-level insertions.
 
 ## Word Error Rate
 Word Error Rate is a fundamental metric that measures the accuracy of a candidate text by considering three types
-of errors — [substitutions, deletions, and insertions](#substitutions-deletions-and-insertions). Word-level errors 
-surface mispredicted words, and it can be useful to visualize common word-level failures to flesh out weaknesses 
+of errors — [substitutions, deletions, and insertions](#substitutions-deletions-and-insertions). Word-level errors
+surface mispredicted words, and it can be useful to visualize common word-level failures to flesh out weaknesses
 in a model.
 
 Formally, it is defined as the rate of word-level errors in a candidate text.
@@ -73,10 +73,10 @@ Let's calculate the word error rate between the following reference and candidat
 |  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into sonnets for enhanced soulful grace.` |
 
 ??? example "Step 1. Count Errors"
-    Highlighting the <b><big>substitution</big></b>, <u><big>deletion</big></u>, and <i><big>insertion</big></i> errors, we can count each type of error:
+    Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>, <span class="mg-color-deletion"><big>deletion</big></span>, and <span class="mg-color-insertion"><big>insertion</big></span> errors, we can count each type of error:
 
     <code>
-    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</big></u> <big><u>nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
+    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of nature</big></span>, <span class="mg-color-substitution"><big>transcending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
     </code>
 
     In our candidate text, we have 2 substitutions, 3 deletions, and 1 insertion.
@@ -103,9 +103,9 @@ we have 2 errors in the candidate and 1 word in the reference. Generally speakin
 to 0 as possible.
 
 ## Character Error Rate
-Character Error Rate is another metric that measures the accuracy of a candidate text through [substitutions, 
-deletions, and insertions](#substitutions-deletions-and-insertions). Unlike word-level errors, character-level 
-errors are useful in surfacing mispronunciations and erroneous phonemes. CER is defined as the rate of 
+Character Error Rate is another metric that measures the accuracy of a candidate text through [substitutions,
+deletions, and insertions](#substitutions-deletions-and-insertions). Unlike word-level errors, character-level
+errors are useful in surfacing mispronunciations and erroneous phonemes. CER is defined as the rate of
 character-level errors in a candidate text.
 
 $$
@@ -120,10 +120,10 @@ Let's calculate the character error rate using the same reference and candidate 
 |  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into enhanced sonnets for soulful grace.` |
 
 ??? example "Step 1. Count Errors"
-    Highlighting the <b><big>substitution</big></b>, <u><big>deletion</big></u>, and <i><big>insertion</big></i> errors, we can count each type of error:
+    Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>, <span class="mg-color-deletion"><big>deletion</big></span>, and <span class="mg-color-insertion"><big>insertion</big></span> errors, we can count each type of error:
 
     <code>
-    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</u></big> <u><big>nature</big></u>, trans<b><big>cending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
+    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of</u></big> <span class="mg-color-deletion"><big>nature</big></span>, trans<span class="mg-color-substitution"><big>cending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
     </code>
 
     In our candidate text, we have 13 substitutions, 16 deletions, and 6 insertions.
@@ -170,10 +170,10 @@ Let's calculate the match error rate using the same reference and candidate text
 |  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into enhanced sonnets for soulful grace.` |
 
 ??? example "Step 1. Count Errors"
-    Highlighting the <b><big>substitution</big></b>, <u><big>deletion</big></u>, and <i><big>insertion</big></i> errors, we can count each type of error:
+    Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>, <span class="mg-color-deletion"><big>deletion</big></span>, and <span class="mg-color-insertion"><big>insertion</big></span> errors, we can count each type of error:
 
     <code>
-    The <i><big>poetic</big></i> bard <b><big>echoed</big></b> ancient melodies <u><big>of</u></big> <u><big>nature</big></u>, <b><big>transcending</big></b> <u><big>tranquil</big></u> meadows into sonnets for enhanced soulful grace.
+    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of</u></big> <span class="mg-color-deletion"><big>nature</big></span>, <span class="mg-color-substitution"><big>transcending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
     </code>
 
     In our candidate text, we have 2 substitutions, 3 deletions, and 1 insertion.
