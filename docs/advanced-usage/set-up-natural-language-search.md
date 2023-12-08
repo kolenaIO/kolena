@@ -37,17 +37,14 @@ on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/develope
     ```
 
 === "`poetry`"
-    Add the following to your `pyproject.toml`
+    Configure an additional poetry source:
     ```shell
-    [[tool.poetry.source]]
-    name = "kolena-embeddings"
-    url = "https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories"
-    priority = "supplemental"
+    poetry source add --priority=supplemental kolena-embeddings "https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories"
     ```
     Run the following command
 
     ```shell
-    poetry add kolena_embeddings
+    poetry add --source kolena-embeddings kolena-embeddings
     ```
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:
