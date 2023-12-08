@@ -1,7 +1,6 @@
 # Example Extraction: Image Search Embeddings
 
 > Kolena supports search embedding extraction and upload as an opt-in feature for our customers.
-> Please message your point of contact for the latest relevant extractor package.
 
 This example runs against data from the [`age_estimation`](../age_estimation) example workflow, and assumes this
 data has already been uploaded to your Kolena platform.

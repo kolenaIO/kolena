@@ -9,9 +9,15 @@ license = "Apache-2.0"
 python = ">=3.8,<3.12"
 kolena = ">=0.94.0,<1"
 s3fs = "^2023.5.0"
+kolena-embeddings = {version = "^0.4.1", source = "kolena-embeddings"}
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"
+
+[[tool.poetry.source]]
+name = "kolena-embeddings"
+url = "https://gateway.kolena.cloud/repositories"
+priority = "supplemental"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
