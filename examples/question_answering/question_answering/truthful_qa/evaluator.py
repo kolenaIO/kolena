@@ -79,14 +79,11 @@ def compute_selfcheck_scores(ts: TestSample, inf: Inference) -> Dict[str, float]
     df_selfcheck = get_selfcheck_metrics(inf.selfcheck_metrics.locator)
     df_question = df_selfcheck[df_selfcheck["question"] == ts.question]
     if len(df_question) > 0:
-        selfcheck_scores = df_question.iloc[0]
+        selfcheck_scores = df_question.iloc[0]["consistency"]
+        selfcheck_scores = ast.literal_eval(selfcheck_scores)
+        return selfcheck_scores
     else:
         return None
-
-    return dict(
-        selfcheck_bertscore=selfcheck_scores.selfcheck_bertscore,
-        selfcheck_ngram=selfcheck_scores.selfcheck_ngram,
-    )
 
 
 def compute_selfcheck_prompt_scores(ts: TestSample, inf: Inference) -> Dict[str, float]:
@@ -128,6 +125,10 @@ def compute_test_sample_metrics(
     selfcheck_scores = compute_selfcheck_scores(ts, inf)
     consistency_scores = compute_selfcheck_prompt_scores(ts, inf)
 
+    selfcheck_bertscore_threshold = 0.4
+    selfcheck_ngram_threshold = 3.5
+    selfcheck_prompt_threshold = 0.75
+
     return TestSampleMetrics(
         fail_to_answer=False,
         is_hallucination_by_logprob=uncertainty_scores["min_logprob"] > 5.0 if uncertainty_scores is not None else None,
@@ -138,19 +139,22 @@ def compute_test_sample_metrics(
         average_entropy=uncertainty_scores["average_entropy"] if uncertainty_scores is not None else None,
         min_logprob=uncertainty_scores["min_logprob"] if uncertainty_scores is not None else None,
         max_entropy=uncertainty_scores["max_entropy"] if uncertainty_scores is not None else None,
-        is_hallucination_by_selfcheck_bertscore=selfcheck_scores["selfcheck_bertscore"] > 0.5
-        if selfcheck_scores is not None
+        is_hallucination_by_selfcheck_bertscore=selfcheck_scores["selfcheck_bertscore"] > selfcheck_bertscore_threshold
+        if selfcheck_scores is not None and selfcheck_scores["selfcheck_bertscore"] is not None
         else None,
-        is_hallucination_by_selfcheck_ngram=selfcheck_scores["selfcheck_ngram"] > 0.5
-        if selfcheck_scores is not None
+        is_hallucination_by_selfcheck_ngram=selfcheck_scores["selfcheck_ngram_max"] > selfcheck_ngram_threshold
+        if selfcheck_scores is not None and selfcheck_scores["selfcheck_ngram_max"] is not None
         else None,
         selfcheck_bertscore=selfcheck_scores["selfcheck_bertscore"] if selfcheck_scores is not None else None,
-        selfcheck_ngram=selfcheck_scores["selfcheck_ngram"] if selfcheck_scores is not None else None,
-        is_hallucination_by_selfcheck_prompt=consistency_scores["consistency_score"] <= 0.75
+        selfcheck_ngram=selfcheck_scores["selfcheck_ngram_max"] if selfcheck_scores is not None else None,
+        is_hallucination_by_selfcheck_prompt=consistency_scores["consistency_score"] <= selfcheck_prompt_threshold
         if consistency_scores is not None
         else None,
         selfcheck_prompt=consistency_scores["consistency_score"] if consistency_scores is not None else None,
         selfcheck_prompt_reasons=consistency_scores["reasons"] if consistency_scores is not None else None,
+        T_selfcheck_bertscore=selfcheck_bertscore_threshold,
+        T_selfcheck_ngram=selfcheck_ngram_threshold,
+        T_selfcheck_prompt=selfcheck_prompt_threshold,
     )
 
 
@@ -211,10 +215,10 @@ def compute_test_case_plots(
     metrics: List[TestSampleMetrics],
     inferences: List[Inference],
 ) -> Optional[List[Plot]]:
-    metric_types = ["selfcheck_prompt"]
+    metric_types = [("selfcheck_prompt", False), ("selfcheck_ngram", True), ("selfcheck_bertscore", True)]
 
     curves = []
-    for metric_type in metric_types:
+    for metric_type, flip in metric_types:
         y_true = []
         y_pred = []
         for m, inf in zip(metrics, inferences):
@@ -222,7 +226,10 @@ def compute_test_case_plots(
             if inf.missing_answer or inf.is_hallucination is None or metric_value is None:
                 continue
             y_true.append(not inf.is_hallucination)
-            y_pred.append(metric_value)
+            if flip:
+                y_pred.append(-metric_value)
+            else:
+                y_pred.append(metric_value)
 
         p, r, t = precision_recall_curve(y_true, y_pred, pos_label=True)
 

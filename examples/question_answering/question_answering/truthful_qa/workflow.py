@@ -102,6 +102,9 @@ class TestSampleMetrics(MetricsTestSample):
     is_hallucination_by_selfcheck_prompt: Optional[bool] = None
     selfcheck_prompt: Optional[float] = None
     selfcheck_prompt_reasons: Optional[List[str]] = None
+    T_selfcheck_bertscore: Optional[float] = None
+    T_selfcheck_ngram: Optional[float] = None
+    T_selfcheck_prompt: Optional[float] = None
 
 
 @dataclass(frozen=True)

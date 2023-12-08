@@ -106,7 +106,7 @@ def main(args: Namespace) -> int:
             answer=Label(label=inference_map[test_sample.question][0][0].label),
             answer_with_top5_logprob=Label(label=inference_map_top5[test_sample.question].label),
             selfcheck_metrics=PlainTextAsset(
-                locator=f"s3://{BUCKET}/{DATASET}/results/selfcheck/{args.model}_metrics.csv",
+                locator=f"s3://{BUCKET}/{DATASET}/results/selfcheck/{args.model}x5_bertscore_ngram_metrics.csv",
             ),
             probabilities_metrics=PlainTextAsset(
                 locator=f"s3://{BUCKET}/{DATASET}/results/prob-based_uncertainty/{args.model}_metrics.csv",
