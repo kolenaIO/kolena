@@ -301,8 +301,7 @@ def test__object_detection__multiclass_evaluator__f1_optimal() -> None:
     assert len(evaluator.matchings_by_test_case[config.display_name()]) != 0
     num_of_ignored = sum([1 for _, _, inf in TEST_DATA if inf.ignored])
     assert (
-        len(evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name])
-        == len(TEST_DATA) - num_of_ignored
+        len(evaluator.matchings_by_test_case[config.display_name()][TEST_CASE.name]) == len(TEST_DATA) - num_of_ignored
     )
     assert test_sample_metrics == EXPECTED_COMPUTE_TEST_SAMPLE_METRICS
 
