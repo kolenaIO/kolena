@@ -37,7 +37,7 @@ InstanceSegmentationEvaluator = instance_segmentation.InstanceSegmentationEvalua
 
 
 @pytest.mark.metrics
-def test__object_detection__smoke() -> None:
+def test__instance_segmentation__smoke() -> None:
     name = with_test_prefix(f"{__file__} test__multiclass__object_detection__smoke")
     test_sample = TestSample(locator=fake_locator(0), metadata=dict(example="metadata", values=[1, 2, 3]))
     ground_truth = GroundTruth(polygons=[LabeledPolygon([(0, 1), (0, 2), (2, 1), (2, 2)], label="a")])
