@@ -19,6 +19,7 @@ from kolena.errors import InputValidationError
 
 
 COL_DATAPOINT = "datapoint"
+COL_DATAPOINT_ID_OBJECT = "datapoint_id_object"
 COL_EVAL_CONFIG = "eval_config"
 COL_RESULT = "result"
 

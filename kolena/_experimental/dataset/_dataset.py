@@ -25,6 +25,7 @@ from kolena._api.v2.dataset import LoadDatapointsRequest
 from kolena._api.v2.dataset import Path
 from kolena._api.v2.dataset import RegisterRequest
 from kolena._experimental.dataset.common import COL_DATAPOINT
+from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena._experimental.dataset.common import validate_batch_size
 from kolena._experimental.dataset.common import validate_id_fields
 from kolena._utils import krequests_v2 as krequests
@@ -124,7 +125,10 @@ def register_dataset(name: str, df: pd.DataFrame, id_fields: List[str]) -> None:
 
     load_uuid = init_upload().uuid
 
-    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
+    df_serialized_datapoint = _to_serialized_dataframe(df, column=COL_DATAPOINT)
+    df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
+    df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
+
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
