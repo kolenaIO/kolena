@@ -120,6 +120,7 @@ def register_dataset(name: str, df: pd.DataFrame, id_fields: List[str]) -> None:
     Create or update a dataset with datapoints and id_fields.
     """
     validate_id_fields(df, id_fields)
+    # TODO: inform or warn users with different id_fields
 
     load_uuid = init_upload().uuid
 
