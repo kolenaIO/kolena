@@ -54,6 +54,10 @@ class DatapointType(str, Enum):
     TEXT = "DATAPOINT/TEXT"
     VIDEO = "DATAPOINT/VIDEO"
 
+    @classmethod
+    def has_value(cls, item) -> bool:
+        return item in cls.__members__.values()
+
 
 _DATAPOINT_TYPE_MAP = {
     "image": DatapointType.IMAGE.value,
@@ -146,7 +150,7 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
 
 def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
-        if isinstance(value, dict) and DATA_TYPE_FIELD in value:
+        if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
             flattened = pd.json_normalize(df[key]).rename(
                 columns=lambda col: f"{key}.{col}",
             )

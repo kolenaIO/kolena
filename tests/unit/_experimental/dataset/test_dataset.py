@@ -100,8 +100,8 @@ def test__add_datatype__composite() -> None:
 def test__flatten_composite():
     composite_dataset = pd.DataFrame(
         {
-            "a": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in a_text],
-            "b": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in b_text],
+            "a": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT.value} for text in a_text],
+            "b": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT.value} for text in b_text],
             "c": [dict(text=a + b) for a, b in zip(a_text, b_text)],  # Should not flatten because no DATA_TYPE_FIELD
             DATA_TYPE_FIELD: DatapointType.COMPOSITE,
         },
