@@ -79,10 +79,7 @@ def test__add_datatype__composite() -> None:
 
     assert "a.text" not in composite_dataset
     assert (composite_dataset[DATA_TYPE_FIELD] == DatapointType.COMPOSITE).all()
-    for val, exp in zip(composite_dataset["a"], a_text):
-        a = json.loads(val)
-        assert a["text"] == exp
-        assert a[DATA_TYPE_FIELD] == DatapointType.TEXT
+    assert (composite_dataset["a"] == [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in a_text]).all()
 
     similarity = [5.0, 3.799999952316284, 3.799999952316284]
     composite_dataset = pd.DataFrame(
@@ -96,24 +93,16 @@ def test__add_datatype__composite() -> None:
 
     assert (composite_dataset[DATA_TYPE_FIELD] == DatapointType.COMPOSITE).all()
     assert (composite_dataset["similarity"] == similarity).all()
-    for val, exp in zip(composite_dataset["a"], a_text):
-        a = json.loads(val)
-        assert a["text"] == exp
-        assert a[DATA_TYPE_FIELD] == DatapointType.TEXT
-    for val, exp in zip(composite_dataset["b"], b_text):
-        b = json.loads(val)
-        assert b["text"] == exp
-        assert b[DATA_TYPE_FIELD] == DatapointType.TEXT
+    assert (composite_dataset["a"] == [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in a_text]).all()
+    assert (composite_dataset["b"] == [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in b_text]).all()
 
 
 def test__flatten_composite():
     composite_dataset = pd.DataFrame(
         {
-            "a": [json.dumps({"text": text, DATA_TYPE_FIELD: DatapointType.TEXT}) for text in a_text],
-            "b": [json.dumps({"text": text, DATA_TYPE_FIELD: DatapointType.TEXT}) for text in b_text],
-            "c": [
-                json.dumps({"text": text}) for text in zip(a_text, b_text)
-            ],  # Should not flatten because no DATA_TYPE_FIELD
+            "a": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in a_text],
+            "b": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in b_text],
+            "c": [dict(text=a + b) for a, b in zip(a_text, b_text)],  # Should not flatten because no DATA_TYPE_FIELD
             DATA_TYPE_FIELD: DatapointType.COMPOSITE,
         },
     )
@@ -125,7 +114,7 @@ def test__flatten_composite():
             f"a.{DATA_TYPE_FIELD}": DatapointType.TEXT,
             "b.text": b_text,
             f"b.{DATA_TYPE_FIELD}": DatapointType.TEXT,
-            "c": [json.dumps({"text": text}) for text in zip(a_text, b_text)],
+            "c": [dict(text=a + b) for a, b in zip(a_text, b_text)],
             DATA_TYPE_FIELD: DatapointType.COMPOSITE,
         },
     )

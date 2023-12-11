@@ -88,7 +88,7 @@ def test__register_dataset__composite() -> None:
             "b.word_count": 2 * i,
             "a.char_length": 10 * i,
             "b.char_length": 15 * i,
-            "c": {"text": "nested " * i, "word_count": 3 * i, "char_length": 7 * i},
+            "c": dict(text="nested " * i, word_count=3 * i, char_length=7 * i),
             "total_word_count": 3 * i,
             "total_char_length": 25 * i,
             "word_count_diff": i,

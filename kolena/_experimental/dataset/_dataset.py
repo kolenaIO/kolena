@@ -96,28 +96,23 @@ def _add_datatype(df: pd.DataFrame) -> None:
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
         for prefix in prefixes:
-            _format_composite(df, prefix)
+            if prefix in df.columns:
+                raise InputValidationError(
+                    f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
+                )
+            if SEP in prefix:
+                raise InputValidationError(
+                    f"More than one delimeter '{SEP}' in prefix: '{prefix}'.",
+                )
+
+            composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
+            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(SEP)[-1])
+            composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
+
+            df[prefix] = composite.to_dict("records")
+            df.drop(columns=composite_columns, inplace=True)
     else:
         df[DATA_TYPE_FIELD] = _infer_datatype(df)
-
-
-def _format_composite(df: pd.DataFrame, prefix: str) -> None:
-    if prefix in df.columns:
-        raise InputValidationError(
-            f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
-        )
-    if SEP in prefix:
-        raise InputValidationError(
-            f"More than one delimeter '{SEP}' in prefix: '{prefix}'.",
-        )
-
-    composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
-    composite = df.loc[:, composite_columns]
-    df.drop(columns=composite_columns, inplace=True)
-    composite.rename(columns=lambda col: col.split(SEP)[-1], inplace=True)
-    composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
-    df[prefix] = composite.to_dict("records")
-    df[prefix] = df[prefix].apply(json.dumps)
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
@@ -151,13 +146,8 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
 
 def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
-        try:
-            value = isinstance(value, str) and json.loads(value)
-        except json.JSONDecodeError:
-            pass
-
         if isinstance(value, dict) and DATA_TYPE_FIELD in value:
-            flattened = pd.json_normalize([json.loads(s) for s in df[key]]).rename(
+            flattened = pd.json_normalize(df[key]).rename(
                 columns=lambda col: f"{key}.{col}",
             )
             df = df.join(flattened)
