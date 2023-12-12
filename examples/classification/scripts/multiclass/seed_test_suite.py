@@ -32,7 +32,7 @@ DATASET = "cifar10/test"
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
-    df_metadata = pd.read_csv(args.dataset_csv)
+    df_metadata = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
 
     non_metadata_fields = {"locator", "label"}
     test_samples_and_ground_truths = [

@@ -29,7 +29,7 @@ BUCKET = "s3://kolena-public-datasets"
 
 
 def run(args: Namespace) -> None:
-    df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv")
+    df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv", storage_options={"anon": True})
 
     test_samples = [TestSample(locator) for locator in df["locator"]]
     ground_truths = [

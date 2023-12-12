@@ -52,10 +52,11 @@ def seed_test_run(
 ) -> None:
     def infer(sample: TestSample) -> Inference:
         inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")
-        inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/")
+        inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/", storage_options={"anon": True})
         if align_speakers:
             gt_df = pd.read_csv(
                 f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}",
+                storage_options={"anon": True}
             )
             realign_labels(gt_df, inference_df)
 

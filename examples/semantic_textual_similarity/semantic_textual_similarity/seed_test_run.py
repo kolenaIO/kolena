@@ -31,7 +31,7 @@ DATASET = "sts-benchmark"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/{model_name}.csv")
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/{model_name}.csv", storage_options={"anon": True})
 
     required_columns = {"sentence1", "sentence2", "cos_similarity"}
     assert all(required_column in set(df.columns) for required_column in required_columns)

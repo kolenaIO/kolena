@@ -59,7 +59,7 @@ def seed_test_suite_by_avg_amp(
 
 
 def seed_complete_test_case(args: Namespace) -> TestCase:
-    df = pd.read_csv(args.dataset_csv)
+    df = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     df = df.where(pd.notnull(df), None)  # read missing cells as None
     df.columns = df.columns.str.replace(r"(\s|\.)+", "_", regex=True)  # sanitize column names to use underscores
 
@@ -82,7 +82,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
             locator=f"s3://{BUCKET}/{DATASET}/{record.audio_path}",
             metadata={f: getattr(record, f) for f in required_columns},
         )
-        transcription_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{record.transcription_path[:-4] + '_cleaned.csv'}")
+        transcription_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{record.transcription_path[:-4] + '_cleaned.csv'}", storage_options={"anon": True})
         ground_truth = GroundTruth(
             transcription=[
                 LabeledTimeSegment(

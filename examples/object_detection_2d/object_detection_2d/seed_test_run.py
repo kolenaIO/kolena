@@ -69,6 +69,7 @@ def load_results(model_alias: str) -> pd.DataFrame:
                 "max_x": object,
                 "max_y": object,
             },
+            storage_options={"anon": True},
         )
     except OSError as e:
         print(e, "\nPlease ensure you have set up AWS credentials.")

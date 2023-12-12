@@ -28,7 +28,7 @@ DATASET = "sts-benchmark"
 
 
 def seed_complete_test_case(args: Namespace) -> TestCase:
-    df = pd.read_csv(args.dataset_csv)
+    df = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     required_columns = {"sentence1", "sentence2"}
     assert all(required_column in set(df.columns) for required_column in required_columns)
 

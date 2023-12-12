@@ -35,9 +35,9 @@ DATASET = "labeled-faces-in-the-wild"
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
-    df = pd.read_csv(args.dataset_csv)
-    df_metadata = pd.read_csv(args.metadata_csv)
-    df_bbox_keypoints = pd.read_csv(args.bbox_keypoints_csv)
+    df = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
+    df_metadata = pd.read_csv(args.metadata_csv, storage_options={"anon": True})
+    df_bbox_keypoints = pd.read_csv(args.bbox_keypoints_csv, storage_options={"anon": True})
 
     metadata_by_locator = {}
     locator_normalization_factor = {}
