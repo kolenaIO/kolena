@@ -31,6 +31,7 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
+from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
@@ -40,16 +41,22 @@ from kolena.workflow.io import _dataframe_object_serde
 
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
+SEP = "."
 
 
 class DatapointType(str, Enum):
     AUDIO = "DATAPOINT/AUDIO"
+    COMPOSITE = "DATAPOINT/COMPOSITE"
     DOCUMENT = "DATAPOINT/DOCUMENT"
     IMAGE = "DATAPOINT/IMAGE"
     POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
     TABULAR = "DATAPOINT/TABULAR"
     TEXT = "DATAPOINT/TEXT"
     VIDEO = "DATAPOINT/VIDEO"
+
+    @classmethod
+    def has_value(cls, item) -> bool:
+        return item in cls.__members__.values()
 
 
 _DATAPOINT_TYPE_MAP = {
@@ -83,6 +90,40 @@ def _infer_datatype_value(x: str) -> str:
     return DatapointType.TABULAR.value
 
 
+def _add_datatype(df: pd.DataFrame) -> None:
+    """Adds `data_type` column(s) to input DataFrame."""
+    prefixes = {
+        column.rsplit(sep=SEP, maxsplit=1)[0]
+        for column in df.columns.values
+        if isinstance(column, str) and SEP in column
+    }
+    if prefixes:
+        df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
+        for prefix in prefixes:
+            if not prefix.strip():
+                raise InputValidationError(
+                    "Empty prefix encountered when parsing composite dataset. "
+                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{SEP}'.",
+                )
+            if prefix in df.columns:
+                raise InputValidationError(
+                    f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
+                )
+            if SEP in prefix:
+                raise InputValidationError(
+                    f"More than one delimeter '{SEP}' in prefix: '{prefix}'.",
+                )
+
+            composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
+            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(SEP)[-1])
+            composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
+
+            df[prefix] = composite.to_dict("records")
+            df.drop(columns=composite_columns, inplace=True)
+    else:
+        df[DATA_TYPE_FIELD] = _infer_datatype(df)
+
+
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if FIELD_LOCATOR in df.columns:
         return df[FIELD_LOCATOR].apply(_infer_datatype_value)
@@ -95,7 +136,7 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
     if column == COL_DATAPOINT:
-        result[DATA_TYPE_FIELD] = _infer_datatype(df)
+        _add_datatype(result)
     result[column] = result.to_dict("records")
     result[column] = result[column].apply(lambda x: json.dumps(x))
 
@@ -107,10 +148,20 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
         max_level=0,
     )
+    flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
-    result = _dataframe_object_serde(flattened, _deserialize_dataobject)
+    return _dataframe_object_serde(flattened, _deserialize_dataobject)
 
-    return result
+
+def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
+    for key, value in df.iloc[0].items():
+        if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
+            flattened = pd.json_normalize(df[key], max_level=0).rename(
+                columns=lambda col: f"{key}{SEP}{col}",
+            )
+            df = df.join(flattened)
+            df.drop(columns=[key], inplace=True)
+    return df
 
 
 def register_dataset(name: str, df: pd.DataFrame) -> None:
