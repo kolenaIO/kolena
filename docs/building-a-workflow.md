@@ -30,7 +30,7 @@ import pandas as pd
 DATASET = "300-W"
 BUCKET = "s3://kolena-public-datasets"
 
-df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv")
+df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv", storage_options={"anon": True})
 ```
 
 !!! note "Note: `s3fs` dependency"
