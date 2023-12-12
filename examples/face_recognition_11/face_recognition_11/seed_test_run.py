@@ -35,7 +35,10 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -> None:
-    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.csv")
+    df = pd.read_csv(
+        f"s3://{BUCKET}/{DATASET}/predictions/predictions_{model_name}.csv",
+        storage_options={"anon": True},
+    )
 
     def infer(test_sample: TestSample) -> Inference:
         similarities = []

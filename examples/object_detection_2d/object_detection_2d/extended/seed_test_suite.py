@@ -72,7 +72,7 @@ def load_transportation_data() -> Dict[str, List[ExtendedBoundingBox]]:
 def create_complete_transportation_case(args: Namespace) -> TestCase:
     print("loading S3 files...")
     image_to_boxes = load_transportation_data()
-    data = pd.read_csv(args.metadata)
+    data = pd.read_csv(args.metadata, storage_options={"anon": True})
 
     # create a test sample object and a ground truth object per image
     test_samples_and_ground_truths: List[Tuple[TestSample, GroundTruth]] = []
