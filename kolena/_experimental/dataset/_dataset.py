@@ -151,7 +151,7 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
 def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
         if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
-            flattened = pd.json_normalize(df[key]).rename(
+            flattened = pd.json_normalize(df[key], max_level=0).rename(
                 columns=lambda col: f"{key}{SEP}{col}",
             )
             df = df.join(flattened)

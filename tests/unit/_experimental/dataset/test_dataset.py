@@ -182,6 +182,64 @@ def test__infer_datatype() -> None:
     )
 
 
+def test__datapoint_dataframe__serde_composite() -> None:
+    datapoints = [
+        {
+            "category": "outdoor" if i < 5 else "indoor",
+            "is_same": True if i % 3 else False,
+            "a.locator": f"https://test-iamge-{i}.png",
+            "a.width": 500 + i,
+            "a.height": 400 + i,
+            "a.bboxes": [
+                BoundingBox(top_left=(i, i), bottom_right=(i + 50, i + 50)) for i in range(random.randint(2, 6))
+            ],
+            "a.label": ClassificationLabel(label="dog"),
+            "b.locator": f"https://test-iamge-{i}.png",
+            "b.width": 500 + i,
+            "b.height": 400 + i,
+            "b.bboxes": [
+                BoundingBox(top_left=(i, i), bottom_right=(i + 50, i + 50)) for i in range(random.randint(2, 6))
+            ],
+            "b.label": ClassificationLabel(label="cat"),
+        }
+        for i in range(10)
+    ]
+    df = pd.DataFrame(datapoints)
+    df_expected = pd.DataFrame(
+        dict(
+            datapoint=[
+                dict(
+                    category=dp["category"],
+                    is_same=dp["is_same"],
+                    a={
+                        DATA_TYPE_FIELD: DatapointType.IMAGE,
+                        "label": dp["a.label"]._to_dict(),
+                        "width": dp["a.width"],
+                        "height": dp["a.height"],
+                        "locator": dp["a.locator"],
+                        "bboxes": [bbox._to_dict() for bbox in dp["a.bboxes"]],
+                    },
+                    b={
+                        DATA_TYPE_FIELD: DatapointType.IMAGE,
+                        "label": dp["b.label"]._to_dict(),
+                        "width": dp["b.width"],
+                        "height": dp["b.height"],
+                        "locator": dp["b.locator"],
+                        "bboxes": [bbox._to_dict() for bbox in dp["b.bboxes"]],
+                    },
+                    data_type=DatapointType.COMPOSITE,
+                )
+                for dp in datapoints
+            ],
+        ),
+    )
+    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
+
+    assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
+    assert_frame_equal(df_deserialized.sort_index(axis=1), df.sort_index(axis=1))
+
+
 def test__datapoint_dataframe__serde_locator() -> None:
     datapoints = [
         dict(
