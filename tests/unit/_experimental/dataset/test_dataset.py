@@ -370,6 +370,20 @@ def test__dataframe__serde_none() -> None:
     assert_frame_equal(df_deserialized, df_expected)
 
 
+def test__dataframe__serde_none__composite() -> None:
+    column_name = COL_RESULT
+    data = [
+        ['{"a.city": "London"}'],
+        ['{"a.city": "Tokyo"}'],
+        [None],
+    ]
+    df_serialized = pd.DataFrame(data, columns=[column_name])
+
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["a.city"])
+    df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
+    assert_frame_equal(df_deserialized, df_expected)
+
+
 def test__dataframe__data_type_field_not_exist() -> None:
     column_name = COL_RESULT
     df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
