@@ -289,7 +289,13 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 metrics_test_sample = evaluator.compute_test_sample_metrics(test_case, inferences, configuration)
 
                 log.info(f"uploading test sample metrics {configuration_description}")
-                self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
+                self._upload_test_sample_metrics(
+                    test_case,
+                    metrics_test_sample,
+                    configuration,
+                    self.model._id,
+                    configuration.eval_config_id,
+                )
 
                 log.info(f"computing test case metrics {configuration_description}")
                 # TODO: sort? order returned from evaluator may not match inferences order
@@ -353,6 +359,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_case=None,
                 metrics=results.metrics_test_sample,
                 configuration=config,
+                model_id=self.model._id,
+                eval_config_id=config.eval_config_id,
             )
             for test_case, metrics in results.metrics_test_case:
                 test_case_metrics[test_case._id][config] = metrics
@@ -436,6 +444,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_case: Optional[TestCase],
         metrics: List[Tuple[TestSample, MetricsTestSample]],
         configuration: Optional[EvaluatorConfiguration],
+        model_id: int,
+        eval_config_id: int,
     ) -> None:
         metrics_records = [(ts._to_dict(), ts_metrics._to_dict()) for ts, ts_metrics in metrics]
         metrics_records, thresholded_metrics = self._extract_thresholded_metrics(metrics_records)
@@ -472,6 +482,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_run_id=self._id,
                 test_case_id=test_case._id if test_case is not None else None,
                 configuration=_maybe_evaluator_configuration_to_api(configuration),
+                model_id=model_id,
+                eval_config_id=eval_config_id,
             )
             res = krequests.put(
                 endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED.value,

@@ -121,6 +121,8 @@ class TestRun:
         test_run_id: int
         test_case_id: Optional[int]
         configuration: Optional["TestRun.EvaluatorConfiguration"]
+        model_id: int
+        eval_config_id: int
 
     @dataclass(frozen=True)
     class UpdateMetricsStatusRequest:
