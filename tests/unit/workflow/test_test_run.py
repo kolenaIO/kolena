@@ -112,19 +112,27 @@ def test__extract_thresholded_metrics(mock_test_run_init, mock_krequests_put) ->
     expected_removed_items = [
         (
             {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
-            [
-                {"name": "class_1", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
-                {"name": "class_1", "threshold": "0.2", "data_type": "METRICS/THRESHOLDED", "value": 20},
-            ],
+            {"name": "class_1", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
         ),
         (
             {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
-            [
-                {"name": "class_1", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
-                {"name": "class_1", "threshold": "0.2", "data_type": "METRICS/THRESHOLDED", "value": 20},
-                {"name": "class_2", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
-                {"name": "class_2", "threshold": "0.2", "data_type": "METRICS/THRESHOLDED", "value": 20},
-            ],
+            {"name": "class_1", "threshold": "0.2", "data_type": "METRICS/THRESHOLDED", "value": 20},
+        ),
+        (
+            {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
+            {"name": "class_1", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
+        ),
+        (
+            {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
+            {"name": "class_1", "threshold": "0.2", "data_type": "METRICS/THRESHOLDED", "value": 20},
+        ),
+        (
+            {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
+            {"name": "class_2", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
+        ),
+        (
+            {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
+            {"name": "class_2", "threshold": "0.2", "data_type": "METRICS/THRESHOLDED", "value": 20},
         ),
     ]
 

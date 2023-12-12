@@ -412,9 +412,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             # Track keys to remove from second_record after iteration
             keys_to_remove = []
 
-            # Create a list to store removed items for this record
-            record_removed_items = []
-
             for key, value in second_record.items():
                 if isinstance(value, list):
                     for item in value:
@@ -422,7 +419,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                             # Modify item to include the 'name' key
                             removed_item = dict(name=key, **item)
                             # Add to the list for this record
-                            record_removed_items.append(removed_item)
+                            removed_items.append((first_record, removed_item))
                     keys_to_remove.append(key)
 
             # Remove identified keys from second_record
@@ -430,10 +427,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 second_record.pop(key, None)
 
             updated_records.append((first_record, second_record))
-
-            # If there are removed items for this record, append them
-            if record_removed_items:
-                removed_items.append((first_record, record_removed_items))
 
         return updated_records, removed_items
 
@@ -447,7 +440,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         metrics_records = [(ts._to_dict(), ts_metrics._to_dict()) for ts, ts_metrics in metrics]
         metrics_records, thresholded_metrics = self._extract_thresholded_metrics(metrics_records)
         log.info(f"uploading {len(metrics_records)} test sample metrics")
-        log.info(f"uploading {len(thresholded_metrics)} thresholded metrics")
         df = pd.DataFrame(metrics_records, columns=["test_sample", "metrics"])
         df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
         df_serializable = df_validated.as_serializable()
@@ -468,7 +460,6 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         krequests.raise_for_status(res)
 
         if len(thresholded_metrics) > 0:
-            log.info("Uploading thresholded metrics")
             df = pd.DataFrame(thresholded_metrics, columns=["test_sample", "metrics"])
             df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
             df_serializable = df_validated.as_serializable()
