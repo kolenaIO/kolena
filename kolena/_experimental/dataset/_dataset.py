@@ -100,6 +100,11 @@ def _add_datatype(df: pd.DataFrame) -> None:
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
         for prefix in prefixes:
+            if not prefix.strip():
+                raise InputValidationError(
+                    "Empty prefix encountered when parsing composite dataset. "
+                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{SEP}'.",
+                )
             if prefix in df.columns:
                 raise InputValidationError(
                     f"Conflicting column '{prefix}' encountered when formatting composite dataset.",

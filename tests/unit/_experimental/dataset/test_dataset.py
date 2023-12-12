@@ -139,6 +139,14 @@ def test__add_datatype__invalid():
     with pytest.raises(InputValidationError):
         _add_datatype(composite_dataset)
 
+    composite_dataset = pd.DataFrame(
+        {
+            ".empty_prefix": [i for i in range(5)],
+        },
+    )
+    with pytest.raises(InputValidationError):
+        _add_datatype(composite_dataset)
+
 
 def test__infer_datatype() -> None:
     assert _infer_datatype(
