@@ -289,7 +289,12 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 metrics_test_sample = evaluator.compute_test_sample_metrics(test_case, inferences, configuration)
 
                 log.info(f"uploading test sample metrics {configuration_description}")
-                self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
+                self._upload_test_sample_metrics(
+                    test_case,
+                    metrics_test_sample,
+                    configuration,
+                    self.model._id,
+                )
 
                 log.info(f"computing test case metrics {configuration_description}")
                 # TODO: sort? order returned from evaluator may not match inferences order
@@ -353,6 +358,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_case=None,
                 metrics=results.metrics_test_sample,
                 configuration=config,
+                model_id=self.model._id,
             )
             for test_case, metrics in results.metrics_test_case:
                 test_case_metrics[test_case._id][config] = metrics
@@ -409,20 +415,18 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         removed_items = []
 
         for first_record, second_record in records:
-            # Track keys to remove from second_record after iteration
             keys_to_remove = []
-
             for key, value in second_record.items():
                 if isinstance(value, list):
-                    for item in value:
-                        if item.get("data_type") == "METRICS/THRESHOLDED":
-                            # Modify item to include the 'name' key
-                            removed_item = dict(name=key, **item)
-                            # Add to the list for this record
-                            removed_items.append((first_record, removed_item))
-                    keys_to_remove.append(key)
+                    removed_items.extend(
+                        (first_record, dict(name=key, **item))
+                        for item in value
+                        if isinstance(item, dict) and item.get("data_type") == "METRICS/THRESHOLDED"
+                    )
 
-            # Remove identified keys from second_record
+                    if any(isinstance(item, dict) and item.get("data_type") == "METRICS/THRESHOLDED" for item in value):
+                        keys_to_remove.append(key)
+
             for key in keys_to_remove:
                 second_record.pop(key, None)
 
@@ -436,6 +440,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_case: Optional[TestCase],
         metrics: List[Tuple[TestSample, MetricsTestSample]],
         configuration: Optional[EvaluatorConfiguration],
+        model_id: int,
     ) -> None:
         metrics_records = [(ts._to_dict(), ts_metrics._to_dict()) for ts, ts_metrics in metrics]
         metrics_records, thresholded_metrics = self._extract_thresholded_metrics(metrics_records)
@@ -472,6 +477,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_run_id=self._id,
                 test_case_id=test_case._id if test_case is not None else None,
                 configuration=_maybe_evaluator_configuration_to_api(configuration),
+                model_id=model_id,
             )
             res = krequests.put(
                 endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED.value,

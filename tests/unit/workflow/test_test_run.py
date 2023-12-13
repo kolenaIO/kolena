@@ -40,6 +40,8 @@ def test__when_no_threshold_metric_classes(mock_test_run_init, mock_krequests_pu
             {"locator": "s3://bucket/image1.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
             {
                 "metric_1": "value1",
+                "metric_2": False,
+                "metric_3": 12.0,
             },
         ),
     ]
@@ -50,6 +52,8 @@ def test__when_no_threshold_metric_classes(mock_test_run_init, mock_krequests_pu
             {"locator": "s3://bucket/image1.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
             {
                 "metric_1": "value1",
+                "metric_2": False,
+                "metric_3": 12.0,
             },
         ),
     ]
@@ -57,6 +61,39 @@ def test__when_no_threshold_metric_classes(mock_test_run_init, mock_krequests_pu
 
     # Call the method under test
     updated_records, removed_items = test_run._extract_thresholded_metrics(records)
+    # Assert the results
+    assert updated_records == expected_updated_records
+    assert removed_items == expected_removed_items
+
+
+def test__when_no_threshold_metric_classes_non_dict_item(mock_test_run_init, mock_krequests_put) -> None:
+    # Create a TestRun instance
+    test_run = TestRun()
+
+    # Define the input records with a non-dict item in the list
+    records = [
+        (
+            {"locator": "s3://bucket/image1.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
+            {
+                "metric_1": ["non-dict-item", 1, 12.0, True, {"data_type": "METRICS/REGULAR"}],
+            },
+        ),
+    ]
+
+    # Define the expected output
+    expected_updated_records = [
+        (
+            {"locator": "s3://bucket/image1.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
+            {
+                "metric_1": ["non-dict-item", 1, 12.0, True, {"data_type": "METRICS/REGULAR"}],
+            },
+        ),
+    ]
+    expected_removed_items = []
+
+    # Call the method under test
+    updated_records, removed_items = test_run._extract_thresholded_metrics(records)
+
     # Assert the results
     assert updated_records == expected_updated_records
     assert removed_items == expected_removed_items
