@@ -17,11 +17,15 @@ from dataclasses import asdict
 from enum import Enum
 from typing import Iterator
 from typing import List
+from typing import Optional
 from typing import Union
 
 import pandas as pd
+import requests
 
+from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.dataset import LoadDatapointsRequest
+from kolena._api.v2.dataset import LoadDatasetByNameRequest
 from kolena._api.v2.dataset import Path
 from kolena._api.v2.dataset import RegisterRequest
 from kolena._experimental.dataset.common import COL_DATAPOINT
@@ -33,6 +37,7 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
@@ -116,20 +121,51 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     return result
 
 
-def register_dataset(name: str, df: pd.DataFrame, id_fields: List[str]) -> None:
-    """
-    Create or update a dataset with datapoints and id_fields.
-    """
-    validate_id_fields(df, id_fields)
-    # TODO: inform or warn users with different id_fields
-
-    load_uuid = init_upload().uuid
-
+def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]) -> None:
     df_serialized_datapoint = _to_serialized_dataframe(df, column=COL_DATAPOINT)
     df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
     df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
 
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+
+
+def load_dataset(name: str) -> Optional[EntityData]:
+    response = krequests.put(Path.LOAD_DATASET, json=asdict(LoadDatasetByNameRequest(name=name)))
+    if response.status_code == requests.codes.not_found:
+        return None
+
+    response.raise_for_status()
+
+    return from_dict(EntityData, response.json())
+
+
+def register_dataset(name: str, df: Union[Iterator[pd.DataFrame], pd.DataFrame], id_fields: List[str]) -> None:
+    """
+    Create or update a dataset with datapoints and id_fields. If the dataset already exists, in order to associate the
+    existing result with the new datapoints, the id_fields need be the same as the existing dataset.
+
+    :param name: name of the dataset
+    :param df: an iterator of pandas dataframe or a pandas dataframe, you can pass in the iterator if you want to have
+                batch processing,
+                 example iterator usage: csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)
+    :param id_fields: a list of id fields, this will be used to link the result with the datapoints
+    :return None
+    """
+    load_uuid = init_upload().uuid
+    existing_dataset = load_dataset(name)
+    existing_id_fields = []
+    if existing_dataset:
+        existing_id_fields = existing_dataset.id_fields
+    if isinstance(df, pd.DataFrame):
+        validate_id_fields(df, id_fields, existing_id_fields)
+        _upload_dataset_chunk(df, load_uuid, id_fields)
+    else:
+        validated = False
+        for chunk in df:
+            if not validated:
+                validated = True
+                validate_id_fields(chunk, id_fields, existing_id_fields)
+            _upload_dataset_chunk(chunk, load_uuid, id_fields)
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
