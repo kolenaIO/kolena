@@ -25,6 +25,7 @@ from kolena._experimental.dataset._dataset import _add_datatype
 from kolena._experimental.dataset._dataset import _flatten_composite
 from kolena._experimental.dataset._dataset import _infer_datatype
 from kolena._experimental.dataset._dataset import _infer_datatype_value
+from kolena._experimental.dataset._dataset import _infer_id_fields
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import DatapointType
@@ -406,3 +407,39 @@ def test__datapoints_results_alignment() -> None:
 
     expected = pd.DataFrame(dict(answer=[1, 2, 3, np.nan]))
     assert df_merged.equals(expected)
+
+
+def test__infer_id_fields() -> None:
+    assert _infer_id_fields(
+        pd.DataFrame(
+            dict(
+                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+            ),
+        ),
+    ) == ["locator"]
+    assert _infer_id_fields(
+        pd.DataFrame(
+            dict(
+                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                text=["a", "b", "c", "d"],
+            ),
+        ),
+    ) == ["locator"]
+    assert _infer_id_fields(
+        pd.DataFrame(
+            dict(
+                text=["a", "b", "c", "d"],
+            ),
+        ),
+    ) == ["text"]
+
+    try:
+        assert _infer_id_fields(
+            pd.DataFrame(
+                dict(
+                    text1=["a", "b", "c", "d"],
+                ),
+            ),
+        )
+    except Exception as e:
+        assert str(e) == "Failed to infer the id_fields, please provide id_fields explicitly"

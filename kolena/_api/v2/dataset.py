@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from enum import Enum
+from typing import List
 
 from pydantic.dataclasses import dataclass
 
@@ -21,14 +22,29 @@ from kolena._api.v1.batched_load import BatchedLoad
 class Path(str, Enum):
     REGISTER = "/dataset/register"
     LOAD_DATAPOINTS = "/dataset/load-datapoints"
+    LOAD_DATASET = "/dataset/load-by-name"
 
 
 @dataclass(frozen=True)
 class RegisterRequest:
     name: str
+    id_fields: List[str]
     uuid: str
 
 
 @dataclass(frozen=True)
 class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
     name: str
+
+
+@dataclass(frozen=True)
+class LoadDatasetByNameRequest:
+    name: str
+
+
+@dataclass(frozen=True)
+class EntityData:
+    id: int
+    name: str
+    description: str
+    id_fields: List[str]
