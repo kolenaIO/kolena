@@ -249,7 +249,7 @@ def test__infer_id_fields() -> None:
             ),
         ),
     ) == ["locator"]
-    assert _infer_datatype(
+    assert _infer_id_fields(
         pd.DataFrame(
             dict(
                 locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
@@ -257,10 +257,21 @@ def test__infer_id_fields() -> None:
             ),
         ),
     ) == ["locator"]
-    assert _infer_datatype(
+    assert _infer_id_fields(
         pd.DataFrame(
             dict(
                 text=["a", "b", "c", "d"],
             ),
         ),
     ) == ["text"]
+
+    try:
+        assert _infer_id_fields(
+            pd.DataFrame(
+                dict(
+                    text1=["a", "b", "c", "d"],
+                ),
+            ),
+        )
+    except Exception as e:
+        assert str(e) == "Failed to infer the id_fields, please provide id_fields explicitly"
