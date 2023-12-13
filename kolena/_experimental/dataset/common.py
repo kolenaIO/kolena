@@ -34,8 +34,12 @@ def validate_batch_size(batch_size: int) -> None:
 def validate_id_fields(df: pd.DataFrame, id_fields: List[str], existing_id_fields: List[str] = None) -> None:
     if len(id_fields) == 0:
         raise InputValidationError(f"invalid id_fields '{id_fields}': expected at least one field")
+    if len(Counter(id_fields)) != len(id_fields):
+        raise InputValidationError(
+            f"invalid id_fields '{id_fields}': fields '{id_fields}' should not contain " f"duplicates",
+        )
     if existing_id_fields:
-        if Counter(id_fields) != Counter(existing_id_fields):
+        if set(id_fields) != set(existing_id_fields):
             log.warn(
                 f"ID field for the existing dataset has been changed from {existing_id_fields} to {id_fields},"
                 f" this will disassociate the existing result from the new datapoints",
