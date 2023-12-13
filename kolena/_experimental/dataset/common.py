@@ -33,10 +33,10 @@ def validate_batch_size(batch_size: int) -> None:
 
 def validate_id_fields(df: pd.DataFrame, id_fields: List[str], existing_id_fields: List[str] = None) -> None:
     if len(id_fields) == 0:
-        raise InputValidationError(f"invalid id_fields '{id_fields}': expected at least one field")
+        raise InputValidationError("invalid id_fields: expected at least one field")
     if len(Counter(id_fields)) != len(id_fields):
         raise InputValidationError(
-            f"invalid id_fields '{id_fields}': fields '{id_fields}' should not contain " f"duplicates",
+            "invalid id_fields: id fields should not contain duplicates",
         )
     if existing_id_fields:
         if set(id_fields) != set(existing_id_fields):
@@ -47,9 +47,11 @@ def validate_id_fields(df: pd.DataFrame, id_fields: List[str], existing_id_field
     for id_field in id_fields:
         if id_field not in df.columns:
             raise InputValidationError(
-                f"invalid id_fields '{id_fields}': field '{id_field}' does not exist in dataframe",
+                f"invalid id_fields: field '{id_field}' does not exist in dataframe",
             )
     # check uniqueness of the id columns
     unique_id_fields = df[id_fields].drop_duplicates()
     if len(unique_id_fields) != len(df):
-        raise InputValidationError(f"invalid id_fields '{id_fields}': fields '{id_fields}' are not unique")
+        raise InputValidationError(
+            f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
+        )

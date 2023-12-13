@@ -39,6 +39,7 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
+from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
@@ -100,6 +101,14 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     return DatapointType.TABULAR.value
 
 
+def _infer_id_fields(df: pd.DataFrame) -> List[str]:
+    if FIELD_LOCATOR in df.columns:
+        return [FIELD_LOCATOR]
+    elif FIELD_TEXT in df.columns:
+        return [FIELD_TEXT]
+    raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")
+
+
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
     if column == COL_DATAPOINT:
@@ -139,7 +148,11 @@ def load_dataset(name: str) -> Optional[EntityData]:
     return from_dict(EntityData, response.json())
 
 
-def register_dataset(name: str, df: Union[Iterator[pd.DataFrame], pd.DataFrame], id_fields: List[str]) -> None:
+def register_dataset(
+    name: str,
+    df: Union[Iterator[pd.DataFrame], pd.DataFrame],
+    id_fields: Optional[List[str]] = None,
+) -> None:
     """
     Create or update a dataset with datapoints and id_fields. If the dataset already exists, in order to associate the
     existing result with the new datapoints, the id_fields need be the same as the existing dataset.
@@ -148,7 +161,8 @@ def register_dataset(name: str, df: Union[Iterator[pd.DataFrame], pd.DataFrame],
     :param df: an iterator of pandas dataframe or a pandas dataframe, you can pass in the iterator if you want to have
                 batch processing,
                  example iterator usage: csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)
-    :param id_fields: a list of id fields, this will be used to link the result with the datapoints
+    :param id_fields: a list of id fields, this will be used to link the result with the datapoints, if this is not
+                 provided, it will be inferred from the dataset
     :return None
     """
     load_uuid = init_upload().uuid
@@ -156,6 +170,11 @@ def register_dataset(name: str, df: Union[Iterator[pd.DataFrame], pd.DataFrame],
     existing_id_fields = []
     if existing_dataset:
         existing_id_fields = existing_dataset.id_fields
+    if not id_fields:
+        if existing_id_fields:
+            raise InputValidationError("id_fields is required for updating an existing dataset")
+        else:
+            id_fields = _infer_id_fields(df)
     if isinstance(df, pd.DataFrame):
         validate_id_fields(df, id_fields, existing_id_fields)
         _upload_dataset_chunk(df, load_uuid, id_fields)
