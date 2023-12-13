@@ -123,7 +123,7 @@ Let's calculate the character error rate using the same reference and candidate 
     Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>, <span class="mg-color-deletion"><big>deletion</big></span>, and <span class="mg-color-insertion"><big>insertion</big></span> errors, we can count each type of error:
 
     <code>
-    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of</u></big> <span class="mg-color-deletion"><big>nature</big></span>, trans<span class="mg-color-substitution"><big>cending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
+    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of</big></span> <span class="mg-color-deletion"><big>nature</big></span>, trans<span class="mg-color-substitution"><big>cending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
     </code>
 
     In our candidate text, we have 13 substitutions, 16 deletions, and 6 insertions.
@@ -173,7 +173,7 @@ Let's calculate the match error rate using the same reference and candidate text
     Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>, <span class="mg-color-deletion"><big>deletion</big></span>, and <span class="mg-color-insertion"><big>insertion</big></span> errors, we can count each type of error:
 
     <code>
-    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of</u></big> <span class="mg-color-deletion"><big>nature</big></span>, <span class="mg-color-substitution"><big>transcending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
+    The <span class="mg-color-insertion"><big>poetic</big></span> bard <span class="mg-color-substitution"><big>echoed</big></span> ancient melodies <span class="mg-color-deletion"><big>of</big></span> <span class="mg-color-deletion"><big>nature</big></span>, <span class="mg-color-substitution"><big>transcending</big></span> <span class="mg-color-deletion"><big>tranquil</big></span> meadows into sonnets for enhanced soulful grace.
     </code>
 
     In our candidate text, we have 2 substitutions, 3 deletions, and 1 insertion.
