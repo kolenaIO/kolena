@@ -13,6 +13,7 @@
 # limitations under the License.
 from enum import Enum
 
+from pydantic import conlist
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.batched_load import BatchedLoad
@@ -40,9 +41,16 @@ class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
 
 
 @dataclass(frozen=True)
+class DatapointMergeConfig:
+    dataset_id: int
+    dataset_id_columns: conlist(str, min_items=1)
+
+
+@dataclass(frozen=True)
 class UploadResultsRequest:
     model: str
     uuid: str
+    merge_config: DatapointMergeConfig = None
 
 
 @dataclass(frozen=True)

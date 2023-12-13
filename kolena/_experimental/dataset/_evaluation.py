@@ -22,14 +22,15 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
-from pandas.errors import MergeError
 
+from kolena._api.v2.model import DatapointMergeConfig
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
 from kolena._experimental.dataset._dataset import _iter_dataset_raw
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
+from kolena._experimental.dataset._dataset import load_dataset
 from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import COL_EVAL_CONFIG
 from kolena._experimental.dataset.common import COL_RESULT
@@ -87,47 +88,36 @@ def _drop_unprovided_result(
     if isinstance(on, str):
         on = [on]
 
-    _validate_on(df_result_concat, df_result_input, on)
     df_result_provided = df_result_input[on].merge(df_result_concat, how="inner", on=on)
     return df_result_provided
 
 
-def _process_results(
-    df: pd.DataFrame,
-    all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame, pd.DataFrame]],
-    df_datapoints: pd.DataFrame,
-    on: TEST_ON_TYPE,
+def _process_result(
+    eval_config: Optional[TYPE_EVALUATION_CONFIG],
+    df_result: pd.DataFrame,
 ) -> pd.DataFrame:
-    target_columns = ["datapoint_id", COL_RESULT, COL_EVAL_CONFIG]
-    df_result_by_eval = []
-    for eval_config, df_result, df_result_input in all_results:
-        df_result_eval = _to_serialized_dataframe(df_result, column=COL_RESULT)
-        df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
-
-        df_result_concat = pd.concat([df["datapoint_id"], df_datapoints, df_result_eval], axis=1)
-        df_result_concat = _drop_unprovided_result(df_result_concat, df_result_input, on)
-
-        df_result_by_eval.append(df_result_concat[target_columns])
-    df_results = (
-        pd.concat(df_result_by_eval, ignore_index=True)
-        if df_result_by_eval
-        else pd.DataFrame(
-            columns=target_columns,
-        )
-    )
-    return df_results
+    df_result_eval = _to_serialized_dataframe(df_result, column=COL_RESULT)
+    df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
+    df_result_eval["datapoint_id"] = -1
+    return df_result_eval
 
 
 def _upload_results(
     model: str,
-    df: pd.DataFrame,
-) -> int:
-    load_uuid = init_upload().uuid
-    upload_data_frame(df=df, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
-    request = UploadResultsRequest(model=model, uuid=load_uuid)
+    load_uuid: str,
+    dataset_id: int,
+    dataset_id_columns: List[str],
+) -> None:
+    request = UploadResultsRequest(
+        model=model,
+        uuid=load_uuid,
+        merge_config=DatapointMergeConfig(
+            dataset_id=dataset_id,
+            dataset_id_columns=dataset_id_columns,
+        ),
+    )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
-    return len(df)
 
 
 def fetch_results(
@@ -162,52 +152,28 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-def _validate_data(left: pd.DataFrame, right: pd.DataFrame) -> None:
-    if len(left) != len(right):
-        raise IncorrectUsageError("numbers of rows between two dataframe do not match")
-
-
-def _validate_on(left: pd.DataFrame, right: pd.DataFrame, on: TEST_ON_TYPE) -> None:
-    if on is None:
-        raise IncorrectUsageError("on cannot be None")
-    # works for both string and list of string
-    if len(on) == 0:
-        raise IncorrectUsageError("on cannot be empty")
-
-    if isinstance(on, str):
-        if on not in left.columns or on not in right.columns:
-            raise IncorrectUsageError(f"column {on} doesn't exist in target dataframe")
-    elif isinstance(on, list):
-        for col in on:
-            if col not in left.columns or col not in right.columns:
-                raise IncorrectUsageError(f"column {col} doesn't exist in target dataframe")
-
-
-def _align_datapoints_results(
-    df_datapoints: pd.DataFrame,
-    df_result_input: pd.DataFrame,
-    on: TEST_ON_TYPE,
-) -> pd.DataFrame:
-    if not on:
-        return df_result_input
-
-    if isinstance(on, str):
-        on = [on]
-
-    _validate_on(df_datapoints, df_result_input, on)
-    try:
-        df_result = df_datapoints[on].merge(df_result_input, how="left", on=on, validate="one_to_one")
-    except MergeError as e:
-        raise IncorrectUsageError(f"merge key {on} is not unique") from e
-
-    return df_result.drop(columns=on)
+def _validate_datapoint_id_columns(df: pd.DataFrame, datapoint_id_columns: List[str]) -> None:
+    for col in datapoint_id_columns:
+        if col not in df:
+            raise ValueError(f"datapoint_id_columns {col} not found in uploaded result file")
 
 
 def test(
     dataset: str,
     model: str,
-    results: Union[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]],
-    on: TEST_ON_TYPE = None,
+    results: Union[
+        pd.DataFrame,
+        Iterator[pd.DataFrame],
+        List[
+            Tuple[
+                TYPE_EVALUATION_CONFIG,
+                Union[
+                    pd.DataFrame,
+                    Iterator[pd.DataFrame],
+                ],
+            ]
+        ],
+    ],
 ) -> None:
     """
     This function is used for testing a specified model on a given dataset.
@@ -216,27 +182,29 @@ def test(
     :param model: The name of the model to be used.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
                     a eval configuration and a DataFrame.
-    :param on: The column(s) to merge on between datapoint DataFrame and result DataFrame
-
     :return None
     """
-    df_data = _fetch_dataset(dataset)
-    df_datapoints = _to_deserialized_dataframe(df_data, column=COL_DATAPOINT)
-    log.info(f"fetched {len(df_data)} for dataset {dataset}")
+    existing_dataset = load_dataset(dataset)
 
-    if isinstance(results, pd.DataFrame):
+    if isinstance(results, pd.DataFrame) or isinstance(results, Iterator):
         results = [(None, results)]
+    load_uuid = init_upload().uuid
 
     _validate_configs([cfg for cfg, _ in results])
-
-    all_results: List[Tuple[Optional[TYPE_EVALUATION_CONFIG], pd.DataFrame, pd.DataFrame]] = []
     for config, df_result_input in results:
         log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
-        single_result = _align_datapoints_results(df_datapoints, df_result_input, on)
-        _validate_data(df_datapoints, single_result)
-        all_results.append((config, single_result, df_result_input))
-        log.info(f"completed evaluation with configuration {config}" if config else "completed evaluation")
+        if isinstance(df_result_input, pd.DataFrame):
+            _validate_datapoint_id_columns(df_result_input, existing_dataset.id_fields)
+            df_results = _process_result(config, df_result_input)
+            upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+        else:
+            id_column_validated = False
+            for df_result in df_result_input:
+                if not id_column_validated:
+                    _validate_datapoint_id_columns(df_result, existing_dataset.id_fields)
+                    id_column_validated = True
+                df_results = _process_result(config, df_result)
+                upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
-    df_results = _process_results(df_data, all_results, df_datapoints, on)
-    n_uploaded_results = _upload_results(model, df_results)
-    log.info(f"uploaded {n_uploaded_results} test results")
+    _upload_results(model, load_uuid, existing_dataset.id, existing_dataset.id_fields)
+    log.info(f"uploaded test results for model {model} on dataset {dataset}")

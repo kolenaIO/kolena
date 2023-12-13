@@ -22,6 +22,7 @@ from kolena._api.v1.batched_load import BatchedLoad
 class Path(str, Enum):
     REGISTER = "/dataset/register"
     LOAD_DATAPOINTS = "/dataset/load-datapoints"
+    LOAD_DATASET = "/dataset/load-by-name"
 
 
 @dataclass(frozen=True)
@@ -34,3 +35,16 @@ class RegisterRequest:
 @dataclass(frozen=True)
 class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
     name: str
+
+
+@dataclass(frozen=True)
+class LoadDatasetByNameRequest:
+    name: str
+
+
+@dataclass(frozen=True)
+class EntityData:
+    id: int
+    name: str
+    description: str
+    id_fields: List[str]
