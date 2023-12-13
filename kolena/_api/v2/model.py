@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from enum import Enum
+from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
@@ -43,6 +44,7 @@ class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
 class UploadResultsRequest:
     model: str
     uuid: str
+    dataset_id: Optional[int]
 
 
 @dataclass(frozen=True)
