@@ -123,10 +123,12 @@ def test__test__multiple_eval_configs() -> None:
     register_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
 
     df_result = get_df_result()
-    result_columns_1 = [JOIN_COLUMN, "softmax_bitmap", "score"]
-    result_columns_2 = [JOIN_COLUMN, "softmax_bitmap"]
-    df_result_1 = df_result[result_columns_1]
-    df_result_2 = df_result[result_columns_2]
+    input_result_columns_1 = [JOIN_COLUMN, "softmax_bitmap", "score"]
+    input_result_columns_2 = [JOIN_COLUMN, "softmax_bitmap"]
+    result_columns_1 = input_result_columns_1[1:]
+    result_columns_2 = input_result_columns_2[1:]
+    df_result_1 = df_result[input_result_columns_1]
+    df_result_2 = df_result[input_result_columns_2]
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
@@ -149,8 +151,8 @@ def test__test__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1[1:])
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2[1:])
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
 def test__test__multiple_eval_configs__partial_uploading() -> None:
@@ -161,10 +163,12 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     register_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
 
     df_result = get_df_result(10)
-    result_columns_1 = [JOIN_COLUMN, "softmax_bitmap", "score"]
-    result_columns_2 = [JOIN_COLUMN, "softmax_bitmap"]
-    df_result_1_p1 = df_result[:5][result_columns_1]
-    df_result_2_p1 = df_result[5:10][result_columns_2]
+    input_result_columns_1 = [JOIN_COLUMN, "softmax_bitmap", "score"]
+    input_result_columns_2 = [JOIN_COLUMN, "softmax_bitmap"]
+    result_columns_1 = input_result_columns_1[1:]
+    result_columns_2 = input_result_columns_2[1:]
+    df_result_1_p1 = df_result[:5][input_result_columns_1]
+    df_result_2_p1 = df_result[5:10][input_result_columns_2]
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
@@ -175,8 +179,8 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
         on=JOIN_COLUMN,
     )
 
-    df_result_1_p2 = df_result[5:10][result_columns_1]
-    df_result_2_p2 = df_result[:5][result_columns_2]
+    df_result_1_p2 = df_result[5:10][input_result_columns_1]
+    df_result_2_p2 = df_result[:5][input_result_columns_2]
     test(
         dataset_name,
         model_name,
@@ -196,8 +200,8 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
     expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1[1:])
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2[1:])
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
 def test__test__multiple_eval_configs__duplicate() -> None:
