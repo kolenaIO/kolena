@@ -149,8 +149,9 @@ def test__register_dataset__composite() -> None:
     ]
     columns = datapoints[0].keys()
 
+    id_fields = ["a.text", "b.text"]
     df = pd.DataFrame(datapoints[:10], columns=columns)
-    register_dataset(name, df)
+    register_dataset(name, df, id_fields)
 
     loaded_datapoints = fetch_dataset(name)
     loaded_datapoints = loaded_datapoints.sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
@@ -158,7 +159,7 @@ def test__register_dataset__composite() -> None:
 
     # update dataset
     df = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
-    register_dataset(name, df)
+    register_dataset(name, df, id_fields)
 
     loaded_datapoints = fetch_dataset(name).sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
     assert_frame_equal(df, loaded_datapoints)
