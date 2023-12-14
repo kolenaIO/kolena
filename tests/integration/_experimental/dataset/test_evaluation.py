@@ -149,8 +149,8 @@ def test__test__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1[1:])
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2[1:])
 
 
 def test__test__multiple_eval_configs__partial_uploading() -> None:
@@ -196,8 +196,8 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
     expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1[1:])
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2[1:])
 
 
 def test__test__multiple_eval_configs__duplicate() -> None:
