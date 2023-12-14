@@ -223,9 +223,6 @@ jobs:
               - equal:
                   - "none"
                   - << parameters.extras >>
-              - not_equal:
-                  - _experimental
-                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
@@ -238,7 +235,7 @@ jobs:
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
-                  poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
+                  poetry run pytest -m 'not metrics' -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
                     --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
