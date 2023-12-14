@@ -345,7 +345,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: ["metrics"]
+              extras: ["metrics", "dataset"]
           pytest-group: _experimental
           enabled: true
           requires:

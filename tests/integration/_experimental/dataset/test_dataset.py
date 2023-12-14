@@ -27,6 +27,7 @@ from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 
+@pytest.mark.dataset
 def test__register_dataset__empty() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset__empty")
     register_dataset(name, pd.DataFrame())
@@ -34,6 +35,7 @@ def test__register_dataset__empty() -> None:
     assert fetch_dataset(name).empty
 
 
+@pytest.mark.dataset
 def test__register_dataset() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset")
     datapoints = [
@@ -84,6 +86,7 @@ def batch_iterator(df: pd.DataFrame, batch_size=5) -> Iterator[pd.DataFrame]:
         yield df.iloc[i : i + batch_size]
 
 
+@pytest.mark.dataset
 def test__register_dataset_chunks() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset")
     datapoints = [
@@ -129,6 +132,7 @@ def test__register_dataset_chunks() -> None:
     assert_frame_equal(loaded_datapoints, expected)
 
 
+@pytest.mark.dataset
 def test__register_dataset__composite() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset__composite")
     datapoints = [
@@ -164,6 +168,7 @@ def test__register_dataset__composite() -> None:
     assert_frame_equal(df, loaded_datapoints)
 
 
+@pytest.mark.dataset
 def test__fetch_dataset__not_exist() -> None:
     name = with_test_prefix(f"{__file__}::test__fetch_dataset__not_exist")
     with pytest.raises(NotFoundError):

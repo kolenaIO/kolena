@@ -59,6 +59,7 @@ def get_df_result(n: int = 20) -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
+@pytest.mark.dataset
 def test__test() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test")
     model_name = with_test_prefix(f"{__file__}::test__test")
@@ -86,6 +87,7 @@ def test__test() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
+@pytest.mark.dataset
 def test__test__align_manually() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__align_manually")
     model_name = with_test_prefix(f"{__file__}::test__test__align_manually")
@@ -114,6 +116,7 @@ def test__test__align_manually() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
+@pytest.mark.dataset
 def test__test__multiple_eval_configs() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs")
     model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs")
@@ -152,6 +155,7 @@ def test__test__multiple_eval_configs() -> None:
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
+@pytest.mark.dataset
 def test__test__multiple_eval_configs__partial_uploading() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__partial_uploading")
     model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__partial_uploading")
@@ -199,6 +203,7 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
+@pytest.mark.dataset
 def test__test__multiple_eval_configs__duplicate() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__duplicate")
     model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__duplicate")
@@ -225,6 +230,7 @@ def test__test__multiple_eval_configs__duplicate() -> None:
     assert "duplicate eval configs are invalid" in exc_info_value
 
 
+@pytest.mark.dataset
 def test__test__missing_result() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__missing_result")
     model_name = with_test_prefix(f"{__file__}::test__test__missing_result")
@@ -269,6 +275,7 @@ def test__test__missing_result() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
+@pytest.mark.dataset
 def test__test__upload_none() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__upload_none")
     model_name = with_test_prefix(f"{__file__}::test__test__upload_none")
@@ -301,6 +308,7 @@ def test__test__upload_none() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
+@pytest.mark.dataset
 def test__test__invalid_data__df_size_mismatch() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
     model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
@@ -320,6 +328,7 @@ def test__test__invalid_data__df_size_mismatch() -> None:
     assert "numbers of rows between two dataframe do not match" in exc_info_value
 
 
+@pytest.mark.dataset
 def test__fetch_results__not_exist() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__fetch_results__not_exist")
     model_name = with_test_prefix(f"{__file__}::test__fetch_results__not_exist")
