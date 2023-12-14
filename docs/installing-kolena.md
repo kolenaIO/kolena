@@ -96,5 +96,5 @@ Additional logging can be configured by specifying `initialize(..., verbose=True
 | 3.10                                                              | _All Versions_                             |
 | 3.9                                                               | _All Versions_                             |
 | 3.8                                                               | _All Versions_                             |
-| 3.7 (EOL: [June 2023](https://devguide.python.org/versions/))     | ≤0.98                                      |
+| 3.7 (EOL: [June 2023](https://devguide.python.org/versions/))     | ≤0.99                                      |
 | 3.6 (EOL: [December 2021](https://devguide.python.org/versions/)) | ≤0.46                                      |
