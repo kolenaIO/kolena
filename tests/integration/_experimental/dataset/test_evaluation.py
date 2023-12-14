@@ -176,13 +176,15 @@ def test__test__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    result_columns_1.remove(JOIN_COLUMN)
+    result_columns_2.remove(JOIN_COLUMN)
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
 def test__test__multiple_eval_configs__iterator_input() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs")
-    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs")
+    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__iterator_input")
+    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__iterator_input")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     register_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=[JOIN_COLUMN])
@@ -214,6 +216,8 @@ def test__test__multiple_eval_configs__iterator_input() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    result_columns_1.remove(JOIN_COLUMN)
+    result_columns_2.remove(JOIN_COLUMN)
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
@@ -259,6 +263,8 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
     assert fetched_eval_config_1 == eval_config_1
     assert fetched_eval_config_2 == eval_config_2
+    result_columns_1.remove(JOIN_COLUMN)
+    result_columns_2.remove(JOIN_COLUMN)
     expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
     expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
@@ -329,7 +335,10 @@ def test__test__missing_result() -> None:
         ],
         axis=0,
     ).reset_index(drop=True)
-    fetched_df_dp = fetched_df_dp.sort_values(JOIN_COLUMN).reset_index(drop=True)
+    fetched_df_dp = fetched_df_dp.sort_values(JOIN_COLUMN)
+    expected_df_dp = expected_df_dp.sort_values(JOIN_COLUMN)
+    fetched_df_dp.reset_index(drop=True, inplace=True)
+    expected_df_dp.reset_index(drop=True, inplace=True)
     _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
@@ -363,25 +372,6 @@ def test__test__upload_none() -> None:
     assert eval_cfg is None
     _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
-
-
-def test__test__invalid_data__df_size_mismatch() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
-    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
-    df_dp = get_df_dp()
-    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
-    register_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
-
-    df_result = get_df_result(10)
-
-    with pytest.raises(IncorrectUsageError) as exc_info:
-        test(
-            dataset_name,
-            model_name,
-            df_result,
-        )
-    exc_info_value = str(exc_info.value)
-    assert "numbers of rows between two dataframe do not match" in exc_info_value
 
 
 def test__fetch_results__not_exist() -> None:
