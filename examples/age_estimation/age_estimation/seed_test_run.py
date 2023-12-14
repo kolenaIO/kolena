@@ -31,7 +31,7 @@ DATASET = "labeled-faces-in-the-wild"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/{model_name}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/predictions/{model_name}.csv", storage_options={"anon": True})
 
     def infer(test_sample: TestSample) -> Inference:
         age = df_results[df_results["image_path"] == test_sample.locator]["age"].values[0]

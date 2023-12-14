@@ -7,9 +7,6 @@ icon: kolena/comparison-16
 Kolena supports natural language and similar image search across [`Image`][kolena.workflow.Image] data previously registered to the platform.
 Users may set up this functionality by extracting and uploading the corresponding search embeddings using a Kolena provided package.
 
-!!! note end
-    Kolena supports search embedding extraction and upload as an opt-in feature for our customers.
-    Please message your point of contact for the latest relevant extractor package.
 
 ## Example
 
@@ -30,19 +27,28 @@ Uploading embeddings to Kolena can be done in three simple steps:
 Let's take a look at each step with example code snippets.
 
 ### Step 1: Install `kolena_embeddings` Package
-
-Copy the `kolena_embeddings-*.*.*.tar.gz` file (provided by your Kolena contact) to your working directory, and install it as a dependency.
+The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
+on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
 
 === "`pip`"
 
     ```shell
-    pip install ./kolena_embeddings-*.*.*.tar.gz
+    pip install --extra-index-url="https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 === "`poetry`"
+    Configure an additional poetry source:
+    ```shell
+    poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
+    ```
+    Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    ```shell
+    poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
+    ```
+    Run the following command:
 
     ```shell
-    poetry add ./kolena_embeddings-*.*.*.tar.gz
+    poetry add --source kolena-embeddings kolena-embeddings
     ```
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:

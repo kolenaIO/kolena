@@ -117,7 +117,7 @@ def seed_test_suite_tempo(
 
 
 def seed_complete_test_case(args: Namespace) -> TestCase:
-    df = pd.read_csv(args.dataset_csv)
+    df = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     df = df.where(pd.notnull(df), None)  # read missing cells as None
     df.columns = df.columns.str.replace(r"(\s|\.)+", "_", regex=True)  # sanitize column names to use underscores
 

@@ -92,7 +92,7 @@ def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
-    df_metadata = pd.read_csv(args.dataset_csv)
+    df_metadata = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     context_dict = defaultdict(list)
 
     # Store the conversation context for each story (data_id)

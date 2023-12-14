@@ -31,6 +31,16 @@ example = ImageWithRegion(
     region=BoundingBox(top_left=(0, 0), bottom_right=(100, 100)),
 )
 ```
+
+!!! note "Versioning for `locator` files"
+
+    Kolena supports versioning for files stored in Amazon S3 or Google Cloud Storage. Simply enable versioning on your
+    [S3](https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html) or
+    [GCS](https://cloud.google.com/storage/docs/object-versioning)
+    bucket and pass the `versionId` or `generation` as a part of the `locator`:
+
+    - S3 (using `versionId`): `s3://my-bucket/example-image.png?versionId=Bv38GKqEKxwr_HYTEXYEx6TQG_4.LkAX`
+    - GCS (using `generation`): `gs://my-bucket/example-image.png?generation=1701352005168905`
 """
 import copy
 from abc import ABCMeta

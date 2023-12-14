@@ -36,7 +36,7 @@ def main(args: Namespace) -> int:
 
     inference_mapping = {}
     model_file_path = f"s3://kolena-public-datasets/CoQA/results/{args.model}.csv"
-    df = pd.read_csv(model_file_path)
+    df = pd.read_csv(model_file_path, storage_options={"anon": True})
 
     # populate inference_mapping
     for _, row in df.iterrows():

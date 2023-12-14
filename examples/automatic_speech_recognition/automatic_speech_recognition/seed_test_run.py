@@ -100,7 +100,7 @@ def main(args: Namespace) -> None:
         "inference_whisper-1-translate",
         "inference_wav2vec2-base-960h",
     ]
-    df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest)
+    df_results = pd.read_csv(csv_to_use, usecols=columns_of_interest, storage_options={"anon": True})
 
     if args.test_suite is None:
         print("loading test suite")

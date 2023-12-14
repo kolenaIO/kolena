@@ -33,7 +33,7 @@ DATASET = "cifar10/test"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/{model_name}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/{model_name}.csv", storage_options={"anon": True})
 
     labels = set(df_results.columns) - {"locator"}
 

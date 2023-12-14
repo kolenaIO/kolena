@@ -53,7 +53,7 @@ def seed_stratified_test_cases(complete_test_case: TestCase, test_suite_name) ->
 
 
 def seed_complete_test_case(args: Namespace) -> TestCase:
-    df = pd.read_csv(args.dataset_csv)
+    df = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     test_samples = []
     for record in tqdm(df.itertuples(index=False), total=len(df)):
         test_sample = TestSample(  # type: ignore

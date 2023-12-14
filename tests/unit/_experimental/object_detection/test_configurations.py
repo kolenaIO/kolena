@@ -35,6 +35,12 @@ evaluator_single_class = pytest.importorskip(
 )
 SingleClassObjectDetectionEvaluator = evaluator_single_class.SingleClassObjectDetectionEvaluator
 
+evaluator = pytest.importorskip(
+    "kolena._experimental.object_detection.evaluator",
+    reason="requires kolena[metrics] extra",
+)
+ObjectDetectionEvaluator = evaluator.ObjectDetectionEvaluator
+
 
 @pytest.mark.metrics
 def test__object_detection__multiple_configurations__multiclass() -> None:
@@ -114,3 +120,17 @@ def test__object_detection__multiple_configurations__single_class() -> None:
     assert len(evaluator.matchings_by_test_case[config_one.display_name()]["one"]) == 1
     assert len(evaluator.matchings_by_test_case[config_two.display_name()]) == 1
     assert len(evaluator.matchings_by_test_case[config_two.display_name()]["two"]) == 1
+
+
+@pytest.mark.metrics
+def test__object_detection__explicit_evaluator() -> None:
+    single_class_configuration = ThresholdConfiguration(
+        multiclass=False,
+    )
+    multiclass_configuration = ThresholdConfiguration(
+        multiclass=True,
+    )
+
+    evaluator = ObjectDetectionEvaluator()
+    assert evaluator._get_evaluator(single_class_configuration) == evaluator.single_class_evaluator
+    assert evaluator._get_evaluator(multiclass_configuration) == evaluator.multiclass_evaluator
