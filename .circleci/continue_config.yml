@@ -331,7 +331,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ detection, fr, classification, workflow, _experimental ]
               extras: ["none"]
           enabled: true
           parallelism: 3
