@@ -23,7 +23,8 @@ The initial specialized prompt passed into GPT4 includes the following:
 1. Asking GPT4 to determine in a binary fashion (strictly output yes or no) whether the generated answer contained hallucinations.
 2. Asking GPT4 for an explanation of why it answered either option.
 
-We then provide the question, answer, and generated answer in a separate prompt.
+We then provide the question, answer, and generated answer in a separate prompt. We are also able to ask GPT4 to provide a score between `0.0` and `1.0` where `0.0`
+is a hallucination and `1.0` contains no hallucinated facts as well as a reason for why it gave a certain score.
 
 # Chain-of-Thought (CoT) and Self-Consistency with GPT4
 GPT4 prompting with CoT and self-consistency is similar to regular prompting with GPT4, however,
