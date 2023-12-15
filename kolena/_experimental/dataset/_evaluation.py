@@ -89,7 +89,6 @@ def _process_result(
     df_result_eval = _to_serialized_dataframe(df_result.drop(columns=id_fields), column=COL_RESULT)
     df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
     df_result_eval = pd.concat([df_result_eval, df_serialized_datapoint_id_object], axis=1)
-    df_result_eval["datapoint_id"] = -1
     return df_result_eval
 
 
@@ -172,6 +171,8 @@ def test(
     :return None
     """
     existing_dataset = load_dataset(dataset)
+    if not existing_dataset:
+        raise IncorrectUsageError(f"dataset {dataset} does not exist")
 
     if isinstance(results, pd.DataFrame) or isinstance(results, Iterator):
         results = [(None, results)]
