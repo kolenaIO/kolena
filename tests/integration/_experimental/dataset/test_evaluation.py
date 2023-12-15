@@ -87,8 +87,8 @@ def test__test() -> None:
 
 
 def test__test__iterator_input() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test")
-    model_name = with_test_prefix(f"{__file__}::test__test")
+    dataset_name = with_test_prefix(f"{__file__}::test__test__iterator_input")
+    model_name = with_test_prefix(f"{__file__}::test__test__iterator_input")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     register_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)

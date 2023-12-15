@@ -43,6 +43,7 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.state import API_V2
 from kolena.errors import IncorrectUsageError
+from kolena.errors import NotFoundError
 
 TYPE_EVALUATION_CONFIG = Optional[Dict[str, Any]]
 TEST_ON_TYPE = Optional[Union[str, List[str]]]
@@ -172,7 +173,7 @@ def test(
     """
     existing_dataset = load_dataset(dataset)
     if not existing_dataset:
-        raise IncorrectUsageError(f"dataset {dataset} does not exist")
+        raise NotFoundError(f"dataset {dataset} does not exist")
 
     if isinstance(results, pd.DataFrame) or isinstance(results, Iterator):
         results = [(None, results)]
