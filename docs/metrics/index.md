@@ -127,6 +127,19 @@ biases, and its intended uses.
 
 </div>
 
+## Hallucination
+
+<div class="grid cards" markdown>
+
+- [Vectara](vectara.md)
+
+    ---
+
+    Vectara offers a hallucination detection metric that can live alongside any NLP workflows to measure factual consistency between candidate texts and reference
+    texts.
+
+</div>
+
 ## Natural Language Processing
 
 <div class="grid cards" markdown>
