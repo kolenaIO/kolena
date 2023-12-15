@@ -1,7 +1,5 @@
 # GPT4 Prompt Engineering
 
-<div class="grid" markdown>
-<div markdown>
 Prompting Engineering is a technique that involves building and optimizing specific input prompts to allow our Large Language Model (LLM) to perform better at targeted tasks. In the landscape of LLM evaluations, prompt engineering is designed to envoke the LLMs inherently knowledge and ability to reason to determine whether or not a set of inputs contain some sort of hallucination.
 
 ## LLM Configurations
@@ -17,14 +15,6 @@ Before diving into the techniques used for prompting we first need to understand
 !!! warn "Limitations"
 
     These metrics have limitations and should therefore be used at your own discretion.
-
-</div>
-
-</div>
-
-<div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`.` ↗][]
-</div>
 
 #  Prompting GPT4 for Hallucinations
 [GPT4](https://openai.com/gpt-4) is a closed LLM by OpenAI that we prompt in order to extract hallucinations.
@@ -43,7 +33,9 @@ the model `k` times with the same prompt and determing an outcome using the most
 
 To obtain an actual score for hallucinations from 0 to 1, we take the number of times the model thinks the generated answer
 is a hallucination and divide by `k`.
-## Implementation Details & Example
+
+## Example
+Using OpenAI's API we would provide the following example system and user prompts to obtain some example output.
 
 Initial Prompt:
 ```
@@ -84,5 +76,13 @@ This is repeated `k` times, for example, `k=5` and the answers are aggregated.
 and slow.
 
 2. **Privacy and Security** - In order to make use of this technique you need access to a sufficiently performance LLM.
-GPT4 is currently one of the de facto standards when performing LLM evaluation but it is an issue when the datasets that
+GPT4 is currently one of the de facto standards when performing LLM evaluation but it be comes an issue when datasets that
 you want to evaluate are supposed to be private.
+
+While using LLMs to detect hallucinations are not without it's limitations it has certain advantages too:
+
+1. **Improved accuracy** - GPT4 is one of the state-of-the-art models being used for LLM hallucination detection so employing prompt engineering techniques like chain-of-thought and self-consistency can further
+improve the accuracy.
+
+2. **Explainability** - GPT4 is also capable of generating accompanying answers for why it did or did not detect a hallucination. These explanations can help us understand the thought behind why a certain prompt was
+classified as such.

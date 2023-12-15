@@ -87,7 +87,7 @@ nav:
         - metrics/meteor.md
         - metrics/perplexity.md
         - metrics/rouge-n.md
-      - Language Language Model Evaluation:
+      - Language Language Models:
         - metrics/gpt4-prompt-eng.md
         - metrics/selfcheckgpt.md
   - Help & FAQ:

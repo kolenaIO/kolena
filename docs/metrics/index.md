@@ -173,7 +173,7 @@ biases, and its intended uses.
 
 </div>
 
-## Large Language Model (LLM) Evaluation
+## Large Language Models
 
 This section of the glossary contains LLM evaluation metrics to identify and measure the number of hallucinations produced by a generative language model. A hallucination is an output by a model that is made up and/or non-factual.
 
