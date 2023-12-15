@@ -151,8 +151,12 @@ def test__test__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    _assert_frame_equal(fetched_df_result_1,
+                        expected_df_result_1,
+                        [col for col in result_columns_1 if col != JOIN_COLUMN])
+    _assert_frame_equal(fetched_df_result_2,
+                        expected_df_result_2,
+                        [col for col in result_columns_2 if col != JOIN_COLUMN])
 
 
 @pytest.mark.dataset
@@ -197,10 +201,12 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
     assert fetched_eval_config_1 == eval_config_1
     assert fetched_eval_config_2 == eval_config_2
-    expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
-    expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    check_columns_1 = [col for col in result_columns_1 if col != JOIN_COLUMN]
+    check_columns_2 = [col for col in result_columns_2 if col != JOIN_COLUMN]
+    expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[check_columns_1].reset_index(drop=True)
+    expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[check_columns_2].reset_index(drop=True)
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, check_columns_1)
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, check_columns_2)
 
 
 @pytest.mark.dataset
@@ -236,7 +242,7 @@ def test__test__missing_result() -> None:
     model_name = with_test_prefix(f"{__file__}::test__test__missing_result")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
-    register_dataset(dataset_name, df_dp[3:10][dp_columns])
+    register_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=["locator"])
 
     df_result = get_df_result()
     result_columns = ["softmax_bitmap", "score"]
@@ -258,7 +264,7 @@ def test__test__missing_result() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
     # add 3 new datapoints, then we should have missing results in the db records
-    register_dataset(dataset_name, df_dp[:10][dp_columns])
+    register_dataset(dataset_name, df_dp[:10][dp_columns], id_fields=["locator"])
     fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
     assert len(df_results_by_eval) == 1
