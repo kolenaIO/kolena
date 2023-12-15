@@ -127,7 +127,7 @@ biases, and its intended uses.
 
 </div>
 
-## Hallucination
+## Large Language Models
 
 <div class="grid cards" markdown>
 

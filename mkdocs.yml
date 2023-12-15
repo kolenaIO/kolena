@@ -81,7 +81,7 @@ nav:
       - Computer Vision:
         - metrics/geometry-matching.md
         - metrics/iou.md
-      - Hallucination:
+      - Large Language Models:
         - metrics/nli-classification.md
         - metrics/vectara.md
       - Natural Language Processing:
