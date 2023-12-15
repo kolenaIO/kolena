@@ -35,6 +35,7 @@ from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena._experimental.dataset.common import COL_EVAL_CONFIG
 from kolena._experimental.dataset.common import COL_RESULT
 from kolena._experimental.dataset.common import validate_batch_size
+from kolena._experimental.dataset.common import validate_dataframe_ids
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -139,12 +140,6 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-def _validate_datapoint_id_columns(df: pd.DataFrame, datapoint_id_columns: List[str]) -> None:
-    for col in datapoint_id_columns:
-        if col not in df:
-            raise ValueError(f"datapoint_id_columns {col} not found in uploaded result file")
-
-
 def test(
     dataset: str,
     model: str,
@@ -183,14 +178,14 @@ def test(
     for config, df_result_input in results:
         log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
         if isinstance(df_result_input, pd.DataFrame):
-            _validate_datapoint_id_columns(df_result_input, existing_dataset.id_fields)
+            validate_dataframe_ids(df_result_input, existing_dataset.id_fields)
             df_results = _process_result(config, df_result_input, existing_dataset.id_fields)
             upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
         else:
             id_column_validated = False
             for df_result in df_result_input:
                 if not id_column_validated:
-                    _validate_datapoint_id_columns(df_result, existing_dataset.id_fields)
+                    validate_dataframe_ids(df_result, existing_dataset.id_fields)
                     id_column_validated = True
                 df_results = _process_result(config, df_result, existing_dataset.id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
