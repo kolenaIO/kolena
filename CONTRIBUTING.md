@@ -16,7 +16,7 @@ $ poetry run pre-commit install
 The documentation for `kolena`, hosted at [docs.kolena.io](https://docs.kolena.io/), is built out of this repo using
 [MkDocs](https://www.mkdocs.org/).
 Building the documentation locally requires installing the Poetry dependencies for `kolena` as well as additional
-[OS-level dependencies for mkdocs-material](https://squidfunk.github.io/mkdocs-material/setup/dependencies/image-processing/).
+[OS-level dependencies for mkdocs-material](https://squidfunk.github.io/mkdocs-material/plugins/requirements/image-processing/#cairo-graphics).
 
 To run the documentation server locally, run:
 
@@ -29,6 +29,9 @@ To build static documentation:
 ```
 poetry run mkdocs build
 ```
+
+Note that any OSError unable to find "cairo-2, "cairo", or "libcairo-2" can be solved with
+`ln -s /opt/homebrew/lib/libcairo.2.dylib .`, which makes a link of cairo to your current directory.
 
 Kolena sponsors the [mkdocs-material](https://squidfunk.github.io/mkdocs-material/) and
 [mkdocstrings](https://mkdocstrings.github.io/) projects and uses "insiders" features from these projects. In order to
