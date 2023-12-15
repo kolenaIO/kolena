@@ -176,8 +176,6 @@ def test__test__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    result_columns_1.remove(JOIN_COLUMN)
-    result_columns_2.remove(JOIN_COLUMN)
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
@@ -263,8 +261,6 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
     assert fetched_eval_config_1 == eval_config_1
     assert fetched_eval_config_2 == eval_config_2
-    result_columns_1.remove(JOIN_COLUMN)
-    result_columns_2.remove(JOIN_COLUMN)
     expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
     expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
