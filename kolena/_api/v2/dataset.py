@@ -13,6 +13,7 @@
 # limitations under the License.
 from enum import Enum
 from typing import List
+from typing import Optional
 
 from pydantic import conint
 from pydantic.dataclasses import dataclass
@@ -37,6 +38,7 @@ class RegisterRequest:
 @dataclass(frozen=True)
 class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
     name: str
+    commit: Optional[str] = None
 
 
 @dataclass(frozen=True)

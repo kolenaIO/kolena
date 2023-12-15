@@ -262,12 +262,15 @@ def register_dataset(
 
 def _iter_dataset_raw(
     name: str,
+    commit: str = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
     init_request = LoadDatapointsRequest(
         name=name,
+        commit=commit,
         batch_size=batch_size,
+
     )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
@@ -279,23 +282,25 @@ def _iter_dataset_raw(
 
 def _iter_dataset(
     name: str,
+    commit: str = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
     Get an iterator over datapoints in the dataset.
     """
-    for df_batch in _iter_dataset_raw(name, batch_size):
+    for df_batch in _iter_dataset_raw(name, commit, batch_size):
         yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
 
 
 def fetch_dataset(
     name: str,
+    commit: str = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> pd.DataFrame:
     """
     Fetch an entire dataset given its name.
     """
-    df_batches = list(_iter_dataset(name, batch_size))
+    df_batches = list(_iter_dataset(name, commit, batch_size))
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
 
