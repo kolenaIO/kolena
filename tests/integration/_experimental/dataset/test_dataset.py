@@ -29,7 +29,7 @@ from tests.integration.helper import with_test_prefix
 
 def test__register_dataset__empty() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset__empty")
-    register_dataset(name, pd.DataFrame())
+    register_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
     assert fetch_dataset(name).empty
 
@@ -148,9 +148,10 @@ def test__register_dataset__composite() -> None:
         for i in range(1, 20)
     ]
     columns = datapoints[0].keys()
+    id_fields = ["a.text"]
 
     df = pd.DataFrame(datapoints[:10], columns=columns)
-    register_dataset(name, df)
+    register_dataset(name, df, id_fields=id_fields)
 
     loaded_datapoints = fetch_dataset(name)
     loaded_datapoints = loaded_datapoints.sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
@@ -158,7 +159,7 @@ def test__register_dataset__composite() -> None:
 
     # update dataset
     df = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
-    register_dataset(name, df)
+    register_dataset(name, df, id_fields=id_fields)
 
     loaded_datapoints = fetch_dataset(name).sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
     assert_frame_equal(df, loaded_datapoints)

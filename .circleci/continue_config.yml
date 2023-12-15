@@ -114,8 +114,8 @@ jobs:
       - run:
           name: Build documentation without 'insiders' packages
           command: poetry run mkdocs build
-      - add_ssh_keys:  # add github.com SSH key fingerprint to access private repo forks
-          fingerprints: ["15:8b:d4:ac:1f:cd:2f:d3:92:a7:4c:aa:46:81:0b:7d"]
+      - add_ssh_keys: # add github.com SSH key fingerprint to access private repo forks
+          fingerprints: [ "15:8b:d4:ac:1f:cd:2f:d3:92:a7:4c:aa:46:81:0b:7d" ]
       - run:
           name: Build documentation with 'insiders' packages
           command: |
@@ -169,8 +169,8 @@ jobs:
           # Generate coverage only from one Python version
           condition:
             matches:
-                pattern: "^3\\.9.*$"
-                value: << parameters.python-version >>
+              pattern: "^3\\.9.*$"
+              value: << parameters.python-version >>
           steps:
             - run:
                 name: Coverage
@@ -219,13 +219,9 @@ jobs:
             export KOLENA_TOKEN=${!token}
       - when:
           condition:
-            and:
-              - equal:
-                  - "none"
-                  - << parameters.extras >>
-              - not_equal:
-                  - _experimental
-                  - << parameters.pytest-group >>
+            equal:
+              - "none"
+              - << parameters.extras >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
@@ -312,13 +308,13 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
-              extras: ["none", "metrics"]
+              extras: [ "none", "metrics" ]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
-              extras: ["none", "metrics"]
+              extras: [ "none", "metrics" ]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - docs:
@@ -326,7 +322,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: ["none"]
+              extras: [ "none" ]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -335,7 +331,7 @@ workflows:
             parameters:
               python-version: [ "3.9.18" ]
               pytest-group: [ detection, fr, classification, workflow ]
-              extras: ["none"]
+              extras: [ "none" ]
           enabled: true
           parallelism: 3
           requires:
@@ -345,7 +341,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: ["metrics"]
+              extras: [ "none", "metrics" ]
           pytest-group: _experimental
           enabled: true
           requires:
@@ -355,7 +351,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: ["none"]
+              extras: [ "none" ]
           pytest-group: misc
           enabled: << pipeline.parameters.all >>
           parallelism: 1
