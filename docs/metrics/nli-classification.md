@@ -51,7 +51,7 @@ context cannot be provided. If relevant, context can be added to the front of bo
 2. Explainability is a challenge for these scores. This model is a black-box that is not able to explain the reasons
 for assigning a contradiction score of `3.0` or `4.5`. Users should examine this classifier's behavior on their own
 data, and see how extra details within a ground truth or inference might impact the decision of assigning
-`'contradiction'`, `'entailment'` or `'neutral'`
+`'contradiction'`, `'entailment'` or `'neutral'`.
 
 Overall, this NLI classifier is quick and easy to use, and provides insightful metrics relevant to a hallucination
 detection system.
