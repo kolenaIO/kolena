@@ -81,6 +81,8 @@ nav:
       - Computer Vision:
         - metrics/geometry-matching.md
         - metrics/iou.md
+      - Hallucination:
+        - metrics/vectara.md
       - Natural Language Processing:
         - metrics/bertscore.md
         - metrics/bleu.md
