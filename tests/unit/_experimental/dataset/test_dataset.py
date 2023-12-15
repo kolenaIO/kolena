@@ -31,11 +31,8 @@ from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import DatapointType
 from kolena._experimental.dataset._dataset import resolve_id_fields
-from kolena._experimental.dataset._evaluation import _align_datapoints_results
-from kolena._experimental.dataset._evaluation import _validate_data
 from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import COL_RESULT
-from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.annotation import BoundingBox
@@ -396,21 +393,6 @@ def test__dataframe__data_type_field_not_exist() -> None:
         assert DATA_TYPE_FIELD not in row[column_name]
 
 
-def test__datapoints_results_alignment() -> None:
-    df_datapoints = pd.DataFrame(dict(text=["a", "a", "b", "c"], question=["foo", "bar", "cat", "dog"]))
-    df_results = pd.DataFrame(
-        dict(text=["a", "a", "b"], question=["foo", "bar", "cat"], answer=[1, 2, 3]),
-    )
-    with pytest.raises(IncorrectUsageError):
-        _align_datapoints_results(df_datapoints, df_results, on="text")
-
-    df_merged = _align_datapoints_results(df_datapoints, df_results, on=["text", "question"])
-    _validate_data(df_datapoints, df_merged)
-
-    expected = pd.DataFrame(dict(answer=[1, 2, 3, np.nan]))
-    assert df_merged.equals(expected)
-
-
 def test__infer_id_fields() -> None:
     assert _infer_id_fields(
         pd.DataFrame(
@@ -434,6 +416,10 @@ def test__infer_id_fields() -> None:
             ),
         ),
     ) == ["text"]
+    assert _infer_id_fields(pd.DataFrame({"a.text": ["a", "b"], "b.text": ["c", "d"]})) == [
+        "a.text",
+        "b.text",
+    ]
 
     try:
         assert _infer_id_fields(

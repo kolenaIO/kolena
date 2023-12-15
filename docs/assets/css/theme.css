@@ -68,6 +68,10 @@ figcaption {
 
   --md-mg-positive-color: #008e10;
   --md-mg-negative-color: #ac0000;
+
+  --md-mg-substitution-color: #008e10;
+  --md-mg-deletion-color: #ac0000;
+  --md-mg-insertion-color: #3e57d3;
 }
 
 /* Apply Kolena branding on top of 'slate' (dark) scheme */
@@ -101,6 +105,10 @@ figcaption {
 
     --md-mg-positive-color: #b6ffc4;
     --md-mg-negative-color: #ffbcbf;
+
+    --md-mg-substitution-color: #b6ffc4;
+    --md-mg-deletion-color: #ffbcbf;
+    --md-mg-insertion-color: #948aff;
   }
 }
 
@@ -127,4 +135,14 @@ figcaption {
 }
 .mg-cell-color-negative {
   color: var(--md-mg-negative-color);
+}
+
+.mg-color-substitution {
+  color: var(--md-mg-substitution-color);
+}
+.mg-color-deletion {
+  color: var(--md-mg-deletion-color);
+}
+.mg-color-insertion {
+  color: var(--md-mg-insertion-color);
 }

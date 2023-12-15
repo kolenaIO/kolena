@@ -43,6 +43,7 @@ class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
 class UploadResultsRequest:
     model: str
     uuid: str
+    dataset_id: int
 
 
 @dataclass(frozen=True)
