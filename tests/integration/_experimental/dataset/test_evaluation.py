@@ -262,7 +262,7 @@ def test__test__missing_result() -> None:
     eval_cfg, fetched_df_result = df_results_by_eval[0]
     assert len(df_results_by_eval) == 1
     assert eval_cfg is None
-    expected_df_dp = pd.concat([df_dp[3:10], df_dp[:3]]).reset_index(drop=True)
+    expected_df_dp = pd.concat([df_dp[3:10], df_dp[:3]]).sort_values(JOIN_COLUMN).reset_index(drop=True)
     expected_df_result = pd.concat(
         [
             df_result.drop(columns=[JOIN_COLUMN])[3:10],
@@ -270,6 +270,7 @@ def test__test__missing_result() -> None:
         ],
         axis=0,
     ).reset_index(drop=True)
+    fetched_df_dp = fetched_df_dp.sort_values(JOIN_COLUMN).reset_index(drop=True)
     _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
