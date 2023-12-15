@@ -8,10 +8,11 @@ consistent with another.
 
 ## Implementation Details
 
-HEM is based on Microsoft's [deberta-v3-base](https://huggingface.co/microsoft/deberta-v3-base) which was trained on
+HEM is based on Microsoft's [deberta-v3-base](https://huggingface.co/microsoft/deberta-v3-base), which was trained on
 NLI (Natural Language Inference) data, and then fine-tuned on text summarization datasets.
 
-Further details for development and usage can be found on Hugging Face: [vectara/hallucination_evaluation_model](https://huggingface.co/vectara/hallucination_evaluation_model).
+Further details for development and usage can be found on Hugging Face:
+[vectara/hallucination_evaluation_model](https://huggingface.co/vectara/hallucination_evaluation_model).
 Below is a quick example of how it can be used:
 
 ```py
@@ -23,6 +24,8 @@ def compute_metric(ground_truth: str, inference: str) -> float:
     return hallucination_score
 
 print(compute_metric("The duck crossed the road", "The duck did not cross the road"))
+# Outputs:
+# 0.0004
 ```
 
 ## Examples
@@ -42,4 +45,10 @@ context cannot be provided. If relevant, context can be added to the front of bo
 has the complete context at hand, might disagree with. Certain extra details within an inference might influence a
 score to soar from near 0 to almost 1. For example: `("Canada and Mexico", "Canada and Mexico, but not the USA")`.
 
-Overall, Vectara's HEM is open source, quick and easy to use, and is a very strong starting point in any hallucination detection system.
+3. Explainability is a challenge in this space, as the difference between a score of 0.1 and 0.3, or 0.7 and 0.9, is
+very hard to subjectively define. This model is a black-box when it comes to numbers, so users who want to consider
+multiple thresholds should learn the behaviors of Vectara's HEM on their own data rather than naively defining more
+thresholds such as `0.25` and `0.75`.
+
+Overall, Vectara's HEM is open source, quick and easy to use, and is a very strong starting point in any hallucination
+detection system.
