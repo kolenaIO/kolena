@@ -82,6 +82,7 @@ nav:
         - metrics/geometry-matching.md
         - metrics/iou.md
       - Hallucination:
+        - metrics/nli-classification.md
         - metrics/vectara.md
       - Natural Language Processing:
         - metrics/bertscore.md
