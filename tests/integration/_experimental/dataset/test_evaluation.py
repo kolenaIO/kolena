@@ -26,6 +26,7 @@ from kolena._experimental.dataset import register_dataset
 from kolena._experimental.dataset import test
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
+from tests.integration._experimental.dataset.test_dataset import batch_iterator
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
@@ -69,12 +70,37 @@ def test__test() -> None:
 
     df_result = get_df_result()
     result_columns = ["softmax_bitmap", "score"]
-
     test(
         dataset_name,
         model_name,
         df_result,
-        on=JOIN_COLUMN,
+    )
+
+    fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
+    eval_cfg, fetched_df_result = df_results_by_eval[0]
+    assert len(df_results_by_eval) == 1
+    assert eval_cfg is None
+    expected_df_dp = df_dp[3:10].reset_index(drop=True)
+    expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+
+
+def test__test__iterator_input() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__iterator_input")
+    model_name = with_test_prefix(f"{__file__}::test__test__iterator_input")
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
+
+    df_result = get_df_result()
+    df_result_iterator = batch_iterator(df_result)
+    result_columns = ["softmax_bitmap", "score"]
+
+    test(
+        dataset_name,
+        model_name,
+        df_result_iterator,
     )
 
     fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
@@ -136,7 +162,6 @@ def test__test__multiple_eval_configs() -> None:
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1), (eval_config_2, df_result_2)],
-        on=JOIN_COLUMN,
     )
 
     fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
@@ -151,6 +176,46 @@ def test__test__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+
+
+def test__test__multiple_eval_configs__iterator_input() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__iterator_input")
+    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__iterator_input")
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    register_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=[JOIN_COLUMN])
+
+    df_result = get_df_result()
+    result_columns_1 = [JOIN_COLUMN, "softmax_bitmap", "score"]
+    result_columns_2 = [JOIN_COLUMN, "softmax_bitmap"]
+    df_result_1 = df_result[result_columns_1]
+    df_result_1_iterator = batch_iterator(df_result_1)
+    df_result_2 = df_result[result_columns_2]
+    df_result_2_iterator = batch_iterator(df_result_2)
+    eval_config_1 = dict(threshold=0.1)
+    eval_config_2 = dict(threshold=0.2)
+
+    test(
+        dataset_name,
+        model_name,
+        [(eval_config_1, df_result_1_iterator), (eval_config_2, df_result_2_iterator)],
+    )
+
+    fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
+    assert len(df_results_by_eval) == 2
+    expected_df_dp = df_dp[3:10].reset_index(drop=True)
+    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
+    fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
+    fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
+    assert fetched_eval_config_1 == eval_config_1
+    assert fetched_eval_config_2 == eval_config_2
+    expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    result_columns_1.remove(JOIN_COLUMN)
+    result_columns_2.remove(JOIN_COLUMN)
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
@@ -176,7 +241,6 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_p1), (eval_config_2, df_result_2_p1)],
-        on=JOIN_COLUMN,
     )
 
     df_result_1_p2 = df_result[5:10][input_result_columns_1]
@@ -185,7 +249,6 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_p2), (eval_config_2, df_result_2_p2)],
-        on=JOIN_COLUMN,
     )
 
     fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
@@ -223,7 +286,6 @@ def test__test__multiple_eval_configs__duplicate() -> None:
             dataset_name,
             model_name,
             [(eval_config, df_result_1), (eval_config, df_result_2)],
-            on=JOIN_COLUMN,
         )
 
     exc_info_value = str(exc_info.value)
@@ -244,7 +306,6 @@ def test__test__missing_result() -> None:
         dataset_name,
         model_name,
         df_result,
-        on=JOIN_COLUMN,
     )
 
     fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
@@ -270,7 +331,10 @@ def test__test__missing_result() -> None:
         ],
         axis=0,
     ).reset_index(drop=True)
-    fetched_df_dp = fetched_df_dp.sort_values(JOIN_COLUMN).reset_index(drop=True)
+    fetched_df_dp = fetched_df_dp.sort_values(JOIN_COLUMN)
+    expected_df_dp = expected_df_dp.sort_values(JOIN_COLUMN)
+    fetched_df_dp.reset_index(drop=True, inplace=True)
+    expected_df_dp.reset_index(drop=True, inplace=True)
     _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
@@ -289,7 +353,6 @@ def test__test__upload_none() -> None:
         dataset_name,
         model_name,
         df_result,
-        on=[JOIN_COLUMN],
     )
 
     fetched_df_dp, df_results_by_eval = fetch_results(dataset_name, model_name)
@@ -305,25 +368,6 @@ def test__test__upload_none() -> None:
     assert eval_cfg is None
     _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
-
-
-def test__test__invalid_data__df_size_mismatch() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
-    model_name = with_test_prefix(f"{__file__}::test__test__invalid_data__df_size_mismatch")
-    df_dp = get_df_dp()
-    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
-    register_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
-
-    df_result = get_df_result(10)
-
-    with pytest.raises(IncorrectUsageError) as exc_info:
-        test(
-            dataset_name,
-            model_name,
-            df_result,
-        )
-    exc_info_value = str(exc_info.value)
-    assert "numbers of rows between two dataframe do not match" in exc_info_value
 
 
 def test__fetch_results__not_exist() -> None:
