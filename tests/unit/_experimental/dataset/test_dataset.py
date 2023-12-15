@@ -432,6 +432,10 @@ def test__infer_id_fields() -> None:
             ),
         ),
     ) == ["text"]
+    assert _infer_id_fields(pd.DataFrame({"a.text": ["a", "b"], "b.text": ["c", "d"]})) == [
+        "a.text",
+        "b.text",
+    ]
 
     try:
         assert _infer_id_fields(
