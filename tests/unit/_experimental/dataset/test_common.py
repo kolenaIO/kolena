@@ -16,7 +16,7 @@ from typing import List
 import pandas as pd
 import pytest
 
-from kolena._experimental.dataset.common import validate_id_fields
+from kolena._experimental.dataset.common import validate_dataframe_ids
 
 
 @pytest.mark.parametrize(
@@ -36,7 +36,7 @@ def test__validate_id_fields__happy_path(id_fields: List[str], existing_id_field
             text=["a", "b", "c", "d"],
         ),
     )
-    validate_id_fields(df, id_fields, existing_id_fields)
+    validate_dataframe_ids(df, id_fields, existing_id_fields)
 
 
 @pytest.mark.parametrize(
@@ -61,6 +61,6 @@ def test__validate_id_fields__validation_error(
         ),
     )
     try:
-        validate_id_fields(df, id_fields, existing_id_fields)
+        validate_dataframe_ids(df, id_fields, existing_id_fields)
     except Exception as e:
         assert str(e) == expected_error

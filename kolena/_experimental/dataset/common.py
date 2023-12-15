@@ -19,7 +19,6 @@ import pandas as pd
 from kolena._utils import log
 from kolena.errors import InputValidationError
 
-
 COL_DATAPOINT = "datapoint"
 COL_DATAPOINT_ID_OBJECT = "datapoint_id_object"
 COL_EVAL_CONFIG = "eval_config"
@@ -31,7 +30,7 @@ def validate_batch_size(batch_size: int) -> None:
         raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
 
 
-def validate_id_fields(df: pd.DataFrame, id_fields: List[str], existing_id_fields: List[str] = None) -> None:
+def validate_id_fields(id_fields: List[str], existing_id_fields: List[str] = None) -> None:
     if len(id_fields) == 0:
         raise InputValidationError("invalid id_fields: expected at least one field")
     if len(Counter(id_fields)) != len(id_fields):
@@ -44,6 +43,9 @@ def validate_id_fields(df: pd.DataFrame, id_fields: List[str], existing_id_field
                 f"ID field for the existing dataset has been changed from {existing_id_fields} to {id_fields},"
                 f" this will disassociate the existing result from the new datapoints",
             )
+
+
+def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
     for id_field in id_fields:
         if id_field not in df.columns:
             raise InputValidationError(

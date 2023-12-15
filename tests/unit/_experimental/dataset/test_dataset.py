@@ -21,6 +21,7 @@ from pandas.testing import assert_frame_equal
 
 from .data import a_text
 from .data import b_text
+from kolena._api.v2.dataset import EntityData
 from kolena._experimental.dataset._dataset import _add_datatype
 from kolena._experimental.dataset._dataset import _flatten_composite
 from kolena._experimental.dataset._dataset import _infer_datatype
@@ -29,6 +30,7 @@ from kolena._experimental.dataset._dataset import _infer_id_fields
 from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
 from kolena._experimental.dataset._dataset import _to_serialized_dataframe
 from kolena._experimental.dataset._dataset import DatapointType
+from kolena._experimental.dataset._dataset import resolve_id_fields
 from kolena._experimental.dataset._evaluation import _align_datapoints_results
 from kolena._experimental.dataset._evaluation import _validate_data
 from kolena._experimental.dataset.common import COL_DATAPOINT
@@ -443,3 +445,27 @@ def test__infer_id_fields() -> None:
         )
     except Exception as e:
         assert str(e) == "Failed to infer the id_fields, please provide id_fields explicitly"
+
+
+def test__resolve_id_fields() -> None:
+    df = pd.DataFrame(dict(id=["a", "b", "c"], newid=["d", "e", "f"]))
+    dataset = EntityData(id=1, name="foo", description="", id_fields=["id"])
+    # new dataset without id_fields
+    with pytest.raises(InputValidationError):
+        resolve_id_fields(df, None, None)
+
+    # existing dataset without id_fields
+    with pytest.raises(InputValidationError):
+        resolve_id_fields(df, None, dataset)
+
+    # new dataset with explicit id_fields should resolve to explicit id_fields
+    assert resolve_id_fields(df, ["id"], None) == ["id"]
+
+    # existing dataset id_fields are the same as explicit id_fields
+    assert resolve_id_fields(df, ["id"], dataset) == ["id"]
+
+    # explicit id_fields override existing dataset id_fields
+    assert resolve_id_fields(df, ["newid"], dataset) == ["newid"]
+
+    # new dataset with implicit datatype support, e.g. locator, without id_fields
+    assert resolve_id_fields(pd.DataFrame(dict(locator=["x", "y", "z"])), None, None) == ["locator"]

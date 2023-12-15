@@ -133,7 +133,6 @@ def test__register_dataset__composite() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset__composite")
     datapoints = [
         {
-            "id": i,
             "a.text": "Something " * i,
             "b.text": "Something else " * i,
             "a.word_count": 1 * i,
@@ -149,7 +148,7 @@ def test__register_dataset__composite() -> None:
         for i in range(1, 20)
     ]
     columns = datapoints[0].keys()
-    id_fields = ["id"]
+    id_fields = ["a.text"]
 
     df = pd.DataFrame(datapoints[:10], columns=columns)
     register_dataset(name, df, id_fields=id_fields)

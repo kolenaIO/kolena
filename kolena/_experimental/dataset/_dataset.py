@@ -31,7 +31,7 @@ from kolena._api.v2.dataset import RegisterRequest
 from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena._experimental.dataset.common import validate_batch_size
-from kolena._experimental.dataset.common import validate_id_fields
+from kolena._experimental.dataset.common import validate_dataframe_ids
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
@@ -45,7 +45,6 @@ from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow.io import _dataframe_object_serde
-
 
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"
@@ -198,6 +197,22 @@ def load_dataset(name: str) -> Optional[EntityData]:
     return from_dict(EntityData, response.json())
 
 
+def resolve_id_fields(
+    df: pd.DataFrame,
+    id_fields: Optional[List[str]],
+    existing_dataset: Optional[EntityData],
+) -> List[str]:
+    existing_id_fields = []
+    if existing_dataset:
+        existing_id_fields = existing_dataset.id_fields
+    if not id_fields:
+        if existing_id_fields:
+            raise InputValidationError("id_fields is required for updating an existing dataset")
+        else:
+            id_fields = _infer_id_fields(df)
+    return id_fields
+
+
 def register_dataset(
     name: str,
     df: Union[Iterator[pd.DataFrame], pd.DataFrame],
@@ -217,23 +232,17 @@ def register_dataset(
     """
     load_uuid = init_upload().uuid
     existing_dataset = load_dataset(name)
-    existing_id_fields = []
-    if existing_dataset:
-        existing_id_fields = existing_dataset.id_fields
-    if not id_fields:
-        if existing_id_fields:
-            raise InputValidationError("id_fields is required for updating an existing dataset")
-        else:
-            id_fields = _infer_id_fields(df)
     if isinstance(df, pd.DataFrame):
-        validate_id_fields(df, id_fields, existing_id_fields)
+        id_fields = resolve_id_fields(df, id_fields, existing_dataset)
+        validate_dataframe_ids(df, id_fields)
         _upload_dataset_chunk(df, load_uuid, id_fields)
     else:
         validated = False
         for chunk in df:
             if not validated:
+                id_fields = resolve_id_fields(chunk, id_fields, existing_dataset)
+                validate_dataframe_ids(chunk, id_fields)
                 validated = True
-                validate_id_fields(chunk, id_fields, existing_id_fields)
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
