@@ -23,7 +23,7 @@ positive inferences.
 ![FPR Image](../assets/images/metrics-fpr-dark.svg#only-dark)
 </div>
 
-FPR is often used in conjuction with [TPR (recall)](./recall.md). By measuring both FPR and TPR, a more complete picture
+FPR is often used in conjunction with [TPR (recall)](./recall.md). By measuring both FPR and TPR, a more complete picture
 of a model's performance can be drawn.
 
 <div class="grid cards" markdown>

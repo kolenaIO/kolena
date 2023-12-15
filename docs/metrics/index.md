@@ -127,6 +127,26 @@ biases, and its intended uses.
 
 </div>
 
+## Large Language Models
+
+<div class="grid cards" markdown>
+
+- [Contradiction Score](contradiction-score.md)
+
+    ---
+
+    NLI classification is an insightful tool to measure if candidate texts and reference texts are contradictory or
+    consistent, providing extra detail towards hallucination detection.
+
+- [Vectara's HEM Score](vectara-HEM-score.md)
+
+    ---
+
+    Vectara offers a hallucination detection metric that can live alongside any NLP workflows to measure factual
+    consistency between candidate texts and reference texts.
+
+</div>
+
 ## Natural Language Processing
 
 <div class="grid cards" markdown>

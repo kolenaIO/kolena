@@ -23,7 +23,7 @@ positive inferences.
 ![Specificity Image](../assets/images/metrics-specificity-dark.svg#only-dark)
 </div>
 
-Specificity is often used in conjuction with [sensitivity (recall)](./recall.md), also known **true positive rate**
+Specificity is often used in conjunction with [sensitivity (recall)](./recall.md), also known **true positive rate**
 (TPR). By measuring both specificity and sensitivity, a more complete picture of a model's performance can be drawn.
 
 <div class="grid cards" markdown>
