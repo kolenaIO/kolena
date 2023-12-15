@@ -172,3 +172,26 @@ biases, and its intended uses.
     ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
 
 </div>
+
+## Large Language Model (LLM) Evaluation
+
+This section of the glossary contains LLM evaluation metrics to identify and measure the number of hallucinations produced by a generative language model. A hallucination is an output by a model that is made up and/or non-factual.
+
+### Risks of Hallucinations
+In a lower-risk setting, language model hallucinations can be something as simple as getting the birth date of a celebrity wrong which while isn not ideal is not inherently harmful either. However, in higher-risk and real-world situations, generative models that consistently mix facts and fiction can contribute to the spread of misinformation and mislead individuals.
+
+<div class="grid cards" markdown>
+
+- [GPT4 Prompt Engineering](gpt4-prompt-eng.md)
+
+    ---
+
+    This technique involves prompt engineering with the latest state-of-the-art model for LLM evaluation, GPT4. Methods like chain-of-thought and self-consistency are employed to determine whether or not a prompt contains a hallucination.
+
+- [SelfCheckGPT](selfcheckgpt.md)
+
+    ---
+
+    SelfCheckGPT is a sampling-based approach that samples using the same prompt to determine whether or not the model is consistent with itself. The prompt is considered a hallucination if sampled responses that contradict one another or are not consistent.
+
+</div>
