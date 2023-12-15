@@ -131,14 +131,14 @@ biases, and its intended uses.
 
 <div class="grid cards" markdown>
 
-- [NLI Classification](nli-classification.md)
+- [Contradiction Score](contradiction-score.md)
 
     ---
 
     NLI classification is an insightful tool to measure if candidate texts and reference texts are contradictory or
     consistent, providing extra detail towards hallucination detection.
 
-- [Vectara](vectara.md)
+- [Vectara's HEM Score](vectara-HEM-score.md)
 
     ---
 

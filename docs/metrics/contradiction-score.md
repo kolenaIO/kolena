@@ -1,10 +1,10 @@
-# NLI Classification
+# Contradiction Score
 
-The [Cross-Encoder for Natural Language Inference](https://huggingface.co/cross-encoder/nli-deberta-v3-base) (NLI) is an
+The [Cross-Encoder for Natural Language Inference](https://huggingface.co/cross-encoder/nli-deberta-v3-base) (NLI) is a
 text classification model that takes a pair of text and assigns a label: `'contradiction'`, `'entailment'` or
-`'neutral'`. This is useful for hallucination detection, as factual consistency implies the absence of contradictions.
-For any label, the higher the score, the more confident the model is to assign that label. So, it chooses to assign the
-respective label having the highest score.
+`'neutral'`. Additionally, it assigns a score, expected to range around `-10` to `10` for each label. The higher the
+score, the more confident the model is to assign that label. So, it assigns the label with the highest score. This is
+useful for hallucination detection, as factual consistency implies the absence of contradictions.
 
 ## Implementation Details
 
@@ -17,6 +17,9 @@ Further details for development and usage can be found on Hugging Face:
 Below is a quick example of how it can be used:
 
 ```py
+# Installation:
+# pip install -U sentence-transformers
+
 from sentence_transformers import CrossEncoder
 nli_model = CrossEncoder('cross-encoder/nli-deberta-v3-base')
 

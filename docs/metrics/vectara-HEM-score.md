@@ -16,6 +16,9 @@ Further details for development and usage can be found on Hugging Face:
 Below is a quick example of how it can be used:
 
 ```py
+# Installation:
+# pip install -U sentence-transformers
+
 from sentence_transformers import CrossEncoder
 hallucination_model = CrossEncoder('vectara/hallucination_evaluation_model')
 
