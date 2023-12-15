@@ -17,6 +17,8 @@ import pandas as pd
 import pytest
 
 from kolena._experimental.dataset.common import validate_dataframe_ids
+from kolena._experimental.dataset.common import validate_id_fields
+from kolena.errors import InputValidationError
 
 
 @pytest.mark.parametrize(
@@ -29,14 +31,7 @@ from kolena._experimental.dataset.common import validate_dataframe_ids
     ],
 )
 def test__validate_id_fields__happy_path(id_fields: List[str], existing_id_fields: List[str]) -> None:
-    df = pd.DataFrame(
-        dict(
-            locator=["http://1.jpg", "http://2.jpg", "http://3.jpg", "http://4.jpg"],
-            locator2=["1", "1", "2", "2"],
-            text=["a", "b", "c", "d"],
-        ),
-    )
-    validate_dataframe_ids(df, id_fields, existing_id_fields)
+    validate_id_fields(id_fields, existing_id_fields)
 
 
 @pytest.mark.parametrize(
@@ -53,14 +48,19 @@ def test__validate_id_fields__validation_error(
     existing_id_fields: List[str],
     expected_error: str,
 ) -> None:
-    df = pd.DataFrame(
-        dict(
-            locator=["http://1.jpg", "http://2.jpg", "http://3.jpg", "http://4.jpg"],
-            locator2=["1", "1", "2", "2"],
-            text=["a", "b", "c", "d"],
-        ),
-    )
     try:
-        validate_dataframe_ids(df, id_fields, existing_id_fields)
+        validate_id_fields(id_fields, existing_id_fields)
     except Exception as e:
         assert str(e) == expected_error
+
+
+def test__validate_dataframe_ids() -> None:
+    validate_dataframe_ids(pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"])
+
+    # dataframe is missing one of id_fields
+    with pytest.raises(InputValidationError):
+        validate_dataframe_ids(pd.DataFrame(dict(a=[1, 2, 3])), ["a", "b"])
+
+    # dataframe values in id_fields is not unique
+    with pytest.raises(InputValidationError):
+        validate_dataframe_ids(pd.DataFrame(dict(a=[1, 2, 1], b=[1, 2, 1])), ["a", "b"])
