@@ -219,13 +219,9 @@ jobs:
             export KOLENA_TOKEN=${!token}
       - when:
           condition:
-            and:
-              - equal:
-                  - "none"
-                  - << parameters.extras >>
-          #              - not_equal:
-          #                  - _experimental
-          #                  - << parameters.pytest-group >>
+            equal:
+              - "none"
+              - << parameters.extras >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
