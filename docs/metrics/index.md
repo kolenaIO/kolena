@@ -135,8 +135,15 @@ biases, and its intended uses.
 
     ---
 
-    Vectara offers a hallucination detection metric that can live alongside any NLP workflows to measure factual consistency between candidate texts and reference
-    texts.
+    Vectara offers a hallucination detection metric that can live alongside any NLP workflows to measure factual
+    consistency between candidate texts and reference texts.
+
+- [NLI Classification](nli-classifier.md)
+
+    ---
+
+    NLI classification is an insightful tool to measure if candidate texts and reference texts are contradictory or
+    consistent, providing extra detail towards hallucination detection.
 
 </div>
 

@@ -48,7 +48,7 @@ print(compute_metric("The duck crossed the road", "The duck did not cross the ro
 context cannot be provided. If relevant, context can be added to the front of both texts within the pair. For example:
 `("What did the duck do? The duck crossed the road.", "What did the duck do? The animal crossed the road.")`.
 
-3. Explainability is a challenge for these scores. This model is a black-box that is not able to explain the reasons
+2. Explainability is a challenge for these scores. This model is a black-box that is not able to explain the reasons
 for assigning a contradiction score of `3.0` or `4.5`. Users should examine this classifier's behavior on their own
 data, and see how extra details within a ground truth or inference might impact the decision of assigning
 `'contradiction'`, `'entailment'` or `'neutral'`
