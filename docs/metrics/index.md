@@ -171,4 +171,13 @@ biases, and its intended uses.
     the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
     ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
 
+
+- [Word, Character, and Match Error Rate](wer-cer-mer.md)
+
+    ---
+
+    Word Error Rate (WER), Character Error Rate (CER), and Match Error Rate (MER) are essential metrics used in the
+    evaluation of speech recognition and natural language processing systems. From a high level, they each quantify
+    the similarity between reference and candidate texts, with zero being a perfect score.
+
 </div>
