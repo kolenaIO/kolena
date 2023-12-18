@@ -54,13 +54,34 @@ def test__validate_id_fields__validation_error(
         assert str(e) == expected_error
 
 
-def test__validate_dataframe_ids() -> None:
-    validate_dataframe_ids(pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"])
+@pytest.mark.parametrize(
+    "df, id_fields",
+    [
+        (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"]),
+        (pd.DataFrame(dict(a=[{"c": i * j for i in range(3)} for j in range(3)], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame(dict(a=[[i * j for i in range(3)] for j in range(3)], b=[1, 2, 1])), ["a", "b"]),
+        # the key sequence difference will make it unique
+        (
+            pd.DataFrame(dict(a=[dict(c=42, d=43, e=44), dict(d=43, e=44, c=42), dict(e=44, d=43, c=42)], b=[1, 2, 1])),
+            ["a", "b"],
+        ),
+    ],
+)
+def test__validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
+    validate_dataframe_ids(df, id_fields)
 
-    # dataframe is missing one of id_fields
-    with pytest.raises(InputValidationError):
-        validate_dataframe_ids(pd.DataFrame(dict(a=[1, 2, 3])), ["a", "b"])
 
-    # dataframe values in id_fields is not unique
+@pytest.mark.parametrize(
+    "df, id_fields",
+    [
+        # dataframe is missing one of id_fields
+        (pd.DataFrame(dict(a=[1, 2, 3])), ["a", "b"]),
+        # dataframe values in id_fields is not unique
+        (pd.DataFrame(dict(a=[1, 2, 1], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame(dict(a=[[1], [1], [1]], b=[1, 2, 1])), ["a", "b"]),
+    ],
+)
+def test__validate_dataframe_ids__error(df: pd.DataFrame, id_fields: List[str]) -> None:
     with pytest.raises(InputValidationError):
-        validate_dataframe_ids(pd.DataFrame(dict(a=[1, 2, 1], b=[1, 2, 1])), ["a", "b"])
+        validate_dataframe_ids(df, id_fields)
