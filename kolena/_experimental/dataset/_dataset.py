@@ -270,7 +270,6 @@ def _iter_dataset_raw(
         name=name,
         commit=commit,
         batch_size=batch_size,
-
     )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,

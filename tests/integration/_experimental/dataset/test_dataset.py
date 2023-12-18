@@ -183,7 +183,7 @@ def test__fetch_dataset__not_exist() -> None:
 def with_dataset_commits() -> Tuple[int, List[CommitData]]:
     for version in range(TEST_COMMIT_HISTORY_VERSIONS):
         # remove all previous datapoints and add (version + 1) new datapoints in each iteration
-        datapoints = [dict(locator=f"{version}-{i}") for i in range(version+1)]
+        datapoints = [dict(locator=f"{version}-{i}") for i in range(version + 1)]
         register_dataset(TEST_COMMIT_HISTORY_NAME, pd.DataFrame(datapoints), id_fields=["locator"])
     return fetch_commits(TEST_COMMIT_HISTORY_NAME)
 
@@ -222,7 +222,7 @@ def test__fetch_commits__limit(with_dataset_commits: Tuple[int, List[CommitData]
 def test__fetch_commits__limit_more_than_versions(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with limit arg greater than number of revisions
     total_commits, commits = with_dataset_commits
-    total_commits_limit, commits_limit = fetch_commits(TEST_COMMIT_HISTORY_NAME, limit=TEST_COMMIT_HISTORY_VERSIONS+1)
+    total_commits_limit, commits_limit = fetch_commits(TEST_COMMIT_HISTORY_NAME, limit=TEST_COMMIT_HISTORY_VERSIONS + 1)
     assert total_commits_limit == total_commits
     assert len(commits) == TEST_COMMIT_HISTORY_VERSIONS
     assert commits_limit == commits
@@ -242,10 +242,12 @@ def test__fetch_dataset__versions(with_dataset_commits: Tuple[int, List[CommitDa
     # check fetch_dataset with commit arg
     total_commits, commits = with_dataset_commits
     for version, commit in enumerate(commits):
-        loaded_datapoints = (fetch_dataset(TEST_COMMIT_HISTORY_NAME, commit.commit)
-                             .sort_values("locator", ignore_index=True))
-        expected_datapoints = (pd.DataFrame([dict(locator=f"{version}-{i}") for i in range(version+1)])
-                               .sort_values("locator", ignore_index=True))
+        loaded_datapoints = fetch_dataset(TEST_COMMIT_HISTORY_NAME, commit.commit).sort_values(
+            "locator", ignore_index=True
+        )
+        expected_datapoints = pd.DataFrame([dict(locator=f"{version}-{i}") for i in range(version + 1)]).sort_values(
+            "locator", ignore_index=True
+        )
         assert_frame_equal(loaded_datapoints, expected_datapoints)
 
 
