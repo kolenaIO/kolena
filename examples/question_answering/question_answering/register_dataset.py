@@ -14,6 +14,7 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
+from question_answering.constants import BUCKET
 from question_answering.constants import HALUEVALQA
 from question_answering.constants import TRUTHFULQA
 
@@ -21,7 +22,6 @@ import kolena
 from kolena._experimental.dataset import register_dataset
 from kolena.workflow.io import dataframe_from_csv
 
-BUCKET = "kolena-public-datasets"
 DATASETS = {
     TRUTHFULQA: f"s3://{BUCKET}/TruthfulQA/v1/TruthfulQA_QA.csv",
     HALUEVALQA: f"s3://{BUCKET}/HaLuEval/data/v1/qa_data.csv",
