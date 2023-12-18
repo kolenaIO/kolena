@@ -21,8 +21,8 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from kolena._api.v2.dataset import CommitData
-from kolena._experimental.dataset import fetch_commits
 from kolena._experimental.dataset import fetch_dataset
+from kolena._experimental.dataset import fetch_dataset_history
 from kolena._experimental.dataset import register_dataset
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
@@ -31,8 +31,8 @@ from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 
-TEST_COMMIT_HISTORY_NAME = with_test_prefix(f"{__file__}::test__commit_history")
-TEST_COMMIT_HISTORY_VERSIONS = 10
+TEST_DATASET_HISTORY_NAME = with_test_prefix(f"{__file__}::test__dataset_history")
+TEST_DATASET_HISTORY_VERSIONS = 10
 
 
 def test__register_dataset__empty() -> None:
@@ -181,17 +181,17 @@ def test__fetch_dataset__not_exist() -> None:
 
 @pytest.fixture(scope="module")
 def with_dataset_commits() -> Tuple[int, List[CommitData]]:
-    for version in range(TEST_COMMIT_HISTORY_VERSIONS):
+    for version in range(TEST_DATASET_HISTORY_VERSIONS):
         # remove all previous datapoints and add (version + 1) new datapoints in each iteration
         datapoints = [dict(locator=f"{version}-{i}") for i in range(version + 1)]
-        register_dataset(TEST_COMMIT_HISTORY_NAME, pd.DataFrame(datapoints), id_fields=["locator"])
-    return fetch_commits(TEST_COMMIT_HISTORY_NAME)
+        register_dataset(TEST_DATASET_HISTORY_NAME, pd.DataFrame(datapoints), id_fields=["locator"])
+    return fetch_dataset_history(TEST_DATASET_HISTORY_NAME)
 
 
 def test__fetch_commits(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits without optional args
     total_commits, commits = with_dataset_commits
-    assert total_commits == TEST_COMMIT_HISTORY_VERSIONS
+    assert total_commits == TEST_DATASET_HISTORY_VERSIONS
     previous_commit_time = -1
     for version, commit in enumerate(commits):
         assert commit.timestamp >= previous_commit_time
@@ -200,58 +200,59 @@ def test__fetch_commits(with_dataset_commits: Tuple[int, List[CommitData]]) -> N
         previous_commit_time = commit.timestamp
 
 
-@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_commits__pagination(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with desc arg
     total_commits, commits = with_dataset_commits
-    total_commits_pagination, commits_pagination = fetch_commits(TEST_COMMIT_HISTORY_NAME, page_size=1)
+    total_commits_pagination, commits_pagination = fetch_dataset_history(TEST_DATASET_HISTORY_NAME, page_size=1)
     assert total_commits_pagination == total_commits
     assert commits_pagination == commits
 
 
-@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_commits__desc(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with desc arg
     total_commits, commits = with_dataset_commits
-    total_commits_desc, commits_desc = fetch_commits(TEST_COMMIT_HISTORY_NAME, desc=True)
+    total_commits_desc, commits_desc = fetch_dataset_history(TEST_DATASET_HISTORY_NAME, descending=True)
     assert total_commits_desc == total_commits
     assert commits_desc == commits[::-1]
 
 
-@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_commits__limit(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with limit arg
     total_commits, commits = with_dataset_commits
-    total_commits_limit, commits_limit = fetch_commits(TEST_COMMIT_HISTORY_NAME, limit=10)
+    total_commits_limit, commits_limit = fetch_dataset_history(TEST_DATASET_HISTORY_NAME, limit=10)
     assert total_commits_limit == total_commits
     assert commits_limit == commits[:10]
 
 
-@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_commits__limit_more_than_versions(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with limit arg greater than number of revisions
     total_commits, commits = with_dataset_commits
-    total_commits_limit, commits_limit = fetch_commits(TEST_COMMIT_HISTORY_NAME, limit=TEST_COMMIT_HISTORY_VERSIONS + 1)
+    total_commits_limit, commits_limit = fetch_dataset_history(
+        TEST_DATASET_HISTORY_NAME,
+        limit=TEST_DATASET_HISTORY_VERSIONS + 1,
+    )
     assert total_commits_limit == total_commits
-    assert len(commits) == TEST_COMMIT_HISTORY_VERSIONS
+    assert len(commits) == TEST_DATASET_HISTORY_VERSIONS
     assert commits_limit == commits
 
 
-@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_commits__desc_limit(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with both desc and limit args
     total_commits, commits = with_dataset_commits
-    total_commits_desc_limit, commits_desc_limit = fetch_commits(TEST_COMMIT_HISTORY_NAME, desc=True, limit=10)
+    total_commits_desc_limit, commits_desc_limit = fetch_dataset_history(
+        TEST_DATASET_HISTORY_NAME,
+        descending=True,
+        limit=10,
+    )
     assert total_commits_desc_limit == total_commits
     assert commits_desc_limit == commits[-1:-11:-1]
 
 
-@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_dataset__versions(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_dataset with commit arg
     total_commits, commits = with_dataset_commits
     for version, commit in enumerate(commits):
-        loaded_datapoints = fetch_dataset(TEST_COMMIT_HISTORY_NAME, commit.commit).sort_values(
+        loaded_datapoints = fetch_dataset(TEST_DATASET_HISTORY_NAME, commit.commit).sort_values(
             "locator",
             ignore_index=True,
         )
@@ -265,4 +266,4 @@ def test__fetch_dataset__versions(with_dataset_commits: Tuple[int, List[CommitDa
 def test__fetch_dataset__commit_not_exist(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_dataset with a commit that does not exist
     with pytest.raises(NotFoundError):
-        fetch_dataset(TEST_COMMIT_HISTORY_NAME, "non-existent-commit")
+        fetch_dataset(TEST_DATASET_HISTORY_NAME, "non-existent-commit")

@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 import mimetypes
+import sys
 from dataclasses import asdict
 from enum import Enum
 from typing import Iterator
@@ -303,11 +304,11 @@ def fetch_dataset(
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
 
-def _list_commits(name: str, desc: bool = False, offset: int = 0, limit: int = 50) -> ListCommitHistoryResponse:
+def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: int = 50) -> ListCommitHistoryResponse:
     """
     Invoke the list-commits api.
     """
-    request = ListCommitHistoryRequest(name=name, desc=desc, offset=offset, limit=limit)
+    request = ListCommitHistoryRequest(name=name, descending=descending, offset=offset, limit=limit)
     response = krequests.put(Path.LIST_COMMITS, json=asdict(request))
     response.raise_for_status()
     return from_dict(ListCommitHistoryResponse, response.json())
@@ -315,34 +316,34 @@ def _list_commits(name: str, desc: bool = False, offset: int = 0, limit: int = 5
 
 def _iter_commits(
     name: str,
-    desc: bool = False,
+    descending: bool = False,
     limit: int = None,
     page_size: int = 50,
 ) -> Iterator[Tuple[int, List[CommitData]]]:
     """
     Get an iterator over the commit history of the dataset.
     """
-    initial_response = _list_commits(name, desc=desc, limit=page_size)
-    total_commit_count = initial_response.total_count
-    if not limit:
-        limit = total_commit_count
-    yield total_commit_count, initial_response.records
-    current_count = len(initial_response.records)
-    while current_count < min(limit, total_commit_count):
-        yield total_commit_count, _list_commits(name, desc=desc, offset=current_count, limit=page_size).records
-        current_count += len(initial_response.records)
+    current_count = 0
+    if limit is None:
+        limit = sys.maxsize
+    while True:
+        response = _list_commits(name, descending=descending, offset=current_count, limit=page_size)
+        yield response.total_count, response.records
+        current_count += len(response.records)
+        if current_count >= min(limit, response.total_count):
+            break
 
 
-def fetch_commits(
+def fetch_dataset_history(
     name: str,
-    desc: bool = False,
+    descending: bool = False,
     limit: int = None,
     page_size: int = 50,
 ) -> Tuple[int, List[CommitData]]:
     """
     Get the commit history of a dataset.
     """
-    iter_commit_responses = list(_iter_commits(name, desc, limit, page_size))
+    iter_commit_responses = list(_iter_commits(name, descending, limit, page_size))
     total_commit_count = iter_commit_responses[0][0]
     commits = [commit for response in iter_commit_responses for commit in response[1]][:limit]
     return total_commit_count, commits

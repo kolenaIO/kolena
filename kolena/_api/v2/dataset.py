@@ -57,7 +57,7 @@ class EntityData:
 @dataclass(frozen=True)
 class ListCommitHistoryRequest:
     name: str
-    desc: bool = False
+    descending: bool = False
     offset: conint(strict=True, ge=0) = 0
     limit: conint(strict=True, ge=0, le=100) = 50
 
@@ -75,6 +75,6 @@ class CommitData:
 class ListCommitHistoryResponse:
     records: List[CommitData]
     total_count: int
-    desc: bool
+    descending: bool
     offset: int
     limit: int
