@@ -59,8 +59,8 @@ def test__validate_id_fields__validation_error(
     [
         (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"]),
         (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"]),
-        (pd.DataFrame(dict(a=[{"c": i * j for i in range(3)} for j in range(3)], b=[1, 2, 1])), ["a", "b"]),
-        (pd.DataFrame(dict(a=[[i * j for i in range(3)] for j in range(3)], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame(dict(a=[dict(c=i) for i in range(3)], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame(dict(a=[[1], [2], [3]], b=[1, 2, 1])), ["a", "b"]),
         # the key sequence difference will make it unique
         (
             pd.DataFrame(dict(a=[dict(c=42, d=43, e=44), dict(d=43, e=44, c=42), dict(e=44, d=43, c=42)], b=[1, 2, 1])),
