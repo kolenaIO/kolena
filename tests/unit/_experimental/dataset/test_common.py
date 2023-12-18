@@ -61,11 +61,6 @@ def test__validate_id_fields__validation_error(
         (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"]),
         (pd.DataFrame(dict(a=[dict(c=i) for i in range(3)], b=[1, 2, 1])), ["a", "b"]),
         (pd.DataFrame(dict(a=[[1], [2], [3]], b=[1, 2, 1])), ["a", "b"]),
-        # the key sequence difference will make it unique
-        (
-            pd.DataFrame(dict(a=[dict(c=42, d=43, e=44), dict(d=43, e=44, c=42), dict(e=44, d=43, c=42)], b=[1, 2, 1])),
-            ["a", "b"],
-        ),
     ],
 )
 def test__validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
@@ -80,6 +75,21 @@ def test__validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None
         # dataframe values in id_fields is not unique
         (pd.DataFrame(dict(a=[1, 2, 1], b=[1, 2, 1])), ["a", "b"]),
         (pd.DataFrame(dict(a=[[1], [1], [1]], b=[1, 2, 1])), ["a", "b"]),
+        # the key sequence difference will not make it unique
+        (pd.DataFrame(dict(a=[{"a": 1, "b": 2}, {"a": 2, "b": 1}, {"b": 2, "a": 1}], b=[1, 2, 1])), ["a", "b"]),
+        (
+            pd.DataFrame(
+                dict(
+                    a=[
+                        dict(c=42, d=43, e=dict(f=44, g=45)),
+                        dict(d=43, e=dict(g=44, f=45), c=42),
+                        dict(e=dict(f=44, g=45), d=43, c=42),
+                    ],
+                    b=[1, 2, 1],
+                ),
+            ),
+            ["a"],
+        ),
     ],
 )
 def test__validate_dataframe_ids__error(df: pd.DataFrame, id_fields: List[str]) -> None:

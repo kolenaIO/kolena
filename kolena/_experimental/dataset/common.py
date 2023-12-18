@@ -45,9 +45,11 @@ def validate_id_fields(id_fields: List[str], existing_id_fields: List[str] = Non
             )
 
 
-def _convert_non_int_str_to_str(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.applymap(lambda x: str(x) if (not isinstance(x, (int, str))) else x)
-    return df
+def _convert_to_single_column(df):
+    # create a new dataframe with dictionary in each row
+    new_df = pd.DataFrame(df.apply(lambda x: x.to_dict(), axis=1))
+
+    return new_df
 
 
 def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
@@ -57,7 +59,7 @@ def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
                 f"invalid id_fields: field '{id_field}' does not exist in dataframe",
             )
     # check uniqueness of the id columns
-    unique_id_fields = _convert_non_int_str_to_str(df[id_fields]).drop_duplicates()
+    unique_id_fields = _convert_to_single_column(df[id_fields]).drop_duplicates()
     if len(unique_id_fields) != len(df):
         raise InputValidationError(
             f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
