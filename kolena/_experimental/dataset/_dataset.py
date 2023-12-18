@@ -313,26 +313,36 @@ def _list_commits(name: str, desc: bool = False, offset: int = 0, limit: int = 5
     return from_dict(ListCommitHistoryResponse, response.json())
 
 
-def _iter_commits(name: str, desc: bool = False, limit: int = None) -> Iterator[Tuple[int, List[CommitData]]]:
+def _iter_commits(
+    name: str,
+    desc: bool = False,
+    limit: int = None,
+    page_size: int = 50,
+) -> Iterator[Tuple[int, List[CommitData]]]:
     """
     Get an iterator over the commit history of the dataset.
     """
-    initial_response = _list_commits(name, desc=desc)
+    initial_response = _list_commits(name, desc=desc, limit=page_size)
     total_commit_count = initial_response.total_count
     if not limit:
         limit = total_commit_count
     yield total_commit_count, initial_response.records
     current_count = len(initial_response.records)
     while current_count < min(limit, total_commit_count):
-        yield total_commit_count, _list_commits(name, desc=desc, offset=current_count).records
+        yield total_commit_count, _list_commits(name, desc=desc, offset=current_count, limit=page_size).records
         current_count += len(initial_response.records)
 
 
-def fetch_commits(name: str, desc: bool = False, limit: int = None) -> Tuple[int, List[CommitData]]:
+def fetch_commits(
+    name: str,
+    desc: bool = False,
+    limit: int = None,
+    page_size: int = 50,
+) -> Tuple[int, List[CommitData]]:
     """
     Get the commit history of a dataset.
     """
-    iter_commit_responses = list(_iter_commits(name, desc, limit))
+    iter_commit_responses = list(_iter_commits(name, desc, limit, page_size))
     total_commit_count = iter_commit_responses[0][0]
     commits = [commit for response in iter_commit_responses for commit in response[1]][:limit]
     return total_commit_count, commits

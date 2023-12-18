@@ -32,7 +32,7 @@ from tests.integration.helper import with_test_prefix
 
 
 TEST_COMMIT_HISTORY_NAME = with_test_prefix(f"{__file__}::test__commit_history")
-TEST_COMMIT_HISTORY_VERSIONS = 60
+TEST_COMMIT_HISTORY_VERSIONS = 10
 
 
 def test__register_dataset__empty() -> None:
@@ -201,6 +201,15 @@ def test__fetch_commits(with_dataset_commits: Tuple[int, List[CommitData]]) -> N
 
 
 @pytest.mark.depends(on=["test__fetch_commits"])
+def test__fetch_commits__pagination(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
+    # check fetch_commits with desc arg
+    total_commits, commits = with_dataset_commits
+    total_commits_pagination, commits_pagination = fetch_commits(TEST_COMMIT_HISTORY_NAME, page_size=1)
+    assert total_commits_pagination == total_commits
+    assert commits_pagination == commits
+
+
+@pytest.mark.depends(on=["test__fetch_commits"])
 def test__fetch_commits__desc(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with desc arg
     total_commits, commits = with_dataset_commits
@@ -243,10 +252,12 @@ def test__fetch_dataset__versions(with_dataset_commits: Tuple[int, List[CommitDa
     total_commits, commits = with_dataset_commits
     for version, commit in enumerate(commits):
         loaded_datapoints = fetch_dataset(TEST_COMMIT_HISTORY_NAME, commit.commit).sort_values(
-            "locator", ignore_index=True
+            "locator",
+            ignore_index=True,
         )
         expected_datapoints = pd.DataFrame([dict(locator=f"{version}-{i}") for i in range(version + 1)]).sort_values(
-            "locator", ignore_index=True
+            "locator",
+            ignore_index=True,
         )
         assert_frame_equal(loaded_datapoints, expected_datapoints)
 
