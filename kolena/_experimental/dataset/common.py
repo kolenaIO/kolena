@@ -45,15 +45,17 @@ def validate_id_fields(id_fields: List[str], existing_id_fields: List[str] = Non
             )
 
 
+def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -> None:
+    if df[id_fields].apply(lambda x: x.to_dict(), axis=1).duplicated().any():
+        raise InputValidationError(
+            f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
+        )
+
+
 def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
     for id_field in id_fields:
         if id_field not in df.columns:
             raise InputValidationError(
                 f"invalid id_fields: field '{id_field}' does not exist in dataframe",
             )
-    # check uniqueness of the id columns
-    unique_id_fields = df[id_fields].drop_duplicates()
-    if len(unique_id_fields) != len(df):
-        raise InputValidationError(
-            f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
-        )
+    _validate_dataframe_ids_uniqueness(df, id_fields)
