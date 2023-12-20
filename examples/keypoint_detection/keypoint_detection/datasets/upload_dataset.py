@@ -22,8 +22,13 @@ from kolena.workflow.annotation import Keypoints
 DATASET = "300-W"
 BUCKET = "s3://kolena-public-datasets"
 
-df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv", index_col=0, storage_options={"anon": True})
-df["points"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
 
-kolena.initialize(verbose=True)
-register_dataset(DATASET, df)
+def main() -> None:
+    df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv", index_col=0, storage_options={"anon": True})
+    df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
+    kolena.initialize(verbose=True)
+    register_dataset(DATASET, df[["locator", "face", "normalization_factor"]])
+
+
+if __name__ == "__main__":
+    main()
