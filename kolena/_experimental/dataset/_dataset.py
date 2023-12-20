@@ -253,7 +253,6 @@ def register_dataset(
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
-
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
@@ -297,5 +296,5 @@ def fetch_dataset(
     Fetch an entire dataset given its name.
     """
     df_batches = list(iter_dataset(name, batch_size))
-    log.info(f"Loaded dataset {name}")
+    log.info(f"Loaded dataset '{name}'")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
