@@ -129,18 +129,18 @@ biases, and its intended uses.
 
 ## Large Language Models
 
-This section of the glossary contains LLM evaluation metrics to identify and measure the number of hallucinations produced by a generative language model. A hallucination is an output by a model that is made up and/or non-factual.
+<!-- This section of the glossary contains LLM evaluation metrics to identify and measure the number of hallucinations produced by a generative language model. A hallucination is an output by a model that is made up and/or non-factual.
 
 ### Risks of Hallucinations
-In a lower-risk setting, language model hallucinations can be something as simple as getting the birth date of a celebrity wrong which while isn not ideal is not inherently harmful either. However, in higher-risk and real-world situations, generative models that consistently mix facts and fiction can contribute to the spread of misinformation and mislead individuals.
+In a lower-risk setting, language model hallucinations can be something as simple as getting the birth date of a celebrity wrong which while isn not ideal is not inherently harmful either. However, in higher-risk and real-world situations, generative models that consistently mix facts and fiction can contribute to the spread of misinformation and mislead individuals. -->
 
 <div class="grid cards" markdown>
 
-- [GPT4 Prompt Engineering](gpt4-prompt-eng.md)
+- [LLM Prompt-based Metric](llm-prompt-metric.md)
 
     ---
 
-    This technique involves prompt engineering with the latest state-of-the-art model for LLM evaluation, GPT4. Methods like chain-of-thought and self-consistency are employed to determine whether or not a prompt contains a hallucination.
+    This technique involves prompt engineering with the latest state-of-the-art model for LLM evaluation, GPT-4. Methods like chain-of-thought and self-consistency are employed to determine whether or not a prompt contains a hallucination.
 
 - [SelfCheckGPT](selfcheckgpt.md)
 

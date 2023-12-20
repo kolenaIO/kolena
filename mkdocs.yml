@@ -82,7 +82,7 @@ nav:
         - metrics/geometry-matching.md
         - metrics/iou.md
       - Large Language Models:
-        - metrics/gpt4-prompt-eng.md
+        - metrics/llm-prompt-metric.md
         - metrics/selfcheckgpt.md
         - metrics/contradiction-score.md
         - metrics/vectara-HEM-score.md
