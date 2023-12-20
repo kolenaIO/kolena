@@ -436,13 +436,21 @@ def test__infer_id_fields() -> None:
 def test__resolve_id_fields() -> None:
     df = pd.DataFrame(dict(id=["a", "b", "c"], newid=["d", "e", "f"]))
     dataset = EntityData(id=1, name="foo", description="", id_fields=["id"])
+    inferrable_df = pd.DataFrame(dict(locator=["x", "y", "z"]))
+
     # new dataset without id_fields
     with pytest.raises(InputValidationError):
         resolve_id_fields(df, None, None)
 
-    # existing dataset without id_fields
-    with pytest.raises(InputValidationError):
-        resolve_id_fields(df, None, dataset)
+    # existing dataset without id_fields, different inferred id_fields, should use existing id_fields
+    assert resolve_id_fields(inferrable_df, None, dataset) == ["id"]
+
+    # existing dataset without id_fields, same inferred id_fields
+    assert resolve_id_fields(
+        inferrable_df,
+        None,
+        EntityData(id=1, name="foo", description="", id_fields=["locator"]),
+    ) == ["locator"]
 
     # new dataset with explicit id_fields should resolve to explicit id_fields
     assert resolve_id_fields(df, ["id"], None) == ["id"]
@@ -454,4 +462,4 @@ def test__resolve_id_fields() -> None:
     assert resolve_id_fields(df, ["newid"], dataset) == ["newid"]
 
     # new dataset with implicit datatype support, e.g. locator, without id_fields
-    assert resolve_id_fields(pd.DataFrame(dict(locator=["x", "y", "z"])), None, None) == ["locator"]
+    assert resolve_id_fields(inferrable_df, None, None) == ["locator"]
