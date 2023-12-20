@@ -13,7 +13,9 @@
 # limitations under the License.
 from enum import Enum
 from typing import List
+from typing import Optional
 
+from pydantic import conint
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.batched_load import BatchedLoad
@@ -23,6 +25,7 @@ class Path(str, Enum):
     REGISTER = "/dataset/register"
     LOAD_DATAPOINTS = "/dataset/load-datapoints"
     LOAD_DATASET = "/dataset/load-by-name"
+    LIST_COMMITS = "/dataset/list-commits"
 
 
 @dataclass(frozen=True)
@@ -35,6 +38,7 @@ class RegisterRequest:
 @dataclass(frozen=True)
 class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
     name: str
+    commit: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -48,3 +52,29 @@ class EntityData:
     name: str
     description: str
     id_fields: List[str]
+
+
+@dataclass(frozen=True)
+class ListCommitHistoryRequest:
+    name: str
+    descending: bool = False
+    offset: conint(strict=True, ge=0) = 0
+    limit: conint(strict=True, ge=0, le=100) = 50
+
+
+@dataclass(frozen=True)
+class CommitData:
+    commit: str
+    timestamp: int
+    user: str
+    n_removed: int
+    n_added: int
+
+
+@dataclass(frozen=True)
+class ListCommitHistoryResponse:
+    records: List[CommitData]
+    total_count: int
+    descending: bool
+    offset: int
+    limit: int
