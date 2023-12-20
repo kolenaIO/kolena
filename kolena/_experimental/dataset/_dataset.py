@@ -258,7 +258,7 @@ def register_dataset(
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
     data = from_dict(EntityData, response.json())
-    log.info(f"Successfully created/updated dataset {name} {get_dataset_url(dataset_id=data.id)}")
+    log.info(f"Successfully registered dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
 
 def _iter_dataset_raw(
