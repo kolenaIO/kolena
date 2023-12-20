@@ -219,7 +219,7 @@ def resolve_id_fields(
         existing_id_fields = existing_dataset.id_fields
     if not id_fields:
         if existing_id_fields:
-            raise InputValidationError("id_fields is required for updating an existing dataset")
+            return existing_id_fields
         else:
             id_fields = _infer_id_fields(df)
     return id_fields
