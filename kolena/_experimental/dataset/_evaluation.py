@@ -115,6 +115,7 @@ def fetch_results(
     """
     Fetch results given dataset name and model name.
     """
+    log.info(f"Fetching results for dataset {dataset} and model {model}")
     df = _fetch_results(dataset, model)
 
     df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
@@ -128,7 +129,7 @@ def fetch_results(
                 _to_deserialized_dataframe(df_matched, column=COL_RESULT),
             ),
         )
-
+    log.info(f"Fetched results for dataset {dataset} and model {model}")
     return df_datapoints, df_results_by_eval
 
 

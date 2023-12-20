@@ -33,10 +33,12 @@ from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena._experimental.dataset.common import validate_batch_size
 from kolena._experimental.dataset.common import validate_dataframe_ids
 from kolena._utils import krequests_v2 as krequests
+from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.errors import InputValidationError
@@ -251,9 +253,12 @@ def register_dataset(
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
+
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
+    data = from_dict(EntityData, response.json())
+    log.info(f"Successfully created/updated dataset {name} {get_dataset_url(dataset_id=data.id)}")
 
 
 def _iter_dataset_raw(
@@ -292,4 +297,5 @@ def fetch_dataset(
     Fetch an entire dataset given its name.
     """
     df_batches = list(iter_dataset(name, batch_size))
+    log.info(f"Loaded dataset {name}")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
