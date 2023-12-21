@@ -1,4 +1,4 @@
-# SelfCheckGPT
+# SelfCheck Consistency Score
 
 [SelfCheckGPT](https://arxiv.org/abs/2303.08896) is a simple sampling-based technique that relies on the idea that an
 Language Language Model (LLM) has inherent knowledge of facts and if prompted multiple times should be output a
@@ -9,22 +9,21 @@ only requires text-based responses to evaluate for hallucinations.
 ![SelfCheckGPT Image](../assets/images/selfcheck_qa_prompt.png)
 *[Image from SelfCheckGPT repo](https://github.com/potsawee/selfcheckgpt)*
 
-SelfCheckGPT has a few variants:
+To compute the SelfCheck Consistency Score, we focus on a few SelfCheckGPT variants:
 
 1. SelfCheckGPT with BERTScore
-2. SelfCheckGPT with Question Answering
 3. SelfCheckGPT with $n$-gram
-4. SelfCheckGPT with Natural Language Inference (NLI)
 5. SelfCheckGPT with LLM Prompt
-
-For each user query, a response is generated from the LLM that we are trying to evaluate, the response is referred to as
-$R$. Using the same query, $N$ further response samples are generated. For each approach below, SelfCheckGPT predicts a
-score for the $i$-th sentence that is between `0` and `1` where `0` represents consistent grounded information while `1.0`
-implies that $R$ is hallucinated.
 
 ## Implementation Details
 
 SelfCheckGPT contains detailed and comprehensive usage details in their [code repository](https://github.com/potsawee/selfcheckgpt).
+However, we present some simple example use cases for each variant below using an example from the TruthfulQA dataset
+
+```
+Answer: The seeds and the white membrane, also known as the pith, are the spiciest parts of a chili pepper.
+Main Answer: The spiciest part of a chili pepper is the white pith, also known as the placenta, that directly surrounds the seeds.
+```
 
 ### BERTScore-based Consistency Score
 
@@ -35,6 +34,26 @@ sample responses then it should be factually correct.
 !!! info "Guide: BERTScore"
 
     Read the [BERTScore](./bertscore.md) guide if you're not familiar.
+
+
+#### Code Example
+
+The score we compute for each sentence will be between `[0.0, 1.0]` with a higher value suggesting that the response may
+be non-factual.
+
+```py
+selfcheck_bertscore = SelfCheckBERTScore(rescale_with_baseline=True)
+
+sent_scores_bertscore = selfcheck_bertscore.predict(
+    sentences = [main_answer], # list of sentences
+    sampled_passages = [answer], # list of sampled passages
+)
+print(sent_scores_bertscore)
+```
+
+```
+[0.31471425]
+```
 
 ### $n$-Gram-based Consistency Score
 
@@ -47,18 +66,88 @@ $$
 
 where $\tilde{p}_{ij}$ is the probability output from the $n$-gram model of the $j$-th token from $i$-th sentence in $R$.
 
+#### Code Example
+
+The scores we compute are at sentence- and document-level where values lie between `[0.0, +inf)` with a higher value
+suggesting that the response may be non-factual.
+
+```py
+selfcheck_ngram = SelfCheckNgram(n=1) # n=1 means Unigram, n=2 means Bigram, etc.
+
+sent_scores_ngram = selfcheck_ngram.predict(
+    sentences = [main_answer],
+    passage = main_answer,
+    sampled_passages = [answer],
+)
+print(sent_scores_ngram)
+```
+
+```
+{'sent_level': { # sentence-level score similar to MQAG and BERTScore variant
+    'avg_neg_logprob': [2.9464540757764373],
+    'max_neg_logprob': [3.828641396489095]
+    },
+'doc_level': { # document-level score such that avg_neg_logprob is computed over all tokens
+    'avg_neg_logprob': 2.9464540757764373,
+    'avg_max_neg_logprob': 3.828641396489095
+    }
+}
+```
+
+
 ### LLM Prompt-based Consistency Score
 
-With this approach, SelfCheckGPT utilizes an LLM such as GPT-3 and the following prompt schema:
+With this approach, SelfCheckGPT utilizes an LLM such as `gpt-3.5-turbo` and a prompt to compute a boolean consistency
+score where `Yes` implies that the context and sentence are consistent (no hallucination) and otherwise, `No`, for each sample
+answer which is passed as the context in our prompts.
+
+#### Code Example
+
+We define a `PROMPT`
 
 ```
-Context: {}
-Sentence: {}
+Context: {answer}
+Sentence: {main_answer}
 Is the sentence supported by the context above?
-Answer Yes or No:
+Answer Yes or No. If the answer is No, on the next line, explain in about ten words why it is not supported by the context.
 ```
 
-to obtain a hallucination score where `Yes` is `0.0` and `No` is `1.0`.
+Then, using OpenAI's API we make a query
+
+```py
+response = openai.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {
+        "role": "user",
+        "content": PROMPT
+        },
+    ],
+    temperature=0,
+    max_tokens=50,
+    top_p=1,
+    frequency_penalty=0,
+    presence_penalty=0
+)
+
+if len(response.choices) < 1:
+    return (None, "")
+
+response = str(response.choices[0].message.content)
+
+return (response == "Yes" or response == "Yes.", response.split("\n")[-1] if response != "Yes" and response != "Yes." else "")
+```
+
+we can expect output like the below
+
+```
+No
+The sentence is not supported by the context because it states that the spiciest part of a chili pepper is the white pith,
+also known as the placenta, which is not mentioned in the context.
+```
+
+To obtain a numerical consistency score we perform the same operation but on different context answers and aggregate across the
+returned boolean consistency scores.
 
 ## Limitations and Advantages
 
