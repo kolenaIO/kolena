@@ -28,4 +28,16 @@ select the dataset to register by specifying `--datasets`.
 2. [optional] [`prepare_results.py`](question_answering/prepare_results.py) computes metrics on each datapoint on both
 datasets and saves the results and metrics to a csv file in `s3://kolena-public-datasets` bucket. You can also select
 the dataset and model to compute metrics by specifying `--datasets` and `--models`. This step is optional as the results
-are already computed and saved in the cloud storage.
+for both datasets and models have already been computed and saved to the cloud storage. NOTE: It will take about 1.5hr
+to run the entire set of metrics on a single dataset / model.
+
+In order to use the script, make sure the `OPENAI_API_KEY` environment variable is populated in your environment. See
+your [OpenAI's User Settings](https://platform.openai.com/api-keys) for the API key.
+
+3. [`upload_results.py`](question_answering/upload_results.py) loads the results csv files from the cloud storage and
+uploads pre-computed results (metrics and inferences) for both datasets. You can select the dataset and model to upload
+results for by specifying `--datsets` and `--models`.
+
+Now, the datasets and results are uploaded to Kolena. Go to your [datasets page](https://app.kolena.io/redirect/datasets)
+to start an investigation on your results by aggregating metrics and building plots to understand your models'
+performance.

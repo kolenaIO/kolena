@@ -72,14 +72,6 @@ def compute_closed_domain_metrics_for_dataset(df_datapoints: pd.DataFrame, df_re
     return pd.DataFrame(dataset_metrics)
 
 
-def apply_thresholds(df_metrics: pd.DataFrame) -> pd.DataFrame:
-    df_metrics["gpt4_hallucination_score_is_hallucination"] = df_metrics["gpt4_hallucination_score"] >= 0.5
-    df_metrics["vectaras_hem_score_is_hallucination"] = df_metrics["vectaras_hem_score"] < 0.5
-    df_metrics["contradiction_score_is_hallucination"] = df_metrics["contradiction_score"] >= 0.33
-    df_metrics["consistency_score_is_hallucination"] = df_metrics["consistency_score"] <= 0.75
-    return df_metrics
-
-
 def main(args: Namespace) -> None:
     for dataset in args.datasets:
         print(f"Loading {dataset}...")
@@ -91,7 +83,6 @@ def main(args: Namespace) -> None:
                 df_metrics = compute_open_domain_metrics_for_dataset(df_datapoints, df_results)
             else:
                 df_metrics = compute_closed_domain_metrics_for_dataset(df_datapoints, df_results)
-            df_metrics = apply_thresholds(df_metrics)
             df_metrics_with_results = df_results.merge(df_metrics, on=["id"])
             df_metrics_with_results.to_csv(DATASET_TO_METRICS_RESULTS[dataset][model], index=False)
             print(f"Saved the results wtih metrics to {DATASET_TO_METRICS_RESULTS[dataset][model]}...")

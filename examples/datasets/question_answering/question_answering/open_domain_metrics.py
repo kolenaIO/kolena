@@ -21,19 +21,19 @@ from openai import OpenAI
 from question_answering.constants import OPEN_DOMAIN_GPT4_HALLUCINATION_PROMPT
 from question_answering.metrics import compute_consistency_score
 from question_answering.metrics import compute_contradiction_score
-from question_answering.metrics import compute_vectaras_hem_score
 
 openai = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
 
 def compute_open_domain_metrics(question: str, reference: str, prediction: str, answers: List[str]) -> Dict[str, Any]:
     gpt4_hallucination_flag, reason = compute_gpt4_hallucination_flag(question, reference, prediction)
+    nli_label, contradiction_score = compute_contradiction_score(reference, prediction)
     metrics = dict(
         gpt4_hallucination_flag=gpt4_hallucination_flag,
         gpt4_hallucination_flag_reason=reason,
         gpt4_hallucination_score=compute_gpt4_hallucination_score(question, reference, prediction),
-        vectaras_hem_score=compute_vectaras_hem_score(question, reference, prediction),
-        contradiction_score=compute_contradiction_score(reference, prediction),
+        nli_label=nli_label,
+        contradiction_score=contradiction_score,
         consistency_score=compute_consistency_score(answers),
     )
     return metrics

@@ -26,7 +26,7 @@ nonsensical, or not real.
 
 Given three texts, where the first one is a question, the second one is a perfect answer, and the third one is a \
 generated answer, if the generated answer is considered a "hallucination", return "yes". Otherwise, simply return "no".
-If yes, on the next line, explain in about ten words why there is a hallucination.
+If yes, on the next line, explain in about ten words why there is a hallucination by thinking step by step.
 """
 
 CLOSED_DOMAIN_GPT4_HALLUCINATION_PROMPT = """
@@ -36,7 +36,7 @@ nonsensical, or not real.
 Given four texts, where the first one is context, the second is a question based on the context, the third is the \
 perfect answer, and the fourth is a generated answer, if the generated answer is considered a "hallucination", return \
 "yes". Otherwise, simply return "no".
-If yes, on the next line, explain in about ten words why there is a hallucination.
+If yes, on the next line, explain in about ten words why there is a hallucination by thinking step by step.
 """
 
 CONSISTENCY_PROMPT = """

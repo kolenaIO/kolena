@@ -13,6 +13,7 @@
 # limitations under the License.
 import os
 from typing import List
+from typing import Tuple
 
 import numpy as np
 from openai import OpenAI
@@ -21,32 +22,27 @@ from sentence_transformers import CrossEncoder
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 openai = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
-hallucination_model = CrossEncoder("vectara/hallucination_evaluation_model")
 nli_model = CrossEncoder("cross-encoder/nli-deberta-v3-base")
 
 
-def compute_vectaras_hem_score(question: str, reference: str, prediction: str) -> float:
-    """
-    Vectara's Hallucination Evaluation Model (HEM) is an open-source model that can be used to compute score for
-    hallucination detection. The scores are probabilities that range from 0 to 1 — 0 means that there is a hallucination
-    and 1 means that there is no hallucination (factually consistent). According to Vectara, an appropriate threshold
-    for this metric is 0.5 to predict whether a text is consistent with another.
-    """
-    hem_score = hallucination_model.predict([question + " " + reference, question + " " + prediction])
-    return hem_score
-
-
-def compute_contradiction_score(reference: str, prediction: str) -> float:
+def compute_contradiction_score(reference: str, prediction: str) -> Tuple[str, float]:
     """
     The Cross-Encoder for Natural Language Inference (NLI) is a text classification model that takes a pair of text and
-    assigns a label: 'contradiction', 'entailment' or 'neutral'. Additionally, it assigns a score, expected to range
-    around -10 to 10 for each label. The higher the score, the more confident the model is to assign that label.
+    assigns a label: 'contradiction', 'entailment' or 'neutral'. Additionally, it assigns a score, a probability that
+    this pair belongs to each label, from 0 to 1. The higher the score, the more confident the model is to assign that
+    label.
 
     To detect hallucination, we use `contradiction` score. The higher the score is, the more likely it is that the
     reference and the prediction are contradicting each other.
+
+    The output is a tuple of NLI label and `contradiction` score.
     """
-    nli_scores = nli_model.predict([(reference, prediction)])
-    return nli_scores[0].tolist()[0]
+    nli_scores = nli_model.predict([(reference, prediction)], apply_softmax=True)
+    label_mapping = ["contradiction", "entailment", "neutral"]
+    nli_label = label_mapping[nli_scores.argmax(axis=1)[0]]
+    contradiction_score = nli_scores[0].tolist()[0]
+
+    return nli_label, contradiction_score
 
 
 def compute_consistency_score(answers: List[str]) -> float:
