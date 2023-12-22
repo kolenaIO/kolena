@@ -36,8 +36,6 @@ def main(args: Namespace) -> None:
         for model in args.models:
             print(f"Loading {model} results on {dataset}...")
             df_results = dataframe_from_csv(DATASET_TO_METRICS_RESULTS[dataset][model])
-            df_results["gpt4_hallucination_flag"] = df_results["gpt4_hallucination_flag"].replace({True: 1, False: 0})
-
             test(dataset, model, df_results)
 
 
