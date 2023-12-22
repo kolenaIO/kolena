@@ -1,13 +1,10 @@
 # SelfCheck Consistency Score
 
-[SelfCheckGPT](https://arxiv.org/abs/2303.08896) is a simple sampling-based technique that relies on the idea that an
-Language Language Model (LLM) has inherent knowledge of facts and if prompted multiple times should be output a
-similar/consistent response. Existing fact-checking methods require output token-level probabilities which may not be
-accessible. As such, [SelfCheckGPT](https://arxiv.org/abs/2303.08896) presents a black-box zero-resource solution that
-only requires text-based responses to evaluate for hallucinations.
-
-![SelfCheckGPT Image](../assets/images/selfcheck_qa_prompt.png)
-*[Image from SelfCheckGPT repo](https://github.com/potsawee/selfcheckgpt)*
+SelfCheck Consistency Score is a simple sampling-based technique that relies on the idea that an
+Language Language Model (LLM) has inherent knowledge of facts and if prompted multiple times should be able to output
+similar or consistent responses which can be used to score the LLM. Existing fact-checking methods require output
+token-level probabilities which may not be accessible. As such, [SelfCheckGPT](https://arxiv.org/abs/2303.08896)
+presents a black-box zero-resource solution that only requires text-based responses to evaluate for hallucinations.
 
 To compute the SelfCheck Consistency Score, we focus on a few SelfCheckGPT variants:
 
@@ -42,13 +39,14 @@ The score we compute for each sentence will be between `[0.0, 1.0]` with a highe
 be non-factual.
 
 ```py
+from selfcheckgpt.modeling_selfcheck import SelfCheckBERTScore
+
 selfcheck_bertscore = SelfCheckBERTScore(rescale_with_baseline=True)
 
 sent_scores_bertscore = selfcheck_bertscore.predict(
-    sentences = [main_answer], # list of sentences
-    sampled_passages = [answer], # list of sampled passages
+    sentences = [main_answer],
+    sampled_passages = [answer],
 )
-print(sent_scores_bertscore)
 ```
 
 ```
@@ -72,7 +70,9 @@ The scores we compute are at sentence- and document-level where values lie betwe
 suggesting that the response may be non-factual.
 
 ```py
-selfcheck_ngram = SelfCheckNgram(n=1) # n=1 means Unigram, n=2 means Bigram, etc.
+from selfcheckgpt.modeling_selfcheck import SelfCheckNgram
+
+selfcheck_ngram = SelfCheckNgram(n=1)
 
 sent_scores_ngram = selfcheck_ngram.predict(
     sentences = [main_answer],
@@ -129,16 +129,9 @@ response = openai.chat.completions.create(
     frequency_penalty=0,
     presence_penalty=0
 )
-
-if len(response.choices) < 1:
-    return (None, "")
-
-response = str(response.choices[0].message.content)
-
-return (response == "Yes" or response == "Yes.", response.split("\n")[-1] if response != "Yes" and response != "Yes." else "")
 ```
 
-we can expect output like the below
+after pre-processing we can expect output like the below
 
 ```
 No

@@ -129,24 +129,23 @@ biases, and its intended uses.
 
 ## Large Language Models
 
-
 <div class="grid cards" markdown>
 
-- [LLM Prompt-based Metric](llm-prompt-metric.md)
+- [LLM Prompt-based Metric](llm-prompt-based-metric.md)
 
     ---
 
-    This technique involves prompt engineering with the latest state-of-the-art model for LLM evaluation, GPT-4.
-    Methods like chain-of-thought and self-consistency are employed to determine whether or not a prompt contains a
-    hallucination.
+    Large Language Model (LLM) Prompt-based Metric involves using an LLM and various prompt engineering techniques
+    to perform evaluations. These methods include chain-of-thought, self-consistency, and others to determine whether or
+    not a prompt contains a hallucination.
 
-- [SelfCheck Consistency Score](selfcheckgpt.md)
+- [SelfCheck Consistency Score](selfcheck-consistency-score.md)
 
     ---
 
-    SelfCheckGPT is a sampling-based approach that samples using the same prompt to determine whether or not the model
-    is consistent with itself. The prompt is considered a hallucination if sampled responses that contradict one another
-    or are not consistent. We use various variants of SelfCheckGPT to compute different SelfCheck Consistency Scores.
+    SelfCheck Consistency Score is a sampling-based approach that computes a score by aggregating across sample responses
+    obtained by using the same prompt and LLM a `k` number of times. The prompt is considered a hallucination if there
+    exists sample responses that contradict one another or are not consistent.
 
 - [Contradiction Score](contradiction-score.md)
 
