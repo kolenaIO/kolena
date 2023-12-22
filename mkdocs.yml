@@ -84,6 +84,7 @@ nav:
       - Natural Language Processing:
         - metrics/bertscore.md
         - metrics/bleu.md
+        - metrics/diarization-error-rate.md
         - metrics/meteor.md
         - metrics/perplexity.md
         - metrics/rouge-n.md
