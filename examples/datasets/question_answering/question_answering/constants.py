@@ -11,17 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# noreorder
-from kolena._experimental.dataset._dataset import fetch_dataset_history
-from kolena._experimental.dataset._dataset import fetch_dataset
-from kolena._experimental.dataset._dataset import register_dataset
-from kolena._experimental.dataset._evaluation import fetch_results
-from kolena._experimental.dataset._evaluation import test
 
-__all__ = [
-    "register_dataset",
-    "fetch_dataset_history",
-    "fetch_dataset",
-    "fetch_results",
-    "test",
+BUCKET = "kolena-public-datasets"
+TRUTHFULQA = "TruthfulQA"
+HALUEVALQA = "HaluEval-QA"
+MODELS = [
+    "gpt-3.5-turbo",
+    "gpt-4-1106-preview",
 ]

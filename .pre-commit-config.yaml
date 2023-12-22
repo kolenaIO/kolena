@@ -47,8 +47,14 @@ repos:
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v0.910
     hooks:
-    -   id: mypy
-        additional_dependencies: [types-all, "pydantic<2.0"]
+      - id: mypy
+        name: mypy-default
+        exclude: ^examples/datasets
+        additional_dependencies: [ types-all, "pydantic<2.0" ]
+      - id: mypy
+        name: mypy-examples-dataset
+        files: ^examples/datasets
+        additional_dependencies: [ types-all, "pydantic<2.0" ]
 -   repo: meta
     hooks:
     -   id: check-hooks-apply
