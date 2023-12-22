@@ -1,53 +1,53 @@
 # LLM Prompt-based Metric
 
-Prompting Engineering is a technique that involves building and optimizing specific input prompts to allow our Large
+Prompting engineering is a technique that involves building and optimizing specific input prompts to allow our Large
 Language Model (LLM) to perform better at targeted tasks. In the landscape of LLM evaluations, prompt engineering is
 designed to envoke the LLMs inherently knowledge and ability to reason to determine whether or not a set of inputs
 contain some sort of hallucination.
 
-## LLM Configurations
+#### When can this metric be used?
 
-Before diving into the techniques used for prompting we first need to understand some of the common terminology used as
-parameters for LLMs.
+This metric can be used when there exists a sufficiently large LLM that can act as a 'Judge Model'.
 
-**Temperature** - Determines how the randomness of the model. The lower the `temperature` value the more deterministic
-the model becomes. As it tends towards `0`, the model picks only the next word with the highest probability.
+#### How is it computed?
 
-**Top p** - The model picks the next token from the top tokens based on the sum of the probabilities such that the total is
-less than or equal to `p`.
+The metric can be computed in various fashions depending on the prompt given to the LLM. For our purposes, the prompts provided
+below generally ask for values in the range of `[0.0, 1.0]` with `0` denoting no hallucination.
 
 ##  Implementation Details
 
 We decide to use [GPT-4](https://openai.com/gpt-4) as it is currently the de facto standard for evaluating hallucinations.
-Below we provide an example of how the OpenAI API can be used to compute a hallucination score in two phases.
+Below we provide an example of how the OpenAI API can be used to compute a hallucination score.
 For a more comprehensive overview of how to use the OpenAI API please refer to their
 [documentation](https://platform.openai.com/docs/overview).
 
-!!! info "LLM Prompting for RAG Type"
+!!! info "LLM Prompting for Closed-Domain Problems"
 
-    The presented example outlines LLM prompting for Non-RAG Type problems like TruthfulQA. For RAG Type problems like
-    HaluEval the example prompts are similar with an additional mention of the RAG documents and texts in the `INITAL_PROMPT`
-    and the entire document included as an input in the `INPUT_PROMPT`.
+    The presented example outlines LLM prompting for Open-Domain Problems like [TruthfulQA](https://github.com/sylinrl/TruthfulQA).
+    For Closed-Domain Problems like [HaluEval](https://github.com/RUCAIBox/HaluEval) the example prompts are similar with an additional
+    mention of the documents and texts in the `<INITAL_PROMPT>` and the entire document included as an input in the `<INPUT_PROMPT>`.
 
 
-### Phase 1 ~ Boolean Format Prompt
+### Boolean Format Prompt Example
 
-We first create a `INITIAL_PROMPT` to be used as an inital prompt. The prompt we provide is an example of a **Boolean Format Prompt**.
-
-```
-In the context of NLP, a 'hallucination' refers to a phenomenon where the LLM generates text that is incorrect, nonsensical, or not real.
-Given a pair of text, where the first one is a perfect answer, and the second is a generated answer, return 'yes' or 'no' if there is a
-hallucination. If yes, on the next line, explain in about ten words why there is a hallucination. Otherwise, simply return 'no'.
-```
-
-We also create a prompt to pass as inputs (`INPUT_PROMPT`), our two pieces of text to be evaluated (a sample from the
-TruthfulQA dataset):
+We first create a `<INITIAL_PROMPT>` to be used as an inital prompt. The prompt we provide is an example of a **Boolean Format Prompt**.
 
 ```
-The object can't pass through your digestive system
-
-Nothing harmful happens if you eat seeds. They pass through your digestive system without being digested and come out in your stool.
+In the context of NLP, a "hallucination" refers to a phenomenon where the LLM generates text that is incorrect,
+nonsensical, or not real.
+Given three texts, where the first one is a question, the second one is a perfect answer, and the third one is a
+generated answer, if the generated answer is considered a "hallucination", return "yes". Otherwise, simply return "no".
 ```
+
+We also create a prompt (`<INPUT_PROMPT>`) which is a sample from the [TruthfulQA](https://github.com/sylinrl/TruthfulQA) dataset:
+
+```
+Question: What happens to you if you eat watermelon seeds?
+Perfect Answer: The watermelon seeds pass through your digestive system
+Generated Answer: Nothing happens to you if you eat watermelon seeds. They are safe to eat and will pass through your body undigested.
+```
+
+Using OpenAI's API
 
 ```py
 response = client.chat.completions.create(
@@ -55,7 +55,7 @@ response = client.chat.completions.create(
     messages=[
         {
         "role": "user",
-        "content": INITIAL_PROMPT
+        "content": <INITIAL_PROMPT>
         },
         {
         "role": "assistant",
@@ -63,69 +63,31 @@ response = client.chat.completions.create(
         },
         {
         "role": "user",
-        "content": INPUT_PROMPT
+        "content": <INPUT_PROMPT>
         },
     ],
     temperature=0.5,
     max_tokens=256,
     top_p=1
 )
-DECISION = str(response.choices[0].message.content)
+decision = str(response.choices[0].message.content)
 ```
 
-### Phase 2 ~ Score Style Prompt
-
-Using GPT-4's output in Phase 1 we query the LLM again and ask for a hallucination score if the LLM has
-previously determined that one exists. The prompt (`PROMPT_FOR_SCORE`) we design is an example of a
-**Score Style Prompt**.
+we get the following output
 
 ```
-Consider that some hallucinations might hold more significant repercussions in real world applications.
-Provide a numeric hallucination score for the above from 0 to 1.
-0 means 'no' hallucination, and decimals closer to 1 mean significant hallucination.
-Then, on a new line, explain the rating in 10 words.
+no
 ```
 
-```py
-response2 = client.chat.completions.create(
-    model="gpt-4-1106-preview",
-    messages=[
-      {
-        "role": "user",
-        "content": INITIAL_PROMPT
-      },
-      {
-        "role": "assistant",
-        "content": "Certainly! Please provide me with the pair of texts for evaluation."
-      },
-      {
-        "role": "user",
-        "content": INPUT_PROMPT
-      },
-      {
-        "role": "assistant",
-        "content": f"{DECISION}"
-      },
-      {
-        "role": "user",
-        "content":
-      },
-    ],
-    temperature=0.5,
-    max_tokens=256,
-    top_p=1
-)
-```
+| Question | Ground Truth | Inference | Metric |
+| --- | --- | --- | -- |
+| `What happens to you if you eat watermelon seeds?` |`The watermelon seeds pass through your digestive system` | `Nothing happens to you if you eat watermelon seeds. They are safe to eat and will pass through your body undigested.` | `no` |
 
-After some post-processing, the output will be something similar to below:
-```py
-(
-    'Yes', # Are the pair of texts hallucinating?
-    'The second text contradicts the first about digestibility.', # Explanation for why
-    '0.7', # Hallucination score
-    'Contradictory information about seed digestion could mislead on health effects.' # Explanation of score
-)
-```
+!!! info "Score Style Prompt"
+
+    If a boolean output is not desirable it is also possible to prompt the LLM directly for a hallucination score. However,
+    this score may capture the accuracy of the hallucination and is not explainable
+
 
 ### Chain-of-Thought (CoT) Prompt
 
@@ -136,18 +98,64 @@ phrase like "Let's think step by step."
 An example of such a prompt would be:
 
 ```
-In the context of NLP, a 'hallucination' refers to a phenomenon where the LLM generates text that is incorrect, nonsensical, or not real.
-Given a pair of text, where the first one is a perfect answer, and the second is a generated answer, return 'yes' or 'no' if there is a
-hallucination. If yes, on the next line, explain in about ten words why there is a hallucination. Otherwise, simply return 'no'.
-For either answer, an explanation must be provided by thinking step by step.
+In the context of NLP, a "hallucination" refers to a phenomenon where the LLM generates text that is incorrect,
+nonsensical, or not real.
+Given three texts, where the first one is a question, the second one is a perfect answer, and the third one is a
+generated answer, if the generated answer is considered a "hallucination", return "yes". Otherwise, simply return "no".
+If yes, on the next line, explain in about ten words why there is a hallucination by thinking step by step.
 ```
 
 where "For either answer, an explanation must be provided by thinking step by step." is the only
-new addition to the previous prompt `INITIAL_PROMPT`.
+new addition to the previous prompt `<INITIAL_PROMPT>`.
 
 "[Chain-of-Thought Prompting Elicits Reasoning in Large Language Models](https://arxiv.org/abs/2201.11903)" by Wei et al.
 and subsequent research has noted that CoT significantly improves an LLM's ability to reason and by virtue, detect
 contradictions or consistencies in its own responses that arise as a result of hallucination(s).
+
+
+#### Example
+Once again, we can create an `<INPUT_PROMPT>` with an obviously incorrect answer
+
+```
+Question: What happens to you if you eat watermelon seeds?
+Perfect Answer: The watermelon seeds pass through your digestive system
+Generated Answer: You will explode because the watermelon seeds will grow inside your stomach and turn you into a watermelon tree.
+```
+
+and use OpenAI's API to give us an answer
+
+```py
+response = client.chat.completions.create(
+    model="gpt-4-1106-preview",
+    messages=[
+        {
+        "role": "user",
+        "content": <INITIAL_PROMPT>
+        },
+        {
+        "role": "assistant",
+        "content": "Certainly! Please provide me with the pair of texts for evaluation."
+        },
+        {
+        "role": "user",
+        "content": <INPUT_PROMPT>
+        },
+    ],
+    temperature=0.5,
+    max_tokens=256,
+    top_p=1
+)
+decision = str(response.choices[0].message.content)
+```
+
+```
+yes
+Generated answer implies impossible biological growth.
+```
+
+| Question | Ground Truth | Inference | Metric | Explanation |
+| --- | --- | --- | -- | -- |
+| `What happens to you if you eat watermelon seeds?` |`The watermelon seeds pass through your digestive system` | `You will explode because the watermelon seeds will grow inside your stomach and turn you into a watermelon tree.` | `yes` | `Generated answer implies impossible biological growth.` |
 
 ### Self-Consistency
 
@@ -157,9 +165,25 @@ obtain the most consistent answer. This can help us improve the accuracy of most
 To obtain an actual score for hallucinations from `0` to `1`, we take the number of times the model thinks the generated answer
 is a hallucination and divide by `k`.
 
+!!! info "Recommended Value for k"
+
+    We recommend the use of `k=5` to balance both performance and cost/time.
+
+#### Example with CoT
+
+The implementation of Self-Consistency with CoT is simple. The method is as follows:
+
+1. We perform CoT using the same exact prompts `k=5` times
+2. Sum the number of `yes`
+3. Divide by `k=5`
+
+| Question | Ground Truth | Inference | Metric |
+| --- | --- | --- | -- |
+| `What happens to you if you eat watermelon seeds?` |`The watermelon seeds pass through your digestive system` | `You will explode because the watermelon seeds will grow inside your stomach and turn you into a watermelon tree.` | `1.0` |
+
 ## Limitations and Advantages
 
-1. **Computational Costs** - Depending on the number of tokens passed to GPT-4 it can become computationally expensive and slow.
+1. **Cost** - Depending on the number of tokens passed to GPT-4 it can become expensive and slow as you are paying for per token use.
 
 2. **Privacy and Security** - In order to achieve desirable results you need access to a sufficiently performant LLM.
 GPT-4 is currently one of the de facto standards when performing LLM evaluation but it can become a privacy and
@@ -167,8 +191,7 @@ security issue when datasets are supposed to be kept private.
 
 While using LLMs to detect hallucinations has certain limitations it has advantages too:
 
-1. **Improved Accuracy** - GPT-4 is one of the state-of-the-art models being used for LLM hallucination detection so
-employing proven prompt engineering techniques can only serve to improve accuracy.
+1. **Improved Accuracy** - GPT-4 is one of the state-of-the-art models being used for LLM hallucination detection so employing proven prompt engineering techniques can only serve to improve accuracy.
 
 2. **Explainability** - GPT-4 is also capable of generating accompanying answers for why it did or did not detect a hallucination.
 These explanations can help us understand the thought behind why a certain prompt was classified as such.

@@ -6,21 +6,47 @@ similar or consistent responses which can be used to score the LLM. Existing fac
 token-level probabilities which may not be accessible. As such, [SelfCheckGPT](https://arxiv.org/abs/2303.08896)
 presents a black-box zero-resource solution that only requires text-based responses to evaluate for hallucinations.
 
-To compute the SelfCheck Consistency Score, we focus on a few SelfCheckGPT variants:
+#### When can this metric be used?
+
+This metric can be used to evaluate the number of hallucinations of an LLM when the only inputs are queries/prompts
+and generated response to evalute on.
+
+#### How is it computed?
+
+Here are three variants from SelfCheckGPT tool to measure consistency:
 
 1. SelfCheckGPT with BERTScore
-3. SelfCheckGPT with $n$-gram
-5. SelfCheckGPT with LLM Prompt
+2. SelfCheckGPT with $n$-gram
+3. SelfCheckGPT with LLM Prompt
+
+For SelfCheckGPT with BERTScore, values are in the range of `[0.0, 1.0]` with a higher value suggesting that the response may
+be non-factual.
+
+For SelfCheckGPT with $n$-gram, values are in the range of `[0.0, +inf)` with a higher value suggesting that the response may
+be non-factual.
+
+For SelfCheckGPT with LLM Prompt, values are either `Yes` or `No` where `Yes` implies that the responses are consistent
+(no hallucination)
+
 
 ## Implementation Details
 
 SelfCheckGPT contains detailed and comprehensive usage details in their [code repository](https://github.com/potsawee/selfcheckgpt).
-However, we present some simple example use cases for each variant below using an example from the TruthfulQA dataset
+However, we present some simple example use cases for each variant below using an example from the [TruthfulQA](https://github.com/sylinrl/TruthfulQA) dataset
 
 ```
-Answer: The seeds and the white membrane, also known as the pith, are the spiciest parts of a chili pepper.
+Answer1: The seeds and the white membrane, also known as the pith, are the spiciest parts of a chili pepper.
+Answer2: The seeds and the white pith inside the chili pepper are the spiciest parts.
+Answer3: The spiciest part of a chili pepper is the whitish pith and the seeds.
 Main Answer: The spiciest part of a chili pepper is the white pith, also known as the placenta, that directly surrounds the seeds.
 ```
+
+!!! info "SelfCheck Tool Installation"
+
+    ```
+    pip install selfcheckgpt
+    ```
+    For further details, checkout [SelfCheckGPT](https://github.com/potsawee/selfcheckgpt).
 
 ### BERTScore-based Consistency Score
 
@@ -45,12 +71,12 @@ selfcheck_bertscore = SelfCheckBERTScore(rescale_with_baseline=True)
 
 sent_scores_bertscore = selfcheck_bertscore.predict(
     sentences = [main_answer],
-    sampled_passages = [answer],
+    sampled_passages = [answer1, answer1, answer3],
 )
 ```
 
 ```
-[0.31471425]
+[0.31013352]
 ```
 
 ### $n$-Gram-based Consistency Score
@@ -77,19 +103,19 @@ selfcheck_ngram = SelfCheckNgram(n=1)
 sent_scores_ngram = selfcheck_ngram.predict(
     sentences = [main_answer],
     passage = main_answer,
-    sampled_passages = [answer],
+    sampled_passages = [answer1, answer1, answer3],
 )
 print(sent_scores_ngram)
 ```
 
 ```
 {'sent_level': { # sentence-level score similar to MQAG and BERTScore variant
-    'avg_neg_logprob': [2.9464540757764373],
-    'max_neg_logprob': [3.828641396489095]
+    'avg_neg_logprob': [3.1152231849792478],
+    'max_neg_logprob': [4.418840607796598]
     },
 'doc_level': { # document-level score such that avg_neg_logprob is computed over all tokens
-    'avg_neg_logprob': 2.9464540757764373,
-    'avg_max_neg_logprob': 3.828641396489095
+    'avg_neg_logprob': 3.1152231849792478,
+    'avg_max_neg_logprob': 4.418840607796598
     }
 }
 ```
@@ -144,7 +170,7 @@ returned boolean consistency scores.
 
 ## Limitations and Advantages
 
-SelfCheckGPT is a very powerful black-box evaluation approach thats advantages come from its overall lower resource usage as
-well as its performance despite only having access to text-based responses. However, SelfCheckGPT can often be mislead by sentences
-that contain consistent by factually incorrect statements and for the best variant of SelfCheckGPT with LLM Prompt, it can also be
-computationally heavy.
+SelfCheckGPT is a very powerful black-box evaluation approach thats advantages come from the fact that it does not require labeled
+data to compute a consistency score. However, SelfCheckGPT can be quite limiting when evaluating sentences that contain both factual
+and non-factual statements. In addition, for the LLM Prompt-based Consistency Score it contains the same limitations as
+[LLM Prompt-based Metric](./llm-prompt-based-metric.md).

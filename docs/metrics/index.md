@@ -143,8 +143,8 @@ biases, and its intended uses.
 
     ---
 
-    SelfCheck Consistency Score is a sampling-based approach that computes a score by aggregating across sample responses
-    obtained by using the same prompt and LLM a `k` number of times. The prompt is considered a hallucination if there
+    SelfCheck Consistency Score is a sampling-based approach that computes a score by aggregating across `k` sample responses
+    obtained by using the same query/prompt `k` times. The prompt is considered a hallucination if there
     exists sample responses that contradict one another or are not consistent.
 
 - [Contradiction Score](contradiction-score.md)
