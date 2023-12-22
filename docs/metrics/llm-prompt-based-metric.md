@@ -21,6 +21,17 @@ Below we provide an example of how the OpenAI API can be used to compute a hallu
 For a more comprehensive overview of how to use the OpenAI API please refer to their
 [documentation](https://platform.openai.com/docs/overview).
 
+The main prompt techniques we will focus on are:
+
+1. **Boolean Format Prompt** - Outputs a `yes` or `no` if a prompt contains a hallucination.
+2. **Chain-of-Thought Prompt** - Similar to Boolean Format Prompt but introduces a small prompt change to improve
+the model's reasoning capabilities.
+3. **Self-Consistency** - To be combined with one of the above prompt techniques. Involves running the same prompt
+multiple times and aggregating across the outputs to obtain a score.
+
+Through our experimentations we found that Self-Consistency + Chain-of-Thought Prompting performed the best.
+
+
 !!! info "LLM Prompting for Closed-Domain Problems"
 
     The presented example outlines LLM prompting for Open-Domain Problems like [TruthfulQA](https://github.com/sylinrl/TruthfulQA).
