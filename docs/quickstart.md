@@ -7,7 +7,7 @@ icon: kolena/flame-16
 Install Kolena to set up rigorous and repeatable model testing in minutes.
 
 In this quickstart guide, we'll use the
-[`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d) example integration to
+[`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d) example integration to
 demonstrate the how to curate test data and test models in Kolena.
 
 ## Install `kolena`
@@ -33,7 +33,7 @@ and run directly:
 
 <div class="grid cards" markdown>
 
-- [:kolena-fr-20: Example: Face Recognition 1:1 ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/face_recognition_11)
+- [:kolena-fr-20: Example: Face Recognition 1:1 ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/face_recognition_11)
 
     ![Example image from Face Recognition 1:1 Workflow.](assets/images/fr11.jpg)
 
@@ -41,7 +41,7 @@ and run directly:
 
     End-to-end face recognition 1:1 using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset.
 
-- [:kolena-age-estimation-20: Example: Age Estimation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation)
+- [:kolena-age-estimation-20: Example: Age Estimation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation)
 
     ![Example images from the Labeled Faces in the Wild dataset.](assets/images/LFW.jpg)
 
@@ -49,7 +49,7 @@ and run directly:
 
     Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
 
-- [:kolena-keypoint-detection-20: Example: Keypoint Detection ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/keypoint_detection)
+- [:kolena-keypoint-detection-20: Example: Keypoint Detection ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/keypoint_detection)
 
     ![Example image and five-point facial keypoints array from the 300 Faces in the Wild dataset.](assets/images/300-W.jpg)
 
@@ -58,7 +58,7 @@ and run directly:
     Facial Keypoint Detection using the [300 Faces in the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/)
     dataset
 
-- [:kolena-text-summarization-20: Example: Text Summarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization)
+- [:kolena-text-summarization-20: Example: Text Summarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/text_summarization)
 
     ![Example articles from the CNN-DailyMail dataset.](assets/images/CNN-DailyMail.jpg)
 
@@ -67,7 +67,7 @@ and run directly:
     Text Summarization using [OpenAI GPT-family models](https://platform.openai.com/docs/guides/gpt) and the
     [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
 
-- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
+- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d)
 
     ![Example 2D bounding boxes from the COCO dataset.](assets/images/COCO-transportation.jpeg)
 
@@ -75,7 +75,7 @@ and run directly:
 
     2D Object Detection using the [COCO](https://cocodataset.org/#overview) dataset
 
-- [:kolena-drive-time-20: Example: Object Detection (3D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_3d)
+- [:kolena-drive-time-20: Example: Object Detection (3D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_3d)
 
     ![Example pointcloud and 3D object bounding boxes from the KITTI dataset.](assets/images/KITTI-pointcloud.png)
 
@@ -83,7 +83,7 @@ and run directly:
 
     3D Object Detection using the [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset
 
-- [:kolena-classification-20: Example: Binary Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#binary-classification-on-dogs-vs-cats)
+- [:kolena-classification-20: Example: Binary Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#binary-classification-on-dogs-vs-cats)
 
     !["Dog" classification example from the Dogs vs. Cats dataset.](assets/images/classification-dog.jpg)
 
@@ -91,7 +91,7 @@ and run directly:
 
     Binary Classification of class "Dog" using the [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
 
-- [:kolena-classification-20: Example: Multiclass Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#multiclass-classification-on-cifar-10)
+- [:kolena-classification-20: Example: Multiclass Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#multiclass-classification-on-cifar-10)
 
     ![Example images from CIFAR-10 dataset.](assets/images/CIFAR-10.jpg)
 
@@ -99,7 +99,7 @@ and run directly:
 
     Multiclass Classification using the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
 
-- [:kolena-comparison-20: Example: Semantic Textual Similarity ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/semantic_textual_similarity)
+- [:kolena-comparison-20: Example: Semantic Textual Similarity ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/semantic_textual_similarity)
 
     ![Example sentence pairs from STS benchmark dataset.](assets/images/STS-benchmark.jpg)
 
@@ -107,7 +107,7 @@ and run directly:
 
     Semantic Textual Similarity using the [STS benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
 
-- [:kolena-chat-20: Example: Question Answering ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/question_answering)
+- [:kolena-chat-20: Example: Question Answering ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/question_answering)
 
     ![Example questions from CoQA dataset.](assets/images/CoQA.jpg)
 
@@ -116,7 +116,7 @@ and run directly:
     Question Answering using the
     [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset
 
-- [:kolena-polygon-20: Example: Semantic Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/semantic_segmentation)
+- [:kolena-polygon-20: Example: Semantic Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/semantic_segmentation)
 
     ![Example image from COCO-Stuff 10K dataset.](assets/images/coco-stuff-10k.jpg)
 
@@ -125,7 +125,7 @@ and run directly:
     Semantic Segmentation on class `Person` using the
     [COCO-Stuff 10K](https://github.com/nightrome/cocostuff10k) dataset
 
-- [:kolena-audio-workflow-20: Example: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/automatic_speech_recognition)
+- [:kolena-audio-workflow-20: Example: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/automatic_speech_recognition)
 
     ![Example image from the automatic speech recognition workflow.](assets/images/librispeech-workflow-example.png)
 
@@ -134,7 +134,7 @@ and run directly:
     Automatic speech recognition using the
     [LibriSpeech](https://www.openslr.org/12) dataset
 
-- [:kolena-diarization-workflow-20: Example: Speaker Diarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/speaker_diarization)
+- [:kolena-diarization-workflow-20: Example: Speaker Diarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/speaker_diarization)
 
     ![Example image from the speaker diarization workflow.](assets/images/speaker-diarization-example.png)
 
@@ -152,7 +152,7 @@ git clone https://github.com/kolenaIO/kolena.git
 ```
 
 With the repository cloned, let's set up the
-[`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d) example:
+[`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d) example:
 
 ```shell
 cd kolena/examples/object_detection_2d
@@ -169,7 +169,7 @@ Each of the example integrations comes with scripts for two flows:
 1. `seed_test_suite.py`: Create test cases and test suite(s) from a source dataset
 2. `seed_test_run.py`: Test model(s) on the created test suites
 
-Before running [`seed_test_suite.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/object_detection_2d/object_detection_2d/seed_test_suite.py),
+Before running [`seed_test_suite.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/workflow/object_detection_2d/object_detection_2d/seed_test_suite.py),
 let's first configure our environment by populating the `KOLENA_TOKEN`
 environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page to
 generate an API token and copy and paste the code snippet into your environment:
@@ -203,7 +203,7 @@ poetry run python3 object_detection_2d/seed_test_run.py "yolo_v4s"
 
 !!! note "Note: Testing additional models"
     In this example, model results have already been extracted and are stored in CSV files in S3. To run a new model,
-    plug it into the `infer` method in [`seed_test_run.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/object_detection_2d/object_detection_2d/seed_test_run.py).
+    plug it into the `infer` method in [`seed_test_run.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/workflow/object_detection_2d/object_detection_2d/seed_test_run.py).
 
 Once this script has completed, click the results link in your console or visit
 [:kolena-results-16: Results](https://app.kolena.io/redirect/results) to view the test results for this newly tested model.
