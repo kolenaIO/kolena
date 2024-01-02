@@ -88,7 +88,7 @@ nav:
         - metrics/iou.md
       - Large Language Models:
         - metrics/contradiction-score.md
-        - metrics/vectara-HEM-score.md
+        - HEM Score: metrics/vectara-HEM-score.md
       - Natural Language Processing:
         - metrics/bertscore.md
         - metrics/bleu.md
