@@ -271,7 +271,7 @@ jobs:
       name: python
       python-version: << parameters.python-version >>
       resource-class: << parameters.resource-class >>
-    working_directory: ~/project/examples/<< parameters.subproject >>
+    working_directory: ~/project/examples/workflow/<< parameters.subproject >>
     steps:
       - checkout:
           path: ~/project
@@ -298,7 +298,7 @@ jobs:
           version: 20.10.14
       - run:
           name: Build evaluator
-          command: examples/text_summarization/docker/build.sh
+          command: examples/workflow/text_summarization/docker/build.sh
 
 workflows:
   ci:

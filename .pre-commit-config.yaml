@@ -49,11 +49,15 @@ repos:
     hooks:
       - id: mypy
         name: mypy-default
-        exclude: ^examples/datasets
+        exclude: ^examples/(dataset|workflow)/
         additional_dependencies: [ types-all, "pydantic<2.0" ]
       - id: mypy
         name: mypy-examples-dataset
-        files: ^examples/datasets
+        files: ^examples/dataset/
+        additional_dependencies: [ types-all, "pydantic<2.0" ]
+      - id: mypy
+        name: mypy-examples-workflow
+        files: ^examples/workflow/
         additional_dependencies: [ types-all, "pydantic<2.0" ]
 -   repo: meta
     hooks:
