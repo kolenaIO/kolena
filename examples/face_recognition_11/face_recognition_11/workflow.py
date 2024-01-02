@@ -1,5 +1,4 @@
-# build out the workflow for the FR problem which is already supported in kolena.fr as a pre-built workflow.
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# build out the workflow for the FR problem which is already supported in kolena.fr as a pre-built workflow.
 import dataclasses
 from typing import List
 from typing import Optional
