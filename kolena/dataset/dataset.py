@@ -33,10 +33,6 @@ from kolena._api.v2.dataset import LoadDatapointsRequest
 from kolena._api.v2.dataset import LoadDatasetByNameRequest
 from kolena._api.v2.dataset import Path
 from kolena._api.v2.dataset import RegisterRequest
-from kolena._experimental.dataset.common import COL_DATAPOINT
-from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena._experimental.dataset.common import validate_batch_size
-from kolena._experimental.dataset.common import validate_dataframe_ids
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -46,6 +42,10 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
+from kolena.dataset.common import COL_DATAPOINT
+from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset.common import validate_batch_size
+from kolena.dataset.common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject

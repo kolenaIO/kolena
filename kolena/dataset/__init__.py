@@ -10,13 +10,24 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
-
+# limitations under the License
+from kolena.dataset.dataset import register_dataset, fetch_dataset_history, fetch_dataset
+from kolena.dataset.evaluation import fetch_results, test
 # noreorder
 from kolena.workflow import annotation
 from kolena.workflow import asset
 
 __all__ = [
+    "register_dataset",
+    "fetch_dataset_history",
+    "fetch_dataset",
+    "fetch_results",
+    "test",
     "annotation",
     "asset",
 ]
+
+# noreorder
+from kolena.workflow import annotation
+from kolena.workflow import asset
+

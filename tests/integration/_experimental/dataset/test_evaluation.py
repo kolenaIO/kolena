@@ -20,10 +20,10 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from kolena._experimental.dataset import fetch_dataset
-from kolena._experimental.dataset import fetch_results
-from kolena._experimental.dataset import register_dataset
-from kolena._experimental.dataset import test
+from kolena.dataset import fetch_dataset
+from kolena.dataset import fetch_results
+from kolena.dataset import register_dataset
+from kolena.dataset import test
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from tests.integration._experimental.dataset.test_dataset import batch_iterator
