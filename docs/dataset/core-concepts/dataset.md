@@ -4,4 +4,4 @@ search:
   boost: 2
 ---
 
-# :kolena-dataset-20: Dataset
+# :kolena-dataset-20: Datasets

@@ -10,15 +10,22 @@ edit_uri: edit/trunk/docs/
 nav:
   - Developer Guide:
       - Developer Guide: index.md
-      - Quickstart: quickstart.md
       - Installing <code>kolena</code>: installing-kolena.md
-      - Building a Workflow: building-a-workflow.md
-      - Core Concepts:
-          - Core Concepts: core-concepts/index.md
-          - Dataset: core-concepts/dataset.md
-          - Workflow: core-concepts/workflow.md
-          - Test Case & Test Suite: core-concepts/test-suite.md
-          - Model: core-concepts/model.md
+      - Datasets:
+          - Datasets: dataset/index.md
+          - Quickstart: dataset/quickstart.md
+          - Core Concepts:
+              - Core Concepts: dataset/core-concepts/index.md
+              - Dataset: dataset/core-concepts/dataset.md
+      - Workflows:
+          - Workflows: workflow/index.md
+          - Quickstart: workflow/quickstart.md
+          - Core Concepts:
+              - Core Concepts: workflow/core-concepts/index.md
+              - Workflow: workflow/core-concepts/workflow.md
+              - Test Case & Test Suite: workflow/core-concepts/test-suite.md
+              - Model: workflow/core-concepts/model.md
+          - Building a Workflow: workflow/building-a-workflow.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
           - Connecting Cloud Storage:

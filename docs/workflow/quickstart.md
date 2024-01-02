@@ -2,7 +2,7 @@
 icon: kolena/flame-16
 ---
 
-# :kolena-flame-20: Quickstart: Workflows
+# :kolena-flame-20: Quickstart Workflows
 
 Install Kolena to set up rigorous and repeatable model testing in minutes.
 
