@@ -6,6 +6,8 @@ search:
 
 # :kolena-model-20: Model
 
+!!! note "Note: If you are using Kolena dataset, this is not relevant, please follow the datasets core concept document."
+
 In Kolena, a model is a deterministic transformation from [test samples](workflow.md#test-sample) to
 [inferences](workflow.md#inference).
 

@@ -6,6 +6,8 @@ search:
 
 # :kolena-test-suite-20: Test Case & Test Suite
 
+!!! note "Note: If you are using Kolena dataset, this is not relevant, please follow the datasets core concept document."
+
 Test cases and test suites are used to organize test data in Kolena.
 
 A **test case** is a collection of [test samples](workflow.md#test-sample) and their associated

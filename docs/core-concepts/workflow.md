@@ -6,6 +6,8 @@ search:
 
 # :kolena-workflow-20: Workflow
 
+!!! note "Note: If you are using Kolena dataset, this is not relevant, please follow the datasets core concept document."
+
 Testing in Kolena is broken down by the type of ML problem you're solving, called a **workflow**. Any ML problem that
 can be tested can be modeled as a workflow in Kolena.
 
