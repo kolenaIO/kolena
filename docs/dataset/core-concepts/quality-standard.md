@@ -4,4 +4,4 @@ search:
   boost: 2
 ---
 
-# :kolena-quality-standard-20: Quality Standards
+# :kolena-quality-standard-20: Quality Standard

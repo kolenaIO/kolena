@@ -17,6 +17,7 @@ nav:
           - Core Concepts:
               - Core Concepts: dataset/core-concepts/index.md
               - Dataset: dataset/core-concepts/dataset.md
+              - Quality Standard: dataset/core-concepts/quality-standard.md
       - Workflows:
           - Workflows: workflow/index.md
           - Quickstart: workflow/quickstart.md
