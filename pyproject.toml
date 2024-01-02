@@ -2,7 +2,7 @@
 name = "kolena"
 version = "0.999.0"  # version is automatically set to latest git tag during release process
 description = "Client for Kolena's machine learning testing platform."
-authors = ["Kolena Engineering <eng@kolena.io>"]
+authors = ["Kolena Engineering <eng@kolena.com>"]
 homepage = "https://kolena.io"
 documentation = "https://docs.kolena.io"
 readme = "README.md"
