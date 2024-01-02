@@ -15,6 +15,7 @@ nav:
       - Building a Workflow: building-a-workflow.md
       - Core Concepts:
           - Core Concepts: core-concepts/index.md
+          - Dataset: core-concepts/dataset.md
           - Workflow: core-concepts/workflow.md
           - Test Case & Test Suite: core-concepts/test-suite.md
           - Model: core-concepts/model.md
@@ -35,6 +36,8 @@ nav:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
+      - <code>kolena.dataset</code>:
+          - <code>kolena.dataset</code>: reference/dataset/index.md
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md
