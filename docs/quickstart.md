@@ -155,7 +155,7 @@ With the repository cloned, let's set up the
 [`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d) example:
 
 ```shell
-cd kolena/examples/object_detection_2d
+cd kolena/examples/workflow/object_detection_2d
 poetry update && poetry install
 ```
 
