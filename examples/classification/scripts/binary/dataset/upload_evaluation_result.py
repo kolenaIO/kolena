@@ -44,6 +44,7 @@ def to_kolena_result(score, ground_truth_label) -> Dict[str, Any]:
     return {
         "label": label,
         "correct": correct,
+        "score": score,
         "data_type": _get_full_type(ScoredClassificationLabel(label=label, score=score))
     }
 
@@ -91,7 +92,7 @@ def upload_results(model_name: str, dataset: str, multiclass: bool) -> None:
     eval_result = df_results.apply(lambda x: to_kolena_result(x.prediction, x.label), axis=1)
     eval_result.name = "prediction"
     df_results = pd.concat([df_results[["locator"]], raw_inference, eval_result], axis=1)
-    test(dataset, model_name, df_results)
+    test(dataset, model_name, [(eval_config, df_results)])
 
 # TODO: Add logging to the link to result page
 def main(args: Namespace) -> int:
