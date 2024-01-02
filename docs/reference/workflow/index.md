@@ -8,7 +8,7 @@ hide:
 
 <div class="grid cards" markdown>
 - :kolena-layers-16: Developer Guide: [Building a Workflow ↗](../../building-a-workflow.md)
-- :kolena-developer-16: Examples: [`kolena/examples` ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples)
+- :kolena-developer-16: Examples: [`kolena/examples` ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow)
 </div>
 
 `kolena.workflow` contains the definitions to build a [workflow](../../core-concepts/workflow.md):
