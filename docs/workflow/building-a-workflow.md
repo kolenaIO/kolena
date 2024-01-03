@@ -6,14 +6,14 @@ search:
 
 # :kolena-cube-20: Building a Workflow
 
-In this tutorial we'll learn how to use the [`kolena.workflow`](reference/workflow/index.md) workflow builder
+In this tutorial we'll learn how to use the [`kolena.workflow`](../reference/workflow/index.md) workflow builder
 definitions to test a [Keypoint Detection](https://keras.io/examples/vision/keypoint_detection/) model on the
 [300-W](https://ibug.doc.ic.ac.uk/resources/300-W/) facial keypoint dataset. This demonstration will show us how we can
 build a workflow to test any arbitrary ML problem on Kolena.
 
 ### Getting Started
 
-With the `kolena` Python client [installed](installing-kolena.md#installation),
+With the `kolena` Python client [installed](../installing-kolena.md#installation),
 first let's initialize a client session:
 
 ```python
@@ -46,7 +46,7 @@ This **`metadata.csv`** file describes a keypoint detection dataset with the fol
     nose, and corners of the mouth.
 
     <figure markdown>
-      ![Example image and five-point facial keypoints array from 300-W.](assets/images/300-W.jpg)
+      ![Example image and five-point facial keypoints array from 300-W.](../assets/images/300-W.jpg)
       <figcaption>Example image and five-point facial keypoints array from 300-W.</figcaption>
     </figure>
 

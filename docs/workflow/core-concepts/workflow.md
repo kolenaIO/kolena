@@ -18,7 +18,7 @@ Examples of workflows include:
 - [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos
 </div>
 
-With the [`kolena.workflow`](../reference/workflow/index.md) client module, any arbitrary ML problem can be defined as a
+With the [`kolena.workflow`](../../reference/workflow/index.md) client module, any arbitrary ML problem can be defined as a
 workflow and tested on Kolena.
 
 There are three main components of a workflow:
@@ -42,7 +42,7 @@ computer vision models would have a [video][kolena.workflow.Video] test sample t
 [image pairs][kolena.workflow.Composite]. For natural language processing models, the test sample may be a
 [document][kolena.workflow.Document] or [text snippet][kolena.workflow.Text].
 
-When [building a workflow](../building-a-workflow.md), you can [extend](../reference/workflow/test-sample.md) and
+When [building a workflow](../building-a-workflow.md), you can [extend][kolena.workflow.TestSample] and
 [compose][kolena.workflow.Composite] these base test sample types as necessary, or use the base types directly if no
 customization is required.
 
