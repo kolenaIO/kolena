@@ -230,6 +230,9 @@ jobs:
                   if [ "$TEST_GROUP" = "misc" ]; then
                     TESTFILES=$(circleci tests glob tests/integration/test_*.py |
                       circleci tests split --split-by=timings --timings-type=filename)
+                  elif [ "$TEST_GROUP" = "_experimental" ]; then
+                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                      circleci tests split --split-by=timings --timings-type=testname)
                   else
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
