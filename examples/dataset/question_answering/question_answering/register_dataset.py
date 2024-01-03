@@ -19,7 +19,7 @@ from question_answering.constants import HALUEVALQA
 from question_answering.constants import TRUTHFULQA
 
 import kolena
-from kolena._experimental.dataset import register_dataset
+from kolena.dataset import register_dataset
 from kolena.workflow.io import dataframe_from_csv
 
 DATASETS = {
