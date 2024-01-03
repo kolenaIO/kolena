@@ -262,7 +262,7 @@ def register_dataset(
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
     data = from_dict(EntityData, response.json())
-    log.info(f"Successfully registered dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
+    log.info(f"registered dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
 
 def _iter_dataset_raw(
@@ -304,8 +304,8 @@ def fetch_dataset(
     """
     Fetch an entire dataset given its name.
     """
-    log.info(f"Loaded dataset '{name}'")
     df_batches = list(_iter_dataset(name, commit, batch_size))
+    log.info(f"loaded dataset '{name}'")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
 

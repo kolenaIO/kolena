@@ -15,12 +15,30 @@ import math
 from typing import Any
 from typing import Dict
 from typing import List
+from typing import Tuple
 
 import numpy as np
-from keypoint_detection.utils import calculate_mse_nmse
-from keypoint_detection.utils import compute_distances
 
 from kolena.workflow.annotation import Keypoints
+
+
+def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:
+    return math.sqrt(math.pow(point_a[0] - point_b[0], 2) + math.pow(point_a[1] - point_b[1], 2))
+
+
+def compute_distances(
+    point_a: Tuple[float, float],
+    point_b: Tuple[float, float],
+    normalization_factor: float,
+) -> Tuple[float, float]:
+    distance = compute_distance(point_a, point_b)
+    return distance, distance / normalization_factor
+
+
+def calculate_mse_nmse(distances: np.ndarray, normalization_factor: float) -> Tuple[float, float]:
+    mse = np.mean(distances**2)
+    nmse = math.sqrt(np.mean((distances / normalization_factor) ** 2))
+    return mse, nmse
 
 
 def compute_metrics(gt: Keypoints, inf: List[Keypoints], norm: float) -> Dict[str, Any]:

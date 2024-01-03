@@ -15,12 +15,12 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-from keypoint_detection.datasets.metrics import compute_metrics
+from keypoint_detection.metrics import compute_metrics
+from keypoint_detection.model import infer_random
+from keypoint_detection.model import infer_retinaface
 from tqdm import tqdm
 
 import kolena
-from examples.keypoint_detection.keypoint_detection.datasets.model import infer_random
-from examples.keypoint_detection.keypoint_detection.datasets.model import infer_retinaface
 from kolena._experimental.dataset import fetch_dataset
 from kolena._experimental.dataset import test
 
