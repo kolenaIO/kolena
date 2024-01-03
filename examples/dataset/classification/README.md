@@ -1,8 +1,8 @@
 # Example Integration: Classification
 
 This example integration uses the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html), the
-[Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) and open-source
-classification models to demonstrate how to test multiclass and binary classification problems on Kolena.
+[Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) and open-source classification models to demonstrate how to test
+multiclass and binary classification problems on Kolena.
 
 ## Setup
 
