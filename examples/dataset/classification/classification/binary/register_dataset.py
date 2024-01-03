@@ -11,9 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
-from argparse import ArgumentParser
-from argparse import Namespace
 from typing import Dict
 
 import pandas as pd
@@ -42,10 +39,10 @@ def to_label_object(x: str) -> Dict[str, str]:
     }
 
 
-def main(args: Namespace) -> int:
+def main() -> None:
     kolena.initialize(verbose=True)
 
-    df_metadata = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
+    df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv", storage_options={"anon": True})
     id_fields = ["locator"]
     ground_truth_field = "label"
 
@@ -54,15 +51,6 @@ def main(args: Namespace) -> int:
     df_datapoints = pd.concat([df_metadata[id_fields], df_serialized_metadata, df_serialized_ground_truth], axis=1)
     register_dataset(DATASET, df_datapoints, id_fields)
 
-    return 0
-
 
 if __name__ == "__main__":
-    ap = ArgumentParser()
-    ap.add_argument(
-        "--dataset_csv",
-        type=str,
-        default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
-        help="CSV file with a list of image `locator` and its `label`. See default CSV for details",
-    )
-    sys.exit(main(ap.parse_args()))
+    main()
