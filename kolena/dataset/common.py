@@ -59,3 +59,8 @@ def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
                 f"invalid id_fields: field '{id_field}' does not exist in dataframe",
             )
     _validate_dataframe_ids_uniqueness(df, id_fields)
+
+
+def validate_dataframe_have_other_columns_besides_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
+    if set(df.columns) == set(id_fields):
+        raise InputValidationError("dataframe only contains id fields")

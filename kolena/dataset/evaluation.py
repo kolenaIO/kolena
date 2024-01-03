@@ -40,6 +40,7 @@ from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset.common import COL_EVAL_CONFIG
 from kolena.dataset.common import COL_RESULT
 from kolena.dataset.common import validate_batch_size
+from kolena.dataset.common import validate_dataframe_have_other_columns_besides_ids
 from kolena.dataset.common import validate_dataframe_ids
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
@@ -172,6 +173,8 @@ def test(
     if not existing_dataset:
         raise NotFoundError(f"dataset {dataset} does not exist")
 
+    id_fields = existing_dataset.id_fields
+
     if isinstance(results, pd.DataFrame) or isinstance(results, Iterator):
         results = [(None, results)]
     load_uuid = init_upload().uuid
@@ -180,16 +183,18 @@ def test(
     for config, df_result_input in results:
         log.info(f"uploading test results with configuration {config}" if config else "uploading test results")
         if isinstance(df_result_input, pd.DataFrame):
-            validate_dataframe_ids(df_result_input, existing_dataset.id_fields)
-            df_results = _process_result(config, df_result_input, existing_dataset.id_fields)
+            validate_dataframe_ids(df_result_input, id_fields)
+            validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
+            df_results = _process_result(config, df_result_input, id_fields)
             upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
         else:
             id_column_validated = False
             for df_result in df_result_input:
                 if not id_column_validated:
-                    validate_dataframe_ids(df_result, existing_dataset.id_fields)
+                    validate_dataframe_ids(df_result, id_fields)
+                    validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
                     id_column_validated = True
-                df_results = _process_result(config, df_result, existing_dataset.id_fields)
+                df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     _upload_results(model, load_uuid, existing_dataset.id)
