@@ -23,16 +23,16 @@ This project defines two scripts that perform the following operations:
 
 1. [`upload_dataset.py`](keypoint_detection/upload_dataset.py) creates the 300-W dataset on Kolena
 
-2. [`benchmark_model.py`](keypoint_detection/benchmark_model.py) tests a keypoint detection model on the 300-W dataset,
+2. [`upload_results.py`](keypoint_detection/upload_results.py) tests a keypoint detection model on the 300-W dataset,
   using either random keypoints (`random` option) or the open-source [RetinaFace](https://github.com/serengil/retinaface)
   (`RetinaFace` option) keypoint detection model.
 
-The `benchmark_model.py` script defines command line arguments to select which model to evaluate — run using the
+The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
 `--help` flag for more information:
 
 ```shell
-$ poetry run python3 keypoint_detection/benchmark_model.py --help
-usage: benchmark_model.py [-h] {RetinaFace,random} [dataset]
+$ poetry run python3 keypoint_detection/upload_results.py --help
+usage: upload_results.py [-h] {RetinaFace,random} [dataset]
 
 positional arguments:
   {RetinaFace,random}  Name of model to test.
