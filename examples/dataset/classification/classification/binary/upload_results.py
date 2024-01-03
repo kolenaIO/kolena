@@ -25,10 +25,8 @@ from classification.binary.constants import NEGATIVE_LABEL
 from classification.binary.constants import POSITIVE_LABEL
 
 import kolena
-from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
-from kolena._experimental.dataset._evaluation import _fetch_dataset
+from kolena._experimental.dataset import fetch_dataset
 from kolena._experimental.dataset._evaluation import test
-from kolena._experimental.dataset.common import COL_DATAPOINT
 from kolena.workflow._datatypes import _get_full_type
 from kolena.workflow.annotation import ScoredClassificationLabel
 
@@ -36,18 +34,27 @@ eval_config = {"threshold": 0.5}
 id_fields = ["locator"]
 
 
-def to_kolena_result(score, ground_truth_label) -> Dict[str, Any]:
-    label = NEGATIVE_LABEL
-    correct = False
+def metrics(score, ground_truth_label) -> Dict[str, Any]:
+    prediction = ScoredClassificationLabel(label=NEGATIVE_LABEL, score=score)
     if score >= eval_config["threshold"]:
-        label = POSITIVE_LABEL
-    if ground_truth_label.label == label:
-        correct = True
+        prediction = ScoredClassificationLabel(label=POSITIVE_LABEL, score=score)
+
+    threshold = eval_config["threshold"]
+    if threshold is None:
+        threshold = 0.5
+
+    is_positive_prediction = prediction.score >= threshold
+    is_positive_sample = ground_truth_label == prediction.label
+
     return {
-        "label": label,
-        "correct": correct,
-        "score": score,
-        "data_type": _get_full_type(ScoredClassificationLabel(label=label, score=score)),
+        "classification_label": prediction.label,
+        "classification_score": prediction.score,
+        "threshold": threshold,
+        "is_correct": is_positive_prediction == is_positive_sample,
+        "is_TP": is_positive_sample and is_positive_prediction,
+        "is_FP": not is_positive_sample and is_positive_prediction,
+        "is_FN": is_positive_sample and not is_positive_prediction,
+        "is_TN": not is_positive_sample and not is_positive_prediction,
     }
 
 
@@ -80,34 +87,38 @@ def to_kolena_inference(score, multiclass: bool = False) -> List[Dict[str, Any]]
 
 
 def upload_results(model_name: str, dataset: str, multiclass: bool) -> None:
-    df_results = pd.read_csv(
-        f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv",
-        storage_options={"anon": True},
-    )
-    dataset_df = _fetch_dataset(dataset)
-    dataset_df = _to_deserialized_dataframe(dataset_df, column=COL_DATAPOINT)
-    df_results = df_results.merge(
-        dataset_df,
-        how="left",
-        on=id_fields,
-    )
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
+    dataset_df = fetch_dataset(dataset)
+    df_results = df_results.merge(dataset_df, how="left", on=id_fields)
+
     raw_inference = df_results["prediction"].apply(lambda x: to_kolena_inference(x, multiclass))
     raw_inference.name = "raw_inference"
-    eval_result = df_results.apply(lambda x: to_kolena_result(x.prediction, x.label), axis=1)
-    eval_result.name = "prediction"
+
+    eval_result = df_results.apply(lambda x: pd.Series(metrics(x.prediction, x.label)), axis=1)
+    eval_result.columns = [
+        "classification_label",
+        "classification_score",
+        "threshold",
+        "is_correct",
+        "is_TP",
+        "is_FP",
+        "is_FN",
+        "is_TN",
+    ]
+
     df_results = pd.concat([df_results[["locator"]], raw_inference, eval_result], axis=1)
     test(dataset, model_name, [(eval_config, df_results)])
 
 
-# TODO: Add logging to the link to result page
-def main(args: Namespace) -> int:
+def run(args: Namespace) -> int:
     kolena.initialize(verbose=True)
     for model_name in args.models:
-        upload_results(model_name, args.dataset, args.multiclass)
+        upload_results(model_name, DATASET, args.multiclass)
+
     return 0
 
 
-if __name__ == "__main__":
+def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
@@ -116,15 +127,13 @@ if __name__ == "__main__":
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
-        "--dataset",
-        default="dogs-vs-cats",
-        nargs="+",
-        help="Name of dataset to test.",
-    )
-    ap.add_argument(
         "--multiclass",
         action="store_true",
         default=True,
         help="Option to evaluate dogs-vs-cats as multiclass classification",
     )
-    sys.exit(main(ap.parse_args()))
+    sys.exit(run(ap.parse_args()))
+
+
+if __name__ == "__main__":
+    main()
