@@ -191,6 +191,8 @@ def test(
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     response = _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"Uploaded test results for model '{model}' on dataset '{dataset}':\n"
-             f"\t - Inserted {response.n_inserted} results\n"
-             f"\t - Updated {response.n_updated} results")
+    log.info(
+        f"Uploaded test results for model '{model}' on dataset '{dataset}':\n"
+        f"\t - Inserted {response.n_inserted} results\n"
+        f"\t - Updated {response.n_updated} results",
+    )
