@@ -319,7 +319,7 @@ def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: i
     """
     request = ListCommitHistoryRequest(name=name, descending=descending, offset=offset, limit=limit)
     response = krequests.put(Path.LIST_COMMITS, json=asdict(request))
-    response.raise_for_status()
+    krequests.raise_for_status(response)
     return from_dict(ListCommitHistoryResponse, response.json())
 
 
