@@ -136,7 +136,7 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-@with_event(EventAPI.Event.TEST_DATASET_MODEL)
+@with_event(EventAPI.Event.UPLOAD_DATASET_MODEL_RESULT)
 def upload_results(
     dataset: str,
     model: str,
