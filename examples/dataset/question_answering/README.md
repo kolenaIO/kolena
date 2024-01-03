@@ -20,7 +20,7 @@ The data for this example integration lives in the publicly accessible S3 bucket
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
 
-This project defines three scripts that perform the following operations:
+This project defines a script that performs the following operations:
 
 1. [`upload_dataset.py`](question_answering/upload_dataset.py) uploads both datasets by default. You can also
 select the dataset to register by specifying `--datasets`.
