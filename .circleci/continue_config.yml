@@ -16,6 +16,9 @@ parameters:
   workflow:
     type: boolean
     default: false
+  dataset:
+    type: boolean
+    default: false
   misc:
     type: boolean
     default: false
@@ -219,9 +222,13 @@ jobs:
             export KOLENA_TOKEN=${!token}
       - when:
           condition:
-            equal:
-              - "none"
-              - << parameters.extras >>
+            and:
+              - equal:
+                  - "none"
+                  - << parameters.extras >>
+              - not_equal:
+                  - _experimental
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
@@ -341,8 +348,18 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: [ "none", "metrics" ]
+              extras: [ "metrics" ]
           pytest-group: _experimental
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: dataset
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>

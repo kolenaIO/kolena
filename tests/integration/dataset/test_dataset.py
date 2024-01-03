@@ -21,9 +21,9 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from kolena._api.v2.dataset import CommitData
-from kolena._experimental.dataset import fetch_dataset
-from kolena._experimental.dataset import fetch_dataset_history
-from kolena._experimental.dataset import register_dataset
+from kolena.dataset import fetch_dataset
+from kolena.dataset import fetch_dataset_history
+from kolena.dataset import register_dataset
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
