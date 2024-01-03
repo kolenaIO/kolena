@@ -11,3 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from kolena.workflow.asset import BaseVideoAsset
+from kolena.workflow.asset import BinaryAsset
+from kolena.workflow.asset import ImageAsset
+from kolena.workflow.asset import PlainTextAsset
+from kolena.workflow.asset import PointCloudAsset
+from kolena.workflow.asset import VideoAsset
+
+__all__ = ["ImageAsset", "PlainTextAsset", "BinaryAsset", "PointCloudAsset", "BaseVideoAsset", "VideoAsset"]
