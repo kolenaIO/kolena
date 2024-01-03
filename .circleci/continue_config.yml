@@ -59,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &ci-base-cache ci-caches-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
             equal: [ "none", << parameters.extras >> ]
