@@ -41,7 +41,7 @@ def calculate_mse_nmse(distances: np.ndarray, normalization_factor: float) -> Tu
     return mse, nmse
 
 
-def compute_metrics(gt: Keypoints, inf: List[Keypoints], norm: float) -> Dict[str, Any]:
+def compute_metrics(gt: Keypoints, inf: List[Keypoints], norm: float, nmse_threshold: float = 0.05) -> Dict[str, Any]:
     best_face_nmse, best_face_metrics = math.inf, dict(outcome="failure_to_detect")
     for face in inf:
         Δ_nose, norm_Δ_nose = compute_distances(gt.points[0], face.points[0], norm)
@@ -54,7 +54,7 @@ def compute_metrics(gt: Keypoints, inf: List[Keypoints], norm: float) -> Dict[st
         if nmse < best_face_nmse:
             best_face_nmse = nmse
             best_face_metrics = dict(
-                outcome="failure_to_align" if nmse > 0.1 else "success",  # TODO: config
+                outcome="failure_to_align" if nmse > nmse_threshold else "success",
                 Δ_nose=Δ_nose,
                 Δ_left_eye=Δ_left_eye,
                 Δ_right_eye=Δ_right_eye,
