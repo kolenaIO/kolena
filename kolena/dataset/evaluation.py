@@ -23,38 +23,32 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
-from kolena._experimental.dataset._dataset import _iter_dataset_raw
-from kolena._experimental.dataset._dataset import _to_deserialized_dataframe
-from kolena._experimental.dataset._dataset import _to_serialized_dataframe
-from kolena._experimental.dataset._dataset import load_dataset
-from kolena._experimental.dataset.common import COL_DATAPOINT
-from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena._experimental.dataset.common import COL_EVAL_CONFIG
-from kolena._experimental.dataset.common import COL_RESULT
-from kolena._experimental.dataset.common import validate_batch_size
-from kolena._experimental.dataset.common import validate_dataframe_ids
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
+from kolena.dataset.common import COL_DATAPOINT
+from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset.common import COL_EVAL_CONFIG
+from kolena.dataset.common import COL_RESULT
+from kolena.dataset.common import validate_batch_size
+from kolena.dataset.common import validate_dataframe_ids
+from kolena.dataset.dataset import _to_deserialized_dataframe
+from kolena.dataset.dataset import _to_serialized_dataframe
+from kolena.dataset.dataset import load_dataset
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
 TYPE_EVALUATION_CONFIG = Optional[Dict[str, Any]]
 TEST_ON_TYPE = Optional[Union[str, List[str]]]
-
-
-def _fetch_dataset(dataset: str) -> pd.DataFrame:
-    df_data_batch = list(_iter_dataset_raw(dataset))
-    df_datapoints = pd.concat(df_data_batch) if df_data_batch else pd.DataFrame(columns=["id", COL_DATAPOINT])
-    df_datapoints.rename(columns={"id": "datapoint_id"}, inplace=True)
-    return df_datapoints
 
 
 def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
@@ -108,6 +102,7 @@ def _upload_results(
     krequests.raise_for_status(response)
 
 
+@with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
 def fetch_results(
     dataset: str,
     model: str,
@@ -141,6 +136,7 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
+@with_event(EventAPI.Event.TEST_DATASET_MODEL)
 def test(
     dataset: str,
     model: str,

@@ -25,6 +25,7 @@ from typing import Union
 import pandas as pd
 import requests
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v2.dataset import CommitData
 from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.dataset import ListCommitHistoryRequest
@@ -33,10 +34,6 @@ from kolena._api.v2.dataset import LoadDatapointsRequest
 from kolena._api.v2.dataset import LoadDatasetByNameRequest
 from kolena._api.v2.dataset import Path
 from kolena._api.v2.dataset import RegisterRequest
-from kolena._experimental.dataset.common import COL_DATAPOINT
-from kolena._experimental.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena._experimental.dataset.common import validate_batch_size
-from kolena._experimental.dataset.common import validate_dataframe_ids
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -44,8 +41,13 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.endpoints import get_dataset_url
+from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
+from kolena.dataset.common import COL_DATAPOINT
+from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset.common import validate_batch_size
+from kolena.dataset.common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.workflow._datatypes import _deserialize_dataobject
 from kolena.workflow._datatypes import _serialize_dataobject
@@ -227,6 +229,7 @@ def resolve_id_fields(
     return id_fields
 
 
+@with_event(event_name=EventAPI.Event.REGISTER_DATASET)
 def register_dataset(
     name: str,
     df: Union[Iterator[pd.DataFrame], pd.DataFrame],
@@ -296,6 +299,7 @@ def _iter_dataset(
         yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
 
 
+@with_event(event_name=EventAPI.Event.FETCH_DATASET)
 def fetch_dataset(
     name: str,
     commit: str = None,
@@ -315,7 +319,7 @@ def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: i
     """
     request = ListCommitHistoryRequest(name=name, descending=descending, offset=offset, limit=limit)
     response = krequests.put(Path.LIST_COMMITS, json=asdict(request))
-    response.raise_for_status()
+    krequests.raise_for_status(response)
     return from_dict(ListCommitHistoryResponse, response.json())
 
 
@@ -339,6 +343,7 @@ def _iter_commits(
             break
 
 
+@with_event(event_name=EventAPI.Event.FETCH_DATASET_HISTORY)
 def fetch_dataset_history(
     name: str,
     descending: bool = False,
