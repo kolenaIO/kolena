@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -115,6 +115,7 @@ def fetch_results(
     """
     Fetch results given dataset name and model name.
     """
+    log.info(f"Fetching results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
 
     df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
@@ -128,7 +129,7 @@ def fetch_results(
                 _to_deserialized_dataframe(df_matched, column=COL_RESULT),
             ),
         )
-
+    log.info(f"Fetched results for model '{model}' on dataset '{dataset}'")
     return df_datapoints, df_results_by_eval
 
 
@@ -191,4 +192,4 @@ def test(
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"uploaded test results for model {model} on dataset {dataset}")
+    log.info(f"Uploaded test results for model '{model}' on dataset '{dataset}'")

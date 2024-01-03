@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # noreorder
+from kolena._experimental.dataset._dataset import fetch_dataset_history
 from kolena._experimental.dataset._dataset import fetch_dataset
 from kolena._experimental.dataset._dataset import register_dataset
 from kolena._experimental.dataset._evaluation import fetch_results
@@ -19,6 +20,7 @@ from kolena._experimental.dataset._evaluation import test
 
 __all__ = [
     "register_dataset",
+    "fetch_dataset_history",
     "fetch_dataset",
     "fetch_results",
     "test",
