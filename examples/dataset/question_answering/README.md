@@ -20,7 +20,7 @@ The data for this example integration lives in the publicly accessible S3 bucket
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
 
-This project defines two scripts that perform the following operations:
+This project defines a script that performs the following operations:
 
 1. [`register_dataset.py`](question_answering/register_dataset.py) registers both datasets by default. You can also
 select the dataset to register by specifying `--datasets`.
