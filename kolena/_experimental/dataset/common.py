@@ -46,7 +46,7 @@ def validate_id_fields(id_fields: List[str], existing_id_fields: List[str] = Non
 
 
 def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -> None:
-    if df[id_fields].apply(lambda x: x.to_dict(), axis=1).duplicated().any():
+    if df[id_fields].duplicated().any():
         raise InputValidationError(
             f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
         )
@@ -58,4 +58,6 @@ def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
             raise InputValidationError(
                 f"invalid id_fields: field '{id_field}' does not exist in dataframe",
             )
+        elif df[id_field].dtype == object and not isinstance(df.iloc[0][id_field], str):
+            raise InputValidationError(f"Datatype for id field '{id_field}' must be a primitive.")
     _validate_dataframe_ids_uniqueness(df, id_fields)

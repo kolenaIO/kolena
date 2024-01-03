@@ -59,8 +59,6 @@ def test__validate_id_fields__validation_error(
     [
         (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"]),
         (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"]),
-        (pd.DataFrame(dict(a=[dict(c=i) for i in range(3)], b=[1, 2, 1])), ["a", "b"]),
-        (pd.DataFrame(dict(a=[[1], [2], [3]], b=[1, 2, 1])), ["a", "b"]),
     ],
 )
 def test__validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
@@ -72,9 +70,12 @@ def test__validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None
     [
         # dataframe is missing one of id_fields
         (pd.DataFrame(dict(a=[1, 2, 3])), ["a", "b"]),
+        # dataframe id_fields datatypes are not primitives
+        (pd.DataFrame(dict(a=[dict(c=i) for i in range(3)], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame(dict(a=[[1], [2], [3]], b=[1, 2, 1])), ["a", "b"]),
         # dataframe values in id_fields is not unique
         (pd.DataFrame(dict(a=[1, 2, 1], b=[1, 2, 1])), ["a", "b"]),
-        (pd.DataFrame(dict(a=[[1], [1], [1]], b=[1, 2, 1])), ["a", "b"]),
+        (pd.DataFrame(dict(a=[1, 1, 1], b=[1, 2, 1])), ["a", "b"]),
         # the key sequence difference will not make it unique
         (pd.DataFrame(dict(a=[{"a": 1, "b": 2}, {"a": 2, "b": 1}, {"b": 2, "a": 1}], b=[1, 2, 1])), ["a", "b"]),
         (
