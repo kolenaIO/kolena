@@ -59,6 +59,10 @@ class EventAPI:
         FETCH_DATASET = "sdk-dataset-fetched"
         FETCH_DATASET_HISTORY = "sdk-dataset-history-fetched"
 
+        # dataset evaluation
+        FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"
+        TEST_DATASET_MODEL = "sdk-dataset-model-tested"
+
     @dataclass(frozen=True)
     class RecordEventRequest:
         event_name: str
