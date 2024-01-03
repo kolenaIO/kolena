@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import sys
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import Any
@@ -110,12 +109,10 @@ def upload_results(model_name: str, dataset: str, multiclass: bool) -> None:
     test(dataset, model_name, [(eval_config, df_results)])
 
 
-def run(args: Namespace) -> int:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     for model_name in args.models:
         upload_results(model_name, DATASET, args.multiclass)
-
-    return 0
 
 
 def main() -> None:
@@ -132,7 +129,7 @@ def main() -> None:
         default=True,
         help="Option to evaluate dogs-vs-cats as multiclass classification",
     )
-    sys.exit(run(ap.parse_args()))
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":
