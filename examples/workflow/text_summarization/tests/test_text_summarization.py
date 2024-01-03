@@ -14,9 +14,8 @@
 from argparse import Namespace
 
 import pytest
-
-from examples.workflow.text_summarization.text_summarization.seed_test_run import main as seed_test_run_main
-from examples.workflow.text_summarization.text_summarization.seed_test_suite import main as seed_test_suite_main
+from text_summarization.seed_test_run import main as seed_test_run_main
+from text_summarization.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke() -> None:

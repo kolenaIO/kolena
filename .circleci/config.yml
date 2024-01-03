@@ -42,7 +42,7 @@ jobs:
           name: Generate config
           command: |
             export INT_MATRIX=$(jq -c 'if (.all) then
-              (["detection", "fr", "classification", "workflow", "dataset"])
+              (["detection", "fr", "classification", "workflow"])
               else (to_entries | map(select((.value) and (.key | contains("example") | not)) | .key)) end' \
               /tmp/pipeline-parameters.json)
             yq '(.workflows.ci.jobs[] | select(."integration-test".matrix.parameters."pytest-group")

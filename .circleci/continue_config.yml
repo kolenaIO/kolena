@@ -337,7 +337,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow, dataset ]
+              pytest-group: [ detection, fr, classification, workflow ]
               extras: [ "none" ]
           enabled: true
           parallelism: 3
@@ -350,6 +350,16 @@ workflows:
               python-version: [ "3.9.18" ]
               extras: [ "metrics" ]
           pytest-group: _experimental
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: dataset
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
