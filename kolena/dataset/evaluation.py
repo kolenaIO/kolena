@@ -133,7 +133,7 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-def test(
+def upload_results(
     dataset: str,
     model: str,
     results: Union[
