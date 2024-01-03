@@ -34,6 +34,7 @@ rendered on top of the image.
 """  # noqa: E501
 import dataclasses
 from abc import ABCMeta
+from abc import abstractmethod
 from functools import reduce
 from typing import Dict
 from typing import List
@@ -67,8 +68,17 @@ class _AnnotationType(DataType):
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """The base class for all annotation types."""
 
+    @abstractmethod
+    def _data_type() -> _AnnotationType:
+        ...
+
     def __init_subclass__(cls, **kwargs):
         _register_data_type(cls)
+
+    def __str__(self) -> str:
+        _dict = dataclasses.asdict(self)
+        _dict["data_type"] = f"{_AnnotationType._data_category()}/{self._data_type().value}"
+        return str(_dict)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
