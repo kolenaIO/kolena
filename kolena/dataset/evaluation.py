@@ -192,7 +192,7 @@ def test(
             for df_result in df_result_input:
                 if not id_column_validated:
                     validate_dataframe_ids(df_result, id_fields)
-                    validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
+                    validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
                     id_column_validated = True
                 df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
