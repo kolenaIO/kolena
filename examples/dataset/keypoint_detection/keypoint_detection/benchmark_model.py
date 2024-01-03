@@ -30,13 +30,9 @@ def run(args: Namespace) -> int:
     infer = infer_retinaface if args.model == "RetinaFace" else infer_random
     df = fetch_dataset(args.dataset)
 
-    inferences = []
+    results = []
     for record in tqdm(df.itertuples(), total=len(df)):
         bboxes, faces = infer(record)
-        inferences.append((bboxes, faces))
-
-    results = []
-    for record, (bboxes, faces) in tqdm(zip(df.itertuples(), inferences), total=len(df)):
         metrics = compute_metrics(record.face, faces, record.normalization_factor)
         results.append(dict(locator=record.locator, raw_bboxes=bboxes, raw_faces=faces, **metrics))
 
