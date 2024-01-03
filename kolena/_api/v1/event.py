@@ -54,6 +54,11 @@ class EventAPI:
         # test run
         EXECUTE_TEST_RUN = "sdk-test-run-executed"
 
+        # dataset
+        REGISTER_DATASET = "sdk-dataset-registered"
+        FETCH_DATASET = "sdk-dataset-fetched"
+        FETCH_DATASET_HISTORY = "sdk-dataset-history-fetched"
+
     @dataclass(frozen=True)
     class RecordEventRequest:
         event_name: str
