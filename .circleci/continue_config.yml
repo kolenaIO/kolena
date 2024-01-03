@@ -16,6 +16,9 @@ parameters:
   workflow:
     type: boolean
     default: false
+  dataset:
+    type: boolean
+    default: false
   misc:
     type: boolean
     default: false
@@ -334,7 +337,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ detection, fr, classification, workflow, dataset ]
               extras: [ "none" ]
           enabled: true
           parallelism: 3
