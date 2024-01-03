@@ -25,8 +25,8 @@ from classification.binary.constants import NEGATIVE_LABEL
 from classification.binary.constants import POSITIVE_LABEL
 
 import kolena
-from kolena._experimental.dataset import fetch_dataset
-from kolena._experimental.dataset._evaluation import test
+from kolena.dataset import fetch_dataset
+from kolena.dataset import test
 from kolena.workflow._datatypes import _get_full_type
 from kolena.workflow.annotation import ScoredClassificationLabel
 

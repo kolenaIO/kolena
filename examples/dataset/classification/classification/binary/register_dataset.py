@@ -18,7 +18,7 @@ from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
 
 import kolena
-from kolena._experimental.dataset._dataset import register_dataset
+from kolena.dataset import register_dataset
 from kolena.workflow._datatypes import _get_full_type
 from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow.annotation import ClassificationLabel
