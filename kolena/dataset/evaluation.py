@@ -151,12 +151,12 @@ def upload_results(
     ],
 ) -> None:
     """
-    This function is used for testing a specified model on a given dataset.
+    This function is used for uploading the results from a specified model on a given dataset.
 
     :param dataset: The name of the dataset to be used.
     :param model: The name of the model to be used.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    a eval configuration and a DataFrame.
+                    an eval configuration and a DataFrame.
     :return None
     """
     existing_dataset = load_dataset(dataset)
@@ -184,4 +184,4 @@ def upload_results(
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"Uploaded test results for model '{model}' on dataset '{dataset}'")
+    log.info(f"Uploaded results for model '{model}' on dataset '{dataset}'")
