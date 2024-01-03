@@ -23,6 +23,7 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
@@ -32,6 +33,7 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
 from kolena.dataset.common import COL_DATAPOINT
 from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
@@ -100,6 +102,7 @@ def _upload_results(
     krequests.raise_for_status(response)
 
 
+@with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
 def fetch_results(
     dataset: str,
     model: str,
@@ -133,6 +136,7 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
+@with_event(EventAPI.Event.TEST_DATASET_MODEL)
 def upload_results(
     dataset: str,
     model: str,
