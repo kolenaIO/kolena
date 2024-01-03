@@ -26,7 +26,7 @@ from kolena.dataset import register_dataset
 from kolena.dataset import test
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
-from tests.integration._experimental.dataset.test_dataset import batch_iterator
+from tests.integration.dataset.test_dataset import batch_iterator
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
