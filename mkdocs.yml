@@ -10,14 +10,23 @@ edit_uri: edit/trunk/docs/
 nav:
   - Developer Guide:
       - Developer Guide: index.md
-      - Quickstart: quickstart.md
       - Installing <code>kolena</code>: installing-kolena.md
-      - Building a Workflow: building-a-workflow.md
-      - Core Concepts:
-          - Core Concepts: core-concepts/index.md
-          - Workflow: core-concepts/workflow.md
-          - Test Case & Test Suite: core-concepts/test-suite.md
-          - Model: core-concepts/model.md
+      - Datasets:
+          - Datasets: dataset/index.md
+          - Quickstart: dataset/quickstart.md
+          - Core Concepts:
+              - Core Concepts: dataset/core-concepts/index.md
+              - Dataset: dataset/core-concepts/dataset.md
+              - Quality Standard: dataset/core-concepts/quality-standard.md
+      - Workflows:
+          - Workflows: workflow/index.md
+          - Quickstart: workflow/quickstart.md
+          - Core Concepts:
+              - Core Concepts: workflow/core-concepts/index.md
+              - Workflow: workflow/core-concepts/workflow.md
+              - Test Case & Test Suite: workflow/core-concepts/test-suite.md
+              - Model: workflow/core-concepts/model.md
+          - Building a Workflow: workflow/building-a-workflow.md
       - Advanced Usage:
           - Advanced Usage: advanced-usage/index.md
           - Connecting Cloud Storage:
@@ -35,6 +44,10 @@ nav:
       - API Reference: reference/index.md
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
+      - <code>kolena.dataset</code>:
+          - <code>kolena.dataset</code>: reference/dataset/index.md
+          - Annotations: reference/dataset/annotation.md
+          - Assets: reference/dataset/asset.md
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md
@@ -83,7 +96,7 @@ nav:
         - metrics/iou.md
       - Large Language Models:
         - metrics/contradiction-score.md
-        - metrics/vectara-HEM-score.md
+        - HEM Score: metrics/vectara-HEM-score.md
       - Natural Language Processing:
         - metrics/bertscore.md
         - metrics/bleu.md

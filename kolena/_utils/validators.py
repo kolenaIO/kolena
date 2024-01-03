@@ -18,9 +18,8 @@ from pydantic import Extra
 from kolena._utils.consts import FieldName
 
 
+# Pydantic configuration for dataclasses and @validate_arguments decorators
 class ValidatorConfig:
-    """Pydantic configuration for dataclasses and @validate_arguments decorators."""
-
     arbitrary_types_allowed = True
     smart_union = True
     extra = Extra.allow  # do not fail when unrecognized values are provided
