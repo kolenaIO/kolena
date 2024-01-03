@@ -47,6 +47,12 @@ class UploadResultsRequest:
 
 
 @dataclass(frozen=True)
+class UploadResultsResponse:
+    n_inserted: int
+    n_updated: int
+
+
+@dataclass(frozen=True)
 class EntityData:
     id: int
     name: str

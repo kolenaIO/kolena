@@ -27,6 +27,7 @@ from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
+from kolena._api.v2.model import UploadResultsResponse
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -34,6 +35,7 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.instrumentation import with_event
+from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.dataset.common import COL_DATAPOINT
 from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
@@ -92,7 +94,7 @@ def _upload_results(
     model: str,
     load_uuid: str,
     dataset_id: int,
-) -> None:
+) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
@@ -100,6 +102,7 @@ def _upload_results(
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
+    return from_dict(UploadResultsResponse, response.json())
 
 
 @with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
@@ -187,5 +190,7 @@ def test(
                 df_results = _process_result(config, df_result, existing_dataset.id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
-    _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"Uploaded test results for model '{model}' on dataset '{dataset}'")
+    response = _upload_results(model, load_uuid, existing_dataset.id)
+    log.info(f"Uploaded test results for model '{model}' on dataset '{dataset}':\n"
+             f"\t - Inserted {response.n_inserted} results\n"
+             f"\t - Updated {response.n_updated} results")
