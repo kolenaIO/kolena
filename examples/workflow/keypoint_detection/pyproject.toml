@@ -7,12 +7,10 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-# kolena = ">=0.94.0,<1"
-kolena = { path = '../..', develop = true }
+kolena = ">=0.94.0,<1"
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
 pandera = ">=0.9.0,<0.16"
-retina-face = "^0.0.13"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"
