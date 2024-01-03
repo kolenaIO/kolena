@@ -59,7 +59,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: &ci-base-cache ci-caches-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
             equal: [ "none", << parameters.extras >> ]
@@ -230,9 +230,6 @@ jobs:
                   if [ "$TEST_GROUP" = "misc" ]; then
                     TESTFILES=$(circleci tests glob tests/integration/test_*.py |
                       circleci tests split --split-by=timings --timings-type=filename)
-                  elif [ "$TEST_GROUP" = "_experimental" ]; then
-                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
-                      circleci tests split)
                   else
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
