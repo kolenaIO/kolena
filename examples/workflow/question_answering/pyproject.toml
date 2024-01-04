@@ -2,7 +2,7 @@
 name = "question_answering"
 version = "0.1.0"
 description = "Example Kolena integration for question answering"
-authors = ["Kolena Engineering <eng@kolena.io>"]
+authors = ["Kolena Engineering <eng@kolena.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]

@@ -2,7 +2,7 @@
 name = "face_recognition_11"
 version = "0.1.0"
 description = "Example Kolena integration for face recognition 1:1"
-authors = ["Kolena Engineering <eng@kolena.io>"]
+authors = ["Kolena Engineering <eng@kolena.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
