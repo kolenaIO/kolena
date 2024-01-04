@@ -24,6 +24,7 @@ from kolena._utils.datatypes import _register_data_type
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
+from kolena.io import _serialize_dataobject_str
 
 
 class _AnnotationType(DataType):
@@ -42,15 +43,18 @@ class _AnnotationType(DataType):
         return "ANNOTATION"
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """The base class for all annotation types."""
 
     def __init_subclass__(cls, **kwargs):
         _register_data_type(cls)
 
+    def __repr__(self):
+        return _serialize_dataobject_str(self)
 
-@dataclass(frozen=True, config=ValidatorConfig)
+
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class BoundingBox(Annotation):
     """
     Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices.
@@ -81,7 +85,7 @@ class BoundingBox(Annotation):
         object.__setattr__(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class LabeledBoundingBox(BoundingBox):
     """
     Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices and a string
@@ -92,7 +96,7 @@ class LabeledBoundingBox(BoundingBox):
     """The label (e.g. model classification) associated with this bounding box."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredBoundingBox(BoundingBox):
     """
     Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices and a float
@@ -103,7 +107,7 @@ class ScoredBoundingBox(BoundingBox):
     """The score (e.g. model confidence) associated with this bounding box."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredLabeledBoundingBox(BoundingBox):
     """
     Rectangular bounding box specified with pixel coordinates of the top left and bottom right vertices, a string
@@ -117,7 +121,7 @@ class ScoredLabeledBoundingBox(BoundingBox):
     """The score (e.g. model confidence) associated with this bounding box."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class Polygon(Annotation):
     """Arbitrary polygon specified by three or more pixel coordinates."""
 
@@ -133,7 +137,7 @@ class Polygon(Annotation):
             raise ValueError(f"{type(self).__name__} must have at least three points ({len(self.points)} provided)")
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class LabeledPolygon(Polygon):
     """Arbitrary polygon specified by three or more pixel coordinates and a string label."""
 
@@ -141,7 +145,7 @@ class LabeledPolygon(Polygon):
     """The label (e.g. model classification) associated with this polygon."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredPolygon(Polygon):
     """
     Arbitrary polygon specified by three or more pixel coordinates and a float score.
@@ -151,7 +155,7 @@ class ScoredPolygon(Polygon):
     """The score (e.g. model confidence) associated with this polygon."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredLabeledPolygon(Polygon):
     """
     Arbitrary polygon specified by three or more pixel coordinates with a string label and a float score.
@@ -164,7 +168,7 @@ class ScoredLabeledPolygon(Polygon):
     """The score (e.g. model confidence) associated with this polygon."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class Keypoints(Annotation):
     """Array of any number of keypoints specified in pixel coordinates."""
 
@@ -176,7 +180,7 @@ class Keypoints(Annotation):
         return _AnnotationType.KEYPOINTS
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class Polyline(Annotation):
     """Polyline with any number of vertices specified in pixel coordinates."""
 
@@ -188,7 +192,7 @@ class Polyline(Annotation):
         return _AnnotationType.POLYLINE
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class BoundingBox3D(Annotation):
     """
     Three-dimensional cuboid bounding box in a right-handed coordinate system.
@@ -218,7 +222,7 @@ class BoundingBox3D(Annotation):
         object.__setattr__(self, "volume", reduce(lambda a, b: a * b, self.dimensions))
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class LabeledBoundingBox3D(BoundingBox3D):
     """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional string label."""
 
@@ -226,7 +230,7 @@ class LabeledBoundingBox3D(BoundingBox3D):
     """The label associated with this 3D bounding box."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredBoundingBox3D(BoundingBox3D):
     """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional float score."""
 
@@ -234,8 +238,8 @@ class ScoredBoundingBox3D(BoundingBox3D):
     """The score associated with this 3D bounding box."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
-class ScoredLabeledBoundingBox3D(BoundingBox3D):
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
+class ScoredLabeledBoundingBox3D(BoundingBox3D, repr=False):
     """[`BoundingBox3D`][kolena.workflow.annotation.BoundingBox3D] with an additional string label and float score."""
 
     label: str
@@ -245,7 +249,7 @@ class ScoredLabeledBoundingBox3D(BoundingBox3D):
     """The score associated with this 3D bounding box."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class SegmentationMask(Annotation):
     """
     Raster segmentation mask. The `locator` is the URL to the image file representing the segmentation mask.
@@ -269,7 +273,7 @@ class SegmentationMask(Annotation):
         return _AnnotationType.SEGMENTATION_MASK
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class BitmapMask(Annotation):
     """Arbitrary bitmap mask. The `locator` is the URL to the image file representing the mask."""
 
@@ -281,7 +285,7 @@ class BitmapMask(Annotation):
         return _AnnotationType.BITMAP_MASK
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class Label(Annotation):
     """Label, e.g. for classification."""
 
@@ -297,7 +301,7 @@ ClassificationLabel = Label
 """Alias for [`Label`][kolena.workflow.annotation.Label]."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredLabel(Label):
     """Label with accompanying score."""
 
@@ -309,7 +313,7 @@ ScoredClassificationLabel = ScoredLabel
 """Alias for [`ScoredLabel`][kolena.workflow.annotation.ScoredLabel]."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class TimeSegment(Annotation):
     """
     Segment of time in the associated audio or video file.
@@ -339,7 +343,7 @@ class TimeSegment(Annotation):
         return _AnnotationType.TIME_SEGMENT
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class LabeledTimeSegment(TimeSegment):
     """Time segment with accompanying label, e.g. audio transcription."""
 
@@ -347,7 +351,7 @@ class LabeledTimeSegment(TimeSegment):
     """The label associated with this time segment."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredTimeSegment(TimeSegment):
     """Time segment with additional float score, representing e.g. model prediction confidence."""
 
@@ -355,7 +359,7 @@ class ScoredTimeSegment(TimeSegment):
     """The score associated with this time segment."""
 
 
-@dataclass(frozen=True, config=ValidatorConfig)
+@dataclass(frozen=True, config=ValidatorConfig, repr=False)
 class ScoredLabeledTimeSegment(TimeSegment):
     """Time segment with accompanying label and score."""
 
