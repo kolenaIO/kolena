@@ -4,7 +4,7 @@ site_url: https://docs.kolena.io
 strict: true
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
-copyright: Copyright &copy; 2021-2023 Kolena
+copyright: Copyright &copy; 2021-2024 Kolena
 edit_uri: edit/trunk/docs/
 
 nav:
