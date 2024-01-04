@@ -33,6 +33,7 @@ For example, when viewing images in the Studio, any annotations (such as lists o
 rendered on top of the image.
 """  # noqa: E501
 import dataclasses
+import json
 from abc import ABCMeta
 from abc import abstractmethod
 from functools import reduce
@@ -78,7 +79,7 @@ class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     def __str__(self) -> str:
         _dict = dataclasses.asdict(self)
         _dict["data_type"] = f"{_AnnotationType._data_category()}/{self._data_type().value}"
-        return str(_dict)
+        return json.dumps(_dict)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
