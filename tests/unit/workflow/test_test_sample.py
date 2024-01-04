@@ -28,6 +28,7 @@ import numpy as np
 import pydantic
 import pytest
 
+from kolena._utils.datatypes import DataObject
 from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
 from kolena.workflow import Audio
@@ -42,7 +43,6 @@ from kolena.workflow import PointCloud
 from kolena.workflow import TestSample
 from kolena.workflow import Text
 from kolena.workflow import Video
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 from kolena.workflow.annotation import LabeledBoundingBox

@@ -30,10 +30,10 @@ from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
+from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataType
+from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
-from kolena.workflow._datatypes import _register_data_type
-from kolena.workflow._datatypes import DataType
-from kolena.workflow._datatypes import TypedDataObject
 
 
 class _AssetType(DataType):

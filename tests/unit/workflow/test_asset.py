@@ -18,7 +18,7 @@ from typing import Type
 import pydantic
 import pytest
 
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
+from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.workflow.asset import _AssetType
 from kolena.workflow.asset import Asset
 from kolena.workflow.asset import BinaryAsset

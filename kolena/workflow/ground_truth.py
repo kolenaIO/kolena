@@ -36,10 +36,10 @@ from typing import Type
 
 from pydantic.dataclasses import dataclass
 
+from kolena._utils.datatypes import DataObject
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import Composite
 from kolena.workflow import TestSample
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import safe_issubclass
 from kolena.workflow._validators import validate_data_object_type

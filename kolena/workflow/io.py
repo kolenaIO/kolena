@@ -18,9 +18,9 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._utils.datatypes import _DATA_TYPE_MAP
+from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.workflow import DataObject
-from kolena.workflow._datatypes import _DATA_TYPE_MAP
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
 
 
 def _serialize_dataobject(x: Any) -> Any:

@@ -23,8 +23,8 @@ from typing import Tuple
 import pydantic
 import pytest
 
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
-from kolena.workflow._datatypes import DataObject
+from kolena._utils.datatypes import DATA_TYPE_FIELD
+from kolena._utils.datatypes import DataObject
 from kolena.workflow.annotation import _AnnotationType
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox

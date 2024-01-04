@@ -34,10 +34,10 @@ import numpy as np
 from pydantic.dataclasses import dataclass
 from pydantic.typing import Literal
 
+from kolena._utils.datatypes import DataObject
+from kolena._utils.datatypes import DataType
+from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
-from kolena.workflow._datatypes import DataObject
-from kolena.workflow._datatypes import DataType
-from kolena.workflow._datatypes import TypedDataObject
 
 NumberSeries = Sequence[Union[float, int]]
 """A sequence of numeric values."""
