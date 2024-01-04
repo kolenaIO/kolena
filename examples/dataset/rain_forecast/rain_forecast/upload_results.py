@@ -21,7 +21,7 @@ from tqdm import tqdm
 import kolena
 from kolena.dataset import test
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 DATASET = "rain-in-australia"
 MODEL_NAME = {
     "ann": "ann-batch32-epoch150",
@@ -32,7 +32,7 @@ THRESHOLD = 0.5
 
 def run(args: Namespace) -> int:
     kolena.initialize(verbose=True)
-    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/{args.model}.csv")
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv")
 
     results = []
     for record in tqdm(df.itertuples(), total=len(df)):

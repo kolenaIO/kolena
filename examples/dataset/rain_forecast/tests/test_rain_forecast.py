@@ -21,7 +21,7 @@ from rain_forecast.upload_results import run as upload_results_main
 
 from kolena._utils.state import kolena_session
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 DATASET = "rain-in-australia"
 
 
@@ -32,7 +32,7 @@ def with_init() -> Iterator[None]:
 
 
 def test__upload_dataset() -> None:
-    args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/test/weatherAUS.tiny5.csv")
+    args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/weatherAUS.tiny5.csv")
     upload_dataset_main(args)
 
 

@@ -19,7 +19,7 @@ import pandas as pd
 import kolena
 from kolena.dataset import register_dataset
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 DATASET = "rain-in-australia"
 
 
@@ -33,7 +33,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset_csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/test/weatherAUS.csv",
+        default=f"s3://{BUCKET}/{DATASET}/weatherAUS.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     kolena.initialize(verbose=True)

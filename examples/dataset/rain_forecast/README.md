@@ -15,7 +15,7 @@ poetry update && poetry install
 
 ## Usage
 
-The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
+The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
