@@ -87,7 +87,7 @@ def to_kolena_inference(score, multiclass: bool = False) -> List[Dict[str, Any]]
 
 
 def upload_results(model_name: str, dataset: str, multiclass: bool) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model_name}.csv")
     dataset_df = fetch_dataset(dataset)
     df_results = df_results.merge(dataset_df, how="left", on=id_fields)
 

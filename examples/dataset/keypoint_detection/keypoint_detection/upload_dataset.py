@@ -20,7 +20,7 @@ from kolena.dataset import register_dataset
 from kolena.workflow.annotation import Keypoints
 
 DATASET = "300-W"
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 
 
 def main() -> None:

@@ -21,7 +21,7 @@ from classification.binary.upload_results import run as upload_results_main
 
 from kolena._utils.state import kolena_session
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 DATASET = "dogs-vs-cats"
 
 

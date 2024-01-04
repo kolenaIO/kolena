@@ -41,8 +41,7 @@ def to_label_object(x: str) -> Dict[str, str]:
 
 def main() -> None:
     kolena.initialize(verbose=True)
-
-    df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv", storage_options={"anon": True})
+    df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     id_fields = ["locator"]
     ground_truth_field = "label"
 
