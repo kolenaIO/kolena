@@ -160,14 +160,14 @@ jobs:
           steps:
             - run:
                 name: Run unit tests
-                command: poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest --cache-clear -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run metrics unit tests
-                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           # Generate coverage only from one Python version
           condition:
@@ -241,7 +241,7 @@ jobs:
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
-                  poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
+                  poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
                     --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
@@ -249,7 +249,7 @@ jobs:
           steps:
             - run:
                 name: Run experimental metrics integration tests
-                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
+                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
           condition:
@@ -294,7 +294,7 @@ jobs:
             token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
             echo "Using $token"
             export KOLENA_TOKEN=${!token}
-            poetry run pytest -vv tests
+            poetry run pytest --cache-clear -vv tests
   example-evaluator:
     docker:
       - image: cimg/base:2022.06
