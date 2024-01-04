@@ -21,6 +21,7 @@ from kolena.dataset import upload_dataset
 from kolena.workflow.io import dataframe_from_csv
 
 
+
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     for dataset in args.datasets:

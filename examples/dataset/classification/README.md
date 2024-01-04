@@ -31,8 +31,23 @@ For binary classification, there are two scripts that perform the following oper
 2. [`upload_results.py`](classification/binary/upload_results.py) uploads results for `"resnet50v2"` and
 `"inceptionv3"` by default. You can also choose one model by specifying `--datasets`.
 
+The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
+`--help` flag for more information:
+
+```shell
+$ poetry run python3 classification/binary/upload_results.py --help
+usage: upload_results.py [-h] [--models MODELS [MODELS ...]] [--multiclass]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --models MODELS [MODELS ...]
+                        Model(s) from ['resnet50v2', 'inceptionv3'] to test
+  --multiclass          Option to evaluate dogs-vs-cats as multiclass classification
+```
+
+
 <!---
-TODO
+TODO, indicating where multiclass information will be.
 ### Multiclass Classification
 
 For multiclass classification, there are two scripts that perform the following operations:

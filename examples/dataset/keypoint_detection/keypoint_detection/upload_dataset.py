@@ -20,8 +20,8 @@ from keypoint_detection.constants import BUCKET
 from keypoint_detection.constants import DATASET
 
 import kolena
-from kolena.annotation import Keypoints
-from kolena.dataset import upload_dataset
+from kolena.dataset import register_dataset
+from kolena.workflow.annotation import Keypoints
 
 
 def run(args: Namespace) -> None:

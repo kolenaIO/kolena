@@ -26,11 +26,8 @@ from keypoint_detection.model import infer_random
 from tqdm import tqdm
 
 import kolena
-from kolena.annotation import Keypoints
-from kolena.annotation import ScoredLabeledBoundingBox
-from kolena.dataset import download_dataset
-from kolena.dataset import upload_results
-from kolena.io import dataframe_from_csv
+from kolena.dataset import fetch_dataset
+from kolena.dataset import test
 
 
 MODELS = ["retinaface", "random"]

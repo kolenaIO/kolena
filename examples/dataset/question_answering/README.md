@@ -22,7 +22,7 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 This project defines a script that performs the following operations:
 
-1. [`upload_dataset.py`](question_answering/upload_dataset.py) uploads both datasets by default. You can also
+1. [`upload_dataset.py`](question_answering/upload_dataset.py) registers both datasets by default. You can also
 select the dataset to register by specifying `--datasets`.
 
 ```shell

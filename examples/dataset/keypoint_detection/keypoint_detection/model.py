@@ -16,7 +16,15 @@ from typing import Any
 from typing import List
 from typing import Tuple
 
-import pandas as pd
+import cv2
+import numpy as np
+import s3fs
+
+try:
+    from retinaface import RetinaFace  # noqa: F401
+except ImportError:
+    print("Note: Package 'retinaface' not found; install 'retinaface' with `poetry install --extras retina`")
+
 
 from kolena.annotation import Keypoints
 from kolena.annotation import ScoredLabeledBoundingBox
