@@ -15,9 +15,9 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from dataclasses import fields
 
-from kolena.workflow._datatypes import _register_data_type
-from kolena.workflow._datatypes import DataType
-from kolena.workflow._datatypes import TypedDataObject
+from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataType
+from kolena._utils.datatypes import TypedDataObject
 
 
 class PreventThresholdOverrideMeta(ABCMeta, type):

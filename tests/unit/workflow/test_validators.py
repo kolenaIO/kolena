@@ -21,7 +21,7 @@ from typing import Union
 import pytest
 
 from kolena._experimental.workflow.thresholded import ThresholdedMetrics
-from kolena.workflow._datatypes import DataObject
+from kolena._utils.datatypes import DataObject
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints

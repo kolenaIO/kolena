@@ -13,7 +13,7 @@
 # limitations under the License.
 
 # noreorder
-from ._datatypes import DataObject
+from kolena._utils.datatypes import DataObject
 from .test_sample import Audio
 from .test_sample import Metadata
 from .test_sample import Image

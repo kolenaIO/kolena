@@ -42,12 +42,13 @@ nav:
           - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
   - API Reference:
       - API Reference: reference/index.md
+      - <code>kolena.annotation</code>: reference/annotation.md
+      - <code>kolena.asset</code>: reference/asset.md
       - <code>kolena.initialize</code>: reference/initialize.md
+      - <code>kolena.io</code>: reference/io.md
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.dataset</code>:
           - <code>kolena.dataset</code>: reference/dataset/index.md
-          - Annotations: reference/dataset/annotation.md
-          - Assets: reference/dataset/asset.md
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md
