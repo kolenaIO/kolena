@@ -23,6 +23,7 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
@@ -32,6 +33,7 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
 from kolena.dataset.common import COL_DATAPOINT
 from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
@@ -100,6 +102,7 @@ def _upload_results(
     krequests.raise_for_status(response)
 
 
+@with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
 def fetch_results(
     dataset: str,
     model: str,
@@ -107,7 +110,7 @@ def fetch_results(
     """
     Fetch results given dataset name and model name.
     """
-    log.info(f"Fetching results for model '{model}' on dataset '{dataset}'")
+    log.info(f"fetching results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
 
     df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
@@ -121,7 +124,7 @@ def fetch_results(
                 _to_deserialized_dataframe(df_matched, column=COL_RESULT),
             ),
         )
-    log.info(f"Fetched results for model '{model}' on dataset '{dataset}'")
+    log.info(f"fetched results for model '{model}' on dataset '{dataset}'")
     return df_datapoints, df_results_by_eval
 
 
@@ -133,6 +136,7 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
+@with_event(EventAPI.Event.TEST_DATASET_MODEL)
 def test(
     dataset: str,
     model: str,
@@ -169,7 +173,7 @@ def test(
 
     _validate_configs([cfg for cfg, _ in results])
     for config, df_result_input in results:
-        log.info(f"start evaluation with configuration {config}" if config else "start evaluation")
+        log.info(f"uploading test results with configuration {config}" if config else "uploading test results")
         if isinstance(df_result_input, pd.DataFrame):
             validate_dataframe_ids(df_result_input, existing_dataset.id_fields)
             df_results = _process_result(config, df_result_input, existing_dataset.id_fields)
@@ -184,4 +188,4 @@ def test(
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"Uploaded test results for model '{model}' on dataset '{dataset}'")
+    log.info(f"uploaded test results for model '{model}' on dataset '{dataset}'")
