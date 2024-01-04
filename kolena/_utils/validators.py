@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ from pydantic import Extra
 from kolena._utils.consts import FieldName
 
 
+# Pydantic configuration for dataclasses and @validate_arguments decorators
 class ValidatorConfig:
-    """Pydantic configuration for dataclasses and @validate_arguments decorators."""
-
     arbitrary_types_allowed = True
     smart_union = True
     extra = Extra.allow  # do not fail when unrecognized values are provided

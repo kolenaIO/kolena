@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -53,6 +53,15 @@ class EventAPI:
 
         # test run
         EXECUTE_TEST_RUN = "sdk-test-run-executed"
+
+        # dataset
+        REGISTER_DATASET = "sdk-dataset-registered"
+        FETCH_DATASET = "sdk-dataset-fetched"
+        FETCH_DATASET_HISTORY = "sdk-dataset-history-fetched"
+
+        # dataset evaluation
+        FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"
+        TEST_DATASET_MODEL = "sdk-dataset-model-tested"
 
     @dataclass(frozen=True)
     class RecordEventRequest:

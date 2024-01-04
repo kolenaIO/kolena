@@ -2,6 +2,11 @@
 icon: octicons/container-16
 ---
 
+
+!!! note "Important Notice for Dataset Users"
+    This page is no longer relevant for users who have adopted the new Datasets feature for creating tests.
+    Please refer to [the Datasets documentation](../dataset/core-concepts/dataset.md) for updated information and guidance.
+
 # :octicons-container-24: Packaging for Automated Evaluation
 
 ## Introduction
@@ -17,8 +22,8 @@ it for metrics computation on the Kolena platform.
 
 ## Build Evaluator Docker Image
 
-We will use the keypoint detection workflow we've built in the [Building a Workflow](../building-a-workflow.md) guide
-to illustrate the process. Here is the project structure:
+We will use the keypoint detection workflow we've built in the [Building a Workflow](../workflow/building-a-workflow.md)
+guide to illustrate the process. Here is the project structure:
 
 ```
 .
@@ -38,8 +43,9 @@ to illustrate the process. Here is the project structure:
 The `keypoint_detection` directory is where our workflow is defined, with evaluator logic in `evaluator.py` and
 workflow data objects in `workflow.py`. The `main.py` will be the entry point where `test` is executed.
 
-From the [workflow building guide](../building-a-workflow.md#step-4-running-tests), we know that metrics evaluation
-using [`test`][kolena.workflow.test] involves a `model`, a `test_suite`, an `evaluator`, and optional `configurations`:
+From the [workflow building guide](../workflow/building-a-workflow.md#step-4-running-tests), we know that metrics
+evaluation using [`test`][kolena.workflow.test] involves a `model`, a `test_suite`, an `evaluator`, and optional
+`configurations`:
 
 ```python
 test(model, test_suite, evaluator, configurations=configurations)
