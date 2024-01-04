@@ -19,10 +19,10 @@ def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5)
     metrics: Dict[str, Any] = dict(
         missing_ground_truth=True,
         is_correct=None,
-        is_tp=None,
-        is_fp=None,
-        is_fn=None,
-        is_tn=None,
+        is_TP=None,
+        is_FP=None,
+        is_FN=None,
+        is_TN=None,
     )
 
     if ground_truth == "Yes" or ground_truth == "No":
@@ -31,10 +31,10 @@ def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5)
         metrics = dict(
             missing_ground_truth=False,
             is_correct=gt == inf,
-            is_tp=gt == inf and gt,
-            is_fp=gt != inf and not gt,
-            is_fn=gt != inf and gt,
-            is_tn=gt == inf and not gt,
+            is_TP=gt == inf and gt,
+            is_FP=gt != inf and not gt,
+            is_FN=gt != inf and gt,
+            is_TN=gt == inf and not gt,
         )
         return metrics
 
