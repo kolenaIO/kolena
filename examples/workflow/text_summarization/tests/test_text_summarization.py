@@ -11,19 +11,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import random
+import string
 from argparse import Namespace
 
 import pytest
 from text_summarization.seed_test_run import main as seed_test_run_main
 from text_summarization.seed_test_suite import main as seed_test_suite_main
+from text_summarization.seed_test_suite import DATASET
 
 
-def test__seed_test_suite__smoke() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/metadata.tiny1.csv")
+@pytest.fixture(scope="module")
+def suite_prefix() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
+
+
+def test__seed_test_suite__smoke(suite_prefix: str) -> None:
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/metadata.tiny1.csv", suite_prefix=suite_prefix)
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke() -> None:
-    args = Namespace(model="ada", test_suite="CNN-DailyMail :: text length", local_csv=None)
+def test__seed_test_run__smoke(suite_prefix: str) -> None:
+    args = Namespace(model="ada", test_suite=f"{suite_prefix} :: text length", local_csv=None)
     seed_test_run_main(args)
