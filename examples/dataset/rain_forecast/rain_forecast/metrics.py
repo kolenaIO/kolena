@@ -11,31 +11,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
 from typing import Dict
 
 
-def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5) -> Dict[str, float]:
-    if ground_truth == "Yes" or ground_truth == "No":
-        ground_truth = ground_truth == "Yes"
+def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5) -> Dict[str, Any]:
+    metrics: Dict[str, Any] = dict(
+        missing_ground_truth=True,
+        is_correct=None,
+        is_tp=None,
+        is_fp=None,
+        is_fn=None,
+        is_tn=None,
+    )
 
-    if not isinstance(ground_truth, bool):
+    if ground_truth == "Yes" or ground_truth == "No":
+        gt = ground_truth == "Yes"
+        inf = inference >= threshold
         metrics = dict(
-            missing_ground_truth=True,
-            is_correct=None,
-            is_tp=None,
-            is_fp=None,
-            is_fn=None,
-            is_tn=None,
+            missing_ground_truth=False,
+            is_correct=gt == inf,
+            is_tp=gt == inf and gt,
+            is_fp=gt != inf and not gt,
+            is_fn=gt != inf and gt,
+            is_tn=gt == inf and not gt,
         )
         return metrics
 
-    inference_classification = inference >= threshold
-    metrics = dict(
-        missing_ground_truth=False,
-        is_correct=ground_truth == inference_classification,
-        is_tp=ground_truth == inference_classification and ground_truth,
-        is_fp=ground_truth != inference_classification and not ground_truth,
-        is_fn=ground_truth != inference_classification and ground_truth,
-        is_tn=ground_truth == inference_classification and not ground_truth,
-    )
     return metrics
