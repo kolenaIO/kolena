@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import os
 from dataclasses import dataclass
 from typing import Any
 from typing import Callable
@@ -20,6 +21,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
+import pandas as pd
 import pydantic
 import pytest
 
@@ -35,6 +37,7 @@ from kolena.workflow.annotation import LabeledBoundingBox3D
 from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import Polygon
 from kolena.workflow.annotation import Polyline
+from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.annotation import SegmentationMask
 
 
@@ -166,3 +169,40 @@ def test__bounding_box__derived(
 def test__bounding_box_3d__derived(dimensions: Tuple[float, float, float], expected: float) -> None:
     bbox = BoundingBox3D(center=(0, 0, 0), dimensions=dimensions, rotations=(0, 0, 0))
     assert bbox.volume == expected
+
+
+def test__dataframe__to_csv__with__annotations() -> None:
+    data = {
+        "1": {
+            "bboxes": [
+                BoundingBox(top_left=(1, 2), bottom_right=(3, 4)),
+            ],
+            "polygons": [
+                Polygon([(1, 2), (3, 4), (5, 6)]),
+            ],
+            "labels": [
+                ScoredLabel(score=0.5, label="person"),
+            ],
+        },
+        "2": {
+            "bboxes": [
+                BoundingBox(top_left=(1, 2), bottom_right=(3, 4)),
+                BoundingBox(top_left=(2, 2), bottom_right=(3, 4)),
+            ],
+            "polygons": [
+                Polygon([(1, 2), (3, 4), (5, 6)]),
+                Polygon([(2, 2), (3, 4), (5, 6)]),
+            ],
+            "labels": [
+                ScoredLabel(score=0.5, label="person"),
+                ScoredLabel(score=0.6, label="person"),
+            ],
+        },
+    }
+    df = pd.DataFrame.from_dict(data)
+    csv_str = df.to_csv()
+    with open(
+        f"{os.path.dirname(__file__)}/test-assets/test__dataframe__to_csv__with__annotations_expected_csv_output.csv",
+    ) as file:
+        expected_csv_str = file.read()
+        assert csv_str == expected_csv_str
