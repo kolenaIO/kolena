@@ -42,6 +42,7 @@ nav:
           - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
   - API Reference:
       - API Reference: reference/index.md
+      - <code>kolena.annotation</code>: reference/annotation.md
       - <code>kolena.initialize</code>: reference/initialize.md
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.dataset</code>:

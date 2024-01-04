@@ -25,7 +25,7 @@ import pytest
 
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
-from kolena.workflow.annotation import _AnnotationType
+from kolena.annotation import _AnnotationType
 from kolena.workflow.annotation import BitmapMask
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import BoundingBox3D
