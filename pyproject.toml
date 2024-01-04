@@ -64,6 +64,7 @@ mkdocs-material = ">=9.2,<10"  # insiders fork installed out-of-band in docs/set
 mkdocstrings = { version = ">0.20,<1", extras = ["python"] }
 mkdocs-git-committers-plugin-2 = "^1"
 mkdocs-git-revision-date-localized-plugin = "^1"
+memray = "^1.11.0"
 
 [tool.poetry.scripts]
 kolena = 'kolena._utils.cli:run'
