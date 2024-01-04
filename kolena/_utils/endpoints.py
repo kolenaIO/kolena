@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ def _get_test_suite_url(client_state: _ClientState, test_suite_id: int) -> str:
 
 def _get_dataset_url(client_state: _ClientState, dataset_id: str) -> str:
     platform_url = _get_platform_url(client_state)
-    return f"{platform_url}/datasets?{urlencode(dict(datasetId=dataset_id))}"
+    return f"{platform_url}/dataset?{urlencode(dict(datasetId=dataset_id))}"
 
 
 def get_dataset_url(dataset_id: int) -> str:
