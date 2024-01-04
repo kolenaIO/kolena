@@ -19,7 +19,7 @@ from rain_forecast.metrics import compute_metrics
 from tqdm import tqdm
 
 import kolena
-from kolena._experimental.dataset import test
+from kolena.dataset import test
 
 BUCKET = "kolena-public-datasets"
 DATASET = "rain-in-australia"

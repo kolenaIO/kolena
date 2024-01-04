@@ -17,7 +17,7 @@ from argparse import Namespace
 import pandas as pd
 
 import kolena
-from kolena._experimental.dataset import register_dataset
+from kolena.dataset import register_dataset
 
 BUCKET = "kolena-public-datasets"
 DATASET = "rain-in-australia"
