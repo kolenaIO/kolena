@@ -142,7 +142,7 @@ Once you have uploaded your dataset and model results, you can visualize the dat
 
 You can quickly see the distribution of any datapoint or model inference field in the “Distributions” tab.
 
-Additionally, you can create custom plots in the “Results” tab. For example, click “Add Model” in the top left and
+Additionally, you can create custom plots in the "Debugger" tab. For example, click “Add Model” in the top left and
 select the RetinaFace model. In the plotting widget at the bottom, select **something** as the x-axis
 and **something else** as the y-axis. You will then see a plot showing **something**
 
@@ -155,7 +155,7 @@ Test Cases, which organize your data into key scenarios, and Evaluation Criteria
 
 ### Test Cases
 
-To configure test cases, navigate to the “Results” tab and click on “Configure Test Cases”. From here, you can select a
+To configure test cases, navigate to the “Debugger” tab and click on “Configure Test Cases”. From here, you can select a
 field to use stratify your dataset. For this example, divide the dataset by <>. Click “Save to Quality
 Standards” to save your test case configuration.
 
@@ -166,23 +166,24 @@ Criteria you define will be calculated on each test case.
 
 ### Evaluation Criteria
 
-To configure Evaluation Criteria, navigate to the “Results” tab and click on “Configure Evaluation Criteria”.
-In the drawer, click on “Add Evaluation Criteria”, and select <><><>
+To configure Evaluation Criteria, navigate to the “Debugger” tab and click on “Configure Evaluation Criteria”.
+In the drawer, click on “Add Evaluation Criteria”, and select **suggested evaluation criteria**
 
 **gif of evaluation criteria definition**
 
 ## Compare Models
 
 Once you have configured a Quality Standard, the Evaluation Metrics you define will be calculated across all Test Cases.
-To compare the results across models, navigate to the “Model Cards” tab and add the <><><> models to the
+To compare the results across models, navigate to the "Quality Standards" tab and add the "RetinaFace" and "random" models to the
 table using the + button in the top right. You will now see all evaluation criteria in the quality standard computed
 on every test case in the quality standard.
 
 ## Conclusion
 
-In this quickstart, we used an example integration from [kolenaIO/kolena](https://github.com/kolenaIO/kolena) to integrate data from the
-[300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/) dataset, created test cases,
-and tested the open source open-source [RetinaFace](https://github.com/serengil/retinaface) keypoint detection model.
+In this quickstart, we used an example integration from [kolenaIO/kolena](https://github.com/kolenaIO/kolena) to
+integrate data from the [300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/) dataset,
+created test cases, and tested the open source open-source [RetinaFace](https://github.com/serengil/retinaface)
+keypoint detection model.
 
 This example shows us how to quickly and easily integrate test data and evaluate model performance in Kolena,
 and can be arbitrarily extended with additional metrics, plots, visualizations, and data.
