@@ -28,7 +28,7 @@ DATASETS = {
 }
 
 
-def main(args: Namespace) -> None:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     for dataset in args.datasets:
         print(f"Loading {dataset}...")
@@ -36,7 +36,7 @@ def main(args: Namespace) -> None:
         register_dataset(dataset, df_datapoint, id_fields=["id"])
 
 
-if __name__ == "__main__":
+def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
         "--datasets",
@@ -46,4 +46,8 @@ if __name__ == "__main__":
         help="Name(s) of the dataset(s) to register.",
     )
 
-    main(ap.parse_args())
+    run(ap.parse_args())
+
+
+if __name__ == "__main__":
+    main()

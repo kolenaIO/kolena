@@ -29,6 +29,7 @@ from kolena.dataset import test
 from kolena.workflow._datatypes import _get_full_type
 from kolena.workflow.annotation import ScoredClassificationLabel
 
+MODELS = ["resnet50v2", "inceptionv3"]
 eval_config = {"threshold": 0.5}
 id_fields = ["locator"]
 
@@ -119,9 +120,10 @@ def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
         "--models",
-        default=["resnet50v2", "inceptionv3"],
         nargs="+",
-        help="Name(s) of model(s) in directory to test",
+        default=MODELS,
+        choices=MODELS,
+        help="Name(s) of the models(s) to register.",
     )
     ap.add_argument(
         "--multiclass",

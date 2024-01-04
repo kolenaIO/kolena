@@ -21,8 +21,8 @@ from keypoint_detection.model import infer_retinaface
 from tqdm import tqdm
 
 import kolena
-from kolena._experimental.dataset import fetch_dataset
-from kolena._experimental.dataset import test
+from kolena.dataset import fetch_dataset
+from kolena.dataset import test
 
 
 def run(args: Namespace) -> int:

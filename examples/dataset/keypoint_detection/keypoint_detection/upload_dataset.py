@@ -16,7 +16,7 @@ import json
 import pandas as pd
 
 import kolena
-from kolena._experimental.dataset import register_dataset
+from kolena.dataset import register_dataset
 from kolena.workflow.annotation import Keypoints
 
 DATASET = "300-W"
