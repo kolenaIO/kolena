@@ -48,8 +48,6 @@ nav:
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.dataset</code>:
           - <code>kolena.dataset</code>: reference/dataset/index.md
-          - Annotations: reference/dataset/annotation.md
-          - Assets: reference/dataset/asset.md
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md
