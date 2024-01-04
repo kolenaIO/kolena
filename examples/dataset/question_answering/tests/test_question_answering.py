@@ -11,24 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
+import os
+from argparse import Namespace
+from collections.abc import Iterator
 
-import pandas as pd
+import pytest
+from question_answering.upload_dataset import run as upload_dataset_main
 
-import kolena
-from kolena.dataset import register_dataset
-from kolena.workflow.annotation import Keypoints
-
-DATASET = "300-W"
-BUCKET = "kolena-public-datasets"
+from kolena._utils.state import kolena_session
 
 
-def main() -> None:
-    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv", index_col=0, storage_options={"anon": True})
-    df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
-    kolena.initialize(verbose=True)
-    register_dataset(DATASET, df[["locator", "face", "normalization_factor"]])
+@pytest.fixture(scope="session", autouse=True)
+def with_init() -> Iterator[None]:
+    with kolena_session(api_token=os.environ["KOLENA_TOKEN"]):
+        yield
 
 
-if __name__ == "__main__":
-    main()
+def test__upload_datasets() -> None:
+    args = Namespace(datasets=["TruthfulQA", "HaluEval-QA"])
+    upload_dataset_main(args)

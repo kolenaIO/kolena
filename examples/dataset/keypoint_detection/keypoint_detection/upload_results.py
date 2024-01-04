@@ -25,7 +25,7 @@ from kolena.dataset import fetch_dataset
 from kolena.dataset import test
 
 
-def run(args: Namespace) -> int:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     infer = infer_retinaface if args.model == "RetinaFace" else infer_random
     df = fetch_dataset(args.dataset)
@@ -38,7 +38,6 @@ def run(args: Namespace) -> int:
 
     df_results = pd.DataFrame.from_records(results)
     test(args.dataset, args.model, df_results)
-    return 0
 
 
 def main() -> None:
