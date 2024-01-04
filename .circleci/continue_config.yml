@@ -232,6 +232,7 @@ jobs:
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
+                no_output_timeout: 30m
                 command: |
                   TEST_GROUP="<< parameters.pytest-group >>"
                   if [ "$TEST_GROUP" = "misc" ]; then
