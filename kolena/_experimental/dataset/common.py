@@ -52,7 +52,7 @@ def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -
                 f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
             )
     except TypeError as e:
-        raise InputValidationError(f"id fields must be hashable: ", e)
+        raise InputValidationError("id fields must be hashable: ", e)
 
 
 def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
