@@ -48,7 +48,8 @@ def run(args: Namespace) -> int:
         )
 
     df_results = pd.DataFrame.from_records(results)
-    test(args.dataset, MODEL_NAME[args.model], df_results)
+    eval_config = dict(threshold=THRESHOLD)
+    test(args.dataset, MODEL_NAME[args.model], [(eval_config, df_results)])
     return 0
 
 
