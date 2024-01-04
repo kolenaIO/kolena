@@ -264,8 +264,37 @@ jobs:
                 file: coverage.xml
             - store_test_results:
                 path: test-results
-
-  example-test:
+  example-test-dataset:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9.18"
+      subproject:
+        type: string
+      resource-class:
+        type: string
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
+      resource-class: << parameters.resource-class >>
+    working_directory: ~/project/examples/dataset/<< parameters.subproject >>
+    steps:
+      - checkout:
+          path: ~/project
+      - run: |
+          poetry config installer.max-workers 10
+          poetry install -vv --no-ansi
+      - run:
+          name: Run pre-commit checks
+          command: poetry run pre-commit run -a
+      - run:
+          name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
+          command: |
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
+            poetry run pytest -vv tests
+  example-test-workflow:
     parameters:
       python-version:
         type: string
@@ -378,13 +407,19 @@ workflows:
     when:
       or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
     jobs:
-      - example-test:
+      - example-test-dataset:
+          matrix:
+            parameters:
+              subproject: [ rain_forecast ]
+              resource-class: [ small ]
+              python-version: [ "3.9.18" ]
+      - example-test-workflow:
           matrix:
             parameters:
               subproject: [ text_summarization ]
               resource-class: [ large ]
               python-version: [ "3.9.18" ]
-      - example-test:
+      - example-test-workflow:
           matrix:
             parameters:
               subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]

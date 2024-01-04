@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from argparse import ArgumentParser
+from argparse import Namespace
+
 import pandas as pd
 
 import kolena
@@ -20,10 +23,21 @@ BUCKET = "kolena-public-datasets"
 DATASET = "rain-in-australia"
 
 
-def main() -> None:
-    kolena.initialize(verbose=True)
-    df_dataset = pd.read_csv(f"s3://{BUCKET}/{DATASET}/test/weatherAUS.csv")
+def run(args: Namespace) -> None:
+    df_dataset = pd.read_csv(args.dataset_csv)
     register_dataset(DATASET, df_dataset, id_fields=["Date", "Location"])
+
+
+def main() -> None:
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset_csv",
+        type=str,
+        default=f"s3://{BUCKET}/{DATASET}/test/weatherAUS.csv",
+        help="CSV file specifying dataset. See default CSV for details",
+    )
+    kolena.initialize(verbose=True)
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":
