@@ -53,7 +53,7 @@ from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset.common import validate_batch_size
 from kolena.dataset.common import validate_dataframe_ids
 from kolena.errors import InputValidationError
-from kolena.workflow.io import _dataframe_object_serde
+from kolena.io import _dataframe_object_serde
 
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"

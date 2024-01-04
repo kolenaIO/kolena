@@ -45,6 +45,7 @@ nav:
       - <code>kolena.annotation</code>: reference/annotation.md
       - <code>kolena.asset</code>: reference/asset.md
       - <code>kolena.initialize</code>: reference/initialize.md
+      - <code>kolena.io</code>: reference/io.md
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.dataset</code>:
           - <code>kolena.dataset</code>: reference/dataset/index.md
