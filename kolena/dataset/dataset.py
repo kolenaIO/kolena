@@ -40,6 +40,10 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.datatypes import _deserialize_dataobject
+from kolena._utils.datatypes import _serialize_dataobject
+from kolena._utils.datatypes import DATA_TYPE_FIELD
+from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
@@ -49,11 +53,7 @@ from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset.common import validate_batch_size
 from kolena.dataset.common import validate_dataframe_ids
 from kolena.errors import InputValidationError
-from kolena.workflow._datatypes import _deserialize_dataobject
-from kolena.workflow._datatypes import _serialize_dataobject
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
-from kolena.workflow._datatypes import TypedDataObject
-from kolena.workflow.io import _dataframe_object_serde
+from kolena.io import _dataframe_object_serde
 
 FIELD_LOCATOR = "locator"
 FIELD_TEXT = "text"

@@ -14,33 +14,39 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-from question_answering.constants import DATASET_TO_LOCATOR
+from question_answering.constants import DATASET_TO_RESULTS
+from question_answering.constants import MODELS
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import test
 from kolena.workflow.io import dataframe_from_csv
 
 
-def run(args: Namespace) -> None:
+def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     for dataset in args.datasets:
         print(f"loading {dataset}...")
-        df_datapoint = dataframe_from_csv(DATASET_TO_LOCATOR[dataset])
-        register_dataset(dataset, df_datapoint, id_fields=["id"])
+        for model in args.models:
+            print(f"loading {model} results on {dataset}...")
+            df_results = dataframe_from_csv(DATASET_TO_RESULTS[dataset][model])
+            test(dataset, model, df_results)
 
 
-def main() -> None:
+if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
         "--datasets",
         nargs="+",
-        default=DATASET_TO_LOCATOR.keys(),
-        choices=DATASET_TO_LOCATOR.keys(),
-        help="Name(s) of the dataset(s) to register.",
+        default=DATASET_TO_RESULTS.keys(),
+        choices=DATASET_TO_RESULTS.keys(),
+        help="Name(s) of the dataset(s) to test.",
     )
 
-    run(ap.parse_args())
-
-
-if __name__ == "__main__":
-    main()
+    ap.add_argument(
+        "--models",
+        nargs="+",
+        default=MODELS,
+        choices=MODELS,
+        help="Name(s) of the model(s) to test.",
+    )
+    main(ap.parse_args())
