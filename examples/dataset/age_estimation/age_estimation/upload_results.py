@@ -48,8 +48,6 @@ def run(args: Namespace) -> None:
         )
 
     df_metrics = pd.DataFrame.from_records(results)
-    df_metrics.to_csv(f"{model}.csv")
-
     test(DATASET, model, df_metrics)
 
 
