@@ -53,7 +53,7 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("model", type=str, choices=["ssr", "deepface"], help="Name of model to test.")
+    ap.add_argument("model", type=str, choices=["ssrnet", "deepface"], help="Name of model to test.")
     run(ap.parse_args())
 
 
