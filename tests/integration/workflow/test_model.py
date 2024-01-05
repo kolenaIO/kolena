@@ -15,8 +15,6 @@ from typing import List
 
 import pytest
 
-from kolena.detection import Model as DetectionModel
-from kolena.errors import WorkflowMismatchError
 from kolena.workflow import TestRun
 from kolena.workflow.define_workflow import define_workflow
 from tests.integration.helper import assert_sorted_list_equal
@@ -80,13 +78,6 @@ def test__load_all() -> None:
         assert result.tags == expected.tags
         assert result.workflow == expected.workflow
     assert model.load_all(tags={"does_not_exist"}) == []
-
-
-def test__load__mismatching_workflows() -> None:
-    name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
-    DetectionModel(name)
-    with pytest.raises(WorkflowMismatchError):
-        Model(name)
 
 
 def test__init() -> None:

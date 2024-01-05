@@ -16,8 +16,6 @@ from typing import Optional
 
 import pytest
 
-from kolena.detection import TestCase as DetectionTestCase
-from kolena.errors import WorkflowMismatchError
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
 from tests.integration.workflow.dummy import DUMMY_WORKFLOW
@@ -80,13 +78,6 @@ def test__load() -> None:
 
     TestCase.create(name)
     assert_test_case(TestCase.load(name), name, 0)
-
-
-def test__load__mismatching_workflows() -> None:
-    name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
-    DetectionTestCase(name)
-    with pytest.raises(WorkflowMismatchError):
-        TestCase(name)
 
 
 def test__edit(

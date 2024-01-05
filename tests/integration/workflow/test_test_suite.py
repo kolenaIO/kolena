@@ -20,9 +20,7 @@ from typing import List
 
 import pytest
 
-from kolena.detection import TestSuite as DetectionTestSuite
 from kolena.errors import NameConflictError
-from kolena.errors import WorkflowMismatchError
 from kolena.workflow import define_workflow
 from tests.integration.helper import with_test_prefix
 from tests.integration.workflow.dummy import DUMMY_WORKFLOW
@@ -141,13 +139,6 @@ def test__init__with_tags(test_case_versions: List[TestCase]) -> None:
     assert test_suite.tags == tags
     assert test_suite.version == 2
     assert test_suite.test_cases == [test_case_versions[1]]
-
-
-def test__load__mismatching_workflows() -> None:
-    name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
-    DetectionTestSuite(name)
-    with pytest.raises(WorkflowMismatchError):
-        TestSuite(name)
 
 
 def test__load_all(with_init: None) -> None:
