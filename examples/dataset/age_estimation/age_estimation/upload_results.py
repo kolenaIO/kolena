@@ -44,7 +44,7 @@ def run(args: Namespace) -> None:
                 "error": error,
                 "absolute_error": abs(error),
                 "square_error": error**2,
-            }
+            },
         )
 
     df_metrics = pd.DataFrame.from_records(results)

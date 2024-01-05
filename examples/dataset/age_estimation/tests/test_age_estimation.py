@@ -37,6 +37,7 @@ def test__upload_results_deepface() -> None:
     args = Namespace(model="deepface")
     upload_results_main(args)
 
+
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results_ssr() -> None:
     args = Namespace(model="ssr")
