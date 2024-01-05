@@ -124,7 +124,7 @@ def main(args: Namespace) -> int:
                 ),
             )
         TestSuite(
-            name=f"{DATASET} :: {category} [FR]",
+            name=f"{args.suite_name} :: {category} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
@@ -149,5 +149,11 @@ if __name__ == "__main__":
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file containing the metadata of each image. See default CSV for details.",
+    )
+    ap.add_argument(
+        "--suite_name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name for the created test suite.",
     )
     sys.exit(main(ap.parse_args()))
