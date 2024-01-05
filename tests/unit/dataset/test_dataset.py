@@ -22,6 +22,7 @@ from pandas.testing import assert_frame_equal
 from .data import a_text
 from .data import b_text
 from kolena._api.v2.dataset import EntityData
+from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.dataset.common import COL_DATAPOINT
 from kolena.dataset.common import COL_RESULT
 from kolena.dataset.dataset import _add_datatype
@@ -34,7 +35,6 @@ from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.dataset.dataset import DatapointType
 from kolena.dataset.dataset import resolve_id_fields
 from kolena.errors import InputValidationError
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
 from kolena.workflow.annotation import LabeledBoundingBox

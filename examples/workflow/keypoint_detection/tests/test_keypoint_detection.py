@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import random
+import string
 from argparse import Namespace
 from collections.abc import Iterator
 
@@ -28,12 +30,18 @@ def with_init() -> Iterator[None]:
         yield
 
 
-def test__seed_test_suite() -> None:
-    args = Namespace(test_suite="300-W :: complete")
+@pytest.fixture(scope="module")
+def suite_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - 300-W :: complete"
+
+
+def test__seed_test_suite(suite_name: str) -> None:
+    args = Namespace(test_suite=suite_name)
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
-def test__seed_test_run() -> None:
-    args = Namespace(model_name="Point Randomizer", test_suite="300-W :: complete")
+def test__seed_test_run(suite_name: str) -> None:
+    args = Namespace(model_name="Point Randomizer", test_suite=suite_name)
     seed_test_run_main(args)
