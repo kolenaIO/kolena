@@ -15,28 +15,33 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
+from rain_forecast.constants import BUCKET
+from rain_forecast.constants import DATASET
 
 import kolena
 from kolena.dataset import register_dataset
 
-BUCKET = "kolena-public-examples"
-DATASET = "rain-in-australia"
-
 
 def run(args: Namespace) -> None:
+    kolena.initialize(verbose=True)
     df_dataset = pd.read_csv(args.dataset_csv)
-    register_dataset(DATASET, df_dataset, id_fields=["Date", "Location"])
+    register_dataset(args.dataset_name, df_dataset, id_fields=["Date", "Location"])
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/weatherAUS.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
-    kolena.initialize(verbose=True)
+    ap.add_argument(
+        "--dataset-name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name of the dataset",
+    )
     run(ap.parse_args())
 
 

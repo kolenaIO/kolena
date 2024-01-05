@@ -15,19 +15,15 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
+from rain_forecast.constants import BUCKET
+from rain_forecast.constants import DATASET
+from rain_forecast.constants import EVAL_CONFIG
+from rain_forecast.constants import MODEL_NAME
 from rain_forecast.metrics import compute_metrics
 from tqdm import tqdm
 
 import kolena
 from kolena.dataset import test
-
-BUCKET = "kolena-public-examples"
-DATASET = "rain-in-australia"
-MODEL_NAME = {
-    "ann": "ann-batch32-epoch150",
-    "logreg": "logreg-liblinear",
-}
-THRESHOLD = 0.5
 
 
 def run(args: Namespace) -> int:
@@ -36,26 +32,25 @@ def run(args: Namespace) -> int:
 
     results = []
     for record in tqdm(df.itertuples(), total=len(df)):
-        metrics = compute_metrics(record.RainTomorrow, record.ChanceOfRain, threshold=THRESHOLD)
+        metrics = compute_metrics(record.RainTomorrow, record.ChanceOfRain, threshold=EVAL_CONFIG["threshold"])
         results.append(
             dict(
                 Date=record.Date,
                 Location=record.Location,
                 ChanceOfRain=record.ChanceOfRain,
-                Threshold=THRESHOLD,
+                Threshold=EVAL_CONFIG["threshold"],
                 **metrics,
             ),
         )
 
     df_results = pd.DataFrame.from_records(results)
-    eval_config = dict(threshold=THRESHOLD)
-    test(args.dataset, MODEL_NAME[args.model], [(eval_config, df_results)])
+    test(args.dataset, MODEL_NAME[args.model], [(EVAL_CONFIG, df_results)])
     return 0
 
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--model", type=str, choices=MODEL_NAME.keys(), help="Name of model to test.")
+    ap.add_argument("--model", type=str, default="ann", choices=MODEL_NAME.keys(), help="Name of model to test.")
     ap.add_argument("--dataset", default=DATASET, help="Name of dataset to use for testing.")
     run(ap.parse_args())
 
