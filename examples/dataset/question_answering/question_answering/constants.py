@@ -12,13 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 TRUTHFULQA = "TruthfulQA"
 HALUEVALQA = "HaluEval-QA"
 MODELS = [
     "gpt-3.5-turbo",
     "gpt-4-1106-preview",
 ]
+
+DATASET_TO_LOCATOR = {
+    TRUTHFULQA: f"s3://{BUCKET}/{TRUTHFULQA}/TruthfulQA.csv",
+    HALUEVALQA: f"s3://{BUCKET}/{HALUEVALQA}/HaluEval-QA.csv",
+}
+
+DATASET_TO_INFERENCES = {
+    TRUTHFULQA: {model: f"s3://{BUCKET}/{TRUTHFULQA}/results/raw/{model}.csv" for model in MODELS},
+    HALUEVALQA: {model: f"s3://{BUCKET}/{HALUEVALQA}/results/raw/{model}.csv" for model in MODELS},
+}
+
+DATASET_TO_RESULTS = {
+    TRUTHFULQA: {model: f"s3://{BUCKET}/{TRUTHFULQA}/results/{model}.csv" for model in MODELS},
+    HALUEVALQA: {model: f"s3://{BUCKET}/{HALUEVALQA}/results/{model}.csv" for model in MODELS},
+}
 
 OPEN_DOMAIN_GPT4_HALLUCINATION_PROMPT = """
 In the context of NLP, a "hallucination" refers to a phenomenon where the LLM generates text that is incorrect, \

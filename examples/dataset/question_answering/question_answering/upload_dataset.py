@@ -14,25 +14,18 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-from question_answering.constants import BUCKET
-from question_answering.constants import HALUEVALQA
-from question_answering.constants import TRUTHFULQA
+from question_answering.constants import DATASET_TO_LOCATOR
 
 import kolena
 from kolena.dataset import register_dataset
 from kolena.workflow.io import dataframe_from_csv
 
-DATASETS = {
-    TRUTHFULQA: f"s3://{BUCKET}/TruthfulQA/v1/TruthfulQA_QA.csv",
-    HALUEVALQA: f"s3://{BUCKET}/HaLuEval/data/v1/qa_data.csv",
-}
-
 
 def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     for dataset in args.datasets:
-        print(f"Loading {dataset}...")
-        df_datapoint = dataframe_from_csv(DATASETS[dataset])
+        print(f"loading {dataset}...")
+        df_datapoint = dataframe_from_csv(DATASET_TO_LOCATOR[dataset])
         register_dataset(dataset, df_datapoint, id_fields=["id"])
 
 
@@ -41,8 +34,8 @@ if __name__ == "__main__":
     ap.add_argument(
         "--datasets",
         nargs="+",
-        default=DATASETS.keys(),
-        choices=DATASETS.keys(),
+        default=DATASET_TO_LOCATOR.keys(),
+        choices=DATASET_TO_LOCATOR.keys(),
         help="Name(s) of the dataset(s) to register.",
     )
 

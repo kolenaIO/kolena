@@ -16,28 +16,13 @@ from argparse import Namespace
 
 import pandas as pd
 from question_answering.closed_domain_metrics import compute_closed_domain_metrics
-from question_answering.constants import BUCKET
+from question_answering.constants import DATASET_TO_INFERENCES
+from question_answering.constants import DATASET_TO_LOCATOR
+from question_answering.constants import DATASET_TO_RESULTS
 from question_answering.constants import HALUEVALQA
 from question_answering.constants import MODELS
-from question_answering.constants import TRUTHFULQA
 from question_answering.open_domain_metrics import compute_open_domain_metrics
 from tqdm import tqdm
-
-
-DATASETS = {
-    TRUTHFULQA: f"s3://{BUCKET}/TruthfulQA/v1/TruthfulQA_QA.csv",
-    HALUEVALQA: f"s3://{BUCKET}/HaLuEval/data/v1/qa_data.csv",
-}
-
-DATASET_TO_RESULTS = {
-    TRUTHFULQA: {model: f"s3://{BUCKET}/TruthfulQA/results/v1/{model}.csv" for model in MODELS},
-    HALUEVALQA: {model: f"s3://{BUCKET}/HaLuEval/evaluation/v1/qa_{model}.csv" for model in MODELS},
-}
-
-DATASET_TO_METRICS_RESULTS = {
-    TRUTHFULQA: {model: f"s3://{BUCKET}/TruthfulQA/results/v1/{model}_with_metrics.csv" for model in MODELS},
-    HALUEVALQA: {model: f"s3://{BUCKET}/HaLuEval/evaluation/v1/qa_{model}_with_metrics.csv" for model in MODELS},
-}
 
 
 def compute_open_domain_metrics_for_dataset(df_datapoints: pd.DataFrame, df_results: pd.DataFrame) -> pd.DataFrame:
@@ -75,17 +60,17 @@ def compute_closed_domain_metrics_for_dataset(df_datapoints: pd.DataFrame, df_re
 def main(args: Namespace) -> None:
     for dataset in args.datasets:
         print(f"Loading {dataset}...")
-        df_datapoints = pd.read_csv(DATASETS[dataset])
+        df_datapoints = pd.read_csv(DATASET_TO_LOCATOR[dataset])
         for model in args.models:
             print(f"Loading {model} results on {dataset}...")
-            df_results = pd.read_csv(DATASET_TO_RESULTS[dataset][model])
-            if dataset == TRUTHFULQA:
-                df_metrics = compute_open_domain_metrics_for_dataset(df_datapoints, df_results)
-            else:
+            df_results = pd.read_csv(DATASET_TO_INFERENCES[dataset][model])
+            if dataset == HALUEVALQA:
                 df_metrics = compute_closed_domain_metrics_for_dataset(df_datapoints, df_results)
+            else:
+                df_metrics = compute_open_domain_metrics_for_dataset(df_datapoints, df_results)
             df_metrics_with_results = df_results.merge(df_metrics, on=["id"])
-            df_metrics_with_results.to_csv(DATASET_TO_METRICS_RESULTS[dataset][model], index=False)
-            print(f"Saved the results wtih metrics to {DATASET_TO_METRICS_RESULTS[dataset][model]}...")
+            df_metrics_with_results.to_csv(DATASET_TO_RESULTS[dataset][model], index=False)
+            print(f"Saved the results wtih metrics to {DATASET_TO_RESULTS[dataset][model]}...")
 
 
 if __name__ == "__main__":
@@ -93,8 +78,8 @@ if __name__ == "__main__":
     ap.add_argument(
         "--datasets",
         nargs="+",
-        default=DATASETS.keys(),
-        choices=DATASETS.keys(),
+        default=DATASET_TO_LOCATOR.keys(),
+        choices=DATASET_TO_LOCATOR.keys(),
         help="Name(s) of the dataset(s) to prepare results for.",
     )
 

@@ -15,7 +15,7 @@ poetry update && poetry install
 
 ## Usage
 
-The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
+The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
@@ -26,7 +26,7 @@ This project defines three scripts that perform the following operations:
 select the dataset to register by specifying `--datasets`.
 
 2. [optional] [`prepare_results.py`](question_answering/prepare_results.py) computes metrics on each datapoint on both
-datasets and saves the results and metrics to a csv file in `s3://kolena-public-datasets` bucket. You can also select
+datasets and saves the results and metrics to a csv file in `s3://kolena-public-examples` bucket. You can also select
 the dataset and model to compute metrics by specifying `--datasets` and `--models`. This step is optional as the results
 for both datasets and models have already been computed and saved to the cloud storage. NOTE: It will take about 1.5hr
 to run the entire set of metrics on a single dataset / model.

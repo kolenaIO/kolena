@@ -14,28 +14,21 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-from question_answering.constants import BUCKET
-from question_answering.constants import HALUEVALQA
+from question_answering.constants import DATASET_TO_RESULTS
 from question_answering.constants import MODELS
-from question_answering.constants import TRUTHFULQA
 
 import kolena
 from kolena.dataset import test
 from kolena.workflow.io import dataframe_from_csv
 
-DATASET_TO_METRICS_RESULTS = {
-    TRUTHFULQA: {model: f"s3://{BUCKET}/TruthfulQA/results/v1/{model}_with_metrics.csv" for model in MODELS},
-    HALUEVALQA: {model: f"s3://{BUCKET}/HaLuEval/evaluation/v1/qa_{model}_with_metrics.csv" for model in MODELS},
-}
-
 
 def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     for dataset in args.datasets:
-        print(f"Loading {dataset}...")
+        print(f"loading {dataset}...")
         for model in args.models:
-            print(f"Loading {model} results on {dataset}...")
-            df_results = dataframe_from_csv(DATASET_TO_METRICS_RESULTS[dataset][model])
+            print(f"loading {model} results on {dataset}...")
+            df_results = dataframe_from_csv(DATASET_TO_RESULTS[dataset][model])
             test(dataset, model, df_results)
 
 
@@ -44,8 +37,8 @@ if __name__ == "__main__":
     ap.add_argument(
         "--datasets",
         nargs="+",
-        default=DATASET_TO_METRICS_RESULTS.keys(),
-        choices=DATASET_TO_METRICS_RESULTS.keys(),
+        default=DATASET_TO_RESULTS.keys(),
+        choices=DATASET_TO_RESULTS.keys(),
         help="Name(s) of the dataset(s) to test.",
     )
 
@@ -54,6 +47,6 @@ if __name__ == "__main__":
         nargs="+",
         default=MODELS,
         choices=MODELS,
-        help="Name(s) of the dataset(s) to test.",
+        help="Name(s) of the model(s) to test.",
     )
     main(ap.parse_args())
