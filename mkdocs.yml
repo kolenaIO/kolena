@@ -79,9 +79,7 @@ nav:
           - Classification: reference/pre-built/classification.md
           - Legacy Definitions:
               - Legacy Definitions: reference/legacy/index.md
-              - <code>detection</code>: reference/legacy/built-in/detection.md
               - <code>fr</code>: reference/legacy/built-in/fr.md
-              - Base Definitions: reference/legacy/built-in/base.md
   - Metrics Glossary:
       - Metrics Glossary: metrics/index.md
       - metrics/accuracy.md
