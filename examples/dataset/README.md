@@ -14,3 +14,4 @@ This directory contains example Kolena Datasets integrations for different machi
   [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset for text summarization workflow
 - [Rain Forecast](./rain_forecast): rain forecast models tested using the
   [Rain in Australia](https://www.kaggle.com/datasets/jsphyg/weather-dataset-rattle-package)
+- [Speaker Diarization](./speaker_diarization/): speaker diarization using the [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset

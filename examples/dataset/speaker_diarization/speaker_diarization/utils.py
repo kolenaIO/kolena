@@ -11,19 +11,31 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 import re
 from typing import List
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
+import tqdm
+from jiwer import cer
+from jiwer import wer
 from pyannote.core import Annotation
 from pyannote.core import Segment
+from pyannote.metrics.detection import DetectionAccuracy
+from pyannote.metrics.detection import DetectionPrecision
+from pyannote.metrics.detection import DetectionRecall
+from pyannote.metrics.diarization import DiarizationCoverage
+from pyannote.metrics.diarization import DiarizationErrorRate
+from pyannote.metrics.diarization import DiarizationPurity
+from pyannote.metrics.diarization import JaccardErrorRate
+from pyannote.metrics.identification import IdentificationErrorRate
+from pyannote.metrics.identification import IdentificationPrecision
+from pyannote.metrics.identification import IdentificationRecall
 from scipy import optimize
-from speaker_diarization.workflow import GroundTruth
-from speaker_diarization.workflow import Inference
-from speaker_diarization.workflow import TestCase
 
+from kolena.annotation import LabeledTimeSegment
 from kolena.workflow.annotation import TimeSegment
 
 # allowed error (in seconds) when generating identification and missed speech errors.
@@ -60,25 +72,34 @@ def build_cost_matrix(ref: List[Tuple[str, float, float]], inf: List[Tuple[str, 
     return cost_matrix
 
 
-def realign_labels(ref_df: pd.DataFrame, inf_df: pd.DataFrame):
+def realign_labels(ref: List[TimeSegment], inf: List[TimeSegment]) -> List[TimeSegment]:
     """
-    Aligns speaker labels using linear sum optimiztion
+    Aligns speaker labels using linear sum optimization
     """
-    ref = [(row.speaker, row.starttime, row.endtime) for i, row in ref_df.iterrows()]
-    inf = [(row.speaker, row.starttime, row.endtime) for i, row in inf_df.iterrows()]
-    cost_matrix = build_cost_matrix(ref, inf)
+    ref_t = [(row.group, row.start, row.end) for row in ref]
+    inf_t = [(row.group, row.start, row.end) for row in inf]
+    cost_matrix = build_cost_matrix(ref_t, inf_t)
     row_index, col_index = optimize.linear_sum_assignment(-cost_matrix)
 
-    ref_dict = build_speaker_index(ref)
+    ref_dict = build_speaker_index(ref_t)
     ref_dict_inv = {v: k for k, v in ref_dict.items()}
-    inf_dict = build_speaker_index(inf)
+    inf_dict = build_speaker_index(inf_t)
     inf_dict_inv = {v: k for k, v in inf_dict.items()}
 
     mapping = {}
     for i in range(len(col_index)):
         mapping[inf_dict_inv[col_index[i]]] = ref_dict_inv[row_index[i]]
 
-    inf_df["speaker"] = inf_df["speaker"].apply(lambda x: f"NA_{int(x)}" if x not in mapping.keys() else mapping[x])
+    # TODO: int(x.group)
+    return [
+        dataclasses.replace(x, group=f"NA_{x.group}")
+        if x.group not in mapping.keys()
+        else dataclasses.replace(
+            x,
+            group=mapping[x.group],
+        )
+        for x in inf
+    ]
 
 
 def generate_annotation(segments: List[TimeSegment]) -> Annotation:
@@ -92,7 +113,7 @@ def generate_annotation(segments: List[TimeSegment]) -> Annotation:
     return annotation
 
 
-def preprocess_text(segments: List[TimeSegment]) -> str:
+def preprocess_text(segments: List[LabeledTimeSegment]) -> str:
     """
     Preprocess text by removing punctuation and combining transcriptions.
     """
@@ -196,18 +217,21 @@ def generate_error(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]
     return res
 
 
-def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeSegment]:
+def generate_identification_error(
+    gt_transcription: List[TimeSegment],
+    inf_transcription: List[TimeSegment],
+) -> List[TimeSegment]:
     """
     Highlights false positive speaker identifications.
     """
     unique_identities = set()
-    for t in gt.transcription:
+    for t in gt_transcription:
         unique_identities.add(t.group)
 
     res = []
     for id in unique_identities:
-        gt_no = create_non_overlapping_segments(gt.transcription, id)
-        inf_no = create_non_overlapping_segments(inf.transcription, id)
+        gt_no = create_non_overlapping_segments(gt_transcription, id)
+        inf_no = create_non_overlapping_segments(inf_transcription, id)
         res.extend(generate_error(gt_no, inf_no))
         res.extend(generate_error(inf_no, gt_no))
 
@@ -232,27 +256,70 @@ def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float
     return res
 
 
-def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSegment]:
+def generate_missed_speech_error(
+    gt_transcription: List[TimeSegment],
+    inf_transcription: List[TimeSegment],
+) -> List[TimeSegment]:
     """
     Highlights all missed speech.
     """
-    gt = create_non_overlapping_segments(gt.transcription)
-    inf = create_non_overlapping_segments(inf.transcription)
+    gt = create_non_overlapping_segments(gt_transcription)
+    inf = create_non_overlapping_segments(inf_transcription)
 
     return [TimeSegment(start=r[0], end=r[1]) for r in generate_error(inf, gt)]
 
 
-def calculate_tertiles(tc: TestCase, feature: str) -> dict:
-    """
-    Calculates the tertiles of a feature stored in metadata.
-    """
-    feature_list = [ts.metadata[feature] for ts, gt in tc.iter_test_samples()]
-    percentiles = [np.percentile(feature_list, i) for i in np.linspace(0, 100, 4)]
+def annotate_transcripts(ref: pd.Series, inf: pd.Series) -> pd.DataFrame:
+    return pd.concat(
+        dict(
+            reference=ref,
+            inference=inf,
+            gt_annotate=ref.apply(generate_annotation),
+            inf_annotate=inf.apply(generate_annotation),
+            gt_text=ref.apply(preprocess_text),
+            inf_text=inf.apply(preprocess_text),
+        ),
+        axis=1,
+    )
 
-    test_case_name_to_decision_logic_map = {
-        "1st tertile": lambda x: x < percentiles[1],
-        "2nd tertile": lambda x: percentiles[1] <= x < percentiles[2],
-        "3rd tertile": lambda x: percentiles[2] <= x,
-    }
 
-    return test_case_name_to_decision_logic_map
+def compute_metrics(datapoints: pd.DataFrame, results: pd.DataFrame) -> pd.DataFrame:
+    annotates = annotate_transcripts(datapoints["transcripts"], results["transcripts"])
+    diarization_error = DiarizationErrorRate()
+    jaccard_error = JaccardErrorRate()
+    diarization_purity = DiarizationPurity()
+    diarization_coverage = DiarizationCoverage()
+    detection_accuracy = DetectionAccuracy()
+    detection_precision = DetectionPrecision()
+    detection_recall = DetectionRecall()
+    identification_error = IdentificationErrorRate()
+    identification_precision = IdentificationPrecision()
+    identification_recall = IdentificationRecall()
+    metrics = []
+    for row in tqdm.tqdm(annotates.itertuples(), "computing metrics"):
+        ref = row.reference
+        inf = row.inference
+        gt_annotate = row.gt_annotate
+        inf_annotate = row.inf_annotate
+        gt_text = row.gt_text
+        inf_text = row.inf_text
+        metrics.append(
+            dict(
+                DiarizationErrorRate=diarization_error(gt_annotate, inf_annotate),
+                JaccardErrorRate=jaccard_error(gt_annotate, inf_annotate),
+                DiarizationPurity=diarization_purity(gt_annotate, inf_annotate),
+                DiarizationCoverage=diarization_coverage(gt_annotate, inf_annotate),
+                DetectionAccuracy=detection_accuracy(gt_annotate, inf_annotate),
+                DetectionPrecision=detection_precision(gt_annotate, inf_annotate),
+                DetectionRecall=detection_recall(gt_annotate, inf_annotate),
+                IdentificationErrorRate=identification_error(gt_annotate, inf_annotate),
+                IdentificationPrecision=identification_precision(gt_annotate, inf_annotate),
+                IdentificationRecall=identification_recall(gt_annotate, inf_annotate),
+                WordErrorRate=wer(gt_text, inf_text),
+                CharacterErrorRate=cer(gt_text, inf_text),
+                IdentificationError=generate_identification_error(ref, inf),
+                MissedSpeechError=generate_missed_speech_error(ref, inf),
+            ),
+        )
+
+    return pd.DataFrame(metrics)
