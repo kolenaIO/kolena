@@ -11,14 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import pandas as pd
+from age_estimation.constants import DATA_FILEPATH
+from age_estimation.constants import DATASET
 
 import kolena
 from kolena.dataset import register_dataset
-
-from age_estimation.constants import DATASET
-from age_estimation.constants import DATA_FILEPATH
 
 
 def main() -> None:
