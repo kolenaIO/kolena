@@ -11,13 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import unittest
 from io import StringIO
+from typing import Any
 
 import pandas as pd
+import pytest
 from pandas.testing import assert_frame_equal
 
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
+from kolena.io import _serialize_dataobject
 from kolena.io import dataframe_from_csv
 from kolena.io import dataframe_from_json
 from kolena.io import dataframe_to_csv
@@ -114,3 +118,37 @@ def test__dataframe_csv__malformed_input() -> None:
         ),
     )
     assert_frame_equal(df, df_expected)
+
+
+@pytest.mark.parametrize(
+    "source, expected",
+    [
+        (BoundingBox((1, 2), (3, 4)), BoundingBox((1, 2), (3, 4))._to_dict()),
+        (
+            {"box1": BoundingBox((1, 2), (3, 4)), "box2": BoundingBox((2, 2), (3, 4)), "id": 1},
+            {
+                "box1": BoundingBox((1, 2), (3, 4))._to_dict(),
+                "box2": BoundingBox((2, 2), (3, 4))._to_dict(),
+                "id": 1,
+            },
+        ),
+        (
+            {"boxes": [BoundingBox((1, 2), (3, 4))], "id": 1},
+            {"boxes": [BoundingBox((1, 2), (3, 4))._to_dict()], "id": 1},
+        ),
+        (
+            [BoundingBox((1, 2), (3, 4)), BoundingBox((2, 2), (3, 4))],
+            [BoundingBox((1, 2), (3, 4))._to_dict(), BoundingBox((2, 2), (3, 4))._to_dict()],
+        ),
+        (
+            (BoundingBox((1, 2), (3, 4)), BoundingBox((2, 2), (3, 4))),
+            (BoundingBox((1, 2), (3, 4))._to_dict(), BoundingBox((2, 2), (3, 4))._to_dict()),
+        ),
+    ],
+)
+def test__serialize_dataobject(source: Any, expected: Any) -> None:
+    if isinstance(source, (list, tuple)):
+        case = unittest.TestCase()
+        case.assertCountEqual(_serialize_dataobject(source), expected)
+    else:
+        assert _serialize_dataobject(source) == expected

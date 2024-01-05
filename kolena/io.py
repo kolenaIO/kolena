@@ -24,8 +24,10 @@ from kolena._utils.datatypes import DataObject
 
 
 def _serialize_dataobject(x: Any) -> Any:
-    if isinstance(x, list):
-        return [item._to_dict() if isinstance(item, DataObject) else item for item in x]
+    if isinstance(x, (list, tuple)):
+        return [_serialize_dataobject(item) for item in x]
+    elif isinstance(x, dict):
+        return {key: _serialize_dataobject(value) for key, value in x.items()}
 
     return x._to_dict() if isinstance(x, DataObject) else x
 
