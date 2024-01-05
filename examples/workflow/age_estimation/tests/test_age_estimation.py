@@ -28,7 +28,10 @@ def suite_name() -> str:
 
 
 def test__seed_test_suite__smoke(suite_name: str) -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.tiny5.csv", suite_name=suite_name)
+    args = Namespace(
+        dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.tiny5.csv",
+        suite_name=suite_name,
+    )
     seed_test_suite_main(args)
 
 
