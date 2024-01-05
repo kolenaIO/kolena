@@ -11,24 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
-
-import pandas as pd
-
-import kolena
-from kolena.dataset import register_dataset
-from kolena.workflow.annotation import Keypoints
-
-DATASET = "300-W"
 BUCKET = "kolena-public-examples"
-
-
-def main() -> None:
-    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata.csv", index_col=0, storage_options={"anon": True})
-    df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
-    kolena.initialize(verbose=True)
-    register_dataset(DATASET, df[["locator", "face", "normalization_factor"]])
-
-
-if __name__ == "__main__":
-    main()
+DATASET = "dogs-vs-cats"
+POSITIVE_LABEL = "dog"
+NEGATIVE_LABEL = "not dog"

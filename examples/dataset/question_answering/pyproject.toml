@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "question_answering"
 version = "0.1.0"
-description = " Kolena Datasets Example integration for question answering"
+description = "Example Kolena integration for question answering"
 authors = ["Kolena Engineering <eng@kolena.com>"]
 license = "Apache-2.0"
 

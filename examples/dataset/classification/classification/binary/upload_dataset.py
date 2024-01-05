@@ -14,31 +14,30 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-from question_answering.constants import DATASET_TO_LOCATOR
+import pandas as pd
+from classification.binary.constants import BUCKET
+from classification.binary.constants import DATASET
 
 import kolena
 from kolena.dataset import register_dataset
-from kolena.workflow.io import dataframe_from_csv
+from kolena.workflow.annotation import ClassificationLabel
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    for dataset in args.datasets:
-        print(f"loading {dataset}...")
-        df_datapoint = dataframe_from_csv(DATASET_TO_LOCATOR[dataset])
-        register_dataset(dataset, df_datapoint, id_fields=["id"])
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
+    id_fields = ["locator"]
+    df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
+    register_dataset(args.dataset, df, id_fields)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--datasets",
-        nargs="+",
-        default=DATASET_TO_LOCATOR.keys(),
-        choices=DATASET_TO_LOCATOR.keys(),
-        help="Name(s) of the dataset(s) to register.",
+        "--dataset",
+        default=DATASET,
+        help=f"Custom name for the {DATASET} dataset to upload.",
     )
-
     run(ap.parse_args())
 
 
