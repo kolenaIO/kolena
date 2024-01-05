@@ -25,7 +25,7 @@ from kolena.dataset import register_dataset
 
 def run(args: Namespace) -> None:
     df_dataset = pd.read_csv(args.dataset_csv)
-    register_dataset(DATASET, df_dataset, id_fields=[ID_FIELD])
+    register_dataset(args.dataset_name, df_dataset, id_fields=[ID_FIELD])
 
 
 def main() -> None:
@@ -35,6 +35,12 @@ def main() -> None:
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/CNN-DailyMail.csv",
         help="CSV file specifying dataset. See default CSV for details",
+    )
+    ap.add_argument(
+        "--dataset-name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name of the dataset",
     )
     kolena.initialize(verbose=True)
     run(ap.parse_args())

@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import random
+import string
 from argparse import Namespace
 
 import pytest
@@ -21,12 +23,18 @@ from text_summarization.upload_dataset import main as upload_dataset_main
 from text_summarization.upload_results import main as upload_results_main
 
 
-def test__upload_dataset__smoke() -> None:
-    args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/CNN-DailyMail.tiny1.csv")
+@pytest.fixture(scope="module")
+def dataset_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
+
+
+def test__upload_dataset__smoke(dataset_name: str) -> None:
+    args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/CNN-DailyMail.tiny1.csv", dataset_name=dataset_name)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset__smoke"])
-def test__upload_results__smoke() -> None:
-    args = Namespace(models=[MODELS[0]])
+def test__upload_results__smoke(dataset_name: str) -> None:
+    args = Namespace(models=[MODELS[0]], dataset=dataset_name)
     upload_results_main(args)

@@ -30,7 +30,7 @@ from kolena.dataset import test
 def run(args: Namespace) -> int:
     kolena.initialize(verbose=True)
     for model in args.models:
-        df_dataset = fetch_dataset(DATASET)
+        df_dataset = fetch_dataset(args.dataset)
         df_inferences = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv")
         df = df_inferences.merge(df_dataset, on=ID_FIELD)
 
