@@ -30,10 +30,6 @@ from kolena.workflow.test_run import test
 BUCKET = "kolena-public-datasets"
 DATASET = "ICSI-corpus"
 
-TEST_SUITE_NAMES = [
-    f"{DATASET} :: average amplitude",
-]
-
 MODEL_A = {
     "model family": "GCP Speech To Text",
     "model name": "gcp-stt-video",
@@ -84,7 +80,10 @@ def main(args: Namespace) -> None:
     mod = "gcp-stt-video"
 
     print("loading test suite")
-    test_suites = TestSuite.load_all(tags={DATASET})
+    if "suite_name" in args:
+        test_suites = [TestSuite.load(args.suite_name)]
+    else:
+        test_suites = TestSuite.load_all(tags={DATASET})
     for test_suite in test_suites:
         seed_test_run(mod, test_suite, args.align_speakers)
 

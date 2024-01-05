@@ -37,7 +37,11 @@ def clean_name(name: str) -> str:
     return name[9:] if name.startswith("metadata_") else name
 
 
-def create_test_suite_by_question(dataset: TestCase, data: List[Tuple[TestSample, GroundTruth]]) -> None:
+def create_test_suite_by_question(
+    suite_name: str,
+    dataset: TestCase,
+    data: List[Tuple[TestSample, GroundTruth]],
+) -> None:
     question_types = ["what", "who", "how", "did", "where", "was", "when", "is", "why", "other"]
     samples_by_question_type = {value: [] for value in question_types}
 
@@ -56,14 +60,18 @@ def create_test_suite_by_question(dataset: TestCase, data: List[Tuple[TestSample
     )
 
     test_suite = TestSuite(
-        f"question types :: {DATASET}",
+        f"question types :: {suite_name}",
         test_cases=[dataset, *test_cases],
         reset=True,
     )
     print(f"created test suite: {test_suite.name} v{test_suite.version}")
 
 
-def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple[TestSample, GroundTruth]]) -> None:
+def create_test_suite_by_conversation_length(
+    suite_name: str,
+    dataset: TestCase,
+    data: List[Tuple[TestSample, GroundTruth]],
+) -> None:
     depths = sorted({test_sample.turn for test_sample, _ in data})
     samples_by_turn = {value: [] for value in depths}
 
@@ -82,7 +90,7 @@ def create_test_suite_by_conversation_length(dataset: TestCase, data: List[Tuple
     )
 
     test_suite = TestSuite(
-        f"conversation depths :: {DATASET}",
+        f"conversation depths :: {suite_name}",
         test_cases=[dataset, *test_cases],
         reset=True,
     )
@@ -145,8 +153,9 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
-    create_test_suite_by_question(complete_test_case, test_samples_and_ground_truths)
-    create_test_suite_by_conversation_length(complete_test_case, test_samples_and_ground_truths)
+    suite_name = args.suite_name
+    create_test_suite_by_question(suite_name, complete_test_case, test_samples_and_ground_truths)
+    create_test_suite_by_conversation_length(suite_name, complete_test_case, test_samples_and_ground_truths)
 
     return 0
 
@@ -158,5 +167,11 @@ if __name__ == "__main__":
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata/metadata.csv",
         help="CSV file with a stories, questions, and answers.",
+    )
+    ap.add_argument(
+        "suite_name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name for the created test suites.",
     )
     sys.exit(main(ap.parse_args()))

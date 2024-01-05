@@ -14,36 +14,32 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-from question_answering.constants import BUCKET
-from question_answering.constants import HALUEVALQA
-from question_answering.constants import TRUTHFULQA
+import pandas as pd
+from classification.binary.constants import BUCKET
+from classification.binary.constants import DATASET
 
 import kolena
 from kolena.dataset import register_dataset
-from kolena.workflow.io import dataframe_from_csv
-
-DATASETS = {
-    TRUTHFULQA: f"s3://{BUCKET}/TruthfulQA/v1/TruthfulQA_QA.csv",
-    HALUEVALQA: f"s3://{BUCKET}/HaLuEval/data/v1/qa_data.csv",
-}
+from kolena.workflow.annotation import ClassificationLabel
 
 
-def main(args: Namespace) -> None:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    for dataset in args.datasets:
-        print(f"Loading {dataset}...")
-        df_datapoint = dataframe_from_csv(DATASETS[dataset])
-        register_dataset(dataset, df_datapoint, id_fields=["id"])
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
+    id_fields = ["locator"]
+    df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
+    register_dataset(args.dataset, df, id_fields)
+
+
+def main() -> None:
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset",
+        default=DATASET,
+        help=f"Custom name for the {DATASET} dataset to upload.",
+    )
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":
-    ap = ArgumentParser()
-    ap.add_argument(
-        "--datasets",
-        nargs="+",
-        default=DATASETS.keys(),
-        choices=DATASETS.keys(),
-        help="Name(s) of the dataset(s) to register.",
-    )
-
-    main(ap.parse_args())
+    main()

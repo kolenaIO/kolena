@@ -15,15 +15,24 @@ from argparse import Namespace
 
 import pytest
 from scripts.multiclass.seed_test_run import main as seed_test_run_main
+from scripts.multiclass.seed_test_suite import DATASET
 from scripts.multiclass.seed_test_suite import main as seed_test_suite_main
 
 
-def test__seed_test_suite__smoke() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/cifar10/test/meta/metadata.tiny5.csv")
+@pytest.fixture(scope="module")
+def suite_name(test_prefix: str) -> str:
+    return f"{test_prefix} - {DATASET}"
+
+
+def test__seed_test_suite__smoke(suite_name: str) -> None:
+    args = Namespace(
+        dataset_csv="s3://kolena-public-datasets/cifar10/test/meta/metadata.tiny5.csv",
+        suite_name=suite_name,
+    )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke() -> None:
-    args = Namespace(models=["inceptionv3"], test_suites=["image properties :: cifar10/test"])
+def test__seed_test_run__smoke(suite_name: str) -> None:
+    args = Namespace(models=["inceptionv3"], test_suites=[f"image properties :: {suite_name}"])
     seed_test_run_main(args)

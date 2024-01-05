@@ -19,7 +19,12 @@ from typing import Tuple
 import cv2
 import numpy as np
 import s3fs
-from retinaface import RetinaFace
+
+try:
+    from retinaface import RetinaFace  # noqa: F401
+except ImportError:
+    print("Note: Package 'retinaface' not found; install 'retinaface' with `poetry install --extras retina`")
+
 
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
