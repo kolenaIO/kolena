@@ -50,6 +50,5 @@ __all__ = [
     "errors",
     "fr",
     "detection",
-    "classification",
     "workflow",
 ]
