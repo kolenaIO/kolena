@@ -30,10 +30,6 @@ from kolena.workflow.test_run import test
 BUCKET = "kolena-public-datasets"
 DATASET = "ICSI-corpus"
 
-TEST_SUITE_NAMES = [
-    f"{DATASET} :: average amplitude",
-]
-
 MODEL_A = {
     "model family": "GCP Speech To Text",
     "model name": "gcp-stt-video",
@@ -84,7 +80,10 @@ def main(args: Namespace) -> None:
     mod = "gcp-stt-video"
 
     print("loading test suite")
-    test_suites = TestSuite.load_all(tags={DATASET})
+    if args.suite_name:
+        test_suites = TestSuite.load(args.suite_name)
+    else:
+        test_suites = TestSuite.load_all(tags={DATASET})
     for test_suite in test_suites:
         seed_test_run(mod, test_suite, args.align_speakers)
 
@@ -96,5 +95,11 @@ if __name__ == "__main__":
         type=bool,
         default=False,
         help="Specify whether to perform speaker alignment between the GT and Inf in the preprocessing step.",
+    )
+    ap.add_argument(
+        "--suite_name",
+        type=str,
+        default="",
+        help="Optionally specify a suite_name prefix for the created test suites.",
     )
     main(ap.parse_args())
