@@ -22,9 +22,6 @@ from face_recognition_11.seed_test_run import main as seed_test_run_main
 from face_recognition_11.seed_test_suite import main as seed_test_suite_main
 
 
-BUCKET = "kolena-public-datasets"
-DATASET = "labeled-faces-in-the-wild"
-
 @pytest.fixture(scope="module")
 def suite_name() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
