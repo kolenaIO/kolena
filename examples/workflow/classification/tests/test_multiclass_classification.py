@@ -15,7 +15,13 @@ from argparse import Namespace
 
 import pytest
 from scripts.multiclass.seed_test_run import main as seed_test_run_main
+from scripts.multiclass.seed_test_suite import DATASET
 from scripts.multiclass.seed_test_suite import main as seed_test_suite_main
+
+
+@pytest.fixture(scope="module")
+def suite_name(test_prefix: str) -> str:
+    return f"{test_prefix} - {DATASET}"
 
 
 def test__seed_test_suite__smoke(suite_name: str) -> None:
