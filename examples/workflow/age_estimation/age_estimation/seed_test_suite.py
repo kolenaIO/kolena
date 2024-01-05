@@ -65,7 +65,7 @@ def main(args: Namespace) -> int:
     ]
 
     test_suite = TestSuite(
-        f"age :: {DATASET} [age estimation]",
+        f"age :: {args.suite_name} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_age],
         reset=True,
     )
@@ -81,7 +81,7 @@ def main(args: Namespace) -> int:
         for gender in ["man", "woman"]
     ]
     test_suite = TestSuite(
-        f"gender :: {DATASET} [age estimation]",
+        f"gender :: {args.suite_name} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_gender],
         reset=True,
     )
@@ -98,7 +98,7 @@ def main(args: Namespace) -> int:
         for race in races
     ]
     test_suite = TestSuite(
-        f"race :: {DATASET} [age estimation]",
+        f"race :: {args.suite_name} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_race],
         reset=True,
     )
@@ -114,5 +114,11 @@ if __name__ == "__main__":
         nargs="?",
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
+    )
+    ap.add_argument(
+        "suite_name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name for the created test suites.",
     )
     sys.exit(main(ap.parse_args()))
