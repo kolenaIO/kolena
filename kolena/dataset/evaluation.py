@@ -109,6 +109,11 @@ def fetch_results(
 ) -> Tuple[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]]:
     """
     Fetch results given dataset name and model name.
+
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
+    :return: Tuple of DataFrame of datapoints and list of tuples,
+             each containing an evaluation configuration and the corresponding DataFrame of results.
     """
     log.info(f"fetching results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
@@ -157,11 +162,11 @@ def test(
     """
     This function is used for testing a specified model on a given dataset.
 
-    :param dataset: The name of the dataset to be used.
-    :param model: The name of the model to be used.
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
                     a eval configuration and a DataFrame.
-    :return None
+    :return: None
     """
     existing_dataset = load_dataset(dataset)
     if not existing_dataset:
