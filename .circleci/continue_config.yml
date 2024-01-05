@@ -239,7 +239,7 @@ jobs:
                     TESTFILES=$(circleci tests glob tests/integration/test_*.py |
                       circleci tests split --split-by=timings --timings-type=filename)
                   else
-                    TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
+                    TESTFILES=$(circleci tests glob tests/integration/$TEST_GROUP/**/test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
                   poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
@@ -391,7 +391,7 @@ workflows:
               extras: [ "none" ]
           pytest-group: dataset
           enabled: true
-          parallelism: 2
+          parallelism: 1
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
