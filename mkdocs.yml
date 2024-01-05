@@ -58,8 +58,8 @@ nav:
           - Pre-built Workflows: reference/pre-built/index.md
           - Object Detection (2D): reference/pre-built/object-detection-2d.md
           - Classification: reference/pre-built/classification.md
-          - Legacy Definitions:
-              - Legacy Definitions: reference/legacy/index.md
+          - Definitions:
+              - Definitions: reference/legacy/index.md
               - <code>classification</code>: reference/legacy/built-in/classification.md
               - <code>detection</code>: reference/legacy/built-in/detection.md
               - <code>fr</code>: reference/legacy/built-in/fr.md

@@ -2,6 +2,13 @@
 icon: kolena/developer-16
 ---
 
+!!! warning "Legacy Warning"
+
+    Content in this section reflects **outdated practices** or **deprecated features**. It's recommended to avoid using these in new developments.
+
+    While existing implementations using these features will continue to receive support, we strongly advise adopting the latest standards and tools for new projects to ensure optimal performance and compatibility. For more information and up-to-date practices, please refer to our newest documentation at [docs.kolena.io](https://docs.kolena.io).
+
+
 # :kolena-developer-20: Installing `kolena`
 
 Testing on Kolena is conducted using the [`kolena`](https://github.com/kolenaIO/kolena) Python package. You use the
