@@ -81,7 +81,7 @@ def main(args: Namespace) -> None:
 
     print("loading test suite")
     if args.suite_name:
-        test_suites = TestSuite.load(args.suite_name)
+        test_suites = [TestSuite.load(args.suite_name)]
     else:
         test_suites = TestSuite.load_all(tags={DATASET})
     for test_suite in test_suites:
