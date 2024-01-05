@@ -4,9 +4,6 @@ orbs:
   codecov: codecov/codecov@3.2.4
 
 parameters:
-  classification:
-    type: boolean
-    default: false
   detection:
     type: boolean
     default: false
@@ -367,7 +364,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ detection, fr, workflow ]
               extras: [ "none" ]
           enabled: true
           parallelism: 3
@@ -424,7 +421,7 @@ workflows:
       - example-test-workflow:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]
+              subproject: [ keypoint_detection, age_estimation, object_detection_3d, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
   example-evaluator:
