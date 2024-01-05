@@ -23,6 +23,7 @@ from automatic_speech_recognition.seed_test_suite import main as seed_test_suite
 BUCKET = "kolena-public-datasets"
 DATASET = "LibriSpeech"
 
+
 @pytest.fixture(scope="module")
 def suite_name() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
