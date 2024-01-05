@@ -25,37 +25,31 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 For binary classification, there are two scripts that perform the following operations:
 
-1. [`register_dataset.py`](classification/binary/register_dataset.py) registers the
+1. [`upload_dataset.py`](classification/binary/upload_dataset.py) registers the
 [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset.
 
+```shell
+$ poetry run python3 classification/binary/upload_dataset.py --help
+usage: upload_dataset.py [-h] [--dataset DATASET]
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --dataset DATASET  Custom name for the dogs-vs-cats dataset to upload.
+```
+
 2. [`upload_results.py`](classification/binary/upload_results.py) uploads results for `"resnet50v2"` and
-`"inceptionv3"` by default. You can also choose one model by specifying `--datasets`.
+`"inceptionv3"` by default. You can also choose one model by specifying `--models`.
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
 `--help` flag for more information:
 
 ```shell
 $ poetry run python3 classification/binary/upload_results.py --help
-usage: upload_results.py [-h] [--models MODELS [MODELS ...]] [--multiclass]
+usage: upload_results.py [-h] [--models {resnet50v2,inceptionv3} [{resnet50v2,inceptionv3} ...]] [--dataset DATASET]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --models MODELS [MODELS ...]
-                        Model(s) from ['resnet50v2', 'inceptionv3'] to test
-  --multiclass          Option to evaluate dogs-vs-cats as multiclass classification
+  --models {resnet50v2,inceptionv3} [{resnet50v2,inceptionv3} ...]
+                        Name(s) of the models(s) to register.
+  --dataset DATASET     Custom name for the dogs-vs-cats dataset to test.
 ```
-
-
-<!---
-TODO, indicating where multiclass information will be.
-### Multiclass Classification
-
-For multiclass classification, there are two scripts that perform the following operations:
-
-1. [`register_dataset.py`](classification/multiclass/register_dataset.py) registers the
-[CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset.
-
-2. [`upload_results.py`](classification/multiclass/upload_results.py) uploads results for `"resnet50v2"` and
-`"inceptionv3"` by default. You can also choose one model by specifying `--datasets`.
-
--->

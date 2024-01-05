@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import random
+import string
 from argparse import Namespace
 from collections.abc import Iterator
 
@@ -24,6 +26,8 @@ from kolena._utils.state import kolena_session
 BUCKET = "kolena-public-examples"
 DATASET = "dogs-vs-cats"
 
+TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+
 
 @pytest.fixture(scope="session", autouse=True)
 def with_init() -> Iterator[None]:
@@ -31,11 +35,18 @@ def with_init() -> Iterator[None]:
         yield
 
 
+@pytest.fixture(scope="module")
+def dataset_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
+
+
 def test__upload_dataset() -> None:
-    upload_dataset_main()
+    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
+    upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results() -> None:
-    args = Namespace(models=["resnet50v2", "inceptionv3"], multiclass=True)
+    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
     upload_results_main(args)

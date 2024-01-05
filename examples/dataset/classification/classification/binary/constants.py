@@ -14,4 +14,4 @@
 BUCKET = "kolena-public-examples"
 DATASET = "dogs-vs-cats"
 POSITIVE_LABEL = "dog"
-NEGATIVE_LABEL = "cat"
+NEGATIVE_LABEL = "not dog"

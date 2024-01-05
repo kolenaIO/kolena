@@ -11,7 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Dict
+from argparse import ArgumentParser
+from argparse import Namespace
 
 import pandas as pd
 from classification.binary.constants import BUCKET
@@ -19,36 +20,25 @@ from classification.binary.constants import DATASET
 
 import kolena
 from kolena.dataset import register_dataset
-from kolena.workflow._datatypes import _get_full_type
-from kolena.workflow._datatypes import _serialize_dataobject
 from kolena.workflow.annotation import ClassificationLabel
-from kolena.workflow.io import _dataframe_object_serde
 
 
-def to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    result = _dataframe_object_serde(df, _serialize_dataobject)
-    result[column] = result.to_dict("records")
-    return result[[column]]
-
-
-def to_label_object(x: str) -> Dict[str, str]:
-    label = ClassificationLabel(x)
-    return {
-        "label": label.label,
-        "data_type": _get_full_type(label),
-    }
+def run(args: Namespace) -> None:
+    kolena.initialize(verbose=True)
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
+    id_fields = ["locator"]
+    df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
+    register_dataset(args.dataset, df, id_fields)
 
 
 def main() -> None:
-    kolena.initialize(verbose=True)
-    df_metadata = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
-    id_fields = ["locator"]
-    ground_truth_field = "label"
-
-    df_serialized_metadata = to_serialized_dataframe(df_metadata[["width", "height"]], column="metadata")
-    df_serialized_ground_truth = df_metadata[ground_truth_field].apply(lambda x: to_label_object(x))
-    df_datapoints = pd.concat([df_metadata[id_fields], df_serialized_metadata, df_serialized_ground_truth], axis=1)
-    register_dataset(DATASET, df_datapoints, id_fields)
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset",
+        default=DATASET,
+        help=f"Custom name for the {DATASET} dataset to upload.",
+    )
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":
