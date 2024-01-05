@@ -59,7 +59,7 @@ def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     complete_test_case = seed_complete_test_case(args)
     test_suite = TestSuite(
-        f"{DATASET}",
+        f"{args.suite_name}",
         test_cases=[complete_test_case],
         reset=True,
     )
@@ -73,6 +73,12 @@ if __name__ == "__main__":
         type=str,
         default="s3://kolena-public-datasets/sts-benchmark/results/all-distilroberta-v1.csv",
         help="CSV file specifying dataset. See default CSV for details",
+    )
+    ap.add_argument(
+        "--suite_name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name for the created test suite.",
     )
 
     main(ap.parse_args())
