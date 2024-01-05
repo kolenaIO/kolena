@@ -19,7 +19,10 @@ from scripts.multiclass.seed_test_suite import main as seed_test_suite_main
 
 
 def test__seed_test_suite__smoke(suite_name: str) -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/cifar10/test/meta/metadata.tiny5.csv", suite_name=suite_name)
+    args = Namespace(
+        dataset_csv="s3://kolena-public-datasets/cifar10/test/meta/metadata.tiny5.csv",
+        suite_name=suite_name,
+    )
     seed_test_suite_main(args)
 
 
