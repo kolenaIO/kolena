@@ -17,8 +17,8 @@ from argparse import Namespace
 
 import pytest
 from text_summarization.seed_test_run import main as seed_test_run_main
-from text_summarization.seed_test_suite import main as seed_test_suite_main
 from text_summarization.seed_test_suite import DATASET
+from text_summarization.seed_test_suite import main as seed_test_suite_main
 
 
 @pytest.fixture(scope="module")
@@ -28,7 +28,10 @@ def suite_prefix() -> str:
 
 
 def test__seed_test_suite__smoke(suite_prefix: str) -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/metadata.tiny1.csv", suite_prefix=suite_prefix)
+    args = Namespace(
+        dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/metadata.tiny1.csv",
+        suite_prefix=suite_prefix,
+    )
     seed_test_suite_main(args)
 
 
