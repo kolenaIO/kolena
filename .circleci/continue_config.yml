@@ -4,9 +4,6 @@ orbs:
   codecov: codecov/codecov@3.2.4
 
 parameters:
-  detection:
-    type: boolean
-    default: false
   fr:
     type: boolean
     default: false
@@ -364,7 +361,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, workflow ]
+              pytest-group: [fr, workflow ]
               extras: [ "none" ]
           enabled: true
           parallelism: 3
