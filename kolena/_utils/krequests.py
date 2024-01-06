@@ -155,7 +155,8 @@ def raise_for_status(response: requests.Response) -> None:
     try:
         response.raise_for_status()
     except HTTPError:
-        raise RemoteError(response=f"{response.text} ({response.elapsed.total_seconds():0.5f} seconds elapsed)")
+        error_message = f"{response.text} ({response.elapsed.total_seconds():0.5f} seconds elapsed)"
+        raise RemoteError(response=error_message)  # type: ignore
 
 
 @kolena_initialized

@@ -145,7 +145,7 @@ def initialize(
         log.info(f"connected to {get_platform_url()}")
 
 
-def _find_token() -> str:
+def _find_token() -> Optional[str]:
     if KOLENA_TOKEN_ENV in os.environ:
         return os.environ[KOLENA_TOKEN_ENV]
 

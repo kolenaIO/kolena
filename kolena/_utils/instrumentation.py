@@ -112,7 +112,7 @@ def record_event(request: EventAPI.RecordEventRequest) -> None:
         ...
 
 
-def with_event(event_name: str):
+def with_event(event_name: str) -> Callable:
     """function decorator to track start and end of an event"""
 
     def event_decorator(func: Callable) -> Callable:

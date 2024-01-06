@@ -115,7 +115,7 @@ class _BatchedLoader(Generic[DFType]):
     def complete_load(uuid: Optional[str], api_version: str = DEFAULT_API_VERSION) -> None:
         if uuid is None:
             return
-        kreq = krequests if api_version == "v1" else krequests_v2
+        kreq = krequests if api_version == API_V1 else krequests_v2
         complete_request = API.CompleteDownloadRequest(uuid=uuid)
         complete_res = kreq.put(
             endpoint_path=API.Path.COMPLETE_DOWNLOAD.value,

@@ -431,7 +431,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             load_uuid = init_upload().uuid
             upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
         else:
-            load_uuid = None
+            load_uuid = None  # type: ignore
 
         request = CoreAPI.BulkProcessRequest(
             test_cases=[CoreAPI.SingleProcessRequest(name=name, reset=reset) for name, _ in data],

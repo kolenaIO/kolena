@@ -130,7 +130,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.reset = reset
 
         evaluator_display_name = (
-            None if evaluator is None else evaluator.display_name() if is_evaluator_class else evaluator.__name__
+            None if evaluator is None else evaluator.display_name() if is_evaluator_class else evaluator.__name__  # type: ignore
         )
         api_configurations = (
             [_maybe_evaluator_configuration_to_api(config) for config in self.configurations]

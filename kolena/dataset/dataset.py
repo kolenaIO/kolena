@@ -71,7 +71,7 @@ class DatapointType(str, Enum):
     VIDEO = "DATAPOINT/VIDEO"
 
     @classmethod
-    def has_value(cls, item) -> bool:
+    def has_value(cls, item) -> bool:  # type: ignore
         return item in cls.__members__.values()
 
 
@@ -91,7 +91,7 @@ def _dataobject_type(obj: TypedDataObject) -> str:
 
 def _get_datapoint_type(mimetype_str: str) -> str:
     main_type, sub_type = mimetype_str.split("/")
-    return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
+    return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)  # type: ignore
 
 
 def _infer_datatype_value(x: str) -> str:
