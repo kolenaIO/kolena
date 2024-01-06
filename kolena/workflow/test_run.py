@@ -130,7 +130,11 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.reset = reset
 
         evaluator_display_name = (
-            None if evaluator is None else evaluator.display_name() if is_evaluator_class else evaluator.__name__  # type: ignore
+            None
+            if evaluator is None
+            else evaluator.display_name()
+            if is_evaluator_class
+            else evaluator.__name__  # type: ignore
         )
         api_configurations = (
             [_maybe_evaluator_configuration_to_api(config) for config in self.configurations]
@@ -281,7 +285,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             log.info(f"evaluating test case '{test_case.name}'")
             test_case_metrics_by_config = {}
             test_case_plots_by_config = {}
-            inferences:  List[Tuple[TestSample, GroundTruth, Inference]] = self.model.load_inferences(test_case)
+            inferences: List[Tuple[TestSample, GroundTruth, Inference]] = self.model.load_inferences(test_case)
 
             for configuration in configurations:
                 configuration_description = _configuration_description(configuration)
@@ -375,7 +379,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         else:
             test_case_test_samples._set_configuration(None)
             evaluation_results = evaluator(
-                test_samples, ground_truths, inferences,
+                test_samples,
+                ground_truths,
+                inferences,
                 test_case_test_samples,
             )  # type: ignore
             process_results(evaluation_results, None)

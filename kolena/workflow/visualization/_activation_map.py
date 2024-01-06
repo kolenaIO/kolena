@@ -13,7 +13,6 @@
 # limitations under the License.
 from abc import ABC
 from abc import abstractmethod
-from typing import Optional
 from typing import Union
 
 import numpy as np

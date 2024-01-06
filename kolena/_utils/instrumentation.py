@@ -129,8 +129,8 @@ def with_event(event_name: str) -> Callable:
                 raise e
             finally:
                 event_metadata["duration"] = round(
-                    (datetime.datetime.now() - start_time)
-                    .total_seconds(), 3,
+                    (datetime.datetime.now() - start_time).total_seconds(),
+                    3,
                 )  # type: ignore
                 record_event(
                     EventAPI.RecordEventRequest(

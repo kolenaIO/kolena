@@ -37,7 +37,6 @@ from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
 from kolena.errors import MissingTokenError
-from kolena.errors import UninitializedError
 
 
 def mock_jwt(input: str) -> str:

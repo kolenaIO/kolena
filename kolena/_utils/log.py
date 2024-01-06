@@ -83,7 +83,11 @@ def error(message: str, exception: Optional[BaseException], **kwargs: Any) -> No
 T = TypeVar("T")
 
 
-def progress_bar(iterator: Union[Iterator[T], List[np.ndarray]], desc: Optional[str] = None, **kwargs: Any) -> Iterator[T]:
+def progress_bar(
+    iterator: Union[Iterator[T], List[np.ndarray]],
+    desc: Optional[str] = None,
+    **kwargs: Any,
+) -> Iterator[T]:
     if _client_state.verbose:
         desc_base = "kolena> " if is_notebook else _colored("kolena> ", color="magenta")
         desc_full = f"{desc_base}{desc}" if desc is not None else desc_base
@@ -96,7 +100,7 @@ def _is_notebook() -> bool:
     if "IPython" not in sys.modules:
         return False
     try:
-        get_ipython = sys.modules["IPython"].get_ipython  #type: ignore
+        get_ipython = sys.modules["IPython"].get_ipython  # type: ignore
         shell = get_ipython().__class__.__name__
         if shell == "ZMQInteractiveShell":
             return True  # Jupyter notebook or qtconsole
