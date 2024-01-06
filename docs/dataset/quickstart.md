@@ -106,8 +106,8 @@ keypoint detection model and a random keypoint model.
 
     To upload new model results, from the Details tab of the dataset, click on “Upload Model Results” in the upper right.
     Then, select “Upload from cloud storage”. Using the explorer, navigate to s3://kolena-public-datasets/300-W/results/
-    and select **model.csv**. This CSV file contains model results for each
-    of the datapoints we uploaded to the dataset.
+    and select `random.csv` This CSV file contains model results for the random keypoints
+    model for each of the datapoints we uploaded to the dataset.
 
     ??? note "Generating Model Results"
         See the [`keypoint_detetction/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
@@ -116,9 +116,12 @@ keypoint detection model and a random keypoint model.
     You will now see a preview of how Kolena will ingest the model results. Give your model a name, and click “Confirm” to
     upload the model results.
 
-    **gif of model import workflow**
+    <figure markdown>
+        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow.gif)
+        <figcaption>Example Results Upload</figcaption>
+    </figure>
 
-    Repeat the above steps with the file **model/other-results.csv**.
+    Repeat the above steps with the file `retinaface.csv`.
 
 === "SDK"
 
@@ -138,43 +141,55 @@ Once you have uploaded your dataset and model results, you can visualize the dat
 
 You can quickly see the distribution of any datapoint or model inference field in the “Distributions” tab.
 
-Additionally, you can create custom plots in the "Debugger" tab. For example, click “Add Model” in the top left and
-select the RetinaFace model. In the plotting widget at the bottom, select **something** as the x-axis
-and **something else** as the y-axis. You will then see a plot showing **something**
+<figure markdown>
+![Distribution Plots](../assets/images/quickstart-distribution.jpg)
+<figcaption>Distribution Plots</figcaption>
+</figure>
 
-**gif of plot generation**
+Additionally, you can create custom plots in the "Debugger" tab. For example, click “Add Model” in the top left and
+select the random model. In the plotting widget at the bottom, select `datapoint.normalization_factor` as the x-axis
+and `result.mse > mean` as the y-axis to plot these two fields against each other.
+
+<figure markdown>
+![Custom Plots](../assets/images/quickstart-otf-plotting.gif)
+<figcaption>Custom Plots</figcaption>
+</figure>
 
 ## Step 4: Define Quality Standards
 
 Quality Standards define the criteria by which models are evaluated on each dataset. A Quality Standard consists of
-Test Cases, which organize your data into key scenarios, and Evaluation Criteria, which define key performance metrics.
+Test Cases, which organize your data into key scenarios, and Metric, which define key performance indicators.
 
 ### Define Test Cases
 
-To configure test cases, navigate to the “Debugger” tab and click on “Configure Test Cases”. From here, you can select a
-field to use stratify your dataset. For this example, divide the dataset by <>. Click “Save to Quality
-Standards” to save your test case configuration.
+To configure test cases, navigate to the "Quality Standards" tab and click on “Divide Dataset By”. Select
+`datapoint.condition` to create test cases based on the condition field. Click the check mark to
+save your test cases to your Quality Standard.
 
 You will now see that your dataset has been organized into test cases based on the category field. Any Evaluation
 Criteria you define will be calculated on each test case.
 
-**gif of test case creation**
+<figure markdown>
+![Creating Test Cases](../assets/images/quickstart-create-test-cases.gif)
+<figcaption>Creating Test Cases</figcaption>
+</figure>
 
-### Define Evaluation Criteria
+### Define Metrics
 
-To configure Evaluation Criteria, navigate to the “Debugger” tab and click on “Configure Evaluation Criteria”.
-In the drawer, click on “Add Evaluation Criteria”, and select **suggested evaluation criteria**
-
-**gif of evaluation criteria definition**
+To configure Evaluation Criteria, from the Quality Standards tab, click "Add Metrics" and select `result.mse > mean`
+and `result.nmse > mean`.
 
 ## Step 5: Compare Models
 
-Once you have configured a Quality Standard, the Evaluation Metrics you define will be calculated across all Test Cases.
+Once you have configured a Quality Standard, the Metrics you define will be calculated across all Test Cases.
 To compare the results across models, navigate to the "Quality Standards" tab and add the "RetinaFace" and "random" models to the
-table using the + button in the top right. You will now see all evaluation criteria in the quality standard computed
-on every test case in the quality standard.
+table using the "Add Models" button in the top right. You will now see all metrics in the Quality Standard computed
+on every test case in the Quality Standard.
 
-**gif of model comparison**
+<figure markdown>
+![Comparing Modles](../assets/images/quickstart-compare-models.gif)
+<figcaption>Comparing Models</figcaption>
+</figure>
 
 ## Conclusion
 
