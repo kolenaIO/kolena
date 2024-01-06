@@ -18,9 +18,9 @@ from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from classification.binary.upload_dataset import main as upload_dataset_main
-from classification.binary.upload_results import run as upload_results_main
 
+from classification.binary.upload_dataset import run as upload_dataset_main
+from classification.binary.upload_results import run as upload_results_main
 from kolena._utils.state import kolena_session
 
 BUCKET = "kolena-public-examples"
@@ -41,12 +41,12 @@ def dataset_name() -> str:
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__upload_dataset() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
+def test__upload_dataset(dataset_name: str) -> None:
+    args = Namespace(dataset_name=dataset_name)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results() -> None:
+def test__upload_results(dataset_name: str) -> None:
     args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
     upload_results_main(args)

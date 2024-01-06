@@ -30,11 +30,12 @@ For binary classification, there are two scripts that perform the following oper
 
 ```shell
 $ poetry run python3 classification/binary/upload_dataset.py --help
-usage: upload_dataset.py [-h] [--dataset DATASET]
+usage: upload_dataset.py [-h] [--dataset_name DATASET_NAME]
 
-optional arguments:
-  -h, --help         show this help message and exit
-  --dataset DATASET  Custom name for the dogs-vs-cats dataset to upload.
+options:
+  -h, --help            show this help message and exit
+  --dataset_name DATASET_NAME
+                        Custom name for the dogs-vs-cats dataset to upload.
 ```
 
 2. [`upload_results.py`](classification/binary/upload_results.py) uploads results for `"resnet50v2"` and
