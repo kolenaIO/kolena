@@ -22,7 +22,7 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 This project defines two scripts that perform the following operations:
 
 1. [`upload_dataset.py`](age_estimation/upload_dataset.py) creates the Labeled Faces in the Wild dataset on Kolena
-2. [`upload_results.py`](age_estimation/upload_results.py) tests a specified model, e.g. `ssrnet`, on the above test suites
+2. [`upload_results.py`](age_estimation/upload_results.py) tests a specified model, e.g. `ssrnet`, on the above dataset
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
 `--help` flag for more information:
