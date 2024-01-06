@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from argparse import ArgumentParser
+from argparse import Namespace
+
 import pandas as pd
 from age_estimation.constants import DATA_FILEPATH
 from age_estimation.constants import DATASET
@@ -19,11 +22,22 @@ import kolena
 from kolena.dataset import register_dataset
 
 
-def main() -> None:
+def run(args: Namespace) -> None:
     df = pd.read_csv(DATA_FILEPATH)
 
     kolena.initialize(verbose=True)
-    register_dataset(DATASET, df)
+    register_dataset(args.dataset_name, df)
+
+
+def main() -> None:
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset_name",
+        type=str,
+        default=DATASET,
+        help=f"Custom name for the {DATASET} dataset to upload.",
+    )
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":

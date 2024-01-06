@@ -55,12 +55,18 @@ def run(args: Namespace) -> None:
         )
 
     df_metrics = pd.DataFrame.from_records(results)
-    test(DATASET, model, df_metrics)
+    test(args.dataset, model, df_metrics)
 
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("model", type=str, choices=["ssrnet", "deepface"], help="Name of model to test.")
+    ap.add_argument("--model", type=str, choices=["ssrnet", "deepface"], help="Name of model to test.")
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DATASET,
+        help=f"Custom name for the {DATASET} dataset to test.",
+    )
     run(ap.parse_args())
 
 

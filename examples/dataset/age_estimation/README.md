@@ -29,11 +29,10 @@ The `upload_results.py` script defines command line arguments to select which mo
 
 ```shell
 $ poetry run python3 age_estimation/upload_results.py --help
-usage: upload_results.py [-h] {ssrnet,deepface}
-
-positional arguments:
-  {ssrnet,deepface}  Name of model to test.
+usage: upload_results.py [-h] [--model {ssrnet,deepface}]
 
 options:
-  -h, --help         show this help message and exit
+  -h, --help            show this help message and exit
+  --model {ssrnet,deepface}
+                        Name of model to test.
 ```

@@ -12,14 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import random
+import string
 from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from age_estimation.upload_dataset import main as upload_dataset_main
+from age_estimation.upload_dataset import run as upload_dataset_main
 from age_estimation.upload_results import run as upload_results_main
 
 from kolena._utils.state import kolena_session
+
+
+BUCKET = "kolena-public-examples"
+DATASET = "labeled-faces-in-the-wild"
+
+TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -28,17 +36,24 @@ def with_init() -> Iterator[None]:
         yield
 
 
-def test__upload_dataset() -> None:
-    upload_dataset_main()
+@pytest.fixture(scope="module")
+def dataset_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
+
+
+def test__upload_dataset(dataset_name: str) -> None:
+    args = Namespace(dataset_name=dataset_name)
+    upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results_deepface() -> None:
-    args = Namespace(model="deepface")
+def test__upload_results_deepface(dataset_name: str) -> None:
+    args = Namespace(dataset=dataset_name, model="deepface")
     upload_results_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results_ssrnet() -> None:
-    args = Namespace(model="ssrnet")
+def test__upload_results_ssrnet(dataset_name: str) -> None:
+    args = Namespace(dataset=dataset_name, model="ssrnet")
     upload_results_main(args)
