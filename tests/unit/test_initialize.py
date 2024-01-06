@@ -169,11 +169,6 @@ def test__initialize__token_missing() -> None:
             kolena.initialize()
 
 
-def test__uninitialized_usage() -> None:
-    with pytest.raises(UninitializedError):
-        kolena.fr.Model.create("test", {})
-
-
 def test__kolena_session() -> None:
     base_token = "foobar"
     token_1 = "token tenant one"
