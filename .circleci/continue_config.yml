@@ -391,7 +391,6 @@ workflows:
               extras: [ "none" ]
           pytest-group: dataset
           enabled: true
-          parallelism: 2
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
