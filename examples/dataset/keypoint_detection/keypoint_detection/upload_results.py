@@ -38,7 +38,6 @@ def run(args: Namespace) -> None:
 
     df_results = pd.DataFrame.from_records(results)
     upload_results(args.dataset, args.model, df_results)
-    return 0
 
 
 def main() -> None:
