@@ -20,8 +20,6 @@ jobs:
           mapping: |
             kolena/_experimental/.* workflow true
             tests/integration/_experimental/.* workflow true
-            kolena/fr/.* fr true
-            tests/integration/fr/.* fr true
             kolena/workflow/.* workflow true
             tests/integration/workflow/.* workflow true
             kolena/dataset/.* dataset true
@@ -38,7 +36,7 @@ jobs:
           name: Generate config
           command: |
             export INT_MATRIX=$(jq -c 'if (.all) then
-              (["fr", "workflow"])
+              (["workflow"])
               else (to_entries | map(select((.value) and (.key | contains("example") | not)) | .key)) end' \
               /tmp/pipeline-parameters.json)
             yq '(.workflows.ci.jobs[] | select(."integration-test".matrix.parameters."pytest-group")
