@@ -95,7 +95,7 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
 def get(
     endpoint_path: str,
     params: Any = None,
-    api_version: int = DEFAULT_API_VERSION,
+    api_version: str = DEFAULT_API_VERSION,
     **kwargs: Any,
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
@@ -109,7 +109,7 @@ def post(
     endpoint_path: str,
     data: Any = None,
     json: Any = None,
-    api_version: int = DEFAULT_API_VERSION,
+    api_version: str = DEFAULT_API_VERSION,
     **kwargs: Any,
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
@@ -123,7 +123,7 @@ def put(
     endpoint_path: str,
     data: Any = None,
     json: Any = None,
-    api_version: int = DEFAULT_API_VERSION,
+    api_version: str = DEFAULT_API_VERSION,
     **kwargs: Any,
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
@@ -133,7 +133,7 @@ def put(
 
 
 @kolena_initialized
-def delete(endpoint_path: str, api_version: int = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
+def delete(endpoint_path: str, api_version: str = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
