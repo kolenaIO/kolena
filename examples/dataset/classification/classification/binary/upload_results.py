@@ -17,12 +17,12 @@ from typing import Any
 from typing import Dict
 
 import pandas as pd
-
-import kolena
 from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
 from classification.binary.constants import NEGATIVE_LABEL
 from classification.binary.constants import POSITIVE_LABEL
+
+import kolena
 from kolena.dataset import fetch_dataset
 from kolena.dataset import test
 from kolena.workflow.annotation import ScoredClassificationLabel

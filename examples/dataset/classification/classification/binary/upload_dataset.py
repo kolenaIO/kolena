@@ -15,10 +15,10 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-
-import kolena
 from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
+
+import kolena
 from kolena.dataset import register_dataset
 from kolena.workflow.annotation import ClassificationLabel
 
