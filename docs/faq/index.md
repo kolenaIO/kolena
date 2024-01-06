@@ -70,6 +70,11 @@ If you don't see your question here, please reach out to us on Slack or at
     To retrieve a service user API token that is not scoped to a specific username, please reach out to us on Slack or
     at [contact@kolena.com](mailto:contact@kolena.com).
 
+??? faq "My data is being ingested in the wrong format for a CSV exported using `pandas.DataFrame.to_csv`"
+
+    `pandas.DataFrame.to_csv` does not always handle object serialization seamlessly. Please reference
+    [`dataframe_to_csv`](../reference/io/#kolena.io.dataframe_to_csv) for a drop-in replacement.
+
 ??? faq "Does Kolena support file versioning?"
 
     If you are using Amazon S3 or Google Cloud Storage, Kolena supports file versioning for any linked `locator` files.
