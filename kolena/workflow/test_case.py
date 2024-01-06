@@ -17,6 +17,8 @@ import time
 from abc import ABCMeta
 from collections import defaultdict
 from contextlib import contextmanager
+from typing import Any
+from typing import DefaultDict
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -444,7 +446,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         bulk_response = from_dict(data_class=CoreAPI.BulkProcessResponse, data=response.json())
 
         test_cases = []
-        statuses = defaultdict(int)
+        statuses: DefaultDict[Any, int] = defaultdict(int)
         for test_case_data in bulk_response.test_cases:
             test_cases.append(cls._create_from_data(test_case_data.data))
             statuses[test_case_data.status] += 1

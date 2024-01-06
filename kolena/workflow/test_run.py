@@ -281,7 +281,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             log.info(f"evaluating test case '{test_case.name}'")
             test_case_metrics_by_config = {}
             test_case_plots_by_config = {}
-            inferences = self.model.load_inferences(test_case)
+            inferences:  List[Tuple[TestSample, GroundTruth, Inference]] = self.model.load_inferences(test_case)
 
             for configuration in configurations:
                 configuration_description = _configuration_description(configuration)

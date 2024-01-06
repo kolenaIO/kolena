@@ -80,7 +80,7 @@ def _get_test_suite_url(client_state: _ClientState, test_suite_id: int) -> str:
     return f"{platform_url}/testing?{urlencode(dict(testSuiteId=test_suite_id))}"
 
 
-def _get_dataset_url(client_state: _ClientState, dataset_id: str) -> str:
+def _get_dataset_url(client_state: _ClientState, dataset_id: int) -> str:
     platform_url = _get_platform_url(client_state)
     return f"{platform_url}/dataset?{urlencode(dict(datasetId=dataset_id))}"
 

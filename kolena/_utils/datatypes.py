@@ -132,7 +132,7 @@ def _try_deserialize_typed_dataobject(value: Any) -> Any:
 class DataObject(metaclass=ABCMeta):
     """The base for various objects in `kolena.workflow`."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         if not _allow_extra(type(self)):
             return self.__repr__()
 
