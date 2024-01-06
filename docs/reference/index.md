@@ -15,38 +15,37 @@ This section contains detailed API reference documentation for `kolena`.
 
     Initialize client sessions
 
-- [`kolena.errors`](errors.md)
+- [`kolena.errors`](./errors.md)
 
     ---
 
     Custom error definitions
+
+- [`kolena.io`](./io.md)
+
+    ---
+
+    Helper utilities for working with Kolena using common data types
+
+- [`kolena.annotation`](./annotation.md)
+
+    ---
+
+    Conect annotations and overlays to datapoints and results
+
+- [`kolena.asset`](asset.md)
+
+    ---
+
+    Connect asset files to datapoints and results
 </div>
 
+---
+
 <div class="grid cards" markdown>
-- [:kolena-cube-16: `kolena.workflow`](./workflow/index.md)
+- [:kolena-dataset-16: `kolena.dataset`](./dataset/index.md)
 
     ---
 
     Building blocks to test any ML problem in Kolena
-</div>
-
----
-
-<div class="grid cards" markdown>
-- [:kolena-workflow-16: Pre-built Workflows](./pre-built/index.md)
-
-    ---
-
-    Ready-to-use workflows built with [`kolena.workflow`](./workflow/index.md).
-</div>
-
----
-
-<div class="grid cards" markdown>
-- [:kolena-archive-16: Legacy Definitions](./legacy/index.md)
-
-    ---
-
-    Built-in [`kolena.classification`](./legacy/built-in/classification.md),
-    [`kolena.detection`](./legacy/built-in/detection.md), and [`kolena.fr`](./legacy/built-in/fr.md) workflows
 </div>
