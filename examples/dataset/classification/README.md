@@ -53,3 +53,36 @@ optional arguments:
                         Name(s) of the models(s) to register.
   --dataset DATASET     Custom name for the dogs-vs-cats dataset to test.
 ```
+
+### Multiclass Classification
+
+For multiclass classification, there are two scripts that perform the following operations:
+
+1. [`upload_dataset.py`](classification/multiclass/upload_dataset.py) registers the
+[CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset.
+
+```shell
+$ poetry run python3 classification/multiclass/upload_dataset.py --help
+usage: upload_dataset.py [-h] [--dataset DATASET]
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --dataset DATASET  Custom name for the cifar10 dataset to upload.
+```
+
+2. [`upload_results.py`](classification/multiclass/upload_results.py) uploads results for `"resnet50v2"` and
+`"inceptionv3"` by default. You can also choose one model by specifying `--models`.
+
+The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
+`--help` flag for more information:
+
+```shell
+$ poetry run python3 classification/multiclass/upload_results.py --help
+usage: upload_results.py [-h] [--models {resnet50v2,inceptionv3} [{resnet50v2,inceptionv3} ...]] [--dataset DATASET]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --models {resnet50v2,inceptionv3} [{resnet50v2,inceptionv3} ...]
+                        Name(s) of the models(s) to register.
+  --dataset DATASET     Custom name for the cifar10 dataset to test.
+```
