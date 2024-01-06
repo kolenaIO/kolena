@@ -15,4 +15,3 @@ BUCKET = "kolena-public-examples"
 DATASET = "labeled-faces-in-the-wild"
 
 DATA_FILEPATH = f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv"
-PREDICTION_FILEPATH = f"s3://{BUCKET}/{DATASET}/results/{DATASET}.csv"

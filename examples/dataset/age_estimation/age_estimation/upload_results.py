@@ -13,6 +13,7 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Optional
 
 import pandas as pd
 from age_estimation.constants import BUCKET
@@ -24,26 +25,32 @@ from kolena.dataset import fetch_dataset
 from kolena.dataset import test
 
 
+def compute_metrics(gt_age: float, inf_age: Optional[float]):
+    error = inf_age - gt_age
+    return {
+        "fail_to_detect": inf_age is None or inf_age < 0,
+        "error": error,
+        "absolute_error": abs(error),
+        "square_error": error**2,
+    }
+
+
 def run(args: Namespace) -> None:
     model = args.model
 
     kolena.initialize(verbose=True)
     dataset_df = fetch_dataset(DATASET)
-    age_by_locator = {record["locator"]: record["age"] for record in dataset_df.to_dict(orient="records")}
+    gt_age_by_locator = {record["locator"]: record["age"] for record in dataset_df.to_dict(orient="records")}
 
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv")
 
     results = []
     for record in tqdm(df_results.itertuples(), total=len(df_results)):
-        error = age_by_locator[record.locator] - record.age
         results.append(
             {
                 "locator": record.locator,
                 "age": record.age,
-                "fail_to_detect": record.age is None or record.age < 0,
-                "error": error,
-                "absolute_error": abs(error),
-                "square_error": error**2,
+                **compute_metrics(gt_age_by_locator[record.locator], record.age),
             },
         )
 
