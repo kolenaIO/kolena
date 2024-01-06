@@ -20,7 +20,7 @@ This pre-built workflow is prepared for a 2D Object Detection problem and here i
 on the COCO dataset.
 
 <div class="grid cards" markdown>
-- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d)
+- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/hotfix/0.100.x/examples/object_detection_2d)
 
     ![Example 2D bounding boxes from the COCO dataset.](../../assets/images/COCO-transportation.jpeg)
 

@@ -14,9 +14,9 @@ arbitrary ML problem.
   [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset
 - [Text Summarization](./text_summarization): abstractive text summarization using the
   [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
-- [Mutliclass Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#multiclass-classification-on-cifar-10): Multiclass Classification
+- [Mutliclass Classification](https://github.com/kolenaIO/kolena/tree/hotfix/0.100.x/examples/classification#multiclass-classification-on-cifar-10): Multiclass Classification
   on image data from [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
-- [Binary Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/classification#binary-classification-on-dogs-vs-cats):
+- [Binary Classification](https://github.com/kolenaIO/kolena/tree/hotfix/0.100.x/examples/classification#binary-classification-on-dogs-vs-cats):
   Binary Classification on image data from [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
 - [Semantic Textual Similarity](./semantic_textual_similarity): semantic textual similarity using the
   [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
