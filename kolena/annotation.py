@@ -11,6 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Annotations are visualized in Kolena as overlays on top of datapoints.
+
+| Annotation | Conditions for visualization |
+| --- | --- |
+| [`BoundingBox`][kolena.annotation.BoundingBox] | Limited to `Image` or `Video` data |
+| [`BoundingBox3D`][kolena.annotation.BoundingBox3D] | Limited to `PointCloud` data |
+| [`Polygon`][kolena.annotation.Polygon] | Limited to `Image` or `Video` data |
+| [`Polyline`][kolena.annotation.Polyline] | Limited to `Image` or `Video` data |
+| [`Keypoints`][kolena.annotation.Keypoints] | Limited to `Image` or `Video` data |
+| [`SegmentationMask`][kolena.annotation.SegmentationMask] | Limited to `Image` or `Video` data |
+| [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
+| [`Label`][kolena.annotation.Label] | Valid for all data |
+| [`TimeSegment`][kolena.annotation.TimeSegment] | Limited to `Audio` or `Video` data |
+
+For example, when viewing images in the Studio, any annotations (such as lists of
+[`BoundingBox`][kolena.annotation.BoundingBox] objects) present in the datapoints are
+rendered on top of the image.
+"""  # noqa: E501
 import dataclasses
 from abc import ABCMeta
 from functools import reduce

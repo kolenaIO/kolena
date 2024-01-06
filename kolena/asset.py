@@ -11,6 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Assets are additional files that can be linked to the datapoints in your datasets.
+Assets can be visualized in the Kolena when exploring your datasets, test cases, or model results.
+
+The following asset types are available:
+
+- [`ImageAsset`][kolena.asset.ImageAsset]
+- [`PlainTextAsset`][kolena.asset.PlainTextAsset]
+- [`BinaryAsset`][kolena.asset.BinaryAsset]
+- [`PointCloudAsset`][kolena.asset.PointCloudAsset]
+- [`VideoAsset`][kolena.asset.VideoAsset]
+
+"""
 from abc import ABCMeta
 from typing import Optional
 
