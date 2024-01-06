@@ -14,7 +14,7 @@ the `kolena` Python SDK.
     If you would like to use the SDK for this quickstart follow these instructions to set up the
     SDK and set up the code example locally.
 
-    First ,install the `kolena` python SDK:
+    First, install the `kolena` python SDK:
 
     === "`pip`"
 
@@ -50,19 +50,19 @@ creating test cases.
 === "Web App"
 
     To import the 300-W dataset, select “Import datasets” then “Select from cloud storage”. Using the explorer, navigate to
-    s3://kolena-pubic-examples/300-W/ and select 300-W.csv.
+    `s3://kolena-pubic-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
-        See the [`keypoint_detetction/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
-        script in the code example for details on how the dataset is were generated.
+        See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
+        script in the code example for details on how the dataset was generated.
 
     Note: The keypoints in `300-W.csv` have been defined using `kolena.workflow.annotation.Keypoints` from
     the `kolena` SDK. See the `keypoint_detetction/upload_dataset.py` script for example usage.
 
     You will now see a preview of how the information is going to be consumed by Kolena.
 
-    Give your dataset a name and select `locator` as the ID column. The ID column is used to uniquely identify a test
-    sample and is used when uploading model results to associate inferences with test samples.
+    Give your dataset a name and select `locator` as the ID column. The ID column is used to uniquely identify a datapoint
+    and is used when uploading model results to associate inferences with datapoints.
 
     Click “Confirm” to import the dataset. Once the dataset has been added, you can add description and tags to them to organize the workspace.
 
@@ -74,7 +74,7 @@ creating test cases.
 
 === "SDK"
 
-    The example code contains a script [`keypoint_detetction/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
+    The example code contains a script [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
     which will process the CSV file `s3://kolena-public-examples/300-W/raw/300-W.csv`
     and register it as a dataset in Kolena using the `register_dataset` function.
 
@@ -105,12 +105,12 @@ keypoint detection model and a random keypoint model.
 === "Web App"
 
     To upload new model results, from the Details tab of the dataset, click on “Upload Model Results” in the upper right.
-    Then, select “Upload from cloud storage”. Using the explorer, navigate to s3://kolena-public-datasets/300-W/results/
-    and select `random.csv` This CSV file contains model results for the random keypoints
+    Then, select “Upload from cloud storage”. Using the explorer, navigate to `s3://kolena-public-datasets/300-W/results/`
+    and select `random.csv`, This CSV file contains model results for the random keypoints
     model for each of the datapoints we uploaded to the dataset.
 
     ??? note "Generating Model Results"
-        See the [`keypoint_detetction/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
+        See the [`keypoint_detection/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
         script in the code example for details on how results were generated.
 
     You will now see a preview of how Kolena will ingest the model results. Give your model a name, and click “Confirm” to
@@ -125,7 +125,7 @@ keypoint detection model and a random keypoint model.
 
 === "SDK"
 
-    The example code contains a script [`keypoint_detetction/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
+    The example code contains a script [`keypoint_detection/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
     which will compute metrics on a CSV of model inferences and upload them to Kolena.
 
     ```shell
