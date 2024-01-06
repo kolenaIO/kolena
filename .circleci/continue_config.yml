@@ -412,7 +412,13 @@ workflows:
       - example-test-dataset:
           matrix:
             parameters:
-              subproject: [ rain_forecast, text_summarization ]
+              subproject: [ text_summarization ]
+              resource-class: [ large ]
+              python-version: [ "3.9.18" ]
+      - example-test-dataset:
+          matrix:
+            parameters:
+              subproject: [ rain_forecast ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
