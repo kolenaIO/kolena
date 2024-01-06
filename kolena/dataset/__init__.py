@@ -17,7 +17,6 @@ from kolena.dataset.dataset import fetch_dataset
 from kolena.dataset.dataset import register_dataset
 from kolena.dataset.evaluation import fetch_results
 from kolena.dataset.evaluation import upload_results
-from kolena.workflow import annotation, asset
 
 __all__ = [
     "register_dataset",
@@ -25,6 +24,4 @@ __all__ = [
     "fetch_dataset",
     "fetch_results",
     "upload_results",
-    "annotation",
-    "asset",
 ]
