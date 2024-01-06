@@ -166,7 +166,7 @@ def upload_results(
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
                     an eval configuration and a DataFrame.
-    :return None
+    :return: None
     """
     existing_dataset = load_dataset(dataset)
     if not existing_dataset:
