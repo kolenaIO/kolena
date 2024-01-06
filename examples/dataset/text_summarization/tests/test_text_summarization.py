@@ -19,8 +19,8 @@ import pytest
 from text_summarization.constants import BUCKET
 from text_summarization.constants import DATASET
 from text_summarization.constants import MODELS
-from text_summarization.upload_dataset import main as upload_dataset_main
-from text_summarization.upload_results import main as upload_results_main
+from text_summarization.upload_dataset import run as upload_dataset_run
+from text_summarization.upload_results import run as upload_results_run
 
 
 @pytest.fixture(scope="module")
@@ -31,10 +31,10 @@ def dataset_name() -> str:
 
 def test__upload_dataset__smoke(dataset_name: str) -> None:
     args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/CNN-DailyMail.tiny1.csv", dataset_name=dataset_name)
-    upload_dataset_main(args)
+    upload_dataset_run(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset__smoke"])
 def test__upload_results__smoke(dataset_name: str) -> None:
     args = Namespace(models=[MODELS[0]], dataset=dataset_name)
-    upload_results_main(args)
+    upload_results_run(args)

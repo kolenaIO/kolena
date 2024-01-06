@@ -24,6 +24,7 @@ from kolena.dataset import register_dataset
 
 
 def run(args: Namespace) -> None:
+    kolena.initialize(verbose=True)
     df_dataset = pd.read_csv(args.dataset_csv)
     register_dataset(args.dataset_name, df_dataset, id_fields=[ID_FIELD])
 
@@ -42,7 +43,6 @@ def main() -> None:
         default=DATASET,
         help="Optionally specify a name of the dataset",
     )
-    kolena.initialize(verbose=True)
     run(ap.parse_args())
 
 
