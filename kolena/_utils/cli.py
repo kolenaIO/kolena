@@ -15,6 +15,7 @@ import dataclasses
 import json
 import os
 import sys
+from typing import Any
 from typing import Optional
 
 import click
@@ -43,8 +44,8 @@ _shared_options = [
 _shared_evaluator_options = [click.option("--workflow", "-w", required=True)]
 
 
-def add_options(*args):
-    def _add_options(func):
+def add_options(*args: Any) -> Any:
+    def _add_options(func: Any) -> Any:
         options = [x for n in args for x in n]
         for option in reversed(options):
             func = option(func)
@@ -176,5 +177,5 @@ def repository_create(name: str, api_token: Optional[str] = None) -> None:
     print("repository created")
 
 
-def run():
+def run() -> None:
     base_command()
