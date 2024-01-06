@@ -18,7 +18,7 @@ from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from classification.binary.upload_dataset import main as upload_dataset_main
+from classification.binary.upload_dataset import run as upload_dataset_main
 from classification.binary.upload_results import run as upload_results_main
 
 from kolena._utils.state import kolena_session
