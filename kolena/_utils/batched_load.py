@@ -112,7 +112,7 @@ class _BatchedLoader(Generic[DFType]):
         return df_class(df)
 
     @staticmethod
-    def complete_load(uuid: Optional[str], api_version: int = DEFAULT_API_VERSION) -> None:
+    def complete_load(uuid: Optional[str], api_version: str = DEFAULT_API_VERSION) -> None:
         if uuid is None:
             return
         kreq = krequests if api_version == "v1" else krequests_v2
@@ -128,7 +128,7 @@ class _BatchedLoader(Generic[DFType]):
         init_request: API.BaseInitDownloadRequest,
         endpoint_path: str,
         df_class: Optional[Type[DFType]],
-        endpoint_api_version: int = DEFAULT_API_VERSION,
+        endpoint_api_version: str = DEFAULT_API_VERSION,
     ) -> Iterator[DFType]:
         kreq = krequests if endpoint_api_version == API_V1 else krequests_v2
         with kreq.put(

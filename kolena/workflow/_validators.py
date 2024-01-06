@@ -95,7 +95,7 @@ def validate_field(
         validate_list(field_name, field_type, supported_list_types)
 
     elif origin is Union:  # NOTE: get_origin(Optional[T]) == Union
-        validate_union(field_name, field_type, supported_field_types, supported_list_types)
+        validate_union(field_name, field_type, supported_field_types, supported_list_types)  # type: ignore
 
     elif origin is not None or field_type == typing.Any:
         raise ValueError(f"Unsupported field type: field '{field_name}', type '{field_type}'")

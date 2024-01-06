@@ -17,6 +17,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -29,7 +30,7 @@ class Model:
         name: str
         metadata: Dict[str, Any]
         workflow: str
-        tags: Optional[List[str]] = None
+        tags: Optional[Union[List[str], Set[str]]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -38,7 +39,7 @@ class Model:
     @dataclass(frozen=True)
     class LoadAllRequest:
         workflow: str
-        tags: Optional[List[str]] = None
+        tags: Optional[Union[List[str], Set[str]]] = None
 
     @dataclass(frozen=True)
     class EntityData:
@@ -57,7 +58,7 @@ class Model:
         id: int
 
 
-Model.LoadAllResponse.__pydantic_model__.update_forward_refs()
+Model.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 @dataclass(frozen=True)
@@ -160,7 +161,7 @@ class TestSuite:
         name: str
         description: str
         workflow: str
-        tags: Optional[List[str]] = None
+        tags: Optional[Union[List[str], Set[str]]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -170,7 +171,7 @@ class TestSuite:
     @dataclass(frozen=True)
     class LoadAllRequest:
         workflow: str
-        tags: Optional[List[str]] = None
+        tags: Optional[Union[List[str], Set[str]]] = None
 
     @dataclass(frozen=True)
     class EntityData:
@@ -200,7 +201,7 @@ class TestSuite:
         test_suite_id: int
 
 
-TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()
+TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 class TestRun:

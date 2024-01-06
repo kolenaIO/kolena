@@ -128,11 +128,14 @@ def with_event(event_name: str):
                 event_metadata["response_error"] = e.__class__.__name__
                 raise e
             finally:
-                event_metadata["duration"] = round((datetime.datetime.now() - start_time).total_seconds(), 3)
+                event_metadata["duration"] = round(
+                    (datetime.datetime.now() - start_time)
+                    .total_seconds(), 3,
+                )  # type: ignore
                 record_event(
                     EventAPI.RecordEventRequest(
                         event_name=event_name,
-                        additional_metadata=event_metadata,
+                        additional_metadata=event_metadata,  # type: ignore
                     ),
                 )
 

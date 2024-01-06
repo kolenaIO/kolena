@@ -110,7 +110,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         is_evaluator_class = isinstance(evaluator, Evaluator)
         is_evaluator_function = evaluator is not None and not is_evaluator_class
-        if is_evaluator_function and _is_configured(evaluator) and len(configurations) == 0:
+        if is_evaluator_function and _is_configured(evaluator) and len(configurations) == 0:  # type: ignore
             raise ValueError("evaluator requires configuration but no configurations provided")
 
         if model.workflow != test_suite.workflow:
@@ -126,7 +126,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.model = model
         self.test_suite = test_suite
         self.evaluator = evaluator
-        self.configurations = self.evaluator.configurations if is_evaluator_class else configurations
+        self.configurations = self.evaluator.configurations if is_evaluator_class else configurations  # type: ignore
         self.reset = reset
 
         evaluator_display_name = (
@@ -142,7 +142,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             model_id=model._id,
             test_suite_id=test_suite._id,
             evaluator=evaluator_display_name,
-            configurations=api_configurations,
+            configurations=api_configurations,  # type: ignore
         )
         res = krequests.put(
             endpoint_path=API.Path.CREATE_OR_RETRIEVE.value,
@@ -263,7 +263,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if isinstance(self.evaluator, Evaluator):
             self._perform_evaluation(self.evaluator)
         else:
-            self._perform_streamlined_evaluation(self.evaluator)
+            self._perform_streamlined_evaluation(self.evaluator)  # type: ignore
 
         log.success(f"completed evaluation in {time.time() - t0:0.1f} seconds")
         log.success(f"results: {get_results_url(self.model.workflow.name, self.model._id, self.test_suite._id)}")
@@ -336,7 +336,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_case_test_samples = _TestCases(
             test_case_membership,
             self._id,
-            len(self.configurations),
+            len(self.configurations),  # type: ignore
         )
 
         test_case_metrics: Dict[int, Dict[Optional[EvaluatorConfiguration], MetricsTestCase]] = defaultdict(dict)
@@ -361,7 +361,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             if results.metrics_test_suite is not None:
                 test_suite_metrics[config] = results.metrics_test_suite
 
-        if _is_configured(evaluator):
+        if _is_configured(evaluator) and self.configurations:
             for configuration in self.configurations:
                 test_case_test_samples._set_configuration(configuration)
                 evaluation_results = evaluator(
@@ -370,19 +370,22 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                     inferences,
                     test_case_test_samples,
                     configuration,
-                )
+                )  # type: ignore
                 process_results(evaluation_results, configuration)
         else:
             test_case_test_samples._set_configuration(None)
-            evaluation_results = evaluator(test_samples, ground_truths, inferences, test_case_test_samples)
+            evaluation_results = evaluator(
+                test_samples, ground_truths, inferences,
+                test_case_test_samples,
+            )  # type: ignore
             process_results(evaluation_results, None)
 
         log.info("uploading test case metrics")
         self._upload_test_case_metrics(test_case_metrics)
         log.info("uploading test case plots")
-        self._upload_test_case_plots(test_case_plots)
+        self._upload_test_case_plots(test_case_plots)  # type: ignore
         log.info("uploading test suite metrics")
-        self._upload_test_suite_metrics(test_suite_metrics)
+        self._upload_test_suite_metrics(test_suite_metrics)  # type: ignore
 
     def _iter_test_samples_batch(
         self,

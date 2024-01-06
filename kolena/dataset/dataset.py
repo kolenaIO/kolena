@@ -266,7 +266,9 @@ def register_dataset(
                 id_fields = resolve_id_fields(chunk, id_fields, existing_dataset)
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
+            assert id_fields is not None
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
+    assert id_fields is not None
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)

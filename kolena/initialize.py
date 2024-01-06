@@ -120,7 +120,7 @@ def initialize(
             category=DeprecationWarning,
             stacklevel=2,
         )
-
+    assert api_token is not None
     init_response = state.get_token(api_token, proxies=proxies)
     derived_telemetry = init_response.tenant_telemetry
     _client_state.update(
@@ -150,6 +150,7 @@ def _find_token() -> str:
         return os.environ[KOLENA_TOKEN_ENV]
 
     hostname = urlparse(state._get_api_base_url()).hostname
+    assert hostname is not None
     try:
         netrc_file = netrc.netrc()
         record = netrc_file.authenticators(hostname)

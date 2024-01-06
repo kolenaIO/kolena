@@ -62,7 +62,7 @@ class LoadableDataFrame(ABC, Generic[TDataFrame]):
 
     @classmethod
     def construct_empty(cls) -> TDataFrame:
-        df = pd.DataFrame({key: [] for key in cls.get_schema().to_schema().columns.keys()})
+        df = pd.DataFrame({key: [] for key in cls.get_schema().to_schema().columns.keys()})  # type: ignore
         return cast(TDataFrame, validate_df_schema(df, cls.get_schema(), trusted=True))
 
     @classmethod
@@ -80,11 +80,11 @@ def _double_under(input: str) -> bool:
 def _allow_extra(cls: Type[T]) -> bool:
     # `pydantic.dataclasses.is_built_in_dataclass` would have false-positive when a stdlib-dataclass decorated
     # class extends a pydantic dataclass
-    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow
+    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow  # type: ignore
 
 
 # used to track data_type string -> TypedDataObject
-_DATA_TYPE_MAP = {}
+_DATA_TYPE_MAP: Dict[Any, Any] = {}
 
 
 def _get_full_type(obj: "TypedDataObject") -> str:
@@ -257,7 +257,7 @@ class DataObject(metaclass=ABCMeta):
             for key, val in obj_dict.items():
                 if key not in field_names:
                     items[key] = _try_deserialize_typed_dataobject(val)
-        return cls(**items)
+        return cls(**items)  # type: ignore
 
     # integrate with pandas json deserialization
     # https://pandas.pydata.org/docs/user_guide/io.html#fallback-behavior

@@ -93,7 +93,7 @@ def _is_notebook() -> bool:
     if "IPython" not in sys.modules:
         return False
     try:
-        get_ipython = sys.modules["IPython"].get_ipython
+        get_ipython = sys.modules["IPython"].get_ipython  #type: ignore
         shell = get_ipython().__class__.__name__
         if shell == "ZMQInteractiveShell":
             return True  # Jupyter notebook or qtconsole

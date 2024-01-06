@@ -44,6 +44,7 @@ def _get_platform_origin(client_state: _ClientState) -> str:
     base_url = urlparse(client_state.base_url)
     if base_url.hostname == "localhost":
         return "http://localhost:3000"
+    assert base_url.hostname is not None
     gateway_subdomain, *_ = base_url.hostname.split(".")
     subdomain = "trunk" if "trunk" in gateway_subdomain else "app"
     return f"https://{subdomain}.kolena.io"

@@ -59,7 +59,7 @@ class JWTAuth(requests.auth.AuthBase):
     def __init__(self, jwt: str):
         self.jwt = jwt
 
-    def __call__(self, r):
+    def __call__(self, r):  # type: ignore
         r.headers["Authorization"] = f"Bearer {self.jwt}"
         return r
 
@@ -67,6 +67,7 @@ class JWTAuth(requests.auth.AuthBase):
 @kolena_initialized
 def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
     client_state = get_client_state()
+    assert client_state.jwt_token is not None
     default_kwargs = {
         "auth": JWTAuth(client_state.jwt_token),
         "timeout": (CONNECTION_CONNECT_TIMEOUT, CONNECTION_READ_TIMEOUT),
@@ -83,7 +84,7 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
     )
     # allow requests to override Content-Type as needed by for example file uploads
     if "Content-Type" in kwargs.get("headers", {}):
-        default_headers["Content-Type"] = kwargs.get("headers")["Content-Type"]
+        default_headers["Content-Type"] = kwargs.get("headers")["Content-Type"]  # type: ignore
     return {
         **kwargs,
         **default_kwargs,
@@ -143,18 +144,18 @@ def delete(endpoint_path: str, api_version: str = DEFAULT_API_VERSION, **kwargs:
 def raise_for_status(response: requests.Response) -> None:
     if response.status_code == HTTPStatus.UNAUTHORIZED:
         # HTTP 401 is "unauthorized" but used as "unauthenticated"
-        raise UnauthenticatedError(response.content)
+        raise UnauthenticatedError(response=response)
     if response.status_code == HTTPStatus.NOT_FOUND:
-        raise NotFoundError(response.content)
+        raise NotFoundError(response=response)
     if response.status_code == HTTPStatus.CONFLICT:
-        raise NameConflictError(response.content)
+        raise NameConflictError(response=response)
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         raise IncorrectUsageError(response.content)
 
     try:
         response.raise_for_status()
     except HTTPError:
-        raise RemoteError(f"{response.text} ({response.elapsed.total_seconds():0.5f} seconds elapsed)")
+        raise RemoteError(response=f"{response.text} ({response.elapsed.total_seconds():0.5f} seconds elapsed)")
 
 
 @kolena_initialized

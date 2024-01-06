@@ -33,7 +33,7 @@ class Colormap(ABC):
     This option makes the overlay visualization better by highlighting only the important regions.
     """
 
-    def __init__(self, fade_low_activation: Optional[bool] = True):
+    def __init__(self, fade_low_activation: bool = True):
         self.fade_low_activation = fade_low_activation
 
     @abstractmethod
@@ -96,27 +96,27 @@ class ColormapJet(Colormap):
     def _scale_to_colormap(self, intensity: np.uint8) -> np.uint8:
         max_uint8 = np.iinfo(np.uint8).max
         if intensity <= max_uint8 / 8:
-            return 0
+            return np.uint8(0)
         elif intensity <= max_uint8 * 3 / 8:
             return self._interpolate(intensity, max_uint8 / 8, 0.0, max_uint8 * 3 / 8, max_uint8)
         elif intensity <= max_uint8 * 5 / 8:
-            return max_uint8
+            return np.uint8(max_uint8)
         elif intensity <= max_uint8 * 7 / 8:
             return self._interpolate(intensity, max_uint8 * 5 / 8, max_uint8, max_uint8 * 7 / 8, 0.0)
         else:
-            return 0
+            return np.uint8(0)
 
     def red(self, intensity: np.uint8) -> np.uint8:
-        return self._scale_to_colormap(intensity - np.iinfo(np.uint8).max / 4)
+        return self._scale_to_colormap(np.uint8(intensity - np.iinfo(np.uint8).max / 4))
 
     def green(self, intensity: np.uint8) -> np.uint8:
         return self._scale_to_colormap(intensity)
 
     def blue(self, intensity: np.uint8) -> np.uint8:
-        return self._scale_to_colormap(intensity + np.iinfo(np.uint8).max / 4)
+        return self._scale_to_colormap(np.uint8(intensity + np.iinfo(np.uint8).max / 4))
 
 
-def colorize_activation_map(activation_map: np.ndarray, colormap: Optional[Colormap] = ColormapJet()) -> np.ndarray:
+def colorize_activation_map(activation_map: np.ndarray, colormap: Colormap = ColormapJet()) -> np.ndarray:
     """
     Applies the specified colormap to the activation map.
 
