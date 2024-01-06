@@ -2,7 +2,7 @@
 
 The [Cross-Encoder for Natural Language Inference](https://huggingface.co/cross-encoder/nli-deberta-v3-base) (NLI) is a
 text classification model that takes a pair of text and assigns a label: `'contradiction'`, `'entailment'` or
-`'neutral'`. Additionally, it assigns a score, expected to range around `-10` to `10` for each label. The higher the
+`'neutral'`. Additionally, it assigns a probability ranging from 0 to 1 for each label. The higher the
 score, the more confident the model is to assign that label. So, it assigns the label with the highest score. This is
 useful for hallucination detection, as factual consistency implies the absence of contradictions.
 
@@ -24,7 +24,7 @@ from sentence_transformers import CrossEncoder
 nli_model = CrossEncoder('cross-encoder/nli-deberta-v3-base')
 
 def compute_metric(ground_truth: str, inference: str) -> float:
-    scores = nli_model.predict([ground_truth, inference])
+    scores = nli_model.predict([ground_truth, inference], apply_softmax=True)
     label = ['contradiction', 'entailment', 'neutral'][scores.argmax()]
     return {
         'label': label,
@@ -35,15 +35,15 @@ def compute_metric(ground_truth: str, inference: str) -> float:
 
 print(compute_metric("The duck crossed the road", "The duck did not cross the road"))
 # Outputs:
-# {'label': 'contradiction', 'contradiction': 7.436936, 'entailment': -4.0519376, 'neutral': -3.030173}
+# {'label': 'contradiction', 'contradiction': 0.999961, 'entailment': 0.000010, 'neutral': 0.000028}
 ```
 
 ## Examples
 | Ground Truth | Inference | <nobr>Classification</nobr> | Contradiction | Entailment | Neutral |
 | --- | --- | --- | --- | --- | --- |
-| `The duck crossed the road` | `The duck did not cross the road` | `contradiction` | `7.437` | `-4.052` | `-3.030` |
-| `The duck crossed the road` | `The animal crossed the road` | `entailment` | `-4.733` | `3.589` | `0.081` |
-| `The duck crossed the road` | `The duck crossed my path` | `neutral` | `-2.300` | `-0.173` | `2.059` |
+| `The duck crossed the road` | `The duck did not cross the road` | `contradiction` | `0.999` | `0.000` | `0.000` |
+| `The duck crossed the road` | `The animal crossed the road` | `entailment` | `0.000` | `0.971` | `0.029` |
+| `The duck crossed the road` | `The duck crossed my path` | `neutral` | `0.011` | `0.096` | `0.893` |
 
 ## Limitations and Advantages
 
@@ -52,7 +52,7 @@ context cannot be provided. If relevant, context can be added to the front of bo
 `("What did the duck do? The duck crossed the road.", "What did the duck do? The animal crossed the road.")`.
 
 2. Explainability is a challenge for these scores. This model is a black-box that is not able to explain the reasons
-for assigning a contradiction score of `3.0` or `4.5`. Users should examine this classifier's behavior on their own
+for assigning a contradiction score of `0.5` or `0.7`. Users should examine this classifier's behavior on their own
 data, and see how extra details within a ground truth or inference might impact the decision of assigning
 `'contradiction'`, `'entailment'` or `'neutral'`.
 

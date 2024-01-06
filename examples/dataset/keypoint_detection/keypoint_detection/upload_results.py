@@ -25,7 +25,7 @@ from kolena.dataset import fetch_dataset
 from kolena.dataset import upload_results
 
 
-def run(args: Namespace) -> int:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     infer = infer_retinaface if args.model == "RetinaFace" else infer_random
     df = fetch_dataset(args.dataset)

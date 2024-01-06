@@ -16,18 +16,20 @@ import json
 import pandas as pd
 
 import kolena
-from kolena._experimental.dataset import register_dataset
+from kolena.dataset import register_dataset
 from kolena.workflow.annotation import Keypoints
 
 DATASET = "300-W"
-BUCKET = "s3://kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 
 
 def main() -> None:
-    df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv", index_col=0, storage_options={"anon": True})
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", index_col=0, storage_options={"anon": True})
     df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
+    df["condition"] = df["locator"].apply(lambda locator: "indoor" if "indoor" in locator else "outdoor")
+
     kolena.initialize(verbose=True)
-    register_dataset(DATASET, df[["locator", "face", "normalization_factor"]])
+    register_dataset(DATASET, df[["locator", "face", "normalization_factor", "condition"]])
 
 
 if __name__ == "__main__":

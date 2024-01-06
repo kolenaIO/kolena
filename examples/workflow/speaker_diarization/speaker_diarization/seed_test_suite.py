@@ -53,7 +53,7 @@ def seed_test_suite_by_avg_amp(
         test_suite_name,
         test_cases=[complete_test_case, *test_cases],
         reset=True,
-        tags={DATASET},
+        tags={DATASET, test_suite_name},
     )
     print(f"created test suite {test_suite.name} v{test_suite.version}")
 
@@ -122,7 +122,7 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{DATASET} :: average amplitude": seed_test_suite_by_avg_amp,
+        f"{args.suite_name} :: average amplitude": seed_test_suite_by_avg_amp,
     }
     seed_test_suites(test_suite_names, complete_tc)
 
@@ -134,6 +134,13 @@ if __name__ == "__main__":
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
+    )
+
+    ap.add_argument(
+        "--suite_name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name for the created test suites.",
     )
 
     main(ap.parse_args())

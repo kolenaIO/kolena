@@ -23,6 +23,7 @@ from pydantic import validate_arguments
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as API
+from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import get_args
 from kolena._utils.datatypes import get_origin
 from kolena._utils.validators import ValidatorConfig
@@ -31,7 +32,6 @@ from kolena.workflow import Inference
 from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type

@@ -13,6 +13,7 @@
 # limitations under the License.
 import math
 import random
+import string
 import uuid
 from typing import Any
 from typing import Dict
@@ -29,7 +30,14 @@ from object_detection_3d.workflow import TestSample
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.asset import PointCloudAsset
 
-TEST_SUITE_NAME = "KITTI 3D Object Detection Smoke Test Suite"
+
+DATASET = "KITTI 3D Object Detection"
+
+
+@pytest.fixture(scope="module")
+def suite_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
 
 
 def dummy_test_samples() -> List[Tuple[TestSample, GroundTruth]]:
@@ -94,12 +102,12 @@ def dummy_results() -> List[Dict[str, Any]]:
     ]
 
 
-def test__seed_test_suite__smoke() -> None:
-    seed_test_suite(TEST_SUITE_NAME, dummy_test_samples())
+def test__seed_test_suite__smoke(suite_name: str) -> None:
+    seed_test_suite(suite_name, dummy_test_samples())
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 @pytest.mark.skip("expected to fail until evaluation codes can run without cuda")
-def test__seed_test_run__smoke() -> None:
+def test__seed_test_run__smoke(suite_name: str) -> None:
     model_name = f"KITTI 3D Object Detection ({uuid.uuid4()})"
-    seed_test_run(TEST_SUITE_NAME, model_name, dummy_results())
+    seed_test_run(suite_name, model_name, dummy_results())

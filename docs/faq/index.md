@@ -10,7 +10,7 @@ hide:
 This page answers common questions about Kolena and how to use it to test ML models.
 
 If you don't see your question here, please reach out to us on Slack or at
-[contact@kolena.io](mailto:contact@kolena.io)!
+[contact@kolena.com](mailto:contact@kolena.com)!
 
 
 
@@ -68,7 +68,7 @@ If you don't see your question here, please reach out to us on Slack or at
     token generated for your user.
 
     To retrieve a service user API token that is not scoped to a specific username, please reach out to us on Slack or
-    at [contact@kolena.io](mailto:contact@kolena.io).
+    at [contact@kolena.com](mailto:contact@kolena.com).
 
 ??? faq "Does Kolena support file versioning?"
 
@@ -104,7 +104,7 @@ If you don't see your question here, please reach out to us on Slack or at
 ??? faq "How can I report a bug?"
 
     If you encounter a bug when using the `kolena` Python client or when using [app.kolena.io](https://app.kolena.io),
-    message us on Slack, email your support representative or [contact@kolena.io](mailto:contact@kolena.io), or
+    message us on Slack, email your support representative or [contact@kolena.com](mailto:contact@kolena.com), or
     [open an issue on the `kolena` repository](https://github.com/kolenaIO/kolena/issues) for Python-client-related
     issues.
 
