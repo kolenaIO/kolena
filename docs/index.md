@@ -112,7 +112,7 @@ Learn how to use Kolena to test your models effectively:
 
     Core concepts for testing in Kolena.
 
-- [:kolena-rocket-16: Advanced Usage](advanced-usage/index.md)
+- [:kolena-rocket-16: Advanced Usage](workflow/advanced-usage/index.md)
 
     ---
 
