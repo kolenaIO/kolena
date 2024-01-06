@@ -25,7 +25,7 @@ This project defines two scripts that perform the following operations:
 
 2. [`upload_results.py`](keypoint_detection/upload_results.py) tests a keypoint detection model on the 300-W dataset,
   using either random keypoints (`random` option) or the open-source [RetinaFace](https://github.com/serengil/retinaface)
-  (`RetinaFace` option) keypoint detection model. Using `RetinaFace` requires: `poetry install --extras retina`.
+  (`RetinaFace` option) keypoint detection model.
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
 `--help` flag for more information:
