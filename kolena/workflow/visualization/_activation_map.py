@@ -14,6 +14,7 @@
 from abc import ABC
 from abc import abstractmethod
 from typing import Optional
+from typing import Union
 
 import numpy as np
 
@@ -56,7 +57,7 @@ class Colormap(ABC):
         """
         raise NotImplementedError
 
-    def alpha(self, intensity: np.uint8) -> np.uint8:
+    def alpha(self, intensity: np.uint8) -> Union[np.uint8, int]:
         """
         Maps the grayscale pixel intensity to alpha: [0, 255]. If `fade_low_activation`
         is False, then it returns the maximum alpha value.

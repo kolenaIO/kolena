@@ -84,13 +84,13 @@ class WithTelemetry(metaclass=ABCMeta):
             setattr(cls, key, telemetry(value))
 
 
-def report_crash(id: int, endpoint_path: str):
+def report_crash(id: int, endpoint_path: str) -> None:
     request = CoreAPI.MarkCrashedRequest(test_run_id=id)
     # note no krequests.raise_for_status -- already in crashed state
     krequests.post(endpoint_path=endpoint_path, data=json.dumps(dataclasses.asdict(request)))
 
 
-def set_profile():
+def set_profile() -> None:
     try:
         krequests.put(endpoint_path=EventAPI.Path.PROFILE)
     except Exception:
@@ -101,7 +101,7 @@ def set_profile():
         ...
 
 
-def record_event(request: EventAPI.RecordEventRequest):
+def record_event(request: EventAPI.RecordEventRequest) -> None:
     try:
         krequests.post(endpoint_path=EventAPI.Path.EVENT, json=dataclasses.asdict(request))
     except Exception:

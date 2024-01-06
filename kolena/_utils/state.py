@@ -149,7 +149,7 @@ def kolena_initialized(func: Callable) -> Callable:
     return wrapper
 
 
-def get_endpoint_with_baseurl(base_url: str, endpoint_path: str, api_version: int = DEFAULT_API_VERSION) -> str:
+def get_endpoint_with_baseurl(base_url: str, endpoint_path: str, api_version: str = DEFAULT_API_VERSION) -> str:
     return f"{base_url}/{api_version}/{endpoint_path.lstrip('/')}"
 
 
