@@ -30,7 +30,7 @@ parameters:
     default: false
   token_count:
     type: integer
-    default: 4
+    default: 8
 
 executors:
   python:
