@@ -44,7 +44,7 @@ CLIENT_STATE = contextvars.ContextVar("client_state")
 class NoOpAuth(requests.auth.AuthBase):
     """Provide no-op Auth to disable requests using .netrc"""
 
-    def __call__(self, r):
+    def __call__(self, r: Any):
         return r
 
 

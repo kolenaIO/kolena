@@ -158,6 +158,6 @@ def raise_for_status(response: requests.Response) -> None:
 
 
 @kolena_initialized
-def get_connection_args(**kwargs):
+def get_connection_args(**kwargs: Any) -> Dict[str, Dict[str,str]]:
     client_state = get_client_state()
     return {"proxies": client_state.proxies}

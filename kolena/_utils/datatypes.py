@@ -97,7 +97,7 @@ def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
 
 
 # used for TypedBaseDataObject to register themselves to be used in dataclass extra fields deserialization
-def _register_data_type(cls) -> None:
+def _register_data_type(cls: Any) -> None:
     full_name = _get_full_type(cls)
     # leverage class inheritance order, only keep base classes of a datatype
     if full_name not in _DATA_TYPE_MAP:
