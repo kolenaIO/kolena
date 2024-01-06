@@ -9,13 +9,6 @@ hide:
 This section contains tutorial documentation for advanced features available in Kolena.
 
 <div class="grid cards" markdown>
-- [:octicons-cloud-16: Connecting Cloud Storage](./connecting-cloud-storage/index.md)
-
-    ---
-
-    Establish integrations with cloud storage providers such as [<nobr>:simple-amazons3: Amazon S3</nobr>](./connecting-cloud-storage/amazon-s3.md) and
-    [<nobr>:simple-googlecloud: Google Cloud Storage</nobr>](./connecting-cloud-storage/google-cloud-storage.md).
-
 - [:octicons-container-24: Packaging for Automated Evaluation](packaging-for-automated-evaluation.md)
 
     ---
