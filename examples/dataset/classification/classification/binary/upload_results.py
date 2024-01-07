@@ -32,7 +32,7 @@ EVAL_CONFIG = {"threshold": 0.5}
 id_fields = ["locator"]
 
 
-def metrics(score, ground_truth_label) -> Dict[str, Any]:
+def metrics(score: float, ground_truth_label: str) -> Dict[str, Any]:
     threshold = EVAL_CONFIG["threshold"]
     is_positive_prediction = score >= threshold
     classification_label = POSITIVE_LABEL if is_positive_prediction else NEGATIVE_LABEL
@@ -48,7 +48,7 @@ def metrics(score, ground_truth_label) -> Dict[str, Any]:
     }
 
 
-def to_kolena_inference(score) -> ScoredClassificationLabel:
+def to_kolena_inference(score: float) -> ScoredClassificationLabel:
     threshold = EVAL_CONFIG["threshold"]
     label = POSITIVE_LABEL if score >= threshold else NEGATIVE_LABEL
     score = score if score >= threshold else 1 - score

@@ -21,6 +21,8 @@ from typing import Any
 from typing import cast
 from typing import Dict
 from typing import Generic
+from typing import get_args
+from typing import get_origin
 from typing import Optional
 from typing import Tuple
 from typing import Type
@@ -36,37 +38,24 @@ from pydantic.dataclasses import dataclass
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.validators import ValidatorConfig
 
-# export these such that this version handling logic only needs to be applied here
-try:
-    # Python >= 3.8
-    from typing import get_args
-    from typing import get_origin
-except ImportError:
-
-    def get_args(t: Any) -> tuple:
-        return getattr(t, "__args__", ())
-
-    def get_origin(t: Any) -> Optional[Type]:
-        return getattr(t, "__origin__", None)
-
 
 TDataFrame = TypeVar("TDataFrame", bound="LoadableDataFrame")
 TSchema = TypeVar("TSchema", bound=pa.SchemaModel)
 
 
-class LoadableDataFrame(ABC, Generic[TDataFrame]):
+class LoadableDataFrame(ABC, pa.typing.DataFrame[TSchema], Generic[TSchema]):
     @classmethod
     @abstractmethod
     def get_schema(cls) -> Type[TSchema]:
         raise NotImplementedError
 
     @classmethod
-    def construct_empty(cls) -> TDataFrame:
+    def construct_empty(cls: Type[TDataFrame]) -> TDataFrame:
         df = pd.DataFrame({key: [] for key in cls.get_schema().to_schema().columns.keys()})
         return cast(TDataFrame, validate_df_schema(df, cls.get_schema(), trusted=True))
 
     @classmethod
-    def from_serializable(cls, df: pd.DataFrame) -> TDataFrame:
+    def from_serializable(cls: Type[TDataFrame], df: pd.DataFrame) -> TDataFrame:
         return cast(TDataFrame, validate_df_schema(df, cls.get_schema(), trusted=True))
 
 
@@ -80,14 +69,14 @@ def _double_under(input: str) -> bool:
 def _allow_extra(cls: Type[T]) -> bool:
     # `pydantic.dataclasses.is_built_in_dataclass` would have false-positive when a stdlib-dataclass decorated
     # class extends a pydantic dataclass
-    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow
+    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow  # type: ignore
 
 
 # used to track data_type string -> TypedDataObject
-_DATA_TYPE_MAP = {}
+_DATA_TYPE_MAP: Dict[str, Type["TypedDataObject"]] = {}
 
 
-def _get_full_type(obj: "TypedDataObject") -> str:
+def _get_full_type(obj: Type["TypedDataObject"]) -> str:
     data_type = obj._data_type()
     return f"{data_type._data_category()}/{data_type.value}"
 
@@ -97,7 +86,7 @@ def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
 
 
 # used for TypedBaseDataObject to register themselves to be used in dataclass extra fields deserialization
-def _register_data_type(cls) -> None:
+def _register_data_type(cls: Type["TypedDataObject"]) -> None:
     full_name = _get_full_type(cls)
     # leverage class inheritance order, only keep base classes of a datatype
     if full_name not in _DATA_TYPE_MAP:
@@ -132,7 +121,7 @@ def _try_deserialize_typed_dataobject(value: Any) -> Any:
 class DataObject(metaclass=ABCMeta):
     """The base for various objects in `kolena.workflow`."""
 
-    def __str__(self):
+    def __str__(self) -> str:
         if not _allow_extra(type(self)):
             return self.__repr__()
 
@@ -257,7 +246,7 @@ class DataObject(metaclass=ABCMeta):
             for key, val in obj_dict.items():
                 if key not in field_names:
                     items[key] = _try_deserialize_typed_dataobject(val)
-        return cls(**items)
+        return cls(**items)  # type: ignore
 
     # integrate with pandas json deserialization
     # https://pandas.pydata.org/docs/user_guide/io.html#fallback-behavior

@@ -39,10 +39,7 @@ class TestSampleDataFrameSchema(pa.SchemaModel):
     inference: Optional[Series[JSONObject]] = pa.Field(coerce=True)
 
 
-class TestSampleDataFrame(
-    pa.typing.DataFrame[TestSampleDataFrameSchema],
-    LoadableDataFrame["TestSampleDataFrame"],
-):
+class TestSampleDataFrame(LoadableDataFrame[TestSampleDataFrameSchema]):
     @classmethod
     def get_schema(cls) -> Type[TestSampleDataFrameSchema]:
         return TestSampleDataFrameSchema
@@ -78,10 +75,7 @@ class TestSuiteTestSamplesDataFrameSchema(pa.SchemaModel):
     test_sample_metadata: Series[JSONObject] = pa.Field(coerce=True)
 
 
-class TestSuiteTestSamplesDataFrame(
-    pa.typing.DataFrame[TestSuiteTestSamplesDataFrameSchema],
-    LoadableDataFrame["TestSuiteTestSamplesDataFrame"],
-):
+class TestSuiteTestSamplesDataFrame(LoadableDataFrame[TestSuiteTestSamplesDataFrameSchema]):
     @classmethod
     def get_schema(cls) -> Type[TestSuiteTestSamplesDataFrameSchema]:
         return TestSuiteTestSamplesDataFrameSchema
@@ -113,10 +107,7 @@ class TestCaseEditorDataFrameSchema(pa.SchemaModel):
     remove: Series[pa.typing.Bool] = pa.Field(coerce=True)
 
 
-class TestCaseEditorDataFrame(
-    pa.typing.DataFrame[TestCaseEditorDataFrameSchema],
-    LoadableDataFrame["TestCaseEditorDataFrame"],
-):
+class TestCaseEditorDataFrame(LoadableDataFrame[TestCaseEditorDataFrameSchema]):
     def as_serializable(self) -> pd.DataFrame:
         object_columns = ["test_sample", "test_sample_metadata", "ground_truth"]
         return with_serialized_columns(self, object_columns)
@@ -142,7 +133,7 @@ class MetricsDataFrameSchema(pa.SchemaModel):
     metrics: Series[JSONObject] = pa.Field(coerce=True)
 
 
-class MetricsDataFrame(pa.typing.DataFrame[MetricsDataFrameSchema], LoadableDataFrame["MetricsDataFrame"]):
+class MetricsDataFrame(LoadableDataFrame[MetricsDataFrameSchema]):
     @classmethod
     def get_schema(cls) -> Type[MetricsDataFrameSchema]:
         return MetricsDataFrameSchema

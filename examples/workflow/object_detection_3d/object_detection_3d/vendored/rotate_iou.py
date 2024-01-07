@@ -19,6 +19,7 @@
 # Licensed under The MIT License
 # Author: yanyan, scrin@foxmail.com
 #####################
+# type: ignore
 import math
 
 import numba
