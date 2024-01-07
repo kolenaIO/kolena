@@ -11,6 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+`kolena.io` provides helper functions for converting `pandas.DataFrame`s containing
+to and from common serializable formats while adhering to the JSON specifications, and preserving
+non-primitive data objects.
+"""
 import json
 from typing import Any
 from typing import Callable

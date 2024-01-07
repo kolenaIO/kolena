@@ -100,23 +100,11 @@ Learn how to use Kolena to test your models effectively:
 
     Install and initialize the `kolena` Python package, the programmatic interface to Kolena.
 
-- [:kolena-cube-16: Building a Workflow](workflow/building-a-workflow.md)
-
-    ---
-
-    Learn how to use `kolena.workflow` to test any arbitrary ML problem on Kolena.
-
-- [:kolena-flag-16: Core Concepts](workflow/core-concepts/index.md)
+- [:kolena-flag-16: Core Concepts](dataset/core-concepts/index.md)
 
     ---
 
     Core concepts for testing in Kolena.
-
-- [:kolena-rocket-16: Advanced Usage](workflow/advanced-usage/index.md)
-
-    ---
-
-    Tutorial documentation for advanced features available in Kolena.
 
 - [:kolena-manual-16: API Reference](reference/index.md)
 
