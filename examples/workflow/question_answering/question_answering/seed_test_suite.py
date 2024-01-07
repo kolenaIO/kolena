@@ -28,7 +28,6 @@ from question_answering.workflow import TestSuite
 import kolena
 from kolena.workflow.annotation import ClassificationLabel
 
-
 BUCKET = "kolena-public-datasets"
 DATASET = "CoQA"
 
@@ -153,7 +152,7 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
-    suite_name = args.suite_name
+    suite_name = args.test_suite
     create_test_suite_by_question(suite_name, complete_test_case, test_samples_and_ground_truths)
     create_test_suite_by_conversation_length(suite_name, complete_test_case, test_samples_and_ground_truths)
 
@@ -169,7 +168,7 @@ if __name__ == "__main__":
         help="CSV file with a stories, questions, and answers.",
     )
     ap.add_argument(
-        "suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",
