@@ -34,5 +34,5 @@ def test__qa_seed_test_suite__smoke(suite_name: str) -> None:
 
 @pytest.mark.depends(on=["test__qa_seed_test_suite__smoke"])
 def test__qa_seed_test_run__smoke(suite_name: str) -> None:
-    args = Namespace(model="gpt-3.5-turbo_head", test_suite=suite_name)
+    args = Namespace(model="gpt-3.5-turbo_head", test_suite=f"question types :: {suite_name}")
     seed_test_run_main(args)
