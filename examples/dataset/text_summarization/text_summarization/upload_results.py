@@ -24,7 +24,7 @@ from tqdm import tqdm
 
 import kolena
 from kolena.dataset import fetch_dataset
-from kolena.dataset import test
+from kolena.dataset import upload_results
 
 
 def run(args: Namespace) -> int:
@@ -45,7 +45,7 @@ def run(args: Namespace) -> int:
             )
 
         df_results = pd.DataFrame.from_records(results)
-        test(args.dataset, model, df_results)
+        upload_results(args.dataset, model, df_results)
     return 0
 
 

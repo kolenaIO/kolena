@@ -23,7 +23,7 @@ from pandas.testing import assert_frame_equal
 from kolena.dataset import fetch_dataset
 from kolena.dataset import fetch_results
 from kolena.dataset import register_dataset
-from kolena.dataset import test
+from kolena.dataset import upload_results
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from tests.integration.dataset.test_dataset import batch_iterator
@@ -70,7 +70,7 @@ def test__test() -> None:
 
     df_result = get_df_result()
     result_columns = ["softmax_bitmap", "score"]
-    test(
+    upload_results(
         dataset_name,
         model_name,
         df_result,
@@ -97,7 +97,7 @@ def test__test__iterator_input() -> None:
     df_result_iterator = batch_iterator(df_result)
     result_columns = ["softmax_bitmap", "score"]
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         df_result_iterator,
@@ -125,7 +125,7 @@ def test__test__align_manually() -> None:
     result_columns = ["softmax_bitmap", "score"]
     aligned_df_result = fetched_df_dp[[JOIN_COLUMN]].merge(df_result, how="left", on=JOIN_COLUMN)
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         aligned_df_result,
@@ -158,7 +158,7 @@ def test__test__multiple_eval_configs() -> None:
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1), (eval_config_2, df_result_2)],
@@ -197,7 +197,7 @@ def test__test__multiple_eval_configs__iterator_input() -> None:
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_iterator), (eval_config_2, df_result_2_iterator)],
@@ -237,7 +237,7 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_p1), (eval_config_2, df_result_2_p1)],
@@ -245,7 +245,7 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
 
     df_result_1_p2 = df_result[5:10][input_result_columns_1]
     df_result_2_p2 = df_result[:5][input_result_columns_2]
-    test(
+    upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_p2), (eval_config_2, df_result_2_p2)],
@@ -282,7 +282,7 @@ def test__test__multiple_eval_configs__duplicate() -> None:
     eval_config = dict(threshold=0.1)
 
     with pytest.raises(IncorrectUsageError) as exc_info:
-        test(
+        upload_results(
             dataset_name,
             model_name,
             [(eval_config, df_result_1), (eval_config, df_result_2)],
@@ -302,7 +302,7 @@ def test__test__missing_result() -> None:
     df_result = get_df_result()
     result_columns = ["softmax_bitmap", "score"]
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         df_result,
@@ -349,7 +349,7 @@ def test__test__upload_none() -> None:
     df_result = get_df_result(10)
     result_columns = ["softmax_bitmap", "score"]
 
-    test(
+    upload_results(
         dataset_name,
         model_name,
         df_result,

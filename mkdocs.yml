@@ -53,7 +53,7 @@ nav:
           - <code>fetch_dataset_history</code>: reference/dataset/fetch-dataset-history.md
           - <code>fetch_dataset</code>: reference/dataset/fetch-dataset.md
           - <code>fetch_results</code>: reference/dataset/fetch-results.md
-          - <code>test</code>: reference/dataset/test.md
+          - <code>upload_results</code>: reference/dataset/upload-results.md
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md
