@@ -23,7 +23,7 @@ from rain_forecast.metrics import compute_metrics
 from tqdm import tqdm
 
 import kolena
-from kolena.dataset import test
+from kolena.dataset import upload_results
 
 
 def run(args: Namespace) -> int:
@@ -44,7 +44,7 @@ def run(args: Namespace) -> int:
         )
 
     df_results = pd.DataFrame.from_records(results)
-    test(args.dataset, MODEL_NAME[args.model], [(EVAL_CONFIG, df_results)])
+    upload_results(args.dataset, MODEL_NAME[args.model], [(EVAL_CONFIG, df_results)])
     return 0
 
 

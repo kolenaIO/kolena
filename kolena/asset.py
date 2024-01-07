@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from abc import ABCMeta
+from typing import Any
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
@@ -39,7 +40,7 @@ class _AssetType(DataType):
 class Asset(TypedDataObject[_AssetType], metaclass=ABCMeta):
     """Base class for all asset types."""
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any):
         _register_data_type(cls)
 
 

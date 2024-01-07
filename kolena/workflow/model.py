@@ -136,7 +136,12 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         validate_name(name, FieldName.MODEL_NAME)
         metadata = metadata or {}
-        request = CoreAPI.CreateRequest(name=name, metadata=metadata, workflow=cls.workflow.name, tags=tags)
+        request = CoreAPI.CreateRequest(
+            name=name,
+            metadata=metadata or {},
+            workflow=cls.workflow.name,
+            tags=list(tags) if tags is not None else None,
+        )
         res = krequests.post(endpoint_path=API.Path.CREATE.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         obj = cls._from_data(from_dict(data_class=CoreAPI.EntityData, data=res.json()), infer)
@@ -174,7 +179,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             `model.tags.intersection(tags) == tags`.
         :return: The models within this workflow, filtered by tags when specified.
         """
-        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
+        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=list(tags) if tags is not None else None)
         res = krequests.put(endpoint_path=API.Path.LOAD_ALL.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())
@@ -243,6 +248,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj.name = data.name
         obj.metadata = data.metadata
         obj.tags = data.tags
-        obj.infer = infer
+        obj.infer = infer  # type: ignore
         obj._freeze()
         return obj

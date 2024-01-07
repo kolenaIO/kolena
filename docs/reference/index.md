@@ -41,12 +41,3 @@ This section contains detailed API reference documentation for `kolena`.
 </div>
 
 ---
-
-<div class="grid cards" markdown>
-- [:kolena-archive-16: Legacy Definitions](./legacy/index.md)
-
-    ---
-
-    Built-in [`kolena.classification`](./legacy/built-in/classification.md),
-    [`kolena.detection`](./legacy/built-in/detection.md), and [`kolena.fr`](./legacy/built-in/fr.md) workflows
-</div>

@@ -25,7 +25,7 @@ class ValidatorConfig:
     extra = Extra.allow  # do not fail when unrecognized values are provided
 
 
-def validate_name(field: str, field_name: Optional[FieldName] = None):
+def validate_name(field: str, field_name: Optional[FieldName] = None) -> None:
     field_name_str = field_name.value if field_name else "field"
     if not field or field.isspace():
         raise ValueError(f"{field_name_str} must be non empty")
