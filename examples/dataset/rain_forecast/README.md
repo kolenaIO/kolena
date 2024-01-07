@@ -38,3 +38,31 @@ optional arguments:
   --model {ann,logreg}  Name of model to test.
   --dataset DATASET     Name of dataset to use for testing.
 ```
+
+## Quality Standards Guide
+
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
+test the rain forecast models. See our [QuickStart](https://docs.kolena.io/dataset/quickstart/) guide
+for details.
+
+Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+this workflow:
+
+### Metrics
+1. Precision
+2. Recall
+3. F1-score
+4. \# FP
+5. \# FN
+
+
+### Plots
+1. Confusion Matrix: datapoint.RainTomorrow vs. result.will_rain
+2. Location vs. mean(result.is_FN)
+3. Location vs. mean(result.is_FP)
+4. Year vs. mean(result.is_FN)
+5. Year vs. mean(result.is_FP)
+
+### Test Cases
+1. Year (bin = 5)
+2. Region
