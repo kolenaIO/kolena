@@ -16,23 +16,25 @@ import string
 from argparse import Namespace
 
 import pytest
-from question_answering.seed_test_run import main as seed_test_run_main
-from question_answering.seed_test_suite import DATASET
-from question_answering.seed_test_suite import main as seed_test_suite_main
+from text_summarization.constants import BUCKET
+from text_summarization.constants import DATASET
+from text_summarization.constants import MODELS
+from text_summarization.upload_dataset import run as upload_dataset_run
+from text_summarization.upload_results import run as upload_results_run
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def dataset_name() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__qa_seed_test_suite__smoke(suite_name: str) -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CoQA/metadata/metadata_head.csv", suite_name=suite_name)
-    seed_test_suite_main(args)
+def test__upload_dataset__smoke(dataset_name: str) -> None:
+    args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/CNN-DailyMail.tiny1.csv", dataset_name=dataset_name)
+    upload_dataset_run(args)
 
 
-@pytest.mark.depends(on=["test__qa_seed_test_suite__smoke"])
-def test__qa_seed_test_run__smoke(suite_name: str) -> None:
-    args = Namespace(model="gpt-3.5-turbo_head", test_suite=f"question types :: {suite_name}")
-    seed_test_run_main(args)
+@pytest.mark.depends(on=["test__upload_dataset__smoke"])
+def test__upload_results__smoke(dataset_name: str) -> None:
+    args = Namespace(models=[MODELS[0]], dataset=dataset_name)
+    upload_results_run(args)
