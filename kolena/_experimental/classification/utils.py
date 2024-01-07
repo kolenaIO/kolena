@@ -113,7 +113,7 @@ def create_histogram(
 def compute_confusion_matrix(
     ground_truths: List[str],
     inferences: List[str],
-    title: Optional[str] = "Confusion Matrix",
+    title: str = "Confusion Matrix",
     labels: Optional[List[str]] = None,
 ) -> Optional[ConfusionMatrix]:
     """

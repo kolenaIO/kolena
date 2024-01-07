@@ -52,9 +52,13 @@ repos:
         exclude: |
             (?x)^(
                 examples/.*|
-                tests/.* |
+                tests/.*|
                 kolena/_experimental/.*
             )$
+        additional_dependencies: [ types-all, "pydantic<2.0" ]
+      - id: mypy
+        name: mypy-examples-dataset
+        files: ^examples/dataset/
         additional_dependencies: [ types-all, "pydantic<2.0" ]
 -   repo: meta
     hooks:
