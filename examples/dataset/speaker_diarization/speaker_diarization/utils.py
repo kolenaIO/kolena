@@ -13,8 +13,10 @@
 # limitations under the License.
 import dataclasses
 import re
+from typing import cast
 from typing import List
 from typing import Tuple
+from typing import Union
 
 import numpy as np
 import pandas as pd
@@ -49,10 +51,10 @@ def build_speaker_index(inf: List[Tuple[str, float, float]]) -> dict[str, int]:
     return index
 
 
-def compute_intersection_length(A: List[Tuple[float, float]], B: List[Tuple[float, float]]) -> float:
+def compute_intersection_length(a: Tuple[str, float, float], b: Tuple[str, float, float]) -> float:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
-    max_start = max(A[1], B[1])
-    min_end = min(A[2], B[2])
+    max_start = max(a[1], b[1])
+    min_end = min(a[2], b[2])
     return max(0.0, min_end - max_start)
 
 
@@ -76,8 +78,8 @@ def realign_labels(ref: List[TimeSegment], inf: List[TimeSegment]) -> List[TimeS
     """
     Aligns speaker labels using linear sum optimization
     """
-    ref_t = [(row.group, row.start, row.end) for row in ref]
-    inf_t = [(row.group, row.start, row.end) for row in inf]
+    ref_t = [(row.group, row.start, row.end) for row in ref]  # type: ignore[attr-defined]
+    inf_t = [(row.group, row.start, row.end) for row in inf]  # type: ignore[attr-defined]
     cost_matrix = build_cost_matrix(ref_t, inf_t)
     row_index, col_index = optimize.linear_sum_assignment(-cost_matrix)
 
@@ -92,11 +94,11 @@ def realign_labels(ref: List[TimeSegment], inf: List[TimeSegment]) -> List[TimeS
 
     # TODO: int(x.group)
     return [
-        dataclasses.replace(x, group=f"NA_{x.group}")
-        if x.group not in mapping.keys()
+        dataclasses.replace(x, group=f"NA_{x.group}")  # type: ignore[call-arg, attr-defined]
+        if x.group not in mapping.keys()  # type: ignore[attr-defined]
         else dataclasses.replace(
             x,
-            group=mapping[x.group],
+            group=mapping[x.group],  # type: ignore[call-arg, attr-defined]
         )
         for x in inf
     ]
@@ -108,7 +110,7 @@ def generate_annotation(segments: List[TimeSegment]) -> Annotation:
     """
     annotation = Annotation()
     for segment in segments:
-        annotation[Segment(segment.start, segment.end)] = segment.group
+        annotation[Segment(segment.start, segment.end)] = segment.group  # type: ignore[attr-defined]
 
     return annotation
 
@@ -124,16 +126,16 @@ def preprocess_text(segments: List[LabeledTimeSegment]) -> str:
 
 def create_non_overlapping_segments(
     transcription: List[TimeSegment],
-    identity=None,
+    identity: Union[int, None] = None,
 ) -> List[Tuple[float, float]]:
     """
     Takes in a list of TimeSegments (overlapping or not) and returns a non-overlapping segment list.
     """
-    res = []  # [(start, end), ...]
+    res: List[List[float]] = []  # [(start, end), ...]
     transcription = sorted(transcription, key=lambda x: x.start)
 
     for t in transcription:
-        if identity is not None and t.group != identity:
+        if identity is not None and t.group != identity:  # type: ignore[attr-defined]
             continue
 
         start_time = t.start
@@ -164,12 +166,12 @@ def create_non_overlapping_segments(
             # interval already exists
             continue
 
-    return res
+    return cast(List[Tuple[float, float]], res)
 
 
-def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> List[Tuple[float, float]]:
+def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Union[List[Tuple[float, float]], None]:
     """
-    Takes in two intervals, GT and Inf, and removes the intersect of the two from inf.
+    Takes in two intervals, GT and Inf, and removes the intersection of the two from inf.
     """
     inf_start, inf_end = inf
     gt_start, gt_end = gt
@@ -180,16 +182,16 @@ def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Li
 
     if inf_start < gt_start and inf_end > gt_end:
         # Return the two ends
-        return [[inf_start, gt_start], [gt_end, inf_end]]
+        return [(inf_start, gt_start), (gt_end, inf_end)]
     elif inf_start >= gt_start and inf_end <= gt_end:
         # Entirely overlapped
         return None
     elif inf_start < gt_start:
         # Only return the left end
-        return [[inf_start, gt_start]]
+        return [(inf_start, gt_start)]
     else:
         # Only return the right end
-        return [[gt_end, inf_end]]
+        return [(gt_end, inf_end)]
 
 
 def generate_error(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
@@ -226,7 +228,7 @@ def generate_identification_error(
     """
     unique_identities = set()
     for t in gt_transcription:
-        unique_identities.add(t.group)
+        unique_identities.add(t.group)  # type: ignore[attr-defined]
 
     res = []
     for id in unique_identities:
@@ -235,25 +237,9 @@ def generate_identification_error(
         res.extend(generate_error(gt_no, inf_no))
         res.extend(generate_error(inf_no, gt_no))
 
-    res = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
+    res_seg = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in create_non_overlapping_segments(res)]
-
-
-def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float, float]]:
-    """
-    Inverts time segments. Ex: [(start1, end1), (start2, end2)] -> [(end1, start2)]
-    """
-    res = []
-
-    for i in range(len(segments) - 1):
-        if segments[i + 1].start - segments[i].end > 0:
-            res.append(segments[i + 1][0] - segments[i][1])
-
-    if end - segments[-1][1] > 0:
-        res.append(segments[-1][1], end)
-
-    return res
+    return [TimeSegment(start=r[0], end=r[1]) for r in create_non_overlapping_segments(res_seg)]
 
 
 def generate_missed_speech_error(
@@ -296,13 +282,14 @@ def compute_metrics(datapoints: pd.DataFrame, results: pd.DataFrame) -> pd.DataF
     identification_precision = IdentificationPrecision()
     identification_recall = IdentificationRecall()
     metrics = []
+    # type ignore for itertuples before https://github.com/pandas-dev/pandas-stubs/pull/842
     for row in tqdm.tqdm(annotates.itertuples(), "computing metrics"):
-        ref = row.reference
-        inf = row.inference
-        gt_annotate = row.gt_annotate
-        inf_annotate = row.inf_annotate
-        gt_text = row.gt_text
-        inf_text = row.inf_text
+        ref = row.reference  # type: ignore[attr-defined]
+        inf = row.inference  # type: ignore[attr-defined]
+        gt_annotate = row.gt_annotate  # type: ignore[attr-defined]
+        inf_annotate = row.inf_annotate  # type: ignore[attr-defined]
+        gt_text = row.gt_text  # type: ignore[attr-defined]
+        inf_text = row.inf_text  # type: ignore[attr-defined]
         metrics.append(
             dict(
                 DiarizationErrorRate=diarization_error(gt_annotate, inf_annotate),

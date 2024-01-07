@@ -28,7 +28,13 @@ S3_STORAGE_OPTIONS = {"anon": True}
 
 def _annotate(df: pd.DataFrame) -> list[LabeledTimeSegment]:
     return [
-        LabeledTimeSegment(start=r.starttime, end=r.endtime, label=r.label, group=r.speaker) for r in df.itertuples()
+        LabeledTimeSegment(
+            start=r.starttime,
+            end=r.endtime,
+            label=r.label,
+            group=r.speaker,  # type: ignore[call-arg]
+        )
+        for r in df.itertuples()
     ]
 
 

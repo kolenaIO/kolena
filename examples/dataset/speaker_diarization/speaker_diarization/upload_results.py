@@ -22,7 +22,7 @@ from speaker_diarization.utils import compute_metrics
 from speaker_diarization.utils import realign_labels
 
 import kolena
-from kolena.dataset import test
+from kolena.dataset import upload_results
 
 
 def align_df_speakers(ref: pd.Series, inf: pd.Series) -> pd.Series:
@@ -49,7 +49,7 @@ def main(args: Namespace) -> None:
     merged_df = pd.concat([transcripts_df, metrics_df], axis=1)
     results_df = datapoint_df[["locator", "transcription_path"]].merge(merged_df, on="transcription_path")
     eval_config = {"align-speakers": align_speakers}
-    test(args.dataset_name, model, [(eval_config, results_df)])
+    upload_results(args.dataset_name, model, [(eval_config, results_df)])
 
 
 if __name__ == "__main__":
