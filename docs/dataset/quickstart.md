@@ -176,18 +176,28 @@ Criteria you define will be calculated on each test case.
 
 ### Define Metrics
 
-To configure Evaluation Criteria, from the Quality Standards tab, click "Add Metrics" and select `result.mse > mean`
-and `result.nmse > mean`.
+To configure Evaluation Criteria, from the Quality Standards tab, click "Define Metrics" and select `result.mse > mean`.
+Rename the metric to "Average MSE", and select "Lower is better" as the highlight. Repeat these steps for `result.nmse > mean`.
+
+<figure markdown>
+![Defining Metrics](../assets/images/quickstart-define-metrics.gif)
+<figcaption>Defining Metrics</figcaption>
+</figure>
 
 ## Step 5: Compare Models
 
 Once you have configured a Quality Standard, the Metrics you define will be calculated across all Test Cases.
-To compare the results across models, navigate to the "Quality Standards" tab and add the "RetinaFace" and "random" models to the
-table using the "Add Models" button in the top right. You will now see all metrics in the Quality Standard computed
-on every test case in the Quality Standard.
+To compare the results across models, navigate to the "Quality Standards" tab and add "random" model to the
+table using the "Add Models" button in the top right. Then, add the "RetinaFace" model to compare its performance
+to the "random" model.
+
+You will now see all metrics in the Quality Standard computed on every test case in the Quality Standard.
+Metrics in this view will also be highlighted according to how much they improve/worsen compared to the
+reference model. In this example, RetinaFace performs better than the random model over the entire dataset
+as well as over all test cases we defined earlier.
 
 <figure markdown>
-![Comparing Modles](../assets/images/quickstart-compare-models.gif)
+![Comparing Models](../assets/images/quickstart-compare-models.gif)
 <figcaption>Comparing Models</figcaption>
 </figure>
 
