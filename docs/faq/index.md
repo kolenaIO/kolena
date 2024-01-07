@@ -28,7 +28,7 @@ If you don't see your question here, please reach out to us on Slack or at
     We're constantly adding new data types and annotation types — if you don't see what you're looking for, reach out
     to us and we'll happily extend our system to support your use case.
 
-??? faq "Do I have to upload my data files to Kolena?"
+??? faq "Do I have to upload my images, documents, or files to Kolena?"
 
     No. Kolena doesn't store your data (images, videos, documents, 3D assetes, etc.) directly, only URLs pointing to
     the right location in a cloud bucket or internal infrastructure that you own.
