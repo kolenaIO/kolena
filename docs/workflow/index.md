@@ -11,8 +11,8 @@ hide:
     If you are setting up your Kolena environments for the first time, please refer to
     [Kolena Datasets](../dataset/index.md).
 
-Kolena Workflows provides a framework for rigorously describing your ML evaluation process and integration your data
-and evaluation process into the Kolena web application.
+Kolena Workflows provides a framework for rigorously describing your data and model evaluation process and integrating
+it into the Kolena web application for analysis and exploration.
 
 <div class="grid cards" markdown>
 - [:kolena-flame-16: Quickstart](./quickstart.md)
