@@ -21,6 +21,7 @@ from typing import cast
 from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import Mapping
 from typing import Optional
 from typing import Sequence
 from typing import Tuple
@@ -389,9 +390,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info("uploading test case metrics")
         self._upload_test_case_metrics(test_case_metrics)
         log.info("uploading test case plots")
-        self._upload_test_case_plots(test_case_plots)  # type: ignore
+        self._upload_test_case_plots(test_case_plots)
         log.info("uploading test suite metrics")
-        self._upload_test_suite_metrics(test_suite_metrics)  # type: ignore
+        self._upload_test_suite_metrics(test_suite_metrics)
 
     def _iter_test_samples_batch(
         self,
@@ -451,7 +452,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     def _upload_test_case_plots(
         self,
-        plots: Dict[int, Dict[Optional[EvaluatorConfiguration], Optional[List[Plot]]]],
+        plots: Mapping[int, Mapping[Optional[EvaluatorConfiguration], Optional[List[Plot]]]],
     ) -> None:
         records = [
             (test_case_id, _maybe_display_name(config), tc_plot._to_dict())
@@ -464,7 +465,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     def _upload_test_suite_metrics(
         self,
-        metrics: Dict[Optional[EvaluatorConfiguration], Optional[MetricsTestSuite]],
+        metrics: Mapping[Optional[EvaluatorConfiguration], Optional[MetricsTestSuite]],
     ) -> None:
         records: List[Tuple[Optional[str], Dict[str, Any]]] = [
             (_maybe_display_name(config), ts_metrics._to_dict())

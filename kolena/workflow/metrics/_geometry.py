@@ -15,20 +15,16 @@ from collections import defaultdict
 from typing import Dict
 from typing import Generic
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Set
 from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-
+from pydantic.dataclasses import dataclass
 from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
-from pydantic.dataclasses import dataclass
 
 from kolena.errors import InputValidationError
 from kolena.workflow.annotation import BoundingBox

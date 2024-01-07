@@ -248,6 +248,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         obj.name = data.name
         obj.metadata = data.metadata
         obj.tags = data.tags
-        obj.infer = infer
+        obj.infer = infer  # type: ignore
         obj._freeze()
         return obj

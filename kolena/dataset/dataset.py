@@ -279,7 +279,7 @@ def register_dataset(
 
 def _iter_dataset_raw(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
@@ -298,7 +298,7 @@ def _iter_dataset_raw(
 
 def _iter_dataset(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
@@ -311,7 +311,7 @@ def _iter_dataset(
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
 def fetch_dataset(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> pd.DataFrame:
     """
@@ -340,7 +340,7 @@ def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: i
 def _iter_commits(
     name: str,
     descending: bool = False,
-    limit: int = None,
+    limit: Optional[int] = None,
     page_size: int = 50,
 ) -> Iterator[Tuple[int, List[CommitData]]]:
     """
@@ -361,7 +361,7 @@ def _iter_commits(
 def fetch_dataset_history(
     name: str,
     descending: bool = False,
-    limit: int = None,
+    limit: Optional[int] = None,
     page_size: int = 50,
 ) -> Tuple[int, List[CommitData]]:
     """

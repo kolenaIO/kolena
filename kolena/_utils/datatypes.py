@@ -21,6 +21,8 @@ from typing import Any
 from typing import cast
 from typing import Dict
 from typing import Generic
+from typing import get_args
+from typing import get_origin
 from typing import Optional
 from typing import Tuple
 from typing import Type
@@ -35,19 +37,6 @@ from pydantic.dataclasses import dataclass
 
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.validators import ValidatorConfig
-
-# export these such that this version handling logic only needs to be applied here
-try:
-    # Python >= 3.8
-    from typing import get_args
-    from typing import get_origin
-except ImportError:
-
-    def get_args(t: Any) -> tuple:
-        return getattr(t, "__args__", ())
-
-    def get_origin(t: Any) -> Optional[Type]:
-        return getattr(t, "__origin__", None)
 
 
 TDataFrame = TypeVar("TDataFrame", bound="LoadableDataFrame")
