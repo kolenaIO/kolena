@@ -33,6 +33,7 @@ rendered on top of the image.
 import dataclasses
 from abc import ABCMeta
 from functools import reduce
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
@@ -65,7 +66,7 @@ class _AnnotationType(DataType):
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """The base class for all annotation types."""
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any):
         _register_data_type(cls)
 
 

@@ -13,6 +13,7 @@
 # limitations under the License.
 from collections import Counter
 from typing import List
+from typing import Optional
 
 import pandas as pd
 
@@ -30,7 +31,7 @@ def validate_batch_size(batch_size: int) -> None:
         raise InputValidationError(f"invalid batch_size '{batch_size}': expected positive integer")
 
 
-def validate_id_fields(id_fields: List[str], existing_id_fields: List[str] = None) -> None:
+def validate_id_fields(id_fields: List[str], existing_id_fields: Optional[List[str]] = None) -> None:
     if len(id_fields) == 0:
         raise InputValidationError("invalid id_fields: expected at least one field")
     if len(Counter(id_fields)) != len(id_fields):

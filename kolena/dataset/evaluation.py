@@ -141,8 +141,8 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-@with_event(EventAPI.Event.TEST_DATASET_MODEL)
-def test(
+@with_event(EventAPI.Event.UPLOAD_DATASET_MODEL_RESULT)
+def upload_results(
     dataset: str,
     model: str,
     results: Union[
@@ -160,12 +160,12 @@ def test(
     ],
 ) -> None:
     """
-    This function is used for testing a specified model on a given dataset.
+    This function is used for uploading the results from a specified model on a given dataset.
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    a eval configuration and a DataFrame.
+                    an eval configuration and a DataFrame.
     :return: None
     """
     existing_dataset = load_dataset(dataset)
@@ -193,4 +193,4 @@ def test(
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"uploaded test results for model '{model}' on dataset '{dataset}'")
+    log.info(f"Uploaded results for model '{model}' on dataset '{dataset}'")

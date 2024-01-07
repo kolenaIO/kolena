@@ -68,7 +68,7 @@ def _deserialize_dataobject_str(x: Any) -> Any:
     return _deserialize_dataobject(y)
 
 
-def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
+def dataframe_to_csv(df: pd.DataFrame, *args: Any, **kwargs: Any) -> Union[str, None]:
     """
     Helper function to export pandas DataFrame containing annotation or asset to CSV format.
 
@@ -80,7 +80,7 @@ def dataframe_to_csv(df: pd.DataFrame, *args, **kwargs) -> Union[str, None]:
     return df_post.to_csv(*args, **kwargs)
 
 
-def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
+def dataframe_from_csv(*args: Any, **kwargs: Any) -> pd.DataFrame:
     """
     Helper function to load pandas DataFrame exported to CSV with `dataframe_to_csv`.
 
@@ -94,7 +94,7 @@ def dataframe_from_csv(*args, **kwargs) -> pd.DataFrame:
     return df_post
 
 
-def dataframe_from_json(*args, **kwargs) -> pd.DataFrame:
+def dataframe_from_json(*args: Any, **kwargs: Any) -> pd.DataFrame:
     """
     Helper function to load pandas DataFrame containing annotation or asset from JSON file or string.
 
@@ -108,7 +108,7 @@ def dataframe_from_json(*args, **kwargs) -> pd.DataFrame:
     return df_post
 
 
-def _dataframe_object_serde(df, serde_fn: Callable[[Any], Any]):
+def _dataframe_object_serde(df: pd.DataFrame, serde_fn: Callable[[Any], Any]) -> pd.DataFrame:
     columns = list(df.columns)
     df_post = pd.DataFrame(columns=columns)
     for column in columns:
