@@ -65,3 +65,29 @@ optional arguments:
   --sample-count SAMPLE_COUNT
                         Number of samples to use, all samples are used if 0.
 ```
+
+## Quality Standards Guide
+
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
+[explore the data and results](https://docs.kolena.io/dataset/quickstart/#step-3-explore-data-and-results).
+
+Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+speaker diarization:
+
+### Metrics
+
+1. mean(DetectionPrecision)
+2. mean(DetectionRecall)
+3. mean(DetectionAccuracy)
+4. mean(DiarizationErrorRate)
+5. mean(IdentificationErrorRate)
+
+### Plots
+
+1. Distribution: `datapoint.DetectionAccuracy`
+2. Distribution: `datapoint.DiarizationErrorRate`
+3. Distribution: `datapoint.IdentificationErrorRate`
+
+### Test Cases
+
+1. `datapoint."Average Amplitude"` (with `bin` = 5)
