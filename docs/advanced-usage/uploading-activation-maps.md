@@ -13,7 +13,7 @@ vision workflows output a map that highlights regions in an image that are relev
 called an **activation map**.
 
 <figure markdown>
-  ![activation map](../../assets/images/activation-map.png)
+  ![activation map](../assets/images/activation-map.png)
   <figcaption markdown>Visualization of an activation map overlaid on an image</figcaption>
 </figure>
 
