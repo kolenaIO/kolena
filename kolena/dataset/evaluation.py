@@ -35,16 +35,16 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
-from kolena.dataset.common import COL_DATAPOINT
-from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena.dataset.common import COL_EVAL_CONFIG
-from kolena.dataset.common import COL_RESULT
-from kolena.dataset.common import validate_batch_size
-from kolena.dataset.common import validate_dataframe_have_other_columns_besides_ids
-from kolena.dataset.common import validate_dataframe_ids
+from kolena.dataset._common import COL_DATAPOINT
+from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import COL_EVAL_CONFIG
+from kolena.dataset._common import COL_RESULT
+from kolena.dataset._common import validate_batch_size
+from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_ids
+from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
-from kolena.dataset.dataset import load_dataset
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
@@ -89,11 +89,7 @@ def _process_result(
     return df_result_eval
 
 
-def _upload_results(
-    model: str,
-    load_uuid: str,
-    dataset_id: int,
-) -> None:
+def _upload_results(model: str, load_uuid: str, dataset_id: int) -> None:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
@@ -146,19 +142,7 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
 def upload_results(
     dataset: str,
     model: str,
-    results: Union[
-        pd.DataFrame,
-        Iterator[pd.DataFrame],
-        List[
-            Tuple[
-                TYPE_EVALUATION_CONFIG,
-                Union[
-                    pd.DataFrame,
-                    Iterator[pd.DataFrame],
-                ],
-            ]
-        ],
-    ],
+    results: Union[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, Union[pd.DataFrame]]]],
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.
@@ -169,7 +153,7 @@ def upload_results(
                     an eval configuration and a DataFrame.
     :return: None
     """
-    existing_dataset = load_dataset(dataset)
+    existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
         raise NotFoundError(f"dataset {dataset} does not exist")
 

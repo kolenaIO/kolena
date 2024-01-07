@@ -16,9 +16,9 @@ from typing import List
 import pandas as pd
 import pytest
 
-from kolena.dataset.common import validate_dataframe_have_other_columns_besides_ids
-from kolena.dataset.common import validate_dataframe_ids
-from kolena.dataset.common import validate_id_fields
+from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_ids
+from kolena.dataset._common import validate_id_fields
 from kolena.errors import InputValidationError
 
 

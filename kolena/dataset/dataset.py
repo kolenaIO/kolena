@@ -49,10 +49,10 @@ from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
-from kolena.dataset.common import COL_DATAPOINT
-from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena.dataset.common import validate_batch_size
-from kolena.dataset.common import validate_dataframe_ids
+from kolena.dataset._common import COL_DATAPOINT
+from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import validate_batch_size
+from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.io import _dataframe_object_serde
 
@@ -204,7 +204,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
 
-def load_dataset(name: str) -> Optional[EntityData]:
+def _load_dataset_metadata(name: str) -> Optional[EntityData]:
     """
     Load the metadata of a given dataset.
 
@@ -220,7 +220,7 @@ def load_dataset(name: str) -> Optional[EntityData]:
     return from_dict(EntityData, response.json())
 
 
-def resolve_id_fields(
+def _resolve_id_fields(
     df: pd.DataFrame,
     id_fields: Optional[List[str]],
     existing_dataset: Optional[EntityData],
@@ -240,6 +240,7 @@ def resolve_id_fields(
 def register_dataset(
     name: str,
     df: Union[Iterator[pd.DataFrame], pd.DataFrame],
+    *,
     id_fields: Optional[List[str]] = None,
 ) -> None:
     """
@@ -255,16 +256,16 @@ def register_dataset(
     :return: None
     """
     load_uuid = init_upload().uuid
-    existing_dataset = load_dataset(name)
+    existing_dataset = _load_dataset_metadata(name)
     if isinstance(df, pd.DataFrame):
-        id_fields = resolve_id_fields(df, id_fields, existing_dataset)
+        id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)
         _upload_dataset_chunk(df, load_uuid, id_fields)
     else:
         validated = False
         for chunk in df:
             if not validated:
-                id_fields = resolve_id_fields(chunk, id_fields, existing_dataset)
+                id_fields = _resolve_id_fields(chunk, id_fields, existing_dataset)
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
             assert id_fields is not None
@@ -311,6 +312,7 @@ def _iter_dataset(
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
 def fetch_dataset(
     name: str,
+    *,
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> pd.DataFrame:
@@ -360,6 +362,7 @@ def _iter_commits(
 @with_event(event_name=EventAPI.Event.FETCH_DATASET_HISTORY)
 def fetch_dataset_history(
     name: str,
+    *,
     descending: bool = False,
     limit: Optional[int] = None,
     page_size: int = 50,
