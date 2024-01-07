@@ -11,26 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import random
 import string
 from argparse import Namespace
-from collections.abc import Iterator
 
 import pytest
-from classification.binary.upload_dataset import run as upload_dataset_main
-from classification.binary.upload_results import run as upload_results_main
-
-from kolena._utils.state import kolena_session
-
-BUCKET = "kolena-public-examples"
-DATASET = "dogs-vs-cats"
-
-
-@pytest.fixture(scope="session", autouse=True)
-def with_init() -> Iterator[None]:
-    with kolena_session(api_token=os.environ["KOLENA_TOKEN"]):
-        yield
+from text_summarization.constants import BUCKET
+from text_summarization.constants import DATASET
+from text_summarization.constants import MODELS
+from text_summarization.upload_dataset import run as upload_dataset_run
+from text_summarization.upload_results import run as upload_results_run
 
 
 @pytest.fixture(scope="module")
@@ -39,12 +29,12 @@ def dataset_name() -> str:
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__upload_dataset() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
-    upload_dataset_main(args)
+def test__upload_dataset__smoke(dataset_name: str) -> None:
+    args = Namespace(dataset_csv=f"s3://{BUCKET}/{DATASET}/CNN-DailyMail.tiny1.csv", dataset_name=dataset_name)
+    upload_dataset_run(args)
 
 
-@pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
-    upload_results_main(args)
+@pytest.mark.depends(on=["test__upload_dataset__smoke"])
+def test__upload_results__smoke(dataset_name: str) -> None:
+    args = Namespace(models=[MODELS[0]], dataset=dataset_name)
+    upload_results_run(args)
