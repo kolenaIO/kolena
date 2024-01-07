@@ -21,7 +21,7 @@ parameters:
     default: false
   token_count:
     type: integer
-    default: 4
+    default: 8
 
 executors:
   python:
@@ -400,6 +400,12 @@ workflows:
     when:
       or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
     jobs:
+      - example-test-dataset:
+          matrix:
+            parameters:
+              subproject: [ text_summarization ]
+              resource-class: [ large ]
+              python-version: [ "3.9.18" ]
       - example-test-dataset:
           matrix:
             parameters:
