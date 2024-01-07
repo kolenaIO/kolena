@@ -15,7 +15,7 @@ testing. For a quick overview, refer to the [Quickstart Guide](../quickstart.md)
 
     ---
 
-    A **Dataset** represents a structured assembly of datapoints, essential for model evaluation. Each datapoint
+    A Dataset represents a structured assembly of datapoints, essential for model evaluation. Each datapoint
     within a dataset combines various data types, such as images or text, traditionally segmented into test samples and
     metadata.
 
@@ -26,7 +26,7 @@ testing. For a quick overview, refer to the [Quickstart Guide](../quickstart.md)
 
     ---
 
-    A **Quality Standard** tracks a standardized process for how a team evaluates a model's performance on a dataset.
-    Users may configure quality standards in Kolena Datasets by defining **Test Cases** and **Metrics**.
+    A Quality Standard tracks a standardized process for how a team evaluates a model's performance on a dataset.
+    Users may configure quality standards in Kolena Datasets by defining Test Cases and Metrics.
 
 </div>

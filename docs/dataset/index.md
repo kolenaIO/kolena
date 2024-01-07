@@ -24,12 +24,12 @@ standardization and comparison of multiple models.
 
     ---
 
-    A **Dataset** represents a structured assembly of datapoints, essential for model evaluation.
+    A Dataset represents a structured assembly of datapoints, essential for model evaluation.
 
 - [:kolena-quality-standard-16: Quality Standard](./core-concepts/quality-standard.md)
 
     ---
 
-    A **Quality Standard** tracks a standardized process for how a team evaluates a model's performance on a dataset.
+    A Quality Standard tracks a standardized process for how a team evaluates a model's performance on a dataset.
 
 </div>
