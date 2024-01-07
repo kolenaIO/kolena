@@ -40,7 +40,6 @@ del __version_assign
 
 
 import kolena.errors
-
 from .initialize import initialize
 
 __all__ = [

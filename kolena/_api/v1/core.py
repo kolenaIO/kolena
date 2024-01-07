@@ -17,7 +17,6 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
-from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -30,7 +29,7 @@ class Model:
         name: str
         metadata: Dict[str, Any]
         workflow: str
-        tags: Optional[Union[List[str], Set[str]]] = None
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -39,7 +38,7 @@ class Model:
     @dataclass(frozen=True)
     class LoadAllRequest:
         workflow: str
-        tags: Optional[Union[List[str], Set[str]]] = None
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class EntityData:
@@ -161,7 +160,7 @@ class TestSuite:
         name: str
         description: str
         workflow: str
-        tags: Optional[Union[List[str], Set[str]]] = None
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class LoadByNameRequest:
@@ -171,7 +170,7 @@ class TestSuite:
     @dataclass(frozen=True)
     class LoadAllRequest:
         workflow: str
-        tags: Optional[Union[List[str], Set[str]]] = None
+        tags: Optional[List[str]] = None
 
     @dataclass(frozen=True)
     class EntityData:
