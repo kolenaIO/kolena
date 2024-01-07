@@ -49,6 +49,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy-default
+        # TODO: not exclude tests, _experimental
         exclude: |
             (?x)^(
                 examples/.*|

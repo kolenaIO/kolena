@@ -17,7 +17,6 @@ import time
 from abc import ABCMeta
 from collections import defaultdict
 from contextlib import contextmanager
-from typing import Any
 from typing import DefaultDict
 from typing import Iterator
 from typing import List
@@ -427,11 +426,10 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             if test_samples
         ]
         df_serialized = pd.concat(df_test_samples) if df_test_samples else pd.DataFrame()
+        load_uuid: Optional[str] = None
         if len(df_serialized):
             load_uuid = init_upload().uuid
             upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
-        else:
-            load_uuid = None  # type: ignore
 
         request = CoreAPI.BulkProcessRequest(
             test_cases=[CoreAPI.SingleProcessRequest(name=name, reset=reset) for name, _ in data],
@@ -446,7 +444,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         bulk_response = from_dict(data_class=CoreAPI.BulkProcessResponse, data=response.json())
 
         test_cases = []
-        statuses: DefaultDict[Any, int] = defaultdict(int)
+        statuses: DefaultDict[BulkProcessStatus, int] = defaultdict(int)
         for test_case_data in bulk_response.test_cases:
             test_cases.append(cls._create_from_data(test_case_data.data))
             statuses[test_case_data.status] += 1

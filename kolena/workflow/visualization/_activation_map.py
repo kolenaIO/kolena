@@ -13,7 +13,6 @@
 # limitations under the License.
 from abc import ABC
 from abc import abstractmethod
-from typing import Union
 
 import numpy as np
 
@@ -56,7 +55,7 @@ class Colormap(ABC):
         """
         raise NotImplementedError
 
-    def alpha(self, intensity: np.uint8) -> Union[np.uint8, int]:
+    def alpha(self, intensity: np.uint8) -> np.uint8:
         """
         Maps the grayscale pixel intensity to alpha: [0, 255]. If `fade_low_activation`
         is False, then it returns the maximum alpha value.
@@ -65,8 +64,7 @@ class Colormap(ABC):
         if self.fade_low_activation:
             # apply non-linear scaling alpha channel [0, 255]
             return max_uint8 / (1 + np.exp(((max_uint8 / 2) - intensity) / 8))
-        else:
-            return max_uint8
+        return np.uint8(max_uint8)
 
     def colorize(self, intensity: np.uint8) -> np.array:
         return np.array(

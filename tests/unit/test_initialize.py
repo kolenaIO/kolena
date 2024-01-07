@@ -36,7 +36,9 @@ from kolena._utils.state import API_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
 from kolena._utils.state import kolena_session
+from kolena.dataset import fetch_dataset
 from kolena.errors import MissingTokenError
+from kolena.errors import UninitializedError
 
 
 def mock_jwt(input: str) -> str:
@@ -166,6 +168,11 @@ def test__initialize__token_missing() -> None:
     with patch("netrc.netrc", side_effect=MissingTokenError):
         with pytest.raises(MissingTokenError):
             kolena.initialize()
+
+
+def test__uninitialized_usage() -> None:
+    with pytest.raises(UninitializedError):
+        fetch_dataset("does not exist")
 
 
 def test__kolena_session() -> None:

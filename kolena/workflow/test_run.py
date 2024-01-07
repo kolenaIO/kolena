@@ -109,8 +109,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         if configurations is None:
             configurations = []
 
-        is_evaluator_class = isinstance(evaluator, Evaluator)
-        is_evaluator_function = evaluator is not None and not is_evaluator_class
+        is_evaluator_function = evaluator is not None and not isinstance(evaluator, Evaluator)
         if is_evaluator_function and _is_configured(evaluator) and len(configurations) == 0:  # type: ignore
             raise ValueError("evaluator requires configuration but no configurations provided")
 
@@ -127,7 +126,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self.model = model
         self.test_suite = test_suite
         self.evaluator = evaluator
-        self.configurations = self.evaluator.configurations if is_evaluator_class else configurations  # type: ignore
+        self.configurations = evaluator.configurations if isinstance(evaluator, Evaluator) else configurations
         self.reset = reset
 
         evaluator_display_name = (
@@ -341,7 +340,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         test_case_test_samples = _TestCases(
             test_case_membership,
             self._id,
-            len(self.configurations),  # type: ignore
+            len(self.configurations or []),
         )
 
         test_case_metrics: Dict[int, Dict[Optional[EvaluatorConfiguration], MetricsTestCase]] = defaultdict(dict)
