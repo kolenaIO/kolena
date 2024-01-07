@@ -76,7 +76,7 @@ def main(args: Namespace) -> int:
 
 if __name__ == "__main__":
     ap = ArgumentParser()
-    ap.add_argument("--test_suite", default="question types :: CoQA", help="Name of the test suite to test.")
+    ap.add_argument("--test-suite", default="question types :: CoQA", help="Name of the test suite to test.")
     ap.add_argument("--model", default="gpt-4", choices=MODELS, help="Name of the model to test.")
 
     sys.exit(main(ap.parse_args()))
