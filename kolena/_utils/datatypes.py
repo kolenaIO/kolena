@@ -54,19 +54,19 @@ TDataFrame = TypeVar("TDataFrame", bound="LoadableDataFrame")
 TSchema = TypeVar("TSchema", bound=pa.SchemaModel)
 
 
-class LoadableDataFrame(ABC, pd.DataFrame, Generic[TDataFrame]):
+class LoadableDataFrame(ABC, pd.DataFrame, pa.typing.DataFrame[TSchema], Generic[TSchema]):
     @classmethod
     @abstractmethod
     def get_schema(cls) -> Type[TSchema]:
         raise NotImplementedError
 
     @classmethod
-    def construct_empty(cls) -> TDataFrame:
-        df = pd.DataFrame({key: [] for key in cls.get_schema().to_schema().columns.keys()})  # type: ignore
+    def construct_empty(cls: Type[TDataFrame]) -> TDataFrame:
+        df = pd.DataFrame({key: [] for key in cls.get_schema().to_schema().columns.keys()})
         return cast(TDataFrame, validate_df_schema(df, cls.get_schema(), trusted=True))
 
     @classmethod
-    def from_serializable(cls, df: pd.DataFrame) -> TDataFrame:
+    def from_serializable(cls: Type[TDataFrame], df: pd.DataFrame) -> TDataFrame:
         return cast(TDataFrame, validate_df_schema(df, cls.get_schema(), trusted=True))
 
 

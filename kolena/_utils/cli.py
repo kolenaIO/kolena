@@ -16,6 +16,7 @@ import json
 import os
 import sys
 from typing import Any
+from typing import Callable
 from typing import Optional
 
 import click
@@ -45,7 +46,7 @@ _shared_evaluator_options = [click.option("--workflow", "-w", required=True)]
 
 
 def add_options(*args: Any) -> Any:
-    def _add_options(func: Any) -> Any:
+    def _add_options(func: Callable[..., Any]) -> Callable[..., Any]:
         options = [x for n in args for x in n]
         for option in reversed(options):
             func = option(func)
