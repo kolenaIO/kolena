@@ -38,6 +38,9 @@ def main(args: Namespace) -> None:
 
     datapoint_df = load_data()
     transcripts_df = load_results(model)
+    datapoint_df.sort_values(by="transcription_path", inplace=True, ignore_index=True)
+    transcripts_df.sort_values(by="transcription_path", inplace=True, ignore_index=True)
+
     if sample_count:
         datapoint_df = datapoint_df[:sample_count]
         transcripts_df = transcripts_df[:sample_count]
@@ -47,7 +50,11 @@ def main(args: Namespace) -> None:
 
     metrics_df = compute_metrics(datapoint_df, transcripts_df)
     merged_df = pd.concat([transcripts_df, metrics_df], axis=1)
-    results_df = datapoint_df[["locator", "transcription_path"]].merge(merged_df, on="transcription_path")
+    results_df = datapoint_df[["locator", "transcription_path"]].merge(
+        merged_df,
+        on="transcription_path",
+        validate="one_to_one",
+    )
     eval_config = {"align-speakers": align_speakers}
     upload_results(args.dataset_name, model, [(eval_config, results_df)])
 

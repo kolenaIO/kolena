@@ -38,7 +38,7 @@ from pyannote.metrics.identification import IdentificationRecall
 from scipy import optimize
 
 from kolena.annotation import LabeledTimeSegment
-from kolena.workflow.annotation import TimeSegment
+from kolena.annotation import TimeSegment
 
 # allowed error (in seconds) when generating identification and missed speech errors.
 ERROR_THRESHOLD = 0.2
