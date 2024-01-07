@@ -36,12 +36,14 @@ RETINAFACE_S3_PATH = "s3://kolena-public-examples/300-W/results/raw/retinaface.c
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
-    retinaface_raw_inferences_df = dataframe_from_csv(RETINAFACE_S3_PATH, storage_options={"anon": True})
+    infer = infer_random
+    if args.model == "RetinaFace":
+        retinaface_raw_inferences_df = dataframe_from_csv(RETINAFACE_S3_PATH, storage_options={"anon": True})
 
-    def infer_retinaface(rec: Any) -> Tuple[List[BoundingBox], List[Keypoints]]:
-        return infer_from_df(rec, retinaface_raw_inferences_df)
+        def infer_retinaface(rec: Any) -> Tuple[List[BoundingBox], List[Keypoints]]:
+            return infer_from_df(rec, retinaface_raw_inferences_df)
 
-    infer = infer_retinaface if args.model == "RetinaFace" else infer_random
+        infer = infer_retinaface
 
     df = fetch_dataset(args.dataset)
 
