@@ -54,7 +54,7 @@ TDataFrame = TypeVar("TDataFrame", bound="LoadableDataFrame")
 TSchema = TypeVar("TSchema", bound=pa.SchemaModel)
 
 
-class LoadableDataFrame(ABC, Generic[TDataFrame]):
+class LoadableDataFrame(ABC, pd.DataFrame, Generic[TDataFrame]):
     @classmethod
     @abstractmethod
     def get_schema(cls) -> Type[TSchema]:

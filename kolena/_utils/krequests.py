@@ -83,8 +83,9 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         },
     )
     # allow requests to override Content-Type as needed by for example file uploads
-    if "Content-Type" in kwargs.get("headers", {}):
-        default_headers["Content-Type"] = kwargs.get("headers")["Content-Type"]  # type: ignore
+    kw_headers = kwargs.get("headers", {})
+    if "Content-Type" in kw_headers:
+        default_headers["Content-Type"] = kw_headers["Content-Type"]
     return {
         **kwargs,
         **default_kwargs,

@@ -133,8 +133,8 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             None
             if evaluator is None
             else evaluator.display_name()
-            if is_evaluator_class
-            else evaluator.__name__  # type: ignore
+            if isinstance(evaluator, Evaluator)
+            else getattr(evaluator, "__name__", None)
         )
         api_configurations = (
             [_maybe_evaluator_configuration_to_api(config) for config in self.configurations]

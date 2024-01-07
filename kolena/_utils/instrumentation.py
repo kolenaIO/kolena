@@ -21,6 +21,8 @@ from abc import ABCMeta
 from enum import Enum
 from typing import Any
 from typing import Callable
+from typing import Dict
+from typing import Union
 
 import kolena
 from kolena._api.v1.client_log import ClientLog as API
@@ -120,7 +122,7 @@ def with_event(event_name: str) -> Callable:
         def wrapper(*args: Any, **kwargs: Any) -> Any:
             # track duration of the call, and if failed record the exception class name
             start_time = datetime.datetime.now()
-            event_metadata = {}
+            event_metadata: Dict[str, Union[str, int, float, bool, None]] = {}
             try:
                 response = func(*args, **kwargs)
                 return response
@@ -128,15 +130,9 @@ def with_event(event_name: str) -> Callable:
                 event_metadata["response_error"] = e.__class__.__name__
                 raise e
             finally:
-                event_metadata["duration"] = round(
-                    (datetime.datetime.now() - start_time).total_seconds(),
-                    3,
-                )  # type: ignore
+                event_metadata["duration"] = round((datetime.datetime.now() - start_time).total_seconds(), 3)
                 record_event(
-                    EventAPI.RecordEventRequest(
-                        event_name=event_name,
-                        additional_metadata=event_metadata,  # type: ignore
-                    ),
+                    EventAPI.RecordEventRequest(event_name=event_name, additional_metadata=event_metadata),
                 )
 
         return wrapper

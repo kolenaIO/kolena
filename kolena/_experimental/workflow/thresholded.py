@@ -15,7 +15,6 @@ from abc import ABCMeta
 from dataclasses import dataclass
 from dataclasses import fields
 from typing import Any
-from typing import cast
 
 from kolena._utils.datatypes import _register_data_type
 from kolena._utils.datatypes import DataType
@@ -28,7 +27,7 @@ class PreventThresholdOverrideMeta(ABCMeta, type):
             for base in bases:
                 if base.__name__ == "ThresholdedMetrics":
                     raise TypeError(f"Subclasses of {base.__name__} cannot override 'threshold'")
-        return cast(PreventThresholdOverrideMeta, super().__new__(cls, name, bases, dct))
+        return super().__new__(cls, name, bases, dct)
 
 
 class _MetricsType(DataType):

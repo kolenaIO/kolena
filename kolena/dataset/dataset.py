@@ -16,6 +16,7 @@ import mimetypes
 import sys
 from dataclasses import asdict
 from enum import Enum
+from typing import Any
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -71,7 +72,7 @@ class DatapointType(str, Enum):
     VIDEO = "DATAPOINT/VIDEO"
 
     @classmethod
-    def has_value(cls, item) -> bool:  # type: ignore
+    def has_value(cls, item: Any) -> bool:
         return item in cls.__members__.values()
 
 
@@ -89,9 +90,9 @@ def _dataobject_type(obj: TypedDataObject) -> str:
     return f"{obj_type._data_category()}/{obj_type.value}"
 
 
-def _get_datapoint_type(mimetype_str: str) -> str:
+def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
     main_type, sub_type = mimetype_str.split("/")
-    return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)  # type: ignore
+    return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
 
 def _infer_datatype_value(x: str) -> str:
