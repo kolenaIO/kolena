@@ -18,6 +18,8 @@ from typing import List
 from typing import Tuple
 
 import pandas as pd
+from keypoint_detection.constants import BUCKET
+from keypoint_detection.constants import DATASET
 from keypoint_detection.metrics import compute_metrics
 from keypoint_detection.model import infer_from_df
 from keypoint_detection.model import infer_random
@@ -30,15 +32,18 @@ from kolena.dataset import fetch_dataset
 from kolena.dataset import upload_results
 from kolena.io import dataframe_from_csv
 
-RETINAFACE_S3_PATH = "s3://kolena-public-examples/300-W/results/raw/retinaface.csv"
+
+MODELS = ["retinaface", "random"]
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-
     infer = infer_random
-    if args.model == "RetinaFace":
-        retinaface_raw_inferences_df = dataframe_from_csv(RETINAFACE_S3_PATH, storage_options={"anon": True})
+    if args.model == "retinaface":
+        retinaface_raw_inferences_df = dataframe_from_csv(
+            f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
+            storage_options={"anon": True},
+        )
 
         def infer_retinaface(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
             return infer_from_df(record, retinaface_raw_inferences_df)
@@ -46,7 +51,6 @@ def run(args: Namespace) -> None:
         infer = infer_retinaface
 
     df = fetch_dataset(args.dataset)
-
     results = []
     for record in tqdm(df.itertuples(), total=len(df)):
         bboxes, faces = infer(record)
@@ -59,8 +63,18 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("model", type=str, choices=["RetinaFace", "random"], help="Name of model to test.")
-    ap.add_argument("dataset", nargs="?", default="300-W", help="Name of dataset to use for testing.")
+    ap.add_argument(
+        "model",
+        type=str,
+        choices=MODELS,
+        help="Name of the model to test.",
+    )
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a custom dataset name to test.",
+    )
     run(ap.parse_args())
 
 

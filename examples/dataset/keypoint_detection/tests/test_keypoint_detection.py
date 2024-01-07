@@ -12,14 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import random
+import string
 from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from keypoint_detection.upload_dataset import main as upload_dataset_main
+from keypoint_detection.upload_dataset import run as upload_dataset_main
 from keypoint_detection.upload_results import run as upload_results_main
 
 from kolena._utils.state import kolena_session
+
+
+BUCKET = "kolena-public-examples"
+DATASET = "300-W"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -28,11 +34,20 @@ def with_init() -> Iterator[None]:
         yield
 
 
+@pytest.fixture(scope="module")
+def dataset_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
+
+
 def test__upload_dataset() -> None:
-    upload_dataset_main()
+    args = Namespace(dataset=dataset_name)
+    upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results() -> None:
-    args = Namespace(model="random", dataset="300-W")
+    args = Namespace(model="random", dataset=dataset_name)
+    upload_results_main(args)
+    args = Namespace(model="retinaface", dataset=dataset_name)
     upload_results_main(args)
