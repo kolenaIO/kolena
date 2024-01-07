@@ -56,7 +56,7 @@ creating test cases.
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
         script in the code example for details on how the dataset was generated.
 
-    Note: The keypoints in `300-W.csv` have been defined using `kolena.workflow.annotation.Keypoints` from
+    Note: The keypoints in `300-W.csv` have been defined using `kolena.annotation.Keypoints` from
     the `kolena` SDK. See the `keypoint_detection/upload_dataset.py` script for example usage.
 
     You will now see a preview of how the information is going to be consumed by Kolena.
