@@ -150,7 +150,7 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     [`Evaluator`][kolena.workflow.Evaluator] evaluates metrics.
     """
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any):
         _register_data_type(cls)
 
     @staticmethod

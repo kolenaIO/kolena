@@ -120,7 +120,7 @@ def validate_list(field_name: str, field_type: Type, supported_field_types: List
 
 def validate_union(
     field_name: str,
-    field_type: Union,
+    field_type: Type,
     supported_field_types: List[Type],
     supported_list_types: List[Type],
 ) -> None:

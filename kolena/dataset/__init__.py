@@ -16,12 +16,12 @@ from kolena.dataset.dataset import fetch_dataset_history
 from kolena.dataset.dataset import fetch_dataset
 from kolena.dataset.dataset import register_dataset
 from kolena.dataset.evaluation import fetch_results
-from kolena.dataset.evaluation import test
+from kolena.dataset.evaluation import upload_results
 
 __all__ = [
     "register_dataset",
     "fetch_dataset_history",
     "fetch_dataset",
     "fetch_results",
-    "test",
+    "upload_results",
 ]
