@@ -49,11 +49,12 @@ def list_inferences(scores: List[float]) -> List[ScoredClassificationLabel]:
 
 
 def run(args: Namespace) -> None:
+    kolena.initialize(verbose=True)
+    dataset_df = fetch_dataset(args.dataset)
     df_results = pd.read_csv(
-        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model_name}.csv",
+        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
         storage_options={"anon": True},
     )
-    dataset_df = fetch_dataset(args.dataset)
 
     df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
     df_results["inferences"] = df_results[CLASSES].apply(lambda row: list_inferences(row.tolist()), axis=1)
@@ -63,8 +64,7 @@ def run(args: Namespace) -> None:
     )
     df_results = pd.concat([df_results[ID_FIELDS], df_results["inferences"], eval_result], axis=1)
 
-    kolena.initialize(verbose=True)
-    upload_results(args.dataset, args.model_name, df_results)
+    upload_results(args.dataset, args.model, df_results)
 
 
 def main() -> None:

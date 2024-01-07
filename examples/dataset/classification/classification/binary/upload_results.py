@@ -57,19 +57,19 @@ def create_classification(score: float) -> ScoredClassificationLabel:
 
 
 def run(args: Namespace) -> None:
+    kolena.initialize(verbose=True)
+    dataset_df = fetch_dataset(args.dataset)
     df_results = pd.read_csv(
-        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model_name}.csv",
+        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
         storage_options={"anon": True},
     )
-    dataset_df = fetch_dataset(args.dataset)
 
     df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
     df_results["inference"] = df_results["prediction"].apply(lambda score: create_classification(score))
     eval_result = df_results.apply(lambda row: pd.Series(compute_metrics(row.prediction, row.label)), axis=1)
     df_results = pd.concat([df_results[ID_FIELDS], df_results["inference"], eval_result], axis=1)
 
-    kolena.initialize(verbose=True)
-    upload_results(args.dataset, args.model_name, [(EVAL_CONFIG, df_results)])
+    upload_results(args.dataset, args.model, [(EVAL_CONFIG, df_results)])
 
 
 def main() -> None:

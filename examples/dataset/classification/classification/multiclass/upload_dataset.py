@@ -38,7 +38,7 @@ def main() -> None:
         "--dataset",
         type=str,
         default=DATASET,
-        help="Optionally specify a dataset name to upload.",
+        help="Optionally specify a custom dataset name to upload.",
     )
     run(ap.parse_args())
 

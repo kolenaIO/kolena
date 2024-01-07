@@ -4,6 +4,10 @@ This example integration uses the [CIFAR-10](https://www.cs.toronto.edu/~kriz/ci
 [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset, and open-source classification models to demonstrate
 how to test multiclass and binary classification problems on Kolena.
 
+The models used in this example are
+[`resnet50v2`](https://www.tensorflow.org/api_docs/python/tf/keras/applications/resnet_v2/ResNet50V2) and
+[`inceptionv3`](https://www.tensorflow.org/api_docs/python/tf/keras/applications/inception_v3/InceptionV3).
+
 ## Setup
 
 This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
@@ -69,7 +73,7 @@ usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
   -h, --help         show this help message and exit
-  --dataset DATASET  Optionally specify a dataset name to upload.
+  --dataset DATASET  Optionally specify a custom dataset name to upload.
 ```
 
 2. [`upload_results.py`](classification/multiclass/upload_results.py) uploads results for `"resnet50v2"` or
