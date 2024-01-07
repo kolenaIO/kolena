@@ -152,7 +152,7 @@ def main(args: Namespace) -> int:
         reset=True,
     )
 
-    suite_name = args.suite_name
+    suite_name = args.test_suite
     create_test_suite_by_question(suite_name, complete_test_case, test_samples_and_ground_truths)
     create_test_suite_by_conversation_length(suite_name, complete_test_case, test_samples_and_ground_truths)
 
