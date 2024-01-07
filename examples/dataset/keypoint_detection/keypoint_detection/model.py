@@ -21,8 +21,8 @@ import numpy as np
 import pandas as pd
 import s3fs
 
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import Keypoints
+from kolena.annotation import Keypoints
+from kolena.annotation import ScoredLabeledBoundingBox
 
 
 def download_image(locator: str) -> np.ndarray:
@@ -33,17 +33,17 @@ def download_image(locator: str) -> np.ndarray:
         return image
 
 
-def infer_from_df(record: Any, df: pd.DataFrame) -> Tuple[List[BoundingBox], List[Keypoints]]:
+def infer_from_df(record: Any, df: pd.DataFrame) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
     inference = df[df["locator"] == record.locator]
     return inference.iloc[0]["raw_bboxes"], inference.iloc[0]["raw_faces"]
 
 
-def infer_random(record: Any) -> Tuple[List[BoundingBox], List[Keypoints]]:
+def infer_random(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
     def randomize(point: Tuple[float, float]) -> Tuple[float, float]:
         return point[0] + (random.random() - 0.5) * 100, point[1] + (random.random() - 0.5) * 100
 
     gt_points = record.face.points
-    random_bbox = BoundingBox(
+    random_bbox = ScoredLabeledBoundingBox(
         top_left=(gt_points[1][0] - random.random() * 100, gt_points[1][1] - random.random() * 100),
         bottom_right=(gt_points[4][0] + random.random() * 100, gt_points[4][1] + random.random() * 100),
         score=random.random(),

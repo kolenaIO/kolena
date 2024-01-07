@@ -27,19 +27,19 @@ nav:
               - Test Case & Test Suite: workflow/core-concepts/test-suite.md
               - Model: workflow/core-concepts/model.md
           - Building a Workflow: workflow/building-a-workflow.md
-      - Advanced Usage:
-          - Advanced Usage: advanced-usage/index.md
-          - Connecting Cloud Storage:
-              - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
-              - Amazon S3: advanced-usage/connecting-cloud-storage/amazon-s3.md
-              - S3-Compatible APIs: advanced-usage/connecting-cloud-storage/s3-compatible.md
-              - Google Cloud Storage: advanced-usage/connecting-cloud-storage/google-cloud-storage.md
-              - Azure Blob Storage: advanced-usage/connecting-cloud-storage/azure-blob-storage.md
-              - HTTP Basic: advanced-usage/connecting-cloud-storage/http-basic.md
-          - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
-          - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
-          - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
-          - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
+          - Advanced Usage:
+              - Advanced Usage: workflow/advanced-usage/index.md
+              - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
+              - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
+              - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
+              - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
+      - Connecting Cloud Storage:
+        - Connecting Cloud Storage: connecting-cloud-storage/index.md
+        - Amazon S3: connecting-cloud-storage/amazon-s3.md
+        - S3-Compatible APIs: connecting-cloud-storage/s3-compatible.md
+        - Google Cloud Storage: connecting-cloud-storage/google-cloud-storage.md
+        - Azure Blob Storage: connecting-cloud-storage/azure-blob-storage.md
+        - HTTP Basic: connecting-cloud-storage/http-basic.md
   - API Reference:
       - API Reference: reference/index.md
       - <code>kolena.annotation</code>: reference/annotation.md
@@ -49,6 +49,11 @@ nav:
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.dataset</code>:
           - <code>kolena.dataset</code>: reference/dataset/index.md
+          - <code>register_dataset</code>: reference/dataset/register-dataset.md
+          - <code>fetch_dataset_history</code>: reference/dataset/fetch-dataset-history.md
+          - <code>fetch_dataset</code>: reference/dataset/fetch-dataset.md
+          - <code>fetch_results</code>: reference/dataset/fetch-results.md
+          - <code>upload_results</code>: reference/dataset/upload-results.md
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md
@@ -72,12 +77,6 @@ nav:
           - Pre-built Workflows: reference/pre-built/index.md
           - Object Detection (2D): reference/pre-built/object-detection-2d.md
           - Classification: reference/pre-built/classification.md
-          - Legacy Definitions:
-              - Legacy Definitions: reference/legacy/index.md
-              - <code>classification</code>: reference/legacy/built-in/classification.md
-              - <code>detection</code>: reference/legacy/built-in/detection.md
-              - <code>fr</code>: reference/legacy/built-in/fr.md
-              - Base Definitions: reference/legacy/built-in/base.md
   - Metrics Glossary:
       - Metrics Glossary: metrics/index.md
       - metrics/accuracy.md

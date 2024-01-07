@@ -61,7 +61,7 @@ class EventAPI:
 
         # dataset evaluation
         FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"
-        TEST_DATASET_MODEL = "sdk-dataset-model-tested"
+        UPLOAD_DATASET_MODEL_RESULT = "sdk-dataset-model-result-uploaded"
 
     @dataclass(frozen=True)
     class RecordEventRequest:

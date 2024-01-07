@@ -109,6 +109,11 @@ def fetch_results(
 ) -> Tuple[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]]:
     """
     Fetch results given dataset name and model name.
+
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
+    :return: Tuple of DataFrame of datapoints and list of tuples,
+             each containing an evaluation configuration and the corresponding DataFrame of results.
     """
     log.info(f"fetching results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
@@ -136,8 +141,8 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-@with_event(EventAPI.Event.TEST_DATASET_MODEL)
-def test(
+@with_event(EventAPI.Event.UPLOAD_DATASET_MODEL_RESULT)
+def upload_results(
     dataset: str,
     model: str,
     results: Union[
@@ -155,13 +160,13 @@ def test(
     ],
 ) -> None:
     """
-    This function is used for testing a specified model on a given dataset.
+    This function is used for uploading the results from a specified model on a given dataset.
 
-    :param dataset: The name of the dataset to be used.
-    :param model: The name of the model to be used.
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    a eval configuration and a DataFrame.
-    :return None
+                    an eval configuration and a DataFrame.
+    :return: None
     """
     existing_dataset = load_dataset(dataset)
     if not existing_dataset:
@@ -188,4 +193,4 @@ def test(
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"uploaded test results for model '{model}' on dataset '{dataset}'")
+    log.info(f"Uploaded results for model '{model}' on dataset '{dataset}'")

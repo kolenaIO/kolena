@@ -16,6 +16,7 @@ import mimetypes
 import sys
 from dataclasses import asdict
 from enum import Enum
+from typing import Any
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -71,7 +72,7 @@ class DatapointType(str, Enum):
     VIDEO = "DATAPOINT/VIDEO"
 
     @classmethod
-    def has_value(cls, item) -> bool:
+    def has_value(cls, item: Any) -> bool:
         return item in cls.__members__.values()
 
 
@@ -89,7 +90,7 @@ def _dataobject_type(obj: TypedDataObject) -> str:
     return f"{obj_type._data_category()}/{obj_type.value}"
 
 
-def _get_datapoint_type(mimetype_str: str) -> str:
+def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
     main_type, sub_type = mimetype_str.split("/")
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
@@ -204,6 +205,12 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
 
 
 def load_dataset(name: str) -> Optional[EntityData]:
+    """
+    Load the metadata of a given dataset.
+
+    :param name: The name of the dataset.
+    :return: The metadata of the dataset.
+    """
     response = krequests.put(Path.LOAD_DATASET, json=asdict(LoadDatasetByNameRequest(name=name)))
     if response.status_code == requests.codes.not_found:
         return None
@@ -239,13 +246,13 @@ def register_dataset(
     Create or update a dataset with datapoints and id_fields. If the dataset already exists, in order to associate the
     existing result with the new datapoints, the id_fields need be the same as the existing dataset.
 
-    :param name: name of the dataset
-    :param df: an iterator of pandas dataframe or a pandas dataframe, you can pass in the iterator if you want to have
+    :param name: The name of the dataset.
+    :param df: An iterator of pandas dataframe or a pandas dataframe, you can pass in the iterator if you want to have
                 batch processing,
                  example iterator usage: csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)
-    :param id_fields: a list of id fields, this will be used to link the result with the datapoints, if this is not
+    :param id_fields: A list of id fields, this will be used to link the result with the datapoints, if this is not
                  provided, it will be inferred from the dataset
-    :return None
+    :return: None
     """
     load_uuid = init_upload().uuid
     existing_dataset = load_dataset(name)
@@ -260,7 +267,9 @@ def register_dataset(
                 id_fields = resolve_id_fields(chunk, id_fields, existing_dataset)
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
+            assert id_fields is not None
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
+    assert id_fields is not None
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
@@ -270,7 +279,7 @@ def register_dataset(
 
 def _iter_dataset_raw(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
@@ -289,7 +298,7 @@ def _iter_dataset_raw(
 
 def _iter_dataset(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
@@ -302,11 +311,16 @@ def _iter_dataset(
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
 def fetch_dataset(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> pd.DataFrame:
     """
     Fetch an entire dataset given its name.
+
+    :param name: The name of the dataset.
+    :param commit: The commit hash for version control. Get the latest commit when it's None.
+    :param batch_size: The number of samples to be loaded per batch.
+    :return: A DataFrame containing the fetched dataset.
     """
     df_batches = list(_iter_dataset(name, commit, batch_size))
     log.info(f"loaded dataset '{name}'")
@@ -326,7 +340,7 @@ def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: i
 def _iter_commits(
     name: str,
     descending: bool = False,
-    limit: int = None,
+    limit: Optional[int] = None,
     page_size: int = 50,
 ) -> Iterator[Tuple[int, List[CommitData]]]:
     """
@@ -347,11 +361,18 @@ def _iter_commits(
 def fetch_dataset_history(
     name: str,
     descending: bool = False,
-    limit: int = None,
+    limit: Optional[int] = None,
     page_size: int = 50,
 ) -> Tuple[int, List[CommitData]]:
     """
     Get the commit history of a dataset.
+
+    :param name: The name of the dataset
+    :param descending: If True, return the results in descending order.
+    :param limit: The maximum number of results to return. If None, all results will be returned.
+    :param page_size: The number of items to return per page.
+    :return: A tuple where the first element is the total number of commits
+             and the second element is a list of CommitData objects.
     """
     iter_commit_responses = list(_iter_commits(name, descending, limit, page_size))
     total_commit_count = iter_commit_responses[0][0]

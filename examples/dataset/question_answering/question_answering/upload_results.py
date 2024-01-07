@@ -18,7 +18,7 @@ from question_answering.constants import DATASET_TO_RESULTS
 from question_answering.constants import MODELS
 
 import kolena
-from kolena.dataset import test
+from kolena.dataset import upload_results
 from kolena.workflow.io import dataframe_from_csv
 
 
@@ -29,7 +29,7 @@ def main(args: Namespace) -> None:
         for model in args.models:
             print(f"loading {model} results on {dataset}...")
             df_results = dataframe_from_csv(DATASET_TO_RESULTS[dataset][model])
-            test(dataset, model, df_results)
+            upload_results(dataset, model, df_results)
 
 
 if __name__ == "__main__":

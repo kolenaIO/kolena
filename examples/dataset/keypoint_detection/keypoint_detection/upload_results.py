@@ -24,10 +24,10 @@ from keypoint_detection.model import infer_random
 from tqdm import tqdm
 
 import kolena
-from kolena.annotation import BoundingBox
 from kolena.annotation import Keypoints
+from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.dataset import fetch_dataset
-from kolena.dataset import test
+from kolena.dataset import upload_results
 from kolena.io import dataframe_from_csv
 
 RETINAFACE_S3_PATH = "s3://kolena-public-examples/300-W/results/raw/retinaface.csv"
@@ -40,8 +40,8 @@ def run(args: Namespace) -> None:
     if args.model == "RetinaFace":
         retinaface_raw_inferences_df = dataframe_from_csv(RETINAFACE_S3_PATH, storage_options={"anon": True})
 
-        def infer_retinaface(rec: Any) -> Tuple[List[BoundingBox], List[Keypoints]]:
-            return infer_from_df(rec, retinaface_raw_inferences_df)
+        def infer_retinaface(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
+            return infer_from_df(record, retinaface_raw_inferences_df)
 
         infer = infer_retinaface
 
@@ -54,7 +54,7 @@ def run(args: Namespace) -> None:
         results.append(dict(locator=record.locator, raw_bboxes=bboxes, raw_faces=faces, **metrics))
 
     df_results = pd.DataFrame.from_records(results)
-    test(args.dataset, args.model, df_results)
+    upload_results(args.dataset, args.model, df_results)
 
 
 def main() -> None:

@@ -180,5 +180,5 @@ class Search:
         n_samples: int
 
 
-Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()
-Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()
+Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()  # type: ignore
+Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()  # type: ignore
