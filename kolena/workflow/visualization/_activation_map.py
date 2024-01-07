@@ -106,13 +106,13 @@ class ColormapJet(Colormap):
             return np.uint8(0)
 
     def red(self, intensity: np.uint8) -> np.uint8:
-        return self._scale_to_colormap(np.uint8(intensity - np.iinfo(np.uint8).max / 4))
+        return self._scale_to_colormap(intensity - np.iinfo(np.uint8).max / 4)  # type: ignore
 
     def green(self, intensity: np.uint8) -> np.uint8:
         return self._scale_to_colormap(intensity)
 
     def blue(self, intensity: np.uint8) -> np.uint8:
-        return self._scale_to_colormap(np.uint8(intensity + np.iinfo(np.uint8).max / 4))
+        return self._scale_to_colormap(intensity + np.iinfo(np.uint8).max / 4)  # type: ignore
 
 
 def colorize_activation_map(activation_map: np.ndarray, colormap: Colormap = ColormapJet()) -> np.ndarray:
