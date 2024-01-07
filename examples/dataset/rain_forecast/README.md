@@ -49,20 +49,19 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 this workflow:
 
 ### Metrics
-1. Precision
-2. Recall
-3. F1-score
-4. \# FP
-5. \# FN
-
+1. [Precision](https://docs.kolena.io/metrics/precision)
+2. [Recall](https://docs.kolena.io/metrics/recall)
+3. [F1-score](https://docs.kolena.io/metrics/f1-score)
+4. [\# FP](https://docs.kolena.io/metrics/tp-fp-fn-tn)
+5. [\# FN](https://docs.kolena.io/metrics/tp-fp-fn-tn)
 
 ### Plots
-1. Confusion Matrix: datapoint.RainTomorrow vs. result.will_rain
-2. Location vs. mean(result.is_FN)
-3. Location vs. mean(result.is_FP)
-4. Year vs. mean(result.is_FN)
-5. Year vs. mean(result.is_FP)
+1. Confusion Matrix: "datapoint.RainTomorrow" vs. "result.will_rain"
+2. "datapoint.Location" vs. ```mean(result.is_FN)
+3. "datapoint.Location" vs. ```mean(result.is_FP)
+4. "datapoint.Year/Month" vs. ```mean(result.is_FN)
+5. "datapoint.Year/Month" vs. ```mean(result.is_FP)
 
 ### Test Cases
-1. Year (bin = 5)
-2. Region
+1. "datapoint.Year" (with `bin` = 5)
+2. "datapoint.Region"
