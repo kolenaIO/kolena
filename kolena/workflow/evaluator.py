@@ -104,7 +104,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
     `sampleSize`, `sample_size`, `SampleSize`.
 
     For a detailed overview of this feature, see the [:kolena-diagram-tree-16: Nesting Test Case
-    Metrics](../../advanced-usage/nesting-test-case-metrics.md) advanced usage guide.
+    Metrics](../../workflow/advanced-usage/nesting-test-case-metrics.md) advanced usage guide.
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
