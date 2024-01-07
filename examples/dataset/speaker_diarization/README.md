@@ -45,23 +45,22 @@ upload results for. Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 speaker_diarization/upload_dataset.py --help
-usage: upload_dataset.py [-h] [--dataset-name DATASET_NAME] [--sample-count SAMPLE_COUNT]
+usage: upload_dataset.py [-h] [--dataset DATASET] [--sample-count SAMPLE_COUNT]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --dataset-name DATASET_NAME
-                        Name of the dataset
+  --dataset DATASET     Optionally specify a dataset name to upload.
   --sample-count SAMPLE_COUNT
-                        Number of samples to use, all samples are used if 0
+                        Number of samples to use. All samples are used by default.
 
 $ poetry run python3 speaker_diarization/upload_results.py --help
-usage: upload_results.py [-h] [--dataset-name DATASET_NAME] [--align-speakers] [--sample-count SAMPLE_COUNT]
+usage: upload_results.py [-h] [--dataset DATASET] [--align-speakers] [--sample-count SAMPLE_COUNT]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --dataset-name DATASET_NAME
-                        Name of the dataset.
-  --align-speakers      Specify whether to perform speaker alignment between the ground_truth and inference in the preprocessing step.
+  --dataset DATASET     Optionally specify a dataset name to upload.
+  --align-speakers      Specify whether to perform speaker alignment between the ground_truth and inference in the
+                        preprocessing step.
   --sample-count SAMPLE_COUNT
-                        Number of samples to use, all samples are used if 0.
+                        Number of samples to use. All samples are used by default.
 ```

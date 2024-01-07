@@ -29,7 +29,7 @@ def align_df_speakers(ref: pd.Series, inf: pd.Series) -> pd.Series:
     return pd.Series([realign_labels(r, i) for r, i in zip(ref.tolist(), inf.tolist())])
 
 
-def main(args: Namespace) -> None:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
     model = "gcp-stt-video"
@@ -49,12 +49,12 @@ def main(args: Namespace) -> None:
     merged_df = pd.concat([transcripts_df, metrics_df], axis=1)
     results_df = datapoint_df[["locator", "transcription_path"]].merge(merged_df, on="transcription_path")
     eval_config = {"align-speakers": align_speakers}
-    upload_results(args.dataset_name, model, [(eval_config, results_df)])
+    upload_results(args.dataset, model, [(eval_config, results_df)])
 
 
-if __name__ == "__main__":
+def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--dataset-name", type=str, default=DATASET, help="Name of the dataset.")
+    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a dataset name to upload.")
     ap.add_argument(
         "--align-speakers",
         action="store_true",
@@ -65,6 +65,10 @@ if __name__ == "__main__":
         "--sample-count",
         type=int,
         default=0,
-        help="Number of samples to use, all samples are used if 0.",
+        help="Number of samples to use. All samples are used by default.",
     )
-    main(ap.parse_args())
+    run(ap.parse_args())
+
+
+if __name__ == "__main__":
+    main()
