@@ -28,7 +28,7 @@ def suite_name() -> str:
 
 
 def test__qa_seed_test_suite__smoke(suite_name: str) -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CoQA/metadata/metadata_head.csv", suite_name=suite_name)
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/CoQA/metadata/metadata_head.csv", test_suite=suite_name)
     seed_test_suite_main(args)
 
 
