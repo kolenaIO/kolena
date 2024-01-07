@@ -251,7 +251,7 @@ def register_dataset(
                 batch processing,
                  example iterator usage: csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)
     :param id_fields: A list of id fields, this will be used to link the result with the datapoints, if this is not
-                 provided, it will be inferred from the dataset
+                 provided, it will be inferred from the dataset. Note that id fields must be hashable.
     :return: None
     """
     load_uuid = init_upload().uuid
