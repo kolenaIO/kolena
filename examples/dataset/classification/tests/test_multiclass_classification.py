@@ -40,11 +40,13 @@ def dataset_name() -> str:
 
 
 def test__upload_dataset() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
+    args = Namespace(dataset=dataset_name)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
+    args = Namespace(model="resnet50v2", dataset=dataset_name)
+    upload_results_main(args)
+    args = Namespace(model="inceptionv3", dataset=dataset_name)
     upload_results_main(args)

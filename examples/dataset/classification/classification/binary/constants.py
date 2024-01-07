@@ -13,5 +13,4 @@
 # limitations under the License.
 BUCKET = "kolena-public-examples"
 DATASET = "dogs-vs-cats"
-POSITIVE_LABEL = "dog"
-NEGATIVE_LABEL = "not dog"
+ID_FIELDS = ["locator"]

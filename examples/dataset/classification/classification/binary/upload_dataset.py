@@ -17,26 +17,28 @@ from argparse import Namespace
 import pandas as pd
 from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
+from classification.binary.constants import ID_FIELDS
 
 import kolena
+from kolena.annotation import ClassificationLabel
 from kolena.dataset import register_dataset
-from kolena.workflow.annotation import ClassificationLabel
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
-    id_fields = ["locator"]
     df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
-    register_dataset(args.dataset, df, id_fields)
+
+    kolena.initialize(verbose=True)
+    register_dataset(args.dataset, df, ID_FIELDS)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
         "--dataset",
+        type=str,
         default=DATASET,
-        help=f"Custom name for the {DATASET} dataset to upload.",
+        help="Optionally specify a custom dataset name to upload.",
     )
     run(ap.parse_args())
 

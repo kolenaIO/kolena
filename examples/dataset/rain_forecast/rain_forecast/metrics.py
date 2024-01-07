@@ -16,15 +16,6 @@ from typing import Dict
 
 
 def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5) -> Dict[str, Any]:
-    metrics: Dict[str, Any] = dict(
-        missing_ground_truth=True,
-        is_correct=None,
-        is_TP=None,
-        is_FP=None,
-        is_FN=None,
-        is_TN=None,
-    )
-
     if ground_truth == "Yes" or ground_truth == "No":
         gt = ground_truth == "Yes"
         inf = inference >= threshold
@@ -38,4 +29,11 @@ def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5)
         )
         return metrics
 
-    return metrics
+    return dict(
+        missing_ground_truth=True,
+        is_correct=None,
+        is_TP=None,
+        is_FP=None,
+        is_FN=None,
+        is_TN=None,
+    )
