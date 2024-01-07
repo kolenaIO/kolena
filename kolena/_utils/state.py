@@ -38,7 +38,7 @@ API_V2 = "v2"
 DEFAULT_API_VERSION = API_V1
 API_URL = "https://api.kolena.io"
 API_URL_ENV_VAR = "KOLENA_API_URL"
-CLIENT_STATE = contextvars.ContextVar("client_state")  # type: ignore
+CLIENT_STATE: contextvars.ContextVar["_ClientState"] = contextvars.ContextVar("client_state")
 
 
 class NoOpAuth(requests.auth.AuthBase):
@@ -158,8 +158,7 @@ def get_token(
     base_url: Optional[str] = None,
     proxies: Optional[Dict[str, str]] = None,
 ) -> API.ValidateResponse:
-    base_url = base_url or get_client_state().base_url
-    assert base_url is not None
+    base_url = base_url or get_client_state().base_url or ""
     request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
     r = requests.put(
         get_endpoint_with_baseurl(base_url, "token/login"),

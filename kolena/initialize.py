@@ -149,8 +149,7 @@ def _find_token() -> Optional[str]:
     if KOLENA_TOKEN_ENV in os.environ:
         return os.environ[KOLENA_TOKEN_ENV]
 
-    hostname = urlparse(state._get_api_base_url()).hostname
-    assert hostname is not None
+    hostname = urlparse(state._get_api_base_url()).hostname or ""
     try:
         netrc_file = netrc.netrc()
         record = netrc_file.authenticators(hostname)
