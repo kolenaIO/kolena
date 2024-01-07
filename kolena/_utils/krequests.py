@@ -59,7 +59,7 @@ class JWTAuth(requests.auth.AuthBase):
     def __init__(self, jwt: str):
         self.jwt = jwt
 
-    def __call__(self, r):  # type: ignore
+    def __call__(self, r: Any) -> Any:
         r.headers["Authorization"] = f"Bearer {self.jwt}"
         return r
 
@@ -145,19 +145,18 @@ def delete(endpoint_path: str, api_version: str = DEFAULT_API_VERSION, **kwargs:
 def raise_for_status(response: requests.Response) -> None:
     if response.status_code == HTTPStatus.UNAUTHORIZED:
         # HTTP 401 is "unauthorized" but used as "unauthenticated"
-        raise UnauthenticatedError(response=response)
+        raise UnauthenticatedError(response.content)
     if response.status_code == HTTPStatus.NOT_FOUND:
-        raise NotFoundError(response=response)
+        raise NotFoundError(response.content)
     if response.status_code == HTTPStatus.CONFLICT:
-        raise NameConflictError(response=response)
+        raise NameConflictError(response.content)
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
         raise IncorrectUsageError(response.content)
 
     try:
         response.raise_for_status()
     except HTTPError:
-        error_message = f"{response.text} ({response.elapsed.total_seconds():0.5f} seconds elapsed)"
-        raise RemoteError(response=error_message)  # type: ignore
+        raise RemoteError(f"{response.text} ({response.elapsed.total_seconds():0.5f} seconds elapsed)")
 
 
 @kolena_initialized

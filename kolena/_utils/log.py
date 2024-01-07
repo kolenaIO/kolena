@@ -15,13 +15,10 @@ import logging
 import os
 import sys
 from typing import Any
-from typing import Iterator
-from typing import List
+from typing import Iterable
 from typing import Optional
 from typing import TypeVar
-from typing import Union
 
-import numpy as np
 import termcolor
 from tqdm.auto import tqdm
 
@@ -83,11 +80,7 @@ def error(message: str, exception: Optional[BaseException], **kwargs: Any) -> No
 T = TypeVar("T")
 
 
-def progress_bar(
-    iterator: Union[Iterator[T], List[np.ndarray]],
-    desc: Optional[str] = None,
-    **kwargs: Any,
-) -> Iterator[T]:
+def progress_bar(iterator: Iterable[T], desc: Optional[str] = None, **kwargs: Any) -> Iterable[T]:
     if _client_state.verbose:
         desc_base = "kolena> " if is_notebook else _colored("kolena> ", color="magenta")
         desc_full = f"{desc_base}{desc}" if desc is not None else desc_base
