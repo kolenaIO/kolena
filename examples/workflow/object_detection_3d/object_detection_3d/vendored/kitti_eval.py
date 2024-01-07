@@ -20,6 +20,7 @@
 # Marked any modified functions with "MODIFIED BY KOLENA".
 # Licensed under Apache-2.0
 # Copyright (c) OpenMMLab. All rights reserved.
+# type: ignore
 import gc
 import io as sysio
 
