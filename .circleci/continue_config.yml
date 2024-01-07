@@ -382,7 +382,6 @@ workflows:
               extras: [ "none" ]
           pytest-group: dataset
           enabled: true
-          parallelism: 2
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -409,7 +408,7 @@ workflows:
       - example-test-dataset:
           matrix:
             parameters:
-              subproject: [ rain_forecast ]
+              subproject: [ rain_forecast, speaker_diarization ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:

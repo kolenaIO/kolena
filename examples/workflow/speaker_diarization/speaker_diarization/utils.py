@@ -13,7 +13,6 @@
 # limitations under the License.
 import re
 from typing import List
-from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -31,7 +30,7 @@ from kolena.workflow.annotation import TimeSegment
 ERROR_THRESHOLD = 0.2
 
 
-def build_speaker_index(inf: List[Tuple[str, float, float]]) -> Set[str]:
+def build_speaker_index(inf: List[Tuple[str, float, float]]) -> dict[str, int]:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
     speaker_set = sorted({element[0] for element in inf})
     index = {speaker: i for i, speaker in enumerate(speaker_set)}

@@ -18,15 +18,11 @@ from typing import Tuple
 
 import cv2
 import numpy as np
+import pandas as pd
 import s3fs
 
 from kolena.annotation import Keypoints
 from kolena.annotation import ScoredLabeledBoundingBox
-
-try:
-    from retinaface import RetinaFace  # noqa: F401
-except ImportError:
-    print("Note: Package 'retinaface' not found; install 'retinaface' with `poetry install --extras retina`")
 
 
 def download_image(locator: str) -> np.ndarray:
@@ -37,32 +33,9 @@ def download_image(locator: str) -> np.ndarray:
         return image
 
 
-def infer_retinaface(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
-    image = download_image(record.locator)
-    predictions = RetinaFace.detect_faces(image)
-    bboxes, faces = [], []
-    try:
-        for face_label, pred in predictions.items():
-            bbox = ScoredLabeledBoundingBox(
-                top_left=pred["facial_area"][:2],
-                bottom_right=pred["facial_area"][2:],
-                score=pred["score"],
-                label=face_label,
-            )
-            face = Keypoints(
-                points=[
-                    pred["landmarks"]["left_eye"],
-                    pred["landmarks"]["right_eye"],
-                    pred["landmarks"]["nose"],
-                    pred["landmarks"]["mouth_left"],
-                    pred["landmarks"]["mouth_right"],
-                ],
-            )
-            bboxes.append(bbox)
-            faces.append(face)
-    except Exception:
-        pass  # prediction failure
-    return bboxes, faces
+def infer_from_df(record: Any, df: pd.DataFrame) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
+    inference = df[df["locator"] == record.locator]
+    return inference.iloc[0]["raw_bboxes"], inference.iloc[0]["raw_faces"]
 
 
 def infer_random(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:

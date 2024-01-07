@@ -28,7 +28,7 @@ If you don't see your question here, please reach out to us on Slack or at
     We're constantly adding new data types and annotation types — if you don't see what you're looking for, reach out
     to us and we'll happily extend our system to support your use case.
 
-??? faq "Do I have to upload my datasets to Kolena?"
+??? faq "Do I have to upload my images, documents, or files to Kolena?"
 
     No. Kolena doesn't store your data (images, videos, documents, 3D assetes, etc.) directly, only URLs pointing to
     the right location in a cloud bucket or internal infrastructure that you own.
@@ -69,6 +69,11 @@ If you don't see your question here, please reach out to us on Slack or at
 
     To retrieve a service user API token that is not scoped to a specific username, please reach out to us on Slack or
     at [contact@kolena.com](mailto:contact@kolena.com).
+
+??? faq "My data is being ingested in the wrong format for a CSV exported using `pandas.DataFrame.to_csv`"
+
+    `pandas.DataFrame.to_csv` does not always handle object serialization seamlessly. Please reference
+    [`dataframe_to_csv`](../reference/io/#kolena.io.dataframe_to_csv) for a drop-in replacement.
 
 ??? faq "Does Kolena support file versioning?"
 

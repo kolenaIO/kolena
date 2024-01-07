@@ -13,21 +13,38 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Any
+from typing import List
+from typing import Tuple
 
 import pandas as pd
 from keypoint_detection.metrics import compute_metrics
+from keypoint_detection.model import infer_from_df
 from keypoint_detection.model import infer_random
-from keypoint_detection.model import infer_retinaface
 from tqdm import tqdm
 
 import kolena
+from kolena.annotation import Keypoints
+from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.dataset import fetch_dataset
 from kolena.dataset import upload_results
+from kolena.io import dataframe_from_csv
+
+RETINAFACE_S3_PATH = "s3://kolena-public-examples/300-W/results/raw/retinaface.csv"
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    infer = infer_retinaface if args.model == "RetinaFace" else infer_random
+
+    infer = infer_random
+    if args.model == "RetinaFace":
+        retinaface_raw_inferences_df = dataframe_from_csv(RETINAFACE_S3_PATH, storage_options={"anon": True})
+
+        def infer_retinaface(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
+            return infer_from_df(record, retinaface_raw_inferences_df)
+
+        infer = infer_retinaface
+
     df = fetch_dataset(args.dataset)
 
     results = []

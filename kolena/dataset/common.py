@@ -47,10 +47,13 @@ def validate_id_fields(id_fields: List[str], existing_id_fields: Optional[List[s
 
 
 def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -> None:
-    if df[id_fields].apply(lambda x: x.to_dict(), axis=1).duplicated().any():
-        raise InputValidationError(
-            f"invalid id_fields: " f"input dataframe's id field values are not unique for {id_fields}",
-        )
+    try:
+        if df[id_fields].duplicated().any():
+            raise InputValidationError(
+                f"invalid id_fields: input dataframe's id field values are not unique for {id_fields}",
+            )
+    except TypeError as e:
+        raise InputValidationError("id fields must be hashable: ", e)
 
 
 def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
@@ -60,3 +63,8 @@ def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
                 f"invalid id_fields: field '{id_field}' does not exist in dataframe",
             )
     _validate_dataframe_ids_uniqueness(df, id_fields)
+
+
+def validate_dataframe_have_other_columns_besides_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
+    if set(df.columns) == set(id_fields):
+        raise InputValidationError("dataframe only contains id fields")
