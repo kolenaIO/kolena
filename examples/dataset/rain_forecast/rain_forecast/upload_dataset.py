@@ -24,7 +24,7 @@ from kolena.dataset import register_dataset
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    df_dataset = pd.read_csv(args.dataset_csv)
+    df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     register_dataset(args.dataset_name, df_dataset, id_fields=["Date", "Location"])
 
 
