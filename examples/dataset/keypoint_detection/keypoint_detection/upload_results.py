@@ -24,11 +24,11 @@ from keypoint_detection.model import infer_random
 from tqdm import tqdm
 
 import kolena
+from kolena.annotation import BoundingBox
+from kolena.annotation import Keypoints
 from kolena.dataset import fetch_dataset
 from kolena.dataset import test
 from kolena.io import dataframe_from_csv
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import Keypoints
 
 RETINAFACE_S3_PATH = "s3://kolena-public-examples/300-W/results/raw/retinaface.csv"
 
