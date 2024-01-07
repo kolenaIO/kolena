@@ -9,8 +9,6 @@ hide:
 Kolena Datasets provides a framework and tooling for exploration of data, evaluation of model results, and
 standardization and comparison of multiple models.
 
----
-
 <div class="grid cards" markdown>
 - [:kolena-flame-16: Quickstart](./quickstart.md)
 

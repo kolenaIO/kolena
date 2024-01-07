@@ -14,8 +14,6 @@ hide:
 Kolena Workflows provides a framework for rigorously describing your ML evaluation process and integration your data
 and evaluation process into the Kolena web application.
 
----
-
 <div class="grid cards" markdown>
 - [:kolena-flame-16: Quickstart](./quickstart.md)
 
