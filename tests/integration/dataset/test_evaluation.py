@@ -61,9 +61,9 @@ def get_df_result(n: int = 20) -> pd.DataFrame:
     return pd.DataFrame(records)
 
 
-def test__test() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test")
-    model_name = with_test_prefix(f"{__file__}::test__test")
+def test__upload_results() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
@@ -86,9 +86,9 @@ def test__test() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
-def test__test__iterator_input() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__iterator_input")
-    model_name = with_test_prefix(f"{__file__}::test__test__iterator_input")
+def test__upload_results__iterator_input() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__iterator_input")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__iterator_input")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
@@ -97,11 +97,7 @@ def test__test__iterator_input() -> None:
     df_result_iterator = batch_iterator(df_result)
     result_columns = ["softmax_bitmap", "score"]
 
-    upload_results(
-        dataset_name,
-        model_name,
-        df_result_iterator,
-    )
+    upload_results(dataset_name, model_name, df_result_iterator)
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -113,9 +109,9 @@ def test__test__iterator_input() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
-def test__test__align_manually() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__align_manually")
-    model_name = with_test_prefix(f"{__file__}::test__test__align_manually")
+def test__upload_results__align_manually() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__align_manually")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__align_manually")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
@@ -141,9 +137,9 @@ def test__test__align_manually() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
-def test__test__multiple_eval_configs() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs")
-    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs")
+def test__upload_results__multiple_eval_configs() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
@@ -180,9 +176,9 @@ def test__test__multiple_eval_configs() -> None:
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
-def test__test__multiple_eval_configs__iterator_input() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__iterator_input")
-    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__iterator_input")
+def test__upload_results__multiple_eval_configs__iterator_input() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs__iterator_input")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs__iterator_input")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=[JOIN_COLUMN])
@@ -220,9 +216,9 @@ def test__test__multiple_eval_configs__iterator_input() -> None:
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
-def test__test__multiple_eval_configs__partial_uploading() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__partial_uploading")
-    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__partial_uploading")
+def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs__partial_uploading")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs__partial_uploading")
     df_dp = get_df_dp(10)
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
@@ -267,9 +263,9 @@ def test__test__multiple_eval_configs__partial_uploading() -> None:
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
-def test__test__multiple_eval_configs__duplicate() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__duplicate")
-    model_name = with_test_prefix(f"{__file__}::test__test__multiple_eval_configs__duplicate")
+def test__upload_results__multiple_eval_configs__duplicate() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs__duplicate")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__multiple_eval_configs__duplicate")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
@@ -292,9 +288,9 @@ def test__test__multiple_eval_configs__duplicate() -> None:
     assert "duplicate eval configs are invalid" in exc_info_value
 
 
-def test__test__missing_result() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__missing_result")
-    model_name = with_test_prefix(f"{__file__}::test__test__missing_result")
+def test__upload_results__missing_result() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__missing_result")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__missing_result")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
@@ -339,9 +335,9 @@ def test__test__missing_result() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
-def test__test__upload_none() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__test__upload_none")
-    model_name = with_test_prefix(f"{__file__}::test__test__upload_none")
+def test__upload_results__upload_none() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__upload_none")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__upload_none")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
@@ -370,9 +366,9 @@ def test__test__upload_none() -> None:
     _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
-def test__fetch_results__not_exist() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__fetch_results__not_exist")
-    model_name = with_test_prefix(f"{__file__}::test__fetch_results__not_exist")
+def test__download_results__not_exist() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__not_exist")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__not_exist")
     with pytest.raises(NotFoundError) as exc_info:
         download_results(dataset_name, model_name)
     exc_info_value = str(exc_info.value)

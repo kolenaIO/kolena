@@ -56,9 +56,9 @@ from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.io import _dataframe_object_serde
 
-FIELD_LOCATOR = "locator"
-FIELD_TEXT = "text"
-SEP = "."
+_FIELD_LOCATOR = "locator"
+_FIELD_TEXT = "text"
+_SEP = "."
 
 
 class DatapointType(str, Enum):
@@ -110,9 +110,9 @@ def _infer_datatype_value(x: str) -> str:
 def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
     prefixes = {
-        column.rsplit(sep=SEP, maxsplit=1)[0]
+        column.rsplit(sep=_SEP, maxsplit=1)[0]
         for column in df.columns.values
-        if isinstance(column, str) and SEP in column
+        if isinstance(column, str) and _SEP in column
     }
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
@@ -120,19 +120,19 @@ def _add_datatype(df: pd.DataFrame) -> None:
             if not prefix.strip():
                 raise InputValidationError(
                     "Empty prefix encountered when parsing composite dataset. "
-                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{SEP}'.",
+                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{_SEP}'.",
                 )
             if prefix in df.columns:
                 raise InputValidationError(
                     f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
                 )
-            if SEP in prefix:
+            if _SEP in prefix:
                 raise InputValidationError(
-                    f"More than one delimeter '{SEP}' in prefix: '{prefix}'.",
+                    f"More than one delimeter '{_SEP}' in prefix: '{prefix}'.",
                 )
 
             composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
-            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(SEP)[-1])
+            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(_SEP)[-1])
             composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
 
             df[prefix] = composite.to_dict("records")
@@ -142,9 +142,9 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
-    if FIELD_LOCATOR in df.columns:
-        return df[FIELD_LOCATOR].apply(_infer_datatype_value)
-    elif FIELD_TEXT in df.columns:
+    if _FIELD_LOCATOR in df.columns:
+        return df[_FIELD_LOCATOR].apply(_infer_datatype_value)
+    elif _FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
     return DatapointType.TABULAR.value
@@ -155,12 +155,12 @@ def _infer_id_fields(df: pd.DataFrame) -> List[str]:
         return [
             id_field
             for id_field in df.columns.array
-            if isinstance(id_field, str) and id_field.rsplit(SEP, maxsplit=1)[-1] == field
+            if isinstance(id_field, str) and id_field.rsplit(_SEP, maxsplit=1)[-1] == field
         ]
 
-    if id_fields := get_id_fields_by(FIELD_LOCATOR):
+    if id_fields := get_id_fields_by(_FIELD_LOCATOR):
         return id_fields
-    elif id_fields := get_id_fields_by(FIELD_TEXT):
+    elif id_fields := get_id_fields_by(_FIELD_TEXT):
         return id_fields
     raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")
 
@@ -189,7 +189,7 @@ def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
         if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
             flattened = pd.json_normalize(df[key], max_level=0).rename(
-                columns=lambda col: f"{key}{SEP}{col}",
+                columns=lambda col: f"{key}{_SEP}{col}",
             )
             df = df.join(flattened)
             df.drop(columns=[key], inplace=True)
