@@ -254,7 +254,7 @@ def test__download_dataset__versions(with_dataset_commits: Tuple[int, List[Commi
     # check download_dataset with commit arg
     total_commits, commits = with_dataset_commits
     for version, commit in enumerate(commits):
-        loaded_datapoints = download_dataset(TEST_DATASET_HISTORY_NAME, commit.commit).sort_values(
+        loaded_datapoints = download_dataset(TEST_DATASET_HISTORY_NAME, commit=commit.commit).sort_values(
             "locator",
             ignore_index=True,
         )
@@ -268,4 +268,4 @@ def test__download_dataset__versions(with_dataset_commits: Tuple[int, List[Commi
 def test__download_dataset__commit_not_exist(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check download_dataset with a commit that does not exist
     with pytest.raises(NotFoundError):
-        download_dataset(TEST_DATASET_HISTORY_NAME, "non-existent-commit")
+        download_dataset(TEST_DATASET_HISTORY_NAME, commit="non-existent-commit")

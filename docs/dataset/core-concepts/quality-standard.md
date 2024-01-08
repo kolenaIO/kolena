@@ -32,8 +32,8 @@ Metrics describe the criteria used to evaluate the performance of a model and co
 dataset and its test cases.
 
 Kolena supports defining metrics by applying standard aggregations over datapoint level results or by leveraging
-common machine learning aggregations, such as [Precision](../../../metrics/precision) or
-[F1 Score](../../../metrics/f1-score). Once defined, users may also specify highlighting for metrics, indicating if
+common machine learning aggregations, such as [Precision](../../metrics/precision.md) or
+[F1 Score](../../metrics/f1-score.md). Once defined, users may also specify highlighting for metrics, indicating if
 `Higher is better`, or if `Lower is better`.
 
 The datasets quickstart provides a more hands-on example of
