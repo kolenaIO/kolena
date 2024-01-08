@@ -16,21 +16,10 @@ from typing import Any
 from typing import List
 from typing import Tuple
 
-import cv2
-import numpy as np
 import pandas as pd
-import s3fs
 
 from kolena.annotation import Keypoints
 from kolena.annotation import ScoredLabeledBoundingBox
-
-
-def download_image(locator: str) -> np.ndarray:
-    s3 = s3fs.S3FileSystem(anon=True)
-    with s3.open(locator, "rb") as f:
-        image_arr = np.asarray(bytearray(f.read()), dtype="uint8")
-        image = cv2.imdecode(image_arr, cv2.IMREAD_COLOR)
-        return image
 
 
 def infer_from_df(record: Any, df: pd.DataFrame) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:

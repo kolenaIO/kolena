@@ -18,13 +18,16 @@ from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from classification.binary.upload_dataset import run as upload_dataset_main
-from classification.binary.upload_results import run as upload_results_main
+from age_estimation.upload_dataset import run as upload_dataset_main
+from age_estimation.upload_results import run as upload_results_main
 
 from kolena._utils.state import kolena_session
 
+
 BUCKET = "kolena-public-examples"
-DATASET = "dogs-vs-cats"
+DATASET = "labeled-faces-in-the-wild"
+
+TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -39,12 +42,18 @@ def dataset_name() -> str:
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__upload_dataset() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
+def test__upload_dataset(dataset_name: str) -> None:
+    args = Namespace(dataset=dataset_name)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results() -> None:
-    args = Namespace(dataset=dataset_name, models=["resnet50v2", "inceptionv3"])
+def test__upload_results_deepface(dataset_name: str) -> None:
+    args = Namespace(dataset=dataset_name, model="deepface")
+    upload_results_main(args)
+
+
+@pytest.mark.depends(on=["test__upload_dataset"])
+def test__upload_results_ssrnet(dataset_name: str) -> None:
+    args = Namespace(dataset=dataset_name, model="ssrnet")
     upload_results_main(args)

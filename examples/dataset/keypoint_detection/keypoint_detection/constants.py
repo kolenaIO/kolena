@@ -12,5 +12,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 BUCKET = "kolena-public-examples"
-DATASET = "dogs-vs-cats"
+DATASET = "300-W"
 ID_FIELDS = ["locator"]

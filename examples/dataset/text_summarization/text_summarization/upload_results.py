@@ -23,36 +23,36 @@ from text_summarization.metrics import compute_metrics
 from tqdm import tqdm
 
 import kolena
-from kolena.dataset import fetch_dataset
+from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
 
-def run(args: Namespace) -> int:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    for model in args.models:
-        df_dataset = fetch_dataset(args.dataset)
-        df_inferences = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv")
-        df = df_inferences.merge(df_dataset, on=ID_FIELD)
 
-        results = []
-        for record in tqdm(df.itertuples(index=False), total=len(df)):
-            metrics = compute_metrics(record.text_summary, record.inference)
-            results.append(
-                dict(
-                    **record._asdict(),
-                    **metrics,
-                ),
-            )
+    model = MODELS[args.model]
+    df_dataset = download_dataset(args.dataset)
+    df_inferences = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv", storage_options={"anon": True})
+    df = df_inferences.merge(df_dataset, on=ID_FIELD)
 
-        df_results = pd.DataFrame.from_records(results)
-        upload_results(args.dataset, model, df_results)
-    return 0
+    results = []
+    for record in tqdm(df.itertuples(index=False), total=len(df)):
+        metrics = compute_metrics(record.text_summary, record.inference)
+        results.append(
+            dict(
+                **record._asdict(),
+                **metrics,
+            ),
+        )
+
+    df_results = pd.DataFrame.from_records(results)
+    upload_results(args.dataset, model, df_results)
 
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--models", nargs="+", default=MODELS, choices=MODELS, help="Name(s) of model(s) to test.")
-    ap.add_argument("--dataset", default=DATASET, help="Name of the dataset to test.")
+    ap.add_argument("model", type=str, choices=list(MODELS.keys()), help="Name of the model to test.")
+    ap.add_argument("--dataset", default=DATASET, help="Optionally specify a custom dataset name to test.")
     run(ap.parse_args())
 
 

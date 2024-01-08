@@ -20,13 +20,13 @@ from text_summarization.constants import DATASET
 from text_summarization.constants import ID_FIELD
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    df_dataset = pd.read_csv(args.dataset_csv)
-    register_dataset(args.dataset_name, df_dataset, id_fields=[ID_FIELD])
+    df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
+    upload_dataset(args.dataset, df_dataset, id_fields=[ID_FIELD])
 
 
 def main() -> None:
@@ -38,10 +38,10 @@ def main() -> None:
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--dataset-name",
+        "--dataset",
         type=str,
         default=DATASET,
-        help="Optionally specify a name of the dataset",
+        help="Optionally specify a name of the dataset to upload.",
     )
     run(ap.parse_args())
 

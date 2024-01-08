@@ -23,17 +23,17 @@ from .data import a_text
 from .data import b_text
 from kolena._api.v2.dataset import EntityData
 from kolena._utils.datatypes import DATA_TYPE_FIELD
-from kolena.dataset.common import COL_DATAPOINT
-from kolena.dataset.common import COL_RESULT
+from kolena.dataset._common import COL_DATAPOINT
+from kolena.dataset._common import COL_RESULT
 from kolena.dataset.dataset import _add_datatype
 from kolena.dataset.dataset import _flatten_composite
 from kolena.dataset.dataset import _infer_datatype
 from kolena.dataset.dataset import _infer_datatype_value
 from kolena.dataset.dataset import _infer_id_fields
+from kolena.dataset.dataset import _resolve_id_fields
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.dataset.dataset import DatapointType
-from kolena.dataset.dataset import resolve_id_fields
 from kolena.errors import InputValidationError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ClassificationLabel
@@ -440,26 +440,26 @@ def test__resolve_id_fields() -> None:
 
     # new dataset without id_fields
     with pytest.raises(InputValidationError):
-        resolve_id_fields(df, None, None)
+        _resolve_id_fields(df, None, None)
 
     # existing dataset without id_fields, different inferred id_fields, should use existing id_fields
-    assert resolve_id_fields(inferrable_df, None, dataset) == ["id"]
+    assert _resolve_id_fields(inferrable_df, None, dataset) == ["id"]
 
     # existing dataset without id_fields, same inferred id_fields
-    assert resolve_id_fields(
+    assert _resolve_id_fields(
         inferrable_df,
         None,
         EntityData(id=1, name="foo", description="", id_fields=["locator"]),
     ) == ["locator"]
 
     # new dataset with explicit id_fields should resolve to explicit id_fields
-    assert resolve_id_fields(df, ["id"], None) == ["id"]
+    assert _resolve_id_fields(df, ["id"], None) == ["id"]
 
     # existing dataset id_fields are the same as explicit id_fields
-    assert resolve_id_fields(df, ["id"], dataset) == ["id"]
+    assert _resolve_id_fields(df, ["id"], dataset) == ["id"]
 
     # explicit id_fields override existing dataset id_fields
-    assert resolve_id_fields(df, ["newid"], dataset) == ["newid"]
+    assert _resolve_id_fields(df, ["newid"], dataset) == ["newid"]
 
     # new dataset with implicit datatype support, e.g. locator, without id_fields
-    assert resolve_id_fields(inferrable_df, None, None) == ["locator"]
+    assert _resolve_id_fields(inferrable_df, None, None) == ["locator"]

@@ -12,5 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 BUCKET = "kolena-public-examples"
-DATASET = "dogs-vs-cats"
-ID_FIELDS = ["locator"]
+DATASET = "labeled-faces-in-the-wild"
+
+DATA_FILEPATH = f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv"

@@ -16,8 +16,8 @@ import string
 from argparse import Namespace
 
 import pytest
-from speaker_diarization.upload_dataset import main as upload_dataset_main
-from speaker_diarization.upload_results import main as upload_results_main
+from speaker_diarization.upload_dataset import run as upload_dataset_main
+from speaker_diarization.upload_results import run as upload_results_main
 
 DATASET = "ICSI-corpus"
 
@@ -29,17 +29,17 @@ def dataset_name() -> str:
 
 
 def test__upload_dataset__smoke(dataset_name: str) -> None:
-    args = Namespace(dataset_name=dataset_name, sample_count=50)
+    args = Namespace(dataset=dataset_name, sample_count=50)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset__smoke"])
 def test__upload_results__smoke(dataset_name: str) -> None:
-    args = Namespace(dataset_name=dataset_name, sample_count=50, align_speakers=False)
+    args = Namespace(dataset=dataset_name, sample_count=50, align_speakers=False)
     upload_results_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset__smoke"])
 def test__upload_results_speaker_aligned__smoke(dataset_name: str) -> None:
-    args = Namespace(dataset_name=dataset_name, sample_count=50, align_speakers=True)
+    args = Namespace(dataset=dataset_name, sample_count=50, align_speakers=True)
     upload_results_main(args)

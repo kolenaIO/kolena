@@ -15,32 +15,27 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-from rain_forecast.constants import BUCKET
-from rain_forecast.constants import DATASET
+from age_estimation.constants import DATA_FILEPATH
+from age_estimation.constants import DATASET
 
 import kolena
 from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
+    df = pd.read_csv(DATA_FILEPATH)
+
     kolena.initialize(verbose=True)
-    df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
-    upload_dataset(args.dataset_name, df_dataset, id_fields=["Date", "Location"])
+    upload_dataset(args.dataset, df)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset-csv",
-        type=str,
-        default=f"s3://{BUCKET}/{DATASET}/weatherAUS.csv",
-        help="CSV file specifying dataset. See default CSV for details",
-    )
-    ap.add_argument(
-        "--dataset-name",
+        "--dataset",
         type=str,
         default=DATASET,
-        help="Optionally specify a name of the dataset",
+        help="Optionally specify a custom dataset name to upload.",
     )
     run(ap.parse_args())
 
