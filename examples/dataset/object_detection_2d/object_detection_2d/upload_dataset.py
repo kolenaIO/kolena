@@ -12,9 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pandas as pd
-from commons import load_data
-from commons import DATASET
 from commons import BUCKET
+from commons import DATASET
+from commons import load_data
 
 import kolena
 from kolena.dataset import upload_dataset

@@ -11,59 +11,65 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from commons import defaultdict
-from typing import List
-from typing import Dict
 from typing import Any
+from typing import Dict
+from typing import List
+from typing import Union
 
 import pandas as pd
-from metrics import test_sample_metrics
-from commons import load_data
-from commons import DATASET
 from commons import BUCKET
+from commons import DATASET
+from commons import defaultdict
+from commons import load_data
+from metrics import test_sample_metrics
 
 import kolena
-from kolena.dataset import upload_results
-from kolena.dataset import download_dataset
 from kolena._experimental.object_detection.utils import filter_inferences
-from kolena.workflow.metrics._geometry import match_inferences_multiclass
+from kolena.dataset import download_dataset
+from kolena.dataset import upload_results
 from kolena.workflow.annotation import LabeledBoundingBox
+from kolena.workflow.metrics._geometry import match_inferences_multiclass
 
-MODEL = 'coco-2014-val_prediction_complete'
+MODEL = "coco-2014-val_prediction_complete"
 EVAL_CONFIG = {
-    'threshold_strategy': 0.5,
-    'iou_threshold': 0.5,
-    'min_confidence_score': 0.5,
+    "threshold_strategy": 0.5,
+    "iou_threshold": 0.5,
+    "min_confidence_score": 0.5,
 }
 
 
-def process_inferences(pred_df, eval_config):
+def process_inferences(
+    pred_df: pd.DataFrame,
+    eval_config: Dict[str, Union[float, int]],
+) -> pd.DataFrame:
     results: List[Dict[str, Any]] = list()
     for record in pred_df.itertuples():
-        ground_truths = [LabeledBoundingBox(box.top_left, box.bottom_right, box.label) 
-            for box in record.bounding_boxes]
+        ground_truths = [LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record.bounding_boxes]
         inferences = record.raw_inferences
         matches = match_inferences_multiclass(
             ground_truths,
-            filter_inferences(inferences, eval_config['min_confidence_score']),
-            mode='pascal',
-            iou_threshold=eval_config['iou_threshold']
+            filter_inferences(inferences, eval_config["min_confidence_score"]),
+            mode="pascal",
+            iou_threshold=eval_config["iou_threshold"],
         )
         results.append(
-            test_sample_metrics(matches, defaultdict(lambda: eval_config['threshold_strategy']))
+            test_sample_metrics(matches, defaultdict(lambda: eval_config["threshold_strategy"])),
         )
 
     results_df = pd.concat([pd.DataFrame(results), pred_df], axis=1)
-    results_df.drop('raw_inferences', axis=1)
+    results_df.drop("raw_inferences", axis=1)
     return results_df
 
 
-def main():
+def main() -> None:
     kolena.initialize(verbose=True)
-    pred_df_csv = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/object_detection/{MODEL}.csv", storage_options={"anon": True})
+    pred_df_csv = pd.read_csv(
+        f"s3://{BUCKET}/{DATASET}/results/object_detection/{MODEL}.csv",
+        storage_options={"anon": True},
+    )
     pred_df = load_data(pred_df_csv, is_pred=True)
     dataset_df = download_dataset(DATASET)
-    results_df = process_inferences(pred_df.merge(dataset_df, on='image_id'), EVAL_CONFIG)
+    results_df = process_inferences(pred_df.merge(dataset_df, on="image_id"), EVAL_CONFIG)
     upload_results(DATASET, MODEL, results_df)
 
 
