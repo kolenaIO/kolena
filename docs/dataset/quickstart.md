@@ -207,7 +207,7 @@ as well as over all test cases we defined earlier.
 
 In this quickstart, we used an example integration from [kolenaIO/kolena](https://github.com/kolenaIO/kolena) to
 integrate data from the [300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/) dataset,
-created test cases, and tested the open source open-source [RetinaFace](https://github.com/serengil/retinaface)
+created test cases, and tested the open-source [RetinaFace](https://github.com/serengil/retinaface)
 keypoint detection model.
 
 This example shows us how to quickly and easily integrate test data and evaluate model performance in Kolena,
