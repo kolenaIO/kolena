@@ -43,7 +43,7 @@ def dataset_name() -> str:
 
 
 def test__upload_dataset(dataset_name: str) -> None:
-    args = Namespace(dataset_name=dataset_name)
+    args = Namespace(dataset=dataset_name)
     upload_dataset_main(args)
 
 

@@ -21,8 +21,8 @@ from age_estimation.constants import DATASET
 from tqdm import tqdm
 
 import kolena
-from kolena.dataset import fetch_dataset
-from kolena.dataset import test
+from kolena.dataset import download_dataset
+from kolena.dataset import upload_results
 
 
 def compute_metrics(gt_age: float, inf_age: Optional[float]):
@@ -39,7 +39,7 @@ def run(args: Namespace) -> None:
     model = args.model
 
     kolena.initialize(verbose=True)
-    dataset_df = fetch_dataset(DATASET)
+    dataset_df = download_dataset(DATASET)
     gt_age_by_locator = {record["locator"]: record["age"] for record in dataset_df.to_dict(orient="records")}
 
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv")
@@ -55,7 +55,7 @@ def run(args: Namespace) -> None:
         )
 
     df_metrics = pd.DataFrame.from_records(results)
-    test(args.dataset, model, df_metrics)
+    upload_results(args.dataset, model, df_metrics)
 
 
 def main() -> None:

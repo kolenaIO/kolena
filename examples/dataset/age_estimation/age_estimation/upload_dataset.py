@@ -19,20 +19,20 @@ from age_estimation.constants import DATA_FILEPATH
 from age_estimation.constants import DATASET
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
     df = pd.read_csv(DATA_FILEPATH)
 
     kolena.initialize(verbose=True)
-    register_dataset(args.dataset_name, df)
+    upload_dataset(args.dataset, df)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_name",
+        "--dataset",
         type=str,
         default=DATASET,
         help=f"Custom name for the {DATASET} dataset to upload.",
