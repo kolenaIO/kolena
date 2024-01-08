@@ -221,7 +221,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
         average_precision = 0.0
         baseline_pr_curve = compute_pr_curve(all_bbox_matches)
         if baseline_pr_curve is not None:
-            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+            average_precision = compute_average_precision(list(baseline_pr_curve.y), list(baseline_pr_curve.x))
 
         return self.test_case_metrics_single_class(metrics, average_precision)
 

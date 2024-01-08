@@ -290,7 +290,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         average_precision = 0.0
         baseline_pr_curve = compute_pr_curve([class_matches])
         if baseline_pr_curve is not None:
-            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+            average_precision = compute_average_precision(list(baseline_pr_curve.y), list(baseline_pr_curve.x))
 
         return self.class_metrics_per_test_case(label, thresholds, class_matches, samples_count, average_precision)
 
@@ -311,10 +311,12 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             FN=fn_count,
             FP=fp_count,
             nIgnored=ignored_count,
-            macro_Precision=np.mean([data.Precision for data in per_class_metrics]) if per_class_metrics else 0.0,
-            macro_Recall=np.mean([data.Recall for data in per_class_metrics]) if per_class_metrics else 0.0,
-            macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,
-            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,
+            macro_Precision=float(np.mean([data.Precision for data in per_class_metrics]))
+            if per_class_metrics
+            else 0.0,
+            macro_Recall=float(np.mean([data.Recall for data in per_class_metrics])) if per_class_metrics else 0.0,
+            macro_F1=float(np.mean([data.F1 for data in per_class_metrics])) if per_class_metrics else 0.0,
+            mean_AP=float(np.mean([data.AP for data in per_class_metrics])) if per_class_metrics else 0.0,
             micro_Precision=compute_precision(tp_count, fp_count),
             micro_Recall=compute_recall(tp_count, fn_count),
             micro_F1=compute_f1_score(tp_count, fp_count, fn_count),
@@ -403,7 +405,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         average_precisions = [tcm.mean_AP for _, tcm in metrics]
         return self.test_suite_metrics(unique_locators, average_precisions)
 
-    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
+    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
         if configuration.threshold_strategy == "F1-Optimal":
             return self.threshold_cache[configuration.display_name()]
         else:

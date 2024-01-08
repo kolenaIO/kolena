@@ -161,17 +161,17 @@ def compute_confusion_matrix(
 
 def _roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], List[float]]:
     # Convert inputs to numpy arrays
-    y_true = np.array(y_true)
-    y_score = np.array(y_score)
+    _y_true = np.array(y_true)
+    _y_score = np.array(y_score)
     # Sort the predictions by descending order of confidence
-    sorted_indices = np.argsort(y_score)[::-1]
-    y_score = y_score[sorted_indices]
-    y_true = y_true[sorted_indices]
-    distinct_value_indices = np.where(np.diff(y_score[sorted_indices]))[0]
-    threshold_idxs = np.r_[distinct_value_indices, y_true.size - 1]
+    sorted_indices = np.argsort(_y_score)[::-1]
+    _y_score = _y_score[sorted_indices]
+    _y_true = _y_true[sorted_indices]
+    distinct_value_indices = np.where(np.diff(_y_score[sorted_indices]))[0]
+    threshold_idxs = np.r_[distinct_value_indices, _y_true.size - 1]
     # Compute the cumulative sums of true positives and false positives
-    tps = np.cumsum(y_true)[threshold_idxs]
-    fps = np.cumsum(1 - y_true)[threshold_idxs]
+    tps = np.cumsum(_y_true)[threshold_idxs]
+    fps = np.cumsum(1 - _y_true)[threshold_idxs]
     # Drop collinear points (copied from sklearn)
     if len(fps) > 2:
         optimal_indices = np.where(np.r_[True, np.logical_or(np.diff(fps, 2), np.diff(tps, 2)), True])[0]
@@ -184,14 +184,14 @@ def _roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], Li
         # No negative samples in y_true, false positive value should be meaningless
         fpr = []
     else:
-        fpr = fps / fps[-1]
-        fpr = fpr.tolist()
+        _fpr = fps / fps[-1]
+        fpr = _fpr.tolist()
     if tps[-1] <= 0:
         # No positive samples in y_true, true positive value should be meaningless
         tpr = []
     else:
-        tpr = tps / tps[-1]
-        tpr = tpr.tolist()
+        _tpr = tps / tps[-1]
+        tpr = _tpr.tolist()
     return fpr, tpr
 
 
