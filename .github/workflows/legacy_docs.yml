@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - hotfix/0.100.x
-      - diego/legacy-docs
-
 jobs:
   docs:
     name: Build and publish documentation

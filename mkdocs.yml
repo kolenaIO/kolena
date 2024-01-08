@@ -1,4 +1,4 @@
-site_name: Testing with Kolena (legacy)
+site_name: Testing with Kolena (0.100.0)
 site_description: Python client for Kolena's machine learning testing platform
 site_url: https://legacy-docs.kolena.io
 strict: true
