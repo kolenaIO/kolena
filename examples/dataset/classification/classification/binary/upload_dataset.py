@@ -28,13 +28,13 @@ def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
     kolena.initialize(verbose=True)
-    upload_dataset(args.dataset_name, df, id_fields=ID_FIELDS)
+    upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_name",
+        "--dataset",
         type=str,
         default=DATASET,
         help="Optionally specify a custom dataset name to upload.",
