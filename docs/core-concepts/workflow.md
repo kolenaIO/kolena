@@ -4,6 +4,13 @@ search:
   boost: 2
 ---
 
+!!! warning "Legacy Warning"
+
+    Content in this section reflects **outdated practices** or **deprecated features**. It's recommended to avoid using these in new developments.
+
+    While existing implementations using these features will continue to receive support, we strongly advise adopting the latest standards and tools for new projects to ensure optimal performance and compatibility. For more information and up-to-date practices, please refer to our newest documentation at [docs.kolena.io](https://docs.kolena.io).
+
+
 # :kolena-workflow-20: Workflow
 
 Testing in Kolena is broken down by the type of ML problem you're solving, called a **workflow**. Any ML problem that
@@ -12,9 +19,9 @@ can be tested can be modeled as a workflow in Kolena.
 Examples of workflows include:
 
 <div class="grid cards" markdown>
-- [:kolena-widget-20: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/object_detection_2d) using images
-- [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/text_summarization) using articles/documents
-- [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/age_estimation) (regression) using images
+- [:kolena-widget-20: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/hotfix/0.100.x/examples/object_detection_2d) using images
+- [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/hotfix/0.100.x/examples/text_summarization) using articles/documents
+- [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/hotfix/0.100.x/examples/age_estimation) (regression) using images
 - [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos
 </div>
 
