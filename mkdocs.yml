@@ -49,11 +49,10 @@ nav:
       - <code>kolena.errors</code>: reference/errors.md
       - <code>kolena.dataset</code>:
           - <code>kolena.dataset</code>: reference/dataset/index.md
-          - <code>register_dataset</code>: reference/dataset/register-dataset.md
-          - <code>fetch_dataset_history</code>: reference/dataset/fetch-dataset-history.md
-          - <code>fetch_dataset</code>: reference/dataset/fetch-dataset.md
-          - <code>fetch_results</code>: reference/dataset/fetch-results.md
-          - <code>upload_results</code>: reference/dataset/upload-results.md
+          - <code>upload_dataset</code>: reference/dataset#kolena.dataset.upload_dataset
+          - <code>download_dataset</code>: reference/dataset#kolena.dataset.download_dataset
+          - <code>upload_results</code>: reference/dataset#kolena.dataset.upload_results
+          - <code>download_results</code>: reference/dataset#kolena.dataset.download_results
       - <code>kolena.workflow</code>:
           - <code>kolena.workflow</code>: reference/workflow/index.md
           - <code>TestSample</code>: reference/workflow/test-sample.md

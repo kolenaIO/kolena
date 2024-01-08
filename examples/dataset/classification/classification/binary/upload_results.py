@@ -23,7 +23,7 @@ from classification.binary.constants import NEGATIVE_LABEL
 from classification.binary.constants import POSITIVE_LABEL
 
 import kolena
-from kolena.dataset import fetch_dataset
+from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.workflow.annotation import ScoredClassificationLabel
 
@@ -57,7 +57,7 @@ def to_kolena_inference(score: float) -> ScoredClassificationLabel:
 
 def _upload_results(model_name: str, dataset: str) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model_name}.csv")
-    dataset_df = fetch_dataset(dataset)
+    dataset_df = download_dataset(dataset)
     df_results = df_results.merge(dataset_df, how="left", on=id_fields)
 
     df_results["inference"] = df_results["prediction"].apply(lambda score: to_kolena_inference(score))

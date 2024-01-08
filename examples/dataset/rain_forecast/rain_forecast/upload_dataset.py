@@ -19,13 +19,13 @@ from rain_forecast.constants import BUCKET
 from rain_forecast.constants import DATASET
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_dataset = pd.read_csv(args.dataset_csv)
-    register_dataset(args.dataset_name, df_dataset, id_fields=["Date", "Location"])
+    upload_dataset(args.dataset_name, df_dataset, id_fields=["Date", "Location"])
 
 
 def main() -> None:

@@ -19,7 +19,7 @@ from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 from kolena.workflow.annotation import ClassificationLabel
 
 
@@ -28,7 +28,7 @@ def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     id_fields = ["locator"]
     df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
-    register_dataset(args.dataset, df, id_fields)
+    upload_dataset(args.dataset, df, id_fields)
 
 
 def main() -> None:

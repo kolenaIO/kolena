@@ -237,23 +237,23 @@ def _resolve_id_fields(
 
 
 @with_event(event_name=EventAPI.Event.REGISTER_DATASET)
-def register_dataset(
+def upload_dataset(
     name: str,
     df: Union[Iterator[pd.DataFrame], pd.DataFrame],
     *,
     id_fields: Optional[List[str]] = None,
 ) -> None:
     """
-    Create or update a dataset with datapoints and id_fields. If the dataset already exists, in order to associate the
-    existing result with the new datapoints, the id_fields need be the same as the existing dataset.
+    Create or update a dataset.
+
+    !!! note "Updating a dataset"
+        When updating an existing dataset, any change to `id_fields` will.
 
     :param name: The name of the dataset.
-    :param df: An iterator of pandas dataframe or a pandas dataframe, you can pass in the iterator if you want to have
-                batch processing,
-                 example iterator usage: csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)
-    :param id_fields: A list of id fields, this will be used to link the result with the datapoints, if this is not
-                 provided, it will be inferred from the dataset. Note that id fields must be hashable.
-    :return: None
+    :param df: A DataFrame or iterator of DataFrames. Provide an iterator to perform batch upload (example:
+        `csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)`)
+    :param id_fields: Optionally specify a list of ID fields that will be used to link model results with the datapoints
+        within a dataset. Note that `id_fields` must be hashable.
     """
     load_uuid = init_upload().uuid
     existing_dataset = _load_dataset_metadata(name)
@@ -310,21 +310,15 @@ def _iter_dataset(
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
-def fetch_dataset(
-    name: str,
-    *,
-    commit: Optional[str] = None,
-    batch_size: int = BatchSize.LOAD_SAMPLES.value,
-) -> pd.DataFrame:
+def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame:
     """
-    Fetch an entire dataset given its name.
+    Download an entire dataset given its name.
 
     :param name: The name of the dataset.
-    :param commit: The commit hash for version control. Get the latest commit when it's None.
-    :param batch_size: The number of samples to be loaded per batch.
-    :return: A DataFrame containing the fetched dataset.
+    :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
+    :return: A DataFrame containing the specified dataset.
     """
-    df_batches = list(_iter_dataset(name, commit, batch_size))
+    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
     log.info(f"loaded dataset '{name}'")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
@@ -360,7 +354,7 @@ def _iter_commits(
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET_HISTORY)
-def fetch_dataset_history(
+def _fetch_dataset_history(
     name: str,
     *,
     descending: bool = False,

@@ -21,9 +21,9 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from kolena._api.v2.dataset import CommitData
-from kolena.dataset import fetch_dataset
-from kolena.dataset import fetch_dataset_history
-from kolena.dataset import register_dataset
+from kolena.dataset import _fetch_dataset_history
+from kolena.dataset import download_dataset
+from kolena.dataset import upload_dataset
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -37,9 +37,9 @@ TEST_DATASET_HISTORY_VERSIONS = 10
 
 def test__register_dataset__empty() -> None:
     name = with_test_prefix(f"{__file__}::test__register_dataset__empty")
-    register_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
+    upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
-    assert fetch_dataset(name).empty
+    assert download_dataset(name).empty
 
 
 def test__register_dataset() -> None:
@@ -72,17 +72,17 @@ def test__register_dataset() -> None:
     ]
     columns = ["locator", "width", "height", "city", "bboxes"]
 
-    register_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"])
+    upload_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"])
 
-    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
     expected = pd.DataFrame(expected_datapoints[:10], columns=columns)
     assert_frame_equal(loaded_datapoints, expected)
 
     # update dataset
     datapoints_updated = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
-    register_dataset(name, datapoints_updated, id_fields=["locator"])
+    upload_dataset(name, datapoints_updated, id_fields=["locator"])
 
-    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
     expected = pd.DataFrame(expected_datapoints[:5] + expected_datapoints[7:15], columns=columns)
     assert_frame_equal(loaded_datapoints, expected)
 
@@ -122,17 +122,17 @@ def test__register_dataset_chunks() -> None:
     ]
     columns = ["locator", "width", "height", "city", "bboxes"]
 
-    register_dataset(name, batch_iterator(pd.DataFrame(datapoints[:10], columns=columns)), id_fields=["locator"])
+    upload_dataset(name, batch_iterator(pd.DataFrame(datapoints[:10], columns=columns)), id_fields=["locator"])
 
-    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
     expected = pd.DataFrame(expected_datapoints[:10], columns=columns)
     assert_frame_equal(loaded_datapoints, expected)
 
     # update dataset
     datapoints_updated = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
-    register_dataset(name, datapoints_updated, id_fields=["locator"])
+    upload_dataset(name, datapoints_updated, id_fields=["locator"])
 
-    loaded_datapoints = fetch_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
     expected = pd.DataFrame(expected_datapoints[:5] + expected_datapoints[7:15], columns=columns)
     assert_frame_equal(loaded_datapoints, expected)
 
@@ -159,24 +159,26 @@ def test__register_dataset__composite() -> None:
     id_fields = ["a.text"]
 
     df = pd.DataFrame(datapoints[:10], columns=columns)
-    register_dataset(name, df, id_fields=id_fields)
+    upload_dataset(name, df, id_fields=id_fields)
 
-    loaded_datapoints = fetch_dataset(name)
+    loaded_datapoints = download_dataset(name)
     loaded_datapoints = loaded_datapoints.sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
     assert_frame_equal(df, loaded_datapoints)
 
     # update dataset
     df = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
-    register_dataset(name, df, id_fields=id_fields)
+    upload_dataset(name, df, id_fields=id_fields)
 
-    loaded_datapoints = fetch_dataset(name).sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
+    loaded_datapoints = (
+        download_dataset(name).sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
+    )
     assert_frame_equal(df, loaded_datapoints)
 
 
 def test__fetch_dataset__not_exist() -> None:
     name = with_test_prefix(f"{__file__}::test__fetch_dataset__not_exist")
     with pytest.raises(NotFoundError):
-        fetch_dataset(name)
+        download_dataset(name)
 
 
 @pytest.fixture(scope="module")
@@ -184,8 +186,8 @@ def with_dataset_commits() -> Tuple[int, List[CommitData]]:
     for version in range(TEST_DATASET_HISTORY_VERSIONS):
         # remove all previous datapoints and add (version + 1) new datapoints in each iteration
         datapoints = [dict(locator=f"{version}-{i}") for i in range(version + 1)]
-        register_dataset(TEST_DATASET_HISTORY_NAME, pd.DataFrame(datapoints), id_fields=["locator"])
-    return fetch_dataset_history(TEST_DATASET_HISTORY_NAME)
+        upload_dataset(TEST_DATASET_HISTORY_NAME, pd.DataFrame(datapoints), id_fields=["locator"])
+    return _fetch_dataset_history(TEST_DATASET_HISTORY_NAME)
 
 
 def test__fetch_commits(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
@@ -203,7 +205,7 @@ def test__fetch_commits(with_dataset_commits: Tuple[int, List[CommitData]]) -> N
 def test__fetch_commits__pagination(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with desc arg
     total_commits, commits = with_dataset_commits
-    total_commits_pagination, commits_pagination = fetch_dataset_history(TEST_DATASET_HISTORY_NAME, page_size=1)
+    total_commits_pagination, commits_pagination = _fetch_dataset_history(TEST_DATASET_HISTORY_NAME, page_size=1)
     assert total_commits_pagination == total_commits
     assert commits_pagination == commits
 
@@ -211,7 +213,7 @@ def test__fetch_commits__pagination(with_dataset_commits: Tuple[int, List[Commit
 def test__fetch_commits__desc(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with desc arg
     total_commits, commits = with_dataset_commits
-    total_commits_desc, commits_desc = fetch_dataset_history(TEST_DATASET_HISTORY_NAME, descending=True)
+    total_commits_desc, commits_desc = _fetch_dataset_history(TEST_DATASET_HISTORY_NAME, descending=True)
     assert total_commits_desc == total_commits
     assert commits_desc == commits[::-1]
 
@@ -219,7 +221,7 @@ def test__fetch_commits__desc(with_dataset_commits: Tuple[int, List[CommitData]]
 def test__fetch_commits__limit(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with limit arg
     total_commits, commits = with_dataset_commits
-    total_commits_limit, commits_limit = fetch_dataset_history(TEST_DATASET_HISTORY_NAME, limit=10)
+    total_commits_limit, commits_limit = _fetch_dataset_history(TEST_DATASET_HISTORY_NAME, limit=10)
     assert total_commits_limit == total_commits
     assert commits_limit == commits[:10]
 
@@ -227,7 +229,7 @@ def test__fetch_commits__limit(with_dataset_commits: Tuple[int, List[CommitData]
 def test__fetch_commits__limit_more_than_versions(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with limit arg greater than number of revisions
     total_commits, commits = with_dataset_commits
-    total_commits_limit, commits_limit = fetch_dataset_history(
+    total_commits_limit, commits_limit = _fetch_dataset_history(
         TEST_DATASET_HISTORY_NAME,
         limit=TEST_DATASET_HISTORY_VERSIONS + 1,
     )
@@ -239,7 +241,7 @@ def test__fetch_commits__limit_more_than_versions(with_dataset_commits: Tuple[in
 def test__fetch_commits__desc_limit(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_commits with both desc and limit args
     total_commits, commits = with_dataset_commits
-    total_commits_desc_limit, commits_desc_limit = fetch_dataset_history(
+    total_commits_desc_limit, commits_desc_limit = _fetch_dataset_history(
         TEST_DATASET_HISTORY_NAME,
         descending=True,
         limit=10,
@@ -252,7 +254,7 @@ def test__fetch_dataset__versions(with_dataset_commits: Tuple[int, List[CommitDa
     # check fetch_dataset with commit arg
     total_commits, commits = with_dataset_commits
     for version, commit in enumerate(commits):
-        loaded_datapoints = fetch_dataset(TEST_DATASET_HISTORY_NAME, commit.commit).sort_values(
+        loaded_datapoints = download_dataset(TEST_DATASET_HISTORY_NAME, commit.commit).sort_values(
             "locator",
             ignore_index=True,
         )
@@ -266,4 +268,4 @@ def test__fetch_dataset__versions(with_dataset_commits: Tuple[int, List[CommitDa
 def test__fetch_dataset__commit_not_exist(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
     # check fetch_dataset with a commit that does not exist
     with pytest.raises(NotFoundError):
-        fetch_dataset(TEST_DATASET_HISTORY_NAME, "non-existent-commit")
+        download_dataset(TEST_DATASET_HISTORY_NAME, "non-existent-commit")

@@ -100,7 +100,7 @@ def _upload_results(model: str, load_uuid: str, dataset_id: int) -> None:
 
 
 @with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
-def fetch_results(
+def download_results(
     dataset: str,
     model: str,
 ) -> Tuple[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]]:
