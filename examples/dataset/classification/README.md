@@ -32,6 +32,12 @@ For binary classification, there are two scripts that perform the following oper
 1. [`upload_dataset.py`](classification/binary/upload_dataset.py) uploads the
 [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset.
 
+2. [`upload_results.py`](classification/binary/upload_results.py) uploads results for `"resnet50v2"` or
+`"inceptionv3"`.
+
+Command line arguments are defined within each script to specify the dataset name to create or model to upload results
+for. Run a script using the `--help` flag for more information:
+
 ```shell
 $ poetry run python3 classification/binary/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
@@ -39,15 +45,7 @@ usage: upload_dataset.py [-h] [--dataset DATASET]
 optional arguments:
   -h, --help         show this help message and exit
   --dataset DATASET  Optionally specify a custom dataset name to upload.
-```
 
-2. [`upload_results.py`](classification/binary/upload_results.py) uploads results for `"resnet50v2"` or
-`"inceptionv3"`.
-
-The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
-`--help` flag for more information:
-
-```shell
 $ poetry run python3 classification/binary/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {resnet50v2,inceptionv3}
 
@@ -67,6 +65,13 @@ For multiclass classification, there are two scripts that perform the following 
 1. [`upload_dataset.py`](classification/multiclass/upload_dataset.py) uploads the
 [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset.
 
+
+2. [`upload_results.py`](classification/multiclass/upload_results.py) uploads results for `"resnet50v2"` or
+`"inceptionv3"`.
+
+Command line arguments are defined within each script to specify the dataset name to create or model to upload results
+for. Run a script using the `--help` flag for more information:
+
 ```shell
 $ poetry run python3 classification/multiclass/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
@@ -74,15 +79,7 @@ usage: upload_dataset.py [-h] [--dataset DATASET]
 optional arguments:
   -h, --help         show this help message and exit
   --dataset DATASET  Optionally specify a custom dataset name to upload.
-```
 
-2. [`upload_results.py`](classification/multiclass/upload_results.py) uploads results for `"resnet50v2"` or
-`"inceptionv3"`.
-
-The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
-`--help` flag for more information:
-
-```shell
 $ poetry run python3 classification/multiclass/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {resnet50v2,inceptionv3}
 
@@ -94,3 +91,28 @@ optional arguments:
   -h, --help            show this help message and exit
   --dataset DATASET     Optionally specify a custom dataset name to test.
 ```
+
+## Quality Standards Guide
+
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
+[explore the data and results](https://docs.kolena.io/dataset/quickstart/#step-3-explore-data-and-results).
+
+Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+classification:
+
+### Metrics
+1. [Precision](https://docs.kolena.io/metrics/precision)
+2. [Recall](https://docs.kolena.io/metrics/recall)
+3. [F1-score](https://docs.kolena.io/metrics/f1-score)
+4. [Accuracy](https://docs.kolena.io/metrics/accuracy)
+
+### Binary Classification Plots
+1. Confusion Matrix: `datapoint.label.label` vs. `result.inference.label`
+2. `result.inference.label` vs. `result.inference.score`
+
+### Multiclass Classification Plots
+1. Confusion Matrix: `datapoint.ground_truth.label` vs. `result.classification.label`
+2. `result.classification.label` vs. `result.classification.score`
+
+### Test Cases
+1. `datapoint.label.label` (`datapoint.ground_truth.label` for multiclass)
