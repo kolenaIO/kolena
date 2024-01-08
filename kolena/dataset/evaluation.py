@@ -114,7 +114,8 @@ def download_results(
     """
     Download results given dataset name and model name.
 
-    Concat dataset with results
+    Concat dataset with results:
+
     ```python
     import kolena
     import pandas as pd
