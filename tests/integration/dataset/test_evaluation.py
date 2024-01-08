@@ -70,11 +70,13 @@ def test__upload_results() -> None:
 
     df_result = get_df_result()
     result_columns = ["softmax_bitmap", "score"]
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         df_result,
     )
+    assert response.n_inserted == 7
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -97,7 +99,9 @@ def test__upload_results__iterator_input() -> None:
     df_result_iterator = batch_iterator(df_result)
     result_columns = ["softmax_bitmap", "score"]
 
-    upload_results(dataset_name, model_name, df_result_iterator)
+    response = upload_results(dataset_name, model_name, df_result_iterator)
+    assert response.n_inserted == 7
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -121,11 +125,13 @@ def test__upload_results__align_manually() -> None:
     result_columns = ["softmax_bitmap", "score"]
     aligned_df_result = fetched_df_dp[[JOIN_COLUMN]].merge(df_result, how="left", on=JOIN_COLUMN)
 
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         aligned_df_result,
     )
+    assert response.n_inserted == 7
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -154,11 +160,13 @@ def test__upload_results__multiple_eval_configs() -> None:
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1), (eval_config_2, df_result_2)],
     )
+    assert response.n_inserted == 14
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
@@ -193,11 +201,13 @@ def test__upload_results__multiple_eval_configs__iterator_input() -> None:
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_iterator), (eval_config_2, df_result_2_iterator)],
     )
+    assert response.n_inserted == 14
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
@@ -233,19 +243,23 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     eval_config_1 = dict(threshold=0.1)
     eval_config_2 = dict(threshold=0.2)
 
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_p1), (eval_config_2, df_result_2_p1)],
     )
+    assert response.n_inserted == 10
+    assert response.n_updated == 0
 
     df_result_1_p2 = df_result[5:10][input_result_columns_1]
     df_result_2_p2 = df_result[:5][input_result_columns_2]
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         [(eval_config_1, df_result_1_p2), (eval_config_2, df_result_2_p2)],
     )
+    assert response.n_inserted == 10
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
@@ -298,11 +312,13 @@ def test__upload_results__missing_result() -> None:
     df_result = get_df_result()
     result_columns = ["softmax_bitmap", "score"]
 
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         df_result,
     )
+    assert response.n_inserted == 7
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -345,11 +361,13 @@ def test__upload_results__upload_none() -> None:
     df_result = get_df_result(10)
     result_columns = ["softmax_bitmap", "score"]
 
-    upload_results(
+    response = upload_results(
         dataset_name,
         model_name,
         df_result,
     )
+    assert response.n_inserted == 10
+    assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]

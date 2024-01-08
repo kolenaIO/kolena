@@ -27,6 +27,7 @@ from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
+from kolena._api.v2.model import UploadResultsResponse
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -34,6 +35,7 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.instrumentation import with_event
+from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
@@ -89,7 +91,11 @@ def _process_result(
     return df_result_eval
 
 
-def _upload_results(model: str, load_uuid: str, dataset_id: int) -> None:
+def _upload_results(
+    model: str,
+    load_uuid: str,
+    dataset_id: int,
+) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
@@ -97,6 +103,7 @@ def _upload_results(model: str, load_uuid: str, dataset_id: int) -> None:
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
+    return from_dict(UploadResultsResponse, response.json())
 
 
 @with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
@@ -143,7 +150,7 @@ def upload_results(
     dataset: str,
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
-) -> None:
+) -> UploadResultsResponse:
     """
     This function is used for uploading the results from a specified model on a given dataset.
 
@@ -181,5 +188,9 @@ def upload_results(
                 df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
-    _upload_results(model, load_uuid, existing_dataset.id)
-    log.info(f"Uploaded results for model '{model}' on dataset '{dataset}'")
+    response = _upload_results(model, load_uuid, existing_dataset.id)
+    log.info(
+        f"uploaded test results for model '{model}' on dataset '{dataset}': "
+        f"{response.n_inserted} inserted, {response.n_updated} updated",
+    )
+    return response
