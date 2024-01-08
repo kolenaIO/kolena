@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 BUCKET = "kolena-public-examples"
 TRUTHFULQA = "TruthfulQA"
 HALUEVALQA = "HaluEval-QA"
@@ -21,8 +20,8 @@ MODELS = [
 ]
 
 DATASET_TO_LOCATOR = {
-    TRUTHFULQA: f"s3://{BUCKET}/{TRUTHFULQA}/TruthfulQA.csv",
-    HALUEVALQA: f"s3://{BUCKET}/{HALUEVALQA}/HaluEval-QA.csv",
+    TRUTHFULQA: f"s3://{BUCKET}/{TRUTHFULQA}/{TRUTHFULQA}.csv",
+    HALUEVALQA: f"s3://{BUCKET}/{HALUEVALQA}/{HALUEVALQA}.csv",
 }
 
 DATASET_TO_INFERENCES = {

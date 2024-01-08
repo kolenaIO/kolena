@@ -19,7 +19,7 @@ from typing import Tuple
 
 import numpy as np
 
-from kolena.workflow.annotation import Keypoints
+from kolena.annotation import Keypoints
 
 
 def compute_distance(point_a: Tuple[float, float], point_b: Tuple[float, float]) -> float:

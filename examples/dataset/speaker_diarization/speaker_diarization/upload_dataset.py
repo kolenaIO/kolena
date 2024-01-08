@@ -21,24 +21,27 @@ import kolena
 from kolena.dataset import upload_dataset
 
 
-def main(args: Namespace) -> None:
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df = load_data()
     sample_count = args.sample_count
     if sample_count:
         df = df[:sample_count]
 
-    upload_dataset(args.dataset_name, df)
+    upload_dataset(args.dataset, df)
 
 
-if __name__ == "__main__":
+def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--dataset-name", type=str, default=DATASET, help="Name of the dataset")
+    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a dataset name to upload.")
     ap.add_argument(
         "--sample-count",
         type=int,
         default=0,
-        help="Number of samples to use, all samples are used if 0",
+        help="Number of samples to use. All samples are used by default.",
     )
+    run(ap.parse_args())
 
-    main(ap.parse_args())
+
+if __name__ == "__main__":
+    main()

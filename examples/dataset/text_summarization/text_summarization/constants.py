@@ -14,11 +14,11 @@
 
 BUCKET = "kolena-public-examples"
 DATASET = "CNN-DailyMail"
-MODELS = [
-    "text-ada-001",
-    "text-babbage-001",
-    "text-curie-001",
-    "text-davinci-003",
-    "gpt-3.5-turbo",
-]
+MODELS = {
+    "ada": "text-ada-001",
+    "babbage": "text-babbage-001",
+    "curie": "text-curie-001",
+    "davinci": "text-davinci-003",
+    "turbo": "gpt-3.5-turbo",
+}
 ID_FIELD = "text_id"

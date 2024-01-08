@@ -27,11 +27,12 @@ from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.workflow.annotation import ScoredClassificationLabel
 
+
 MODELS = ["resnet50v2", "inceptionv3"]
 CLASSES = ["airplane", "automobile", "bird", "cat", "deer", "dog", "frog", "horse", "ship", "truck"]
 
 
-def metrics(ground_truth_label: str, inferences: List[ScoredClassificationLabel]) -> Dict[str, Any]:
+def compute_metrics(ground_truth_label: str, inferences: List[ScoredClassificationLabel]) -> Dict[str, Any]:
     sorted_infs = sorted(inferences, key=lambda x: x.score, reverse=True)
     predicted_match = sorted_infs[0]
     predicted_label, predicted_score = predicted_match.label, predicted_match.score
@@ -43,43 +44,33 @@ def metrics(ground_truth_label: str, inferences: List[ScoredClassificationLabel]
     )
 
 
-def to_kolena_inference(scores: List[float]) -> List[ScoredClassificationLabel]:
+def list_inferences(scores: List[float]) -> List[ScoredClassificationLabel]:
     return [ScoredClassificationLabel(class_name, score) for class_name, score in zip(CLASSES, scores)]
-
-
-def _upload_results(model_name: str, dataset: str) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model_name}.csv")
-    dataset_df = download_dataset(dataset)
-
-    df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
-    df_results["inferences"] = df_results[CLASSES].apply(lambda row: to_kolena_inference(row.tolist()), axis=1)
-
-    eval_result = df_results.apply(lambda row: pd.Series(metrics(row.ground_truth.label, row.inferences)), axis=1)
-
-    df_results = pd.concat([df_results[ID_FIELDS], df_results["inferences"], eval_result], axis=1)
-    upload_results(dataset, model_name, df_results)
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    for model_name in args.models:
-        _upload_results(model_name, args.dataset)
+    dataset_df = download_dataset(args.dataset)
+    df_results = pd.read_csv(
+        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
+        storage_options={"anon": True},
+    )
+
+    df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
+    df_results["inferences"] = df_results[CLASSES].apply(lambda row: list_inferences(row.tolist()), axis=1)
+    eval_result = df_results.apply(
+        lambda row: pd.Series(compute_metrics(row.ground_truth.label, row.inferences)),
+        axis=1,
+    )
+    df_results = pd.concat([df_results[ID_FIELDS], df_results["inferences"], eval_result], axis=1)
+
+    upload_results(args.dataset, args.model, df_results)
 
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument(
-        "--models",
-        nargs="+",
-        default=MODELS,
-        choices=MODELS,
-        help="Name(s) of the models(s) to register.",
-    )
-    ap.add_argument(
-        "--dataset",
-        default=DATASET,
-        help=f"Custom name for the {DATASET} dataset to test.",
-    )
+    ap.add_argument("model", type=str, choices=MODELS, help="Name of the model to test.")
+    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a custom dataset name to test.")
     run(ap.parse_args())
 
 
