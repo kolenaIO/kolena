@@ -18,7 +18,7 @@ from speaker_diarization.data_loader import DATASET
 from speaker_diarization.data_loader import load_data
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
@@ -28,7 +28,7 @@ def run(args: Namespace) -> None:
     if sample_count:
         df = df[:sample_count]
 
-    register_dataset(args.dataset, df)
+    upload_dataset(args.dataset, df)
 
 
 def main() -> None:

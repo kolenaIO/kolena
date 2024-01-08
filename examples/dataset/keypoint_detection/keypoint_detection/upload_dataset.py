@@ -21,7 +21,7 @@ from keypoint_detection.constants import DATASET
 
 import kolena
 from kolena.annotation import Keypoints
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
@@ -30,7 +30,7 @@ def run(args: Namespace) -> None:
     df["condition"] = df["locator"].apply(lambda locator: "indoor" if "indoor" in locator else "outdoor")
 
     kolena.initialize(verbose=True)
-    register_dataset(args.dataset, df[["locator", "face", "normalization_factor", "condition"]])
+    upload_dataset(args.dataset, df[["locator", "face", "normalization_factor", "condition"]])
 
 
 def main() -> None:

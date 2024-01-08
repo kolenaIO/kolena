@@ -21,15 +21,14 @@ from classification.binary.constants import ID_FIELDS
 
 import kolena
 from kolena.annotation import ClassificationLabel
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
-
     kolena.initialize(verbose=True)
-    register_dataset(args.dataset, df, ID_FIELDS)
+    upload_dataset(args.dataset, df, ID_FIELDS)
 
 
 def main() -> None:
