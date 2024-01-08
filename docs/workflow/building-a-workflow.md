@@ -8,7 +8,8 @@ search:
 
 !!! note
     Kolena Workflows are simplified in Kolena Datasets.
-    If you are setting up your Kolena environments for the first time, please refer to [Datasets Quickstart](../dataset/quickstart.md)
+    If you are setting up your Kolena environments for the first time, please refer to the
+    [Datasets Quickstart](../dataset/quickstart.md).
 
 
 In this tutorial we'll learn how to use the [`kolena.workflow`](../reference/workflow/index.md) workflow builder

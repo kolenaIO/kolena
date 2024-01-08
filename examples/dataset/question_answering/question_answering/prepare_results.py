@@ -60,10 +60,10 @@ def compute_closed_domain_metrics_for_dataset(df_datapoints: pd.DataFrame, df_re
 def main(args: Namespace) -> None:
     for dataset in args.datasets:
         print(f"Loading {dataset}...")
-        df_datapoints = pd.read_csv(DATASET_TO_LOCATOR[dataset])
+        df_datapoints = pd.read_csv(DATASET_TO_LOCATOR[dataset], storage_options={"anon": True})
         for model in args.models:
             print(f"Loading {model} results on {dataset}...")
-            df_results = pd.read_csv(DATASET_TO_INFERENCES[dataset][model])
+            df_results = pd.read_csv(DATASET_TO_INFERENCES[dataset][model], storage_options={"anon": True})
             if dataset == HALUEVALQA:
                 df_metrics = compute_closed_domain_metrics_for_dataset(df_datapoints, df_results)
             else:

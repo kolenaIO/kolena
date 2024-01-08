@@ -19,20 +19,21 @@ from typing import Dict
 import pandas as pd
 from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
-from classification.binary.constants import NEGATIVE_LABEL
-from classification.binary.constants import POSITIVE_LABEL
+from classification.binary.constants import ID_FIELDS
 
 import kolena
-from kolena.dataset import fetch_dataset
-from kolena.dataset import test
-from kolena.workflow.annotation import ScoredClassificationLabel
+from kolena.annotation import ScoredClassificationLabel
+from kolena.dataset import download_dataset
+from kolena.dataset import upload_results
 
+
+POSITIVE_LABEL = "dog"
+NEGATIVE_LABEL = "not dog"
 MODELS = ["resnet50v2", "inceptionv3"]
 EVAL_CONFIG = {"threshold": 0.5}
-id_fields = ["locator"]
 
 
-def metrics(score, ground_truth_label) -> Dict[str, Any]:
+def compute_metrics(score: float, ground_truth_label: str) -> Dict[str, Any]:
     threshold = EVAL_CONFIG["threshold"]
     is_positive_prediction = score >= threshold
     classification_label = POSITIVE_LABEL if is_positive_prediction else NEGATIVE_LABEL
@@ -48,53 +49,42 @@ def metrics(score, ground_truth_label) -> Dict[str, Any]:
     }
 
 
-def to_kolena_inference(score) -> ScoredClassificationLabel:
+def create_classification(score: float) -> ScoredClassificationLabel:
     threshold = EVAL_CONFIG["threshold"]
     label = POSITIVE_LABEL if score >= threshold else NEGATIVE_LABEL
     score = score if score >= threshold else 1 - score
     return ScoredClassificationLabel(label=label, score=score)
 
 
-def upload_results(model_name: str, dataset: str) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model_name}.csv")
-    dataset_df = fetch_dataset(dataset)
-    df_results = df_results.merge(dataset_df, how="left", on=id_fields)
-
-    df_results["inference"] = df_results["prediction"].apply(lambda score: to_kolena_inference(score))
-
-    eval_result = df_results.apply(lambda row: pd.Series(metrics(row.prediction, row.label)), axis=1)
-    eval_result.columns = [
-        "threshold",
-        "is_correct",
-        "is_TP",
-        "is_FP",
-        "is_FN",
-        "is_TN",
-    ]
-
-    df_results = pd.concat([df_results[id_fields], df_results["inference"], eval_result], axis=1)
-    test(dataset, model_name, [(EVAL_CONFIG, df_results)])
-
-
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    for model_name in args.models:
-        upload_results(model_name, args.dataset)
+    dataset_df = download_dataset(args.dataset)
+    df_results = pd.read_csv(
+        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
+        storage_options={"anon": True},
+    )
+
+    df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
+    df_results["inference"] = df_results["prediction"].apply(lambda score: create_classification(score))
+    eval_result = df_results.apply(lambda row: pd.Series(compute_metrics(row.prediction, row.label)), axis=1)
+    df_results = pd.concat([df_results[ID_FIELDS], df_results["inference"], eval_result], axis=1)
+
+    upload_results(args.dataset, args.model, [(EVAL_CONFIG, df_results)])
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--models",
-        nargs="+",
-        default=MODELS,
+        "model",
+        type=str,
         choices=MODELS,
-        help="Name(s) of the models(s) to register.",
+        help="Name of the model to test.",
     )
     ap.add_argument(
         "--dataset",
+        type=str,
         default=DATASET,
-        help=f"Custom name for the {DATASET} dataset to test.",
+        help="Optionally specify a custom dataset name to test.",
     )
     run(ap.parse_args())
 

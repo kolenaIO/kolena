@@ -4,15 +4,6 @@ orbs:
   codecov: codecov/codecov@3.2.4
 
 parameters:
-  classification:
-    type: boolean
-    default: false
-  detection:
-    type: boolean
-    default: false
-  fr:
-    type: boolean
-    default: false
   workflow:
     type: boolean
     default: false
@@ -367,7 +358,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ workflow ]
               extras: [ "none" ]
           enabled: true
           parallelism: 3
@@ -391,7 +382,6 @@ workflows:
               extras: [ "none" ]
           pytest-group: dataset
           enabled: true
-          parallelism: 2
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
@@ -412,7 +402,13 @@ workflows:
       - example-test-dataset:
           matrix:
             parameters:
-              subproject: [ age_estimation, classification, keypoint_detection, question_answering, rain_forecast ]
+              subproject: [ text_summarization ]
+              resource-class: [ large ]
+              python-version: [ "3.9.18" ]
+      - example-test-dataset:
+          matrix:
+            parameters:
+              subproject: [ classification, keypoint_detection, question_answering, rain_forecast, speaker_diarization]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:

@@ -22,7 +22,7 @@ from kolena._utils.state import get_endpoint_with_baseurl
 from kolena.errors import InvalidClientStateError
 
 
-def get_endpoint(endpoint_path: str, api_version: int) -> str:
+def get_endpoint(endpoint_path: str, api_version: str) -> str:
     client_state = get_client_state()
     if client_state.base_url is None:
         raise InvalidClientStateError("missing base_url")
@@ -44,7 +44,8 @@ def _get_platform_origin(client_state: _ClientState) -> str:
     base_url = urlparse(client_state.base_url)
     if base_url.hostname == "localhost":
         return "http://localhost:3000"
-    gateway_subdomain, *_ = base_url.hostname.split(".")
+    hostname = base_url.hostname or ""
+    gateway_subdomain, *_ = hostname.split(".")
     subdomain = "trunk" if "trunk" in gateway_subdomain else "app"
     return f"https://{subdomain}.kolena.io"
 
@@ -80,7 +81,7 @@ def _get_test_suite_url(client_state: _ClientState, test_suite_id: int) -> str:
     return f"{platform_url}/testing?{urlencode(dict(testSuiteId=test_suite_id))}"
 
 
-def _get_dataset_url(client_state: _ClientState, dataset_id: str) -> str:
+def _get_dataset_url(client_state: _ClientState, dataset_id: int) -> str:
     platform_url = _get_platform_url(client_state)
     return f"{platform_url}/dataset?{urlencode(dict(datasetId=dataset_id))}"
 

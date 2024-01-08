@@ -16,62 +16,23 @@ from typing import Any
 from typing import List
 from typing import Tuple
 
-import cv2
-import numpy as np
-import s3fs
+import pandas as pd
 
-try:
-    from retinaface import RetinaFace  # noqa: F401
-except ImportError:
-    print("Note: Package 'retinaface' not found; install 'retinaface' with `poetry install --extras retina`")
+from kolena.annotation import Keypoints
+from kolena.annotation import ScoredLabeledBoundingBox
 
 
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import Keypoints
+def infer_from_df(record: Any, df: pd.DataFrame) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
+    inference = df[df["locator"] == record.locator]
+    return inference.iloc[0]["raw_bboxes"], inference.iloc[0]["raw_faces"]
 
 
-def download_image(locator: str) -> np.ndarray:
-    s3 = s3fs.S3FileSystem(anon=True)
-    with s3.open(locator, "rb") as f:
-        image_arr = np.asarray(bytearray(f.read()), dtype="uint8")
-        image = cv2.imdecode(image_arr, cv2.IMREAD_COLOR)
-        return image
-
-
-def infer_retinaface(record: Any) -> Tuple[List[BoundingBox], List[Keypoints]]:
-    image = download_image(record.locator)
-    predictions = RetinaFace.detect_faces(image)
-    bboxes, faces = [], []
-    try:
-        for face_label, pred in predictions.items():
-            bbox = BoundingBox(
-                top_left=pred["facial_area"][:2],
-                bottom_right=pred["facial_area"][2:],
-                score=pred["score"],
-                label=face_label,
-            )
-            face = Keypoints(
-                points=[
-                    pred["landmarks"]["left_eye"],
-                    pred["landmarks"]["right_eye"],
-                    pred["landmarks"]["nose"],
-                    pred["landmarks"]["mouth_left"],
-                    pred["landmarks"]["mouth_right"],
-                ],
-            )
-            bboxes.append(bbox)
-            faces.append(face)
-    except Exception:
-        pass  # prediction failure
-    return bboxes, faces
-
-
-def infer_random(record: Any) -> Tuple[List[BoundingBox], List[Keypoints]]:
+def infer_random(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
     def randomize(point: Tuple[float, float]) -> Tuple[float, float]:
         return point[0] + (random.random() - 0.5) * 100, point[1] + (random.random() - 0.5) * 100
 
     gt_points = record.face.points
-    random_bbox = BoundingBox(
+    random_bbox = ScoredLabeledBoundingBox(
         top_left=(gt_points[1][0] - random.random() * 100, gt_points[1][1] - random.random() * 100),
         bottom_right=(gt_points[4][0] + random.random() * 100, gt_points[4][1] + random.random() * 100),
         score=random.random(),

@@ -38,13 +38,13 @@ API_V2 = "v2"
 DEFAULT_API_VERSION = API_V1
 API_URL = "https://api.kolena.io"
 API_URL_ENV_VAR = "KOLENA_API_URL"
-CLIENT_STATE = contextvars.ContextVar("client_state")
+CLIENT_STATE: contextvars.ContextVar["_ClientState"] = contextvars.ContextVar("client_state")
 
 
 class NoOpAuth(requests.auth.AuthBase):
     """Provide no-op Auth to disable requests using .netrc"""
 
-    def __call__(self, r):
+    def __call__(self, r: Any) -> Any:
         return r
 
 
@@ -149,7 +149,7 @@ def kolena_initialized(func: Callable) -> Callable:
     return wrapper
 
 
-def get_endpoint_with_baseurl(base_url: str, endpoint_path: str, api_version: int = DEFAULT_API_VERSION) -> str:
+def get_endpoint_with_baseurl(base_url: str, endpoint_path: str, api_version: str = DEFAULT_API_VERSION) -> str:
     return f"{base_url}/{api_version}/{endpoint_path.lstrip('/')}"
 
 
@@ -158,7 +158,7 @@ def get_token(
     base_url: Optional[str] = None,
     proxies: Optional[Dict[str, str]] = None,
 ) -> API.ValidateResponse:
-    base_url = base_url or get_client_state().base_url
+    base_url = base_url or get_client_state().base_url or ""
     request = API.ValidateRequest(api_token=api_token, version=kolena.__version__)
     r = requests.put(
         get_endpoint_with_baseurl(base_url, "token/login"),
