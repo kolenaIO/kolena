@@ -39,13 +39,13 @@ def dataset_name() -> str:
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__upload_dataset() -> None:
+def test__upload_dataset(dataset_name: str) -> None:
     args = Namespace(dataset=dataset_name)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results() -> None:
+def test__upload_results(dataset_name: str) -> None:
     args = Namespace(model="resnet50v2", dataset=dataset_name)
     upload_results_main(args)
     args = Namespace(model="inceptionv3", dataset=dataset_name)

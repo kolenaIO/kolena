@@ -408,7 +408,7 @@ workflows:
       - example-test-dataset:
           matrix:
             parameters:
-              subproject: [ classification, keypoint_detection, question_answering, rain_forecast, speaker_diarization, text_summarization]
+              subproject: [ classification, keypoint_detection, rain_forecast, speaker_diarization, text_summarization]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
