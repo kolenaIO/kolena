@@ -23,13 +23,32 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 This project defines two scripts that perform the following operations:
 
-1. [`upload_dataset.py`](text_summarization/upload_dataset.py) creates CNN-DailyMail dataset on Kolena.
+1. [`upload_dataset.py`](text_summarization/upload_dataset.py) uploads the CNN-DailyMail dataset on Kolena.
 
-2. [`upload_results.py`](text_summarization/upload_results.py) tests the following models on the above test suites: `ada`,
-  `babbage`, `curie`, `davinci`, `turbo`. Command line arguments are defined to specify what model to test. Run the
-  script using the `--help` flag for more information:
+```shell
+$ poetry run python3 text_summarization/upload_dataset.py --help
+usage: upload_dataset.py [-h] [--dataset-csv DATASET_CSV] [--dataset-name DATASET_NAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --dataset-csv DATASET_CSV
+                        CSV file specifying dataset. See default CSV for details
+  --dataset-name DATASET_NAME
+                        Optionally specify a name of the dataset to upload.
+```
+
+2. [`upload_results.py`](text_summarization/upload_results.py) tests the following models : `ada`, `babbage`, `curie`,
+  `davinci`, `turbo`. Command line arguments are defined to specify what model to test. Run the script using the
+  `--help` flag for more information:
 
 ```shell
 $ poetry run python3 text_summarization/upload_results.py --help
+usage: upload_results.py [-h] [--models {ada,babbage,curie,davinci,turbo} [{ada,babbage,curie,davinci,turbo} ...]]
+                         [--dataset DATASET]
 
+optional arguments:
+  -h, --help            show this help message and exit
+  --models {ada,babbage,curie,davinci,turbo} [{ada,babbage,curie,davinci,turbo} ...]
+                        Name of model to test.
+  --dataset DATASET     Optionally specify a custom dataset name to test.
 ```
