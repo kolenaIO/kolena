@@ -151,7 +151,7 @@ if __name__ == "__main__":
         help="CSV file containing the metadata of each image. See default CSV for details.",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test_suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

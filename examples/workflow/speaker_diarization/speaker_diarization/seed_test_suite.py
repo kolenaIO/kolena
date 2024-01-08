@@ -137,7 +137,7 @@ if __name__ == "__main__":
     )
 
     ap.add_argument(
-        "--suite_name",
+        "--test_suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",

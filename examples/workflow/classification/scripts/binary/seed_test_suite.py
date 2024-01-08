@@ -96,7 +96,7 @@ if __name__ == "__main__":
         help="CSV file with a list of image `locator` and its `label`. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test_suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

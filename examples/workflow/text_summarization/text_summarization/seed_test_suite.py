@@ -214,9 +214,9 @@ if __name__ == "__main__":
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_prefix",
+        "--test_suite",
         type=str,
         default=DATASET,
-        help="Optionally specify a prefix for the created test suite names.",
+        help="Optionally specify a name for the created test suites.",
     )
     main(ap.parse_args())

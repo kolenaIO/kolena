@@ -168,7 +168,7 @@ if __name__ == "__main__":
         help="CSV file with a stories, questions, and answers.",
     )
     ap.add_argument(
-        "--test-suite",
+        "--test_suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",
