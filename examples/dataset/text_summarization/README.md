@@ -33,7 +33,7 @@ optional arguments:
   -h, --help            show this help message and exit
   --dataset-csv DATASET_CSV
                         CSV file specifying dataset. See default CSV for details
-  --dataset-name DATASET_NAME
+  --dataset DATASET
                         Optionally specify a name of the dataset to upload.
 ```
 
