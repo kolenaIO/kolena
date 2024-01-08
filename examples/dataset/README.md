@@ -2,7 +2,7 @@
 
 This directory contains example Kolena Datasets integrations for different machine learning workflows.
 
-- [Classification](./classification): open source classification models tested using the
+- [Classification](./classification): open-source classification models tested using the
   [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) and
   [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
 - [Keypoint Detection](./keypoint_detection): [RetinaFace](https://github.com/serengil/retinaface) keypoint detection

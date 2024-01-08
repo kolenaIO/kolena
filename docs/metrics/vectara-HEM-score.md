@@ -1,7 +1,7 @@
 # Vectara's HEM Score
 
 [Vectara's hallucination evaluation model (HEM)](https://vectara.com/measuring-hallucinations-in-rag-systems) is an
-open source model that can be used to compute scores for hallucination detection. The scores are probabilities that
+open-source model that can be used to compute scores for hallucination detection. The scores are probabilities that
 range from 0 to 1 — 0 means that there is a hallucination and 1 means that there is no hallucination (factually
 consistent). According to Vectara, an appropriate threshold for this metric is 0.5 to predict whether a text is
 consistent with another.
@@ -53,5 +53,5 @@ very hard to subjectively define. This model is a black-box when it comes to num
 multiple thresholds should learn the behaviors of Vectara's HEM on their own data rather than naively defining more
 thresholds such as `0.25` and `0.75`.
 
-Overall, Vectara's HEM is open source, quick and easy to use, and is a very strong starting point in any hallucination
+Overall, Vectara's HEM is open-source, quick and easy to use, and is a very strong starting point in any hallucination
 detection system.
