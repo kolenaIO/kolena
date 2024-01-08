@@ -6,7 +6,7 @@ on:
       environment:
         description: Deployment environment
         type: choice
-        options: [trunk, production]
+        options: [ trunk, production ]
         default: trunk
   push:
     branches:
@@ -58,6 +58,7 @@ jobs:
         run: |
           poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://trunk-docs.kolena.io"
+          aws cloudfront create-invalidation --no-cli-pager --distribution-id ${{ secrets.TRUNK_DOC_DISTRIBUTION_ID }} --paths "/*"
 
       - name: Publish 'kolena' documentation to production (S3)
         if: inputs.environment == 'production'
