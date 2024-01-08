@@ -7,9 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
-# TODO: use official release after 1.0
-# kolena = ">=0.100.0,<1"
-kolena = { path = "../../..", develop = true }
+kolena = ">=1.0.0"
 s3fs = "^2022.7.1"
 scikit-learn = "^1.1.2"
 numba = "^0.56.0"
