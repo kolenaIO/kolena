@@ -21,7 +21,7 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 This project defines two scripts that perform the following operations:
 
-1. [`upload_dataset.py`](keypoint_detection/upload_dataset.py) registers the 300-W dataset.
+1. [`upload_dataset.py`](keypoint_detection/upload_dataset.py) uploads the 300-W dataset.
 
 ```shell
 $ poetry run python3 keypoint_detection/upload_dataset.py --help

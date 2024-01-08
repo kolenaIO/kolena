@@ -29,7 +29,7 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 For binary classification, there are two scripts that perform the following operations:
 
-1. [`upload_dataset.py`](classification/binary/upload_dataset.py) registers the
+1. [`upload_dataset.py`](classification/binary/upload_dataset.py) uploads the
 [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset.
 
 ```shell
@@ -64,7 +64,7 @@ optional arguments:
 
 For multiclass classification, there are two scripts that perform the following operations:
 
-1. [`upload_dataset.py`](classification/multiclass/upload_dataset.py) registers the
+1. [`upload_dataset.py`](classification/multiclass/upload_dataset.py) uploads the
 [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset.
 
 ```shell

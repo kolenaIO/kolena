@@ -73,12 +73,7 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument(
-        "model",
-        type=str,
-        choices=list(MODEL_NAME.keys()),
-        help="Name of the model to test.",
-    )
+    ap.add_argument("model", type=str, choices=list(MODEL_NAME.keys()), help="Name of the model to test.")
     ap.add_argument(
         "--dataset",
         type=str,
