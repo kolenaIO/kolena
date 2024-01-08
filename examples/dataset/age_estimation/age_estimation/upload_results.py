@@ -40,7 +40,7 @@ def run(args: Namespace) -> None:
     model = args.model
 
     kolena.initialize(verbose=True)
-    dataset_df = download_dataset(DATASET)
+    dataset_df = download_dataset(args.dataset)
     gt_age_by_locator = {record["locator"]: record["age"] for record in dataset_df.to_dict(orient="records")}
 
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv")
