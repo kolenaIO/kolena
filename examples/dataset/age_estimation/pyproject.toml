@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "keypoint_detection"
+name = "age_estimation"
 version = "0.1.0"
-description = "Example Kolena integration for keypoint detection"
+description = "Example Kolena integration for age estimation"
 authors = ["Kolena Engineering <eng@kolena.com>"]
 license = "Apache-2.0"
 
