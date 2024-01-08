@@ -117,12 +117,6 @@ def download_results(
     Concat dataset with results:
 
     ```python
-    import kolena
-    import pandas as pd
-    from kolena.dataset import download_results
-
-    kolena.initialize(verbose=True)
-
     df_dp, results = download_results("dataset name", "model name")
     for eval_config, df_result in results:
         df_combined = pd.concat([df_dp, df_result], axis=1)
