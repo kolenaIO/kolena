@@ -23,8 +23,8 @@ from .data import a_text
 from .data import b_text
 from kolena._api.v2.dataset import EntityData
 from kolena._utils.datatypes import DATA_TYPE_FIELD
-from kolena.dataset.common import COL_DATAPOINT
-from kolena.dataset.common import COL_RESULT
+from kolena.dataset._common import COL_DATAPOINT
+from kolena.dataset._common import COL_RESULT
 from kolena.dataset.dataset import _add_datatype
 from kolena.dataset.dataset import _flatten_composite
 from kolena.dataset.dataset import _infer_datatype

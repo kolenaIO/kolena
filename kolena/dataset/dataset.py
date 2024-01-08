@@ -244,10 +244,10 @@ def upload_dataset(
     id_fields: Optional[List[str]] = None,
 ) -> None:
     """
-    Create or update a dataset.
+    Create or update a dataset with the contents of the provided DataFrame `df`.
 
     !!! note "Updating a dataset"
-        When updating an existing dataset, any change to `id_fields` will.
+        When updating an existing dataset, change `id_fields` with caution
 
     :param name: The name of the dataset.
     :param df: A DataFrame or iterator of DataFrames. Provide an iterator to perform batch upload (example:
