@@ -190,8 +190,7 @@ def upload_results(
 
     response = _upload_results(model, load_uuid, existing_dataset.id)
     log.info(
-        f"uploaded test results for model '{model}' on dataset '{dataset}':\n"
-        f"\t - inserted {response.n_inserted} results\n"
-        f"\t - updated {response.n_updated} results",
+        f"uploaded test results for model '{model}' on dataset '{dataset}': "
+        f"{response.n_inserted} inserted, {response.n_updated} updated"
     )
     return response
