@@ -246,14 +246,16 @@ def upload_dataset(
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
 
-    !!! note "Updating a dataset"
-        When updating an existing dataset, change `id_fields` with caution
+    !!! note "Updating `id_fields`"
+        ID fields are used to associate model results (uploaded via [`upload_results`][kolena.dataset.upload_results])
+        with datapoints in this dataset. When updating an existing dataset, update `id_fields` with caution.
 
     :param name: The name of the dataset.
     :param df: A DataFrame or iterator of DataFrames. Provide an iterator to perform batch upload (example:
-        `csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)`)
+        `csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)`).
     :param id_fields: Optionally specify a list of ID fields that will be used to link model results with the datapoints
-        within a dataset. Note that `id_fields` must be hashable.
+        within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
+        that `id_fields` must be hashable.
     """
     load_uuid = init_upload().uuid
     existing_dataset = _load_dataset_metadata(name)

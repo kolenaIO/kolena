@@ -73,7 +73,7 @@ If you don't see your question here, please reach out to us on Slack or at
 ??? faq "My data is being ingested in the wrong format for a CSV exported using `pandas.DataFrame.to_csv`"
 
     `pandas.DataFrame.to_csv` does not always handle object serialization seamlessly. Please reference
-    [`dataframe_to_csv`](../reference/io/#kolena.io.dataframe_to_csv) for a drop-in replacement.
+    [`dataframe_to_csv`](../reference/io.md#kolena.io.dataframe_to_csv) for a drop-in replacement.
 
 ??? faq "Does Kolena support file versioning?"
 
