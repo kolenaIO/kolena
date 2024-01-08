@@ -133,6 +133,6 @@ That being said, ROUGE-N has some advantages over embeddings-based metrics. Firs
 compute — it is able to calculate scores for large corpuses efficiently with no specialized hardware. ROUGE-N is also
 relatively easy to interpret. The N value can be adjusted to measure the granularity of measurements, and higher scores
 indicate greater overlap with the reference text. In fact, ROUGE is very widely used in NLP which allows engineers to
-benchmark their models against others on most open source NLP datasets. Lastly, it can be used in complement with other
+benchmark their models against others on most open-source NLP datasets. Lastly, it can be used in complement with other
 n-gram based metrics like BLEU to provide a more holistic view of test results — since BLEU provides a precision-related
 score, and ROUGE provides a recall-related score, it makes it easier to pinpoint potential failure cases.
