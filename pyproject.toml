@@ -2,7 +2,7 @@
 name = "kolena"
 version = "0.999.0"  # version is automatically set to latest git tag during release process
 description = "Client for Kolena's machine learning testing platform."
-authors = ["Kolena Engineering <eng@kolena.io>"]
+authors = ["Kolena Engineering <eng@kolena.com>"]
 homepage = "https://kolena.io"
 documentation = "https://docs.kolena.io"
 readme = "README.md"
@@ -43,7 +43,6 @@ tqdm = ">=4,<5"
 Pillow = "^10.0.1"
 retrying = "^1.3.3"
 Shapely = "^1.8.5"
-deprecation = "^2.1.0"
 termcolor = "^1.1.0"
 pyarrow = ">=8"
 click = ">=8"

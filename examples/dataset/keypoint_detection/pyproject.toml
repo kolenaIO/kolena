@@ -2,18 +2,17 @@
 name = "keypoint_detection"
 version = "0.1.0"
 description = "Example Kolena integration for keypoint detection"
-authors = ["Kolena Engineering <eng@kolena.io>"]
+authors = ["Kolena Engineering <eng@kolena.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.9,<3.12"
 # TODO: use official release after 1.0
 # kolena = ">=0.100.0,<1"
 kolena = { path = "../../..", develop = true }
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
 pandera = ">=0.9.0,<0.16"
-retina-face = "^0.0.13"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"

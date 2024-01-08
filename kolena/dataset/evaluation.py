@@ -37,20 +37,21 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
-from kolena.dataset.common import COL_DATAPOINT
-from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena.dataset.common import COL_EVAL_CONFIG
-from kolena.dataset.common import COL_RESULT
-from kolena.dataset.common import validate_batch_size
-from kolena.dataset.common import validate_dataframe_ids
+from kolena.dataset._common import COL_DATAPOINT
+from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import COL_EVAL_CONFIG
+from kolena.dataset._common import COL_RESULT
+from kolena.dataset._common import validate_batch_size
+from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_ids
+from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
-from kolena.dataset.dataset import load_dataset
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
-TYPE_EVALUATION_CONFIG = Optional[Dict[str, Any]]
-TEST_ON_TYPE = Optional[Union[str, List[str]]]
+EvalConfig = Optional[Dict[str, Any]]
+DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
 
 
 def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
@@ -76,7 +77,7 @@ def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
 
 
 def _process_result(
-    eval_config: Optional[TYPE_EVALUATION_CONFIG],
+    eval_config: EvalConfig,
     df_result: pd.DataFrame,
     id_fields: List[str],
 ) -> pd.DataFrame:
@@ -106,12 +107,17 @@ def _upload_results(
 
 
 @with_event(EventAPI.Event.FETCH_DATASET_MODEL_RESULT)
-def fetch_results(
+def download_results(
     dataset: str,
     model: str,
-) -> Tuple[pd.DataFrame, List[Tuple[TYPE_EVALUATION_CONFIG, pd.DataFrame]]]:
+) -> Tuple[pd.DataFrame, List[Tuple[EvalConfig, pd.DataFrame]]]:
     """
     Fetch results given dataset name and model name.
+
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
+    :return: Tuple of DataFrame of datapoints and list of tuples,
+             each containing an evaluation configuration and the corresponding DataFrame of results.
     """
     log.info(f"fetching results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
@@ -131,7 +137,7 @@ def fetch_results(
     return df_datapoints, df_results_by_eval
 
 
-def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
+def _validate_configs(configs: List[EvalConfig]) -> None:
     n = len(configs)
     for i in range(n):
         for j in range(i + 1, n):
@@ -139,36 +145,26 @@ def _validate_configs(configs: List[TYPE_EVALUATION_CONFIG]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-@with_event(EventAPI.Event.TEST_DATASET_MODEL)
-def test(
+@with_event(EventAPI.Event.UPLOAD_DATASET_MODEL_RESULT)
+def upload_results(
     dataset: str,
     model: str,
-    results: Union[
-        pd.DataFrame,
-        Iterator[pd.DataFrame],
-        List[
-            Tuple[
-                TYPE_EVALUATION_CONFIG,
-                Union[
-                    pd.DataFrame,
-                    Iterator[pd.DataFrame],
-                ],
-            ]
-        ],
-    ],
+    results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
 ) -> None:
     """
-    This function is used for testing a specified model on a given dataset.
+    This function is used for uploading the results from a specified model on a given dataset.
 
-    :param dataset: The name of the dataset to be used.
-    :param model: The name of the model to be used.
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    a eval configuration and a DataFrame.
-    :return None
+                    an eval configuration and a DataFrame.
+    :return: None
     """
-    existing_dataset = load_dataset(dataset)
+    existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
         raise NotFoundError(f"dataset {dataset} does not exist")
+
+    id_fields = existing_dataset.id_fields
 
     if isinstance(results, pd.DataFrame) or isinstance(results, Iterator):
         results = [(None, results)]
@@ -178,16 +174,18 @@ def test(
     for config, df_result_input in results:
         log.info(f"uploading test results with configuration {config}" if config else "uploading test results")
         if isinstance(df_result_input, pd.DataFrame):
-            validate_dataframe_ids(df_result_input, existing_dataset.id_fields)
-            df_results = _process_result(config, df_result_input, existing_dataset.id_fields)
+            validate_dataframe_ids(df_result_input, id_fields)
+            validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
+            df_results = _process_result(config, df_result_input, id_fields)
             upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
         else:
             id_column_validated = False
             for df_result in df_result_input:
                 if not id_column_validated:
-                    validate_dataframe_ids(df_result, existing_dataset.id_fields)
+                    validate_dataframe_ids(df_result, id_fields)
+                    validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
                     id_column_validated = True
-                df_results = _process_result(config, df_result, existing_dataset.id_fields)
+                df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     response = _upload_results(model, load_uuid, existing_dataset.id)

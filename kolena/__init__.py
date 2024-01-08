@@ -40,16 +40,10 @@ del __version_assign
 
 
 import kolena.errors
-import kolena.fr
-import kolena.detection
-import kolena.classification
 from .initialize import initialize
 
 __all__ = [
     "initialize",
     "errors",
-    "fr",
-    "detection",
-    "classification",
     "workflow",
 ]

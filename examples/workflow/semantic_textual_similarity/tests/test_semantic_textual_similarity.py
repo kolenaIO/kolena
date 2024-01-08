@@ -12,16 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import os
+import random
+import string
 from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from semantic_textual_similarity.seed_test_run import run as seed_test_run_main
-from semantic_textual_similarity.seed_test_suite import run as seed_test_suite_main
+from semantic_textual_similarity.seed_test_run import main as seed_test_run_main
+from semantic_textual_similarity.seed_test_suite import main as seed_test_suite_main
 
 from kolena._utils.state import kolena_session
 
 DATASET = "sts-benchmark"
+
+
+@pytest.fixture(scope="module")
+def suite_name() -> str:
+    TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
+    return f"{TEST_PREFIX} - {DATASET}"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -30,12 +38,15 @@ def with_init() -> Iterator[None]:
         yield
 
 
-def test__seed_test_suite() -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/sts-benchmark/results/all-distilroberta-v1.tiny5.csv")
+def test__seed_test_suite(suite_name: str) -> None:
+    args = Namespace(
+        dataset_csv="s3://kolena-public-datasets/sts-benchmark/results/all-distilroberta-v1.tiny5.csv",
+        suite_name=suite_name,
+    )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
-def test__seed_test_run() -> None:
-    args = Namespace(models=["all-distilroberta-v1"], test_suites=[f"{DATASET}"])
+def test__seed_test_run(suite_name: str) -> None:
+    args = Namespace(models=["all-distilroberta-v1"], test_suites=[f"{suite_name}"])
     seed_test_run_main(args)

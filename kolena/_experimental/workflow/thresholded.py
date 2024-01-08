@@ -14,14 +14,15 @@
 from abc import ABCMeta
 from dataclasses import dataclass
 from dataclasses import fields
+from typing import Any
 
-from kolena.workflow._datatypes import _register_data_type
-from kolena.workflow._datatypes import DataType
-from kolena.workflow._datatypes import TypedDataObject
+from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataType
+from kolena._utils.datatypes import TypedDataObject
 
 
 class PreventThresholdOverrideMeta(ABCMeta, type):
-    def __new__(cls, name, bases, dct):
+    def __new__(cls, name: str, bases: tuple, dct: dict) -> "PreventThresholdOverrideMeta":
         if "threshold" in dct.get("__annotations__", {}):
             for base in bases:
                 if base.__name__ == "ThresholdedMetrics":
@@ -91,7 +92,7 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
 
     threshold: float
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any):
         _register_data_type(cls)
 
     @classmethod

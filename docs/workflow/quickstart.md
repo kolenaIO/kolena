@@ -4,6 +4,11 @@ icon: kolena/flame-16
 
 # :kolena-flame-20: Quickstart
 
+!!! note
+    Kolena Workflows are simplified in Kolena Datasets.
+    If you are setting up your Kolena environments for the first time, please refer to the
+    [Datasets Quickstart](../dataset/quickstart.md).
+
 Install Kolena to set up rigorous and repeatable model testing in minutes.
 
 In this quickstart guide, we'll use the

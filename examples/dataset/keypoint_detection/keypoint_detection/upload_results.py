@@ -13,23 +13,44 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Any
+from typing import List
+from typing import Tuple
 
 import pandas as pd
+from keypoint_detection.constants import BUCKET
+from keypoint_detection.constants import DATASET
 from keypoint_detection.metrics import compute_metrics
+from keypoint_detection.model import infer_from_df
 from keypoint_detection.model import infer_random
-from keypoint_detection.model import infer_retinaface
 from tqdm import tqdm
 
 import kolena
-from kolena._experimental.dataset import fetch_dataset
-from kolena._experimental.dataset import test
+from kolena.annotation import Keypoints
+from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.dataset import download_dataset
+from kolena.dataset import upload_results
+from kolena.io import dataframe_from_csv
 
 
-def run(args: Namespace) -> int:
+MODELS = ["retinaface", "random"]
+
+
+def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    infer = infer_retinaface if args.model == "RetinaFace" else infer_random
-    df = fetch_dataset(args.dataset)
+    infer = infer_random
+    if args.model == "retinaface":
+        retinaface_raw_inferences_df = dataframe_from_csv(
+            f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
+            storage_options={"anon": True},
+        )
 
+        def infer_retinaface(record: Any) -> Tuple[List[ScoredLabeledBoundingBox], List[Keypoints]]:
+            return infer_from_df(record, retinaface_raw_inferences_df)
+
+        infer = infer_retinaface
+
+    df = download_dataset(args.dataset)
     results = []
     for record in tqdm(df.itertuples(), total=len(df)):
         bboxes, faces = infer(record)
@@ -37,14 +58,23 @@ def run(args: Namespace) -> int:
         results.append(dict(locator=record.locator, raw_bboxes=bboxes, raw_faces=faces, **metrics))
 
     df_results = pd.DataFrame.from_records(results)
-    test(args.dataset, args.model, df_results)
-    return 0
+    upload_results(args.dataset, args.model, df_results)
 
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("model", type=str, choices=["RetinaFace", "random"], help="Name of model to test.")
-    ap.add_argument("dataset", nargs="?", default="300-W", help="Name of dataset to use for testing.")
+    ap.add_argument(
+        "model",
+        type=str,
+        choices=MODELS,
+        help="Name of the model to test.",
+    )
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a custom dataset name to test.",
+    )
     run(ap.parse_args())
 
 

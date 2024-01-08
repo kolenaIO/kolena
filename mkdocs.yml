@@ -4,109 +4,104 @@ site_url: https://docs.kolena.io
 strict: true
 repo_name: kolenaIO/kolena
 repo_url: https://github.com/kolenaIO/kolena
-copyright: Copyright &copy; 2021-2023 Kolena
+copyright: Copyright &copy; 2021-2024 Kolena
 edit_uri: edit/trunk/docs/
 
 nav:
   - Developer Guide:
-      - Developer Guide: index.md
-      - Installing <code>kolena</code>: installing-kolena.md
-      - Datasets:
-          - Datasets: dataset/index.md
-          - Quickstart: dataset/quickstart.md
-          - Core Concepts:
-              - Core Concepts: dataset/core-concepts/index.md
-              - Dataset: dataset/core-concepts/dataset.md
-              - Quality Standard: dataset/core-concepts/quality-standard.md
-      - Workflows:
-          - Workflows: workflow/index.md
-          - Quickstart: workflow/quickstart.md
-          - Core Concepts:
-              - Core Concepts: workflow/core-concepts/index.md
-              - Workflow: workflow/core-concepts/workflow.md
-              - Test Case & Test Suite: workflow/core-concepts/test-suite.md
-              - Model: workflow/core-concepts/model.md
-          - Building a Workflow: workflow/building-a-workflow.md
+    - Developer Guide: index.md
+    - Installing <code>kolena</code>: installing-kolena.md
+    - Datasets:
+      - Datasets: dataset/index.md
+      - Quickstart: dataset/quickstart.md
+      - Core Concepts:
+        - Core Concepts: dataset/core-concepts/index.md
+        - Dataset: dataset/core-concepts/dataset.md
+        - Quality Standard: dataset/core-concepts/quality-standard.md
+    - Workflows:
+      - Workflows: workflow/index.md
+      - Quickstart: workflow/quickstart.md
+      - Core Concepts:
+        - Core Concepts: workflow/core-concepts/index.md
+        - Workflow: workflow/core-concepts/workflow.md
+        - Test Case & Test Suite: workflow/core-concepts/test-suite.md
+        - Model: workflow/core-concepts/model.md
+      - Building a Workflow: workflow/building-a-workflow.md
       - Advanced Usage:
-          - Advanced Usage: advanced-usage/index.md
-          - Connecting Cloud Storage:
-              - Connecting Cloud Storage: advanced-usage/connecting-cloud-storage/index.md
-              - Amazon S3: advanced-usage/connecting-cloud-storage/amazon-s3.md
-              - S3-Compatible APIs: advanced-usage/connecting-cloud-storage/s3-compatible.md
-              - Google Cloud Storage: advanced-usage/connecting-cloud-storage/google-cloud-storage.md
-              - Azure Blob Storage: advanced-usage/connecting-cloud-storage/azure-blob-storage.md
-              - HTTP Basic: advanced-usage/connecting-cloud-storage/http-basic.md
-          - Packaging for Automated Evaluation: advanced-usage/packaging-for-automated-evaluation.md
-          - Nesting Test Case Metrics: advanced-usage/nesting-test-case-metrics.md
-          - Uploading Activation Maps: advanced-usage/uploading-activation-maps.md
-          - Setting Up Natural Language Search: advanced-usage/set-up-natural-language-search.md
+        - Advanced Usage: workflow/advanced-usage/index.md
+        - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
+        - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
+        - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
+        - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
+    - Connecting Cloud Storage:
+      - Connecting Cloud Storage: connecting-cloud-storage/index.md
+      - Amazon S3: connecting-cloud-storage/amazon-s3.md
+      - S3-Compatible APIs: connecting-cloud-storage/s3-compatible.md
+      - Google Cloud Storage: connecting-cloud-storage/google-cloud-storage.md
+      - Azure Blob Storage: connecting-cloud-storage/azure-blob-storage.md
+      - HTTP Basic: connecting-cloud-storage/http-basic.md
   - API Reference:
-      - API Reference: reference/index.md
-      - <code>kolena.initialize</code>: reference/initialize.md
-      - <code>kolena.errors</code>: reference/errors.md
-      - <code>kolena.dataset</code>:
-          - <code>kolena.dataset</code>: reference/dataset/index.md
-          - Annotations: reference/dataset/annotation.md
-          - Assets: reference/dataset/asset.md
-      - <code>kolena.workflow</code>:
-          - <code>kolena.workflow</code>: reference/workflow/index.md
-          - <code>TestSample</code>: reference/workflow/test-sample.md
-          - <code>GroundTruth</code>: reference/workflow/ground-truth.md
-          - <code>Inference</code>: reference/workflow/inference.md
-          - <code>Evaluator</code>: reference/workflow/evaluator.md
-          - <code>TestCase</code>: reference/workflow/test-case.md
-          - <code>TestSuite</code>: reference/workflow/test-suite.md
-          - <code>Model</code>: reference/workflow/model.md
-          - <code>test</code>: reference/workflow/test-run.md
-          - Utilities:
-              - Annotations: reference/workflow/annotation.md
-              - Assets: reference/workflow/asset.md
-              - Plots: reference/workflow/plot.md
-              - <code>define_workflow</code>: reference/workflow/define-workflow.md
-              - <code>metrics</code>: reference/workflow/metrics.md
-              - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
-              - <code>visualization</code>: reference/workflow/visualization.md
-              - IO: reference/workflow/io.md
-      - Pre-built Workflows:
-          - Pre-built Workflows: reference/pre-built/index.md
-          - Object Detection (2D): reference/pre-built/object-detection-2d.md
-          - Classification: reference/pre-built/classification.md
-          - Legacy Definitions:
-              - Legacy Definitions: reference/legacy/index.md
-              - <code>classification</code>: reference/legacy/built-in/classification.md
-              - <code>detection</code>: reference/legacy/built-in/detection.md
-              - <code>fr</code>: reference/legacy/built-in/fr.md
-              - Base Definitions: reference/legacy/built-in/base.md
+    - API Reference: reference/index.md
+    - <code>kolena.annotation</code>: reference/annotation.md
+    - <code>kolena.asset</code>: reference/asset.md
+    - <code>kolena.errors</code>: reference/errors.md
+    - <code>kolena.initialize</code>: reference/initialize.md
+    - <code>kolena.io</code>: reference/io.md
+    - <code>kolena.dataset</code>:
+      - <code>kolena.dataset</code>: reference/dataset/index.md
+    - <code>kolena.workflow</code>:
+      - <code>kolena.workflow</code>: reference/workflow/index.md
+      - <code>TestSample</code>: reference/workflow/test-sample.md
+      - <code>GroundTruth</code>: reference/workflow/ground-truth.md
+      - <code>Inference</code>: reference/workflow/inference.md
+      - <code>Evaluator</code>: reference/workflow/evaluator.md
+      - <code>TestCase</code>: reference/workflow/test-case.md
+      - <code>TestSuite</code>: reference/workflow/test-suite.md
+      - <code>Model</code>: reference/workflow/model.md
+      - <code>test</code>: reference/workflow/test-run.md
+      - Utilities:
+        - Annotations: reference/workflow/annotation.md
+        - Assets: reference/workflow/asset.md
+        - Plots: reference/workflow/plot.md
+        - <code>define_workflow</code>: reference/workflow/define-workflow.md
+        - <code>metrics</code>: reference/workflow/metrics.md
+        - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
+        - <code>visualization</code>: reference/workflow/visualization.md
+        - IO: reference/workflow/io.md
+    - Pre-built Workflows:
+      - Pre-built Workflows: reference/pre-built/index.md
+      - Object Detection (2D): reference/pre-built/object-detection-2d.md
+      - Classification: reference/pre-built/classification.md
   - Metrics Glossary:
-      - Metrics Glossary: metrics/index.md
-      - metrics/accuracy.md
-      - metrics/average-precision.md
-      - metrics/averaging-methods.md
-      - metrics/confusion-matrix.md
-      - metrics/f1-score.md
-      - metrics/fpr.md
-      - metrics/precision.md
-      - metrics/pr-curve.md
-      - metrics/recall.md
-      - metrics/roc-curve.md
-      - metrics/specificity.md
-      - metrics/tp-fp-fn-tn.md
-      - Computer Vision:
-        - metrics/geometry-matching.md
-        - metrics/iou.md
-      - Large Language Models:
-        - metrics/contradiction-score.md
-        - HEM Score: metrics/vectara-HEM-score.md
-      - Natural Language Processing:
-        - metrics/bertscore.md
-        - metrics/bleu.md
-        - metrics/diarization-error-rate.md
-        - metrics/meteor.md
-        - metrics/perplexity.md
-        - metrics/rouge-n.md
-        - metrics/wer-cer-mer.md
+    - Metrics Glossary: metrics/index.md
+    - metrics/accuracy.md
+    - metrics/average-precision.md
+    - metrics/averaging-methods.md
+    - metrics/confusion-matrix.md
+    - metrics/f1-score.md
+    - metrics/fpr.md
+    - metrics/precision.md
+    - metrics/pr-curve.md
+    - metrics/recall.md
+    - metrics/roc-curve.md
+    - metrics/specificity.md
+    - metrics/tp-fp-fn-tn.md
+    - Computer Vision:
+      - metrics/geometry-matching.md
+      - metrics/iou.md
+    - Large Language Models:
+      - metrics/contradiction-score.md
+      - HEM Score: metrics/vectara-HEM-score.md
+    - Natural Language Processing:
+      - metrics/bertscore.md
+      - metrics/bleu.md
+      - metrics/diarization-error-rate.md
+      - metrics/meteor.md
+      - metrics/perplexity.md
+      - metrics/rouge-n.md
+      - metrics/wer-cer-mer.md
   - Help & FAQ:
-      - Help & FAQ: faq/index.md
+    - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
 
 theme:

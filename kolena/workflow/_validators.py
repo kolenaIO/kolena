@@ -21,14 +21,14 @@ from typing import Type
 from typing import Union
 
 from kolena._experimental.workflow.thresholded import ThresholdedMetrics
+from kolena._utils.datatypes import DATA_TYPE_FIELD
+from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import get_args
 from kolena._utils.datatypes import get_origin
+from kolena.annotation import _ANNOTATION_TYPES
+from kolena.asset import _ASSET_TYPES
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow._datatypes import _SCALAR_TYPES
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
-from kolena.workflow._datatypes import DataObject
-from kolena.workflow.annotation import _ANNOTATION_TYPES
-from kolena.workflow.asset import _ASSET_TYPES
 
 _SUPPORTED_FIELD_TYPES = [*_SCALAR_TYPES, *_ANNOTATION_TYPES, *_ASSET_TYPES, ThresholdedMetrics]
 
@@ -120,7 +120,7 @@ def validate_list(field_name: str, field_type: Type, supported_field_types: List
 
 def validate_union(
     field_name: str,
-    field_type: Union,
+    field_type: Type,
     supported_field_types: List[Type],
     supported_list_types: List[Type],
 ) -> None:

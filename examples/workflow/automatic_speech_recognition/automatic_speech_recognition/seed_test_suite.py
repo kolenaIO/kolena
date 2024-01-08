@@ -175,9 +175,9 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{DATASET} :: audio duration": seed_test_suite_duration,
-        f"{DATASET} :: speaker sex": seed_test_suite_speaker_sex,
-        f"{DATASET} :: tempo (words per second)": seed_test_suite_tempo,
+        f"{args.suite_name} :: audio duration": seed_test_suite_duration,
+        f"{args.suite_name} :: speaker sex": seed_test_suite_speaker_sex,
+        f"{args.suite_name} :: tempo (words per second)": seed_test_suite_tempo,
     }
 
     seed_test_suites(test_suite_names, complete_tc)
@@ -191,5 +191,10 @@ if __name__ == "__main__":
         default=f"s3://{BUCKET}/{DATASET}/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
-
+    ap.add_argument(
+        "--suite_name",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a name for the created test suites.",
+    )
     main(ap.parse_args())

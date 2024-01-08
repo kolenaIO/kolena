@@ -12,22 +12,36 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+from argparse import ArgumentParser
+from argparse import Namespace
 
 import pandas as pd
+from keypoint_detection.constants import BUCKET
+from keypoint_detection.constants import DATASET
 
 import kolena
-from kolena._experimental.dataset import register_dataset
-from kolena.workflow.annotation import Keypoints
+from kolena.annotation import Keypoints
+from kolena.dataset import upload_dataset
 
-DATASET = "300-W"
-BUCKET = "s3://kolena-public-datasets"
+
+def run(args: Namespace) -> None:
+    df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
+    df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
+    df["condition"] = df["locator"].apply(lambda locator: "indoor" if "indoor" in locator else "outdoor")
+
+    kolena.initialize(verbose=True)
+    upload_dataset(args.dataset, df[["locator", "face", "normalization_factor", "condition"]])
 
 
 def main() -> None:
-    df = pd.read_csv(f"{BUCKET}/{DATASET}/meta/metadata.csv", index_col=0, storage_options={"anon": True})
-    df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
-    kolena.initialize(verbose=True)
-    register_dataset(DATASET, df[["locator", "face", "normalization_factor"]])
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DATASET,
+        help="Optionally specify a custom dataset name to upload.",
+    )
+    run(ap.parse_args())
 
 
 if __name__ == "__main__":

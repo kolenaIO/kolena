@@ -16,6 +16,7 @@ import mimetypes
 import sys
 from dataclasses import asdict
 from enum import Enum
+from typing import Any
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -40,24 +41,24 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.datatypes import _deserialize_dataobject
+from kolena._utils.datatypes import _serialize_dataobject
+from kolena._utils.datatypes import DATA_TYPE_FIELD
+from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
-from kolena.dataset.common import COL_DATAPOINT
-from kolena.dataset.common import COL_DATAPOINT_ID_OBJECT
-from kolena.dataset.common import validate_batch_size
-from kolena.dataset.common import validate_dataframe_ids
+from kolena.dataset._common import COL_DATAPOINT
+from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import validate_batch_size
+from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
-from kolena.workflow._datatypes import _deserialize_dataobject
-from kolena.workflow._datatypes import _serialize_dataobject
-from kolena.workflow._datatypes import DATA_TYPE_FIELD
-from kolena.workflow._datatypes import TypedDataObject
-from kolena.workflow.io import _dataframe_object_serde
+from kolena.io import _dataframe_object_serde
 
-FIELD_LOCATOR = "locator"
-FIELD_TEXT = "text"
-SEP = "."
+_FIELD_LOCATOR = "locator"
+_FIELD_TEXT = "text"
+_SEP = "."
 
 
 class DatapointType(str, Enum):
@@ -71,7 +72,7 @@ class DatapointType(str, Enum):
     VIDEO = "DATAPOINT/VIDEO"
 
     @classmethod
-    def has_value(cls, item) -> bool:
+    def has_value(cls, item: Any) -> bool:
         return item in cls.__members__.values()
 
 
@@ -89,7 +90,7 @@ def _dataobject_type(obj: TypedDataObject) -> str:
     return f"{obj_type._data_category()}/{obj_type.value}"
 
 
-def _get_datapoint_type(mimetype_str: str) -> str:
+def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
     main_type, sub_type = mimetype_str.split("/")
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
@@ -109,9 +110,9 @@ def _infer_datatype_value(x: str) -> str:
 def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
     prefixes = {
-        column.rsplit(sep=SEP, maxsplit=1)[0]
+        column.rsplit(sep=_SEP, maxsplit=1)[0]
         for column in df.columns.values
-        if isinstance(column, str) and SEP in column
+        if isinstance(column, str) and _SEP in column
     }
     if prefixes:
         df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
@@ -119,19 +120,19 @@ def _add_datatype(df: pd.DataFrame) -> None:
             if not prefix.strip():
                 raise InputValidationError(
                     "Empty prefix encountered when parsing composite dataset. "
-                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{SEP}'.",
+                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{_SEP}'.",
                 )
             if prefix in df.columns:
                 raise InputValidationError(
                     f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
                 )
-            if SEP in prefix:
+            if _SEP in prefix:
                 raise InputValidationError(
-                    f"More than one delimeter '{SEP}' in prefix: '{prefix}'.",
+                    f"More than one delimeter '{_SEP}' in prefix: '{prefix}'.",
                 )
 
             composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
-            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(SEP)[-1])
+            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(_SEP)[-1])
             composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
 
             df[prefix] = composite.to_dict("records")
@@ -141,9 +142,9 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
-    if FIELD_LOCATOR in df.columns:
-        return df[FIELD_LOCATOR].apply(_infer_datatype_value)
-    elif FIELD_TEXT in df.columns:
+    if _FIELD_LOCATOR in df.columns:
+        return df[_FIELD_LOCATOR].apply(_infer_datatype_value)
+    elif _FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
     return DatapointType.TABULAR.value
@@ -154,12 +155,12 @@ def _infer_id_fields(df: pd.DataFrame) -> List[str]:
         return [
             id_field
             for id_field in df.columns.array
-            if isinstance(id_field, str) and id_field.rsplit(SEP, maxsplit=1)[-1] == field
+            if isinstance(id_field, str) and id_field.rsplit(_SEP, maxsplit=1)[-1] == field
         ]
 
-    if id_fields := get_id_fields_by(FIELD_LOCATOR):
+    if id_fields := get_id_fields_by(_FIELD_LOCATOR):
         return id_fields
-    elif id_fields := get_id_fields_by(FIELD_TEXT):
+    elif id_fields := get_id_fields_by(_FIELD_TEXT):
         return id_fields
     raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")
 
@@ -188,7 +189,7 @@ def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
         if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
             flattened = pd.json_normalize(df[key], max_level=0).rename(
-                columns=lambda col: f"{key}{SEP}{col}",
+                columns=lambda col: f"{key}{_SEP}{col}",
             )
             df = df.join(flattened)
             df.drop(columns=[key], inplace=True)
@@ -203,7 +204,13 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
 
-def load_dataset(name: str) -> Optional[EntityData]:
+def _load_dataset_metadata(name: str) -> Optional[EntityData]:
+    """
+    Load the metadata of a given dataset.
+
+    :param name: The name of the dataset.
+    :return: The metadata of the dataset.
+    """
     response = krequests.put(Path.LOAD_DATASET, json=asdict(LoadDatasetByNameRequest(name=name)))
     if response.status_code == requests.codes.not_found:
         return None
@@ -213,7 +220,7 @@ def load_dataset(name: str) -> Optional[EntityData]:
     return from_dict(EntityData, response.json())
 
 
-def resolve_id_fields(
+def _resolve_id_fields(
     df: pd.DataFrame,
     id_fields: Optional[List[str]],
     existing_dataset: Optional[EntityData],
@@ -230,37 +237,42 @@ def resolve_id_fields(
 
 
 @with_event(event_name=EventAPI.Event.REGISTER_DATASET)
-def register_dataset(
+def upload_dataset(
     name: str,
-    df: Union[Iterator[pd.DataFrame], pd.DataFrame],
+    df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
+    *,
     id_fields: Optional[List[str]] = None,
 ) -> None:
     """
-    Create or update a dataset with datapoints and id_fields. If the dataset already exists, in order to associate the
-    existing result with the new datapoints, the id_fields need be the same as the existing dataset.
+    Create or update a dataset with the contents of the provided DataFrame `df`.
 
-    :param name: name of the dataset
-    :param df: an iterator of pandas dataframe or a pandas dataframe, you can pass in the iterator if you want to have
-                batch processing,
-                 example iterator usage: csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)
-    :param id_fields: a list of id fields, this will be used to link the result with the datapoints, if this is not
-                 provided, it will be inferred from the dataset
-    :return None
+    !!! note "Updating `id_fields`"
+        ID fields are used to associate model results (uploaded via [`upload_results`][kolena.dataset.upload_results])
+        with datapoints in this dataset. When updating an existing dataset, update `id_fields` with caution.
+
+    :param name: The name of the dataset.
+    :param df: A DataFrame or iterator of DataFrames. Provide an iterator to perform batch upload (example:
+        `csv_reader = pd.read_csv("PathToDataset.csv", chunksize=10)`).
+    :param id_fields: Optionally specify a list of ID fields that will be used to link model results with the datapoints
+        within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
+        that `id_fields` must be hashable.
     """
     load_uuid = init_upload().uuid
-    existing_dataset = load_dataset(name)
+    existing_dataset = _load_dataset_metadata(name)
     if isinstance(df, pd.DataFrame):
-        id_fields = resolve_id_fields(df, id_fields, existing_dataset)
+        id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)
         _upload_dataset_chunk(df, load_uuid, id_fields)
     else:
         validated = False
         for chunk in df:
             if not validated:
-                id_fields = resolve_id_fields(chunk, id_fields, existing_dataset)
+                id_fields = _resolve_id_fields(chunk, id_fields, existing_dataset)
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
+            assert id_fields is not None
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
+    assert id_fields is not None
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
@@ -270,7 +282,7 @@ def register_dataset(
 
 def _iter_dataset_raw(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
@@ -289,7 +301,7 @@ def _iter_dataset_raw(
 
 def _iter_dataset(
     name: str,
-    commit: str = None,
+    commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
 ) -> Iterator[pd.DataFrame]:
     """
@@ -300,15 +312,15 @@ def _iter_dataset(
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
-def fetch_dataset(
-    name: str,
-    commit: str = None,
-    batch_size: int = BatchSize.LOAD_SAMPLES.value,
-) -> pd.DataFrame:
+def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame:
     """
-    Fetch an entire dataset given its name.
+    Download an entire dataset given its name.
+
+    :param name: The name of the dataset.
+    :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
+    :return: A DataFrame containing the specified dataset.
     """
-    df_batches = list(_iter_dataset(name, commit, batch_size))
+    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
     log.info(f"loaded dataset '{name}'")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
@@ -326,7 +338,7 @@ def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: i
 def _iter_commits(
     name: str,
     descending: bool = False,
-    limit: int = None,
+    limit: Optional[int] = None,
     page_size: int = 50,
 ) -> Iterator[Tuple[int, List[CommitData]]]:
     """
@@ -344,14 +356,22 @@ def _iter_commits(
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET_HISTORY)
-def fetch_dataset_history(
+def _fetch_dataset_history(
     name: str,
+    *,
     descending: bool = False,
-    limit: int = None,
+    limit: Optional[int] = None,
     page_size: int = 50,
 ) -> Tuple[int, List[CommitData]]:
     """
     Get the commit history of a dataset.
+
+    :param name: The name of the dataset
+    :param descending: If True, return the results in descending order.
+    :param limit: The maximum number of results to return. If None, all results will be returned.
+    :param page_size: The number of items to return per page.
+    :return: A tuple where the first element is the total number of commits
+             and the second element is a list of CommitData objects.
     """
     iter_commit_responses = list(_iter_commits(name, descending, limit, page_size))
     total_commit_count = iter_commit_responses[0][0]

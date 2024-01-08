@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "classification"
+version = "0.1.0"
+description = "Example Kolena integration for binary and multiclass classification"
+authors = ["Kolena Engineering <eng@kolena.com>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+# TODO: use official release after 1.0
+# kolena = ">=0.100.0,<1"
+kolena = { path = "../../..", develop = true }
+s3fs = "^2023.5.0"
+fsspec = "^2023.5.0"
+pandera = ">=0.9.0,<0.16"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.17"
+pytest = "^7"
+pytest-depends = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
