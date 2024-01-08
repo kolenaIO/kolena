@@ -150,7 +150,7 @@ def upload_results(
     dataset: str,
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
-) -> None:
+) -> UploadResultsResponse:
     """
     This function is used for uploading the results from a specified model on a given dataset.
 
@@ -194,3 +194,4 @@ def upload_results(
         f"\t - inserted {response.n_inserted} results\n"
         f"\t - updated {response.n_updated} results",
     )
+    return response
