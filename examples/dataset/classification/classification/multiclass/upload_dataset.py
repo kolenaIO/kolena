@@ -29,7 +29,7 @@ def run(args: Namespace) -> None:
     df["ground_truth"] = df["ground_truth"].apply(lambda label: ClassificationLabel(label))
 
     kolena.initialize(verbose=True)
-    upload_dataset(args.dataset, df, ID_FIELDS)
+    upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
 
 
 def main() -> None:

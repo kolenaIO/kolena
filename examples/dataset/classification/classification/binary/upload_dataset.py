@@ -28,7 +28,7 @@ def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
     kolena.initialize(verbose=True)
-    upload_dataset(args.dataset, df, ID_FIELDS)
+    upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
 
 
 def main() -> None:
