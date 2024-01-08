@@ -34,7 +34,7 @@ For binary classification, there are two scripts that perform the following oper
 
 ```shell
 $ poetry run python3 classification/binary/upload_dataset.py --help
-usage: upload_dataset.py [-h] [--dataset_name DATASET_NAME]
+usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
   -h, --help         show this help message and exit

@@ -13,7 +13,8 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import Optional
+from typing import Dict
+from typing import Union
 
 import pandas as pd
 from age_estimation.constants import BUCKET
@@ -25,7 +26,7 @@ from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
 
-def compute_metrics(gt_age: float, inf_age: Optional[float]):
+def compute_metrics(gt_age: float, inf_age: float) -> Dict[str, Union[bool, float]]:
     error = inf_age - gt_age
     return {
         "fail_to_detect": inf_age is None or inf_age < 0,
