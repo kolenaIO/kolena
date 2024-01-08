@@ -18,8 +18,8 @@ from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
-from classification.binary.upload_dataset import run as upload_dataset_main
-from classification.binary.upload_results import run as upload_results_main
+from classification.binary.upload_dataset import run as upload_binary_dataset_main
+from classification.binary.upload_results import run as upload_binary_results_main
 
 from kolena._utils.state import kolena_session
 
@@ -34,19 +34,19 @@ def with_init() -> Iterator[None]:
 
 
 @pytest.fixture(scope="module")
-def dataset_name() -> str:
+def binary_dataset_name() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__upload_dataset(dataset_name: str) -> None:
-    args = Namespace(dataset=dataset_name)
-    upload_dataset_main(args)
+def test__upload_binary_dataset(binary_dataset_name: str) -> None:
+    args = Namespace(dataset=binary_dataset_name)
+    upload_binary_dataset_main(args)
 
 
-@pytest.mark.depends(on=["test__upload_dataset"])
-def test__upload_results(dataset_name: str) -> None:
-    args = Namespace(model="resnet50v2", dataset=dataset_name)
-    upload_results_main(args)
-    args = Namespace(model="inceptionv3", dataset=dataset_name)
-    upload_results_main(args)
+@pytest.mark.depends(on=["test__upload_binary_dataset"])
+def test__upload_results(binary_dataset_name: str) -> None:
+    args = Namespace(model="resnet50v2", dataset=binary_dataset_name)
+    upload_binary_results_main(args)
+    args = Namespace(model="inceptionv3", dataset=binary_dataset_name)
+    upload_binary_results_main(args)
