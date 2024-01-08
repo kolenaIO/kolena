@@ -28,7 +28,7 @@ from kolena.dataset import upload_results
 
 
 POSITIVE_LABEL = "dog"
-NEGATIVE_LABEL = "not dog"
+NEGATIVE_LABEL = "cat"
 MODELS = ["resnet50v2", "inceptionv3"]
 EVAL_CONFIG = {"threshold": 0.5}
 
