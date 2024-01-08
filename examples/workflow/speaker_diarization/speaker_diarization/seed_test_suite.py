@@ -122,7 +122,7 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{args.suite_name} :: average amplitude": seed_test_suite_by_avg_amp,
+        f"{args.test_suite} :: average amplitude": seed_test_suite_by_avg_amp,
     }
     seed_test_suites(test_suite_names, complete_tc)
 

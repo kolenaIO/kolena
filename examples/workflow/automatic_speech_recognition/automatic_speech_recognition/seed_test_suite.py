@@ -175,9 +175,9 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{args.suite_name} :: audio duration": seed_test_suite_duration,
-        f"{args.suite_name} :: speaker sex": seed_test_suite_speaker_sex,
-        f"{args.suite_name} :: tempo (words per second)": seed_test_suite_tempo,
+        f"{args.test_suite} :: audio duration": seed_test_suite_duration,
+        f"{args.test_suite} :: speaker sex": seed_test_suite_speaker_sex,
+        f"{args.test_suite} :: tempo (words per second)": seed_test_suite_tempo,
     }
 
     seed_test_suites(test_suite_names, complete_tc)

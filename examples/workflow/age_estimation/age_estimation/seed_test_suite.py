@@ -65,7 +65,7 @@ def main(args: Namespace) -> int:
     ]
 
     test_suite = TestSuite(
-        f"age :: {args.suite_name} [age estimation]",
+        f"age :: {args.test_suite} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_age],
         reset=True,
     )
@@ -81,7 +81,7 @@ def main(args: Namespace) -> int:
         for gender in ["man", "woman"]
     ]
     test_suite = TestSuite(
-        f"gender :: {args.suite_name} [age estimation]",
+        f"gender :: {args.test_suite} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_gender],
         reset=True,
     )
@@ -98,7 +98,7 @@ def main(args: Namespace) -> int:
         for race in races
     ]
     test_suite = TestSuite(
-        f"race :: {args.suite_name} [age estimation]",
+        f"race :: {args.test_suite} [age estimation]",
         test_cases=[complete_test_case, *test_cases_by_race],
         reset=True,
     )

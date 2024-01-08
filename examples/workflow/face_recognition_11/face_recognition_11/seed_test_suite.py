@@ -124,7 +124,7 @@ def main(args: Namespace) -> int:
                 ),
             )
         TestSuite(
-            name=f"{args.suite_name} :: {category} [FR]",
+            name=f"{args.test_suite} :: {category} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )

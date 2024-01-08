@@ -78,7 +78,7 @@ def main(args: Namespace) -> int:
         )
 
     test_suite = TestSuite(
-        f"image size :: {args.suite_name}",
+        f"image size :: {args.test_suite}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
