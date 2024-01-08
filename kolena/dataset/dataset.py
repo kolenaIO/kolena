@@ -239,7 +239,7 @@ def _resolve_id_fields(
 @with_event(event_name=EventAPI.Event.REGISTER_DATASET)
 def upload_dataset(
     name: str,
-    df: Union[Iterator[pd.DataFrame], pd.DataFrame],
+    df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
     *,
     id_fields: Optional[List[str]] = None,
 ) -> None:

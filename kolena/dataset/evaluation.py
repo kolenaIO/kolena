@@ -48,8 +48,8 @@ from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
-_TYPE_EVALUATION_CONFIG = Optional[Dict[str, Any]]
-_DF = Union[pd.DataFrame, Iterator[pd.DataFrame]]
+EvalConfig = Optional[Dict[str, Any]]
+DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
 
 
 def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
@@ -75,7 +75,7 @@ def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
 
 
 def _process_result(
-    eval_config: Optional[_TYPE_EVALUATION_CONFIG],
+    eval_config: EvalConfig,
     df_result: pd.DataFrame,
     id_fields: List[str],
 ) -> pd.DataFrame:
@@ -103,7 +103,7 @@ def _upload_results(model: str, load_uuid: str, dataset_id: int) -> None:
 def download_results(
     dataset: str,
     model: str,
-) -> Tuple[pd.DataFrame, List[Tuple[_TYPE_EVALUATION_CONFIG, pd.DataFrame]]]:
+) -> Tuple[pd.DataFrame, List[Tuple[EvalConfig, pd.DataFrame]]]:
     """
     Fetch results given dataset name and model name.
 
@@ -130,7 +130,7 @@ def download_results(
     return df_datapoints, df_results_by_eval
 
 
-def _validate_configs(configs: List[_TYPE_EVALUATION_CONFIG]) -> None:
+def _validate_configs(configs: List[EvalConfig]) -> None:
     n = len(configs)
     for i in range(n):
         for j in range(i + 1, n):
@@ -142,7 +142,7 @@ def _validate_configs(configs: List[_TYPE_EVALUATION_CONFIG]) -> None:
 def upload_results(
     dataset: str,
     model: str,
-    results: Union[_DF, List[Tuple[_TYPE_EVALUATION_CONFIG, _DF]]],
+    results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.
