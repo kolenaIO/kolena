@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "object-detection-2d"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+kolena = { path = "../../..", develop = true }
+s3fs = "^2023.5.0"
+
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
