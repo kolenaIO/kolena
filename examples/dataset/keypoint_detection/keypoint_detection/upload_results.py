@@ -26,7 +26,7 @@ from tqdm import tqdm
 import kolena
 from kolena.annotation import Keypoints
 from kolena.annotation import ScoredLabeledBoundingBox
-from kolena.dataset import fetch_dataset
+from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.io import dataframe_from_csv
 
@@ -45,7 +45,7 @@ def run(args: Namespace) -> None:
 
         infer = infer_retinaface
 
-    df = fetch_dataset(args.dataset)
+    df = download_dataset(args.dataset)
 
     results = []
     for record in tqdm(df.itertuples(), total=len(df)):

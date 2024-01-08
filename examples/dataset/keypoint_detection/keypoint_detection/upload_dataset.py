@@ -16,7 +16,7 @@ import json
 import pandas as pd
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 from kolena.workflow.annotation import Keypoints
 
 DATASET = "300-W"
@@ -29,7 +29,7 @@ def main() -> None:
     df["condition"] = df["locator"].apply(lambda locator: "indoor" if "indoor" in locator else "outdoor")
 
     kolena.initialize(verbose=True)
-    register_dataset(DATASET, df[["locator", "face", "normalization_factor", "condition"]])
+    upload_dataset(DATASET, df[["locator", "face", "normalization_factor", "condition"]])
 
 
 if __name__ == "__main__":

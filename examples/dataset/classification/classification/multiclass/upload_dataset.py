@@ -20,7 +20,7 @@ from classification.multiclass.constants import DATASET
 from classification.multiclass.constants import ID_FIELDS
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 from kolena.workflow.annotation import ClassificationLabel
 
 
@@ -28,7 +28,7 @@ def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     df["ground_truth"] = df["ground_truth"].apply(lambda label: ClassificationLabel(label))
     kolena.initialize(verbose=True)
-    register_dataset(args.dataset, df, ID_FIELDS)
+    upload_dataset(args.dataset, df, ID_FIELDS)
 
 
 def main() -> None:

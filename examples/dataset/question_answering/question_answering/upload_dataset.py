@@ -17,7 +17,7 @@ from argparse import Namespace
 from question_answering.constants import DATASET_TO_LOCATOR
 
 import kolena
-from kolena.dataset import register_dataset
+from kolena.dataset import upload_dataset
 from kolena.workflow.io import dataframe_from_csv
 
 
@@ -26,7 +26,7 @@ def run(args: Namespace) -> None:
     for dataset in args.datasets:
         print(f"loading {dataset}...")
         df_datapoint = dataframe_from_csv(DATASET_TO_LOCATOR[dataset])
-        register_dataset(dataset, df_datapoint, id_fields=["id"])
+        upload_dataset(dataset, df_datapoint, id_fields=["id"])
 
 
 def main() -> None:

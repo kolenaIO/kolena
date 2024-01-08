@@ -23,7 +23,7 @@ from classification.multiclass.constants import DATASET
 from classification.multiclass.constants import ID_FIELDS
 
 import kolena
-from kolena.dataset import fetch_dataset
+from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.workflow.annotation import ScoredClassificationLabel
 
@@ -49,7 +49,7 @@ def to_kolena_inference(scores: List[float]) -> List[ScoredClassificationLabel]:
 
 def _upload_results(model_name: str, dataset: str) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model_name}.csv")
-    dataset_df = fetch_dataset(dataset)
+    dataset_df = download_dataset(dataset)
 
     df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
     df_results["inferences"] = df_results[CLASSES].apply(lambda row: to_kolena_inference(row.tolist()), axis=1)
