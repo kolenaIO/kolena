@@ -30,7 +30,7 @@ In essence, datapoints in this context are versatile, immutable data units that 
 
 Structure your dataset as a *CSV file*. Each row in the file should represent a distinct datapoint.
 
-- **Mandatory Columns**: for models that process images, audio, or video, include a `locator` column with valid URL paths to the respective files. For text-based models, include a `text` column that contains the input text data directly in the CSV.
+- **Reserved Columns**: for models that process images, audio, or video, include a `locator` column with valid URL paths to the respective files. For text-based models, include a `text` column that contains the input text data directly in the CSV.
 
 - **Additional Fields**: Include relevant metadata depending on the data type. For instance, image datasets might have metadata like `image_width`, `image_height`, etc. Similarly, other data types can have their respective metadata fields that are useful for model processing.
 
@@ -38,11 +38,29 @@ Structure your dataset as a *CSV file*. Each row in the file should represent a 
 
 - **Data Accessibility**: Ensure the data, especially if linked through URLs, is accessible for processing. In the case of cloud storage, appropriate permissions should be in place to allow access.
 
-#### how to shape a CSV file for ingestion
+### How to shape a CSV file for ingestion
 
-TODO: csv should just work
+#### For multimedia datapoints
 
-TODO: how to process existing csv to be leverage kolena features
-- locator and text
-- how to use kolena annotations and assets
-- metrics
+Add a `locator` column in the CSV to view multimedia datapoints in the web application.
+
+#### For text-focused datapoints
+
+Add a `text` column in the CSV to view text datapoints in the web application.
+
+#### To incorporate [`annotation`](../../reference/annotation.md) and [`asset`](../../reference/asset.md) into CSV
+
+Consider the following Python snippet:
+
+```python
+from kolena.annotation import Keypoints
+from kolena.io import dataframe_to_csv
+
+df = pd.read_csv(f"s3://kolena-public-examples/300-W/raw/300-W.csv", storage_options={"anon": True})
+df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
+dataframe_to_csv(df, "processed.csv")
+```
+
+#### To use compound metrics on the fly
+
+The Kolena web application currently supports [`precision`](../../metrics/precision.md), [`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md), [`accuracy`](../../metrics/accuracy.md), [`false_positive_rate`](../../metrics/fpr.md), and [`true_negative_rate`](../../metrics/tnr.md). To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
