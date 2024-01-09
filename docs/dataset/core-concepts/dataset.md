@@ -37,3 +37,12 @@ Structure your dataset as a *CSV file*. Each row in the file should represent a 
 - **Data Consistency and Format**: It's crucial to maintain data consistency. URLs should be correctly encoded, text should be properly formatted, and numerical values should adhere to their respective formats.
 
 - **Data Accessibility**: Ensure the data, especially if linked through URLs, is accessible for processing. In the case of cloud storage, appropriate permissions should be in place to allow access.
+
+#### how to shape a CSV file for ingestion
+
+TODO: csv should just work
+
+TODO: how to process existing csv to be leverage kolena features
+- locator and text
+- how to use kolena annotations and assets
+- metrics
