@@ -90,7 +90,7 @@ def main(args: Namespace) -> None:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://kolena-public-datasets/{DATASET}/annotations/annotations_person.csv",
         help="CSV file specifying dataset. See default CSV for details",

@@ -27,7 +27,7 @@ DATASET = "sts-benchmark"
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
@@ -38,15 +38,15 @@ def with_init() -> Iterator[None]:
         yield
 
 
-def test__seed_test_suite(suite_name: str) -> None:
+def test__seed_test_suite(test_suite: str) -> None:
     args = Namespace(
         dataset_csv="s3://kolena-public-datasets/sts-benchmark/results/all-distilroberta-v1.tiny5.csv",
-        suite_name=suite_name,
+        test_suite=test_suite,
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
-def test__seed_test_run(suite_name: str) -> None:
-    args = Namespace(models=["all-distilroberta-v1"], test_suites=[f"{suite_name}"])
+def test__seed_test_run(test_suite: str) -> None:
+    args = Namespace(models=["all-distilroberta-v1"], test_suites=[f"{test_suite}"])
     seed_test_run_main(args)

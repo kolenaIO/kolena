@@ -33,7 +33,11 @@ DEFAULT_TEST_SUITE_NAME = "KITTI 3D Object Detection :: training :: metrics"
 def parse_args():
     parser = ArgumentParser()
     parser.add_argument("sample_file", help="File containing test sample and ground truth data", type=Path)
-    parser.add_argument("--test-suite", help="Name of test suite", default=DEFAULT_TEST_SUITE_NAME)
+    parser.add_argument(
+        "--test-suite",
+        help="Optionally specify a name for the created test suite.",
+        default=DEFAULT_TEST_SUITE_NAME,
+    )
     args = parser.parse_args()
     return args
 

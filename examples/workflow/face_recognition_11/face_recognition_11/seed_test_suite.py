@@ -124,7 +124,7 @@ def main(args: Namespace) -> int:
                 ),
             )
         TestSuite(
-            name=f"{args.suite_name} :: {category} [FR]",
+            name=f"{args.test_suite} :: {category} [FR]",
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
@@ -133,25 +133,25 @@ def main(args: Namespace) -> int:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/pairs.30k.csv",
         help="CSV file containing image pairs to be tested. See default CSV for details.",
     )
     ap.add_argument(
-        "--bbox_keypoints_csv",
+        "--bbox-keypoints-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.30k.csv",
         help="CSV file containing bbox and keypoints for each image. See default CSV for details.",
     )
     ap.add_argument(
-        "--metadata_csv",
+        "--metadata-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file containing the metadata of each image. See default CSV for details.",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

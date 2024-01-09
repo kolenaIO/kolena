@@ -69,13 +69,13 @@ def main(args: Namespace) -> None:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default="s3://kolena-public-datasets/sts-benchmark/results/all-distilroberta-v1.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

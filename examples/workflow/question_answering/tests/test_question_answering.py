@@ -22,17 +22,17 @@ from question_answering.seed_test_suite import main as seed_test_suite_main
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__qa_seed_test_suite__smoke(suite_name: str) -> None:
-    args = Namespace(dataset_csv="s3://kolena-public-datasets/CoQA/metadata/metadata_head.csv", test_suite=suite_name)
+def test__qa_seed_test_suite__smoke(test_suite: str) -> None:
+    args = Namespace(dataset_csv="s3://kolena-public-datasets/CoQA/metadata/metadata_head.csv", test_suite=test_suite)
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__qa_seed_test_suite__smoke"])
-def test__qa_seed_test_run__smoke(suite_name: str) -> None:
-    args = Namespace(model="gpt-3.5-turbo_head", test_suite=f"question types :: {suite_name}")
+def test__qa_seed_test_run__smoke(test_suite: str) -> None:
+    args = Namespace(model="gpt-3.5-turbo_head", test_suite=f"question types :: {test_suite}")
     seed_test_run_main(args)

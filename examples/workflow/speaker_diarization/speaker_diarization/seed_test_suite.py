@@ -122,7 +122,7 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{args.suite_name} :: average amplitude": seed_test_suite_by_avg_amp,
+        f"{args.test_suite} :: average amplitude": seed_test_suite_by_avg_amp,
     }
     seed_test_suites(test_suite_names, complete_tc)
 
@@ -130,14 +130,14 @@ def main(args: Namespace) -> None:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
 
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",

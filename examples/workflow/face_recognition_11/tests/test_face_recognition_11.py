@@ -23,26 +23,26 @@ from face_recognition_11.seed_test_suite import main as seed_test_suite_main
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__seed_test_suite__smoke(suite_name: str) -> None:
+def test__seed_test_suite__smoke(test_suite: str) -> None:
     args = Namespace(
         dataset_csv=f"s3://{BUCKET}/{DATASET}/meta/pairs.sample.csv",
         bbox_keypoints_csv=f"s3://{BUCKET}/{DATASET}/meta/bbox_keypoints.csv",
         metadata_csv=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
-        suite_name=suite_name,
+        test_suite=test_suite,
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke(suite_name: str) -> None:
+def test__seed_test_run__smoke(test_suite: str) -> None:
     args = Namespace(
         models=["sample"],
         detectors=["sample"],
-        test_suites=[f"{suite_name} :: gender [FR]"],
+        test_suites=[f"{test_suite} :: gender [FR]"],
     )
     seed_test_run_main(args)

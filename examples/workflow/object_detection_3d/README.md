@@ -95,7 +95,7 @@ Run a script using the `--help` flag for more information:
 
 ```
 $ poetry run python3 object_detection_3d/seed_test_suite.py --help
-usage: seed_test_suite.py [-h] [--test-suite TEST_SUITE] sample-file
+usage: seed_test_suite.py [-h] [--test-suite TEST_SUITE] sample_file
 
 positional arguments:
   sample_file           File containing test sample and ground truth data
@@ -103,7 +103,7 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --test-suite TEST_SUITE
-                        Name of test suite
+                        Optionally specify a name for the created test suite.
 
 $ poetry run python3 object_detection_3d/seed_test_suite.py test_samples_data.json
 ```

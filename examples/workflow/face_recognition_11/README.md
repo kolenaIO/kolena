@@ -44,20 +44,13 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 face_recognition_11/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--models MODELS [MODELS ...]]
-                        [--detectors DETECTORS [DETECTORS ...]]
-                        [--test_suites TEST_SUITES [TEST_SUITES ...]]
+usage: seed_test_run.py [-h] [--models MODELS] [--detectors DETECTORS] [--test-suites TEST_SUITES]
 
-positional arguments:
-  models  Name of the model(s) to test.
-  test_suites  Name of the test suite(s) to run.
-
-optional arguments:
-  -h, --help  show this help message and exit
-  --models MODELS [MODELS ...]
-                        Name(s) of model(s) in directory to test
-  --detectors DETECTORS [DETECTORS ...]
+options:
+  -h, --help            show this help message and exit
+  --models MODELS       Name(s) of model(s) in directory to test
+  --detectors DETECTORS
                         Name(s) of detectors(s) used with corresponding model(s).
-  --test_suites TEST_SUITES [TEST_SUITES ...]
+  --test-suites TEST_SUITES
                         Name(s) of test suite(s) to test.
 ```

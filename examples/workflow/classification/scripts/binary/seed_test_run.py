@@ -93,7 +93,7 @@ if __name__ == "__main__":
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
-        "--test_suites",
+        "--test-suites",
         default=[f"image size :: {DATASET}"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",

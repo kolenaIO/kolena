@@ -193,7 +193,7 @@ def seed_test_suites(
 def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     complete_tc = seed_complete_test_case(args)
-    suite_prefix = args.suite_prefix
+    suite_prefix = args.test_suite
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
         f"{suite_prefix} :: text length": seed_test_suite_by_text,
@@ -208,15 +208,15 @@ if __name__ == "__main__":
     ap = ArgumentParser()
 
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_prefix",
+        "--test-suite",
         type=str,
         default=DATASET,
-        help="Optionally specify a prefix for the created test suite names.",
+        help="Optionally specify a name for the created test suites.",
     )
     main(ap.parse_args())

@@ -91,7 +91,7 @@ def main(args: Namespace) -> int:
         )
 
     test_suite = TestSuite(
-        f"image properties :: {args.suite_name}",
+        f"image properties :: {args.test_suite}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
@@ -103,13 +103,13 @@ def main(args: Namespace) -> int:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file with a list of image `locator` and its `label`. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

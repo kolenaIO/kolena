@@ -20,19 +20,19 @@ from scripts.binary.seed_test_suite import main as seed_test_suite_main
 
 
 @pytest.fixture(scope="module")
-def suite_name(test_prefix: str) -> str:
+def test_suite(test_prefix: str) -> str:
     return f"{test_prefix} - {DATASET}"
 
 
-def test__seed_test_suite__smoke(suite_name: str) -> None:
+def test__seed_test_suite__smoke(test_suite: str) -> None:
     args = Namespace(
         dataset_csv="s3://kolena-public-datasets/dogs-vs-cats/meta/metadata.tiny5.csv",
-        suite_name=suite_name,
+        test_suite=test_suite,
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke(suite_name: str) -> None:
-    args = Namespace(models=["inceptionv3"], test_suites=[f"image size :: {suite_name}"], multiclass=False)
+def test__seed_test_run__smoke(test_suite: str) -> None:
+    args = Namespace(models=["inceptionv3"], test_suites=[f"image size :: {test_suite}"], multiclass=False)
     seed_test_run_main(args)
