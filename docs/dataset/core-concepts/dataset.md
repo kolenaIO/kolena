@@ -63,4 +63,6 @@ dataframe_to_csv(df, "processed.csv")
 
 #### To use compound metrics on the fly
 
-The Kolena web application currently supports [`precision`](../../metrics/precision.md), [`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md), [`accuracy`](../../metrics/accuracy.md), [`false_positive_rate`](../../metrics/fpr.md), and [`true_negative_rate`](../../metrics/tnr.md). To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
+The Kolena web application currently supports [`precision`](../../metrics/precision.md), [`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md), [`accuracy`](../../metrics/accuracy.md), [`false_positive_rate`](../../metrics/fpr.md), and [`true_negative_rate`](../../metrics/recall.md).
+
+To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
