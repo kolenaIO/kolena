@@ -38,7 +38,7 @@ tests. You interface with it through the web at [app.kolena.io](https://app.kole
 
     Kolena helps you test your ML models more effectively.
 
-    **Jump right in with the [<nobr>:kolena-flame-16: Quickstart</nobr>](quickstart.md) guide**.
+    **Jump right in with the [<nobr>:kolena-flame-16: Quickstart</nobr>](dataset/quickstart.md) guide**.
 
 Current ML evaluation techniques are falling short. Engineers run inference on arbitrarily split benchmark datasets,
 spend weeks staring at error graphs to evaluate their models, and ultimately produce a global metric that fails to
@@ -88,7 +88,7 @@ We built Kolena to solve these two problems.
 Learn how to use Kolena to test your models effectively:
 
 <div class="grid cards" markdown>
-- [:kolena-flame-16: Quickstart](quickstart.md)
+- [:kolena-flame-16: Quickstart](dataset/quickstart.md)
 
     ---
 
@@ -100,23 +100,11 @@ Learn how to use Kolena to test your models effectively:
 
     Install and initialize the `kolena` Python package, the programmatic interface to Kolena.
 
-- [:kolena-cube-16: Building a Workflow](building-a-workflow.md)
-
-    ---
-
-    Learn how to use `kolena.workflow` to test any arbitrary ML problem on Kolena.
-
-- [:kolena-flag-16: Core Concepts](core-concepts/index.md)
+- [:kolena-flag-16: Core Concepts](dataset/core-concepts/index.md)
 
     ---
 
     Core concepts for testing in Kolena.
-
-- [:kolena-rocket-16: Advanced Usage](advanced-usage/index.md)
-
-    ---
-
-    Tutorial documentation for advanced features available in Kolena.
 
 - [:kolena-manual-16: API Reference](reference/index.md)
 

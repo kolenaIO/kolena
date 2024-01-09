@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,10 +34,10 @@ import numpy as np
 from pydantic.dataclasses import dataclass
 from pydantic.typing import Literal
 
+from kolena._utils.datatypes import DataObject
+from kolena._utils.datatypes import DataType
+from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
-from kolena.workflow._datatypes import DataObject
-from kolena.workflow._datatypes import DataType
-from kolena.workflow._datatypes import TypedDataObject
 
 NumberSeries = Sequence[Union[float, int]]
 """A sequence of numeric values."""

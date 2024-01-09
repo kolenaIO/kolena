@@ -181,6 +181,14 @@ biases, and its intended uses.
     BLEU is a metric commonly used in a variety of NLP workflows to evaluate the quality of candidate texts. BLEU can be
     thought of as an analog to [precision](precision.md) for text comparisons.
 
+- [Diarization Error Rate](diarization-error-rate.md)
+
+    ---
+
+    Diarization Error Rate (DER) is an important metric used to evaluate speaker diarization systems. It quantifies the
+    overall performance of a speaker diarization system by measuring the ratio of the duration of errors to the total
+    ground truth speech duration.
+
 - [METEOR](meteor.md)
 
     ---

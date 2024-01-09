@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,16 +40,10 @@ del __version_assign
 
 
 import kolena.errors
-import kolena.fr
-import kolena.detection
-import kolena.classification
 from .initialize import initialize
 
 __all__ = [
     "initialize",
     "errors",
-    "fr",
-    "detection",
-    "classification",
     "workflow",
 ]

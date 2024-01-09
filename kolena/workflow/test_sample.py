@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,10 +57,10 @@ from pydantic import StrictInt
 from pydantic import StrictStr
 from pydantic.dataclasses import dataclass
 
+from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataType
+from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
-from kolena.workflow._datatypes import _register_data_type
-from kolena.workflow._datatypes import DataType
-from kolena.workflow._datatypes import TypedDataObject
 from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import safe_issubclass
 from kolena.workflow._validators import validate_field
@@ -150,7 +150,7 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     [`Evaluator`][kolena.workflow.Evaluator] evaluates metrics.
     """
 
-    def __init_subclass__(cls, **kwargs):
+    def __init_subclass__(cls, **kwargs: Any):
         _register_data_type(cls)
 
     @staticmethod

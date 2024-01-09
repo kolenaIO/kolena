@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@ import logging
 import os
 import sys
 from typing import Any
-from typing import Iterator
+from typing import Iterable
 from typing import Optional
 from typing import TypeVar
 
@@ -80,7 +80,7 @@ def error(message: str, exception: Optional[BaseException], **kwargs: Any) -> No
 T = TypeVar("T")
 
 
-def progress_bar(iterator: Iterator[T], desc: Optional[str] = None, **kwargs: Any) -> Iterator[T]:
+def progress_bar(iterator: Iterable[T], desc: Optional[str] = None, **kwargs: Any) -> Iterable[T]:
     if _client_state.verbose:
         desc_base = "kolena> " if is_notebook else _colored("kolena> ", color="magenta")
         desc_full = f"{desc_base}{desc}" if desc is not None else desc_base
@@ -93,7 +93,7 @@ def _is_notebook() -> bool:
     if "IPython" not in sys.modules:
         return False
     try:
-        get_ipython = sys.modules["IPython"].get_ipython
+        get_ipython = sys.modules["IPython"].get_ipython  # type: ignore
         shell = get_ipython().__class__.__name__
         if shell == "ZMQInteractiveShell":
             return True  # Jupyter notebook or qtconsole

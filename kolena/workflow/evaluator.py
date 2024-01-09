@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ from pydantic import validate_arguments
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as API
+from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import get_args
 from kolena._utils.datatypes import get_origin
 from kolena._utils.validators import ValidatorConfig
@@ -31,7 +32,6 @@ from kolena.workflow import Inference
 from kolena.workflow import TestCase
 from kolena.workflow import TestSample
 from kolena.workflow import TestSuite
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow._validators import get_data_object_field_types
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow._validators import validate_scalar_data_object_type
@@ -104,7 +104,7 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
     `sampleSize`, `sample_size`, `SampleSize`.
 
     For a detailed overview of this feature, see the [:kolena-diagram-tree-16: Nesting Test Case
-    Metrics](../../advanced-usage/nesting-test-case-metrics.md) advanced usage guide.
+    Metrics](../../workflow/advanced-usage/nesting-test-case-metrics.md) advanced usage guide.
     """
 
     def __init_subclass__(cls, **kwargs: Any) -> None:

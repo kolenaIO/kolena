@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ def create_histogram(
 def compute_confusion_matrix(
     ground_truths: List[str],
     inferences: List[str],
-    title: Optional[str] = "Confusion Matrix",
+    title: str = "Confusion Matrix",
     labels: Optional[List[str]] = None,
 ) -> Optional[ConfusionMatrix]:
     """

@@ -1,0 +1,42 @@
+[tool.poetry]
+name = "text_summarization"
+version = "0.1.0"
+description = "Example Kolena integration for text summarization"
+authors = ["Kolena Engineering <eng@kolena.com>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.11"
+kolena = ">=1.0.0"
+s3fs = "^2022.7.1"
+scikit-learn = "^1.1.2"
+numba = "^0.56.0"
+opencv-python-headless = "^4.6.0"
+# Transient dependency of `bert-score` -- pin to CPU-only to unbreak CI. This can be safely removed on GPU systems
+# Further reading: https://github.com/python-poetry/poetry/issues/6409#issuecomment-1310655479
+torch = [
+  {markers = "sys_platform == 'darwin' and platform_machine == 'arm64'", url = "https://download.pytorch.org/whl/cpu/torch-2.1.2-cp39-none-macosx_11_0_arm64.whl"},
+  {markers = "sys_platform == 'darwin' and platform_machine == 'x86_64'", url = "https://download.pytorch.org/whl/cpu/torch-2.1.2-cp39-none-macosx_10_9_x86_64.whl"},
+  {markers = "sys_platform != 'darwin'", version = "2.1.2", source = "torch+cpu"}
+]
+evaluate = "^0.4.0"
+bert-score = "^0.3.13"
+absl-py = "^1.4.0"
+nltk = "^3.8.1"
+rouge-score = "^0.1.2"
+sacrebleu = "^2.3.1"
+pandera = ">=0.9.0,<0.16"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^2.17"
+pytest = "^7"
+pytest-depends = "^1.0.1"
+
+[[tool.poetry.source]]
+name = "torch+cpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

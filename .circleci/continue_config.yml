@@ -4,16 +4,10 @@ orbs:
   codecov: codecov/codecov@3.2.4
 
 parameters:
-  classification:
-    type: boolean
-    default: false
-  detection:
-    type: boolean
-    default: false
-  fr:
-    type: boolean
-    default: false
   workflow:
+    type: boolean
+    default: false
+  dataset:
     type: boolean
     default: false
   misc:
@@ -27,7 +21,7 @@ parameters:
     default: false
   token_count:
     type: integer
-    default: 4
+    default: 8
 
 executors:
   python:
@@ -157,14 +151,14 @@ jobs:
           steps:
             - run:
                 name: Run unit tests
-                command: poetry run pytest -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest --cache-clear -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run metrics unit tests
-                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           # Generate coverage only from one Python version
           condition:
@@ -219,12 +213,17 @@ jobs:
             export KOLENA_TOKEN=${!token}
       - when:
           condition:
-            equal:
-              - "none"
-              - << parameters.extras >>
+            and:
+              - equal:
+                  - "none"
+                  - << parameters.extras >>
+              - not_equal:
+                  - _experimental
+                  - << parameters.pytest-group >>
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
+                no_output_timeout: 30m
                 command: |
                   TEST_GROUP="<< parameters.pytest-group >>"
                   if [ "$TEST_GROUP" = "misc" ]; then
@@ -234,15 +233,15 @@ jobs:
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
-                  poetry run pytest -vv --durations=10 --cov=kolena --cov-branch -o junit_family=legacy \
-                    --junitxml=test-results/result.xml $TESTFILES
+                  poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
+                    -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run experimental metrics integration tests
-                command: poetry run pytest -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
+                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
           condition:
@@ -257,8 +256,7 @@ jobs:
                 file: coverage.xml
             - store_test_results:
                 path: test-results
-
-  example-test:
+  example-test-dataset:
     parameters:
       python-version:
         type: string
@@ -271,7 +269,7 @@ jobs:
       name: python
       python-version: << parameters.python-version >>
       resource-class: << parameters.resource-class >>
-    working_directory: ~/project/examples/<< parameters.subproject >>
+    working_directory: ~/project/examples/dataset/<< parameters.subproject >>
     steps:
       - checkout:
           path: ~/project
@@ -288,6 +286,36 @@ jobs:
             echo "Using $token"
             export KOLENA_TOKEN=${!token}
             poetry run pytest -vv tests
+  example-test-workflow:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9.18"
+      subproject:
+        type: string
+      resource-class:
+        type: string
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
+      resource-class: << parameters.resource-class >>
+    working_directory: ~/project/examples/workflow/<< parameters.subproject >>
+    steps:
+      - checkout:
+          path: ~/project
+      - run: |
+          poetry config installer.max-workers 10
+          poetry install -vv --no-ansi
+      - run:
+          name: Run pre-commit checks
+          command: poetry run pre-commit run -a
+      - run:
+          name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
+          command: |
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
+            poetry run pytest --cache-clear -vv tests
   example-evaluator:
     docker:
       - image: cimg/base:2022.06
@@ -298,7 +326,7 @@ jobs:
           version: 20.10.14
       - run:
           name: Build evaluator
-          command: examples/text_summarization/docker/build.sh
+          command: examples/workflow/text_summarization/docker/build.sh
 
 workflows:
   ci:
@@ -330,7 +358,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ detection, fr, classification, workflow ]
+              pytest-group: [ workflow ]
               extras: [ "none" ]
           enabled: true
           parallelism: 3
@@ -341,8 +369,18 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: [ "none", "metrics" ]
+              extras: [ "metrics" ]
           pytest-group: _experimental
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: dataset
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
@@ -361,13 +399,25 @@ workflows:
     when:
       or: [ << pipeline.parameters.workflow >>, << pipeline.parameters.all >>, << pipeline.parameters.example >> ]
     jobs:
-      - example-test:
+      - example-test-dataset:
           matrix:
             parameters:
               subproject: [ text_summarization ]
               resource-class: [ large ]
               python-version: [ "3.9.18" ]
-      - example-test:
+      - example-test-dataset:
+          matrix:
+            parameters:
+              subproject: [ classification, keypoint_detection, question_answering, rain_forecast, speaker_diarization, age_estimation ]
+              resource-class: [ small ]
+              python-version: [ "3.9.18" ]
+      - example-test-workflow:
+          matrix:
+            parameters:
+              subproject: [ text_summarization ]
+              resource-class: [ large ]
+              python-version: [ "3.9.18" ]
+      - example-test-workflow:
           matrix:
             parameters:
               subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]

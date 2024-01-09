@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,12 @@ class UploadResultsRequest:
     model: str
     uuid: str
     dataset_id: int
+
+
+@dataclass(frozen=True)
+class UploadResultsResponse:
+    n_inserted: int
+    n_updated: int
 
 
 @dataclass(frozen=True)

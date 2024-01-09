@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@ from typing import List
 
 import pytest
 
-from kolena.detection import Model as DetectionModel
 from kolena.errors import WorkflowMismatchError
 from kolena.workflow import TestRun
 from kolena.workflow.define_workflow import define_workflow
@@ -84,7 +83,8 @@ def test__load_all() -> None:
 
 def test__load__mismatching_workflows() -> None:
     name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
-    DetectionModel(name)
+    _, _, _, Model1 = define_workflow(f"{name} workflow 1", DummyTestSample, DummyGroundTruth, DummyInference)
+    Model1(name)
     with pytest.raises(WorkflowMismatchError):
         Model(name)
 

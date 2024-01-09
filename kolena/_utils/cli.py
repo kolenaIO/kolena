@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@ import dataclasses
 import json
 import os
 import sys
+from typing import Any
+from typing import Callable
 from typing import Optional
 
 import click
@@ -43,8 +45,8 @@ _shared_options = [
 _shared_evaluator_options = [click.option("--workflow", "-w", required=True)]
 
 
-def add_options(*args):
-    def _add_options(func):
+def add_options(*args: Any) -> Any:
+    def _add_options(func: Callable[..., Any]) -> Callable[..., Any]:
         options = [x for n in args for x in n]
         for option in reversed(options):
             func = option(func)
@@ -176,5 +178,5 @@ def repository_create(name: str, api_token: Optional[str] = None) -> None:
     print("repository created")
 
 
-def run():
+def run() -> None:
     base_command()

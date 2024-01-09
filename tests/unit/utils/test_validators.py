@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,17 +18,17 @@ from kolena._utils.validators import validate_name
 
 
 @pytest.mark.parametrize("name", ["", " ", "    ", "\t", "\n", "\t \n"])
-def test__validate_name__error(name) -> None:
+def test__validate_name__error(name: str) -> None:
     with pytest.raises(ValueError, match="field must be non empty"):
         validate_name(name)
 
 
 @pytest.mark.parametrize("name", ["", " ", "    ", None])
-def test__validate_name__error__field_name(name) -> None:
+def test__validate_name__error__field_name(name: str) -> None:
     with pytest.raises(ValueError, match="Model name must be non empty"):
         validate_name(name, field_name=FieldName.MODEL_NAME)
 
 
 @pytest.mark.parametrize("name", ["a", "a  b", "a ::  b"])
-def test__validate_name__no_error(name) -> None:
+def test__validate_name__no_error(name: str) -> None:
     validate_name(name)

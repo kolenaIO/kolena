@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class JWTAuth(requests.auth.AuthBase):
     def __init__(self, jwt: str):
         self.jwt = jwt
 
-    def __call__(self, r):
+    def __call__(self, r: Any) -> Any:
         r.headers["Authorization"] = f"Bearer {self.jwt}"
         return r
 
@@ -67,6 +67,7 @@ class JWTAuth(requests.auth.AuthBase):
 @kolena_initialized
 def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
     client_state = get_client_state()
+    assert client_state.jwt_token is not None
     default_kwargs = {
         "auth": JWTAuth(client_state.jwt_token),
         "timeout": (CONNECTION_CONNECT_TIMEOUT, CONNECTION_READ_TIMEOUT),
@@ -82,8 +83,9 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
         },
     )
     # allow requests to override Content-Type as needed by for example file uploads
-    if "Content-Type" in kwargs.get("headers", {}):
-        default_headers["Content-Type"] = kwargs.get("headers")["Content-Type"]
+    kw_headers = kwargs.get("headers", {})
+    if "Content-Type" in kw_headers:
+        default_headers["Content-Type"] = kw_headers["Content-Type"]
     return {
         **kwargs,
         **default_kwargs,
@@ -95,7 +97,7 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
 def get(
     endpoint_path: str,
     params: Any = None,
-    api_version: int = DEFAULT_API_VERSION,
+    api_version: str = DEFAULT_API_VERSION,
     **kwargs: Any,
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
@@ -109,7 +111,7 @@ def post(
     endpoint_path: str,
     data: Any = None,
     json: Any = None,
-    api_version: int = DEFAULT_API_VERSION,
+    api_version: str = DEFAULT_API_VERSION,
     **kwargs: Any,
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
@@ -123,7 +125,7 @@ def put(
     endpoint_path: str,
     data: Any = None,
     json: Any = None,
-    api_version: int = DEFAULT_API_VERSION,
+    api_version: str = DEFAULT_API_VERSION,
     **kwargs: Any,
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
@@ -133,7 +135,7 @@ def put(
 
 
 @kolena_initialized
-def delete(endpoint_path: str, api_version: int = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
+def delete(endpoint_path: str, api_version: str = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
         s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
@@ -158,6 +160,6 @@ def raise_for_status(response: requests.Response) -> None:
 
 
 @kolena_initialized
-def get_connection_args(**kwargs):
+def get_connection_args(**kwargs: Any) -> Dict[str, Dict[str, str]]:
     client_state = get_client_state()
     return {"proxies": client_state.proxies}

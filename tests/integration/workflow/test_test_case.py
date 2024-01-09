@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,12 +16,13 @@ from typing import Optional
 
 import pytest
 
-from kolena.detection import TestCase as DetectionTestCase
 from kolena.errors import WorkflowMismatchError
+from kolena.workflow import define_workflow
 from tests.integration.helper import assert_sorted_list_equal
 from tests.integration.helper import with_test_prefix
 from tests.integration.workflow.dummy import DUMMY_WORKFLOW
 from tests.integration.workflow.dummy import DummyGroundTruth
+from tests.integration.workflow.dummy import DummyInference
 from tests.integration.workflow.dummy import DummyTestSample
 from tests.integration.workflow.dummy import TestCase
 
@@ -84,7 +85,8 @@ def test__load() -> None:
 
 def test__load__mismatching_workflows() -> None:
     name = with_test_prefix(f"{__file__}::test__load__mismatching_workflows")
-    DetectionTestCase(name)
+    _, TestCase1, _, _ = define_workflow(f"{name} workflow 1", DummyTestSample, DummyGroundTruth, DummyInference)
+    TestCase1(name)
     with pytest.raises(WorkflowMismatchError):
         TestCase(name)
 

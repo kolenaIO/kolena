@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -203,7 +203,12 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         cls._validate_workflow()
         cls._validate_test_cases(test_cases)
         validate_name(name, FieldName.TEST_SUITE_NAME)
-        request = CoreAPI.CreateRequest(name=name, description=description or "", workflow=cls.workflow.name, tags=tags)
+        request = CoreAPI.CreateRequest(
+            name=name,
+            description=description or "",
+            workflow=cls.workflow.name,
+            tags=list(tags) if tags is not None else None,
+        )
         res = krequests.post(endpoint_path=API.Path.CREATE, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.EntityData, data=res.json())
@@ -245,7 +250,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         :return: The latest version of all test suites, with matching tags when specified.
         """
         cls._validate_workflow()
-        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=tags)
+        request = CoreAPI.LoadAllRequest(workflow=cls.workflow.name, tags=list(tags) if tags is not None else None)
         res = krequests.put(endpoint_path=API.Path.LOAD_ALL.value, data=json.dumps(dataclasses.asdict(request)))
         krequests.raise_for_status(res)
         data = from_dict(data_class=CoreAPI.LoadAllResponse, data=res.json())

@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,11 +31,9 @@ from retrying import retry
 
 from kolena._api.v1.batched_load import BatchedLoad as API
 from kolena._utils import krequests
-from kolena._utils import krequests_v2
 from kolena._utils import log
 from kolena._utils.datatypes import LoadableDataFrame
 from kolena._utils.serde import from_dict
-from kolena._utils.state import API_V1
 from kolena._utils.state import DEFAULT_API_VERSION
 
 VALIDATION_COUNT_LIMIT = 100
@@ -112,14 +110,14 @@ class _BatchedLoader(Generic[DFType]):
         return df_class(df)
 
     @staticmethod
-    def complete_load(uuid: Optional[str], api_version: int = DEFAULT_API_VERSION) -> None:
+    def complete_load(uuid: Optional[str], api_version: str = DEFAULT_API_VERSION) -> None:
         if uuid is None:
             return
-        kreq = krequests if api_version == "v1" else krequests_v2
         complete_request = API.CompleteDownloadRequest(uuid=uuid)
-        complete_res = kreq.put(
+        complete_res = krequests.put(
             endpoint_path=API.Path.COMPLETE_DOWNLOAD.value,
             data=json.dumps(dataclasses.asdict(complete_request)),
+            api_version=api_version,
         )
         krequests.raise_for_status(complete_res)
 
@@ -128,13 +126,13 @@ class _BatchedLoader(Generic[DFType]):
         init_request: API.BaseInitDownloadRequest,
         endpoint_path: str,
         df_class: Optional[Type[DFType]],
-        endpoint_api_version: int = DEFAULT_API_VERSION,
+        endpoint_api_version: str = DEFAULT_API_VERSION,
     ) -> Iterator[DFType]:
-        kreq = krequests if endpoint_api_version == API_V1 else krequests_v2
-        with kreq.put(
+        with krequests.put(
             endpoint_path=endpoint_path,
             data=json.dumps(dataclasses.asdict(init_request)),
             stream=True,
+            api_version=endpoint_api_version,
         ) as init_res:
             krequests.raise_for_status(init_res)
             load_uuid = None

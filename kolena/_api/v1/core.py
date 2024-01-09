@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class Model:
         id: int
 
 
-Model.LoadAllResponse.__pydantic_model__.update_forward_refs()
+Model.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 @dataclass(frozen=True)
@@ -200,7 +200,7 @@ class TestSuite:
         test_suite_id: int
 
 
-TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()
+TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 class TestRun:

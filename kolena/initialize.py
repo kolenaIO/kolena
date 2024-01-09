@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ def initialize(
             category=DeprecationWarning,
             stacklevel=2,
         )
-
+    assert api_token is not None
     init_response = state.get_token(api_token, proxies=proxies)
     derived_telemetry = init_response.tenant_telemetry
     _client_state.update(
@@ -145,11 +145,11 @@ def initialize(
         log.info(f"connected to {get_platform_url()}")
 
 
-def _find_token() -> str:
+def _find_token() -> Optional[str]:
     if KOLENA_TOKEN_ENV in os.environ:
         return os.environ[KOLENA_TOKEN_ENV]
 
-    hostname = urlparse(state._get_api_base_url()).hostname
+    hostname = urlparse(state._get_api_base_url()).hostname or ""
     try:
         netrc_file = netrc.netrc()
         record = netrc_file.authenticators(hostname)

@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import pytest
 from .data import ComplexBoundingBox
 from .data import ImageTriplet
 from .data import NestedComplexBoundingBox
+from kolena._utils.datatypes import DataObject
 from kolena.workflow import GroundTruth
 from kolena.workflow import TestSample
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 from kolena.workflow.annotation import LabeledBoundingBox

@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import numpy as np
 import pydantic
 import pytest
 
+from kolena._utils.datatypes import DataObject
 from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
 from kolena.workflow import Audio
@@ -42,7 +43,6 @@ from kolena.workflow import PointCloud
 from kolena.workflow import TestSample
 from kolena.workflow import Text
 from kolena.workflow import Video
-from kolena.workflow._datatypes import DataObject
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
 from kolena.workflow.annotation import LabeledBoundingBox

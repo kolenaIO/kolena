@@ -1,4 +1,4 @@
-# Copyright 2021-2023 Kolena Inc.
+# Copyright 2021-2024 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ from typing import Union
 import pytest
 
 from kolena._experimental.workflow.thresholded import ThresholdedMetrics
-from kolena.workflow._datatypes import DataObject
+from kolena._utils.datatypes import DataObject
 from kolena.workflow._validators import validate_data_object_type
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import Keypoints
