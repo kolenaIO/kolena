@@ -86,7 +86,7 @@ def process_inferences(
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     pred_df_csv = pd.read_csv(
-        f"s3://{BUCKET}/{args.dataset}/results/object_detection/coco_models/"
+        f"s3://{BUCKET}/{DATASET}/results/object_detection/coco_models/"
         + f"{args.model}/coco-2014-val_prediction_attribution_2.0_transportation.csv",
         storage_options={"anon": True},
     )
