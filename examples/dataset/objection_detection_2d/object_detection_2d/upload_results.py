@@ -26,7 +26,6 @@ from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import EVAL_CONFIG
 from object_detection_2d.constants import MODELS
-from object_detection_2d.data_loader import load_data
 from object_detection_2d.metrics import test_sample_metrics
 
 import kolena
@@ -36,6 +35,17 @@ from kolena.annotation import ScoredLabeledPolygon
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.workflow.metrics._geometry import match_inferences_multiclass
+
+
+def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
+    image_to_boxes: Dict[str, List[ScoredLabeledBoundingBox]] = defaultdict(list)
+
+    for record in df_pred_csv.itertuples():
+        coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
+        bounding_box = ScoredLabeledBoundingBox(*coords, record.label, record.confidence_score)
+        image_to_boxes[record.locator].append(bounding_box)
+
+    return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inferences"])
 
 
 def _filter_inferences(
@@ -70,8 +80,7 @@ def process_inferences(
         )
 
     results_df = pd.concat([pd.DataFrame(results), pred_df], axis=1)
-    results_df = results_df.drop(["bounding_boxes"], axis=1)
-    return results_df
+    return results_df.drop(["bounding_boxes"], axis=1)
 
 
 def run(args: Namespace) -> None:
@@ -81,8 +90,8 @@ def run(args: Namespace) -> None:
         + f"{args.model}/coco-2014-val_prediction_attribution_2.0_transportation.csv",
         storage_options={"anon": True},
     )
-    pred_df = load_data(pred_df_csv, is_pred=True)
-    dataset_df = download_dataset(args.dataset)
+    pred_df = load_data(pred_df_csv)
+    dataset_df = download_dataset(args.dataset)[["locator", "bounding_boxes"]]
     results_df = process_inferences(pred_df.merge(dataset_df, on="locator"), EVAL_CONFIG)
     upload_results(args.dataset, args.model, results_df)
 

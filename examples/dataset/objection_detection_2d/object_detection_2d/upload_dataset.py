@@ -13,15 +13,42 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from collections import defaultdict
+from typing import Any
+from typing import Dict
+from typing import List
 
 import pandas as pd
 from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import ID_FIELDS
-from object_detection_2d.data_loader import load_data
 
 import kolena
+from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import upload_dataset
+
+
+def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
+    image_to_boxes: Dict[str, List[LabeledBoundingBox]] = defaultdict(list)
+    image_to_metadata: Dict[str, Dict[str, Any]] = defaultdict(dict)
+
+    for record in df_metadata_csv.itertuples():
+        coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
+        bounding_box = LabeledBoundingBox(*coords, record.label)
+        image_to_boxes[record.locator].append(bounding_box)
+        metadata = {
+            "locator": str(record.locator),
+            "height": float(record.height),
+            "width": float(record.width),
+            "date_captured": str(record.date_captured),
+            "supercategory": str(record.supercategory),
+            "brightness": float(record.brightness),
+        }
+        image_to_metadata[record.locator] = metadata
+
+    df_boxes = pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "bounding_boxes"])
+    df_metadata = pd.DataFrame.from_dict(image_to_metadata, orient="index").reset_index(drop=True)
+    return df_boxes.merge(df_metadata, on="locator")
 
 
 def run(args: Namespace) -> None:
@@ -30,7 +57,7 @@ def run(args: Namespace) -> None:
         f"s3://{BUCKET}/{args.dataset}/meta/metadata_attribution2.0_transportation.csv",
         storage_options={"anon": True},
     )
-    df_metadata = load_data(df_metadata_csv[:1000], is_pred=False)
+    df_metadata = load_data(df_metadata_csv)
     upload_dataset(args.dataset, df_metadata, id_fields=ID_FIELDS)
 
 
