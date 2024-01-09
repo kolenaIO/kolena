@@ -23,9 +23,6 @@ from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 
-BUCKET = "kolena-public-datasets"
-DATASET = "coco-2014-val"
-
 
 def load_data(
     df_metadata_csv: pd.DataFrame,
@@ -34,40 +31,31 @@ def load_data(
     image_to_boxes: Dict[str, List[Union[ScoredLabeledBoundingBox, LabeledBoundingBox, BoundingBox]]] = defaultdict(
         list,
     )
-    image_to_locator: Dict[str, str] = dict()
     image_to_metadata: Dict[str, Dict[str, Any]] = defaultdict(dict)
 
     for record in df_metadata_csv.itertuples():
-        image_id = record.relative_path
         coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
         bounding_box = (
             LabeledBoundingBox(*coords, record.label)
             if (not is_pred)
             else ScoredLabeledBoundingBox(*coords, record.label, record.confidence_score)
         )
-        image_to_boxes[image_id].append(bounding_box)
+        image_to_boxes[record.locator].append(bounding_box)
 
         if not is_pred:
             metadata = {
                 "height": float(record.height),
                 "width": float(record.width),
                 "date_captured": str(record.date_captured),
+                "supercategory": str(record.supercategory),
+                "brightness": float(record.brightness),
             }
-            image_to_locator[image_id] = record.locator
-            image_to_metadata[image_id] = metadata
+            image_to_metadata[record.locator] = metadata
 
     df_boxes = pd.DataFrame(
         list(image_to_boxes.items()),
-        columns=["image_id", "bounding_boxes" if not is_pred else "raw_inferences"],
+        columns=["locator", "bounding_boxes" if not is_pred else "raw_inferences"],
     )
-    df_metadata = pd.DataFrame(list(image_to_metadata.items()), columns=["image_id", "metadata"])
-    df_locator = pd.DataFrame(list(image_to_locator.items()), columns=["image_id", "locator"])
+    df_metadata = pd.DataFrame(list(image_to_metadata.items()), columns=["locator", "metadata"])
 
-    return (
-        df_boxes.merge(
-            df_locator,
-            on="image_id",
-        ).merge(df_metadata, on="image_id")
-        if not is_pred
-        else df_boxes
-    )
+    return df_boxes.merge(df_metadata, on="locator") if not is_pred else df_boxes

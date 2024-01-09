@@ -11,21 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import pandas as pd
-from commons import BUCKET
-from commons import DATASET
-from commons import load_data
-
-import kolena
-from kolena.dataset import upload_dataset
-
-
-def main() -> None:
-    kolena.initialize(verbose=True)
-    df_metadata_csv = pd.read_csv(f"s3://{BUCKET}/{DATASET}/meta/metadata_complete.csv", storage_options={"anon": True})
-    df_metadata = load_data(df_metadata_csv[:100], is_pred=False)
-    upload_dataset(DATASET, df_metadata)
-
-
-if __name__ == "__main__":
-    main()
+BUCKET = "kolena-public-datasets"
+DATASET = "coco-2014-val"
+ID_FIELDS = ["locator"]
+MODELS = [
+    "yolo_r",
+    "yolo_x",
+    "yolo_v3",
+    "yolo_v4s",
+    "faster_rcnn",
+    "mask_rcnn",
+]
+EVAL_CONFIG = {
+    "threshold_strategy": 0.5,
+    "iou_threshold": 0.5,
+    "min_confidence_score": 0.5,
+}

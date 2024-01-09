@@ -14,7 +14,7 @@
 from typing import Any
 from typing import Dict
 
-from kolena.workflow.annotation import ScoredLabel
+from kolena.annotation import ScoredLabel
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
