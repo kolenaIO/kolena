@@ -34,7 +34,7 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("sample_file", help="File containing test sample and ground truth data", type=Path)
     parser.add_argument(
-        "--test_suite",
+        "--test-suite",
         help="Optionally specify a name for the created test suite.",
         default=DEFAULT_TEST_SUITE_NAME,
     )

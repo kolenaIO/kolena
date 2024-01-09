@@ -208,13 +208,13 @@ if __name__ == "__main__":
     ap = ArgumentParser()
 
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--test_suite",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",

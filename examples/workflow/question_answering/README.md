@@ -32,11 +32,11 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 question_answering/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--test_suite TEST_SUITE] [--model {gpt-3.5-turbo-0301,gpt-3.5-turbo,gpt-4-0314,gpt-4}]
+usage: seed_test_run.py [-h] [--test-suite TEST_SUITE] [--model {gpt-3.5-turbo-0301,gpt-3.5-turbo,gpt-4-0314,gpt-4}]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --test_suite TEST_SUITE
+  --test-suite TEST_SUITE
                         Name of the test suite to test.
   --model {gpt-3.5-turbo-0301,gpt-3.5-turbo,gpt-4-0314,gpt-4}
                         Name of the model to test.

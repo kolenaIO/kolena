@@ -44,12 +44,12 @@ Run a script using the `--help` flag for more information:
 ```shell
 $ poetry run python3 automatic_speech_recognition/seed_test_run.py --help
 usage: seed_test_run.py [-h] [--models MODELS [MODELS ...]]
-                        [--test_suites TEST_SUITES [TEST_SUITES ...]]
+                        [--test-suites TEST_SUITES [TEST_SUITES ...]]
 
 optional arguments:
   -h, --help            show this help message and exit
   --models MODELS [MODELS ...]
                         Name(s) of model(s) in directory to test
-  --test_suites TEST_SUITES [TEST_SUITES ...]
+  --test-suites TEST_SUITES [TEST_SUITES ...]
                         Name(s) of test suite(s) to test.
 ```

@@ -103,13 +103,13 @@ def main(args: Namespace) -> int:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file with a list of image `locator` and its `label`. See default CSV for details",
     )
     ap.add_argument(
-        "--test_suite",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

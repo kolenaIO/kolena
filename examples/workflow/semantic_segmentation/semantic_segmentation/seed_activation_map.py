@@ -54,13 +54,13 @@ if __name__ == "__main__":
         help="Name of model in directory to test",
     )
     ap.add_argument(
-        "--test_suites",
+        "--test-suites",
         default=[f"# of people :: {DATASET} [person]"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )
     ap.add_argument(
-        "--out_bucket",
+        "--out-bucket",
         required=True,
         help="Name of AWS S3 bucket with write access to upload activation maps to.",
     )

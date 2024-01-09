@@ -112,7 +112,7 @@ if __name__ == "__main__":
         help="Name(s) of detectors(s) used with corresponding model(s).",
     )
     ap.add_argument(
-        "--test_suites",
+        "--test-suites",
         default=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"],
         help="Name(s) of test suite(s) to test.",
     )

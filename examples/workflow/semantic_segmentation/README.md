@@ -34,7 +34,7 @@ e.g. `pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512`, `pspnet_r50-d8_4xb4-20k_co
 test suite.
 
     As part of the evaluation, result masks (i.e. TP/FP/FN masks) are computed and uploaded to a cloud storage for
-    better visualization experience on our webapp. Please use `--out_bucket` argument to provide your AWS S3 bucket
+    better visualization experience on our webapp. Please use `--out-bucket` argument to provide your AWS S3 bucket
     with write access where these result masks are going to be uploaded to. Also, follow the
     [instructions](https://docs.kolena.io/advanced-usage/connecting-cloud-storage/amazon-s3/) to connect
     your bucket to Kolena.
@@ -43,7 +43,7 @@ test suite.
     your bucket.
 
 3. An optional script, [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py) demonstrates how to generate activation maps from
-the aformentioned model inferences. If you wish to generate your own, use the `--out_bucket` argument to provide an AWS S3 bucket
+the aformentioned model inferences. If you wish to generate your own, use the `--out-bucket` argument to provide an AWS S3 bucket
 where the activation maps will be uploaded to.
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
@@ -51,14 +51,14 @@ Run a script using the `--help` flag for more information:
 
 ```shell
 $ poetry run python3 semantic_segmentation/seed_test_run.py --help
-usage: seed_test_run.py [-h] [--model MODEL] [--test_suites TEST_SUITES [TEST_SUITES ...]]
-                        --out_bucket OUT_BUCKET
+usage: seed_test_run.py [-h] [--model MODEL] [--test-suites TEST_SUITES [TEST_SUITES ...]]
+                        --out-bucket OUT_BUCKET
 
 options:
   -h, --help            show this help message and exit
   --model MODEL         Name of model in directory to test
-  --test_suites TEST_SUITES [TEST_SUITES ...]
+  --test-suites TEST_SUITES [TEST_SUITES ...]
                         Name(s) of test suite(s) to test.
-  --out_bucket OUT_BUCKET
+  --out-bucket OUT_BUCKET
                         Name of AWS S3 bucket with write access to upload result masks to.
 ```
