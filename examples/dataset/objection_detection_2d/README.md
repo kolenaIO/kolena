@@ -56,7 +56,7 @@ optional arguments:
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
 [explore the data and results](https://docs.kolena.io/dataset/quickstart/#step-3-explore-data-and-results).
 
-Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for object detection:
+Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for 2D Object Detection:
 
 ### Metrics
 1. [Precision](https://docs.kolena.io/metrics/precision)
