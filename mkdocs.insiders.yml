@@ -54,7 +54,7 @@ plugins:
   typeset:
   git-committers:
     repository: kolenaIO/kolena
-    branch: trunk
+    branch: hotfix/0.100.x
   mkdocstrings:
     handlers:
       python:
