@@ -41,7 +41,6 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
             "height": float(record.height),
             "width": float(record.width),
             "date_captured": str(record.date_captured),
-            "supercategory": str(record.supercategory),
             "brightness": float(record.brightness),
         }
         image_to_metadata[record.locator] = metadata
