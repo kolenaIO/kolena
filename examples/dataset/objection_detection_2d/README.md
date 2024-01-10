@@ -15,7 +15,7 @@ poetry update && poetry install
 
 ## Usage
 
-All data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
+All data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
@@ -50,3 +50,28 @@ optional arguments:
   -h, --help            show this help message and exit
   --dataset DATASET     Optionally specify a custom dataset name to test.
 ```
+
+## Quality Standards Guide
+
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
+[explore the data and results](https://docs.kolena.io/dataset/quickstart/#step-3-explore-data-and-results).
+
+Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for object detection:
+
+### Metrics
+1. [Precision](https://docs.kolena.io/metrics/precision)
+2. [Recall](https://docs.kolena.io/metrics/recall)
+3. [F1-score](https://docs.kolena.io/metrics/f1-score)
+
+### Plots
+1. Distribution: `datapoint.bounding_boxes[].label`
+2. Distribution: `result.TP[].label`
+3. Distribution: `result.Confused[].label`
+4. Distribution: `result.FP[].label`
+5. Distribution: `result.FN[].label`
+6. `datapoint.brightness` vs. `mean(count_FN)`
+7. `datapoint.brightness` vs. `mean(count_FP)`
+8. `datapoint.brightness` vs. `mean(count_TP)`
+
+### Test Cases
+1. `datapoint.brightness`

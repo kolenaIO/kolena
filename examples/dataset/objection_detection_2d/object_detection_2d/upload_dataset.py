@@ -54,7 +54,7 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_metadata_csv = pd.read_csv(
-        f"s3://{BUCKET}/{DATASET}/meta/metadata_attribution2.0_transportation.csv",
+        f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv",
         storage_options={"anon": True},
     )
     df_metadata = load_data(df_metadata_csv)
