@@ -21,7 +21,7 @@ Datapoints are integral components within the dataset structure used for evaluat
 
 - **Role in Data Ingestion**: Datapoints play a central role in the data ingestion process. They are represented in a DataFrame structure with special treatment for certain columns like `locator` and `text`.
 
-- **Extension of Data Classes**: Datapoints extend data classes, allowing for flexibility and customization. For instance, they can include annotation objects like `List[BoundingBox]`, and these objects can be further extended as needed.
+- **Extension of Data Classes**: Datapoints extend data classes, allowing for flexibility and customization. For instance, they can include annotation objects like [`BoundingBox`][kolena.annotation.BoundingBox], and these objects can be further extended as needed.
 
 In essence, datapoints in this context are versatile, immutable data units that are exclusively associated with a specific dataset, playing a crucial role in model evaluation by encapsulating various types of data and annotations within a unified object structure.
 
@@ -57,7 +57,7 @@ from kolena.annotation import Keypoints
 from kolena.io import dataframe_to_csv
 
 df = pd.read_csv(f"s3://kolena-public-examples/300-W/raw/300-W.csv", storage_options={"anon": True})
-df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
+df["face"] = [Keypoints(points=json.loads(points)) for points in df["points"]]
 dataframe_to_csv(df, "processed.csv")
 ```
 
