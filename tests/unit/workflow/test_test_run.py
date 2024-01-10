@@ -47,7 +47,7 @@ def test__when_no_threshold_metric_classes(mock_test_run_init, mock_krequests_pu
     ]
 
     # Define the expected output
-    expected_updated_records = [
+    expected_standard_metrics = [
         (
             {"locator": "s3://bucket/image1.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
             {
@@ -57,13 +57,13 @@ def test__when_no_threshold_metric_classes(mock_test_run_init, mock_krequests_pu
             },
         ),
     ]
-    expected_removed_items = []
+    expected_thresholded_metrics = []
 
     # Call the method under test
-    updated_records, removed_items = test_run._extract_thresholded_metrics(records)
+    standard_metrics, thresholded_metrics = test_run._extract_thresholded_metrics(records)
     # Assert the results
-    assert updated_records == expected_updated_records
-    assert removed_items == expected_removed_items
+    assert standard_metrics == expected_standard_metrics
+    assert thresholded_metrics == expected_thresholded_metrics
 
 
 def test__when_no_threshold_metric_classes_non_dict_item(mock_test_run_init, mock_krequests_put) -> None:
@@ -81,7 +81,7 @@ def test__when_no_threshold_metric_classes_non_dict_item(mock_test_run_init, moc
     ]
 
     # Define the expected output
-    expected_updated_records = [
+    expected_standard_metrics = [
         (
             {"locator": "s3://bucket/image1.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
             {
@@ -89,14 +89,14 @@ def test__when_no_threshold_metric_classes_non_dict_item(mock_test_run_init, moc
             },
         ),
     ]
-    expected_removed_items = []
+    expected_thresholded_metrics = []
 
     # Call the method under test
-    updated_records, removed_items = test_run._extract_thresholded_metrics(records)
+    standard_metrics, thresholded_metrics = test_run._extract_thresholded_metrics(records)
 
     # Assert the results
-    assert updated_records == expected_updated_records
-    assert removed_items == expected_removed_items
+    assert standard_metrics == expected_standard_metrics
+    assert thresholded_metrics == expected_thresholded_metrics
 
 
 def test__extract_thresholded_metrics(mock_test_run_init, mock_krequests_put) -> None:
@@ -132,7 +132,7 @@ def test__extract_thresholded_metrics(mock_test_run_init, mock_krequests_put) ->
     ]
 
     # Define the expected output
-    expected_updated_records = [
+    expected_standard_metrics = [
         (
             {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
             {
@@ -146,7 +146,7 @@ def test__extract_thresholded_metrics(mock_test_run_init, mock_krequests_put) ->
             },
         ),
     ]
-    expected_removed_items = [
+    expected_thresholded_metrics = [
         (
             {"locator": "s3://bucket/image2.jpg", "data_type": "TEST_SAMPLE/IMAGE"},
             {"name": "class_1", "threshold": "0.1", "data_type": "METRICS/THRESHOLDED", "value": 10},
@@ -174,14 +174,14 @@ def test__extract_thresholded_metrics(mock_test_run_init, mock_krequests_put) ->
     ]
 
     # Call the method under test
-    updated_records, removed_items = test_run._extract_thresholded_metrics(records)
+    standard_metrics, thresholded_metrics = test_run._extract_thresholded_metrics(records)
     # Assert the results with descriptive error messages
-    assert updated_records == expected_updated_records, "Updated records do not match expected values"
-    assert removed_items == expected_removed_items, "Removed items do not match expected values"
+    assert standard_metrics == expected_standard_metrics, "Updated records do not match expected values"
+    assert thresholded_metrics == expected_thresholded_metrics, "Removed items do not match expected values"
 
     # Optionally, compare lists element by element for more detailed error reporting
-    for i in range(len(expected_updated_records)):
-        assert updated_records[i] == expected_updated_records[i], f"Record at index {i} does not match"
+    for i in range(len(expected_standard_metrics)):
+        assert standard_metrics[i] == expected_standard_metrics[i], f"Record at index {i} does not match"
 
-    for i in range(len(expected_removed_items)):
-        assert removed_items[i] == expected_removed_items[i], f"Removed item at index {i} does not match"
+    for i in range(len(expected_thresholded_metrics)):
+        assert thresholded_metrics[i] == expected_thresholded_metrics[i], f"Removed item at index {i} does not match"
