@@ -277,7 +277,7 @@ def upload_dataset(
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
     data = from_dict(EntityData, response.json())
-    log.info(f"registered dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
+    log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
 
 def _iter_dataset_raw(
@@ -321,7 +321,7 @@ def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame
     :return: A DataFrame containing the specified dataset.
     """
     df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
-    log.info(f"loaded dataset '{name}'")
+    log.info(f"downloaded dataset '{name}'")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
 

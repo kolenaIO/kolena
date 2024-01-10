@@ -112,14 +112,22 @@ def download_results(
     model: str,
 ) -> Tuple[pd.DataFrame, List[Tuple[EvalConfig, pd.DataFrame]]]:
     """
-    Fetch results given dataset name and model name.
+    Download results given dataset name and model name.
+
+    Concat dataset with results:
+
+    ```python
+    df_dp, results = download_results("dataset name", "model name")
+    for eval_config, df_result in results:
+        df_combined = pd.concat([df_dp, df_result], axis=1)
+    ```
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :return: Tuple of DataFrame of datapoints and list of tuples,
              each containing an evaluation configuration and the corresponding DataFrame of results.
     """
-    log.info(f"fetching results for model '{model}' on dataset '{dataset}'")
+    log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
 
     df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
@@ -133,7 +141,7 @@ def download_results(
                 _to_deserialized_dataframe(df_matched, column=COL_RESULT),
             ),
         )
-    log.info(f"fetched results for model '{model}' on dataset '{dataset}'")
+    log.info(f"downloaded results for model '{model}' on dataset '{dataset}'")
     return df_datapoints, df_results_by_eval
 
 
