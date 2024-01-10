@@ -130,7 +130,11 @@ def download_results(
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
     df = _fetch_results(dataset, model)
 
-    df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
+    if df.empty:
+        df_datapoints = pd.DataFrame()
+    else:
+        df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
+
     eval_configs = df[COL_EVAL_CONFIG].unique()
     df_results_by_eval = []
     for eval_config in eval_configs:
