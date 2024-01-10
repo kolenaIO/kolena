@@ -411,14 +411,14 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         self,
         records: List[Tuple[Dict[str, Any], Dict[str, Any]]],
     ) -> Tuple[List[Tuple[Dict[str, Any], Dict[str, Any]]], List[Tuple[Dict[str, Any], List[Dict[str, Any]]]]]:
-        updated_records = []
-        removed_items = []
+        standard_metrics = []
+        thresholded_metrics = []
 
         for first_record, second_record in records:
             keys_to_remove = []
             for key, value in second_record.items():
                 if isinstance(value, list):
-                    removed_items.extend(
+                    thresholded_metrics.extend(
                         (first_record, dict(name=key, **item))
                         for item in value
                         if isinstance(item, dict) and item.get("data_type") == "METRICS/THRESHOLDED"
@@ -430,9 +430,9 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             for key in keys_to_remove:
                 second_record.pop(key, None)
 
-            updated_records.append((first_record, second_record))
+            standard_metrics.append((first_record, second_record))
 
-        return updated_records, removed_items
+        return standard_metrics, thresholded_metrics
 
     @validate_arguments(config=ValidatorConfig)
     def _upload_test_sample_metrics(
