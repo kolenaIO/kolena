@@ -17,8 +17,6 @@ from collections import defaultdict
 from typing import Any
 from typing import Dict
 from typing import List
-from typing import Optional
-from typing import Set
 from typing import Union
 
 import pandas as pd
@@ -27,11 +25,11 @@ from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import EVAL_CONFIG
 from object_detection_2d.constants import MODELS
 from object_detection_2d.metrics import test_sample_metrics
+from object_detection_2d.model import filter_inferences
 
 import kolena
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
-from kolena.annotation import ScoredLabeledPolygon
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.workflow.metrics._geometry import match_inferences_multiclass
@@ -48,20 +46,7 @@ def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inferences"])
 
 
-def _filter_inferences(
-    inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
-    confidence_score: Optional[float] = None,
-    labels: Optional[Set[str]] = None,
-) -> List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]]:
-    filtered_by_confidence = (
-        [inf for inf in inferences if inf.score >= confidence_score] if confidence_score else inferences
-    )
-    if labels is None:
-        return filtered_by_confidence
-    return [inf for inf in filtered_by_confidence if inf.label in labels]
-
-
-def process_inferences(
+def compute_metrics(
     pred_df: pd.DataFrame,
     eval_config: Dict[str, Union[float, int]],
 ) -> pd.DataFrame:
@@ -71,7 +56,7 @@ def process_inferences(
         inferences = record.raw_inferences
         matches = match_inferences_multiclass(
             ground_truths,
-            _filter_inferences(inferences, eval_config["min_confidence_score"]),
+            filter_inferences(inferences, eval_config["min_confidence_score"]),
             mode="pascal",
             iou_threshold=eval_config["iou_threshold"],
         )
@@ -91,7 +76,7 @@ def run(args: Namespace) -> None:
     )
     pred_df = load_data(pred_df_csv)
     dataset_df = download_dataset(args.dataset)[["locator", "bounding_boxes"]]
-    results_df = process_inferences(pred_df.merge(dataset_df, on="locator"), EVAL_CONFIG)
+    results_df = compute_metrics(pred_df.merge(dataset_df, on="locator"), EVAL_CONFIG)
     upload_results(args.dataset, args.model, results_df)
 
 
