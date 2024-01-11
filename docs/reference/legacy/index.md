@@ -6,7 +6,7 @@ hide:
   - toc
 ---
 
-# :kolena-archive-20: Definitions
+# :kolena-archive-20: Legacy Definitions
 
 !!! warning "Legacy Warning"
 
