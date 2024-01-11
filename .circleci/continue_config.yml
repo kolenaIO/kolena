@@ -381,8 +381,7 @@ workflows:
               python-version: [ "3.9.18" ]
               extras: [ "none" ]
           pytest-group: dataset
-          enabled:
-            or: [ << pipeline.parameters.all >>, << pipeline.parameters.dataset >> ]
+          enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
