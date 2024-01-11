@@ -354,12 +354,12 @@ workflows:
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-<< matrix.pytest-group >>-<< matrix.python-version >>-<< matrix.extras >>
+          name: integration-test-workflow-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              pytest-group: [ workflow ]
               extras: [ "none" ]
+          pytest-group: workflow
           enabled: true
           parallelism: 3
           requires:
