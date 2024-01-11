@@ -293,7 +293,12 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 metrics_test_sample = evaluator.compute_test_sample_metrics(test_case, inferences, configuration)
 
                 log.info(f"uploading test sample metrics {configuration_description}")
-                self._upload_test_sample_metrics(test_case, metrics_test_sample, configuration)
+                self._upload_test_sample_metrics(
+                    test_case,
+                    metrics_test_sample,
+                    configuration,
+                    self.model._id,
+                )
 
                 log.info(f"computing test case metrics {configuration_description}")
                 # TODO: sort? order returned from evaluator may not match inferences order
@@ -357,6 +362,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 test_case=None,
                 metrics=results.metrics_test_sample,
                 configuration=config,
+                model_id=self.model._id,
             )
             for test_case, metrics in results.metrics_test_case:
                 test_case_metrics[test_case._id][config] = metrics
@@ -410,14 +416,44 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_class=TestSampleDataFrame,
         )
 
+    def _extract_thresholded_metrics(
+        self,
+        records: List[Tuple[Dict[str, Any], Dict[str, Any]]],
+    ) -> Tuple[List[Tuple[Dict[str, Any], Dict[str, Any]]], List[Tuple[Dict[str, Any], List[Dict[str, Any]]]]]:
+        standard_metrics = []
+        thresholded_metrics = []
+
+        for first_record, second_record in records:
+            keys_to_remove = []
+            for key, value in second_record.items():
+                if isinstance(value, list):
+                    thresholded_metrics.extend(
+                        (first_record, dict(name=key, **item))
+                        for item in value
+                        if isinstance(item, dict) and item.get("data_type") == "METRICS/THRESHOLDED"
+                    )
+
+                    if any(isinstance(item, dict) and item.get("data_type") == "METRICS/THRESHOLDED" for item in value):
+                        keys_to_remove.append(key)
+
+            for key in keys_to_remove:
+                second_record.pop(key, None)
+
+            standard_metrics.append((first_record, second_record))
+
+        return standard_metrics, thresholded_metrics
+
     @validate_arguments(config=ValidatorConfig)
     def _upload_test_sample_metrics(
         self,
         test_case: Optional[TestCase],
         metrics: List[Tuple[TestSample, MetricsTestSample]],
         configuration: Optional[EvaluatorConfiguration],
+        model_id: int,
     ) -> None:
         metrics_records = [(ts._to_dict(), ts_metrics._to_dict()) for ts, ts_metrics in metrics]
+        metrics_records, thresholded_metrics = self._extract_thresholded_metrics(metrics_records)
+        log.info(f"uploading {len(metrics_records)} test sample metrics")
         df = pd.DataFrame(metrics_records, columns=["test_sample", "metrics"])
         df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
         df_serializable = df_validated.as_serializable()
@@ -436,6 +472,27 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             data=json.dumps(dataclasses.asdict(request)),
         )
         krequests.raise_for_status(res)
+
+        if len(thresholded_metrics) > 0:
+            df = pd.DataFrame(thresholded_metrics, columns=["test_sample", "metrics"])
+            df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
+            df_serializable = df_validated.as_serializable()
+
+            init_response = init_upload()
+            upload_data_frame_chunk(df_serializable, init_response.uuid)
+
+            request = API.UploadTestSampleThresholdedMetricsRequest(
+                uuid=init_response.uuid,
+                test_run_id=self._id,
+                test_case_id=test_case._id if test_case is not None else None,
+                configuration=_maybe_evaluator_configuration_to_api(configuration),
+                model_id=model_id,
+            )
+            res = krequests.put(
+                endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED.value,
+                data=json.dumps(dataclasses.asdict(request)),
+            )
+            krequests.raise_for_status(res)
 
     def _upload_test_case_metrics(
         self,
