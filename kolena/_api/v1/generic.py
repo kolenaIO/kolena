@@ -68,7 +68,6 @@ class TestRun:
         LOAD_INFERENCES = "/generic/test-run/load-test-sample-inferences"
         UPLOAD_INFERENCES = "/generic/test-run/upload-inferences"
         UPLOAD_TEST_SAMPLE_METRICS = "/generic/test-run/upload-test-sample-metrics"
-        UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED = "/generic/test-run/upload-test-sample-thresholded-metrics"
         UPLOAD_TEST_CASE_METRICS = "/generic/test-run/upload-test-case-metrics"
         UPLOAD_TEST_CASE_PLOTS = "/generic/test-run/upload-test-case-plots"
         UPLOAD_TEST_SUITE_METRICS = "/generic/test-run/upload-test-suite-metrics"
@@ -117,13 +116,6 @@ class TestRun:
         configuration: Optional["TestRun.EvaluatorConfiguration"]
 
     @dataclass(frozen=True)
-    class UploadTestSampleThresholdedMetricsRequest(BatchedLoad.WithLoadUUID):
-        test_run_id: int
-        test_case_id: Optional[int]
-        configuration: Optional["TestRun.EvaluatorConfiguration"]
-        model_id: int
-
-    @dataclass(frozen=True)
     class UpdateMetricsStatusRequest:
         test_run_id: int
         progress: float
@@ -141,7 +133,6 @@ class TestRun:
 
 TestRun.CreateOrRetrieveRequest.__pydantic_model__.update_forward_refs()  # type: ignore
 TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
-TestRun.UploadTestSampleThresholdedMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 class Workflow:
