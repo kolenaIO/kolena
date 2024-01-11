@@ -421,7 +421,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         records: List[Tuple[Dict[str, Any], Dict[str, Any]]],
     ) -> Tuple[List[Tuple[Dict[str, Any], Dict[str, Any]]], List[Tuple[Dict[str, Any], List[Dict[str, Any]]]]]:
         standard_metrics = []
-        thresholded_metrics = []
+        thresholded_metrics: List[Tuple[Dict[str, Any], List[Dict[str, Any]]]] = []
 
         for first_record, second_record in records:
             keys_to_remove = []
@@ -481,7 +481,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             init_response = init_upload()
             upload_data_frame_chunk(df_serializable, init_response.uuid)
 
-            request = API.UploadTestSampleThresholdedMetricsRequest(
+            thresholded_metrics_request = API.UploadTestSampleThresholdedMetricsRequest(
                 uuid=init_response.uuid,
                 test_run_id=self._id,
                 test_case_id=test_case._id if test_case is not None else None,
@@ -490,7 +490,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             )
             res = krequests.put(
                 endpoint_path=API.Path.UPLOAD_TEST_SAMPLE_METRICS_THRESHOLDED.value,
-                data=json.dumps(dataclasses.asdict(request)),
+                data=json.dumps(dataclasses.asdict(thresholded_metrics_request)),
             )
             krequests.raise_for_status(res)
 
