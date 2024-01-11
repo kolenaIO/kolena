@@ -90,10 +90,10 @@ nav:
       - metrics/geometry-matching.md
       - metrics/iou.md
     - Large Language Models:
-      - metrics/llm-prompt-based-metric.md
-      - metrics/selfcheck-consistency-score.md
+      - metrics/consistency-score.md
       - metrics/contradiction-score.md
-      - HEM Score: metrics/vectara-HEM-score.md
+      - HHEM Score: metrics/HHEM-score.md
+      - metrics/prompt-based-hallucination-metric.md
     - Natural Language Processing:
       - metrics/bertscore.md
       - metrics/bleu.md

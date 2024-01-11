@@ -131,21 +131,13 @@ biases, and its intended uses.
 
 <div class="grid cards" markdown>
 
-- [LLM Prompt-based Metric](llm-prompt-based-metric.md)
+- [Consistency Score](consistency-score.md)
 
     ---
 
-    Large Language Model (LLM) Prompt-based Metric involves using an LLM and various prompt engineering techniques
-    to perform evaluations. These methods include chain-of-thought, self-consistency, and others to determine whether or
-    not a prompt contains a hallucination.
-
-- [SelfCheck Consistency Score](selfcheck-consistency-score.md)
-
-    ---
-
-    SelfCheck Consistency Score is a sampling-based approach that computes a score by aggregating across `k` sample responses
-    obtained by using the same query/prompt `k` times. The prompt is considered a hallucination if there
-    exists sample responses that contradict one another or are not consistent.
+    The consistency score is a sampling-based approach that computes a score by aggregating across `n` sample responses
+    obtained by using the same prompt `n` times. The model is considered hallucinating if there exists sample responses
+    that contradict one another or are not consistent.
 
 - [Contradiction Score](contradiction-score.md)
 
@@ -154,12 +146,20 @@ biases, and its intended uses.
     NLI classification is an insightful tool to measure if candidate texts and reference texts are contradictory or
     consistent, providing extra detail towards hallucination detection.
 
-- [Vectara's HEM Score](vectara-HEM-score.md)
+- [HHEM Score](HHEM-score.md)
 
     ---
 
-    Vectara offers a hallucination detection metric that can live alongside any NLP workflows to measure factual
-    consistency between candidate texts and reference texts.
+    [Hughes Hallucination Evaluation Model (HHEM)](https://huggingface.co/vectara/hallucination_evaluation_model) is an
+    open-source model that can be used to compute scores for hallucination detection.
+
+- [Prompt-based Hallucination Metric](prompt-based-hallucination-metric.md)
+
+    ---
+
+    Large Language Model (LLM) Prompt-based Metric involves using an LLM and various prompt engineering techniques
+    to perform evaluations. These methods include chain-of-thought, self-consistency, and others to determine whether or
+    not an inference text contains a hallucination.
 
 </div>
 
