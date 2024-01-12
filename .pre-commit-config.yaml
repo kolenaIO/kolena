@@ -30,20 +30,6 @@ repos:
     -   id: insert-license
         files: ^(kolena|tests|examples)/.*\.py$
         args: [--license-filepath, "LICENSE_HEADER"]
--   repo: https://github.com/psf/black
-    rev: 23.1.0
-    hooks:
-        -   id: black
-            args: [--line-length, "120"]
--   repo: https://github.com/PyCQA/flake8
-    rev: 5.0.4
-    hooks:
-        -   id: flake8
-            args: [--extend-ignore, "W503,E203,PAR1,PAR002"]
-            additional_dependencies:
-                - flake8-typing-imports==1.12.0
-                - flake8-quotes==3.3.1
-                - flake8-picky-parentheses==0.4.0
 -   repo: https://github.com/pre-commit/mirrors-mypy
     rev: v1.8.0
     hooks:
@@ -56,11 +42,10 @@ repos:
         name: mypy-examples-dataset
         files: ^examples/dataset/
         additional_dependencies: [ types-all, "pydantic<2.0" ]
-      # TODO: enable
-      # - id: mypy
-      #   name: mypy-examples-workflow
-      #   files: ^examples/workflow/
-      #   additional_dependencies: [ types-all, "pydantic<2.0" ]
+      - id: mypy
+        name: mypy-examples-workflow
+        files: ^examples/workflow/text_summarization/
+        additional_dependencies: [ types-all, "pydantic<2.0" ]
 -   repo: meta
     hooks:
     -   id: check-hooks-apply

@@ -13,7 +13,9 @@
 # limitations under the License.
 import dataclasses
 from typing import Optional
+from typing import Union
 
+import numpy as np
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
@@ -72,11 +74,11 @@ class TestCaseMetric(MetricsTestCase):
     n_failures: int
     failure_rate: float
     total_cost: float
-    avg_cost: float
-    avg_inference_time: float
-    avg_wc_input: int
-    avg_wc_gt: int
-    avg_wc_inf: int
+    avg_cost: Union[float, np.floating]
+    avg_inference_time: Union[float, np.floating]
+    avg_wc_input: Union[float, np.floating]
+    avg_wc_gt: Union[float, np.floating]
+    avg_wc_inf: Union[float, np.floating]
     inf_to_gt_word_count: float
     BERT_prec: float
     BERT_rec: float
@@ -93,6 +95,6 @@ class TestSuiteMetric(MetricsTestSuite):
     num_failures: int
     failure_rate: float
     total_cost: float
-    variance_BERT_f1: float
-    variance_BLEU: float
-    variance_ROUGE_L: float
+    variance_BERT_f1: Union[float, np.floating]
+    variance_BLEU: Union[float, np.floating]
+    variance_ROUGE_L: Union[float, np.floating]
