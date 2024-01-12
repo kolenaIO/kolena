@@ -9,3 +9,5 @@ icon: kolena/dataset-16
 </div>
 
 ::: kolena.dataset
+::: kolena.dataset.evaluation
+::: kolena._api.v2.model

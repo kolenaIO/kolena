@@ -51,7 +51,14 @@ from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
 EvalConfig = Optional[Dict[str, Any]]
+"""
+User defined configuration for evaluating results, for example {"threshold": 7}
+"""
 DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
+"""
+A type alias representing a DataFrame, which can be either a pandas DataFrame
+or an iterator of pandas DataFrames. Data will be processed in chunks when iterator is passed in
+"""
 
 
 def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
@@ -169,12 +176,11 @@ def upload_results(
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    an eval configuration and a DataFrame. The DataFrame type has been aliased to be either a pandas
-                    DataFrame or an iterator of pandas DataFrame, this allows for batch upload when passing iterators.
+                    an eval configuration and a DataFrame.
 
-    :return: An UploadResultsResponse object containing information about the number of result rows created
-             and updated
+    :return: Containing information about the number of result rows created and updated
     """
+
     existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
         raise NotFoundError(f"dataset {dataset} does not exist")
