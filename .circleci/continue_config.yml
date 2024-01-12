@@ -277,10 +277,11 @@ jobs:
     steps:
       - when:
           condition:
-            and:
+            or:
               - not: << parameters.enabled >>
-              - not: << pipeline.parameters.dataset >>
-              - not: << pipeline.parameters.all >>
+              - and:
+                - not: << pipeline.parameters.dataset >>
+                - not: << pipeline.parameters.all >>
           steps:
             - run:
                 name: skip job
