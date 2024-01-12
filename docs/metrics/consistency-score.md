@@ -130,8 +130,11 @@ The consistency score is a powerful black-box evaluation metric that has the adv
 without requiring labeled data. However, it can be limiting when evaluating incorrect responses that are consistently
 incorrect. In addition, there are some disadvantages of using an LLM to evaluate hallucinations.
 
-1. **Cost** - Unless you are using your own LLM, there will be a cost associated with the metric computation, which
-varies depending on the number of tokens passed to the LLM. It can become expensive as you pay per token usage.
+1. **Cost** - Running a large model entails significant expenses. The cost of operating an API model such as GPT-4 is
+determined by the number of tokens used. However, if you employ your own model as a judging model, the payment might not
+be calculated based on the token count; nevertheless, there will be additional costs for hardware, computation and
+maintenance. It is essential to remember that monetary expenses are not the sole consideration. You should also take
+into account the inference time of the judging model.
 
 2. **Privacy and Security** - To achieve desirable results, you need access to a sufficiently performant LLM.
 However, using models like GPT-4 can become a privacy and security concern when datasets are meant to be kept private.

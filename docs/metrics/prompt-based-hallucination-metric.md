@@ -147,9 +147,11 @@ judging model predicted `yes` twice out of the five times it was prompted.
 
 ## Limitations and Advantages
 
-1. **Cost** - There will be a cost associated with the metric computation unless you are using your own LLM. The cost
-varies depending on the number of tokens passed to the LLM judge. It can become expensive as you are paying per token
-used.
+1. **Cost** - Running a large model entails significant expenses. The cost of operating an API model such as GPT-4 is
+determined by the number of tokens used. However, if you employ your own model as a judging model, the payment might not
+be calculated based on the token count; nevertheless, there will be additional costs for hardware, computation and
+maintenance. It is essential to remember that monetary expenses are not the sole consideration. You should also take
+into account the inference time of the judging model.
 
 2. **Privacy and Security** - To achieve desirable results, you need access to a sufficiently performant LLM. However,
 using GPT-4 or similar models through an API can hold privacy and security concerns when datasets are meant to be kept
