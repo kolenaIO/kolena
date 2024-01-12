@@ -28,8 +28,8 @@ is currently the most effective at detecting hallucinations.
 
 ### Example
 
-Given the following set of ground truths and inferences, we will compute the hallucination metric using the two prompting
-techniques.
+Given the following set of ground truths and inferences, we will compute the hallucination metric using the two
+prompting techniques.
 
 | Ground Truth | Inference |
 | --- | --- |
@@ -126,8 +126,9 @@ Based on GPT-4's response, we can identify any potential hallucination in each g
 #### Self-Consistency Prompt
 
 In the previous section, we learned about the CoT prompting technique. In this section, let's repeat the same prompt
-five times and measure the hallucination score. If you are unsure how many times to repeat, starting with five is a good option. The hallucination score is calculated as the rate of the number of times the judging model detected hallucination
-to the total number of instances:
+five times and measure the hallucination score. If you are unsure how many times to repeat, starting with five is a good
+option. The hallucination score is calculated as the rate of the number of times the judging model detected
+hallucination to the total number of instances:
 
 $$
 \text{hallucination score} = \frac{\text{number of hallucinating instances}}{\text{total number of instances}}
@@ -159,6 +160,6 @@ While using LLMs to detect hallucinations has limitations, it also offers advant
 1. **Improved Accuracy** - LLM prompt-based evaluation is one of the state-of-the-art techniques being used for
 detecting hallucinations in LLMs.
 
-2. **Explainability** - By using a performant LLM as a judging model, it can provide explanations for flagging a response
-as a hallucination. These explanations can help us understand the reasoning behind the hallucination detection of a
-given prompt.
+2. **Explainability** - By using a performant LLM as a judging model, it can provide explanations for flagging a
+response as a hallucination. These explanations can help us understand the reasoning behind the hallucination detection
+of a given prompt.

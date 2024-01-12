@@ -1,10 +1,10 @@
 # Consistency Score
 
 The consistency score is a numeric result of a simple sampling-based technique which assumes that a Large Language Model
-(LLM) has inherent knowledge of facts. If prompted multiple times, the LLM should be able to output similar or consistent
-responses. This technique can be used to measure the factual consistency of an LLM. It requires generating `n` number of
-answers with the same prompt, and then comparing the first answer with each subsequent answer for consistency. The more
-consistent the answers are, the less likely the model is to be hallucinating.
+(LLM) has inherent knowledge of facts. If prompted multiple times, the LLM should be able to output similar or
+consistent responses. This technique can be used to measure the factual consistency of an LLM. It requires generating
+`n` number of answers with the same prompt, and then comparing the first answer with each subsequent answer for
+consistency. The more consistent the answers are, the less likely the model is to be hallucinating.
 
 The score is computed by prompting a judging LLM to assess the consistency of each pair of responses. The score ranges
 from 0 to 1, with 1 indicating that the model consistently returned facts in every sampled response. As the score
