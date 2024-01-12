@@ -169,8 +169,11 @@ def upload_results(
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    an eval configuration and a DataFrame.
-    :return: None
+                    an eval configuration and a DataFrame. The DataFrame type has been aliased to be either a pandas
+                    DataFrame or an iterator of pandas DataFrame, this allows for batch upload when passing iterators.
+
+    :return: An UploadResultsResponse object containing information about the number of result rows created
+             and updated
     """
     existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
