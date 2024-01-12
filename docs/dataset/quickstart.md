@@ -107,7 +107,7 @@ keypoint detection model and a random keypoint model.
 === "Web App"
 
     To upload new model results, from the Details tab of the dataset, click on `Upload Model Results` in the upper right.
-    Then, select `Upload from cloud storage`. Using the explorer, navigate to `s3://kolena-public-datasets/300-W/results/`
+    Then, select `Upload from cloud storage`. Using the explorer, navigate to `s3://kolena-public-examples/300-W/results/`
     and select `random.csv`, This CSV file contains model results for the random keypoints
     model for each of the datapoints we uploaded to the dataset.
 
