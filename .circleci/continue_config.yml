@@ -214,15 +214,10 @@ jobs:
       - when:
           condition:
             and:
-              - equal:
-                  - "none"
-                  - << parameters.extras >>
-              - not_equal:
-                  - _experimental
-                  - << parameters.pytest-group >>
-              - not_equal:
-                  - dataset
-                  - << parameters.pytest-group >>
+              - equal: [ "none", << parameters.extras >> ]
+              - equal: [ false, << pipeline.parameters.dataset >> ]
+              - not_equal: [ "_experimental", << parameters.pytest-group >> ]
+              - not_equal: [ "dataset", << parameters.pytest-group >> ]
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
@@ -242,14 +237,13 @@ jobs:
           condition:
             and:
               - or: [ << pipeline.parameters.dataset >>, << pipeline.parameters.all >> ]
-              - equal: [ "dataset", << parameters.pytest-group >> ]
           steps:
             - run:
                 name: Run dataset integration tests
                 command: |
                   TESTFILES=$(circleci tests glob tests/integration/dataset/**/test_*.py |
                       circleci tests split --split-by=timings --timings-type=filename)
-                  poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/ \
+                  poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
                     -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
