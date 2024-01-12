@@ -215,9 +215,7 @@ jobs:
           condition:
             and:
               - equal: [ "none", << parameters.extras >> ]
-              - equal: [ false, << pipeline.parameters.dataset >> ]
               - not_equal: [ "_experimental", << parameters.pytest-group >> ]
-              - not_equal: [ "dataset", << parameters.pytest-group >> ]
           steps:
             - run:
                 name: Run << parameters.pytest-group >> integration tests
@@ -231,18 +229,6 @@ jobs:
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
-                  poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
-                    -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
-      - when:
-          condition:
-            and:
-              - or: [ << pipeline.parameters.dataset >>, << pipeline.parameters.all >> ]
-          steps:
-            - run:
-                name: Run dataset integration tests
-                command: |
-                  TESTFILES=$(circleci tests glob tests/integration/dataset/**/test_*.py |
-                      circleci tests split --split-by=timings --timings-type=filename)
                   poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
                     -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
       - when:
@@ -266,6 +252,70 @@ jobs:
                 file: coverage.xml
             - store_test_results:
                 path: test-results
+
+  integration-test-dataset:
+    parameters:
+      python-version:
+        type: string
+        default: "3.9"
+      pytest-group:
+        type: string
+        default: dataset
+      enabled:
+        type: boolean
+        default: false
+      parallelism:
+        type: integer
+        default: 1
+      extras:
+        type: string
+        default: "none"
+    executor:
+      name: python
+      python-version: << parameters.python-version >>
+    parallelism: << parameters.parallelism >>
+    steps:
+      - when:
+          condition:
+            and:
+              - not: << parameters.enabled >>
+              - not: << pipeline.parameters.dataset >>
+              - not: << pipeline.parameters.all >>
+          steps:
+            - run:
+                name: skip job
+                command: circleci-agent step halt
+      - checkout
+      - restore_cache:
+          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run:
+          name: Set KOLENA_TOKEN with round robin
+          command: |
+            token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
+            echo "Using $token"
+            export KOLENA_TOKEN=${!token}
+      - run:
+          name: Run dataset integration tests
+          command: |
+            TESTFILES=$(circleci tests glob tests/integration/dataset/**/test_*.py |
+                circleci tests split --split-by=timings --timings-type=filename)
+            poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
+              -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
+      - when:
+          # Generate coverage only from one python version
+          condition:
+            matches:
+              pattern: "^3\\.9.*$"
+              value: << parameters.python-version >>
+          steps:
+            - run:
+                name: Coverage
+                command: poetry run coverage xml --data-file .coverage
+            - codecov/upload:
+                file: coverage.xml
+            - store_test_results:
+                path: test-results
+
   example-test-dataset:
     parameters:
       python-version:
@@ -296,6 +346,7 @@ jobs:
             echo "Using $token"
             export KOLENA_TOKEN=${!token}
             poetry run pytest -vv tests
+
   example-test-workflow:
     parameters:
       python-version:
@@ -326,6 +377,7 @@ jobs:
             echo "Using $token"
             export KOLENA_TOKEN=${!token}
             poetry run pytest --cache-clear -vv tests
+
   example-evaluator:
     docker:
       - image: cimg/base:2022.06
@@ -384,7 +436,7 @@ workflows:
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
-      - integration-test:
+      - integration-test-dataset:
           name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
