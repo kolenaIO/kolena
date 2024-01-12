@@ -52,7 +52,7 @@ from kolena.errors import NotFoundError
 
 EvalConfig = Optional[Dict[str, Any]]
 """
-User defined configuration for evaluating results, for example {"threshold": 7}
+User defined configuration for evaluating results, for example `{"threshold": 7}`
 """
 DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
 """
