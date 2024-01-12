@@ -23,7 +23,7 @@ from kolena.workflow import Image
 from kolena.workflow import Inference
 from kolena.workflow.annotation import BoundingBox
 
-DUMMY_WORKFLOW_NAME = "Dummy Workflow 🤖"
+DUMMY_WORKFLOW_NAME = "Dummy Workflow 🤖 ci poke"
 
 
 @dataclass(frozen=True, order=True)
