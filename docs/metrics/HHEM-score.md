@@ -1,6 +1,6 @@
-# Vectara's HEM Score
+# Hughes Hallucination Evaluation Model (HHEM) Score
 
-[Vectara's hallucination evaluation model (HEM)](https://vectara.com/measuring-hallucinations-in-rag-systems) is an
+[Hughes Hallucination Evaluation Model (HHEM)](https://huggingface.co/vectara/hallucination_evaluation_model) is an
 open-source model that can be used to compute scores for hallucination detection. The scores are probabilities that
 range from 0 to 1 — 0 means that there is a hallucination and 1 means that there is no hallucination (factually
 consistent). According to Vectara, an appropriate threshold for this metric is 0.5 to predict whether a text is
