@@ -52,6 +52,9 @@ CONNECTION_READ_TIMEOUT = 60 * 60  # Give kolena server 1 hour to respond to cli
 # Using the Retry object to configure a backoff which is not supported by using an int here.
 MAX_RETRIES = Retry(total=3, connect=3, read=0, redirect=0, status=0, backoff_factor=2)
 
+# This retries for read errors in addition to the ones mentioned above.
+MAX_RETRIES_WITH_READ = Retry(total=3, connect=3, read=3, redirect=0, status=0, backoff_factor=2)
+
 
 class JWTAuth(requests.auth.AuthBase):
     """Attaches JWT Authorization to the given Request object"""
@@ -102,7 +105,7 @@ def get(
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
-        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES_WITH_READ))
         return s.get(url=url, params=params, **_with_default_kwargs(**kwargs))
 
 
@@ -130,7 +133,7 @@ def put(
 ) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
-        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES_WITH_READ))
         return s.put(url=url, data=data, json=json, **_with_default_kwargs(**kwargs))
 
 
@@ -138,7 +141,7 @@ def put(
 def delete(endpoint_path: str, api_version: str = DEFAULT_API_VERSION, **kwargs: Any) -> requests.Response:
     url = get_endpoint(endpoint_path=endpoint_path, api_version=api_version)
     with requests.Session() as s:
-        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES))
+        s.mount("https://", socket_options.TCPKeepAliveAdapter(max_retries=MAX_RETRIES_WITH_READ))
         return requests.delete(url=url, **_with_default_kwargs(**kwargs))
 
 
