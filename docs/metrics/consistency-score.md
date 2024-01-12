@@ -1,12 +1,12 @@
 # Consistency Score
 
-The consistency score is a simple sampling-based technique that relies on the idea that a Language Language Model (LLM)
-has inherent knowledge of facts. If prompted multiple times, the LLM should be able to output similar or consistent
+The consistency score is a numeric result of a simple sampling-based technique which assumes that a Large Language Model
+(LLM) has inherent knowledge of facts. If prompted multiple times, the LLM should be able to output similar or consistent
 responses. This technique can be used to measure the factual consistency of an LLM. It requires generating `n` number of
 answers with the same prompt, and then comparing the first answer with each subsequent answer for consistency. The more
 consistent the answers are, the less likely the model is to be hallucinating.
 
-The score is computed by prompting a judge LLM to assess the consistency of each pair of responses. The score ranges
+The score is computed by prompting a judging LLM to assess the consistency of each pair of responses. The score ranges
 from 0 to 1, with 1 indicating that the model consistently returned facts in every sampled response. As the score
 approaches 0, it indicates that the model is uncertain about its response and likely to be hallucinating.
 
@@ -29,10 +29,10 @@ parameter is set to a slightly higher value to allow for some variance in the re
     However, it is important to try out different values to find what works best for your specific usage.
 
 
-Given the `N` responses, a strong LLM judge like [OpenAI](https://openai.com/)'s
+Given the `n` responses, a strong LLM serving as a judge, like [OpenAI](https://openai.com/)'s
 [gpt-3.5-turbo](https://platform.openai.com/docs/models/gpt-3-5) or
-[gpt-4](https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo) is prompted for each pair of responses. The
-judge LLM is asked whether it thinks that the pair of responses contradicts or supports each other. The consistency
+[gpt-4](https://platform.openai.com/docs/models/gpt-4-and-gpt-4-turbo), is prompted for each pair of responses. The
+LLM judge is asked whether it thinks that the pair of responses contradicts or supports each other. The consistency
 score is then computed by dividing the number of consistent pairs by the total number of response pairs.
 
 $$
@@ -42,7 +42,7 @@ $$
 
 ### Example
 
-Let's compute the consistency score using OpenAI's gpt-3.5-turbo model as the judge model, given the following three
+Let's compute the consistency score using OpenAI's gpt-3.5-turbo model as the judging model, given the following three
 sampled responses:
 
 | # | Response |
@@ -59,7 +59,8 @@ pip install openai
 export OPENAI_API_KEY=`your-api-key-here`
 ```
 
-After setting up an API key, prompt the judge model of your choice for each pair of responses with the following prompt:
+After setting up an API key, prompt the judging model of your choice for each pair of responses with the following
+prompt:
 
 ```
 Given a pair of texts, where the first one is context, the second one is a
@@ -106,7 +107,7 @@ Otherwise, answer "no".
     response = str(response.choices[0].message.content)
     ```
 
-| Pair # | Response 1 | Response 2 | Judge Model's Response |
+| Pair # | Response 1 | Response 2 | Judging Model's Response |
 | --- | --- | --- | --- |
 | 1 | `The duck crossed the road.` | `The duck did not cross the road.` | `False` |
 | 2 | `The duck crossed the road.` | `The animal crossed the road.` | `True` |

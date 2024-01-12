@@ -11,24 +11,24 @@ and 1 indicates definite hallucination.
 
 The main prompting techniques we will focus on in this guide are:
 
-1. [**Chain-of-Thought Prompt**](#chain-of-thought-prompt) - This prompting technique asks the judge model to answer
-with a `yes` or `no` if the generated response contains hallucination. When the judge model detects hallucination, the
+1. [**Chain-of-Thought Prompt**](#chain-of-thought-prompt) - This prompting technique asks the judging model to answer
+with a `yes` or `no` if the generated response contains hallucination. When the judge detects hallucination, the
 [Chain-of-Thought (CoT)](https://www.promptingguide.ai/techniques/cot) prompting technique is used to improve the
 model's reasoning capabilities.
-2. [**Self-Consistency Prompt**](#self-consistency-prompt) - This technique involves prompting the judge model multiple
-times with the same prompt asking it to detect hallucinations and aggregating the outputs to obtain a score, known as
-hallucination score.
+2. [**Self-Consistency Prompt**](#self-consistency-prompt) - This technique involves prompting the judging model
+multiple times with the same prompt asking it to detect hallucinations and aggregating the outputs to obtain a score,
+known as a hallucination score.
 
 In practice, we recommend using a combination of the self-consistency prompting technique and the CoT technique.
 
 In the following section, we will compute the prompt-based hallucination metric using these two
-prompting techniques on example responses. We will use [GPT-4](https://openai.com/gpt-4) as the judge model, as it is
-currently the standard for evaluating hallucinations.
+prompting techniques on example responses. We will use [GPT-4](https://openai.com/gpt-4) as the judging model, as it
+is currently the most effective at detecting hallucinations.
 
 
 ### Example
 
-Given the following set of ground truth and inference, we will compute the hallucination metric using the two prompting
+Given the following set of ground truths and inferences, we will compute the hallucination metric using the two prompting
 techniques.
 
 | Ground Truth | Inference |
@@ -45,11 +45,11 @@ pip install openai
 export OPENAI_API_KEY=`your-api-key-here`
 ```
 
-After setting up an API key, let's prompt the judge model of your choice for each pair of ground truth and inference.
+After setting up an API key, let's prompt the judging model of your choice for each pair of ground truth and inference.
 
 #### Chain-of-Thought Prompt
 
-Using the CoT prompting technique, we can prompt the judge model to evaluate hallucination in a boolean format and
+Using the CoT prompting technique, we can prompt the judging model to evaluate hallucination in a boolean format and
 ask for its reasoning. Here is an example of the CoT prompt technique:
 
 ```
@@ -126,7 +126,7 @@ Based on GPT-4's response, we can identify any potential hallucination in each g
 #### Self-Consistency Prompt
 
 In the previous section, we learned about the CoT prompting technique. In this section, let's repeat the same prompt
-five times and measure the hallucination score. If you are unsure how many times to repeat, starting with five is a good option. The hallucination score is calculated as the rate of the number of times the judge model detected hallucination
+five times and measure the hallucination score. If you are unsure how many times to repeat, starting with five is a good option. The hallucination score is calculated as the rate of the number of times the judging model detected hallucination
 to the total number of instances:
 
 $$
@@ -142,22 +142,23 @@ $$
 
 Based on GPT-4's response, the inference in the first example pair is definitely hallucinating, and the one in the
 second pair is factually consistent. However, the inference in the last pair seems to be neutral or inconclusive, as the
-judge model predicted `yes` twice out of the five times it was prompted.
+judging model predicted `yes` twice out of the five times it was prompted.
 
 ## Limitations and Advantages
 
 1. **Cost** - There will be a cost associated with the metric computation unless you are using your own LLM. The cost
-varies depending on the number of tokens passed to the judge LLM. It can become expensive as you are paying per token
+varies depending on the number of tokens passed to the LLM judge. It can become expensive as you are paying per token
 used.
 
 2. **Privacy and Security** - To achieve desirable results, you need access to a sufficiently performant LLM. However,
-using GPT-4 or similar API models can become a privacy and security concern when datasets are meant to be kept private.
+using GPT-4 or similar models through an API can hold privacy and security concerns when datasets are meant to be kept
+private.
 
 While using LLMs to detect hallucinations has limitations, it also offers advantages:
 
 1. **Improved Accuracy** - LLM prompt-based evaluation is one of the state-of-the-art techniques being used for
 detecting hallucinations in LLMs.
 
-2. **Explainability** - By using a performant LLM as a judge model, it can provide explanations for flagging a response
+2. **Explainability** - By using a performant LLM as a judging model, it can provide explanations for flagging a response
 as a hallucination. These explanations can help us understand the reasoning behind the hallucination detection of a
 given prompt.
