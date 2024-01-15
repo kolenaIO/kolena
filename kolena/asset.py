@@ -155,7 +155,7 @@ class AudioAsset(Asset):
     """
 
     locator: str
-    """The location of this text file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-audio-asset.mp3`."""
+    """The location of this audio file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-audio-asset.mp3`."""
 
     @staticmethod
     def _data_type() -> _AssetType:
