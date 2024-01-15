@@ -65,6 +65,7 @@ nav:
         - Assets: reference/workflow/asset.md
         - Plots: reference/workflow/plot.md
         - <code>define_workflow</code>: reference/workflow/define-workflow.md
+        - <code>metrics</code>: reference/workflow/metrics.md
         - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
         - <code>visualization</code>: reference/workflow/visualization.md
         - IO: reference/workflow/io.md
