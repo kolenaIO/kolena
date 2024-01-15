@@ -20,11 +20,11 @@ from typing import Tuple
 import numpy as np
 
 from kolena._utils import log
+from kolena.metrics import f1_score
+from kolena.metrics import precision
+from kolena.metrics import recall
 from kolena.workflow.annotation import Label
 from kolena.workflow.annotation import ScoredLabel
-from kolena.workflow.metrics import f1_score
-from kolena.workflow.metrics import precision
-from kolena.workflow.metrics import recall
 from kolena.workflow.plot import ConfusionMatrix
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
@@ -261,8 +261,8 @@ def compute_threshold_curves(
     thresholds: Optional[List[float]] = None,
 ) -> Optional[List[Curve]]:
     """
-    Computes scores (i.e. [Precision][kolena.workflow.metrics.precision], [Recall][kolena.workflow.metrics.recall]
-    and [F1-score][kolena.workflow.metrics.f1_score]) vs. threshold curves for a **single** class presented in
+    Computes scores (i.e. [Precision][kolena.metrics.precision], [Recall][kolena.metrics.recall]
+    and [F1-score][kolena.metrics.f1_score]) vs. threshold curves for a **single** class presented in
     `inferences`.
 
     Expects `ground_truths` and `inferences` correspond to the same sample for the same given index.

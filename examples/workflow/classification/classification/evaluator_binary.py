@@ -26,11 +26,11 @@ from kolena._experimental.classification.utils import compute_confusion_matrix
 from kolena._experimental.classification.utils import compute_roc_curves
 from kolena._experimental.classification.utils import compute_threshold_curves
 from kolena._utils import log
+from kolena.metrics import accuracy as compute_accuracy
+from kolena.metrics import f1_score as compute_f1_score
+from kolena.metrics import precision as compute_precision
+from kolena.metrics import recall as compute_recall
 from kolena.workflow import Plot
-from kolena.workflow.metrics import accuracy as compute_accuracy
-from kolena.workflow.metrics import f1_score as compute_f1_score
-from kolena.workflow.metrics import precision as compute_precision
-from kolena.workflow.metrics import recall as compute_recall
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
 

@@ -26,15 +26,15 @@ from pydantic.dataclasses import dataclass
 from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
+from kolena.annotation import BoundingBox
+from kolena.annotation import LabeledBoundingBox
+from kolena.annotation import LabeledPolygon
+from kolena.annotation import Polygon
+from kolena.annotation import ScoredBoundingBox
+from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.annotation import ScoredLabeledPolygon
+from kolena.annotation import ScoredPolygon
 from kolena.errors import InputValidationError
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import LabeledBoundingBox
-from kolena.workflow.annotation import LabeledPolygon
-from kolena.workflow.annotation import Polygon
-from kolena.workflow.annotation import ScoredBoundingBox
-from kolena.workflow.annotation import ScoredLabeledBoundingBox
-from kolena.workflow.annotation import ScoredLabeledPolygon
-from kolena.workflow.annotation import ScoredPolygon
 
 
 def _iou_bbox(box1: BoundingBox, box2: BoundingBox) -> float:
@@ -71,7 +71,7 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
     Compute the Intersection Over Union (IoU) of two geometries.
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Intersection over Union (IoU) ↗](../../metrics/iou.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Intersection over Union (IoU) ↗](../metrics/iou.md)
     </div>
 
     :param a: The first geometry in computation.
@@ -101,14 +101,14 @@ Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeled
 @dataclass(frozen=True)
 class InferenceMatches(Generic[GT, Inf]):
     """
-    The result of [`match_inferences`][kolena.workflow.metrics.match_inferences], providing lists of matches between
+    The result of [`match_inferences`][kolena.metrics.match_inferences], providing lists of matches between
     ground truth and inference objects, unmatched ground truths, and unmatched inferences. After applying some
     confidence threshold on returned inference objects, `InferenceMatches` can be used to calculate metrics such as
     precision and recall.
 
-    Objects are of type [`BoundingBox`][kolena.workflow.annotation.BoundingBox] or
-    [`Polygon`][kolena.workflow.annotation.Polygon], depending on the type of inputs provided to
-    [`match_inferences`][kolena.workflow.metrics.match_inferences].
+    Objects are of type [`BoundingBox`][kolena.annotation.BoundingBox] or
+    [`Polygon`][kolena.annotation.Polygon], depending on the type of inputs provided to
+    [`match_inferences`][kolena.metrics.match_inferences].
     """
 
     matched: List[Tuple[GT, Inf]]
@@ -177,7 +177,7 @@ def match_inferences(
 
     This matcher does not consider labels, which is appropriate for single class object matching. To match with multiple
     classes (i.e. heeding `label` classifications), use the multiclass matcher
-    [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass].
+    [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
 
     Available modes:
 
@@ -186,22 +186,22 @@ def match_inferences(
       [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../../metrics/geometry-matching.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../metrics/geometry-matching.md)
     </div>
 
-    :param List[Geometry] ground_truths: A list of [`BoundingBox`][kolena.workflow.annotation.BoundingBox] or
-        [`Polygon`][kolena.workflow.annotation.Polygon] ground truths.
+    :param List[Geometry] ground_truths: A list of [`BoundingBox`][kolena.annotation.BoundingBox] or
+        [`Polygon`][kolena.annotation.Polygon] ground truths.
     :param List[ScoredGeometry] inferences: A list of
-        [`ScoredBoundingBox`][kolena.workflow.annotation.ScoredBoundingBox] or
-        [`ScoredPolygon`][kolena.workflow.annotation.ScoredPolygon] inferences.
+        [`ScoredBoundingBox`][kolena.annotation.ScoredBoundingBox] or
+        [`ScoredPolygon`][kolena.annotation.ScoredPolygon] inferences.
     :param Optional[List[Geometry]] ignored_ground_truths: Optionally specify a list of
-        [`BoundingBox`][kolena.workflow.annotation.BoundingBox] or [`Polygon`][kolena.workflow.annotation.Polygon]
+        [`BoundingBox`][kolena.annotation.BoundingBox] or [`Polygon`][kolena.annotation.Polygon]
         ground truths to ignore. These ignored ground truths and any inferences matched with them are
-        omitted from the returned [`InferenceMatches`][kolena.workflow.metrics.InferenceMatches].
+        omitted from the returned [`InferenceMatches`][kolena.metrics.InferenceMatches].
     :param mode: The matching methodology to use. See available modes above.
-    :param iou_threshold: The IoU (intersection over union, see [`iou`][kolena.workflow.metrics.iou]) threshold for
+    :param iou_threshold: The IoU (intersection over union, see [`iou`][kolena.metrics.iou]) threshold for
         valid matches.
-    :return: [`InferenceMatches`][kolena.workflow.metrics.InferenceMatches] containing the matches (true positives),
+    :return: [`InferenceMatches`][kolena.metrics.InferenceMatches] containing the matches (true positives),
         unmatched ground truths (false negatives) and unmatched inferences (false positives).
     """
 
@@ -223,16 +223,16 @@ Inf_Multiclass = TypeVar("Inf_Multiclass", bound=Union[ScoredLabeledBoundingBox,
 @dataclass(frozen=True)
 class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     """
-    The result of [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass], providing lists
+    The result of [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass], providing lists
     of matches between ground truth and inference objects, unmatched ground truths, and unmatched inferences.
 
     Unmatched ground truths may be matched with an inference of a different class when no inference of its own class is
     suitable, i.e. a "confused" match. `MultiClassInferenceMatches` can be used to calculate metrics such as precision
     and recall per class, after applying some confidence threshold on the returned inference objects.
 
-    Objects are of type [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox] or
-    [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon], depending on the type of inputs provided to
-    [`match_inferences_multiclass`][kolena.workflow.metrics.match_inferences_multiclass].
+    Objects are of type [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
+    [`LabeledPolygon`][kolena.annotation.LabeledPolygon], depending on the type of inputs provided to
+    [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
     """
 
     matched: List[Tuple[GT_Multiclass, Inf_Multiclass]]
@@ -274,24 +274,24 @@ def match_inferences_multiclass(
       [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../../metrics/geometry-matching.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../metrics/geometry-matching.md)
     </div>
 
     :param List[LabeledGeometry] ground_truths: A list of
-        [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox] or
-        [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon] ground truths.
+        [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
+        [`LabeledPolygon`][kolena.annotation.LabeledPolygon] ground truths.
     :param List[ScoredLabeledGeometry] inferences: A list of
-        [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox] or
-        [`ScoredLabeledPolygon`][kolena.workflow.annotation.ScoredLabeledPolygon] inferences.
+        [`ScoredLabeledBoundingBox`][kolena.annotation.ScoredLabeledBoundingBox] or
+        [`ScoredLabeledPolygon`][kolena.annotation.ScoredLabeledPolygon] inferences.
     :param Optional[List[LabeledGeometry]] ignored_ground_truths: Optionally specify a list of
-        [`LabeledBoundingBox`][kolena.workflow.annotation.LabeledBoundingBox] or
-        [`LabeledPolygon`][kolena.workflow.annotation.LabeledPolygon] ground truths to ignore. These ignored ground
+        [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
+        [`LabeledPolygon`][kolena.annotation.LabeledPolygon] ground truths to ignore. These ignored ground
         truths and any inferences matched with them are omitted from the returned
-        [`MulticlassInferenceMatches`][kolena.workflow.metrics.MulticlassInferenceMatches].
+        [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches].
     :param mode: The matching methodology to use. See available modes above.
     :param iou_threshold: The IoU threshold cutoff for valid matches.
     :return:
-        [`MulticlassInferenceMatches`][kolena.workflow.metrics.MulticlassInferenceMatches] containing the matches
+        [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
         (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
     """
     matched: List[Tuple[GT_Multiclass, Inf_Multiclass]] = []

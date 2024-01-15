@@ -32,11 +32,11 @@ from semantic_segmentation.workflow import TestSampleMetric
 
 from kolena._experimental.object_detection.utils import compute_average_precision
 from kolena._utils.log import info
+from kolena.metrics import f1_score as compute_f1_score
+from kolena.metrics import precision as compute_precision
+from kolena.metrics import recall as compute_recall
 from kolena.workflow import EvaluationResults
 from kolena.workflow import TestCases
-from kolena.workflow.metrics import f1_score as compute_f1_score
-from kolena.workflow.metrics import precision as compute_precision
-from kolena.workflow.metrics import recall as compute_recall
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
 

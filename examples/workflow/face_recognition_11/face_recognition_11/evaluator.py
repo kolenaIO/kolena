@@ -35,6 +35,10 @@ from face_recognition_11.workflow import TestSampleMetrics
 from face_recognition_11.workflow import TestSuiteMetrics
 from face_recognition_11.workflow import ThresholdConfiguration
 
+from kolena.metrics import f1_score
+from kolena.metrics import iou
+from kolena.metrics import precision
+from kolena.metrics import recall
 from kolena.workflow import AxisConfig
 from kolena.workflow import BarPlot
 from kolena.workflow import Curve
@@ -42,10 +46,6 @@ from kolena.workflow import CurvePlot
 from kolena.workflow import EvaluationResults
 from kolena.workflow import Plot
 from kolena.workflow import TestCases
-from kolena.workflow.metrics import f1_score
-from kolena.workflow.metrics import iou
-from kolena.workflow.metrics import precision
-from kolena.workflow.metrics import recall
 
 
 def compute_per_sample(

@@ -16,11 +16,11 @@ from typing import Tuple
 
 import pytest
 
+from kolena.metrics import InferenceMatches
+from kolena.metrics import MulticlassInferenceMatches
 from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import ScoredClassificationLabel
 from kolena.workflow.annotation import ScoredLabeledPolygon
-from kolena.workflow.metrics import InferenceMatches
-from kolena.workflow.metrics import MulticlassInferenceMatches
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 GroundTruth = object_detection.GroundTruth

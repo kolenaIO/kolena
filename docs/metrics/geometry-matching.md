@@ -9,8 +9,8 @@ While it may sound simple, geometry matching is surprisingly challenging and ful
 focus on 2D object detection—specifically 2D bounding box matching—to learn about geometry matching algorithms.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`match_inferences`][kolena.workflow.metrics.match_inferences],
-  [`match_inferences_multiclass` ↗][kolena.workflow.metrics.match_inferences_multiclass]
+- :kolena-manual-16: API Reference: [`match_inferences`][kolena.metrics.match_inferences],
+  [`match_inferences_multiclass` ↗][kolena.metrics.match_inferences_multiclass]
 </div>
 
 ## Algorithm Overview

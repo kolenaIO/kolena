@@ -69,8 +69,8 @@ class MetricsTestCase(DataObject, metaclass=ABCMeta):
 
     This class should be subclassed with the relevant fields for a given workflow.
 
-    Test-case-level metrics are aggregate metrics like [`precision`][kolena.workflow.metrics.precision],
-    [`recall`][kolena.workflow.metrics.recall], and [`f1_score`][kolena.workflow.metrics.f1_score]. Any and all
+    Test-case-level metrics are aggregate metrics like [`precision`][kolena.metrics.precision],
+    [`recall`][kolena.metrics.recall], and [`f1_score`][kolena.metrics.f1_score]. Any and all
     aggregate metrics that fit a workflow should be defined here.
 
     ## Nesting Aggregate Metrics

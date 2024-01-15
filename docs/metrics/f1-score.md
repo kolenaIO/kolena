@@ -19,7 +19,7 @@ Thus, the F<sub>1</sub>-score has become a popular metric for the evaluation of 
 object detection, semantic segmentation, and information retrieval.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.workflow.metrics.f1_score]
+- :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.metrics.f1_score]
 </div>
 
 ## Implementation Details
