@@ -23,5 +23,5 @@ from semantic_segmentation.utils import sanitize_model_name
         ("model_NAME(param)_1@%", "model_NAME(param)_1"),
     ],
 )
-def test__model_sanitization(model_name, expected):
+def test__model_sanitization(model_name, expected) -> None:
     assert expected == sanitize_model_name(model_name)

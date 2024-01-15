@@ -200,8 +200,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
@@ -323,9 +323,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetrics],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestCaseMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
@@ -346,9 +346,9 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetrics],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
@@ -395,8 +395,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetrics]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        metrics: List[Tuple[TestCase, TestCaseMetrics]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
         unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}

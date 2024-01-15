@@ -172,13 +172,16 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> List[Tuple[TestSample, TestSampleMetricsSingleClass]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
+        return [
+            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name))  # type: ignore
+            for ts, gt, inf in inferences
+        ]
 
     def test_case_metrics_single_class(
         self,
@@ -210,9 +213,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetricsSingleClass],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetricsSingleClass],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestCaseMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
         all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
@@ -228,9 +231,9 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
         metrics: List[TestSampleMetricsSingleClass],
-        configuration: Optional[ThresholdConfiguration] = None,
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
         all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
@@ -263,8 +266,8 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
         unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}

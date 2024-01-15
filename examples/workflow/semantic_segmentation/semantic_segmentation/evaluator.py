@@ -186,6 +186,6 @@ def evaluate_semantic_segmentation(
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
         plots_test_case=all_test_case_plots,
     )

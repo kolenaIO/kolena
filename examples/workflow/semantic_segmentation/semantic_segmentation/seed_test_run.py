@@ -46,7 +46,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             activation_map=BitmapMask(locator=activation_map_locator),
         )
 
-    model = Model(f"{model_name}", infer=infer)
+    model = Model(f"{model_name}", infer=infer)  # type: ignore
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         configurations = [SegmentationConfiguration(threshold=0.5)]

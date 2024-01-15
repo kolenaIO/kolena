@@ -12,11 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from concurrent.futures import ThreadPoolExecutor
+from typing import Iterable
 from typing import Iterator
 from typing import List
 from typing import Tuple
 
 import numpy as np
+from numpy import ndarray
 from pydantic.dataclasses import dataclass
 from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import download_mask
@@ -41,14 +43,14 @@ ResultMasks = Tuple[ResultMask, ResultMask, ResultMask]
 
 
 class DataLoader:
-    def __init__(self):
+    def __init__(self) -> None:
         self.pool = ThreadPoolExecutor(max_workers=32)
 
     def download_masks(
         self,
         ground_truths: List[GroundTruth],
         inferences: List[Inference],
-    ) -> Iterator[Tuple[np.ndarray, np.ndarray]]:
+    ) -> Iterable[Tuple[np.ndarray, np.ndarray]]:
         def load(gt: GroundTruth, inf: Inference) -> Tuple[np.ndarray, np.ndarray]:
             inf_prob = download_binary_array(inf.prob.locator)
             gt_mask = download_mask(gt.mask.locator)

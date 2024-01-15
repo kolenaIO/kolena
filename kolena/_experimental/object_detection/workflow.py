@@ -67,7 +67,7 @@ class GroundTruth(BaseGroundTruth):
 
     n_bboxes: int = dataclasses.field(default_factory=lambda: 0)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "n_bboxes", len(self.bboxes))
 
 
