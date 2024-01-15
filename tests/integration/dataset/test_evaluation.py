@@ -251,6 +251,25 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     assert response.n_inserted == 10
     assert response.n_updated == 0
 
+    expected_df_dp = df_dp.reset_index(drop=True)
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    assert len(df_results_by_eval) == 2
+    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+
+    df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
+    fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
+    fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
+    assert fetched_eval_config_1 == eval_config_1
+    assert fetched_eval_config_2 == eval_config_2
+    # verify the partial results with placeholder
+    expected_df_result_1_partial = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
+    expected_df_result_1_partial[5:10] = np.nan
+    expected_df_result_2_partial = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
+    expected_df_result_2_partial[:5] = np.nan
+    _assert_frame_equal(fetched_df_result_1, expected_df_result_1_partial, result_columns_1)
+    _assert_frame_equal(fetched_df_result_2, expected_df_result_2_partial, result_columns_2)
+
+    # insert the missing results, they will have full results
     df_result_1_p2 = df_result[5:10][input_result_columns_1]
     df_result_2_p2 = df_result[:5][input_result_columns_2]
     response = upload_results(
@@ -263,7 +282,6 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
-    expected_df_dp = df_dp.reset_index(drop=True)
     _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
 
     df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
@@ -391,3 +409,37 @@ def test__download_results__not_exist() -> None:
         download_results(dataset_name, model_name)
     exc_info_value = str(exc_info.value)
     assert "no such model" in exc_info_value
+
+
+def test__download_results__reset_dataset() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__reset_dataset")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__reset_dataset")
+
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
+
+    df_result = get_df_result(10)
+    eval_config = dict(threshold=0.422)
+
+    response = upload_results(
+        dataset_name,
+        model_name,
+        [(eval_config, df_result)],
+    )
+    assert response.n_inserted == 10
+    assert response.n_updated == 0
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    eval_cfg, fetched_df_result = df_results_by_eval[0]
+    assert not fetched_df_dp.empty
+    assert not fetched_df_result.empty
+    assert len(df_results_by_eval) == 1
+    assert eval_cfg == eval_config
+
+    # reset dataset by updating id_fields, no results are kept
+    upload_dataset(dataset_name, df_dp[dp_columns], id_fields=[*ID_FIELDS, "locator"])
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    assert fetched_df_dp.empty
+    assert len(df_results_by_eval) == 0
