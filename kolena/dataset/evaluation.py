@@ -98,7 +98,7 @@ def _process_result(
     return df_result_eval
 
 
-def _upload_results(
+def _send_upload_results_request(
     model: str,
     load_uuid: str,
     dataset_id: int,
@@ -165,22 +165,11 @@ def _validate_configs(configs: List[EvalConfig]) -> None:
 
 
 @with_event(EventAPI.Event.UPLOAD_DATASET_MODEL_RESULT)
-def upload_results(
+def _upload_results(
     dataset: str,
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
 ) -> UploadResultsResponse:
-    """
-    This function is used for uploading the results from a specified model on a given dataset.
-
-    :param dataset: The name of the dataset.
-    :param model: The name of the model.
-    :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    an eval configuration and a DataFrame.
-
-    :return: Containing information about the number of result rows created and updated
-    """
-
     existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
         raise NotFoundError(f"dataset {dataset} does not exist")
@@ -192,9 +181,11 @@ def upload_results(
     load_uuid = init_upload().uuid
 
     _validate_configs([cfg for cfg, _ in results])
+    total_rows = 0
     for config, df_result_input in results:
         log.info(f"uploading test results with configuration {config}" if config else "uploading test results")
         if isinstance(df_result_input, pd.DataFrame):
+            total_rows += df_result_input.shape[0]
             validate_dataframe_ids(df_result_input, id_fields)
             validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
             df_results = _process_result(config, df_result_input, id_fields)
@@ -206,12 +197,33 @@ def upload_results(
                     validate_dataframe_ids(df_result, id_fields)
                     validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
                     id_column_validated = True
+                total_rows += df_result.shape[0]
                 df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
     response = _upload_results(model, load_uuid, existing_dataset.id)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
+        f"There are a total of {total_rows} rows in the results input"
         f"{response.n_inserted} inserted, {response.n_updated} updated",
     )
     return response
+
+
+@with_event(EventAPI.Event.UPLOAD_DATASET_MODEL_RESULT)
+def upload_results(
+    dataset: str,
+    model: str,
+    results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
+) -> None:
+    """
+    This function is used for uploading the results from a specified model on a given dataset.
+
+    :param dataset: The name of the dataset.
+    :param model: The name of the model.
+    :param results: Either a DataFrame or a list of tuples, where each tuple consists of
+                    an eval configuration and a DataFrame.
+
+    :return: None
+    """
+    _upload_results(dataset, model, results)

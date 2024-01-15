@@ -8,6 +8,5 @@ icon: kolena/dataset-16
 - :kolena-developer-16: Examples: [`kolena/examples/dataset` ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples)
 </div>
 
-::: kolena.dataset
+::: kolena.dataset.dataset
 ::: kolena.dataset.evaluation
-::: kolena._api.v2.model

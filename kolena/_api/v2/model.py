@@ -48,14 +48,8 @@ class UploadResultsRequest:
 
 @dataclass(frozen=True)
 class UploadResultsResponse:
-    """
-    The response object for the UploadResultRequest
-    """
-
     n_inserted: int
-    """ The number of result rows created """
     n_updated: int
-    """ The number of result rows updated """
 
 
 @dataclass(frozen=True)
