@@ -17,8 +17,6 @@ from typing import Union
 
 import pytest
 
-from kolena.metrics import InferenceMatches
-from kolena.metrics import MulticlassInferenceMatches
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
@@ -26,6 +24,8 @@ from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.annotation import LabeledPolygon
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledPolygon
+from kolena.workflow.metrics import InferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 TOLERANCE = 1e-12
 

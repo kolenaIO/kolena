@@ -34,8 +34,8 @@ from kolena._utils import log
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
-from kolena.metrics import InferenceMatches
-from kolena.metrics import MulticlassInferenceMatches
+from kolena.workflow.metrics import InferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def filter_inferences(

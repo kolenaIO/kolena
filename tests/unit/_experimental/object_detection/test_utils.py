@@ -20,11 +20,11 @@ from typing import Union
 import pytest
 
 from .test_plots import TEST_MATCHING
-from kolena.metrics import InferenceMatches
-from kolena.metrics import MulticlassInferenceMatches
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import ScoredBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox
+from kolena.workflow.metrics import InferenceMatches
+from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 @pytest.mark.metrics

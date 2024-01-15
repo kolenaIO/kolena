@@ -35,13 +35,13 @@ from kolena._experimental.object_detection.utils import compute_optimal_f1_thres
 from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot
 from kolena._experimental.object_detection.utils import filter_inferences
-from kolena.metrics import f1_score as compute_f1_score
-from kolena.metrics import InferenceMatches
-from kolena.metrics import match_inferences
-from kolena.metrics import precision as compute_precision
-from kolena.metrics import recall as compute_recall
 from kolena.workflow import Evaluator
 from kolena.workflow import Plot
+from kolena.workflow.metrics import f1_score as compute_f1_score
+from kolena.workflow.metrics import InferenceMatches
+from kolena.workflow.metrics import match_inferences
+from kolena.workflow.metrics import precision as compute_precision
+from kolena.workflow.metrics import recall as compute_recall
 
 
 class SingleClassObjectDetectionEvaluator(Evaluator):
