@@ -21,12 +21,14 @@ from semantic_segmentation.constants import DATASET
 import kolena
 from kolena.annotation import SegmentationMask
 from kolena.dataset import upload_dataset
+from kolena.io import dataframe_to_csv
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     df_dataset["mask"] = df_dataset["mask"].apply(lambda mask: SegmentationMask(locator=mask, labels={1: "PERSON"}))
+    dataframe_to_csv(df_dataset, f"s3://{BUCKET}/{DATASET}/{DATASET}-person.csv", index=False)
     upload_dataset(args.dataset_name, df_dataset)
 
 
@@ -35,7 +37,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset-csv",
         type=str,
-        default=f"s3://{BUCKET}/{DATASET}/annotations/annotations_person.csv",
+        default=f"s3://{BUCKET}/{DATASET}/raw/coco-stuff-10k-person.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(

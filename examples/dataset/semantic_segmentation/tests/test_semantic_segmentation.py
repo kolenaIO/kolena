@@ -41,7 +41,7 @@ def dataset_name() -> str:
 
 def test__semantic_segmentation_upload_dataset__smoke() -> None:
     args = Namespace(
-        dataset_csv=f"s3://{BUCKET}/{DATASET}/annotations/annotations.tiny5.csv",
+        dataset_csv=f"s3://{BUCKET}/{DATASET}/raw/coco-stuff-10k-person.tiny5.csv",
         dataset_name=dataset_name,
     )
     upload_dataset_run(args)

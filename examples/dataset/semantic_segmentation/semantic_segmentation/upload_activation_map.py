@@ -19,16 +19,18 @@ from semantic_segmentation.activation_map_uploader import ActivationMapUploader
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.constants import MODEL_NAME
+from semantic_segmentation.utils import activation_map_locator_path
+from semantic_segmentation.utils import inference_locator_path
 
 import kolena
 from kolena.dataset import download_dataset
 
 
 def upload_activation_map(model_name: str, write_bucket: str) -> None:
-    inf_locator_prefix = f"s3://{BUCKET}/{DATASET}/results/{model_name}/"
-    map_locator_prefix = f"s3://{write_bucket}/{DATASET}/inferences/{model_name}/activation/"
+    inf_locator_prefix = inference_locator_path(BUCKET, DATASET, model_name)
+    map_locator_prefix = activation_map_locator_path(write_bucket, DATASET, model_name)
     uploader = ActivationMapUploader(inf_locator_prefix, map_locator_prefix)
-    df_dataset = download_dataset(DATASET).head(5)
+    df_dataset = download_dataset(DATASET)
     uploader.submit(df_dataset["basename"].tolist())
 
 

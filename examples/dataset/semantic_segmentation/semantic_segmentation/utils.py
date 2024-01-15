@@ -118,3 +118,23 @@ def create_bitmap(activation_map: np.ndarray) -> BytesIO:
     bitmap = colorize_activation_map(activation_map)
     image_buffer = encode_png(bitmap, mode="RGBA")
     return image_buffer
+
+
+def result_masks_locator_path(bucket: str, dataset: str, model: str, threshold: float) -> str:
+    return f"s3://{bucket}/{dataset}/results/{model}/masks/{threshold:.2f}"
+
+
+def inference_locator_path(bucket: str, dataset: str, model: str) -> str:
+    return f"s3://{bucket}/{dataset}/results/{model}/masks/"
+
+
+def inference_locator_from_basename(bucket: str, dataset: str, model: str, basename: str) -> str:
+    return inference_locator_path(bucket, dataset, model) + f"{basename}_person.npy"
+
+
+def activation_map_locator_path(bucket: str, dataset: str, model: str) -> str:
+    return f"s3://{bucket}/{dataset}/results/{model}/activation_maps/"
+
+
+def activation_map_locator_from_basename(bucket: str, dataset: str, model: str, basename: str) -> str:
+    return activation_map_locator_path(bucket, dataset, model) + f"{basename}.png"

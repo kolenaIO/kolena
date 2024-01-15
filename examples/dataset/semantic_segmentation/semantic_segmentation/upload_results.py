@@ -24,9 +24,12 @@ from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.constants import EVAL_CONFIG
 from semantic_segmentation.constants import MODEL_NAME
+from semantic_segmentation.utils import activation_map_locator_from_basename
 from semantic_segmentation.utils import apply_threshold
 from semantic_segmentation.utils import compute_result_masks
+from semantic_segmentation.utils import inference_locator_from_basename
 from semantic_segmentation.utils import load_data
+from semantic_segmentation.utils import result_masks_locator_path
 from semantic_segmentation.utils import upload_result_masks
 from tqdm import tqdm
 
@@ -36,6 +39,7 @@ from kolena.annotation import SegmentationMask
 from kolena.asset import BinaryAsset
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
+from kolena.io import dataframe_to_csv
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
@@ -92,20 +96,24 @@ def run(args: Namespace) -> None:
 
     df_dataset = download_dataset(args.dataset)
     df_dataset["threshold"] = threshold
-    df_dataset[
-        "result_masks_locator_prefix"
-    ] = f"s3://{args.write_bucket}/{DATASET}/results/{model_name}/{threshold:.2f}"
+    df_dataset["result_masks_locator_prefix"] = result_masks_locator_path(
+        args.write_bucket,
+        DATASET,
+        model_name,
+        threshold,
+    )
     df_dataset["inference_locator"] = df_dataset["basename"].apply(
-        lambda x: f"s3://{BUCKET}/{DATASET}/results/{model_name}/{x}_person.npy",
+        lambda x: inference_locator_from_basename(BUCKET, DATASET, model_name, x),
     )
     df_dataset["activation_map_locator"] = df_dataset["basename"].apply(
-        lambda x: f"s3://{BUCKET}/{DATASET}/inferences/{model_name}/activation/{x}.png",
+        lambda x: activation_map_locator_from_basename(BUCKET, DATASET, model_name, x),
     )
 
     pool = ThreadPoolExecutor(max_workers=32)
     results = list(tqdm(pool.map(compute_metrics, list(df_dataset.itertuples(index=False))), total=len(df_dataset)))
 
     df_results = pd.DataFrame.from_records(results)
+    dataframe_to_csv(df_results, f"s3://{BUCKET}/{DATASET}/results/{model_name}/{model_name}.csv", index=False)
     upload_results(args.dataset, model_name, [(EVAL_CONFIG, df_results)])
 
 

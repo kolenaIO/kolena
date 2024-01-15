@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 DATASET = "coco-stuff-10k"
 MODEL_NAME = {
     "pspnet_r101": "pspnet_r101-d8_4xb4-40k_coco-stuff10k-512x512",
