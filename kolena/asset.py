@@ -22,6 +22,7 @@ The following asset types are available:
 - [`BinaryAsset`][kolena.asset.BinaryAsset]
 - [`PointCloudAsset`][kolena.asset.PointCloudAsset]
 - [`VideoAsset`][kolena.asset.VideoAsset]
+- [`AudioAsset`][kolena.asset.AudioAsset]
 
 """
 from abc import ABCMeta
@@ -145,4 +146,20 @@ class VideoAsset(BaseVideoAsset):
             raise ValueError(f"Specified start time '{self.start}' and end time '{self.end}' must be non-negative")
 
 
-_ASSET_TYPES = [ImageAsset, PlainTextAsset, BinaryAsset, PointCloudAsset, BaseVideoAsset, VideoAsset]
+@dataclass(frozen=True, config=ValidatorConfig)
+class AudioAsset(Asset):
+    """
+    An audio file in a cloud bucket or served at a URL.
+
+    For best results, use a broadly supported file type such as `.mp3` or `.wav`.
+    """
+
+    locator: str
+    """The location of this audio file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-audio-asset.mp3`."""
+
+    @staticmethod
+    def _data_type() -> _AssetType:
+        return _AssetType.AUDIO
+
+
+_ASSET_TYPES = [ImageAsset, PlainTextAsset, BinaryAsset, PointCloudAsset, BaseVideoAsset, VideoAsset, AudioAsset]
