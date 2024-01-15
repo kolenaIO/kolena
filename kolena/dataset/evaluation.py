@@ -201,7 +201,7 @@ def _upload_results(
                 df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
-    response = _upload_results(model, load_uuid, existing_dataset.id)
+    response = _send_upload_results_request(model, load_uuid, existing_dataset.id)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
         f"There are a total of {total_rows} rows in the results input"
