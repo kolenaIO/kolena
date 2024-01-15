@@ -13,6 +13,7 @@
 # limitations under the License.
 import math
 from typing import List
+from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -25,7 +26,15 @@ from kolena.workflow import Histogram
 
 
 class PairMetrics:
-    def __init__(self, n_genuine_pairs, n_imposter_pairs, n_fm, n_fnm, n_pair_failures, n_fte):
+    def __init__(
+        self,
+        n_genuine_pairs: int,
+        n_imposter_pairs: int,
+        n_fm: int,
+        n_fnm: int,
+        n_pair_failures: int,
+        n_fte:int,
+    ) -> None:
         self.genuine_pairs = n_genuine_pairs
         self.imposter_pairs = n_imposter_pairs
         self.fm = n_fm
@@ -71,7 +80,7 @@ def compute_baseline_thresholds(
     return list(zip(baseline_fmr_x, baseline_thresholds))
 
 
-def get_unique_pairs(test_samples: List[TestSample]) -> List[Tuple[str, str]]:
+def get_unique_pairs(test_samples: List[TestSample]) -> Set[Tuple[str, str]]:
     pairs = {(ts.locator, pair.locator) for ts in test_samples for pair in ts.pairs}
     unique_pairs = {(a, b) if a <= b else (b, a) for a, b in pairs}
     return unique_pairs
@@ -140,7 +149,7 @@ def create_iou_histogram(
     bin_size = (max_data - min_data) / number_of_bins
     bin_edges = [min_data + i * bin_size for i in range(number_of_bins + 1)]
 
-    freq, bin_edges = np.histogram(ious, bins=bin_edges, density=True)
+    freq, bin_edges = np.histogram(ious, bins=bin_edges, density=True)  # type: ignore
 
     return Histogram(
         title="Bounding Box Detection: IoU Distribution",
@@ -170,8 +179,8 @@ def create_similarity_histogram(
     ]
 
     # address duplicates
-    genuine_values = np.unique(genuine_values)
-    imposter_values = np.unique(imposter_values)
+    genuine_values = np.unique(genuine_values)  # type: ignore
+    imposter_values = np.unique(imposter_values)  # type: ignore
 
     min_data, max_data = 0.0, 1.0
 

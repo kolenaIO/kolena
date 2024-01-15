@@ -13,6 +13,7 @@
 # limitations under the License.
 from collections import defaultdict
 from dataclasses import dataclass
+from typing import cast
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -66,7 +67,7 @@ def compute_test_case_metrics(test_sample_metrics: List[MetricsTestSample]) -> M
         mae=abs_errors.mean(),
         rmse=np.sqrt(abs_errors_squared.mean()),
         n_infer_fail=len(test_sample_metrics) - num_valid_predictions,
-        failure_rate_err_gt_5=np.sum(abs_errors > 5) / float(num_valid_predictions),
+        failure_rate_err_gt_5=cast(float, np.sum(abs_errors > 5) / float(num_valid_predictions)),
     )
 
 
@@ -121,6 +122,6 @@ def evaluate_age_estimation(
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
         plots_test_case=all_test_case_plots,
     )

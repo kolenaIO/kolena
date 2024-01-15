@@ -32,7 +32,7 @@ BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
 
 
-def main(args: Namespace) -> int:
+def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
     df = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
@@ -93,7 +93,7 @@ def main(args: Namespace) -> int:
     complete_test_case = TestCase(
         name=f"{DATASET} :: complete [FR]",
         description=f"All images in {DATASET} dataset",
-        test_samples=test_samples_and_ground_truths,
+        test_samples=test_samples_and_ground_truths,  # type: ignore
         reset=True,
     )
 

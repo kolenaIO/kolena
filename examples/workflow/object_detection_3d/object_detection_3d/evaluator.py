@@ -138,9 +138,9 @@ class MetricsTestCaseLabel(BaseMetricsTestCase):
     label: str
     nObjects: int
     nInferences: int
-    mAP_2D: float
-    mAP_3D: float
-    mAP_BEV: float
+    mAP_2D: Union[float, np.ndarray[Any, Any]]
+    mAP_3D: Union[float, np.ndarray[Any, Any]]
+    mAP_BEV: Union[float, np.ndarray[Any, Any]]
 
 
 @dataclass(frozen=True)
@@ -159,7 +159,7 @@ class KITTI3DEvaluator(Evaluator):
     def get_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
     ) -> Dict[str, Union[float, np.ndarray]]:
         if test_case.name not in self.metrics_by_test_case.keys():
             self.metrics_by_test_case[test_case.name] = self.evaluate(inferences)
@@ -169,8 +169,8 @@ class KITTI3DEvaluator(Evaluator):
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[KITTI3DConfig] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[KITTI3DConfig] = None,  # type: ignore
     ) -> List[Tuple[TestSample, MetricsTestSample]]:
         sample_metrics: List[Tuple[TestSample, MetricsTestSample]] = []
         if configuration is None:
@@ -273,7 +273,7 @@ class KITTI3DEvaluator(Evaluator):
 
     def evaluate(
         self,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
     ) -> Dict[str, float]:
         # convert GT & INF to KITTI evaluation suite's compatible type
         kitti_ground_truths: List[Dict[str, Any]] = []
@@ -306,9 +306,9 @@ class KITTI3DEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[MetricsTestSample],
-        configuration: Optional[KITTI3DConfig] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[MetricsTestSample],  # type: ignore
+        configuration: Optional[KITTI3DConfig] = None,  # type: ignore
     ) -> MetricsTestCase:
         if configuration is None:
             raise ValueError(f"{type(self).__name__} must have configuration")
@@ -336,9 +336,9 @@ class KITTI3DEvaluator(Evaluator):
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[MetricsTestSample],
-        configuration: Optional[KITTI3DConfig] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[MetricsTestSample],  # type: ignore
+        configuration: Optional[KITTI3DConfig] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
         if configuration is None:
             raise ValueError(f"{type(self).__name__} must have configuration")

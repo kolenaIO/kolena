@@ -38,7 +38,11 @@ def infer(test_sample: TestSample) -> Inference:
 
 
 def run(args: Namespace) -> None:
-    model = Model(args.model_name, infer=infer, metadata=dict(description="Any freeform metadata can go here"))
+    model = Model(
+        args.model_name,
+        infer=infer,   # type: ignore
+        metadata=dict(description="Any freeform metadata can go here"),
+    )
 
     test_suite = TestSuite(args.test_suite)
     evaluator = KeypointsEvaluator(

@@ -33,7 +33,7 @@ DATASET = "LibriSpeech"
 def seed_test_suite_duration(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "short duration": lambda x: x < 4,
         "medium duration": lambda x: 4 <= x < 7,
@@ -42,7 +42,10 @@ def seed_test_suite_duration(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["duration_seconds"])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["duration_seconds"])
+        ]
 
         new_ts = TestCase(
             f"transcription duration (seconds) :: {name} :: {DATASET}",
@@ -62,7 +65,7 @@ def seed_test_suite_duration(
 def seed_test_suite_speaker_sex(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "male": lambda x: x == " M ",
         "female": lambda x: x == " F ",
@@ -70,7 +73,10 @@ def seed_test_suite_speaker_sex(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["speaker_sex"])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["speaker_sex"])
+        ]
 
         new_ts = TestCase(
             f"speaker sex:: {name} :: {DATASET}",
@@ -90,7 +96,7 @@ def seed_test_suite_speaker_sex(
 def seed_test_suite_tempo(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "slower": lambda x: x < 2.5,
         "medium": lambda x: 2.5 <= x < 3.1,
@@ -99,7 +105,10 @@ def seed_test_suite_tempo(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["tempo"])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["tempo"])
+        ]
 
         new_ts = TestCase(
             f"tempo (words per second) :: {name} :: {DATASET}",
@@ -152,7 +161,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(transcription=ClassificationLabel(record.text))
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case
