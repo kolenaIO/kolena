@@ -52,12 +52,12 @@ from kolena.errors import NotFoundError
 
 EvalConfig = Optional[Dict[str, Any]]
 """
-User defined configuration for evaluating results, for example `{"threshold": 7}`
+User defined configuration for evaluating results, for example `{"threshold": 7}`.
 """
 DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
 """
 A type alias representing a DataFrame, which can be either a pandas DataFrame
-or an iterator of pandas DataFrames. Data will be processed in chunks when iterator is passed in
+or an iterator of pandas DataFrames, data will be processed in chunks when iterator is used.
 """
 
 
