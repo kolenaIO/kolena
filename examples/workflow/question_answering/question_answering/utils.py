@@ -27,6 +27,7 @@ from kolena.workflow import BarPlot
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
+from kolena.workflow.plot import Plot
 
 
 def get_readable(text: str) -> str:
@@ -85,7 +86,7 @@ def compute_metric_vs_metric_plot(
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     x_logarithmic: bool = False,
     y_logarithmic: bool = False,
-) -> Optional[CurvePlot]:
+) -> Optional[Plot]:
     y_values = [getattr(m, y_metric) for m in y_metrics]
     x_values = [getattr(m, x_metric) for m in x_metrics]
 

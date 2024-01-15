@@ -68,7 +68,7 @@ def compute_test_sample_metrics(
     gt: GroundTruth,
     inf: Inference,
     configuration: ThresholdConfiguration,
-):
+) -> TestSampleMetrics:
     results = compute_metrics(gt.clean_answer, inf.clean_answer)
     custom_metric = round((results["BERT_f1"] + results["ROUGE_1"]) / 2, 3)
     return TestSampleMetrics(
@@ -103,11 +103,11 @@ def compute_test_case_plots(
     test_samples: List[TestSample],
     inferences: List[Inference],
     metrics: List[TestSampleMetrics],
-) -> Optional[List[Plot]]:
+) -> List[Optional[Plot]]:
     metrics_of_interest = ["BERT_f1", "ROUGE_1", "MEAN_METRIC"]
     metric_values = [mean_metric(metric, metrics) for metric in metrics_of_interest]
 
-    plots: List[Plot] = [
+    plots: List[Optional[Plot]] = [
         compute_metric_bar_plot(metrics_of_interest, metric_values),
         compute_score_distribution_plot("BERT_f1", metrics, (0, 1, 101)),
         compute_score_distribution_plot("ROUGE_1", metrics, (0, 1, 101)),
@@ -153,7 +153,7 @@ def evaluate_question_answering(
 
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetrics]] = []
-    all_test_case_plots: List[Tuple[TestCase, List[Plot]]] = []
+    all_test_case_plots: List[Tuple[TestCase, List[Optional[Plot]]]] = []
     for test_case, ts, gt, inf, tsm in test_cases.iter(test_samples, ground_truths, inferences, test_sample_metrics):
         all_test_case_metrics.append((test_case, compute_test_case_metrics(tsm)))
         all_test_case_plots.append((test_case, compute_test_case_plots(ts, inf, tsm)))
@@ -163,7 +163,7 @@ def evaluate_question_answering(
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
-        plots_test_case=all_test_case_plots,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
+        plots_test_case=all_test_case_plots,  # type: ignore
         metrics_test_suite=test_suite_metrics,
     )
