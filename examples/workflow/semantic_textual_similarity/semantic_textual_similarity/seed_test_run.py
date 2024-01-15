@@ -43,7 +43,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
         return Inference(similarity=sample_result["cos_similarity"])
 
-    model = Model(f"{model_name}", infer=infer)
+    model = Model(f"{model_name}", infer=infer)  # type: ignore
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:

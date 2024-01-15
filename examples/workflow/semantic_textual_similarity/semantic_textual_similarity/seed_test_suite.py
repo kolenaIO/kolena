@@ -49,7 +49,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(similarity=record.similarity / 5.0)  # STS-b's similarity ranges from 0 to 5
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case
