@@ -15,7 +15,9 @@
 import dataclasses
 from typing import List
 from typing import Optional
+from typing import Union
 
+import numpy as np
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
@@ -91,9 +93,9 @@ class TestSampleMetrics(MetricsTestSample):
     count_TNM: int
     similarity_threshold: float
     bbox_IoU: Optional[float]
-    bbox_TP: Optional[List[BoundingBox]]
-    bbox_FP: Optional[List[BoundingBox]]
-    bbox_FN: Optional[List[BoundingBox]]
+    bbox_TP: List[Optional[BoundingBox]]
+    bbox_FP: List[Optional[BoundingBox]]
+    bbox_FN: List[Optional[BoundingBox]]
     bbox_has_TP: bool
     bbox_has_FP: bool
     bbox_has_FN: bool
@@ -120,7 +122,7 @@ class PerBBoxMetrics(MetricsTestCase):
     Label: str
     Total: int
     FTE: int
-    AvgIoU: float
+    AvgIoU: Union[float, np.floating]
     Precision: float
     Recall: float
     F1: float
