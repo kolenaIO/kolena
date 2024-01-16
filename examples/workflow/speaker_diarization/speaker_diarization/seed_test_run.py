@@ -47,11 +47,12 @@ def seed_test_run(
     align_speakers: bool,
 ) -> None:
     def infer(sample: TestSample) -> Inference:
-        inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")
+        inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")  # type: ignore
         inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/", storage_options={"anon": True})
         if align_speakers:
+            file_suffix = f"{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}"  # type: ignore
             gt_df = pd.read_csv(
-                f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}",
+                f"s3://{BUCKET}/{DATASET}/{file_suffix}",
                 storage_options={"anon": True},
             )
             realign_labels(gt_df, inference_df)
@@ -62,14 +63,14 @@ def seed_test_run(
                     start=row.starttime,
                     end=row.endtime,
                     label=row.text,
-                    group=row.speaker,
+                    group=row.speaker,  # type: ignore
                 )
                 for _, row in inference_df.iterrows()
             ],
         )
 
-    print(f"working on {mod} and {test_suite.name} v{test_suite.version}")
-    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[mod]})
+    print(f"working on {mod} and {test_suite.name} v{test_suite.version}")  # type: ignore
+    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[mod]})  # type: ignore
 
     test(model, test_suite, evaluate_speaker_diarization, reset=True)
 

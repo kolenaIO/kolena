@@ -34,12 +34,13 @@ DATASET = "ICSI-corpus"
 def seed_test_suite_by_avg_amp(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = calculate_tertiles(complete_test_case, "Average_Amplitude")
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["Average_Amplitude"])
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["Average_Amplitude"])
         ]
 
         new_tc = TestCase(
@@ -92,14 +93,14 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
                     start=row.starttime,
                     end=row.endtime,
                     label=row.text,
-                    group=row.speaker,
+                    group=row.speaker,  # type: ignore
                 )
                 for idx, row in transcription_df.iterrows()
             ],
         )
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case

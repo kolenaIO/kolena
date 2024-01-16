@@ -96,16 +96,16 @@ def compute_aggregate_metrics(
 
 def compute_score_distribution_plot(
     score: str,
-    metrics: List[Union[TestSampleMetric, Inference]],
+    metrics: List[TestSampleMetric],
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     logarithmic_y: bool = False,
     logarithmic_x: bool = False,
 ) -> Histogram:
     scores = [getattr(m, score) for m in metrics]
     if logarithmic_x:
-        bins = np.logspace(*binning_info, base=2)
+        bins = np.logspace(*binning_info, base=2)  # type: ignore
     else:
-        bins = np.linspace(*binning_info)
+        bins = np.linspace(*binning_info)  # type: ignore
 
     hist, _ = np.histogram(scores, bins=bins)
     return Histogram(
@@ -122,8 +122,8 @@ def compute_score_distribution_plot(
 def compute_metric_vs_metric_plot(
     x_metric: str,
     y_metric: str,
-    x_metrics: List[Union[TestSampleMetric, Inference]],
-    y_metrics: List[Union[TestSampleMetric, Inference]],
+    x_metrics: List[TestSample],
+    y_metrics: List[TestSampleMetric],
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     x_logarithmic: bool = False,
     y_logarithmic: bool = False,
@@ -136,9 +136,9 @@ def compute_metric_vs_metric_plot(
         x_values = [getattr(m, x_metric) for m in x_metrics]
 
     if x_logarithmic:
-        bins = list(np.logspace(*binning_info, base=2))
+        bins = list(np.logspace(*binning_info, base=2))  # type: ignore
     else:
-        bins = list(np.linspace(*binning_info))
+        bins = list(np.linspace(*binning_info))  # type: ignore
 
     bins_centers: List[float] = []
     bins_values: List[float] = []
@@ -172,9 +172,9 @@ def compute_test_case_plots(
             "DiarizationErrorRate",
             test_samples,
             test_case_metrics,
-            (
-                min([ts.metadata["Average_Amplitude"] for ts in test_samples]),
-                max([ts.metadata["Average_Amplitude"] for ts in test_samples]),
+            (  # type: ignore
+                min([ts.metadata["Average_Amplitude"] for ts in test_samples]),  # type: ignore
+                max([ts.metadata["Average_Amplitude"] for ts in test_samples]),  # type: ignore
                 15,
             ),
             metadata=True,
@@ -217,7 +217,7 @@ def evaluate_speaker_diarization(
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
         metrics_test_suite=compute_test_suite_metrics(inferences),
         plots_test_case=all_test_case_plots,
     )
