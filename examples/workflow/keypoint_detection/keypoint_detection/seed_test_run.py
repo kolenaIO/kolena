@@ -40,7 +40,7 @@ def infer(test_sample: TestSample) -> Inference:
 def run(args: Namespace) -> None:
     model = Model(
         args.model_name,
-        infer=infer,   # type: ignore
+        infer=infer,  # type: ignore
         metadata=dict(description="Any freeform metadata can go here"),
     )
 

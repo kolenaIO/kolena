@@ -39,7 +39,8 @@ def seed_test_suite_by_avg_amp(
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
             if fn(ts.metadata["Average_Amplitude"])
         ]
 

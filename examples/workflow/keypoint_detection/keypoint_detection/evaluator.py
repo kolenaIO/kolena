@@ -100,7 +100,7 @@ class KeypointsEvaluator(Evaluator):
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
         configuration: Optional[NmseThreshold] = None,  # type: ignore
-    ) -> List[Tuple[TestSample, TestSampleMetrics]]:   # type: ignore
+    ) -> List[Tuple[TestSample, TestSampleMetrics]]:  # type: ignore
         if configuration is None:  # TODO(gh): this is annoying for users to have to deal with
             raise ValueError(f"{type(self).__name__} must have configuration")
         return [
@@ -175,7 +175,7 @@ class KeypointsEvaluator(Evaluator):
     ) -> Optional[List[Plot]]:
         if test_case.name not in self.plot_by_test_case_name.keys():  # type: ignore
             self.plot_by_test_case_name[test_case.name] = self.compute_test_case_plot(metrics)  # type: ignore
-        return [self.plot_by_test_case_name[test_case.name]]   # type: ignore
+        return [self.plot_by_test_case_name[test_case.name]]  # type: ignore
 
     def compute_test_suite_metrics(
         self,
@@ -184,8 +184,8 @@ class KeypointsEvaluator(Evaluator):
         configuration: Optional[NmseThreshold] = None,  # type: ignore
     ) -> Optional[TestSuiteMetrics]:
         return TestSuiteMetrics(
-            variance_average_MSE=np.var([m.total_average_MSE for _, m in metrics]),   # type: ignore
-            variance_average_NMSE=np.var([m.total_average_NMSE for _, m in metrics]),   # type: ignore
+            variance_average_MSE=np.var([m.total_average_MSE for _, m in metrics]),  # type: ignore
+            variance_average_NMSE=np.var([m.total_average_NMSE for _, m in metrics]),  # type: ignore
             variance_detection_failure_rate=np.var([m.total_detection_failure_rate for _, m in metrics]),
             variance_alignment_failure_rate=np.var([m.total_alignment_failure_rate for _, m in metrics]),
             variance_failure_rate=np.var([m.total_failure_rate for _, m in metrics]),

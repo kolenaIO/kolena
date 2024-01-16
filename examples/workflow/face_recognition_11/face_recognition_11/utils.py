@@ -33,7 +33,7 @@ class PairMetrics:
         n_fm: int,
         n_fnm: int,
         n_pair_failures: int,
-        n_fte:int,
+        n_fte: int,
     ) -> None:
         self.genuine_pairs = n_genuine_pairs
         self.imposter_pairs = n_imposter_pairs

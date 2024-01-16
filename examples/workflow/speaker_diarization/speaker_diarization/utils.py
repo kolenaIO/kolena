@@ -39,7 +39,7 @@ def build_speaker_index(inf: List[Tuple[str, float, float]]) -> dict[str, int]:
     return index
 
 
-def compute_intersection_length(A: Tuple[str,float, float], B: Tuple[str, float, float]) -> float:
+def compute_intersection_length(A: Tuple[str, float, float], B: Tuple[str, float, float]) -> float:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
     max_start = max(A[1], B[1])
     min_end = min(A[2], B[2])

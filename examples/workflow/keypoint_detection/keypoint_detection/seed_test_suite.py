@@ -40,7 +40,7 @@ def run(args: Namespace) -> None:
         for record in df.itertuples()
     ]
     ts_with_gt = list(zip(test_samples, ground_truths))
-    complete_test_case = TestCase(args.test_suite + " test case", test_samples=ts_with_gt, reset=True)   # type: ignore
+    complete_test_case = TestCase(args.test_suite + " test case", test_samples=ts_with_gt, reset=True)  # type: ignore
 
     TestSuite(args.test_suite, test_cases=[complete_test_case], reset=True)
 

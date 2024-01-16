@@ -274,8 +274,7 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
         unique_locators = {
-            locator for tc, _ in metrics
-            for locator in self.locators_by_test_case[tc.name]  # type: ignore
+            locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]  # type: ignore
         }
         average_precisions = [tcm.AP for _, tcm in metrics]
         threshold = self.get_confidence_thresholds(configuration)

@@ -43,7 +43,8 @@ def seed_test_suite_duration(
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
             if fn(ts.metadata["duration_seconds"])
         ]
 
@@ -74,7 +75,8 @@ def seed_test_suite_speaker_sex(
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
             if fn(ts.metadata["speaker_sex"])
         ]
 
@@ -106,8 +108,7 @@ def seed_test_suite_tempo(
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
-            if fn(ts.metadata["tempo"])
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["tempo"])  # type: ignore
         ]
 
         new_ts = TestCase(

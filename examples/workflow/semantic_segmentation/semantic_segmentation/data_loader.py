@@ -13,12 +13,10 @@
 # limitations under the License.
 from concurrent.futures import ThreadPoolExecutor
 from typing import Iterable
-from typing import Iterator
 from typing import List
 from typing import Tuple
 
 import numpy as np
-from numpy import ndarray
 from pydantic.dataclasses import dataclass
 from semantic_segmentation.utils import download_binary_array
 from semantic_segmentation.utils import download_mask

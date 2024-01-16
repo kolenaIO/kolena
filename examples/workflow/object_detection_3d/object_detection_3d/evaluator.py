@@ -45,7 +45,6 @@ from kolena.workflow.annotation import ScoredLabeledBoundingBox
 from kolena.workflow.annotation import ScoredLabeledBoundingBox3D
 from kolena.workflow.plot import Curve
 from kolena.workflow.plot import CurvePlot
-from kolena.workflow.plot import Plot
 
 
 VALID_LABELS = ["Car", "Pedestrian", "Cyclist"]
@@ -348,26 +347,29 @@ class KITTI3DEvaluator(Evaluator):
             raise ValueError(f"{type(self).__name__} must have configuration")
 
         test_case_metrics = self.get_test_case_metrics(test_case, inferences)
-        pr_curves_2d = [
-            Curve(
-                x=test_case_metrics[f"bbox_{class_name}_{configuration.name()}_recalls"].tolist(),  # type: ignore
-                y=test_case_metrics[f"bbox_{class_name}_{configuration.name()}_precisions"].tolist(),  # type: ignore
-                label=f"{class_name}",
-            )
-            for class_name in test_case_metrics["classes"]  # type: ignore
-        ],
+        conf_name = configuration.name()
+        pr_curves_2d = (
+            [
+                Curve(
+                    x=test_case_metrics[f"bbox_{class_name}_{conf_name}_recalls"].tolist(),  # type: ignore
+                    y=test_case_metrics[f"bbox_{class_name}_{conf_name}_precisions"].tolist(),  # type: ignore
+                    label=f"{class_name}",
+                )
+                for class_name in test_case_metrics["classes"]  # type: ignore
+            ],
+        )
         pr_curves_3d = [
             Curve(
-                x=test_case_metrics[f"3d_{class_name}_{configuration.name()}_recalls"].tolist(),  # type: ignore
-                y=test_case_metrics[f"3d_{class_name}_{configuration.name()}_precisions"].tolist(),  # type: ignore
+                x=test_case_metrics[f"3d_{class_name}_{conf_name}_recalls"].tolist(),  # type: ignore
+                y=test_case_metrics[f"3d_{class_name}_{conf_name}_precisions"].tolist(),  # type: ignore
                 label=f"{class_name}",
             )
             for class_name in test_case_metrics["classes"]  # type: ignore
         ]
         pr_curves_bev = [
             Curve(
-                x=test_case_metrics[f"bev_{class_name}_{configuration.name()}_recalls"].tolist(),  # type: ignore
-                y=test_case_metrics[f"bev_{class_name}_{configuration.name()}_precisions"].tolist(),  # type: ignore
+                x=test_case_metrics[f"bev_{class_name}_{conf_name}_recalls"].tolist(),  # type: ignore
+                y=test_case_metrics[f"bev_{class_name}_{conf_name}_precisions"].tolist(),  # type: ignore
                 label=f"{class_name}",
             )
             for class_name in test_case_metrics["classes"]  # type: ignore

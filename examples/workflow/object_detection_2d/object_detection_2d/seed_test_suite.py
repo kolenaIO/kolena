@@ -115,7 +115,8 @@ def seed_test_suite_by_brightness(test_suite_name: str, complete_test_case: Test
     test_cases: List[TestCase] = []
     for name, fn in stratification_logic_map.items():
         filtered_test_samples = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
             if fn(ts.metadata["brightness"])
         ]
         new_test_case = TestCase(

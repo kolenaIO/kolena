@@ -74,7 +74,8 @@ def seed_test_suite_by_text_x_gt(
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
             if fn(ts.word_count, gt.word_count)
         ]
 
@@ -132,7 +133,8 @@ def seed_test_suite_by_moderation(
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         samples = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
             if fn(ts.metadata["moderation_score"])
         ]
 

@@ -317,10 +317,10 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             FN=fn_count,
             FP=fp_count,
             nIgnored=ignored_count,
-            macro_Precision= macro_prec_data if per_class_metrics else 0.0,   # type: ignore
-            macro_Recall= macro_rec_data if per_class_metrics else 0.0,  # type: ignore
-            macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,   # type: ignore
-            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,   # type: ignore
+            macro_Precision=macro_prec_data if per_class_metrics else 0.0,  # type: ignore
+            macro_Recall=macro_rec_data if per_class_metrics else 0.0,  # type: ignore
+            macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,  # type: ignore
+            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,  # type: ignore
             micro_Precision=compute_precision(tp_count, fp_count),
             micro_Recall=compute_recall(tp_count, fn_count),
             micro_F1=compute_f1_score(tp_count, fp_count, fn_count),
@@ -406,8 +406,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
         unique_locators = {
-            locator for tc, _ in metrics
-            for locator in self.locators_by_test_case[tc.name]  # type: ignore
+            locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]  # type: ignore
         }
         average_precisions = [tcm.mean_AP for _, tcm in metrics]
         return self.test_suite_metrics(unique_locators, average_precisions)

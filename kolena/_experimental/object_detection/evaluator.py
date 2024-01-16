@@ -87,7 +87,7 @@ class ObjectDetectionEvaluator(Evaluator):
         return evaluator.compute_test_case_metrics(  # type: ignore
             test_case=test_case,
             inferences=inferences,
-            metrics=metrics,   # type: ignore
+            metrics=metrics,  # type: ignore
             configuration=configuration,
         )
 
