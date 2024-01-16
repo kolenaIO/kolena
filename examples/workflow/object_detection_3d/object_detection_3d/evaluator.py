@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from dataclasses import dataclass
 from enum import IntEnum
 from typing import Any
@@ -342,7 +343,7 @@ class KITTI3DEvaluator(Evaluator):
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
         metrics: List[MetricsTestSample],  # type: ignore
         configuration: Optional[KITTI3DConfig] = None,  # type: ignore
-    ) -> Optional[List[Plot]]:
+    ) -> List[CurvePlot]:
         if configuration is None:
             raise ValueError(f"{type(self).__name__} must have configuration")
 

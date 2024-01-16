@@ -11,13 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
-from typing import Union
 
 import numpy as np
 
@@ -203,7 +203,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
         configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
-    ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
+    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
@@ -416,4 +416,4 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         if configuration.threshold_strategy == "F1-Optimal":
             return self.threshold_cache[configuration.display_name()]
         else:
-            return defaultdict(lambda: configuration.threshold_strategy)
+            return defaultdict(lambda: configuration.threshold_strategy)  # type: ignore

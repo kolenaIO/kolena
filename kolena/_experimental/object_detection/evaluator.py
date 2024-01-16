@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -67,7 +68,7 @@ class ObjectDetectionEvaluator(Evaluator):
                 self.dynamic_evaluator = self.single_class_evaluator
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_sample_metrics(
+        return evaluator.compute_test_sample_metrics(  # type: ignore
             test_case=test_case,
             inferences=inferences,
             configuration=configuration,
@@ -83,7 +84,7 @@ class ObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_case_metrics(
+        return evaluator.compute_test_case_metrics(  # type: ignore
             test_case=test_case,
             inferences=inferences,
             metrics=metrics,   # type: ignore
@@ -100,7 +101,7 @@ class ObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_case_plots(
+        return evaluator.compute_test_case_plots(  # type: ignore
             test_case=test_case,
             inferences=inferences,
             metrics=metrics,  # type: ignore
@@ -116,7 +117,7 @@ class ObjectDetectionEvaluator(Evaluator):
         assert configuration is not None, "must specify configuration"
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_suite_metrics(
+        return evaluator.compute_test_suite_metrics(  # type: ignore
             test_suite=test_suite,
             metrics=metrics,  # type: ignore
             configuration=configuration,
@@ -125,7 +126,7 @@ class ObjectDetectionEvaluator(Evaluator):
     def _get_evaluator(
         self,
         configuration: Optional[ThresholdConfiguration],
-    ) -> Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator]:
+    ) -> Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator, None]:
         assert configuration is not None, "must specify configuration"
 
         if configuration.multiclass is None:

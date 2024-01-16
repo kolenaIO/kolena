@@ -47,11 +47,11 @@ def load_data(
 ) -> Tuple[Iterable[np.ndarray], Iterable[np.ndarray]]:
     info("downloading bit masks...")
     data_loader = DataLoader()
-    return zip(*data_loader.download_masks(ground_truths, inferences))
+    return zip(*data_loader.download_masks(ground_truths, inferences))  # type: ignore
 
 
 def apply_threshold(
-    inf_probs: List[np.ndarray],
+    inf_probs: Iterable[np.ndarray],
     threshold: float,
 ) -> List[np.ndarray]:
     inf_masks = []
@@ -89,7 +89,7 @@ def compute_image_metrics(result_masks: ResultMasks) -> TestSampleMetric:
 
 def compute_test_sample_metrics(
     test_samples: List[TestSample],
-    gt_masks: List[np.ndarray],
+    gt_masks: Iterable[np.ndarray],
     inf_masks: List[np.ndarray],
     threshold: float,
 ) -> List[TestSampleMetric]:
@@ -99,7 +99,7 @@ def compute_test_sample_metrics(
     data_loader = DataLoader()
 
     info("uploading result masks...")
-    result_masks = data_loader.upload_masks(locator_prefix, test_samples, gt_masks, inf_masks)
+    result_masks = data_loader.upload_masks(locator_prefix, test_samples, gt_masks, inf_masks)  # type: ignore
     return [compute_image_metrics(result_mask) for result_mask in result_masks]
 
 
@@ -177,7 +177,12 @@ def evaluate_semantic_segmentation(
     # compute aggregate metrics across all test cases using `test_cases.iter(...)`
     all_test_case_metrics: List[Tuple[TestCase, TestCaseMetric]] = []
     all_test_case_plots: List[Tuple[TestCase, List[CurvePlot]]] = []
-    for test_case, _, gt, inf, tsm in test_cases.iter(test_samples, gt_masks, inf_probs, test_sample_metrics):
+    for test_case, _, gt, inf, tsm in test_cases.iter(  # type: ignore
+        test_samples,
+        gt_masks,  # type: ignore
+        inf_probs,  # type: ignore
+        test_sample_metrics,
+    ):
         info(f"computing {test_case.name} test case metrics")
         test_case_metrics, test_case_plots = evaluate_test_case(gt, inf, tsm)
         all_test_case_metrics.append((test_case, test_case_metrics))
@@ -185,7 +190,7 @@ def evaluate_semantic_segmentation(
 
     # if desired, compute and add `plots_test_case` and `metrics_test_suite` to this `EvaluationResults`
     return EvaluationResults(
-        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
+        metrics_test_sample=list(zip(test_samples, test_sample_metrics)),  # type: ignore
         metrics_test_case=all_test_case_metrics,  # type: ignore
-        plots_test_case=all_test_case_plots,
+        plots_test_case=all_test_case_plots,  # type: ignore
     )

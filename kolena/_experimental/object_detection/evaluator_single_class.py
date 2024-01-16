@@ -11,8 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from collections import defaultdict
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
