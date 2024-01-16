@@ -76,15 +76,16 @@ def compute_aggregate_metrics(
         return np.mean([getattr(m, metric) for m, inf in zip(test_samples_metrics, inferences) if not inf.is_failure])
 
     num_failures = sum([inf.is_failure for inf in inferences])
+    inference_times = [inf.inference_time for inf in inferences if inf.inference_time is not None]
     return TestCaseMetric(
         n_failures=num_failures,
         failure_rate=num_failures / len(test_samples_metrics),
         total_cost=np.sum([inf.cost for inf in inferences]),
         avg_cost=np.mean([inf.cost for inf in inferences]),  # type: ignore
-        avg_inference_time=np.mean([inf.inference_time for inf in inferences if inf.inference_time is not None]),
-        avg_wc_input=np.mean([ts.word_count for ts in test_samples]),
-        avg_wc_gt=np.mean([gt.word_count for gt in ground_truths]),
-        avg_wc_inf=np.mean([inf.word_count for inf in inferences]),
+        avg_inference_time=np.mean(inference_times),  # type: ignore
+        avg_wc_input=np.mean([ts.word_count for ts in test_samples]),  # type: ignore
+        avg_wc_gt=np.mean([gt.word_count for gt in ground_truths]),  # type: ignore
+        avg_wc_inf=np.mean([inf.word_count for inf in inferences]),  # type: ignore
         BERT_prec=mean_metric_ignoring_failures("BERT_prec"),
         BERT_rec=mean_metric_ignoring_failures("BERT_rec"),
         BERT_f1=mean_metric_ignoring_failures("BERT_f1"),
@@ -176,10 +177,10 @@ def compute_test_suite_metrics(
         num_articles=len(test_samples),
         num_failures=num_failures,
         failure_rate=num_failures / len(test_samples),
-        total_cost=np.sum([inf.cost for inf in inferences]),
-        variance_BERT_f1=np.var([m.BERT_f1 for _, m in metrics]),
-        variance_BLEU=np.var([m.BLEU for _, m in metrics]),
-        variance_ROUGE_L=np.var([m.ROUGE_L for _, m in metrics]),
+        total_cost=np.sum([inf.cost for inf in inferences]),  # type: ignore
+        variance_BERT_f1=np.var([m.BERT_f1 for _, m in metrics]),  # type: ignore
+        variance_BLEU=np.var([m.BLEU for _, m in metrics]),  # type: ignore
+        variance_ROUGE_L=np.var([m.ROUGE_L for _, m in metrics]),  # type: ignore
     )
 
 

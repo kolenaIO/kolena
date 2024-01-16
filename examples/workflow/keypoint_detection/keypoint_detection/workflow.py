@@ -13,9 +13,6 @@
 # limitations under the License.
 from dataclasses import dataclass
 from typing import Optional
-from typing import Union
-
-import numpy as np
 
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
@@ -78,21 +75,21 @@ class TestSampleMetrics(MetricsTestSample):
 
 @dataclass(frozen=True)
 class TestCaseMetrics(MetricsTestCase):
-    avg_Δ_nose: Union[float, np.floating]
-    avg_Δ_left_eye: Union[float, np.floating]
-    avg_Δ_right_eye: Union[float, np.floating]
-    avg_Δ_left_mouth: Union[float, np.floating]
-    avg_Δ_right_mouth: Union[float, np.floating]
-    avg_norm_Δ_nose: Union[float, np.floating]
-    avg_norm_Δ_left_eye: Union[float, np.floating]
-    avg_norm_Δ_right_eye: Union[float, np.floating]
-    avg_norm_Δ_left_mouth: Union[float, np.floating]
-    avg_norm_Δ_right_mouth: Union[float, np.floating]
+    avg_Δ_nose: float
+    avg_Δ_left_eye: float
+    avg_Δ_right_eye: float
+    avg_Δ_left_mouth: float
+    avg_Δ_right_mouth: float
+    avg_norm_Δ_nose: float
+    avg_norm_Δ_left_eye: float
+    avg_norm_Δ_right_eye: float
+    avg_norm_Δ_left_mouth: float
+    avg_norm_Δ_right_mouth: float
     n_fail_to_align: int
     n_fail_to_detect: int
     n_fail_total: int
-    total_average_MSE: Union[float, np.floating]
-    total_average_NMSE: Union[float, np.floating]
+    total_average_MSE: float
+    total_average_NMSE: float
     total_detection_failure_rate: float
     total_alignment_failure_rate: float
     total_failure_rate: float
@@ -100,11 +97,11 @@ class TestCaseMetrics(MetricsTestCase):
 
 @dataclass(frozen=True)
 class TestSuiteMetrics(MetricsTestSuite):
-    variance_average_MSE: Union[float, np.floating]
-    variance_average_NMSE: Union[float, np.floating]
-    variance_detection_failure_rate: Union[float, np.floating]
-    variance_alignment_failure_rate: Union[float, np.floating]
-    variance_failure_rate: Union[float, np.floating]
+    variance_average_MSE: float
+    variance_average_NMSE: float
+    variance_detection_failure_rate: float
+    variance_alignment_failure_rate: float
+    variance_failure_rate: float
 
 
 @dataclass(frozen=True)

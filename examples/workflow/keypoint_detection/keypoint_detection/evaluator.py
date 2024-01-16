@@ -122,28 +122,30 @@ class KeypointsEvaluator(Evaluator):
         n_fail_to_detect = sum(1 for mts in metrics if mts.match_type == "failure_to_detect")
         n_fail_total = n_fail_to_align + n_fail_to_detect
 
+        avg_Δ_right_eye = [mts.Δ_right_eye for mts in metrics if mts.Δ_right_eye is not None]
+        avg_Δ_left_mouth = [mts.Δ_left_mouth for mts in metrics if mts.Δ_left_mouth is not None]
+        avg_Δ_right_mouth = [mts.Δ_right_mouth for mts in metrics if mts.Δ_right_mouth is not None]
+        avg_norm_Δ_nose = [mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]
+        avg_norm_Δ_left_eye = [mts.norm_Δ_left_eye for mts in metrics if mts.norm_Δ_left_eye is not None]
+        avg_norm_Δ_right_eye = [mts.norm_Δ_right_eye for mts in metrics if mts.norm_Δ_right_eye is not None]
+        avg_norm_Δ_left_mouth = [mts.norm_Δ_left_mouth for mts in metrics if mts.norm_Δ_left_mouth is not None]
+        avg_norm_Δ_right_mouth = [mts.norm_Δ_right_mouth for mts in metrics if mts.norm_Δ_right_mouth is not None]
         return TestCaseMetrics(
-            avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),
-            avg_Δ_left_eye=np.mean([mts.Δ_left_eye for mts in metrics if mts.Δ_left_eye is not None]),
-            avg_Δ_right_eye=np.mean([mts.Δ_right_eye for mts in metrics if mts.Δ_right_eye is not None]),
-            avg_Δ_left_mouth=np.mean([mts.Δ_left_mouth for mts in metrics if mts.Δ_left_mouth is not None]),
-            avg_Δ_right_mouth=np.mean([mts.Δ_right_mouth for mts in metrics if mts.Δ_right_mouth is not None]),
-            avg_norm_Δ_nose=np.mean([mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]),
-            avg_norm_Δ_left_eye=np.mean([mts.norm_Δ_left_eye for mts in metrics if mts.norm_Δ_left_eye is not None]),
-            avg_norm_Δ_right_eye=np.mean(
-                [mts.norm_Δ_right_eye for mts in metrics if mts.norm_Δ_right_eye is not None],
-            ),
-            avg_norm_Δ_left_mouth=np.mean(
-                [mts.norm_Δ_left_mouth for mts in metrics if mts.norm_Δ_left_mouth is not None],
-            ),
-            avg_norm_Δ_right_mouth=np.mean(
-                [mts.norm_Δ_right_mouth for mts in metrics if mts.norm_Δ_right_mouth is not None],
-            ),
+            avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),  # type: ignore
+            avg_Δ_left_eye=np.mean([mts.Δ_left_eye for mts in metrics if mts.Δ_left_eye is not None]),  # type: ignore
+            avg_Δ_right_eye=np.mean(avg_Δ_right_eye),  # type: ignore
+            avg_Δ_left_mouth=np.mean(avg_Δ_left_mouth),  # type: ignore
+            avg_Δ_right_mouth=np.mean(avg_Δ_right_mouth),  # type: ignore
+            avg_norm_Δ_nose=np.mean(avg_norm_Δ_nose),  # type: ignore
+            avg_norm_Δ_left_eye=np.mean(avg_norm_Δ_left_eye),  # type: ignore
+            avg_norm_Δ_right_eye=np.mean(avg_norm_Δ_right_eye),  # type: ignore
+            avg_norm_Δ_left_mouth=np.mean(avg_norm_Δ_left_mouth),  # type: ignore
+            avg_norm_Δ_right_mouth=np.mean(avg_norm_Δ_right_mouth),  # type: ignore
             n_fail_to_align=n_fail_to_align,
             n_fail_to_detect=n_fail_to_detect,
             n_fail_total=n_fail_total,
-            total_average_MSE=np.mean([mts.mse for mts in metrics if mts.mse is not None]),
-            total_average_NMSE=np.mean([mts.nmse for mts in metrics if mts.nmse is not None]),
+            total_average_MSE=np.mean([mts.mse for mts in metrics if mts.mse is not None]),  # type: ignore
+            total_average_NMSE=np.mean([mts.nmse for mts in metrics if mts.nmse is not None]),  # type: ignore
             total_detection_failure_rate=n_fail_to_detect / len(metrics) if len(metrics) > 0 else 0,
             total_alignment_failure_rate=n_fail_to_align / len(metrics) if len(metrics) > 0 else 0,
             total_failure_rate=n_fail_total / len(metrics) if len(metrics) > 0 else 0,
@@ -183,10 +185,12 @@ class KeypointsEvaluator(Evaluator):
         metrics: List[Tuple[TestCase, TestCaseMetrics]],  # type: ignore
         configuration: Optional[NmseThreshold] = None,  # type: ignore
     ) -> Optional[TestSuiteMetrics]:
+        variance_detection_failure_rate = [m.total_detection_failure_rate for _, m in metrics]
+        variance_alignment_failure_rate = [m.total_alignment_failure_rate for _, m in metrics]
         return TestSuiteMetrics(
             variance_average_MSE=np.var([m.total_average_MSE for _, m in metrics]),  # type: ignore
             variance_average_NMSE=np.var([m.total_average_NMSE for _, m in metrics]),  # type: ignore
-            variance_detection_failure_rate=np.var([m.total_detection_failure_rate for _, m in metrics]),
-            variance_alignment_failure_rate=np.var([m.total_alignment_failure_rate for _, m in metrics]),
-            variance_failure_rate=np.var([m.total_failure_rate for _, m in metrics]),
+            variance_detection_failure_rate=np.var(variance_detection_failure_rate),  # type: ignore
+            variance_alignment_failure_rate=np.var(variance_alignment_failure_rate),  # type: ignore
+            variance_failure_rate=np.var([m.total_failure_rate for _, m in metrics]),  # type: ignore
         )

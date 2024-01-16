@@ -15,9 +15,7 @@
 import dataclasses
 from typing import List
 from typing import Optional
-from typing import Union
 
-import numpy as np
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import define_workflow
@@ -122,7 +120,7 @@ class PerBBoxMetrics(MetricsTestCase):
     Label: str
     Total: int
     FTE: int
-    AvgIoU: Union[float, np.floating]
+    AvgIoU: float
     Precision: float
     Recall: float
     F1: float
