@@ -57,7 +57,7 @@ User defined configuration for evaluating results, for example `{"threshold": 7}
 DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
 """
 A type alias representing a DataFrame, which can be either a pandas DataFrame
-or an iterator of pandas DataFrames, data will be processed in chunks when iterator is used.
+or an iterator of pandas DataFrames.
 """
 
 
@@ -203,8 +203,7 @@ def _upload_results(
     response = _send_upload_results_request(model, load_uuid, existing_dataset.id)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
-        f"There are a total of {total_rows} rows in the results input"
-        f"{response.n_inserted} inserted, {response.n_updated} updated",
+        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",
     )
     return response
 
