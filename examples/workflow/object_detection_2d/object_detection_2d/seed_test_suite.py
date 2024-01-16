@@ -88,7 +88,7 @@ def create_complete_transportation_case(args: Namespace) -> TestCase:
         )
 
         ground_truth = GroundTruth(
-            bboxes=image_to_boxes[image_name],
+            bboxes=image_to_boxes[image_name],  # type: ignore
             ignored_bboxes=[],
         )
 
@@ -97,7 +97,7 @@ def create_complete_transportation_case(args: Namespace) -> TestCase:
     # create the complete test case, not attached to any test suite
     complete_test_case = TestCase(
         f"complete transportation :: {DATASET}",
-        test_samples=test_samples_and_ground_truths,
+        test_samples=test_samples_and_ground_truths,  # type: ignore
         reset=True,
     )
 
@@ -115,7 +115,8 @@ def seed_test_suite_by_brightness(test_suite_name: str, complete_test_case: Test
     test_cases: List[TestCase] = []
     for name, fn in stratification_logic_map.items():
         filtered_test_samples = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["brightness"])
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["brightness"])
         ]
         new_test_case = TestCase(
             f"brightness :: {name} :: {DATASET}",
@@ -144,20 +145,20 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
     def filter_gt_bboxes(gt: GroundTruth, filter_fn: Callable[[float], bool]) -> GroundTruth:
         bboxes, ignored_bboxes = [], gt.ignored_bboxes
         for bbox in gt.bboxes:
-            bboxes.append(bbox) if filter_fn(bbox.area) else ignored_bboxes.append(bbox)
+            bboxes.append(bbox) if filter_fn(bbox.area) else ignored_bboxes.append(bbox)  # type: ignore
         return GroundTruth(bboxes=bboxes, ignored_bboxes=ignored_bboxes)
 
     # create each test case by stratification
     test_cases: List[TestCase] = []
     for name, fn in stratification_logic_map.items():
         samples_with_filtered_bboxes = []
-        for ts, gt in complete_test_case.iter_test_samples():
+        for ts, gt in complete_test_case.iter_test_samples():  # type: ignore
             filtered_ground_truth = filter_gt_bboxes(gt, fn)
             if filtered_ground_truth.n_bboxes > 0:
                 samples_with_filtered_bboxes.append((ts, filtered_ground_truth))
         new_test_case = TestCase(
             f"bounding box size :: {name} :: {DATASET}",
-            test_samples=samples_with_filtered_bboxes,
+            test_samples=samples_with_filtered_bboxes,  # type: ignore
             reset=True,
         )
         test_cases.append(new_test_case)
@@ -169,7 +170,7 @@ def seed_test_suite_by_bounding_box_size(test_suite_name: str, complete_test_cas
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
-    print(f"created test suite '{test_suite.name}' v{test_suite.version}")
+    print(f"created test suite '{test_suite.name}' v{test_suite.version}")  # type: ignore
 
 
 def main(args: Namespace) -> None:
