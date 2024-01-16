@@ -138,9 +138,9 @@ class MetricsTestCaseLabel(BaseMetricsTestCase):
     label: str
     nObjects: int
     nInferences: int
-    mAP_2D: Union[float, np.ndarray[Any, Any]]
-    mAP_3D: Union[float, np.ndarray[Any, Any]]
-    mAP_BEV: Union[float, np.ndarray[Any, Any]]
+    mAP_2D: float
+    mAP_3D: float
+    mAP_BEV: float
 
 
 @dataclass(frozen=True)
@@ -323,9 +323,9 @@ class KITTI3DEvaluator(Evaluator):
                     label=label,
                     nObjects=int(test_case_metrics[f"{label}_num_ground_truths"]),
                     nInferences=int(test_case_metrics[f"{label}_num_inferences"]),
-                    mAP_2D=test_case_metrics[f"KITTI/{label}_2D_AP40_{configuration.name()}_strict"],
-                    mAP_3D=test_case_metrics[f"KITTI/{label}_3D_AP40_{configuration.name()}_strict"],
-                    mAP_BEV=test_case_metrics[f"KITTI/{label}_BEV_AP40_{configuration.name()}_strict"],
+                    mAP_2D=test_case_metrics[f"KITTI/{label}_2D_AP40_{configuration.name()}_strict"],  # type: ignore
+                    mAP_3D=test_case_metrics[f"KITTI/{label}_3D_AP40_{configuration.name()}_strict"],  # type: ignore
+                    mAP_BEV=test_case_metrics[f"KITTI/{label}_BEV_AP40_{configuration.name()}_strict"],  # type: ignore
                 )
                 for label in test_case_metrics["classes"]  # type: ignore
             ],
