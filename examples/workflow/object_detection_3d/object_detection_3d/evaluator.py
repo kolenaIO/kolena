@@ -22,13 +22,13 @@ from typing import Tuple
 from typing import Union
 
 import numpy as np
-from object_detection_3d.vendored.kitti_eval import _prepare_data
+from object_detection_3d.vendored.kitti_eval import _prepare_data  # type: ignore
 
 from .utils import ground_truth_to_kitti_format
 from .utils import inference_to_kitti_format
-from .vendored.kitti_eval import calculate_iou_partly
-from .vendored.kitti_eval import compute_statistics_jit
-from .vendored.kitti_eval import kitti_eval
+from .vendored.kitti_eval import calculate_iou_partly  # type: ignore
+from .vendored.kitti_eval import compute_statistics_jit  # type: ignore
+from .vendored.kitti_eval import kitti_eval  # type: ignore
 from .workflow import GroundTruth
 from .workflow import Inference
 from .workflow import TestCase
@@ -73,10 +73,10 @@ class KITTIDifficulty(IntEnum):
 class KITTI3DConfig(EvaluatorConfiguration):
     difficulty: KITTIDifficulty
 
-    def display_name(self):
+    def display_name(self) -> str:
         return f"KITTI Difficulty ({self.name()})"
 
-    def name(self):
+    def name(self) -> str:
         if self.difficulty == KITTIDifficulty.EASY:
             name = "easy"
         elif self.difficulty == KITTIDifficulty.MODERATE:
@@ -154,17 +154,17 @@ class MetricsTestCase(BaseMetricsTestCase):
 
 
 class KITTI3DEvaluator(Evaluator):
-    metrics_by_test_case: Dict[str, Dict[str, float]] = {}
+    metrics_by_test_case: Dict[str, Dict[str, Union[float, np.ndarray]]] = {}
 
     def get_test_case_metrics(
         self,
         test_case: TestCase,
         inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
     ) -> Dict[str, Union[float, np.ndarray]]:
-        if test_case.name not in self.metrics_by_test_case.keys():
-            self.metrics_by_test_case[test_case.name] = self.evaluate(inferences)
+        if test_case.name not in self.metrics_by_test_case.keys():  # type: ignore
+            self.metrics_by_test_case[test_case.name] = self.evaluate(inferences)  # type: ignore
 
-        return self.metrics_by_test_case[test_case.name]
+        return self.metrics_by_test_case[test_case.name]  # type: ignore
 
     def compute_test_sample_metrics(
         self,
@@ -185,7 +185,7 @@ class KITTI3DEvaluator(Evaluator):
         difficulty_name = ["easy", "moderate", "hard"]
         class_name_value = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
         difficulty = configuration.difficulty.value
-        results = [{} for _ in range(len(inferences))]
+        results: List[Dict[str, Dict[Any, Any]]] = [{} for _ in range(len(inferences))]
         overlaps, parted_overlaps, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
         ignored_gts_combined = [[True] * len(gt.bboxes_2d) for _, gt, inf in inferences]
 
@@ -193,7 +193,10 @@ class KITTI3DEvaluator(Evaluator):
             prefix = f"bbox_{current_class}_{difficulty_name[difficulty]}"
             precisions = test_case_metrics[f"{prefix}_precisions"]
             recalls = test_case_metrics[f"{prefix}_recalls"]
-            f1 = [2 * precision * recall / (precision + recall) for precision, recall in zip(precisions, recalls)]
+            f1 = [
+                2 * precision * recall / (precision + recall)
+                for precision, recall in zip(precisions, recalls)  # type: ignore
+            ]
             threshold = np.max(f1)
             f1_optimal_thresholds[current_class] = threshold
             class_value = class_name_value[current_class]
@@ -324,13 +327,13 @@ class KITTI3DEvaluator(Evaluator):
                     mAP_3D=test_case_metrics[f"KITTI/{label}_3D_AP40_{configuration.name()}_strict"],
                     mAP_BEV=test_case_metrics[f"KITTI/{label}_BEV_AP40_{configuration.name()}_strict"],
                 )
-                for label in test_case_metrics["classes"]
+                for label in test_case_metrics["classes"]  # type: ignore
             ],
             nObjects=int(test_case_metrics["num_ground_truths"]),
             nInferences=int(test_case_metrics["num_inferences"]),
-            mAP_2D_macro=test_case_metrics[f"KITTI/Overall_2D_AP40_{configuration.name()}"],
-            mAP_3D_macro=test_case_metrics[f"KITTI/Overall_3D_AP40_{configuration.name()}"],
-            mAP_BEV_macro=test_case_metrics[f"KITTI/Overall_BEV_AP40_{configuration.name()}"],
+            mAP_2D_macro=test_case_metrics[f"KITTI/Overall_2D_AP40_{configuration.name()}"],  # type: ignore
+            mAP_3D_macro=test_case_metrics[f"KITTI/Overall_3D_AP40_{configuration.name()}"],  # type: ignore
+            mAP_BEV_macro=test_case_metrics[f"KITTI/Overall_BEV_AP40_{configuration.name()}"],  # type: ignore
         )
 
     def compute_test_case_plots(
@@ -344,45 +347,48 @@ class KITTI3DEvaluator(Evaluator):
             raise ValueError(f"{type(self).__name__} must have configuration")
 
         test_case_metrics = self.get_test_case_metrics(test_case, inferences)
+        pr_curves_2d = [
+            Curve(
+                x=test_case_metrics[f"bbox_{class_name}_{configuration.name()}_recalls"].tolist(),  # type: ignore
+                y=test_case_metrics[f"bbox_{class_name}_{configuration.name()}_precisions"].tolist(),  # type: ignore
+                label=f"{class_name}",
+            )
+            for class_name in test_case_metrics["classes"]  # type: ignore
+        ],
+        pr_curves_3d = [
+            Curve(
+                x=test_case_metrics[f"3d_{class_name}_{configuration.name()}_recalls"].tolist(),  # type: ignore
+                y=test_case_metrics[f"3d_{class_name}_{configuration.name()}_precisions"].tolist(),  # type: ignore
+                label=f"{class_name}",
+            )
+            for class_name in test_case_metrics["classes"]  # type: ignore
+        ]
+        pr_curves_bev = [
+            Curve(
+                x=test_case_metrics[f"bev_{class_name}_{configuration.name()}_recalls"].tolist(),  # type: ignore
+                y=test_case_metrics[f"bev_{class_name}_{configuration.name()}_precisions"].tolist(),  # type: ignore
+                label=f"{class_name}",
+            )
+            for class_name in test_case_metrics["classes"]  # type: ignore
+        ]
         plots = [
             CurvePlot(
                 title="Precision vs. Recall [2D BoundingBox Evaluation]",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(
-                        x=test_case_metrics[f"bbox_{class_name}_{configuration.name()}_recalls"].tolist(),
-                        y=test_case_metrics[f"bbox_{class_name}_{configuration.name()}_precisions"].tolist(),
-                        label=f"{class_name}",
-                    )
-                    for class_name in test_case_metrics["classes"]
-                ],
+                curves=pr_curves_2d,  # type: ignore
             ),
             CurvePlot(
                 title="Precision vs. Recall [3D BoundingBox Evaluation]",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(
-                        x=test_case_metrics[f"3d_{class_name}_{configuration.name()}_recalls"].tolist(),
-                        y=test_case_metrics[f"3d_{class_name}_{configuration.name()}_precisions"].tolist(),
-                        label=f"{class_name}",
-                    )
-                    for class_name in test_case_metrics["classes"]
-                ],
+                curves=pr_curves_3d,  # type: ignore
             ),
             CurvePlot(
                 title="Precision vs. Recall [BEV Evaluation]",
                 x_label="Recall",
                 y_label="Precision",
-                curves=[
-                    Curve(
-                        x=test_case_metrics[f"bev_{class_name}_{configuration.name()}_recalls"].tolist(),
-                        y=test_case_metrics[f"bev_{class_name}_{configuration.name()}_precisions"].tolist(),
-                        label=f"{class_name}",
-                    )
-                    for class_name in test_case_metrics["classes"]
-                ],
+                curves=pr_curves_bev,  # type: ignore
             ),
         ]
         return plots

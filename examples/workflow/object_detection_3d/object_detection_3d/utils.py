@@ -133,7 +133,7 @@ def transform_to_camera_frame(
             (np.ndarray): Value in the range of
                 [-offset * period, (1-offset) * period]
         """
-        limited_val = val - np.floor(val / period + offset) * period
+        limited_val = val - np.floor(val / period + offset) * period  # type: ignore
         return limited_val
 
     dimensions = [bbox.dimensions for bbox in velodyne_bboxes]
@@ -166,7 +166,7 @@ def ground_truth_to_kitti_format(sample: TestSample, gt: GroundTruth) -> Dict[st
         )
 
     camera_bboxes = transform_to_camera_frame(
-        gt.bboxes_3d,
+        gt.bboxes_3d,  # type: ignore
         sample.velodyne_to_camera_transformation,
         sample.camera_rectification,
     )
@@ -199,7 +199,7 @@ def inference_to_kitti_format(sample: TestSample, inf: Inference) -> Dict[str, A
         )
 
     camera_bboxes = transform_to_camera_frame(
-        inf.bboxes_3d,
+        inf.bboxes_3d,  # type: ignore
         sample.velodyne_to_camera_transformation,
         sample.camera_rectification,
     )
