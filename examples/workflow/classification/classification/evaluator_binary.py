@@ -69,7 +69,7 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
     def compute_test_case_metrics(
         self,
         ground_truths: List[GroundTruth],
-        metrics_test_samples: List[TestSampleMetricsSingleClass],
+        metrics_test_samples: List[TestSampleMetricsSingleClass],  # type: ignore
     ) -> TestCaseMetricsSingleClass:
         n_tp = sum([mts.is_TP for mts in metrics_test_samples])
         n_fn = sum([mts.is_FN for mts in metrics_test_samples])
@@ -92,7 +92,7 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
         self,
         ground_truths: List[GroundTruth],
         inferences: List[Inference],
-        metrics: List[TestSampleMetricsSingleClass],
+        metrics: List[TestSampleMetricsSingleClass],  # type: ignore
         gt_labels: List[str],
         confidence_range: Optional[Tuple[float, float, int]],
     ) -> List[Plot]:
@@ -112,7 +112,7 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
             negative_label = "NOT " + positive_label
 
         plots.append(
-            compute_roc_curves(
+            compute_roc_curves(  # type: ignore
                 [gt.classification for gt in ground_truths],
                 [inf.inferences for inf in inferences],
                 labels=[positive_label],
@@ -120,7 +120,7 @@ class BinaryClassificationEvaluator(BaseClassificationEvaluator):
         )
 
         plots.append(
-            compute_confusion_matrix(
+            compute_confusion_matrix(  # type: ignore
                 [gt.classification.label for gt in ground_truths],
                 [positive_label if metric.is_TP or metric.is_FP else negative_label for metric in metrics],
                 labels=[positive_label, negative_label],

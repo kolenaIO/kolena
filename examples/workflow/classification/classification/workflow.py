@@ -128,7 +128,7 @@ class TestSampleMetricsSingleClass(MetricsTestSample):
 
     missing_inference: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "missing_inference", self.classification is None)
 
 
@@ -160,7 +160,7 @@ class TestSampleMetrics(MetricsTestSample):
 
     missing_inference: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         object.__setattr__(self, "missing_inference", self.classification is None)
 
 
