@@ -14,18 +14,11 @@
 from collections import defaultdict
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Set
 from typing import Tuple
 from typing import Union
-
-from kolena.workflow.annotation import ScoredLabeledBoundingBox
-from kolena.workflow.annotation import ScoredLabeledPolygon
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal  # type: ignore
 
 import numpy as np
 
@@ -34,6 +27,8 @@ from kolena._utils import log
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
+from kolena.workflow.annotation import ScoredLabeledBoundingBox
+from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
