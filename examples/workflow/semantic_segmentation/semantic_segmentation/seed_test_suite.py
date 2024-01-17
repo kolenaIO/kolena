@@ -35,8 +35,8 @@ def within_range(area: int, range: Tuple[int, int]) -> bool:
     return range[0] <= area < range[1]
 
 
-def seed_stratified_test_cases(complete_test_case: TestCase, test_suite_name) -> List[TestCase]:
-    test_samples = complete_test_case.load_test_samples()
+def seed_stratified_test_cases(complete_test_case: TestCase, test_suite_name: str) -> List[TestCase]:
+    test_samples = complete_test_case.load_test_samples()  # type: ignore
     test_cases = []
     for name, count_range in PERSON_COUNT_MAPPING_IMAGES.items():
         samples = []
@@ -71,7 +71,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(mask=SegmentationMask(locator=record.mask, labels=Label.as_label_map()))
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET} [person]", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET} [person]", test_samples=test_samples, reset=True)  # type: ignore
     return test_case
 
 

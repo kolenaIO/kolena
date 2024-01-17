@@ -89,14 +89,14 @@ class BaseClassificationEvaluator(ABC):
             )
         else:
             metrics_test_suite = TestSuiteMetrics(
-                **metrics,
+                **metrics,  # type: ignore
             )
 
         return metrics_test_suite
 
     def _compute_test_case_confidence_histograms(
         self,
-        metrics: List[Union[TestSampleMetricsSingleClass, TestSampleMetrics]],
+        metrics: Union[List[TestSampleMetricsSingleClass], List[TestSampleMetrics]],
         range: Tuple[float, float, int],
     ) -> List[Histogram]:
         all = [mts.classification.score for mts in metrics if mts.classification]

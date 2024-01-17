@@ -182,7 +182,7 @@ def prepare_sample_data(args: Namespace) -> None:
         json.dump(dict(data=test_samples_and_ground_truths), f)
 
 
-def parse_args():
+def parse_args() -> Namespace:
     parser = ArgumentParser()
     parser.add_argument("datadir", help="KITTI dataset dir", type=Path)
     parser.add_argument("remote_prefix", help="Prefix of cloud storage of KITTI raw data")

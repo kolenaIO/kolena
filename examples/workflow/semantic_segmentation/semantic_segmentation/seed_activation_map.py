@@ -37,7 +37,7 @@ def seed_activation_map(model_name: str, test_suite_names: List[str], out_bucket
         for _, test_samples in test_suite.load_test_samples():
             test_sample_names.update([ts.metadata["basename"] for ts in test_samples])
 
-    uploader.submit(test_sample_names)
+    uploader.submit(test_sample_names)  # type: ignore
 
 
 def main(args: Namespace) -> int:

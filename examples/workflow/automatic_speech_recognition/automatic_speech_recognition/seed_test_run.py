@@ -79,9 +79,9 @@ def seed_test_run(
         return infer
 
     model_name = mod
-    print(f"working on {model_name} and {test_suite.name} v{test_suite.version}")
+    print(f"working on {model_name} and {test_suite.name} v{test_suite.version}")  # type: ignore
     infer = get_stored_inferences(infs)
-    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[model_name]})
+    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[model_name]})  # type: ignore
 
     test(model, test_suite, evaluate_audio_recognition, reset=True)
 

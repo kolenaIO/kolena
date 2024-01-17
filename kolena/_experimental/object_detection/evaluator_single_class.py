@@ -11,12 +11,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from collections import defaultdict
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Set
 from typing import Tuple
+from typing import Union
 
 import numpy as np
 
@@ -25,6 +27,7 @@ from kolena._experimental.object_detection import Inference
 from kolena._experimental.object_detection import TestCase
 from kolena._experimental.object_detection import TestCaseMetricsSingleClass
 from kolena._experimental.object_detection import TestSample
+from kolena._experimental.object_detection import TestSampleMetrics
 from kolena._experimental.object_detection import TestSampleMetricsSingleClass
 from kolena._experimental.object_detection import TestSuite
 from kolena._experimental.object_detection import TestSuiteMetrics
@@ -172,13 +175,16 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[ThresholdConfiguration] = None,
-    ) -> List[Tuple[TestSample, TestSampleMetricsSingleClass]]:
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
+    ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
+        return [
+            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name))  # type: ignore
+            for ts, gt, inf in inferences
+        ]
 
     def test_case_metrics_single_class(
         self,
@@ -210,32 +216,32 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetricsSingleClass],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetricsSingleClass],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestCaseMetricsSingleClass:
         assert configuration is not None, "must specify configuration"
-        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
-        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]  # type: ignore
+        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]  # type: ignore
 
         average_precision = 0.0
         baseline_pr_curve = compute_pr_curve(all_bbox_matches)
         if baseline_pr_curve is not None:
-            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)  # type: ignore
 
         return self.test_case_metrics_single_class(metrics, average_precision)
 
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetricsSingleClass],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetricsSingleClass],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
-        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]  # type: ignore
 
-        plots: Optional[List[Plot]] = []
+        plots: List[Plot] = []
         plots.extend(
             filter(
                 None,
@@ -256,18 +262,20 @@ class SingleClassObjectDetectionEvaluator(Evaluator):
     ) -> TestSuiteMetrics:
         return TestSuiteMetrics(
             n_images=len(unique_locators),
-            mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+            mean_AP=np.mean(average_precisions) if average_precisions else 0.0,  # type: ignore
             threshold=threshold,
         )
 
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        metrics: List[Tuple[TestCase, TestCaseMetricsSingleClass]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
-        unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
+        unique_locators = {
+            locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]  # type: ignore
+        }
         average_precisions = [tcm.AP for _, tcm in metrics]
         threshold = self.get_confidence_thresholds(configuration)
         return self.test_suite_metrics(unique_locators, average_precisions, threshold)

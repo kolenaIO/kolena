@@ -19,6 +19,7 @@ from typing import Union
 
 import numpy as np
 from question_answering.workflow import Inference
+from question_answering.workflow import TestSample
 from question_answering.workflow import TestSampleMetrics
 
 from kolena.workflow import AxisConfig
@@ -26,6 +27,7 @@ from kolena.workflow import BarPlot
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Histogram
+from kolena.workflow.plot import Plot
 
 
 def get_readable(text: str) -> str:
@@ -55,15 +57,15 @@ def mean_metric(metric: str, metrics: List[TestSampleMetrics]) -> float:
 
 def compute_score_distribution_plot(
     score: str,
-    metrics: List[Union[TestSampleMetrics, Inference]],
+    metrics: Union[List[TestSampleMetrics], List[Inference]],
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     logarithmic: bool = False,
 ) -> Histogram:
     scores = [getattr(m, score) for m in metrics]
     if logarithmic:
-        bins = np.logspace(*binning_info, base=2)
+        bins = np.logspace(*binning_info, base=2)  # type: ignore
     else:
-        bins = np.linspace(*binning_info)
+        bins = np.linspace(*binning_info)  # type: ignore
 
     hist, _ = np.histogram(scores, bins=bins)
     return Histogram(
@@ -79,12 +81,12 @@ def compute_score_distribution_plot(
 def compute_metric_vs_metric_plot(
     x_metric: str,
     y_metric: str,
-    x_metrics: List[Union[TestSampleMetrics, Inference]],
-    y_metrics: List[Union[TestSampleMetrics, Inference]],
+    x_metrics: Union[List[TestSample], List[Inference]],
+    y_metrics: List[TestSampleMetrics],
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     x_logarithmic: bool = False,
     y_logarithmic: bool = False,
-) -> Optional[CurvePlot]:
+) -> Optional[Plot]:
     y_values = [getattr(m, y_metric) for m in y_metrics]
     x_values = [getattr(m, x_metric) for m in x_metrics]
 
@@ -92,9 +94,9 @@ def compute_metric_vs_metric_plot(
         return None
 
     if x_logarithmic:
-        bins = list(np.logspace(*binning_info, base=2))
+        bins = list(np.logspace(*binning_info, base=2))  # type: ignore
     else:
-        bins = list(np.linspace(*binning_info))
+        bins = list(np.linspace(*binning_info))  # type: ignore
 
     bins_centers: List[float] = []
     bins_values: List[float] = []

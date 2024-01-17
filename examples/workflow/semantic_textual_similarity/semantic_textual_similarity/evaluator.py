@@ -74,7 +74,7 @@ def compute_metric_vs_metric_plot(
         bin_values = [y for y, x in zip(y_values, x_values) if lo <= x < hi]
         if len(bin_values) > 0:
             bins_centers.append(lo + ((hi - lo) / 2))
-            bins_values.append(np.mean(bin_values))
+            bins_values.append(np.mean(bin_values))  # type: ignore
 
     return CurvePlot(
         title=f"{y_metric} vs. {x_metric}",
@@ -133,6 +133,6 @@ def evaluate_semantic_similarity(
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
         plots_test_case=all_test_case_plots,
     )

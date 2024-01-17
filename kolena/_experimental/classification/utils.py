@@ -159,10 +159,10 @@ def compute_confusion_matrix(
     return ConfusionMatrix(title=title, labels=labels, matrix=matrix)
 
 
-def _roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], List[float]]:
+def _roc_curve(y_true_input: List[int], y_score_input: List[float]) -> Tuple[List[float], List[float]]:
     # Convert inputs to numpy arrays
-    y_true = np.array(y_true)
-    y_score = np.array(y_score)
+    y_true = np.array(y_true_input)
+    y_score = np.array(y_score_input)
     # Sort the predictions by descending order of confidence
     sorted_indices = np.argsort(y_score)[::-1]
     y_score = y_score[sorted_indices]
@@ -185,13 +185,13 @@ def _roc_curve(y_true: List[int], y_score: List[float]) -> Tuple[List[float], Li
         fpr = []
     else:
         fpr = fps / fps[-1]
-        fpr = fpr.tolist()
+        fpr = fpr.tolist()  # type: ignore
     if tps[-1] <= 0:
         # No positive samples in y_true, true positive value should be meaningless
         tpr = []
     else:
         tpr = tps / tps[-1]
-        tpr = tpr.tolist()
+        tpr = tpr.tolist()  # type: ignore
     return fpr, tpr
 
 
@@ -234,7 +234,7 @@ def compute_roc_curves(
     for label in labels:
         y_true = [1 if gt is not None and gt.label == label else 0 for gt in ground_truths]
         y_score = [get_label_confidence(label, inf) for inf in inferences]
-        fpr_values, tpr_values = _roc_curve(y_true=y_true, y_score=y_score)
+        fpr_values, tpr_values = _roc_curve(y_true_input=y_true, y_score_input=y_score)
 
         if len(fpr_values) > 0 and len(tpr_values) > 0 and len(fpr_values) == len(tpr_values):
             curves.append(Curve(x=fpr_values, y=tpr_values, label=label))

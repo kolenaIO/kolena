@@ -15,6 +15,10 @@ import sys
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
+from typing import DefaultDict
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -30,6 +34,7 @@ from kolena.workflow.asset import ImageAsset
 
 BUCKET = "kolena-public-datasets"
 DATASET = "labeled-faces-in-the-wild"
+TestCaseSubsetDict = DefaultDict[str, Dict[str, List[Tuple[TestSample, GroundTruth]]]]
 
 
 def main(args: Namespace) -> int:
@@ -93,7 +98,7 @@ def main(args: Namespace) -> int:
     complete_test_case = TestCase(
         name=f"{DATASET} :: complete [FR]",
         description=f"All images in {DATASET} dataset",
-        test_samples=test_samples_and_ground_truths,
+        test_samples=test_samples_and_ground_truths,  # type: ignore
         reset=True,
     )
 
@@ -102,7 +107,7 @@ def main(args: Namespace) -> int:
         race=["asian", "black", "indian", "middle eastern", "latino hispanic", "white"],  # ignore "unknown"
         gender=["man", "woman"],  # ignore "unknown"
     )
-    test_case_subsets = defaultdict(lambda: defaultdict(list))
+    test_case_subsets: TestCaseSubsetDict = defaultdict(lambda: defaultdict(list))
 
     for ts, gt in test_samples_and_ground_truths:
         for category, tags in demographic_subsets.items():
@@ -110,16 +115,16 @@ def main(args: Namespace) -> int:
                 if ts.metadata[category] == tag:
                     test_case_subsets[category][tag].append((ts, gt))
 
-    for category, tags in test_case_subsets.items():
+    for category, tags_dict in test_case_subsets.items():
         test_cases = []
-        for tag, test_samples in tags.items():
+        for tag, test_samples in tags_dict.items():
             name = f"{category} :: {tag} [FR]"
             description = f"demographic subset of {DATASET} with source data labeled as {category}={tag}"
             test_cases.append(
                 TestCase(
                     name=name,
                     description=description,
-                    test_samples=test_samples,
+                    test_samples=test_samples,  # type: ignore
                     reset=True,
                 ),
             )
@@ -128,6 +133,7 @@ def main(args: Namespace) -> int:
             test_cases=[complete_test_case, *test_cases],
             reset=True,
         )
+    return 0
 
 
 if __name__ == "__main__":

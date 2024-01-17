@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from collections import defaultdict
 from typing import Dict
 from typing import List
@@ -200,13 +201,16 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> List[Tuple[TestSample, TestSampleMetrics]]:
         assert configuration is not None, "must specify configuration"
         # compute thresholds to cache values for subsequent steps
         self.compute_and_cache_f1_optimal_thresholds(configuration, inferences)
-        return [(ts, self.compute_image_metrics(gt, inf, configuration, test_case.name)) for ts, gt, inf in inferences]
+        return [
+            (ts, self.compute_image_metrics(gt, inf, configuration, test_case.name))  # type: ignore
+            for ts, gt, inf in inferences
+        ]
 
     def bbox_matches_and_count_for_one_label(
         self,
@@ -290,7 +294,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         average_precision = 0.0
         baseline_pr_curve = compute_pr_curve([class_matches])
         if baseline_pr_curve is not None:
-            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)
+            average_precision = compute_average_precision(baseline_pr_curve.y, baseline_pr_curve.x)  # type: ignore
 
         return self.class_metrics_per_test_case(label, thresholds, class_matches, samples_count, average_precision)
 
@@ -303,6 +307,8 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         fp_count = sum(im.count_FP for im in metrics)
         fn_count = sum(im.count_FN for im in metrics)
         ignored_count = sum(1 if im.ignored else 0 for im in metrics)
+        macro_prec_data = np.mean([data.Precision for data in per_class_metrics])
+        macro_rec_data = np.mean([data.Recall for data in per_class_metrics])
         return TestCaseMetrics(
             PerClass=per_class_metrics,
             Objects=tp_count + fn_count,
@@ -311,10 +317,10 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             FN=fn_count,
             FP=fp_count,
             nIgnored=ignored_count,
-            macro_Precision=np.mean([data.Precision for data in per_class_metrics]) if per_class_metrics else 0.0,
-            macro_Recall=np.mean([data.Recall for data in per_class_metrics]) if per_class_metrics else 0.0,
-            macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,
-            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,
+            macro_Precision=macro_prec_data if per_class_metrics else 0.0,  # type: ignore
+            macro_Recall=macro_rec_data if per_class_metrics else 0.0,  # type: ignore
+            macro_F1=np.mean([data.F1 for data in per_class_metrics]) if per_class_metrics else 0.0,  # type: ignore
+            mean_AP=np.mean([data.AP for data in per_class_metrics]) if per_class_metrics else 0.0,  # type: ignore
             micro_Precision=compute_precision(tp_count, fp_count),
             micro_Recall=compute_recall(tp_count, fn_count),
             micro_F1=compute_f1_score(tp_count, fp_count, fn_count),
@@ -323,14 +329,14 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetrics],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestCaseMetrics:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
-        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
-        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]  # type: ignore
+        self.locators_by_test_case[test_case.name] = [ts.locator for ts, _, _ in inferences]  # type: ignore
 
         # compute nested metrics per class
         labels = {gt.label for _, gts, _ in inferences for gt in gts.bboxes} | {
@@ -346,13 +352,13 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetrics],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
         thresholds = self.get_confidence_thresholds(configuration)
-        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]
+        all_bbox_matches = self.matchings_by_test_case[configuration.display_name()][test_case.name]  # type: ignore
 
         # clean matching for confusion matrix
         match_matched = [
@@ -372,7 +378,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
             ),
         ]
 
-        plots: Optional[List[Plot]] = []
+        plots: List[Plot] = []
         plots.extend(
             filter(
                 None,
@@ -389,22 +395,24 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     def test_suite_metrics(self, unique_locators: Set[str], average_precisions: List[float]) -> TestSuiteMetrics:
         return TestSuiteMetrics(
             n_images=len(unique_locators),
-            mean_AP=np.mean(average_precisions) if average_precisions else 0.0,
+            mean_AP=np.mean(average_precisions) if average_precisions else 0.0,  # type: ignore
         )
 
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetrics]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        metrics: List[Tuple[TestCase, TestCaseMetrics]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
-        unique_locators = {locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]}
+        unique_locators = {
+            locator for tc, _ in metrics for locator in self.locators_by_test_case[tc.name]  # type: ignore
+        }
         average_precisions = [tcm.mean_AP for _, tcm in metrics]
         return self.test_suite_metrics(unique_locators, average_precisions)
 
-    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> float:
+    def get_confidence_thresholds(self, configuration: ThresholdConfiguration) -> Dict[str, float]:
         if configuration.threshold_strategy == "F1-Optimal":
             return self.threshold_cache[configuration.display_name()]
         else:
-            return defaultdict(lambda: configuration.threshold_strategy)
+            return defaultdict(lambda: configuration.threshold_strategy)  # type: ignore

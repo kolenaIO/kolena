@@ -121,7 +121,7 @@ def transform_to_camera_frame(
     transformation: List[float],
     rectification: List[float],
 ) -> List[BoundingBox3D]:
-    def limit_period(val: np.array, offset: Optional[float] = 0.5, period: Optional[float] = np.pi * 2):
+    def limit_period(val: np.array, offset: Optional[float] = 0.5, period: Optional[float] = np.pi * 2) -> np.ndarray:
         """
         Limit the value into a period for periodic function.
         Args:
@@ -133,15 +133,15 @@ def transform_to_camera_frame(
             (np.ndarray): Value in the range of
                 [-offset * period, (1-offset) * period]
         """
-        limited_val = val - np.floor(val / period + offset) * period
+        limited_val = val - np.floor(val / period + offset) * period  # type: ignore
         return limited_val
 
     dimensions = [bbox.dimensions for bbox in velodyne_bboxes]
     yaws = limit_period(-np.array([bbox.rotations[2] for bbox in velodyne_bboxes]) - np.pi / 2.0)
-    transformation = np.array(transformation).reshape([4, 4])
-    rectification = np.array(rectification).reshape([4, 4])
+    transformation_np = np.array(transformation).reshape([4, 4])
+    rectification_np = np.array(rectification).reshape([4, 4])
     centers = np.array([list(bbox.center) + [1.0] for bbox in velodyne_bboxes])
-    centers = centers @ (rectification @ transformation).T
+    centers = centers @ (rectification_np @ transformation_np).T
     return [
         BoundingBox3D(
             center=tuple(center[:3]),
@@ -166,7 +166,7 @@ def ground_truth_to_kitti_format(sample: TestSample, gt: GroundTruth) -> Dict[st
         )
 
     camera_bboxes = transform_to_camera_frame(
-        gt.bboxes_3d,
+        gt.bboxes_3d,  # type: ignore
         sample.velodyne_to_camera_transformation,
         sample.camera_rectification,
     )
@@ -199,7 +199,7 @@ def inference_to_kitti_format(sample: TestSample, inf: Inference) -> Dict[str, A
         )
 
     camera_bboxes = transform_to_camera_frame(
-        inf.bboxes_3d,
+        inf.bboxes_3d,  # type: ignore
         sample.velodyne_to_camera_transformation,
         sample.camera_rectification,
     )

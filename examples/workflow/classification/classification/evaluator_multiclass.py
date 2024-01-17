@@ -68,7 +68,7 @@ class MulticlassClassificationEvaluator(BaseClassificationEvaluator):
     def compute_test_case_metrics(
         self,
         ground_truths: List[GroundTruth],
-        metrics_test_samples: List[TestSampleMetrics],
+        metrics_test_samples: List[TestSampleMetrics],  # type: ignore
     ) -> TestCaseMetrics:
         classification_pairs = [
             (gt.classification.label, tsm.classification.label if tsm.classification else None)
@@ -106,18 +106,18 @@ class MulticlassClassificationEvaluator(BaseClassificationEvaluator):
             n_correct=n_correct,
             n_incorrect=n_images - n_correct,
             Accuracy=n_correct / n_images,
-            macro_Accuracy=np.mean([class_metric.Accuracy for class_metric in class_level_metrics]),
-            macro_Precision=np.mean([class_metric.Precision for class_metric in class_level_metrics]),
-            macro_Recall=np.mean([class_metric.Recall for class_metric in class_level_metrics]),
-            macro_F1=np.mean([class_metric.F1 for class_metric in class_level_metrics]),
-            macro_FPR=np.mean([class_metric.FPR for class_metric in class_level_metrics]),
+            macro_Accuracy=np.mean([class_metric.Accuracy for class_metric in class_level_metrics]),  # type: ignore
+            macro_Precision=np.mean([class_metric.Precision for class_metric in class_level_metrics]),  # type: ignore
+            macro_Recall=np.mean([class_metric.Recall for class_metric in class_level_metrics]),  # type: ignore
+            macro_F1=np.mean([class_metric.F1 for class_metric in class_level_metrics]),  # type: ignore
+            macro_FPR=np.mean([class_metric.FPR for class_metric in class_level_metrics]),  # type: ignore
         )
 
     def compute_test_case_plots(
         self,
         ground_truths: List[GroundTruth],
         inferences: List[Inference],
-        metrics: List[TestSampleMetrics],
+        metrics: List[TestSampleMetrics],  # type: ignore
         gt_labels: List[str],
         confidence_range: Optional[Tuple[float, float, int]],
     ) -> List[Plot]:
@@ -129,14 +129,14 @@ class MulticlassClassificationEvaluator(BaseClassificationEvaluator):
             log.warn("skipping test case confidence histograms: unsupported confidence range")
 
         plots.append(
-            compute_roc_curves(
+            compute_roc_curves(  # type: ignore
                 [gt.classification for gt in ground_truths],
                 [inf.inferences for inf in inferences],
                 gt_labels,
             ),
         )
         plots.append(
-            compute_confusion_matrix(
+            compute_confusion_matrix(  # type: ignore
                 [gt.classification.label for gt in ground_truths],
                 [metric.classification.label if metric.classification is not None else "None" for metric in metrics],
             ),

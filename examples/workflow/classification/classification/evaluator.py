@@ -44,7 +44,7 @@ def evaluate_classification(
         evaluator = BinaryClassificationEvaluator()
     else:
         log.info("evaluating multiclass classification test suite")
-        evaluator = MulticlassClassificationEvaluator()
+        evaluator = MulticlassClassificationEvaluator()  # type: ignore
 
     test_sample_metrics = [
         evaluator.compute_test_sample_metrics(gt, inf, configuration) for gt, inf in zip(ground_truths, inferences)
@@ -73,14 +73,14 @@ def evaluate_classification(
             gt_labels,
             confidence_range,
         )
-        metrics_test_case.append((tc, test_case_metrics))
+        metrics_test_case.append((tc, test_case_metrics))  # type: ignore
         plots_test_case.append((tc, test_case_plots))
 
-    metrics_test_suite = evaluator.compute_test_suite_metrics(test_sample_metrics, configuration)
+    metrics_test_suite = evaluator.compute_test_suite_metrics(test_sample_metrics, configuration)  # type: ignore
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=metrics_test_case,
+        metrics_test_case=metrics_test_case,  # type: ignore
         plots_test_case=plots_test_case,
         metrics_test_suite=metrics_test_suite,
     )

@@ -51,7 +51,7 @@ def main(args: Namespace) -> int:
     complete_test_case = TestCase(
         f"complete {DATASET}",
         description=f"All images in {DATASET} dataset",
-        test_samples=test_samples_and_ground_truths,
+        test_samples=test_samples_and_ground_truths,  # type: ignore
         reset=True,
     )
 
@@ -71,7 +71,7 @@ def main(args: Namespace) -> int:
                 test_samples=[
                     (ts, gt)
                     for ts, gt in test_samples_and_ground_truths
-                    if fn(ts.metadata["width"] * ts.metadata["height"])
+                    if fn(ts.metadata["width"] * ts.metadata["height"])  # type: ignore
                 ],
                 reset=True,
             ),

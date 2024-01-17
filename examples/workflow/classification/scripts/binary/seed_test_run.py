@@ -59,7 +59,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str], multiclass: bool
             ],
         )
 
-    model = Model(f"{model_name} [{DATASET}]", infer=infer)
+    model = Model(f"{model_name} [{DATASET}]", infer=infer)  # type: ignore
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:
@@ -69,10 +69,8 @@ def seed_test_run(model_name: str, test_suite_names: List[str], multiclass: bool
         test(
             model,
             test_suite,
-            evaluate_classification,
-            configurations=[
-                ThresholdConfiguration(threshold=0.5),
-            ],
+            evaluate_classification,  # type: ignore
+            configurations=[ThresholdConfiguration(threshold=0.5)],
             reset=True,
         )
 

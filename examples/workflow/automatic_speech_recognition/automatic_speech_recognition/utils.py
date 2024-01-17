@@ -15,10 +15,7 @@ import difflib
 import re
 from typing import Any
 from typing import Dict
-from typing import Union
 
-from automatic_speech_recognition.workflow import GroundTruth
-from automatic_speech_recognition.workflow import Inference
 from numwords_to_nums.numwords_to_nums import NumWordsToNum
 
 
@@ -50,30 +47,33 @@ def generate_diff_word_level(reference: str, candidate: str) -> Dict[str, Any]:
     fn_str = []
     for opcode, ref_start, ref_end, can_start, can_end in matcher.get_opcodes():
         if opcode == "equal":
-            fp_str.append(" ".join(matcher.a[ref_start:ref_end]))
-            fn_str.append(" ".join(matcher.a[ref_start:ref_end]))
+            fp_str.append(" ".join(matcher.a[ref_start:ref_end]))  # type: ignore
+            fn_str.append(" ".join(matcher.a[ref_start:ref_end]))  # type: ignore
 
         elif opcode == "insert":
-            fp_count += len(matcher.b[can_start:can_end])
-            ins_count += len(matcher.b[can_start:can_end])
-            ins_list.append(matcher.b[can_start:can_end])
-            fp_str.append("<fp>" + " ".join(matcher.b[can_start:can_end]) + "</fp>")
-            fn_str.append(" ".join(matcher.b[can_start:can_end]))
+            fp_count += len(matcher.b[can_start:can_end])  # type: ignore
+            ins_count += len(matcher.b[can_start:can_end])  # type: ignore
+            ins_list.append(matcher.b[can_start:can_end])  # type: ignore
+            fp_str.append("<fp>" + " ".join(matcher.b[can_start:can_end]) + "</fp>")  # type: ignore
+            fn_str.append(" ".join(matcher.b[can_start:can_end]))  # type: ignore
 
         elif opcode == "delete":
-            fn_count += len(matcher.a[ref_start:ref_end])
-            del_count += len(matcher.a[ref_start:ref_end])
-            del_list.append(matcher.a[ref_start:ref_end])
-            fn_str.append("<fn>" + " ".join(matcher.a[ref_start:ref_end]) + "</fn>")
-            fp_str.append(" ".join(matcher.a[ref_start:ref_end]))
+            fn_count += len(matcher.a[ref_start:ref_end])  # type: ignore
+            del_count += len(matcher.a[ref_start:ref_end])  # type: ignore
+            del_list.append(matcher.a[ref_start:ref_end])  # type: ignore
+            fn_str.append("<fn>" + " ".join(matcher.a[ref_start:ref_end]) + "</fn>")  # type: ignore
+            fp_str.append(" ".join(matcher.a[ref_start:ref_end]))  # type: ignore
 
         elif opcode == "replace":
-            fn_count += len(matcher.a[ref_start:ref_end])
-            fp_count += len(matcher.b[can_start:can_end])
-            sub_count += len(matcher.a[ref_start:ref_end])
-            sub_list.append(f"{' '.join(matcher.a[ref_start:ref_end])} → {' '.join(matcher.b[can_start:can_end])}")
-            fp_str.append("<fp>" + " ".join(matcher.b[can_start:can_end]) + "</fp>")
-            fn_str.append("<fn>" + " ".join(matcher.a[ref_start:ref_end]) + "</fn>")
+            fn_count += len(matcher.a[ref_start:ref_end])  # type: ignore
+            fp_count += len(matcher.b[can_start:can_end])  # type: ignore
+            sub_count += len(matcher.a[ref_start:ref_end])  # type: ignore
+            sub_list.append(
+                f"{' '.join(matcher.a[ref_start:ref_end])}"  # type: ignore
+                f" → {' '.join(matcher.b[can_start:can_end])}",  # type: ignore
+            )
+            fp_str.append("<fp>" + " ".join(matcher.b[can_start:can_end]) + "</fp>")  # type: ignore
+            fn_str.append("<fn>" + " ".join(matcher.a[ref_start:ref_end]) + "</fn>")  # type: ignore
 
     return {
         "fp_str": " ".join(fp_str),
@@ -89,13 +89,13 @@ def generate_diff_word_level(reference: str, candidate: str) -> Dict[str, Any]:
     }
 
 
-def preprocess_transcription(txt: Union[GroundTruth, Inference]) -> str:
+def preprocess_transcription(txt: str) -> str:
     """
     Preprocesses and standardizes text to prepare for metrics evaluations.
     Removes punctuation, changes text to lower case, and converts all NumWords to Numbers.
     """
     num = NumWordsToNum()
-    txt = re.sub(r"[^\w\s]", "", txt.transcription.label.lower())
+    txt = re.sub(r"[^\w\s]", "", txt)
     return "oh".join(
         [
             num.numerical_words_to_numbers(

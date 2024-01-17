@@ -14,6 +14,8 @@
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Any
+from typing import Dict
 
 import pandas as pd
 from question_answering.evaluator import evaluate_question_answering
@@ -34,7 +36,7 @@ MODELS = ["gpt-3.5-turbo-0301", "gpt-3.5-turbo", "gpt-4-0314", "gpt-4"]
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
 
-    inference_mapping = {}
+    inference_mapping: Dict[Any, Dict[Any, Dict[str, Any]]] = {}
     model_file_path = f"s3://kolena-public-datasets/CoQA/results/{args.model}.csv"
     df = pd.read_csv(model_file_path, storage_options={"anon": True})
 
@@ -68,9 +70,9 @@ def main(args: Namespace) -> int:
         ThresholdConfiguration(threshold=0.5),
     ]
 
-    model = Model(args.model, infer=infer)
+    model = Model(args.model, infer=infer)  # type: ignore
     test_suite = TestSuite.load(args.test_suite)
-    test(model, test_suite, evaluate_question_answering, configurations, reset=True)
+    test(model, test_suite, evaluate_question_answering, configurations, reset=True)  # type: ignore
     return 0
 
 

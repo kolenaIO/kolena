@@ -47,14 +47,20 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         inferences.sort(key=lambda x: x.score, reverse=True)
         return Inference(inferences=inferences)
 
-    model = Model(f"{model_name} [{DATASET}]", infer=infer)
+    model = Model(f"{model_name} [{DATASET}]", infer=infer)  # type: ignore
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
         print(f"Test Suite: {test_suite}")
 
-        test(model, test_suite, evaluate_classification, configurations=[ThresholdConfiguration()], reset=True)
+        test(
+            model,
+            test_suite,
+            evaluate_classification,  # type: ignore
+            configurations=[ThresholdConfiguration()],
+            reset=True,
+        )
 
 
 def main(args: Namespace) -> int:

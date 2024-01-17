@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -97,9 +98,9 @@ class KeypointsEvaluator(Evaluator):
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[NmseThreshold] = None,
-    ) -> List[Tuple[TestSample, TestSampleMetrics]]:
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[NmseThreshold] = None,  # type: ignore
+    ) -> List[Tuple[TestSample, TestSampleMetrics]]:  # type: ignore
         if configuration is None:  # TODO(gh): this is annoying for users to have to deal with
             raise ValueError(f"{type(self).__name__} must have configuration")
         return [
@@ -113,36 +114,38 @@ class KeypointsEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[NmseThreshold] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetrics],  # type: ignore
+        configuration: Optional[NmseThreshold] = None,  # type: ignore
     ) -> TestCaseMetrics:
         n_fail_to_align = sum(1 for mts in metrics if mts.match_type == "failure_to_align")
         n_fail_to_detect = sum(1 for mts in metrics if mts.match_type == "failure_to_detect")
         n_fail_total = n_fail_to_align + n_fail_to_detect
 
+        avg_Δ_right_eye = [mts.Δ_right_eye for mts in metrics if mts.Δ_right_eye is not None]
+        avg_Δ_left_mouth = [mts.Δ_left_mouth for mts in metrics if mts.Δ_left_mouth is not None]
+        avg_Δ_right_mouth = [mts.Δ_right_mouth for mts in metrics if mts.Δ_right_mouth is not None]
+        avg_norm_Δ_nose = [mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]
+        avg_norm_Δ_left_eye = [mts.norm_Δ_left_eye for mts in metrics if mts.norm_Δ_left_eye is not None]
+        avg_norm_Δ_right_eye = [mts.norm_Δ_right_eye for mts in metrics if mts.norm_Δ_right_eye is not None]
+        avg_norm_Δ_left_mouth = [mts.norm_Δ_left_mouth for mts in metrics if mts.norm_Δ_left_mouth is not None]
+        avg_norm_Δ_right_mouth = [mts.norm_Δ_right_mouth for mts in metrics if mts.norm_Δ_right_mouth is not None]
         return TestCaseMetrics(
-            avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),
-            avg_Δ_left_eye=np.mean([mts.Δ_left_eye for mts in metrics if mts.Δ_left_eye is not None]),
-            avg_Δ_right_eye=np.mean([mts.Δ_right_eye for mts in metrics if mts.Δ_right_eye is not None]),
-            avg_Δ_left_mouth=np.mean([mts.Δ_left_mouth for mts in metrics if mts.Δ_left_mouth is not None]),
-            avg_Δ_right_mouth=np.mean([mts.Δ_right_mouth for mts in metrics if mts.Δ_right_mouth is not None]),
-            avg_norm_Δ_nose=np.mean([mts.norm_Δ_nose for mts in metrics if mts.norm_Δ_nose is not None]),
-            avg_norm_Δ_left_eye=np.mean([mts.norm_Δ_left_eye for mts in metrics if mts.norm_Δ_left_eye is not None]),
-            avg_norm_Δ_right_eye=np.mean(
-                [mts.norm_Δ_right_eye for mts in metrics if mts.norm_Δ_right_eye is not None],
-            ),
-            avg_norm_Δ_left_mouth=np.mean(
-                [mts.norm_Δ_left_mouth for mts in metrics if mts.norm_Δ_left_mouth is not None],
-            ),
-            avg_norm_Δ_right_mouth=np.mean(
-                [mts.norm_Δ_right_mouth for mts in metrics if mts.norm_Δ_right_mouth is not None],
-            ),
+            avg_Δ_nose=np.mean([mts.Δ_nose for mts in metrics if mts.Δ_nose is not None]),  # type: ignore
+            avg_Δ_left_eye=np.mean([mts.Δ_left_eye for mts in metrics if mts.Δ_left_eye is not None]),  # type: ignore
+            avg_Δ_right_eye=np.mean(avg_Δ_right_eye),  # type: ignore
+            avg_Δ_left_mouth=np.mean(avg_Δ_left_mouth),  # type: ignore
+            avg_Δ_right_mouth=np.mean(avg_Δ_right_mouth),  # type: ignore
+            avg_norm_Δ_nose=np.mean(avg_norm_Δ_nose),  # type: ignore
+            avg_norm_Δ_left_eye=np.mean(avg_norm_Δ_left_eye),  # type: ignore
+            avg_norm_Δ_right_eye=np.mean(avg_norm_Δ_right_eye),  # type: ignore
+            avg_norm_Δ_left_mouth=np.mean(avg_norm_Δ_left_mouth),  # type: ignore
+            avg_norm_Δ_right_mouth=np.mean(avg_norm_Δ_right_mouth),  # type: ignore
             n_fail_to_align=n_fail_to_align,
             n_fail_to_detect=n_fail_to_detect,
             n_fail_total=n_fail_total,
-            total_average_MSE=np.mean([mts.mse for mts in metrics if mts.mse is not None]),
-            total_average_NMSE=np.mean([mts.nmse for mts in metrics if mts.nmse is not None]),
+            total_average_MSE=np.mean([mts.mse for mts in metrics if mts.mse is not None]),  # type: ignore
+            total_average_NMSE=np.mean([mts.nmse for mts in metrics if mts.nmse is not None]),  # type: ignore
             total_detection_failure_rate=n_fail_to_detect / len(metrics) if len(metrics) > 0 else 0,
             total_alignment_failure_rate=n_fail_to_align / len(metrics) if len(metrics) > 0 else 0,
             total_failure_rate=n_fail_total / len(metrics) if len(metrics) > 0 else 0,
@@ -168,24 +171,26 @@ class KeypointsEvaluator(Evaluator):
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[TestSampleMetrics],
-        configuration: Optional[NmseThreshold] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[TestSampleMetrics],  # type: ignore
+        configuration: Optional[NmseThreshold] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
-        if test_case.name not in self.plot_by_test_case_name.keys():
-            self.plot_by_test_case_name[test_case.name] = self.compute_test_case_plot(metrics)
-        return [self.plot_by_test_case_name[test_case.name]]
+        if test_case.name not in self.plot_by_test_case_name.keys():  # type: ignore
+            self.plot_by_test_case_name[test_case.name] = self.compute_test_case_plot(metrics)  # type: ignore
+        return [self.plot_by_test_case_name[test_case.name]]  # type: ignore
 
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, TestCaseMetrics]],
-        configuration: Optional[NmseThreshold] = None,
+        metrics: List[Tuple[TestCase, TestCaseMetrics]],  # type: ignore
+        configuration: Optional[NmseThreshold] = None,  # type: ignore
     ) -> Optional[TestSuiteMetrics]:
+        variance_detection_failure_rate = [m.total_detection_failure_rate for _, m in metrics]
+        variance_alignment_failure_rate = [m.total_alignment_failure_rate for _, m in metrics]
         return TestSuiteMetrics(
-            variance_average_MSE=np.var([m.total_average_MSE for _, m in metrics]),
-            variance_average_NMSE=np.var([m.total_average_NMSE for _, m in metrics]),
-            variance_detection_failure_rate=np.var([m.total_detection_failure_rate for _, m in metrics]),
-            variance_alignment_failure_rate=np.var([m.total_alignment_failure_rate for _, m in metrics]),
-            variance_failure_rate=np.var([m.total_failure_rate for _, m in metrics]),
+            variance_average_MSE=np.var([m.total_average_MSE for _, m in metrics]),  # type: ignore
+            variance_average_NMSE=np.var([m.total_average_NMSE for _, m in metrics]),  # type: ignore
+            variance_detection_failure_rate=np.var(variance_detection_failure_rate),  # type: ignore
+            variance_alignment_failure_rate=np.var(variance_alignment_failure_rate),  # type: ignore
+            variance_failure_rate=np.var([m.total_failure_rate for _, m in metrics]),  # type: ignore
         )
