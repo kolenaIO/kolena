@@ -24,7 +24,7 @@ from kolena._utils.log import info
 
 class ActivationMapUploader:
     def __init__(self, inf_locator_prefix: str, map_locator_prefix: str):
-        self.pool = ThreadPoolExecutor(max_workers=32)
+        self.pool = ThreadPoolExecutor()
         self.inf_locator_prefix = inf_locator_prefix
         self.map_locator_prefix = map_locator_prefix
 

@@ -79,9 +79,7 @@ this workflow:
 5. [\# FN](https://docs.kolena.io/metrics/tp-fp-fn-tn)
 
 ### Plots
-1.
-2.
-3.
+1. `mean(results.f1)` vs. `datapoint.image_size`
 
 ### Test Cases
 1. `datapoint.person_count`

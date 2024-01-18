@@ -36,7 +36,7 @@ def upload_activation_map(model_name: str, write_bucket: str) -> None:
 
 def main(args: Namespace) -> int:
     kolena.initialize(verbose=True)
-    upload_activation_map(MODEL_NAME[args.model], args.write_bucket)
+    upload_activation_map(args.model, args.write_bucket)
     return 0
 
 
