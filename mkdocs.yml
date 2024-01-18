@@ -47,6 +47,7 @@ nav:
     - <code>kolena.errors</code>: reference/errors.md
     - <code>kolena.initialize</code>: reference/initialize.md
     - <code>kolena.io</code>: reference/io.md
+    - <code>kolena.metrics</code>: reference/metrics.md
     - <code>kolena.dataset</code>:
       - <code>kolena.dataset</code>: reference/dataset/index.md
     - <code>kolena.workflow</code>:

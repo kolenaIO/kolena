@@ -136,7 +136,7 @@ over Union (IoU)](./iou.md) and [Geometry Matching](./geometry-matching.md)).
 
 Let’s assume that a [matching algorithm](./geometry-matching.md) has already been run on all inferences and that the matched pairs and unmatched
 ground truths and inferences are given. Consider the following variables, adapted from
-[`match_inferences`][kolena.workflow.metrics.match_inferences]:
+[`match_inferences`][kolena.metrics.match_inferences]:
 
 | Variable | Type | Description |
 | --- | --- | --- |

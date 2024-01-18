@@ -13,11 +13,11 @@
 # limitations under the License.
 import pytest
 
-from kolena.workflow.metrics import f1_score
-from kolena.workflow.metrics import fpr
-from kolena.workflow.metrics import precision
-from kolena.workflow.metrics import recall
-from kolena.workflow.metrics import specificity
+from kolena.metrics import f1_score
+from kolena.metrics import fpr
+from kolena.metrics import precision
+from kolena.metrics import recall
+from kolena.metrics import specificity
 
 
 @pytest.mark.parametrize(

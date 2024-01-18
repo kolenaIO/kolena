@@ -22,7 +22,7 @@ negative ground truths.
 </div>
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`recall` ↗][kolena.workflow.metrics.recall]
+- :kolena-manual-16: API Reference: [`recall` ↗][kolena.metrics.recall]
 </div>
 
 

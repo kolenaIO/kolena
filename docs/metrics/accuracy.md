@@ -10,7 +10,7 @@ less meaningful with imbalanced datasets (e.g. far more negative ground truths t
 caution.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`accuracy` ↗][kolena.workflow.metrics.accuracy]
+- :kolena-manual-16: API Reference: [`accuracy` ↗][kolena.metrics.accuracy]
 </div>
 
 ## Implementation Details
