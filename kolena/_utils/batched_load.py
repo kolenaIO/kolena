@@ -62,6 +62,7 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
     # We use a file-like object here so that requests chunks the file upload
     # For reasons not entirely clear, this upload can fail with a broken connection if it is not chunked.
     df_chunk_buffer = io.BytesIO()
+    df_chunk.replace(np.nan, None, inplace=True)
     df_chunk.to_parquet(df_chunk_buffer)
     df_chunk_buffer.seek(0)
     signed_url_response = krequests.get(endpoint_path=API.Path.upload_signed_url(load_uuid))
