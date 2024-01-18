@@ -22,16 +22,15 @@ In a geometry matching algorithm, the following criteria must be met for a valid
 
 ??? info "Pseudocode: Geometry Matching"
 
-	1. Loop through all images in your dataset;
-	2. Loop through all labels;
-	3. Get inferences and ground truths with the current label;
-	4. Sort inferences by descending confidence score;
-	5. Check against all ground truths and find a ground truth that results in maximum IoU;
-	6. Check for the following criteria for a valid match:
-		1. This ground truth is not matched yet AND
-		2. The IoU is greater than or equal to the IoU threshold;
-	7. Repeat 5-6 on the next inference;
-
+    1. Loop through all images in your dataset;
+    2. Loop through all labels;
+    3. Get inferences and ground truths with the current label;
+    4. Sort inferences by descending confidence score;
+    5. Check against all ground truths and find a ground truth that results in maximum IoU;
+    6. Check for the following criteria for a valid match:
+        1. This ground truth is not matched yet AND
+        2. The IoU is greater than or equal to the IoU threshold;
+    7. Repeat 5-6 on the next inference;
 
 ## Examples: Matching 2D Bounding Boxes
 
@@ -41,7 +40,6 @@ type and the matching result:
 
 ![example legends](../assets/images/metrics-bbox-legend-light.svg#only-light)
 ![example legends](../assets/images/metrics-bbox-legend-dark.svg#only-dark)
-
 
 This example contains two ground truth and two inference bounding boxes, each with the same label.
 The pair $(\text{A}, \text{a})$ has high overlap (IoU of 0.9) and the pair $(\text{B}, \text{b})$ has low overlap
@@ -94,7 +92,6 @@ Let's take a look at another example with multiple classes, `Apple` and `Banana`
 | $\text{b}$ | `Banana` | 0.5 | 0.8 |
 
 </center>
-
 
 Each class is evaluated independently. Starting with `Apple`, there is one ground truth $\text{A}$ and one inference
 $\text{a}$, but these two do not overlap at all (IoU of 0.0). Because IoU is less than the IoU threshold, there is **no
@@ -195,17 +192,16 @@ the IoU threshold to be considered as a valid match.
 
 ??? info "Pseudocode: PASCAL VOC Matching"
 
-	1. Loop through all images in your dataset;
-	2. Loop through all labels;
-	3. Get inferences and ground truths with the evaluating label;
-	4. Sort inferences by descending confidence score;
-	5. Check against all ground truths and find a ground truth that results in maximum IoU;
-	6. Check for the following criteria for a valid match:
-		1. This ground truth is not matched yet AND
-		2. The IoU is **greater than** the IoU threshold;
-	7. **If matched with a `difficult` ground truth, ignore**;
-	8. Repeat 5-7 on the next inference;
-
+    1. Loop through all images in your dataset;
+    2. Loop through all labels;
+    3. Get inferences and ground truths with the evaluating label;
+    4. Sort inferences by descending confidence score;
+    5. Check against all ground truths and find a ground truth that results in maximum IoU;
+    6. Check for the following criteria for a valid match:
+        1. This ground truth is not matched yet AND
+        2. The IoU is **greater than** the IoU threshold;
+    7. **If matched with a `difficult` ground truth, ignore**;
+    8. Repeat 5-7 on the next inference;
 
 ### COCO
 
@@ -216,17 +212,16 @@ matched results. This `iscrowd` flag is intended to avoid penalizing models for 
 
 ??? info "Pseudocode: COCO Matching"
 
-	1. Loop through all images in your dataset;
-	2. Loop through all labels;
-	3. Get inferences and ground truths with the evaluating label;
-	4. Sort inferences by descending confidence score;
-	5. Check against all ground truths and find a ground truth that results in maximum IoU;
-	6. Check for the following criteria for a valid match:
-		1. This ground truth is not matched yet AND
-		2. The IoU is greater than or equal to the IoU threshold;
-	7. **If matched with a `iscrowd` ground truth, ignore**;
-	8. Repeat 5-7 on the next inference;
-
+    1. Loop through all images in your dataset;
+    2. Loop through all labels;
+    3. Get inferences and ground truths with the evaluating label;
+    4. Sort inferences by descending confidence score;
+    5. Check against all ground truths and find a ground truth that results in maximum IoU;
+    6. Check for the following criteria for a valid match:
+        1. This ground truth is not matched yet AND
+        2. The IoU is greater than or equal to the IoU threshold;
+    7. **If matched with a `iscrowd` ground truth, ignore**;
+    8. Repeat 5-7 on the next inference;
 
 ### Open Images V7
 
@@ -256,21 +251,20 @@ Also, multiple correct inferences inside the same `group-of` box still count as 
 
 ??? info "Pseudocode: Open Images V7 Matching"
 
-	1. Loop through all images in your dataset;
-	2. Loop through all **positive image-level** labels;
-	3. Get inferences and ground truths with the evaluating label;
-	4. Sort inferences by descending confidence score;
-	5. Check against all **non-`ground-of`** ground truths and find a ground truth that results in maximum IoU;
-	6. Check for the following criteria for a valid match:
-		1. This ground truth is not matched yet AND
-		2. The IoU is greater than or equal to the IoU threshold;
-	7. **If matched with a `difficult` ground truth, ignore**;
-	8. Repeat 5-7 on the next inference;
-	9. **Loop through all unmatched inferences;**
-	10. **Check against all `group-of` ground truths and find a ground truth that results in maximum IoU;**
-	11. **Check for the matching criteria (6);**
-	12. **Repeat 10-11 on the next unmatched inference;**
-
+    1. Loop through all images in your dataset;
+    2. Loop through all **positive image-level** labels;
+    3. Get inferences and ground truths with the evaluating label;
+    4. Sort inferences by descending confidence score;
+    5. Check against all **non-`ground-of`** ground truths and find a ground truth that results in maximum IoU;
+    6. Check for the following criteria for a valid match:
+        1. This ground truth is not matched yet AND
+        2. The IoU is greater than or equal to the IoU threshold;
+    7. **If matched with a `difficult` ground truth, ignore**;
+    8. Repeat 5-7 on the next inference;
+    9. **Loop through all unmatched inferences;**
+    10. **Check against all `group-of` ground truths and find a ground truth that results in maximum IoU;**
+    11. **Check for the matching criteria (6);**
+    12. **Repeat 10-11 on the next unmatched inference;**
 
 ## Limitations and Biases
 
@@ -281,26 +275,26 @@ matching performance.
 
 ??? example "Example: Greedy Matching"
 
-	![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching-light.svg#only-light)
-	![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching-dark.svg#only-dark)
+    ![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching-light.svg#only-light)
+    ![An example of greedy matching](../assets/images/metrics-matcher-greedy-matching-dark.svg#only-dark)
 
-	<center>
+    <center>
 
-	| Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
-	| --- | --- | --- | --- |
-	| $\text{a}$ | 0.7 | 0.0 | 0.6 |
-	| $\text{b}$ | 0.8 | 0.5 | 0.7 |
+    | Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+    | --- | --- | --- | --- |
+    | $\text{a}$ | 0.7 | 0.0 | 0.6 |
+    | $\text{b}$ | 0.8 | 0.5 | 0.7 |
 
-	</center>
+    </center>
 
-	When there are two ground truths and two inferences, one inference $\text{b}$ with a higher score overlaps well with
-	both ground truths $\text{A}$ and $\text{B}$, and the other one, $\text{a}$, with a lower score overlaps well with
+    When there are two ground truths and two inferences, one inference $\text{b}$ with a higher score overlaps well with
+    both ground truths $\text{A}$ and $\text{B}$, and the other one, $\text{a}$, with a lower score overlaps well with
     just one ground truth $\text{B}$. Because the IoU between $\text{B}$ and $\text{b}$ is greater than IoU between
     $\text{A}$ and $\text{b}$, inference $\text{b}$ is matched with ground truth $\text{B}$, causing
-	inference $\text{a}$ to fail to match.
+    inference $\text{a}$ to fail to match.
 
     This greedy matching behavior results in a higher false positive count in this type
-	of scenario. Ideally, inference $\text{a}$ matches with ground truth $\text{B}$, and inference $\text{b}$ matches
+    of scenario. Ideally, inference $\text{a}$ matches with ground truth $\text{B}$, and inference $\text{b}$ matches
     with ground truth $\text{A}$, resulting in no FPs.
 
 Another behavior to note here is that it is possible to get different matching results depending on the **ground truth**
@@ -309,26 +303,26 @@ Another behavior to note here is that it is possible to get different matching r
 
 ??? example "Example: Different Matching Results When Ground Truth Order Changes"
 
-	![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order-light.svg#only-light)
-	![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order-dark.svg#only-dark)
+    ![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order-light.svg#only-light)
+    ![An example of ground truth ordering](../assets/images/metrics-matcher-gt-order-dark.svg#only-dark)
 
-	<center>
+    <center>
 
-	| Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
-	| --- | --- | --- | --- |
-	| $\text{a}$ | 0.7 | 0.0 | 0.5 |
-	| $\text{b}$ | 0.7 | 0.5 | 0.5 |
+    | Bounding Box | Score | IoU($\text{A}$) | IoU($\text{B}$) |
+    | --- | --- | --- | --- |
+    | $\text{a}$ | 0.7 | 0.0 | 0.5 |
+    | $\text{b}$ | 0.7 | 0.5 | 0.5 |
 
-	</center>
+    </center>
 
-	The three pairs of ground truth and inference have **same IoU** and both inferences have **same confidence score**.
+    The three pairs of ground truth and inference have **same IoU** and both inferences have **same confidence score**.
 
-	If the ground truths are ordered as $[\text{A}, \text{B}]$ and the inferences as $[\text{a}, \text{b}]$, inference
+    If the ground truths are ordered as $[\text{A}, \text{B}]$ and the inferences as $[\text{a}, \text{b}]$, inference
     $\text{a}$ is matched with $\text{B}$ first, so inference $\text{b}$ gets matched with $\text{A}$.
 
     If the inference order changes to $[\text{b}, \text{a}]$, now inference $\text{a}$ may or may not be matched with
     any ground truth. The matched result can change depending on the ground truth order. If $\text{A}$ is evaluated
-	before $\text{B}$, inference $\text{b}$ is matched with $\text{A}$, and $\text{a}$ can be matched with $\text{B}$.
+    before $\text{B}$, inference $\text{b}$ is matched with $\text{A}$, and $\text{a}$ can be matched with $\text{B}$.
     However, if $\text{B}$ comes before $\text{A}$, inference $\text{b}$ is matched with $\text{B}$ instead, leaving
     inference $\text{a}$ with no match.
 

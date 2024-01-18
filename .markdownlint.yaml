@@ -1,7 +1,8 @@
-# Default state for all rules
 default: true
 
-# MD013/line-length - Line length
+MD010:
+  spaces_per_tab: 4
+
 MD013:
   code_blocks: false
   headings: false
