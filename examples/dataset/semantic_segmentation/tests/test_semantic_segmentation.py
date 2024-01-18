@@ -20,7 +20,6 @@ from collections.abc import Iterator
 import pytest
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
-from semantic_segmentation.constants import MODEL_NAME
 from semantic_segmentation.upload_dataset import run as upload_dataset_run
 from semantic_segmentation.upload_results import run as upload_results_run
 
@@ -50,7 +49,7 @@ def test__semantic_segmentation_upload_dataset__smoke(dataset_name: str) -> None
 @pytest.mark.depends(on=["test__semantic_segmentation_upload_dataset__smoke"])
 def test__semantic_segmentation_upload_results__smoke(dataset_name: str) -> None:
     args = Namespace(
-        model=MODEL_NAME["pspnet_r101"],
+        model="pspnet_r101",
         write_bucket="kolena-sdk-testing",
         dataset=dataset_name,
     )
