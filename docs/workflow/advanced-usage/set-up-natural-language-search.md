@@ -39,14 +39,17 @@ on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/develope
     ```
 
 === "`poetry`"
+
     Configure an additional poetry source:
     ```shell
     poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
-```
+    ```
+
     Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
     ```shell
     poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
-```
+    ```
+
     Run the following command:
 
     ```shell
