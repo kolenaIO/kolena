@@ -1,11 +1,14 @@
 # Diarization Error Rate
+
 Diarization Error Rate (DER) is an important metric used to evaluate speaker diarization systems. It quantifies the
 overall performance of a speaker diarization system by measuring the ratio of the duration of errors to the total
 ground truth speech duration. DER is calculated as a score bounded below by 0 — 0 being a perfect match, with the
 score increasing as the duration of errors increases.
 
 ## Implementation Details
+
 ### Background
+
 To simplest way to quantify the error in a candidate diarization is to measure the duration of false alarms, missed
 detections, and speaker confusions. These three elementary errors form the building blocks of diarization error rate.
 
@@ -34,7 +37,6 @@ detections, and speaker confusions. These three elementary errors form the build
 
     Upon inspection, at time segments `[10, 13]` and `[23, 24]`, our candidate diarization contains speech that
     doesn't exist in the ground truth diarization. Thus, our false alarm is equal to $3 + 1 = 4$ seconds.
-
 
 ??? example "Missed Detection"
     Missed detection is the duration of speech classified as non-speech — analagous to a false negative in our
@@ -65,6 +67,7 @@ $$
 $$
 
 ### Example
+
 Using the following time segments, let's calculate the DER of the candidate text.
 
 ```python

@@ -30,7 +30,6 @@ of a model's performance can be drawn.
 - :kolena-manual-16: API Reference: [`fpr` ↗][kolena.metrics.fpr]
 </div>
 
-
 ## Implementation Details
 
 FPR is used to evaluate the performance of a classification model, particularly in tasks like binary

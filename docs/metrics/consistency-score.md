@@ -10,7 +10,6 @@ The score is computed by prompting a judging LLM to assess the consistency of ea
 from 0 to 1, with 1 indicating that the model consistently returned facts in every sampled response. As the score
 approaches 0, it indicates that the model is uncertain about its response and likely to be hallucinating.
 
-
 ## Implementation Details
 
 To check for consistency in an LLM's response, the LLM is prompted `n` times with the same prompt. The `temperature`
@@ -22,12 +21,10 @@ parameter is set to a slightly higher value to allow for some variance in the re
     `temperature` (e.g., 0.7) results in more diverse and creative output, while a lower `temperature` (e.g., 0.2)
     makes the output more deterministic and focused.
 
-
 !!! info "Rule of Thumb"
 
     Based on our experience, we recommend setting `n` to 5 and `temperature` to 1.0 for a question answering workflow.
     However, it is important to try out different values to find what works best for your specific usage.
-
 
 Given the `n` responses, a strong LLM serving as a judge, like [OpenAI](https://openai.com/)'s
 [gpt-3.5-turbo](https://platform.openai.com/docs/models/gpt-3-5) or
@@ -38,7 +35,6 @@ score is then computed by dividing the number of consistent pairs by the total n
 $$
 \text{consistency score} = \frac{\text{number of consistent pairs}}{\text{number of total pairs}}
 $$
-
 
 ### Example
 

@@ -1,5 +1,8 @@
 # Example Integration: Speaker Diarization
-This example integration uses the Google Cloud Speech-To-Text model, and [ICSI-Corpus dataset](https://groups.inf.ed.ac.uk/ami/icsi/) to demonstrate how to test speaker diarization problems on Kolena.
+
+This example integration uses the Google Cloud Speech-To-Text model,
+and [ICSI-Corpus dataset](https://groups.inf.ed.ac.uk/ami/icsi/)
+to demonstrate how to test speaker diarization problems on Kolena.
 
 ## Setup
 
@@ -26,14 +29,16 @@ This project defines two scripts that perform the following operations:
     - `ICSI-Corpus`, stratified by `average-amplitude`.
 
     Run this command to seed the default test suite:
+
     ```shell
     poetry run python3 speaker_diarization/seed_test_suite.py
     ```
 
-
-2. [`seed_test_run.py`](speaker_diarization/seed_test_run.py) tests a specified model, `gcp-stt-video`, on the above test suite.
+2. [`seed_test_run.py`](speaker_diarization/seed_test_run.py)
+   tests a specified model, `gcp-stt-video`, on the above test suite.
 
     Run this command to evaluate the default model on the `ICSI-Corpus` test suite:
+
     ```shell
     poetry run python3 speaker_diarization/seed_test_run.py
     ```

@@ -12,12 +12,13 @@ to check out the [original paper](https://www.cs.cmu.edu/~alavie/METEOR/pdf/Bane
 We define METEOR as the product of two components - the Unigram Precision / Recall Harmonic Mean, and Word Order
 Penalty. That is,
 
+<!-- markdownlint-disable MD013 -->
 $$
 \text{METEOR} = \underbrace{\text{FMean}}_{\text{Harmonic Mean of Unigram Precision/Recall}} * \underbrace{(1 - \text{Penalty})}_{\text{Word Order Penalty}}
 $$
+<!-- markdownlint-enable MD013 -->
 
 To understand the formula, let's break down each component into their respective parts.
-
 
 ??? info "FMean: Harmonic Mean of the Unigram Precision / Recall"
     This is defined as
@@ -112,6 +113,7 @@ Lets try the same reference example with a slightly different candidate.
     sentences, and given a perfect score of 1.0.
 
 ## Limitations and Advantages
+
 Although METEOR was created to address some of the major limitations of [BLEU](bleu.md), it still comes with its own
 limitations.
 

@@ -14,15 +14,18 @@ content and linguistic nuances, making it an important and versatile tool used i
 implies, it is a recall-based metric — a complement to the precision-based BLEU score.
 
 ## Implementation Details
+
 Formally, ROUGE-N is an n-gram recall between a candidate and a set of reference texts. That is, ROUGE-N calculates the
 number of overlapping n-grams between the generated and reference texts divided by the total number of n-grams in the
 reference texts.
 
 Mathematically, we define ROUGE-N as follows:
 
+<!-- markdownlint-disable MD013 -->
 $$
 \text{ROUGE-N} = \frac{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Match}(\text{n-gram})}{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Count}(\text{n-gram})}
 $$
+<!-- markdownlint-enable MD013 -->
 
 where $\text{Match(n-gram)}$ is the maximum number of n-grams co-occuring in a candidate text and set of reference
 texts.
@@ -31,6 +34,7 @@ It is clear that ROUGE-N is analogous to a recall-based measure, since the denom
 number of n-grams on the reference-side.
 
 ### Multiple References - Taking the Max
+
 We usually want to compare a candidate text against multiple reference texts, as there is no single correct reference
 text that can capture all semantic nuances. Though the above formula is sufficient for calculating ROUGE-N across
 multiple references, another proposed way of calculating ROUGE-N across multiple references, as highlighted in the
@@ -46,6 +50,7 @@ $$
 The decision to use classic $\text{ROUGE-N}$ or $\text{ROUGE-N}_\text{multi}$ is up to the user.
 
 ### Interpretation
+
 When using ROUGE-N, it is important to consider the metric for multiple values of N (n-gram length). For smaller values
 of N, like ROUGE-1, it places more focus on capturing the presence of keywords or content terms in the candidate text.
 For larger values of N, like ROUGE-3, it places focus on syntactic structure and replicating linguistic patterns. In
@@ -60,6 +65,7 @@ previous iterations of your model.
 ## Examples
 
 ### ROUGE-1 (Unigrams)
+
 Assume we have the following candidate and reference texts:
 
 | | |
@@ -85,6 +91,7 @@ Assume we have the following candidate and reference texts:
     Thus our calculated ROUGE-1 score is $\frac{12}{17} \approx 0.706$
 
 ### ROUGE-2 (Bigrams)
+
 Assume we have the same following candidate and reference texts:
 
 | | |
@@ -113,8 +120,8 @@ Assume we have the same following candidate and reference texts:
     texts. It is always important to consider multiple n-grams when using ROUGE-N, as one value of N does not give a
     holistic view of candidate text quality.
 
-
 ## Limitations and Advantages
+
 ROUGE-N, like any other n-gram based metric, suffers from the following limitations:
 
 1. Unlike [BERTScore](bertscore.md), ROUGE-N is not able to consider order, context, or semantics when calculating a

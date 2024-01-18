@@ -16,13 +16,14 @@ In this tutorial, we'll learn how to establish an integration between Kolena and
 S3-compatible API.
 
 To get started, ensure you have administrator access within Kolena.
-Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page and click "Add Integration", then "MinIO".
+Navigate to the "Integrations" tab on the
+[:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
+page and click "Add Integration", then "MinIO".
 
 Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
 You may need to consult documentation for your provider to perform equivalent steps.
 
 ### Step 1: Create a Service User for Kolena
-
 
 === "`MinIO`"
 
@@ -34,8 +35,8 @@ You may need to consult documentation for your provider to perform equivalent st
 
 Create a policy to allow read access for a bucket or set of buckets.
 
-Save the following JSON policy to a file called `/tmp/kolena-policy.json`, replacing `s3://share-with-kolena` with the appropriate bucket(s):
-
+Save the following JSON policy to a file called `/tmp/kolena-policy.json`,
+replacing `s3://share-with-kolena` with the appropriate bucket(s):
 
 ```json
 {

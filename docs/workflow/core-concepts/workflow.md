@@ -11,15 +11,17 @@ can be tested can be modeled as a workflow in Kolena.
 
 Examples of workflows include:
 
+<!-- markdownlint-disable MD013 -->
 <div class="grid cards" markdown>
 - [:kolena-widget-20: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d) using images
 - [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/text_summarization) using articles/documents
 - [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation) (regression) using images
 - [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos
 </div>
+<!-- markdownlint-enable MD013 -->
 
-With the [`kolena.workflow`](../../reference/workflow/index.md) client module, any arbitrary ML problem can be defined as a
-workflow and tested on Kolena.
+With the [`kolena.workflow`](../../reference/workflow/index.md) client module,
+any arbitrary ML problem can be defined as a workflow and tested on Kolena.
 
 There are three main components of a workflow:
 
@@ -30,8 +32,6 @@ There are three main components of a workflow:
 1. [**Test Sample**](#test-sample): the inputs to a model, e.g. image, video, document
 2. [**Ground Truth**](#ground-truth): the expected model outputs
 3. [**Inference**](#inference): the actual model outputs
-
-
 
 ## Test Sample
 
@@ -116,8 +116,6 @@ class QuadImage(Composite):
         left: SingleImageGroundTruth
     ```
 
-
-
 ## Ground Truth
 
 The ground truth represents the expected output from a model when provided with a test sample. Ground truths are often
@@ -150,8 +148,6 @@ class MyGroundTruth(GroundTruth):
 
     However, it isn't a strict requirement that ground truths only contain information used for model evaluation.
     Sometimes it makes sense to include additional information as optional fields inside a ground truth definition.
-
-
 
 ## Inference
 
@@ -201,8 +197,6 @@ use the `reset` flag:
 # all test samples are processed and inferences [re]uploaded when reset=True
 test(model, test_suite, evaluator, reset=True)
 ```
-
-
 
 ## Defining a Workflow
 

@@ -73,7 +73,6 @@ creating test cases.
         <figcaption>Example Dataset Upload</figcaption>
     </figure>
 
-
 === "SDK"
 
     The example code contains a script [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
@@ -97,11 +96,11 @@ creating test cases.
     After this script has completed, a new dataset named `300-W` will be created, which you can
     see in [:kolena-dataset-20: Datasets](https://app.kolena.io/redirect/datasets).
 
-
 ## Step 2: Upload Model Results
 
 Model results are supplied as tables containing the ID column chosen when uploading the dataset. For
-this example, we will upload the results for the open-source [RetinaFace](https://github.com/serengil/retinaface) (`RetinaFace` option)
+this example, we will upload the results for the open-source
+[RetinaFace](https://github.com/serengil/retinaface) (`RetinaFace` option)
 keypoint detection model and a random keypoint model.
 
 === "Web App"
@@ -179,7 +178,8 @@ Criteria you define will be calculated on each test case.
 ### Define Metrics
 
 To configure Evaluation Criteria, from the Quality Standards tab, click `Define Metrics` and select `result.mse > mean`.
-Rename the metric to `Average MSE`, and select `Lower is better` as the highlight. Repeat these steps for `result.nmse > mean`.
+Rename the metric to `Average MSE`, and select `Lower is better` as the highlight.
+Repeat these steps for `result.nmse > mean`.
 
 <figure markdown>
 ![Defining Metrics](../assets/images/quickstart-define-metrics.gif)

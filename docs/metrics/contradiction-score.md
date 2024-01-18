@@ -39,6 +39,7 @@ print(compute_metric("The duck crossed the road", "The duck did not cross the ro
 ```
 
 ## Examples
+
 | Ground Truth | Inference | <nobr>Classification</nobr> | Contradiction | Entailment | Neutral |
 | --- | --- | --- | --- | --- | --- |
 | `The duck crossed the road` | `The duck did not cross the road` | `contradiction` | `0.999` | `0.000` | `0.000` |

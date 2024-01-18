@@ -12,8 +12,6 @@ This page answers common questions about Kolena and how to use it to test ML mod
 If you don't see your question here, please reach out to us on Slack or at
 [contact@kolena.com](mailto:contact@kolena.com)!
 
-
-
 ## About Kolena
 
 ??? faq "What data types does Kolena support?"
@@ -50,8 +48,6 @@ If you don't see your question here, please reach out to us on Slack or at
     Kolena is primarily a testing (or "offline evaluation") platform, coming _after_ training and _before_ deployment.
     We believe that increased emphasis on this offline evaluation segment of the model development life cycle can save
     effort upstream in the data collection and training process as well as prevent headaches downstream in deployment.
-
-
 
 ## Using Kolena
 
@@ -114,7 +110,6 @@ If you don't see your question here, please reach out to us on Slack or at
     issues.
 
     Please include any relevant stacktrace or platform URL when reporting an issue.
-
 
 ## Troubleshooting Errors
 

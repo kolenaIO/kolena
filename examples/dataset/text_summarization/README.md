@@ -63,6 +63,7 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 text summarization:
 
 ### Metrics
+
 1. mean(result.BERT_f1)
 2. mean(result.ROUGE_1)
 3. mean(result.METEOR)
@@ -70,10 +71,12 @@ text summarization:
 4. mean(result.cost)
 
 ### Plots
+
 1. Distribution of `result.BERT_f1`
 2. Distribution of `result.cost`
 3. `datapoint.category` vs. `result.BERT_f1`
 
 ### Test Cases
+
 1. `datapoint.category`
 2. `datapoint.text_word_count`

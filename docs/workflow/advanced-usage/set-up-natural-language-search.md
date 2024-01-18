@@ -4,17 +4,18 @@ icon: kolena/comparison-16
 
 # :kolena-comparison-20: Natural Language Search Setup
 
-Kolena supports natural language and similar image search across [`Image`][kolena.workflow.Image] data previously registered to the platform.
-Users may set up this functionality by extracting and uploading the corresponding search embeddings using a Kolena provided package.
-
+Kolena supports natural language and similar image search
+across [`Image`][kolena.workflow.Image] data previously registered to the platform.
+Users may set up this functionality by extracting and
+uploading the corresponding search embeddings using a Kolena provided package.
 
 ## Example
 
 The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
 [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/search_embeddings) for embeddings extraction and
 upload. This builds off the data uploaded in the
-[age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation) example workflow, and is best
-run after this data has been uploaded to your Kolena environment.
+[age_estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation)
+example workflow, and is best run after this data has been uploaded to your Kolena environment.
 
 ## How to Set Up Natural Language Search
 
@@ -27,6 +28,7 @@ Uploading embeddings to Kolena can be done in three simple steps:
 Let's take a look at each step with example code snippets.
 
 ### Step 1: Install `kolena_embeddings` Package
+
 The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
 
@@ -40,11 +42,11 @@ on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/develope
     Configure an additional poetry source:
     ```shell
     poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
-    ```
+```
     Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
     ```shell
     poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
-    ```
+```
     Run the following command:
 
     ```shell
@@ -52,6 +54,7 @@ on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/develope
     ```
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:
+
 ```python
 from typing import Iterable
 from typing import Tuple
@@ -72,8 +75,10 @@ def extract_and_upload_embeddings(locators_and_images: Iterable[Tuple[str, Image
 
 ### Step 2: Load Images for Extraction
 
-In order to extract embeddings on image data, we must load our image files into a [`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image) object.
-In this section, we will load these images from an S3 bucket. For other cloud storage services, please refer to your cloud storage's API docs.
+In order to extract embeddings on image data, we must load our image files into a
+[`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image) object.
+In this section, we will load these images from an S3 bucket.
+For other cloud storage services, please refer to your cloud storage's API docs.
 
 ```python
 from typing import Iterator
@@ -130,6 +135,7 @@ Once the upload completes, we can now visit [<nobr>:kolena-studio-16: Studio</no
 to search by natural language over the corresponding [`Image`][kolena.workflow.Image] data.
 
 ## Conclusion
+
 In this tutorial, we learned how to extract and upload vector embeddings over your [`Image`][kolena.workflow.Image] data.
 
 ## FAQ
