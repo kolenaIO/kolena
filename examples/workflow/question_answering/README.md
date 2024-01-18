@@ -1,6 +1,7 @@
 # Example Integration: Question Answering
 
-This example integration uses the [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/) dataset and OpenAI's GPT models to demonstrate the question answering workflow in Kolena.
+This example integration uses the [Conversational Question Answering (CoQA)](https://stanfordnlp.github.io/coqa/)
+dataset and OpenAI's GPT models to demonstrate the question answering workflow in Kolena.
 
 ## Setup
 
@@ -22,7 +23,8 @@ This project defines two scripts that perform the following operations:
 
 1. [`seed_test_suite.py`](question_answering/seed_test_suite.py) creates the following test suites:
 
-    - `question types :: CoQA`, stratified into types of questions: `what`, `who`, `how`, `did`, `where`, `was`, `when`, `is`, `why`, and `other`
+    - `question types :: CoQA`, stratified into types of questions:
+      `what`, `who`, `how`, `did`, `where`, `was`, `when`, `is`, `why`, and `other`
     - `conversation depths :: CoQA`, stratified by depth of conversation: `1` through `20` interactions
 
 2. [`seed_test_run.py`](question_answering/seed_test_run.py) tests a specified model, e.g. `gpt-4`, on the above test suites

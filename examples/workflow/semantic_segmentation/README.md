@@ -42,9 +42,10 @@ test suite.
     The result masks will be stored under `s3://{args.out_bucket}/coco-stuff-10k/results/{args.model}` directory in
     your bucket.
 
-3. An optional script, [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py) demonstrates how to generate activation maps from
-the aformentioned model inferences. If you wish to generate your own, use the `--out-bucket` argument to provide an AWS S3 bucket
-where the activation maps will be uploaded to.
+3. An optional script, [`seed_activation_map.py`](semantic_segmentation/seed_activation_map.py)
+   demonstrates how to generate activation maps from the aformentioned model inferences.
+   If you wish to generate your own, use the `--out-bucket` argument to provide an
+   AWS S3 bucket where the activation maps will be uploaded to.
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:

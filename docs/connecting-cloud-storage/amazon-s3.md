@@ -45,7 +45,8 @@ Copy this JSON.
 
     You will require IAM write permissions within your AWS account to perform the next step.
 
-In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
+In your AWS console, navigate to the
+<a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/policies">IAM policies page</a> and follow these steps:
 
 1. Click the "Create Policy" button and select the "JSON" tab.
 2. Paste the "Access Policy JSON" copied previously.
@@ -60,7 +61,8 @@ In your AWS console, navigate to the <a target="_blank" href="https://console.aw
 
 Return to Kolena and copy the "Trust Policy JSON".
 
-In your AWS console, navigate to the <a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/roles">IAM roles page</a> and follow these steps:
+In your AWS console, navigate to the
+<a target="_blank" href="https://console.aws.amazon.com/iamv2/home#/roles">IAM roles page</a> and follow these steps:
 
 1. Click the "Create role" button and select "Custom trust policy".
 2. Paste the "Trust Policy JSON" you copied above and click "Next".
