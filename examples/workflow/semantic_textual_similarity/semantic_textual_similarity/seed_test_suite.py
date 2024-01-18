@@ -59,7 +59,7 @@ def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     complete_test_case = seed_complete_test_case(args)
     test_suite = TestSuite(
-        f"{args.suite_name}",
+        args.test_suite,
         test_cases=[complete_test_case],
         reset=True,
     )
