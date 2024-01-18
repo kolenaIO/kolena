@@ -39,7 +39,6 @@ from kolena.annotation import SegmentationMask
 from kolena.asset import BinaryAsset
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
-from kolena.io import dataframe_to_csv
 from kolena.workflow.metrics import f1_score as compute_f1_score
 from kolena.workflow.metrics import precision as compute_precision
 from kolena.workflow.metrics import recall as compute_recall
@@ -92,29 +91,27 @@ def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
     threshold = EVAL_CONFIG["threshold"]
-    model_name = MODEL_NAME[args.model]
 
     df_dataset = download_dataset(args.dataset)
     df_dataset["threshold"] = threshold
     df_dataset["result_masks_locator_prefix"] = result_masks_locator_path(
         args.write_bucket,
         DATASET,
-        model_name,
+        args.model,
         threshold,
     )
     df_dataset["inference_locator"] = df_dataset["basename"].apply(
-        lambda x: inference_locator_from_basename(BUCKET, DATASET, model_name, x),
+        lambda x: inference_locator_from_basename(BUCKET, DATASET, args.model, x),
     )
     df_dataset["activation_map_locator"] = df_dataset["basename"].apply(
-        lambda x: activation_map_locator_from_basename(BUCKET, DATASET, model_name, x),
+        lambda x: activation_map_locator_from_basename(BUCKET, DATASET, args.model, x),
     )
 
     pool = ThreadPoolExecutor(max_workers=32)
     results = list(tqdm(pool.map(compute_metrics, list(df_dataset.itertuples(index=False))), total=len(df_dataset)))
 
     df_results = pd.DataFrame.from_records(results)
-    dataframe_to_csv(df_results, f"s3://{BUCKET}/{DATASET}/results/{model_name}/{model_name}.csv", index=False)
-    upload_results(args.dataset, model_name, [(EVAL_CONFIG, df_results)])
+    upload_results(args.dataset, MODEL_NAME[args.model], [(EVAL_CONFIG, df_results)])
 
 
 def main() -> None:
