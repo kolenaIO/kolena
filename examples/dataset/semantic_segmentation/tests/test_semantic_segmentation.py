@@ -39,7 +39,7 @@ def dataset_name() -> str:
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__semantic_segmentation_upload_dataset__smoke() -> None:
+def test__semantic_segmentation_upload_dataset__smoke(dataset_name: str) -> None:
     args = Namespace(
         dataset_csv=f"s3://{BUCKET}/{DATASET}/raw/coco-stuff-10k-person.tiny5.csv",
         dataset_name=dataset_name,
@@ -48,7 +48,7 @@ def test__semantic_segmentation_upload_dataset__smoke() -> None:
 
 
 @pytest.mark.depends(on=["test__semantic_segmentation_upload_dataset__smoke"])
-def test__semantic_segmentation_upload_results__smoke() -> None:
+def test__semantic_segmentation_upload_results__smoke(dataset_name: str) -> None:
     args = Namespace(
         model=MODEL_NAME["pspnet_r101"],
         write_bucket=BUCKET,
