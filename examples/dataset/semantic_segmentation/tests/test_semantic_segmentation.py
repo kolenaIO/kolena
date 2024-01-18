@@ -51,7 +51,7 @@ def test__semantic_segmentation_upload_dataset__smoke(dataset_name: str) -> None
 def test__semantic_segmentation_upload_results__smoke(dataset_name: str) -> None:
     args = Namespace(
         model=MODEL_NAME["pspnet_r101"],
-        write_bucket=BUCKET,
+        write_bucket="kolena-sdk-testing",
         dataset=dataset_name,
     )
     upload_results_run(args)
