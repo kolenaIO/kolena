@@ -1,24 +1,40 @@
+# https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
 default: true
 
+# Hard tabs
 MD010:
   spaces_per_tab: 4
 
+# Line length
 MD013:
   code_blocks: false
   headings: false
   line_length: 120
   tables: false
 
+# Heading levels should only increment by one level at a time
 MD001: false
+# Inconsistent indentation for list items at the same level
 MD005: false
+# Multiple headings with the same content
 MD024: false
+# Ordered list item prefix
 MD029: false
+# Fenced code blocks should be surrounded by blank lines
 MD031: false
+# Inline HTML
 MD033: false
+# Bare URL used
 MD034: false
+# Emphasis used instead of a heading
 MD036: false
+# Fenced code blocks should have a language specified
 MD040: false
+# First line in a file should be a top-level heading
 MD041: false
+# Images should have alternate text (alt text)
 MD045: false
+# Code block style
 MD046: false
+# Reference links and images should use a label that is defined
 MD052: false
