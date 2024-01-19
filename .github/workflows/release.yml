@@ -48,6 +48,7 @@ jobs:
 
       - name: Build 'kolena' Python package
         run: poetry build --format=sdist
+      # The step for publishing documentation used to be here, but we're getting rid of it for the hotfix.
 
       - name: Push 'kolena' dist to Test PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
