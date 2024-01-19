@@ -121,6 +121,7 @@ To showcase the value of BERTScore, let's consider the following candidate and r
 
 ??? example "Semantically Similar Texts"
 
+    <!-- markdownlint-disable MD013 -->
     | Candidate Text | Reference Text |
     | --- | --- |
     | The sun set behind the mountains, casting a warm, orange glow across the horizon. | As the mountains obscured the sun, a warm, orange glow painted the horizon. |
@@ -128,6 +129,7 @@ To showcase the value of BERTScore, let's consider the following candidate and r
     | The adventurous explorer trekked through the dense jungle, searching for hidden treasures. | In search of hidden treasures, the intrepid explorer ventured through the dense jungle. |
     | Laughter echoed through the park as children played on the swings and slides. | Children's laughter filled the park as they enjoyed the swings and slides. |
     | The old bookstore was filled with the scent of well-worn pages, a haven for book lovers. | A haven for book lovers, the old bookstore exuded the fragrance of well-read pages. |
+    <!-- markdownlint-enable MD013 -->
 
     Using the following code and the [`bert-score`](https://pypi.org/project/bert-score/) package:
 

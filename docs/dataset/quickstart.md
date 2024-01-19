@@ -49,8 +49,8 @@ creating test cases.
 
 === "Web App"
 
-    To import the 300-W dataset, select `Import datasets` then `Select from cloud storage`. Using the explorer, navigate to
-    `s3://kolena-pubic-examples/300-W/` and select `300-W.csv`.
+    To import the 300-W dataset, select `Import datasets` then `Select from cloud storage`.
+    Using the explorer, navigate to `s3://kolena-pubic-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
@@ -66,7 +66,8 @@ creating test cases.
     Give your dataset a name and select `locator` as the ID column. The ID column is used to uniquely identify a datapoint
     and is used when uploading model results to associate inferences with datapoints.
 
-    Click `Confirm` to import the dataset. Once the dataset has been added, you can add description and tags to them to organize the workspace.
+    Click `Confirm` to import the dataset. Once the dataset has been added,
+    you can add description and tags to them to organize the workspace.
 
     <figure markdown>
         ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow.gif)

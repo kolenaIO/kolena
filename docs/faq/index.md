@@ -92,10 +92,12 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? faq "Who are administrators for my organization?"
 
-    Certain members of each organization have administrator privileges. These administrators can manage users access and privileges,
+    Certain members of each organization have administrator privileges.
+    These administrators can manage users access and privileges,
     as well as configure Integrations.
 
-    You may become an administrator by having an existing administrator grant you privileges using the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=users) page.
+    You may become an administrator by having an existing administrator grant you privileges
+    using the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=users) page.
 
 ??? faq "I'm new to Kolena — how can I learn more about the platform and how to use it?"
 

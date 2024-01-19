@@ -119,9 +119,9 @@ The precisions (y-values) of the smoothed out curve, the orange line on the plot
 
     Notice the above PR curve doesn't start at zero recall. It is because there is no valid threshold that will result
     in zero recall. In order to ensure that the graph starts on the y-axis, the first point on the curve extends all the
-    way to the y-axis. Similarly, the end of the PR curve doesn't always extend all the way to the recall value of 1. This is
-    because not all the ground truths are matched. Unlike the start of the curve, the tail of the curve doesn't get
-    extended when calculating AP.
+    way to the y-axis. Similarly, the end of the PR curve doesn't always extend all the way to the recall value of 1.
+    This is because not all the ground truths are matched. Unlike the start of the curve,
+    the tail of the curve doesn't get extended when calculating AP.
 </div>
 
 $$

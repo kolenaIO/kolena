@@ -105,6 +105,7 @@ inference[Segment(23, 25)] = 'B'
 ??? example "Step 2. Calculate Diarization Error Rate"
     Using the formula, we get:
 
+    <!-- markdownlint-disable MD013 -->
     $$
     \begin{align*}
     \text{DER} &= \frac{\text{false alarm} + \text{missed detection} + \text{speaker confusion}}{\text{ground truth duration}} \\
@@ -112,6 +113,7 @@ inference[Segment(23, 25)] = 'B'
                &= 0.4
     \end{align*}
     $$
+    <!-- markdownlint-enable MD013 -->
 
     Our diarization error rate is 0.4.
 

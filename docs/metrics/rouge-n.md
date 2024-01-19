@@ -103,11 +103,13 @@ Assume we have the same following candidate and reference texts:
 ??? example "Step 1: Tokenization & n-Grams"
     Splitting our candidate and reference texts into bigrams, we get the following:
 
+    <!-- markdownlint-disable MD013 -->
     | | |
     | --- | --- |
     | <nobr>**Reference #1**</nobr> | [`A fast`, `fast brown`, `brown dog`, `dog jumps`, `jumps over`, `over a`, `a sleeping`, `sleeping fox`] |
     | <nobr>**Reference #2**</nobr> | [`A quick`, `quick brown`, `brown dog`, `dog jumps`, `jumps over`, `over the`, `the fox`] |
     | **Candidate** | [`The quick`, `quick brown`, `brown fox`, `fox jumps`, `jumps over`, `over the`, `the lazy`, `lazy dog`] |
+    <!-- markdownlint-enable MD013 -->
 
 ??? example "Step 2: Calculate ROUGE"
     Recall that our ROUGE-N formula is: $\frac{\text{# of overlapping n-grams}}{\text{# of unigrams in reference}}$

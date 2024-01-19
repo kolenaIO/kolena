@@ -7,8 +7,8 @@ MD010:
 
 # Line length
 MD013:
-  code_blocks: false
-  headings: false
+  code_block_line_length: 120
+  heading_line_length: 120
   line_length: 120
   tables: false
 
