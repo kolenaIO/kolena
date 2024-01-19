@@ -33,7 +33,9 @@ perplexity indicates that the language model is confident in its generation.
     P(`"sleep"` | `"today is a great day to"`) = 9.9% <br>
     P(`"goodbye"` | `"today is a great day to"`) = 0.1% <br>
 
-    For a deep dive into autoregressive language models like GPT and LLaMA, feel free to refer to [this publication](https://insights.sei.cmu.edu/blog/harnessing-the-power-of-large-language-models-for-economic-and-social-good-foundations/) on the theory behind their inner-workings.
+    For a deep dive into autoregressive language models like GPT and LLaMA, feel free to refer to
+    [this publication](https://insights.sei.cmu.edu/blog/harnessing-the-power-of-large-language-models-for-economic-and-social-good-foundations/)
+    on the theory behind their inner-workings.
 
 ## Implementation Details
 
