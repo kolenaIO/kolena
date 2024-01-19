@@ -10,10 +10,26 @@ hide:
 </figure>
 
 <p align='center'>
-  <a href="https://pypi.python.org/pypi/kolena"><img src="https://img.shields.io/pypi/v/kolena?logo=python&logoColor=white&style=flat-square" /></a>
-  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena?style=flat-square" /></a>
-  <a href="https://github.com/kolenaIO/kolena/actions"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk?logo=circleci&logoColor=white&style=flat-square" /></a>
-  <a href="https://codecov.io/gh/kolenaIO/kolena" ><img src="https://img.shields.io/codecov/c/github/kolenaIO/kolena?logo=codecov&logoColor=white&style=flat-square&token=8WOY5I8SF1" /></a>
+  <a href="https://pypi.python.org/pypi/kolena">
+    <img
+      src="https://img.shields.io/pypi/v/kolena?logo=python&logoColor=white&style=flat-square"
+    />
+  </a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0">
+    <img
+      src="https://img.shields.io/pypi/l/kolena?style=flat-square"
+    />
+  </a>
+  <a href="https://github.com/kolenaIO/kolena/actions">
+    <img
+      src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk?logo=circleci&logoColor=white&style=flat-square"
+    />
+  </a>
+  <a href="https://codecov.io/gh/kolenaIO/kolena" >
+    <img
+      src="https://img.shields.io/codecov/c/github/kolenaIO/kolena?logo=codecov&logoColor=white&style=flat-square&token=8WOY5I8SF1"
+    />
+  </a>
 </p>
 
 ---
@@ -30,8 +46,6 @@ Kolena organizes your test data, stores and visualizes your model evaluations, a
 tests. You interface with it through the web at [app.kolena.io](https://app.kolena.io) and programmatically via the
 [`kolena`](installing-kolena.md) Python client.
 
-
-
 ## Why Kolena?
 
 !!! tip inline "TL;DR"
@@ -45,7 +59,8 @@ spend weeks staring at error graphs to evaluate their models, and ultimately pro
 capture the true behavior of the model.
 
 Models exhibit highly variable performance across different subsets of a domain. A global metric gives you a high-level
-picture of performance but doesn't tell you what you really want to know: _what sort of behavior can I expect from my model in production?_
+picture of performance but doesn't tell you what you really want to know:
+_what sort of behavior can I expect from my model in production?_
 
 To answer this question you need a higher-resolution picture of model performance. Not "how well does my model perform
 on class X," but "in what scenarios does my model perform well for class X?"
@@ -111,4 +126,5 @@ Learn how to use Kolena to test your models effectively:
     ---
 
     Developer-focused detailed API reference documentation for `kolena`.
+
 </div>

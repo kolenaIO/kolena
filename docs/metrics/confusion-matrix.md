@@ -86,7 +86,6 @@ And for example, if we are trying to calculate the counts of TP, FP, FN, and TN 
 | **Actual `Boat`** | <span class="mg-cell-color-negative">False Negative</span> | <span class="mg-cell-color-positive">True Positive</span> | <span class="mg-cell-color-negative">False Negative</span> |
 | **Actual `Car`** | <span class="mg-cell-color-positive">True Negative</span> | <span class="mg-cell-color-negative">False Positive</span> | <span class="mg-cell-color-positive">True Negative</span> |
 
-
 **Example: Multiclass**
 
 Let's take a look at a multiclass classification example and plot a confusion matrix. In this example, we have three

@@ -12,8 +12,8 @@ $$\text{IoU} \left( \text{A}, \text{B} \right) = \frac {\text{A} \cap \text{B}} 
 - :kolena-manual-16: API Reference: [`iou` ↗][kolena.metrics.iou]
 </div>
 
-
 ## When Do I Use IoU?
+
 It is often used to compare two geometries (e.g., [`BoundingBox`][kolena.workflow.annotation.BoundingBox],
 [`Polygon`][kolena.workflow.annotation.Polygon] or [`SegmentationMask`][kolena.workflow.annotation.SegmentationMask])
 in object detection, instance segmentation, or semantic segmentation workflows. In multi-label classification, IoU,
@@ -23,13 +23,11 @@ inference labels for a sample to the corresponding set of ground truth labels. M
 [video moment retrieval](https://paperswithcode.com/task/moment-retrieval) where IoU measures the **temporal** overlap
 between two time-series snippets.
 
-
 Because IoU can be used on various types of data, let's look at how the metric is defined for some of these data types:
 
 - [**2D Axis-Aligned Bounding Box**](#2d-axis-aligned-bounding-box)
 - [**Segmentation Mask**](#segmentation-mask)
 - [**Set of Labels**](#set-of-labels)
-
 
 ### 2D Axis-Aligned Bounding Box
 
@@ -81,11 +79,12 @@ $$
 \text{IoU} \left( \text{A}, \, \text{B} \right)
 &= \frac {\text{area} \left( \text{A} \cap \text{B} \right)} {\text{area} \left( \text{A} \cup \text{B} \right)} \\[1em]
 &= \frac {\text{area} \left( \text{A} \cap \text{B} \right)} {\text{area} \left( \text{A} \right)
-+ \text{area} \left( \text{B} \right) - \text{area} \left( \text{A} \cap \text{B} \right)}
+- \text{area} \left( \text{B} \right) - \text{area} \left( \text{A} \cap \text{B} \right)}
 \end{align}
 $$
 
 #### Examples: IoU of 2D Bounding Boxes
+
 The following examples show what IoU values look like in different scenarios with 2D bounding boxes:
 
 **Example 1: overlapping bounding boxes**
@@ -116,7 +115,6 @@ $$
 \end{align}
 $$
 
-
 **Example 3: completely matching bounding boxes**
 
 ![An example of completely matching bounding boxes](../assets/images/metrics-iou-example3-light.svg#only-light)
@@ -131,7 +129,6 @@ $$
 \end{align}
 $$
 
-
 ### Segmentation Mask
 
 A [segmentation mask][kolena.workflow.annotation.SegmentationMask] is a 2D image where each pixel is a class label
@@ -141,7 +138,8 @@ labels areas where a specific class is present:
 
 <figure markdown>
   ![An example of segmentation mask](../assets/images/metrics-iou-seg-mask.png)
-  <figcaption>From left to right: the original RGB image, the ground truth segmentation mask, and the inference segmentation mask</figcaption>
+  <figcaption>From left to right: the original RGB image,
+  the ground truth segmentation mask, and the inference segmentation mask</figcaption>
 </figure>
 
 The IoU metric measures the intersection (the number of pixels common between the ground truth and inference masks,
@@ -156,7 +154,8 @@ Let’s look at what TP, FP, and FN look like on a segmentation mask:
 
 <figure markdown>
   ![An example of segmentation mask with results](../assets/images/metrics-iou-seg-mask-results.png)
-  <figcaption>From left to right: the ground truth segmentation mask, the inference segmentation mask, and the overlay with TP, FP, and FN labeled</figcaption>
+  <figcaption>From left to right: the ground truth segmentation mask,
+  the inference segmentation mask, and the overlay with TP, FP, and FN labeled</figcaption>
 </figure>
 
 From the cat image shown above, when you overlay the ground truth and inference masks, the pixels that belong to both
@@ -230,7 +229,6 @@ $$
 &= \frac 2 3
 \end{align}
 $$
-
 
 ## Limitations and Biases
 

@@ -48,5 +48,5 @@ def test__seed_test_suite(test_suite: str) -> None:
 
 @pytest.mark.depends(on=["test__seed_test_suite"])
 def test__seed_test_run(test_suite: str) -> None:
-    args = Namespace(models=["all-distilroberta-v1"], test_suites=[f"{test_suite}"])
+    args = Namespace(models=["all-distilroberta-v1"], test_suites=[test_suite])
     seed_test_run_main(args)

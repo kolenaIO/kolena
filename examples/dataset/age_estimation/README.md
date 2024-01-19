@@ -32,7 +32,6 @@ options:
   --dataset DATASET  Optionally specify a custom dataset name to upload.
 ```
 
-
 2. [`upload_results.py`](age_estimation/upload_results.py) tests a specified model, e.g. `ssrnet`, on the above dataset
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the

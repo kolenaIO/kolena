@@ -32,6 +32,7 @@ print(compute_metric("The duck crossed the road", "The duck did not cross the ro
 ```
 
 ## Examples
+
 | Ground Truth | Inference | Metric |
 | --- | --- | --- |
 | `The duck crossed the road` | `The duck did not cross the road` | `0.0004` |

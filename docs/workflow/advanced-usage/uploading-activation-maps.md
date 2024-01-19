@@ -18,6 +18,7 @@ called an **activation map**.
 </figure>
 
 ## Popular Interpretation Methods for Computer Vision
+
 There are various methodologies that facilitate and aid the interpretation of several computer vision models, and if you
 are interested in learning more about them, here is a list of some of the popular methods:
 
@@ -29,7 +30,8 @@ are interested in learning more about them, here is a list of some of the popula
 
 Yes! Activation maps can be visualized as an overlay on the corresponding image in
 [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio) using the
-[`BitmapMask`][kolena.workflow.annotation.BitmapMask] annotation type which can help us understand the model’s decision — what
+[`BitmapMask`][kolena.workflow.annotation.BitmapMask]
+annotation type which can help us understand the model’s decision — what
 the model “sees” when it makes its prediction.
 
 In this tutorial, we’ll learn how to upload and visualize activation maps as a part of testing models on Kolena.
@@ -49,8 +51,10 @@ Let's take a look at each step with example code snippets.
 The activation map is a 2D data array ranging from 0 to 1 with `(h, w)` shape. This array is converted to a PNG bitmap
 using the following two utility methods:
 
-- [`colorize_activation_map`][kolena.workflow.visualization.colorize_activation_map]: applies color and opacity to the input activation map
-- [`encode_png`][kolena.workflow.visualization.encode_png]: encodes the colorized map into an in-memory PNG image represented as binary data
+- [`colorize_activation_map`][kolena.workflow.visualization.colorize_activation_map]:
+  applies color and opacity to the input activation map
+- [`encode_png`][kolena.workflow.visualization.encode_png]:
+  encodes the colorized map into an in-memory PNG image represented as binary data
 
 ```python
 import io
@@ -98,7 +102,7 @@ def upload_bitmap(image_buffer: io.BytesIO, filename: str) -> str:
 ```
 
 With all the building blocks we learned from [Step 1](#step-1-creating-png-bitmaps) and
-[Step 2](#step-2-uploading-png-bitmaps-to-cloud), we can now create a
+[Step 2](#step-2-uploading-png-bitmaps-to-cloud-storage), we can now create a
 [`BitmapMask`][kolena.workflow.annotation.BitmapMask] with a given activation map.
 
 ```python
@@ -140,9 +144,10 @@ class Inference(Inf):
 
 Before you run tests, make sure to update your `infer` function to return an `Inference` with the corresponding
 `BitmapMask` as its `activation_map` field. You are now ready to run tests! Once the tests complete, we can now visit
-[<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio) to visualize activation maps overlaid on your
-[`Image`][kolena.workflow.Image] data.
+[<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio)
+to visualize activation maps overlaid on your [`Image`][kolena.workflow.Image] data.
 
 ## Conclusion
+
 In this tutorial, we learned how to upload activation maps to Kolena in order to visualize activation maps
 overlaid on your [`Image`][kolena.workflow.Image] data along with your ground truths and inferences.

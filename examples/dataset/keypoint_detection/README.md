@@ -58,13 +58,16 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 keypoint detection:
 
 ### Metrics
+
 1. mean(result.mse)
 2. mean(results.nsme)
 
 ### Plots
+
 1. `datapoint.normalization_factor` vs. `mean(result.mse)`
 2. `datapoint.condition` vs. `mean(result.nmse)`
 
 ### Test Cases
+
 1. `datapoint.condition`
 2. `datapoint.normalization_factor`

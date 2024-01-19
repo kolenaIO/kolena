@@ -12,12 +12,13 @@ to check out the [original paper](https://www.cs.cmu.edu/~alavie/METEOR/pdf/Bane
 We define METEOR as the product of two components - the Unigram Precision / Recall Harmonic Mean, and Word Order
 Penalty. That is,
 
+<!-- markdownlint-disable MD013 -->
 $$
 \text{METEOR} = \underbrace{\text{FMean}}_{\text{Harmonic Mean of Unigram Precision/Recall}} * \underbrace{(1 - \text{Penalty})}_{\text{Word Order Penalty}}
 $$
+<!-- markdownlint-enable MD013 -->
 
 To understand the formula, let's break down each component into their respective parts.
-
 
 ??? info "FMean: Harmonic Mean of the Unigram Precision / Recall"
     This is defined as
@@ -65,8 +66,10 @@ To understand the formula, let's break down each component into their respective
 ??? example "Step 2: Calculate Word Order Penalty"
     We can break up our candidate sentence into two chunks to map it to our reference sentence.
 
+    <!-- markdownlint-disable MD013 -->
     Candidate: $\underbrace{\text{Under the starry night}}_{\text{Chunk 2}} \space \underbrace{\text{we danced with}}_{\text{Chunk 1}} \space\text{glee}$ <br>
     Reference: $\underbrace{\text{We danced with}}_{\text{Chunk 1}} \space\text{joy}\space \underbrace{\text{under the starry night}}_{\text{Chunk 2}}$
+    <!-- markdownlint-enable MD013 -->
 
     Between the two chunks, we have matched 7 unigrams. This gives us a penalty score of $0.5 \times \frac{2}{7} = 0.143$.
 
@@ -94,9 +97,11 @@ Lets try the same reference example with a slightly different candidate.
     Our penalty is different from the first example, due to the jumbled up order. We split our candidate sentence into
     8 chunks, since no adjacent words can be mapped to the reference sentence.
 
+    <!-- markdownlint-disable MD013 -->
     Candidate: $\underbrace{\text{Danced}}_\text{Chunk 2}\space\underbrace{\text{we}}_\text{Chunk 1}\space\underbrace{\text{with}}_\text{Chunk 3}\space\underbrace{\text{under}}_\text{Chunk 5}\space\underbrace{\text{joy}}_\text{Chunk 4}\space\underbrace{\text{the}}_\text{Chunk 6}\space\underbrace{\text{night}}_\text{Chunk 8}\space\underbrace{\text{starry}}_\text{Chunk 7}\space$
 
     Reference: $\underbrace{\text{We}}_\text{Chunk 1}\space\underbrace{\text{danced}}_\text{Chunk 2}\space\underbrace{\text{with}}_\text{Chunk 3}\space\underbrace{\text{joy}}_\text{Chunk 4}\space\underbrace{\text{under}}_\text{Chunk 5}\space\underbrace{\text{the}}_\text{Chunk 6}\space\underbrace{\text{starry}}_\text{Chunk 7}\space\underbrace{\text{night}}_\text{Chunk 8}\space$
+    <!-- markdownlint-enable MD013 -->
 
     Between the eight chunks, we have matched 8 unigrams. This gives us a penalty score of $0.5 \times \frac{8}{8} = 0.5$.
 
@@ -112,6 +117,7 @@ Lets try the same reference example with a slightly different candidate.
     sentences, and given a perfect score of 1.0.
 
 ## Limitations and Advantages
+
 Although METEOR was created to address some of the major limitations of [BLEU](bleu.md), it still comes with its own
 limitations.
 

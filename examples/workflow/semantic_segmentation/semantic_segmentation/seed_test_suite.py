@@ -77,11 +77,10 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
 
 def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    test_suite_name = f"# of people :: {DATASET} [person]"
     complete_test_case = seed_complete_test_case(args)
-    stratified_test_cases = seed_stratified_test_cases(complete_test_case, test_suite_name)
+    stratified_test_cases = seed_stratified_test_cases(complete_test_case, args.test_suite)
     TestSuite(
-        test_suite_name,
+        args.test_suite,
         test_cases=[complete_test_case] + stratified_test_cases,
         reset=True,
     )
@@ -93,6 +92,12 @@ if __name__ == "__main__":
         "--dataset-csv",
         type=str,
         default=f"s3://kolena-public-datasets/{DATASET}/annotations/annotations_person.csv",
+        help="CSV file specifying dataset. See default CSV for details",
+    )
+    ap.add_argument(
+        "--test-suite",
+        type=str,
+        default=f"# of people :: {DATASET} [person]",
         help="CSV file specifying dataset. See default CSV for details",
     )
 
