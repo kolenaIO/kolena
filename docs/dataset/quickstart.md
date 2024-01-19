@@ -50,7 +50,7 @@ creating test cases.
 === "Web App"
 
     To import the 300-W dataset, select `Import datasets` then `Select from cloud storage`. Using the explorer, navigate to
-    `s3://kolena-pubic-examples/300-W/` and select `300-W.csv`.
+    `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
