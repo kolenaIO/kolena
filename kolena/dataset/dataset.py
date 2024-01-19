@@ -44,6 +44,7 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.dataframes import df_apply
 from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
@@ -153,7 +154,7 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if _FIELD_LOCATOR in df.columns:
-        return df[_FIELD_LOCATOR].apply(_infer_datatype_value)
+        return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
     elif _FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
@@ -180,7 +181,7 @@ def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     if column == COL_DATAPOINT:
         _add_datatype(result)
     result[column] = result.to_dict("records")
-    result[column] = result[column].apply(lambda x: json.dumps(x))
+    result[column] = df_apply(result[column], lambda x: json.dumps(x))
 
     return result[[column]]
 

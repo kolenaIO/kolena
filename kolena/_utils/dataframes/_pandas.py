@@ -11,6 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from kolena._utils.dataframes._pandas import df_apply
+from collections.abc import Callable
+from typing import Any
 
-__all__ = [df_apply]
+import pandas as pd
+
+
+def df_apply(df: pd.DataFrame, func: Callable, **kwargs: Any) -> pd.DataFrame:
+    """
+    pandas.DataFrame.apply wrapper
+    """
+    default_kwargs = dict(convert_dtype=False)
+    return df.apply(func, **default_kwargs, **kwargs)
