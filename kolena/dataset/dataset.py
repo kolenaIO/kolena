@@ -22,6 +22,7 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from urllib.parse import urlparse
 
 import pandas as pd
 import requests
@@ -95,13 +96,19 @@ def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
 
+def _normalize_url(x: str) -> str:
+    url = urlparse(x)
+    return url._replace(query="", fragment="").geturl()
+
+
 def _infer_datatype_value(x: str) -> str:
-    mtype, _ = mimetypes.guess_type(x)
+    url = _normalize_url(x)
+    mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)
         if datatype is not None:
             return datatype
-    elif x.endswith(".pcd"):
+    elif url.endswith(".pcd"):
         return DatapointType.POINT_CLOUD.value
 
     return DatapointType.TABULAR.value
