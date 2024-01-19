@@ -193,7 +193,9 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     )
     flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
-    return _dataframe_object_serde(flattened, _deserialize_dataobject)
+    df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
+    df_post.replace(np.nan, None, inplace=True)
+    return df_post
 
 
 def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
@@ -365,7 +367,8 @@ def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame
     """
     df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
     log.info(f"downloaded dataset '{name}'")
-    return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
+    df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
+    return df_dataset
 
 
 def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: int = 50) -> ListCommitHistoryResponse:

@@ -15,7 +15,6 @@ import random
 from typing import List
 from typing import Optional
 
-import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -262,10 +261,14 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     assert fetched_eval_config_1 == eval_config_1
     assert fetched_eval_config_2 == eval_config_2
     # verify the partial results with placeholder
-    expected_df_result_1_partial = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
-    expected_df_result_1_partial[5:10] = np.nan
-    expected_df_result_2_partial = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
-    expected_df_result_2_partial[:5] = np.nan
+    expected_df_result_1_partial = (
+        df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True).astype("object")
+    )
+    expected_df_result_1_partial[5:10] = None
+    expected_df_result_2_partial = (
+        df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True).astype("object")
+    )
+    expected_df_result_2_partial[:5] = None
     _assert_frame_equal(fetched_df_result_1, expected_df_result_1_partial, result_columns_1)
     _assert_frame_equal(fetched_df_result_2, expected_df_result_2_partial, result_columns_2)
 
@@ -356,8 +359,8 @@ def test__upload_results__missing_result() -> None:
     expected_df_dp = pd.concat([df_dp[3:10], df_dp[:3]]).sort_values(JOIN_COLUMN).reset_index(drop=True)
     expected_df_result = pd.concat(
         [
-            df_result.drop(columns=[JOIN_COLUMN])[3:10],
-            pd.DataFrame({"softmax_bitmap": [np.nan] * 3, "score": [np.nan] * 3}),
+            df_result.drop(columns=[JOIN_COLUMN])[3:10].astype("object"),
+            pd.DataFrame({"softmax_bitmap": [None] * 3, "score": [None] * 3}),
         ],
         axis=0,
     ).reset_index(drop=True)
@@ -391,7 +394,10 @@ def test__upload_results__upload_none() -> None:
     eval_cfg, fetched_df_result = df_results_by_eval[0]
     expected_df_dp = df_dp.reset_index(drop=True)
     expected_df_result = pd.concat(
-        [df_result.drop(columns=JOIN_COLUMN), pd.DataFrame({"softmax_bitmap": [np.nan] * 10, "score": [np.nan] * 10})],
+        [
+            df_result.drop(columns=JOIN_COLUMN).astype("object"),
+            pd.DataFrame({"softmax_bitmap": [None] * 10, "score": [None] * 10}),
+        ],
         axis=0,
     ).reset_index(
         drop=True,

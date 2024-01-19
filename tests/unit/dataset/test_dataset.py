@@ -14,7 +14,6 @@
 import json
 import random
 
-import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -367,7 +366,7 @@ def test__dataframe__serde_none() -> None:
     ]
     df_serialized = pd.DataFrame(data, columns=[column_name])
 
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["city"])
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["city"])
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
     assert_frame_equal(df_deserialized, df_expected)
 
@@ -381,7 +380,7 @@ def test__dataframe__serde_none__composite() -> None:
     ]
     df_serialized = pd.DataFrame(data, columns=[column_name])
 
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["a.city"])
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["a.city"])
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
     assert_frame_equal(df_deserialized, df_expected)
 

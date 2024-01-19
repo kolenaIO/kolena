@@ -32,8 +32,8 @@ def test__df_apply() -> None:
     df = pd.DataFrame({"A": ["", "2", "3"]})
 
     assert df["A"][0] == ""
-    post_df = df["A"].apply(_try_convert_to_num)
-    assert math.isnan(post_df[0])
+    df_post = df["A"].apply(_try_convert_to_num)
+    assert math.isnan(df_post[0])
     # verify convert_dtype is False
-    post_df = df_apply(df["A"], _try_convert_to_num)
-    assert post_df[0] is None
+    df_post = df_apply(df["A"], _try_convert_to_num)
+    assert df_post[0] is None
