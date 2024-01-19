@@ -32,10 +32,10 @@ We will generate an App registration for Kolena in Azure and then assign roles t
 
 We will assign two roles to the App registration created above:
 
-<!-- markdownlint-disable MD013 -->
-- [Storage Blob Delegator](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-delegator) at the storage account level
-- [Storage Blob Data Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader) at the container level
-<!-- markdownlint-enable MD013 -->
+- [Storage Blob Delegator](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-delegator)
+  at the storage account level
+- [Storage Blob Data Reader](https://learn.microsoft.com/en-us/azure/role-based-access-control/built-in-roles#storage-blob-data-reader)
+  at the container level
 
 #### Assign Storage Blob Delegator Role
 

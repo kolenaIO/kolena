@@ -11,14 +11,16 @@ can be tested can be modeled as a workflow in Kolena.
 
 Examples of workflows include:
 
-<!-- markdownlint-disable MD013 -->
 <div class="grid cards" markdown>
-- [:kolena-widget-20: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d) using images
-- [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/text_summarization) using articles/documents
-- [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation) (regression) using images
-- [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval) using text queries on a corpus of videos
+- [:kolena-widget-20: Object Detection (2D)](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d)
+  using images
+- [:kolena-text-summarization-20: Text Summarization](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/text_summarization)
+  using articles/documents
+- [:kolena-age-estimation-20: Age Estimation](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation)
+  (regression) using images
+- [:kolena-video-20: Video Retrieval](https://paperswithcode.com/task/video-retrieval)
+  using text queries on a corpus of videos
 </div>
-<!-- markdownlint-enable MD013 -->
 
 With the [`kolena.workflow`](../../reference/workflow/index.md) client module,
 any arbitrary ML problem can be defined as a workflow and tested on Kolena.
