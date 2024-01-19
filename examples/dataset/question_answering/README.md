@@ -79,15 +79,17 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 question answering:
 
 ### Metrics
+
 1. mean(result.gpt4_hallucination_flag)
 2. mean(result.gpt4_hallucination_score)
 3. mean(result.contradiction_score)
 
 ### Plots
+
 1. `datapoint.question_type` vs. `mean(result.contradiction_score)`
 2. `result.nli_label` vs. `mean(result.gpt4_hallucination_score)`
 
-
 ### Test Cases
+
 1. `datapoint.question_type`
 2. `datapoint.type`

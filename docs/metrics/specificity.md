@@ -30,7 +30,6 @@ Specificity is often used in conjunction with [sensitivity (recall)](./recall.md
 - :kolena-manual-16: API Reference: [`Specificity` ↗][kolena.metrics.specificity]
 </div>
 
-
 ## Implementation Details
 
 Specificity is used to evaluate the performance of a classification model, particularly in tasks like binary

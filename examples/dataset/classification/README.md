@@ -24,7 +24,6 @@ The data for this example integration lives in the publicly accessible S3 bucket
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
 
-
 ### Binary Classification
 
 For binary classification, there are two scripts that perform the following operations:
@@ -65,7 +64,6 @@ For multiclass classification, there are two scripts that perform the following 
 1. [`upload_dataset.py`](classification/multiclass/upload_dataset.py) uploads the
 [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset.
 
-
 2. [`upload_results.py`](classification/multiclass/upload_results.py) uploads results for `"resnet50v2"` or
 `"inceptionv3"`.
 
@@ -101,18 +99,22 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 classification:
 
 ### Metrics
+
 1. [Precision](https://docs.kolena.io/metrics/precision)
 2. [Recall](https://docs.kolena.io/metrics/recall)
 3. [F1-score](https://docs.kolena.io/metrics/f1-score)
 4. [Accuracy](https://docs.kolena.io/metrics/accuracy)
 
 ### Binary Classification Plots
+
 1. Confusion Matrix: `datapoint.label.label` vs. `result.inference.label`
 2. `result.inference.label` vs. `result.inference.score`
 
 ### Multiclass Classification Plots
+
 1. Confusion Matrix: `datapoint.ground_truth.label` vs. `result.classification.label`
 2. `result.classification.label` vs. `result.classification.score`
 
 ### Test Cases
+
 1. `datapoint.label.label` (`datapoint.ground_truth.label` for multiclass)

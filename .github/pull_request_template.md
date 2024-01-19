@@ -1,4 +1,4 @@
-### Linked issue(s):
+### Linked issue(s)
 
 ### What change does this PR introduce and why?
 

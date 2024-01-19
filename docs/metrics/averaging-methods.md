@@ -5,9 +5,10 @@ subtitle: Macro, Micro, Weighted
 # Averaging Methods
 
 For multiclass workflows like classification or object detection, metrics such as [precision](./precision.md),
-[recall](./recall.md), and [F<sub>1</sub>-score](./f1-score.md) are computed **per class**. To compute a single value that represents model performance across all
-classes, these per-class scores need to be aggregated. There are a few different averaging methods for doing this, most
-notably:
+[recall](./recall.md), and [F<sub>1</sub>-score](./f1-score.md) are computed **per class**.
+To compute a single value that represents model performance across all classes,
+these per-class scores need to be aggregated. There are a few different averaging methods for doing this,
+most notably:
 
 - [**Macro**](#macro-average): unweighted mean of all per-class scores
 - [**Micro**](#micro-average): global average of per-sample TP, FP, FN scores
@@ -24,12 +25,12 @@ Let’s consider the following multiclass classification metrics, computed acros
 | `Car` | 6 | 3 | 0 | 3 | 1.0 | 0.5 | 0.67 |
 | Total | 10 | 6 | 4 | 4 | - | - | - |
 
-
 ### Macro Average
 
 **Macro average** is perhaps the most straightforward among the numerous options and is computed by taking an
 **unweighted** mean of all the per-class scores:
 
+<!-- markdownlint-disable MD013 -->
 $$
 \begin{align}
 \text{F}_{1 \, \text{macro}} &= \frac{\text{F}_{1 \, \texttt{Airplane}} + \text{F}_{1 \, \texttt{Boat}} + \text{F}_{1 \, \texttt{Car}}}{3} \\[1em]
@@ -37,6 +38,7 @@ $$
 &= 0.58
 \end{align}
 $$
+<!-- markdownlint-enable MD013 -->
 
 ### Micro Average
 
@@ -64,8 +66,10 @@ $$
 $$
 </div>
 
-What about **micro F<sub>1</sub>**? Plug the micro-averaged values for precision and recall into the standard formula for F<sub>1</sub>-score:
+What about **micro F<sub>1</sub>**?
+Plug the micro-averaged values for precision and recall into the standard formula for F<sub>1</sub>-score:
 
+<!-- markdownlint-disable MD013 -->
 $$
 \begin{align}
 \text{F}_{1 \, \text{micro}} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
@@ -73,7 +77,7 @@ $$
 &= 0.6
 \end{align}
 $$
-
+<!-- markdownlint-enable MD013 -->
 
 Note that precision, recall, and F<sub>1</sub>-score all have the same value: $0.6$. This is because micro-averaging essentially
 computes the proportion of correctly classified instances out of all instances, which is the definition of overall
@@ -94,17 +98,17 @@ For example, if there are 3 samples of class `Airplane`, then the support value 
 words, support is the sum of true positive (TP) and false negative (FN) counts. The weight is the proportion of each
 class’s support relative to the sum of all support values:
 
+<!-- markdownlint-disable MD013 -->
 $$
 \begin{align}
 \text{F}_{1 \, \text{weighted}} &= \left( \text{F}_{1 \, \texttt{Airplane}} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
-+ \left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
-+ \left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
+- \left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
+- \left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
 &= \left( 0.67 \times \tfrac{3}{10} \right) + \left( 0.4 \times \tfrac{1}{10} \right) + \left( 0.67 \times \tfrac{6}{10} \right) \\[1em]
 &= 0.64
 \end{align}
 $$
-
-
+<!-- markdownlint-enable MD013 -->
 
 ## Which Method Should I Use?
 

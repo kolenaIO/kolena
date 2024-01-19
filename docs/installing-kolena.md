@@ -41,7 +41,6 @@ or [Poetry](https://python-poetry.org/):
 
     If you see the error above, please install the latest version of `kolena`.
 
-
 #### Extra Dependency Groups
 
 Certain metrics computation functionality depends on additional packages like

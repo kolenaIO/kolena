@@ -72,6 +72,7 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 this workflow:
 
 ### Metrics
+
 1. [Precision](https://docs.kolena.io/metrics/precision)
 2. [Recall](https://docs.kolena.io/metrics/recall)
 3. [F1-score](https://docs.kolena.io/metrics/f1-score)
@@ -79,7 +80,9 @@ this workflow:
 5. [\# FN](https://docs.kolena.io/metrics/tp-fp-fn-tn)
 
 ### Plots
+
 1. `mean(results.f1)` vs. `datapoint.image_size`
 
 ### Test Cases
+
 1. `datapoint.person_count`

@@ -6,8 +6,7 @@ depending on the prompt given to the LLM. Depending on the prompt technique used
 where `True` indicates hallucination, or a numeric value ranging from 0 to 1, where 0 indicates no hallucination
 and 1 indicates definite hallucination.
 
-
-##  Implementation Details
+## Implementation Details
 
 The main prompting techniques we will focus on in this guide are:
 
@@ -24,7 +23,6 @@ In practice, we recommend using a combination of the self-consistency prompting 
 In the following section, we will compute the prompt-based hallucination metric using these two
 prompting techniques on example responses. We will use [GPT-4](https://openai.com/gpt-4) as the judging model, as it
 is currently the most effective at detecting hallucinations.
-
 
 ### Example
 
@@ -114,7 +112,6 @@ in about ten words why there is a hallucination by thinking step by step.
     response = str(response.choices[0].message.content)
     ```
 
-
 | Ground Truth | Inference | GPT-4 Judge Response | Reasoning |
 | --- | --- | --- | --- |
 | `The duck crossed the road` | `The duck did not cross the road` | `yes` | `The generated answer contradicts the perfect answer directly.` |
@@ -133,7 +130,6 @@ hallucination to the total number of instances:
 $$
 \text{hallucination score} = \frac{\text{number of hallucinating instances}}{\text{total number of instances}}
 $$
-
 
 | Ground Truth | Inference | GPT-4 Judge Responses | Hallucination Score |
 | --- | --- | --- | --- |

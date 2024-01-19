@@ -1,5 +1,9 @@
 # Example Integration: Automatic Speech Recognition
-This example integration uses the [Whisper](https://github.com/openai/whisper) and [Wav2Vec2](https://huggingface.co/facebook/wav2vec2-base) models, and [LibriSpeech dataset](https://www.openslr.org/12) to demonstrate how to test speech recognition problems on Kolena.
+
+This example integration uses the [Whisper](https://github.com/openai/whisper)
+and [Wav2Vec2](https://huggingface.co/facebook/wav2vec2-base) models,
+and [LibriSpeech dataset](https://www.openslr.org/12)
+to demonstrate how to test speech recognition problems on Kolena.
 
 ## Setup
 
@@ -26,14 +30,16 @@ This project defines two scripts that perform the following operations:
     - `LibriSpeech`, stratified by `audio duration`, `tempo`, and `speaker sex`.
 
     Run this command to seed the default test suite:
+
     ```shell
     poetry run python3 automatic_speech_recognition/seed_test_suite.py
     ```
 
-
-2. [`seed_test_run.py`](automatic_speech_recognition/seed_test_run.py) tests a specified model, e.g. `whisper-1-translate`, on the above test suite.
+2. [`seed_test_run.py`](automatic_speech_recognition/seed_test_run.py)
+   tests a specified model, e.g. `whisper-1-translate`, on the above test suite.
 
     Run this command to evaluate the default models on the `LibriSpeech` test suite:
+
     ```shell
     poetry run python3 automatic_speech_recognition/seed_test_run.py
     ```

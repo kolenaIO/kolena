@@ -29,14 +29,16 @@ This project defines two scripts that perform the following operations:
     - `image properties :: cifar10/test`, stratified by `image_brightness` and `image_contrast`
 
     Run this command to seed the default test suite:
+
     ```shell
     poetry run python3 scripts/multiclass/seed_test_suite.py
     ```
 
-
-2. [`seed_test_run.py`](scripts/multiclass/seed_test_run.py) tests a specified model, e.g. `resnet50v2`, on the above test suite.
+2. [`seed_test_run.py`](scripts/multiclass/seed_test_run.py)
+   tests a specified model, e.g. `resnet50v2`, on the above test suite.
 
     Run this command to evaluate the default models on `image properties :: cifar10/test` test suite:
+
     ```shell
     poetry run python3 scripts/multiclass/seed_test_run.py
     ```
@@ -57,7 +59,6 @@ optional arguments:
                         Name(s) of test suite(s) to test.
 ```
 
-
 ### Binary Classification on Dogs vs. Cats
 
 This project defines two scripts that perform the following operations:
@@ -67,6 +68,7 @@ This project defines two scripts that perform the following operations:
     - `image size :: dogs-vs-cats`, stratified by `image size` using metadata `width` and `height`
 
     Run this command to seed the default test suite:
+
     ```shell
     poetry run python3 scripts/binary/seed_test_suite.py
     ```
@@ -74,10 +76,10 @@ This project defines two scripts that perform the following operations:
 2. [`seed_test_run.py`](scripts/binary/seed_test_run.py) tests a specified model, e.g. `resnet50v2`, on the above test suite.
 
     Run this command to evaluate the default models on `image size :: dogs-vs-cats` test suite:
+
     ```shell
     poetry run python3 scripts/binary/seed_test_run.py
     ```
-
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:

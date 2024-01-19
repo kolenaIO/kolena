@@ -26,7 +26,6 @@ positive inferences.
 - :kolena-manual-16: API Reference: [`precision` ↗][kolena.metrics.precision]
 </div>
 
-
 ## Implementation Details
 
 Precision is used across a wide range of workflows, including classification, object detection, instance segmentation,
@@ -110,5 +109,5 @@ As seen in its formula, precision only takes **positive** inferences (TP and FP)
 (TN and FN) are not considered. Thus, precision only provides one half of the picture, and should always be used in
 tandem with [recall](./recall.md): recall penalizes false negatives (FN), whereas precision does not.
 
-For a single metric that takes both precision and recall into account, use F<sub>1</sub>-score, which is the harmonic mean between
-precision and recall.
+For a single metric that takes both precision and recall into account,
+use F<sub>1</sub>-score, which is the harmonic mean between precision and recall.

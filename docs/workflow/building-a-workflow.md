@@ -11,7 +11,6 @@ search:
     If you are setting up your Kolena environments for the first time, please refer to the
     [Datasets Quickstart](../dataset/quickstart.md).
 
-
 In this tutorial we'll learn how to use the [`kolena.workflow`](../reference/workflow/index.md) workflow builder
 definitions to test a [Keypoint Detection](https://keras.io/examples/vision/keypoint_detection/) model on the
 [300-W](https://ibug.doc.ic.ac.uk/resources/300-W/) facial keypoint dataset. This demonstration will show us how we can

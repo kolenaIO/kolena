@@ -152,7 +152,6 @@ Using these TPR and FPR values, per class ROC curves can be plotted:
 ![roc.png](../assets/images/metrics-roccurve-example-multiclass-dark.png#only-dark)
 </center>
 
-
 ## Area Under the ROC Curve (AUC ROC)
 
 The area under the ROC curve (AUC ROC) is a **threshold-independent** metric that summarizes the performance of a model
@@ -189,7 +188,6 @@ $$
 For Python implementation, we recommend using NumPy's
 [`np.trapz(y, x)`](https://numpy.org/doc/stable/reference/generated/numpy.trapz.html) or
 scikit-learn's [`sklearn.metrics.auc`](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.auc.html).
-
 
 ## Limitations and Biases
 

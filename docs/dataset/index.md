@@ -14,7 +14,8 @@ standardization and comparison of multiple models.
 
     ---
 
-    Get started with a quick and easy example for connecting data to Kolena, using either the web application or the Python SDK.
+    Get started with a quick and easy example for connecting data to Kolena,
+    using either the web application or the Python SDK.
 </div>
 
 <div class="grid cards" markdown>

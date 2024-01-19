@@ -6,4 +6,4 @@ status: deprecated
 
 !!! warning "Deprecated"
 
-	This page has been migrated to [kolena.metrics](../metrics.md)
+    This page has been migrated to [kolena.metrics](../metrics.md)
