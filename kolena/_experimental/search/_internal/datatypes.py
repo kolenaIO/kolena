@@ -14,6 +14,10 @@
 import pandera as pa
 from pandera.typing import Series
 
+# Ensure check method is registered or else would get SchemaInitError
+# noreorder
+from kolena._utils.dataframes.validators import _validate_locator  # noqa: F401
+
 
 class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
     key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
