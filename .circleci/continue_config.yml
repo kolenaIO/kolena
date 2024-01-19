@@ -56,7 +56,7 @@ jobs:
           key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
-            not_equal: [ "metrics", << parameters.extras >> ]
+            equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Install Dependencies
@@ -233,14 +233,11 @@ jobs:
                     -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
-            equal: [ "_experimental", << parameters.pytest-group >> ]
+            equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
-                name: Run experimental << parameters.extras >> integration tests
-                command: |
-                  TEST_MARKER="<< parameters.extras >>"
-                  poetry run pytest --cache-clear -m $TEST_MARKER -vv --cov=kolena --cov-branch \
-                    tests/integration/_experimental
+                name: Run experimental metrics integration tests
+                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
       - when:
           # Generate coverage only from one python version
           condition:
@@ -441,15 +438,15 @@ workflows:
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-experimental-<< matrix.python-version >>-<< matrix.extras >>
+          name: integration-test-experimental-embedding-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: [ "embeddings" ]
-          pytest-group: _experimental
+              extras: [ "none" ]
+          pytest-group: _experimental/search
           enabled: true
           requires:
-            - ci-base-<< matrix.python-version >>-none
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test-dataset:
           name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
           matrix:

@@ -36,7 +36,6 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
 )
 
 
-@pytest.mark.embeddings
 @pytest.mark.parametrize(
     "embedding",
     [
@@ -56,7 +55,6 @@ def test__upload_embeddings(embedding: np.ndarray) -> None:
     )
 
 
-@pytest.mark.embeddings
 @pytest.mark.parametrize(
     "embedding",
     [
