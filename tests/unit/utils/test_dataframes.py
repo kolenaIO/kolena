@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import math
+from typing import Any
 
 import pandas as pd
 
 from kolena._utils.dataframes import df_apply
 
 
-def _try_convert_to_num(s: str):
+def _try_convert_to_num(s: str) -> Any:
     if s == "":
         return None
 
