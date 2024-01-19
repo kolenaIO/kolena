@@ -11,6 +11,29 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from kolena._utils.dataframes._pandas import df_apply
+import math
 
-__all__ = [df_apply]
+import pandas as pd
+
+from kolena._utils.dataframes import df_apply
+
+
+def _try_convert_to_num(s: str):
+    if s == "":
+        return None
+
+    try:
+        return pd.to_numeric(s)
+    except Exception:
+        return s
+
+
+def test__df_apply() -> None:
+    df = pd.DataFrame({"A": ["", "2", "3"]})
+
+    assert df["A"][0] == ""
+    post_df = df["A"].apply(_try_convert_to_num)
+    assert math.isnan(post_df[0])
+    # verify convert_dtype is False
+    post_df = df_apply(df["A"], _try_convert_to_num)
+    assert post_df[0] is None
