@@ -31,12 +31,14 @@ The `upload_results.py` script defines command line arguments to select which mo
 
 ```shell
 $ poetry run python3 rain_forecast/upload_results.py --help
-usage: upload_results.py [-h] [--model {ann,logreg}] [--dataset DATASET]
+usage: upload_results.py [-h] [--dataset DATASET] {ann,logreg}
+
+positional arguments:
+  {ann,logreg}       Name of the model to test.
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --model {ann,logreg}  Name of model to test.
-  --dataset DATASET     Name of dataset to use for testing.
+  -h, --help         show this help message and exit
+  --dataset DATASET  Optionally specify a custom dataset name to test.
 ```
 
 ## Quality Standards Guide

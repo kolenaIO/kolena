@@ -19,17 +19,12 @@ from typing import Dict
 import pandas as pd
 from rain_forecast.constants import BUCKET
 from rain_forecast.constants import DATASET
+from rain_forecast.constants import EVAL_CONFIG
+from rain_forecast.constants import MODEL_NAME
 from tqdm import tqdm
 
 import kolena
 from kolena.dataset import upload_results
-
-
-MODEL_NAME = {
-    "ann": "ann-batch32-epoch150",
-    "logreg": "logreg-liblinear",
-}
-EVAL_CONFIG = {"threshold": 0.5}
 
 
 def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5) -> Dict[str, Any]:
@@ -37,16 +32,25 @@ def compute_metrics(ground_truth: str, inference: float, threshold: float = 0.5)
         gt = ground_truth == "Yes"
         inf = inference >= threshold
         metrics = dict(
+            will_rain=inf,
             missing_ground_truth=False,
             is_correct=gt == inf,
-            is_TP=gt == inf and gt,
-            is_FP=gt != inf and not gt,
-            is_FN=gt != inf and gt,
-            is_TN=gt == inf and not gt,
+            is_TP=int(gt == inf and gt),
+            is_FP=int(gt != inf and not gt),
+            is_FN=int(gt != inf and gt),
+            is_TN=int(gt == inf and not gt),
         )
         return metrics
 
-    return dict(missing_ground_truth=True, is_correct=None, is_TP=None, is_FP=None, is_FN=None, is_TN=None)
+    return dict(
+        will_rain=None,
+        missing_ground_truth=True,
+        is_correct=None,
+        is_TP=0,
+        is_FP=0,
+        is_FN=0,
+        is_TN=0,
+    )
 
 
 def run(args: Namespace) -> None:
@@ -73,7 +77,14 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("model", type=str, choices=list(MODEL_NAME.keys()), help="Name of the model to test.")
+    ap.add_argument(
+        "model",
+        type=str,
+        default="ann",
+        nargs="?",
+        choices=list(MODEL_NAME.keys()),
+        help="Name of the model to test.",
+    )
     ap.add_argument(
         "--dataset",
         type=str,

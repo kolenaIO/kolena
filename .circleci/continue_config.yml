@@ -469,9 +469,11 @@ workflows:
               resource-class: [ large ]
               python-version: [ "3.9.18" ]
       - example-test-dataset:
+          context:
+            - aws
           matrix:
             parameters:
-              subproject: [ classification, keypoint_detection, question_answering, rain_forecast, speaker_diarization, age_estimation ]
+              subproject: [ age_estimation, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
@@ -483,7 +485,7 @@ workflows:
       - example-test-workflow:
           matrix:
             parameters:
-              subproject: [ keypoint_detection, age_estimation, object_detection_3d, classification, question_answering, face_recognition_11, speaker_diarization, automatic_speech_recognition ]
+              subproject: [ age_estimation, automatic_speech_recognition, classification, face_recognition_11, keypoint_detection, object_detection_3d, question_answering, speaker_diarization ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
   example-evaluator:
