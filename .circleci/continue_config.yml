@@ -435,11 +435,21 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: [ "metrics", "embeddings" ]
+              extras: [ "metrics" ]
           pytest-group: _experimental
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-experimental-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "embeddings" ]
+          pytest-group: _experimental
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-none
       - integration-test-dataset:
           name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
