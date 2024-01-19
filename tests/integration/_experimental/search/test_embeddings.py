@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import uuid
+
 import numpy as np
 import pytest
 
@@ -34,7 +36,7 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
 )
 
 
-@pytest.mark.skip("disabled until server side changes are deployed")
+@pytest.mark.embeddings
 @pytest.mark.parametrize(
     "embedding",
     [
@@ -44,8 +46,8 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
         np.array([], dtype=np.float16),
     ],
 )
-def test_upload_embeddings(embedding: np.ndarray) -> None:
-    test_case_name = with_test_prefix(f"{__file__} test_upload_embeddings")
+def test__upload_embeddings(embedding: np.ndarray) -> None:
+    test_case_name = with_test_prefix(f"{__file__} test_upload_embeddings {uuid.uuid4()}")
     locator = fake_random_locator()
     TestCase.create(test_case_name, test_samples=[(Image(locator=locator), GroundTruth())])
     upload_embeddings(
@@ -54,6 +56,7 @@ def test_upload_embeddings(embedding: np.ndarray) -> None:
     )
 
 
+@pytest.mark.embeddings
 @pytest.mark.parametrize(
     "embedding",
     [
@@ -62,7 +65,7 @@ def test_upload_embeddings(embedding: np.ndarray) -> None:
         np.array([1, "2"]),
     ],
 )
-def test_upload_embeddings__bad_embedding(embedding: np.ndarray) -> None:
+def test__upload_embeddings__bad_embedding(embedding: np.ndarray) -> None:
     locator = fake_random_locator()
     with pytest.raises(InputValidationError):
         upload_embeddings(

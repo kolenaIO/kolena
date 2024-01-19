@@ -233,11 +233,14 @@ jobs:
                     -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
-            equal: [ "metrics", << parameters.extras >> ]
+            equal: [ "_experimental", << parameters.pytest-group >> ]
           steps:
             - run:
-                name: Run experimental metrics integration tests
-                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
+                name: Run experimental << parameters.extras >> integration tests
+                command: |
+                  TEST_MARKER="<< parameters.extras >>"
+                  poetry run pytest --cache-clear -m $TEST_MARKER -vv --cov=kolena --cov-branch \
+                    tests/integration/_experimental
       - when:
           # Generate coverage only from one python version
           condition:
@@ -432,7 +435,7 @@ workflows:
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
-              extras: [ "metrics" ]
+              extras: [ "metrics", "embeddings" ]
           pytest-group: _experimental
           enabled: true
           requires:
