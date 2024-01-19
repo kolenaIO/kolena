@@ -73,7 +73,8 @@ Otherwise, answer "no".
     openai = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
 
     PROMPT = """
-    Given a pair of texts, where the first one is context, the second one is a sentence, answer "yes" if the sentence is \
+    Given a pair of texts, where the first one is context, \
+    the second one is a sentence, answer "yes" if the sentence is \
     supported by the context. Otherwise, answer "no".
     """
 
