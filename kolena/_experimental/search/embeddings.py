@@ -58,7 +58,7 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     locators, search_embeddings = [], []
     for locator, embedding in embeddings:
         if not np.issubdtype(embedding.dtype, np.number):
-            raise InputValidationError("unexepected non-numeric embedding dtype")
+            raise InputValidationError("unexpected non-numeric embedding dtype")
         locators.append(locator)
         search_embeddings.append(b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8"))
     df_embeddings = pd.DataFrame(dict(key=[key] * len(embeddings), locator=locators, embedding=search_embeddings))
@@ -92,10 +92,9 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     """
 
     def encode_embedding(embedding: Any) -> str:
-        try:
-            return b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8")
-        except Exception:
-            raise InputValidationError("unexepected non-numeric embedding dtype")
+        if not np.issubdtype(embedding.dtype, np.number):
+            raise InputValidationError("unexpected non-numeric embedding dtype")
+        return b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8")
 
     # encode embeddings to string
     df_embedding["embedding"] = df_embedding["embedding"].apply(encode_embedding)
