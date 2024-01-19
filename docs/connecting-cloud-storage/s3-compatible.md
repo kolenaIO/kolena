@@ -77,7 +77,8 @@ By default, any locators beginning with `s3://` will be loaded using this integr
 
 !!!note "Note: scoping integrations"
 
-    Optionally, each integration can be scoped to a specific bucket such that only locators of the pattern `s3://<specific-bucket>/*` will be loaded using the integration.
+    Optionally, each integration can be scoped to a specific bucket such that
+    only locators of the pattern `s3://<specific-bucket>/*` will be loaded using the integration.
     This can be necessary if multiple integrations are required.
     Unchecking "Apply to all buckets by default?" and specifying a bucket will enable this behavior.
 

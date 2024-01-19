@@ -83,11 +83,9 @@ $$
 
 Let's calculate the word error rate between the following reference and candidate texts:
 
-<!-- markdownlint-disable MD013 -->
 | <b>Reference</b> | <b>Candidate</b> |
-| | |
+|-|-|
 |  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into sonnets for enhanced soulful grace.` |
-<!-- markdownlint-enable MD013 -->
 
 ??? example "Step 1. Count Errors"
     Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>,
@@ -143,11 +141,9 @@ $$
 
 Let's calculate the character error rate using the same reference and candidate texts as the previous example:
 
-<!-- markdownlint-disable MD013 -->
 | <b>Reference</b> | <b>Candidate</b> |
-| | |
+|-|-|
 |  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into enhanced sonnets for soulful grace.` |
-<!-- markdownlint-enable MD013 -->
 
 ??? example "Step 1. Count Errors"
     Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>,
@@ -208,11 +204,9 @@ $$
 
 Let's calculate the match error rate using the same reference and candidate texts as the previous examples:
 
-<!-- markdownlint-disable MD013 -->
 | <b>Reference</b> | <b>Candidate</b> |
-| | |
+|-|-|
 |  `The bard sang ancient melodies of nature, transforming tranquil meadows into sonnets for enhanced soulful grace.` | `The poetic bard echoed ancient melodies, transcending meadows into enhanced sonnets for soulful grace.` |
-<!-- markdownlint-enable MD013 -->
 
 ??? example "Step 1. Count Errors"
     Highlighting the <span class="mg-color-substitution"><big>substitution</big></span>,
