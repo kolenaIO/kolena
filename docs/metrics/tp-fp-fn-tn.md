@@ -59,7 +59,6 @@ In binary classification workflow, TP, FN, FP, and TN are implemented as follows
     to be positive (i.e. true)". Therefore, it is a standard practice to consider inferences with confidence score
     **greater than or equal to** the confidence threshold as positive.
 
-
 With these inputs, TP / FP/ FN / TN metrics are defined:
 
 ```python
@@ -85,7 +84,6 @@ TN = sum(not gt and inf <  T for gt, inf in zip(ground_truths, inferences))
     print(f"TP={TP}, FP={FP}, FN={FN}, TN={TN}")
     # TP=1, FN=1, FP=1, TN=2
     ```
-
 
 #### Multiclass
 
@@ -134,7 +132,8 @@ over Union (IoU)](./iou.md) and [Geometry Matching](./geometry-matching.md)).
 
 #### Single-class
 
-Let’s assume that a [matching algorithm](./geometry-matching.md) has already been run on all inferences and that the matched pairs and unmatched
+Let’s assume that a [matching algorithm](./geometry-matching.md)
+has already been run on all inferences and that the matched pairs and unmatched
 ground truths and inferences are given. Consider the following variables, adapted from
 [`match_inferences`][kolena.metrics.match_inferences]:
 

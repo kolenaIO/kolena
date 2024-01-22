@@ -18,6 +18,7 @@ poetry update && poetry install
 ```
 
 4. [Recommended] Download test images to a local path for faster embeddings extraction:
+
 ```shell
 mkdir -p local/data/directory/imgs
 aws s3 cp --recursive s3://kolena-public-datasets/labeled-faces-in-the-wild/imgs local/data/directory/imgs
@@ -43,4 +44,5 @@ optional arguments:
                         Local path where files have already been pre-downloaded (to the same relative path as s3://kolena-public-datasets/labeled-faces-in-the-wild/imgs/)
 ```
 
-Once the embeddings have been extracted, you will be able to search the relevant age estimation test suite in the [Kolena Studio](https://app.kolena.io/redirect/studio) using natural language.
+Once the embeddings have been extracted, you will be able to search the relevant
+age estimation test suite in the [Kolena Studio](https://app.kolena.io/redirect/studio) using natural language.

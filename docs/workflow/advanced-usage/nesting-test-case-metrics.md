@@ -8,11 +8,13 @@ When computing [test case metrics][kolena.workflow.MetricsTestCase] in an
 [evaluator](../../reference/workflow/evaluator.md), in some cases it is desirable to compute multiple sets of aggregate
 metrics within a given test case.
 
+<!-- markdownlint-disable MD013 -->
 <figure markdown>
   ![Class-level metrics](../../assets/images/nesting-test-case-metrics-light.jpg#only-light)
   ![Class-level metrics](../../assets/images/nesting-test-case-metrics-dark.jpg#only-dark)
   <figcaption markdown>Class-level metrics for the `airplane`, `bear`, `bench`, etc. classes reported for the test case `complete :: coco-2014-val [Object Detection]`</figcaption>
 </figure>
+<!-- markdownlint-enable MD013 -->
 
 Here are a few examples of scenarios where this pattern might be warranted:
 
@@ -57,8 +59,9 @@ class AggregateMetrics(MetricsTestCase):
     mAP: float
 ```
 
-These metrics tell us how well the model performs in "Scenario A" and "Scenario B" across all classes, but they don't tell us
-anything about per-class model performance. Within each test case, we'd also like to see precision, recall, F1, and AP
+These metrics tell us how well the model performs in "Scenario A" and "Scenario B" across all classes,
+but they don't tell us anything about per-class model performance.
+Within each test case, we'd also like to see precision, recall, F1, and AP
 scores:
 
 | `Class` | `N` | `Precision` | `Recall` | `F1` | `AP` |

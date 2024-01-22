@@ -1,7 +1,8 @@
 # Average Precision
 
-Average precision (AP) summarizes a [precision-recall (PR) curve](./pr-curve.md) into a single value representing the average of all
-precisions. It is generally understood as the approximation of the area under the PR curve. AP ranges between 0 and 1,
+Average precision (AP) summarizes a [precision-recall (PR) curve](./pr-curve.md)
+into a single value representing the average of all precisions.
+It is generally understood as the approximation of the area under the PR curve. AP ranges between 0 and 1,
 where a perfect model has [precision](./precision.md), [recall](./recall.md), and AP scores of 1. The larger the metric,
 the better a model performs across different thresholds.
 
@@ -42,7 +43,6 @@ where
 - $p(k)$ is the precision at threshold $k$
 - $r(k)$ is the recall at threshold $k$
 - $n$ is the number of thresholds
-
 
 Let’s take a closer look at different implementations of the AP metric. Two primary machine learning workflows that
 use AP as a main evaluation metric are **object detection** and **information retrieval**, but AP is implemented
@@ -96,7 +96,8 @@ Now that we have the precision and recall defined at each threshold, let’s plo
 ![object detection example - PR curve](../assets/images/metrics-ap-od-pr-light.svg#only-light)
 ![object detection example - PR curve](../assets/images/metrics-ap-od-pr-dark.svg#only-dark)
 
-Notice the zigzag pattern, often referred to as “**wiggles**” — the precision goes down with FPs and goes up again with TPs as the
+Notice the zigzag pattern, often referred to as “**wiggles**” —
+the precision goes down with FPs and goes up again with TPs as the
 recall increases. It is a common practice to first smooth out the wiggles before calculating the AP metric by taking the
 maximum precision value to its graphical right side of each recall value. This is why AP is called the **approximation**
 of the area under the PR curve. The interpolated precision at each recall is defined:
@@ -118,9 +119,9 @@ The precisions (y-values) of the smoothed out curve, the orange line on the plot
 
     Notice the above PR curve doesn't start at zero recall. It is because there is no valid threshold that will result
     in zero recall. In order to ensure that the graph starts on the y-axis, the first point on the curve extends all the
-    way to the y-axis. Similarly, the end of the PR curve doesn't always extend all the way to the recall value of 1. This is
-    because not all the ground truths are matched. Unlike the start of the curve, the tail of the curve doesn't get
-    extended when calculating AP.
+    way to the y-axis. Similarly, the end of the PR curve doesn't always extend all the way to the recall value of 1.
+    This is because not all the ground truths are matched. Unlike the start of the curve,
+    the tail of the curve doesn't get extended when calculating AP.
 </div>
 
 $$
@@ -135,7 +136,6 @@ $$
     Although smoothing is considered as the standard implementation of average precision,
     scikit-learn's [average precision](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html)
     implementation does not smooth out the precisions as mentioned above.
-
 
 The example above computes AP at **all unique recall** values whenever the maximum precision value drops. This is the
 most precise implementation of the metric, used in popular benchmarks like the
@@ -158,7 +158,6 @@ The intention of using this 11-point interpolation, according to the
 
 > The intention in interpolating the precision/recall curve in this way is to reduce the impact of the “wiggles” in the
 > precision/recall curve, caused by small variations in the ranking of examples.
-
 
 However, this linearly interpolated method suffers from being less precise and not being able to measure the difference
 with low APs due to the approximation mentioned above. The [COCO benchmark](https://cocodataset.org/#detection-eval)
@@ -183,7 +182,6 @@ where
 - $\text{GTP}$ is the total number of positive ground truths
 - $p(k)$ is the precision at rank $k$ data
 - $rel(k)$ is the relevance at rank $k$ data (1 if the data is relevant, 0 otherwise)
-
 
 Let’s consider the following example of retrieving similar images to the query from a database of images with different
 shapes and colors:

@@ -33,7 +33,9 @@ perplexity indicates that the language model is confident in its generation.
     P(`"sleep"` | `"today is a great day to"`) = 9.9% <br>
     P(`"goodbye"` | `"today is a great day to"`) = 0.1% <br>
 
-    For a deep dive into autoregressive language models like GPT and LLaMA, feel free to refer to [this publication](https://insights.sei.cmu.edu/blog/harnessing-the-power-of-large-language-models-for-economic-and-social-good-foundations/) on the theory behind their inner-workings.
+    For a deep dive into autoregressive language models like GPT and LLaMA, feel free to refer to
+    [this publication](https://insights.sei.cmu.edu/blog/harnessing-the-power-of-large-language-models-for-economic-and-social-good-foundations/)
+    on the theory behind their inner-workings.
 
 ## Implementation Details
 
@@ -83,6 +85,7 @@ LLaMA-2 7B calculated on its diverse test dataset is between 5.0 - 6.0. It is no
 model perform between these ranges for text-generation tasks.
 
 ### Example
+
 Assume we have a sentence-completion language model that uses a context-length of 4 and has a very limited
 vocabulary. Let's calculate the perplexity of the hypothetical model.
 
@@ -124,8 +127,6 @@ vocabulary. Let's calculate the perplexity of the hypothetical model.
 
     Note that in reality, the assigned output probabilities may be much lower due to models having extremely large
     vocabularies. So, a perplexity of 1.869 may not be realistic and representative of an actual language model.
-
-
 
 ## Limitations and Advantages
 

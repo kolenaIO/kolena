@@ -206,7 +206,6 @@ biases, and its intended uses.
     measure the quality of generated text by comparing it with reference texts. Instead, perplexity assesses the
     "confidence" or "surprise" of a language model in predicting the next word in a sequence of words.
 
-
 - [ROUGE-N](rouge-n.md)
 
     ---
@@ -214,7 +213,6 @@ biases, and its intended uses.
     ROUGE-N, a metric within the broader ROUGE metric collection, is a vital metric in the field of NLP. It assesses
     the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.
     ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons.
-
 
 - [Word, Character, and Match Error Rate](wer-cer-mer.md)
 
