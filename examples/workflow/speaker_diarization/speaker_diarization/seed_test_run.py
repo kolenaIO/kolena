@@ -81,8 +81,8 @@ def main(args: Namespace) -> None:
     mod = "gcp-stt-video"
 
     print("loading test suite")
-    if "suite_name" in args:
-        test_suites = [TestSuite.load(args.suite_name)]
+    if "test_suite" in args:
+        test_suites = [TestSuite.load(args.test_suite)]
     else:
         test_suites = TestSuite.load_all(tags={DATASET})
     for test_suite in test_suites:
@@ -96,5 +96,10 @@ if __name__ == "__main__":
         type=bool,
         default=False,
         help="Specify whether to perform speaker alignment between the GT and Inf in the preprocessing step.",
+    )
+    ap.add_argument(
+        "--test-suite",
+        type=str,
+        help="Optionally specify a test suite to test. Test against all available test suites when unspecified.",
     )
     main(ap.parse_args())
