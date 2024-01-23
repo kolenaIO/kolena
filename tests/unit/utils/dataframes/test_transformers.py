@@ -14,9 +14,12 @@
 import math
 from typing import Any
 
+import numpy as np
 import pandas as pd
+import pytest
 
 from kolena._utils.dataframes.transformers import df_apply
+from kolena._utils.dataframes.transformers import replace_nan
 
 
 def _try_convert_to_num(s: str) -> Any:
@@ -38,3 +41,12 @@ def test__df_apply() -> None:
     # verify convert_dtype is False
     df_post = df_apply(df["A"], _try_convert_to_num)
     assert df_post[0] is None
+
+
+@pytest.mark.parametrize("value", [np.nan, -np.nan, float("NaN"), math.nan, -math.nan])
+def test__replace_nan(value: Any) -> None:
+    df = pd.DataFrame({"A": [value, "2", "3"]})
+
+    assert math.isnan(df["A"][0])
+    df_post = replace_nan(df)
+    df_post["A"][0] is None
