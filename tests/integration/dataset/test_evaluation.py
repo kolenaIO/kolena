@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import math
 import random
 from typing import List
 from typing import Optional
@@ -19,6 +20,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
+from kolena._utils.dataframes.transformers import replace_nan
 from kolena.dataset import download_dataset
 from kolena.dataset import download_results
 from kolena.dataset import upload_dataset
@@ -449,3 +451,29 @@ def test__download_results__reset_dataset() -> None:
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert fetched_df_dp.empty
     assert len(df_results_by_eval) == 0
+
+
+def test__download_results__no_nan() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__no_nan")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__no_nan")
+
+    data = [{"col 1": None, "col 2": ""}, {"col 1": 42, "col 2": 2}]
+    df_dp = pd.DataFrame.from_dict(data)
+    assert math.isnan(df_dp["col 1"][0])
+    upload_dataset(dataset_name, df_dp, id_fields=["col 2"])
+
+    response = _upload_results(dataset_name, model_name, df_dp)
+    assert response.n_inserted == 2
+    assert response.n_updated == 0
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    eval_cfg, fetched_df_result = df_results_by_eval[0]
+    assert not fetched_df_dp.empty
+    assert not fetched_df_result.empty
+    assert len(df_results_by_eval) == 1
+    assert eval_cfg is None
+
+    _assert_frame_equal(fetched_df_dp, replace_nan(df_dp))
+    _assert_frame_equal(fetched_df_result, replace_nan(df_dp[["col 1"]]))
+    assert fetched_df_dp["col 1"][0] is None
+    assert fetched_df_result["col 1"][0] is None

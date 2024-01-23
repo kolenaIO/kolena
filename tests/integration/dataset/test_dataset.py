@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import math
 import random
 from typing import Iterator
 from typing import List
@@ -21,6 +22,7 @@ import pytest
 from pandas.testing import assert_frame_equal
 
 from kolena._api.v2.dataset import CommitData
+from kolena._utils.dataframes.transformers import replace_nan
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
@@ -273,3 +275,17 @@ def test__download_dataset__commit_not_exist(with_dataset_commits: Tuple[int, Li
     # check download_dataset with a commit that does not exist
     with pytest.raises(NotFoundError):
         download_dataset(TEST_DATASET_HISTORY_NAME, commit="non-existent-commit")
+
+
+def test__download_dataset__no_nan() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_dataset__no_nan")
+
+    data = [{"col 1": None, "col 2": ""}, {"col 1": 42, "col 2": 2}]
+    df_dp = pd.DataFrame.from_dict(data)
+    assert math.isnan(df_dp["col 1"][0])
+    upload_dataset(dataset_name, df_dp, id_fields=["col 2"])
+
+    fetched_df_dp = download_dataset(dataset_name)
+
+    _assert_frame_equal(fetched_df_dp, replace_nan(df_dp))
+    assert fetched_df_dp["col 1"][0] is None
