@@ -32,6 +32,7 @@ from retrying import retry
 from kolena._api.v1.batched_load import BatchedLoad as API
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils.dataframes.transformers import replace_nan
 from kolena._utils.datatypes import LoadableDataFrame
 from kolena._utils.serde import from_dict
 from kolena._utils.state import DEFAULT_API_VERSION
@@ -62,7 +63,7 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
     # We use a file-like object here so that requests chunks the file upload
     # For reasons not entirely clear, this upload can fail with a broken connection if it is not chunked.
     df_chunk_buffer = io.BytesIO()
-    df_chunk.replace(np.nan, None, inplace=True)
+    replace_nan(df_chunk)
     df_chunk.to_parquet(df_chunk_buffer)
     df_chunk_buffer.seek(0)
     signed_url_response = krequests.get(endpoint_path=API.Path.upload_signed_url(load_uuid))

@@ -25,7 +25,6 @@ from typing import Tuple
 from typing import Union
 from urllib.parse import urlparse
 
-import numpy as np
 import pandas as pd
 import requests
 
@@ -44,7 +43,8 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
-from kolena._utils.dataframes import df_apply
+from kolena._utils.dataframes.transformers import df_apply
+from kolena._utils.dataframes.transformers import replace_nan
 from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
@@ -194,7 +194,7 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
-    df_post.replace(np.nan, None, inplace=True)
+    replace_nan(df_post)
     return df_post
 
 
@@ -214,7 +214,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
     df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
 
-    df_serialized.replace(np.nan, None, inplace=True)
+    replace_nan(df_serialized)
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
 

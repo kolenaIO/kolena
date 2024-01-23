@@ -14,6 +14,7 @@
 from collections.abc import Callable
 from typing import Any
 
+import numpy as np
 import pandas as pd
 
 
@@ -23,3 +24,7 @@ def df_apply(df: pd.DataFrame, func: Callable, **kwargs: Any) -> pd.DataFrame:
     """
     default_kwargs = dict(convert_dtype=False)
     return df.apply(func, **default_kwargs, **kwargs)
+
+
+def replace_nan(df: pd.DataFrame) -> None:
+    df.replace(np.nan, None, inplace=True)

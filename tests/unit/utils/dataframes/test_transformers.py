@@ -16,7 +16,7 @@ from typing import Any
 
 import pandas as pd
 
-from kolena._utils.dataframes import df_apply
+from kolena._utils.dataframes.transformers import df_apply
 
 
 def _try_convert_to_num(s: str) -> Any:
