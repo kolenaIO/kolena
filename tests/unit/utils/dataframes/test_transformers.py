@@ -49,4 +49,4 @@ def test__replace_nan(value: Any) -> None:
 
     assert math.isnan(df["A"][0])
     df_post = replace_nan(df)
-    df_post["A"][0] is None
+    assert df_post["A"][0] is None
