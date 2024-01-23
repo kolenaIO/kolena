@@ -26,5 +26,6 @@ def df_apply(df: pd.DataFrame, func: Callable, **kwargs: Any) -> pd.DataFrame:
     return df.apply(func, **default_kwargs, **kwargs)
 
 
-def replace_nan(df: pd.DataFrame) -> None:
-    df.replace(np.nan, None, inplace=True)
+def replace_nan(df: pd.DataFrame) -> pd.DataFrame:
+    df_post = df.astype("object").replace(np.nan, None)
+    return df_post

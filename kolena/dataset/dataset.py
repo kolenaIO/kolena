@@ -178,6 +178,7 @@ def _infer_id_fields(df: pd.DataFrame) -> List[str]:
 
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
+    result = replace_nan(result)
     if column == COL_DATAPOINT:
         _add_datatype(result)
     result[column] = result.to_dict("records")
@@ -193,8 +194,8 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     )
     flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
+    flattened = replace_nan(flattened)
     df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
-    replace_nan(df_post)
     return df_post
 
 
@@ -214,7 +215,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
     df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
 
-    replace_nan(df_serialized)
+    df_serialized = replace_nan(df_serialized)
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
 
