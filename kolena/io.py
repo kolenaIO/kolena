@@ -23,7 +23,7 @@ from typing import Union
 
 import pandas as pd
 
-from kolena._utils.dataframes import df_apply
+from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.datatypes import _DATA_TYPE_MAP
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
