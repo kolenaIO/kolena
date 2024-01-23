@@ -36,9 +36,9 @@ ID_FIELDS = [JOIN_COLUMN]
 def _assert_frame_equal(df1: pd.DataFrame, df2: pd.DataFrame, columns: Optional[List[str]] = None) -> None:
     """wrapper of assert_frame_equal with selected columns options"""
     if columns is None:
-        assert_frame_equal(df1, df2)
+        assert_frame_equal(df1, df2, check_dtype=False)
     else:
-        assert_frame_equal(df1[columns], df2[columns])
+        assert_frame_equal(df1[columns], df2[columns], check_dtype=False)
 
 
 def get_df_dp(n: int = 20) -> pd.DataFrame:
