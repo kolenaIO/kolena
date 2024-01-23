@@ -11,35 +11,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
-import time
 from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
+from rating_based_recommendation.utils import AGE_STRATIFICATION
+from rating_based_recommendation.utils import ID_AGE_MAP
+from rating_based_recommendation.utils import ID_OCCUPATION_MAP
+from rating_based_recommendation.utils import OCCUPATION_STRATIFICATION
 from rating_based_recommendation.workflow import GroundTruth
 from rating_based_recommendation.workflow import TestCase
 from rating_based_recommendation.workflow import TestSample
 from rating_based_recommendation.workflow import TestSuite
-from rating_based_recommendation.utils import (
-    ID_OCCUPATION_MAP,
-    ID_AGE_MAP,
-    OCCUPATION_STRATIFICATION,
-    AGE_STRATIFICATION,
-)
 
 import kolena
 from kolena.workflow import Text
+from kolena.workflow.io import dataframe_to_csv
 
 BUCKET = "kolena-public-datasets"
 DATASET = "movielens"
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
-
-    t0 = time.time()
+    kolena.initialize(verbose=True)
 
     df_ratings = pd.read_csv(args.ratings_csv)
     df_movies = pd.read_csv(args.movies_csv)
@@ -48,7 +43,7 @@ def main(args: Namespace) -> int:
     def process_metadata(record, f):
         value = getattr(record, f)
         if f == "genres":
-            return value.split("|")
+            return [str(v) for v in value.split("|")]
         elif f == "age":
             return ID_AGE_MAP[value]
         elif f == "occupation":
@@ -86,14 +81,28 @@ def main(args: Namespace) -> int:
 
     print(f"preparing {len(test_samples_and_ground_truths)} test samples")
 
-    t1 = time.time()
+    datapoints = []
+    for record in df_ratings.itertuples(index=False):
+        datapoints.append(
+            dict(
+                user_id=str(record.userId),
+                title=movie_id_title[record.movieId],
+                movie_id=record.movieId,
+                rating=record.rating,
+                **metadata_by_movie_id[movie_id_title[record.movieId]],
+                **metadata_by_user_id[record.userId],
+            ),
+        )
+
+    df_dataset = pd.DataFrame.from_records(datapoints)
+    dataframe_to_csv(df_dataset, "s3://kolena-public-datasets/movielens/movielens.csv", index=False)
+
     complete_test_case = TestCase(
         name=f"complete :: {DATASET}-10k",
         description=f"All images in {DATASET} dataset",
         test_samples=test_samples_and_ground_truths,
         reset=True,
     )
-    print(f"created baseline test case '{complete_test_case.name}' in {time.time() - t1:0.3f} seconds")
 
     # Metadata Test Cases
     cateogry_subsets = dict(
@@ -144,21 +153,16 @@ def main(args: Namespace) -> int:
     )
 
     for cat, ts in test_suites.items():
-        t2 = time.time()
         test_cases = TestCase.init_many(
             [(f"{cat} :: {type} :: {DATASET}-10k", test_samples) for type, test_samples in ts.items()],
             reset=True,
         )
-        print(f"created test case genre stratifications in {time.time() - t2:0.3f} seconds")
 
-        test_suite = TestSuite(
-            name=f"{DATASET}-10k :: {cat}",
-            test_cases=[complete_test_case, *test_cases],
-            reset=True,
-        )
-        print(f"created test suite '{test_suite}' in {time.time() - t2:0.3f} seconds")
-
-    print(f"completed test suite seeding in {time.time() - t0:0.3f} seconds")
+    TestSuite(
+        name=f"{DATASET}-10k :: {type}",
+        test_cases=[complete_test_case, *test_cases],
+        reset=True,
+    )
 
 
 if __name__ == "__main__":

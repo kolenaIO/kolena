@@ -11,16 +11,17 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import sys
 from argparse import ArgumentParser
 from argparse import Namespace
 from typing import List
 
 import pandas as pd
+from rating_based_recommendation.evaluator import compute_per_sample
 from rating_based_recommendation.evaluator import evaluate_recommender
 from rating_based_recommendation.workflow import Inference
 from rating_based_recommendation.workflow import Model
+from rating_based_recommendation.workflow import TestCase
 from rating_based_recommendation.workflow import TestSample
 from rating_based_recommendation.workflow import TestSuite
 from rating_based_recommendation.workflow import ThresholdConfiguration
@@ -33,7 +34,7 @@ DATASET = "movielens"
 
 
 def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/predictions_{model_name}.sample.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/predictions_{model_name}.sample.csv")
 
     def infer(test_sample: TestSample) -> Inference:
         row = df_results[
@@ -56,9 +57,28 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         print(f"Test Suite: {test_suite}")
         test(model, test_suite, evaluate_recommender, configurations, reset=True)
 
+        inferences = model.load_inferences(TestCase(f"complete :: {DATASET}-10k"))
+        results = []
+        for ts, gt, inf in inferences:
+            metrics = compute_per_sample(gt, inf, ThresholdConfiguration(rating_threshold=3.5))
+            metrics = metrics.__dict__
+            del metrics["__pydantic_initialised__"]
+            metrics["abs_Δ_rating"] = abs(metrics["Δ_rating"])
+            results.append(
+                dict(
+                    user_id=ts.user_id.text,
+                    movie_id=ts.movie_id,
+                    rating=inf.pred_rating,
+                    **metrics,
+                ),
+            )
+
+        df_results = pd.DataFrame.from_records(results)
+        df_results.to_csv(f"s3://kolena-public-datasets/movielens/results/{model_name}_T3_5.csv", index=False)
+
 
 def main(args: Namespace) -> int:
-    kolena.initialize(os.environ["KOLENA_TOKEN"], verbose=True)
+    kolena.initialize(verbose=True)
     for model_name in args.models:
         seed_test_run(model_name, args.test_suites)
     return 0
@@ -74,10 +94,7 @@ if __name__ == "__main__":
     ap.add_argument(
         "--test_suites",
         default=[
-            f"{DATASET}-10k :: genre",
-            f"{DATASET}-10k :: age",
-            f"{DATASET}-10k :: occupation",
-            f"{DATASET}-10k :: gender",
+            "movielens-10k",
         ],
         help="Name(s) of test suite(s) to test.",
     )
