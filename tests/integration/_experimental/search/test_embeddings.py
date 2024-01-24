@@ -31,7 +31,6 @@ from tests.integration.helper import with_test_prefix
 
 DUMMY_WORKFLOW_NAME = "Dummy Workflow 🤖"
 
-
 DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
     name=DUMMY_WORKFLOW_NAME,
     test_sample_type=Image,
@@ -142,5 +141,17 @@ def test__upload_dataset_embeddings__bad_embedding(embedding: np.ndarray, datase
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding] * N_DATAPOINTS},
+            ),
+        )
+
+
+def test__upload_dataset_embeddings__embedding_different_sizes(dataset_name: str) -> None:
+    embedding = [np.array([1] * i, dtype=np.float64) for i in range(N_DATAPOINTS)]
+    with pytest.raises(InputValidationError):
+        upload_dataset_embeddings(
+            dataset_name,
+            key="s3://model-bucket/embeddings-model.pt",
+            df_embedding=pd.DataFrame(
+                {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": embedding},
             ),
         )

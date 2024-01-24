@@ -17,6 +17,7 @@ import pickle
 from base64 import b64encode
 from typing import Any
 from typing import List
+from typing import Set
 from typing import Tuple
 
 import numpy as np
@@ -91,13 +92,18 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises InputValidationError: The provided input is not valid.
     """
 
+    embedding_lengths: Set[int] = set()
+
     def encode_embedding(embedding: Any) -> str:
         if not np.issubdtype(embedding.dtype, np.number):
             raise InputValidationError("unexpected non-numeric embedding dtype")
+        embedding_lengths.add(len(embedding))
         return b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8")
 
     # encode embeddings to string
     df_embedding["embedding"] = df_embedding["embedding"].apply(encode_embedding)
+    if len(embedding_lengths) > 1:
+        raise InputValidationError(f"embeddings are not of the same size, found {embedding_lengths}")
 
     # prepare the id objects of the dataset
     existing_dataset = _load_dataset_metadata(dataset_name)
