@@ -41,6 +41,14 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
 N_DATAPOINTS = 20
 
 
+@pytest.fixture(scope="module", autouse=True)
+def test_sample_locator() -> str:
+    test_case_name = with_test_prefix(f"{__file__} test_upload_embeddings")
+    locator = fake_random_locator()
+    TestCase.create(test_case_name, test_samples=[(Image(locator=locator), GroundTruth())])
+    return locator
+
+
 @pytest.mark.parametrize(
     "embedding",
     [
@@ -50,13 +58,10 @@ N_DATAPOINTS = 20
         np.array([], dtype=np.float16),
     ],
 )
-def test__upload_embeddings(embedding: np.ndarray) -> None:
-    test_case_name = with_test_prefix(f"{__file__} test_upload_embeddings {uuid.uuid4()}")
-    locator = fake_random_locator()
-    TestCase.create(test_case_name, test_samples=[(Image(locator=locator), GroundTruth())])
+def test__upload_embeddings(embedding: np.ndarray, test_sample_locator: str) -> None:
     upload_embeddings(
         key="s3://model-bucket/embeddings-model.pt",
-        embeddings=[(locator, embedding)],
+        embeddings=[(test_sample_locator, embedding)],
     )
 
 
