@@ -86,7 +86,6 @@ def dataset_name() -> str:
     return name
 
 
-@pytest.mark.skip("disabled until server side changes are deployed")
 @pytest.mark.parametrize(
     "embedding",
     [
