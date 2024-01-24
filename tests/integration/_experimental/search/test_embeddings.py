@@ -104,6 +104,19 @@ def test__upload_dataset_embeddings(embedding: np.ndarray, dataset_name: str) ->
     )
 
 
+def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:
+    upload_dataset_embeddings(
+        dataset_name,
+        key="s3://model-bucket/embeddings-model.pt",
+        df_embedding=pd.DataFrame(
+            {
+                "locator": [f"locator-{i}" for i in range(N_DATAPOINTS // 2)],
+                "embedding": [np.array([1, 2, 3, 4], dtype=np.int32)] * (N_DATAPOINTS // 2),
+            },
+        ),
+    )
+
+
 def test__upload_dataset_embeddings__dataset_does_not_exist() -> None:
     with pytest.raises(NotFoundError):
         upload_dataset_embeddings(
