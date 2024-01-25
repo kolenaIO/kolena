@@ -53,6 +53,7 @@ from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
@@ -273,7 +274,7 @@ def _send_upload_dataset_request(
     name: str,
     id_fields: List[str],
     load_uuid: str,
-    sources: Optional[List[Dict[str, str]]] = None,
+    sources: Optional[List[Dict[str, str]]],
 ) -> EntityData:
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid, sources=sources)
     response = krequests.post(Path.REGISTER, json=asdict(request))
@@ -287,10 +288,11 @@ def _upload_dataset(
     df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
     *,
     id_fields: Optional[List[str]] = None,
+    sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
 ) -> None:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
-    data = _send_upload_dataset_request(name, prepared_id_fields, load_uuid)
+    data = _send_upload_dataset_request(name, prepared_id_fields, load_uuid, sources=sources)
     log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
 

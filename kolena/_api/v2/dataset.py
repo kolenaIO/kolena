@@ -34,7 +34,7 @@ class RegisterRequest:
     name: str
     id_fields: List[str]
     uuid: str
-    sources: Optional[List[Dict[str, str]]] = None
+    sources: Optional[List[Dict[str, str]]]
 
 
 @dataclass(frozen=True)

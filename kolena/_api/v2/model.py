@@ -47,7 +47,7 @@ class UploadResultsRequest:
     model: str
     uuid: str
     dataset_id: int
-    sources: Optional[List[Dict[str, str]]] = None
+    sources: Optional[List[Dict[str, str]]]
 
 
 @dataclass(frozen=True)

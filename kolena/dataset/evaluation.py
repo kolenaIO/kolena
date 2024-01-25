@@ -41,6 +41,7 @@ from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import COL_EVAL_CONFIG
 from kolena.dataset._common import COL_RESULT
+from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
 from kolena.dataset._common import validate_dataframe_ids
@@ -102,7 +103,7 @@ def _send_upload_results_request(
     model: str,
     load_uuid: str,
     dataset_id: int,
-    sources: Optional[List[Dict[str, str]]] = None,
+    sources: Optional[List[Dict[str, str]]],
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
@@ -209,10 +210,11 @@ def _upload_results(
     dataset: str,
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
+    sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
 ) -> UploadResultsResponse:
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, model, results)
 
-    response = _send_upload_results_request(model, load_uuid, dataset_id)
+    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
         f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",
