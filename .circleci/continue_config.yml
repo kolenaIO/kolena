@@ -141,7 +141,7 @@ jobs:
           condition:
             not:
               matches:
-                pattern: "^3\\.(10|11).*$"
+                pattern: "^3\\.(10|11|12).*$"
                 value: << parameters.python-version >>
           steps:
             - run: poetry run pre-commit run -a
