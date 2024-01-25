@@ -268,6 +268,7 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
         recall = compute_recall(tp_count, fn_count)
         f1_score = compute_f1_score(tp_count, fp_count, fn_count)
 
+        # import pdb; pdb.set_trace()
         return ClassMetricsPerTestCase(
             Class=label,
             nImages=samples_count,

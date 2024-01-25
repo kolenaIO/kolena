@@ -31,6 +31,7 @@ from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
 from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
 from kolena.workflow import Evaluator
+from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import Plot
 
 
@@ -46,9 +47,12 @@ class ObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    single_class_evaluator = SingleClassObjectDetectionEvaluator()
-    multiclass_evaluator = MulticlassObjectDetectionEvaluator()
     dynamic_evaluator: Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator, None] = None
+
+    def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
+        super().__init__(configurations)
+        self.single_class_evaluator = SingleClassObjectDetectionEvaluator()
+        self.multiclass_evaluator = MulticlassObjectDetectionEvaluator()
 
     def compute_test_sample_metrics(
         self,
