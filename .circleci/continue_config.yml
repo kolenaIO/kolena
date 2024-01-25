@@ -398,13 +398,13 @@ workflows:
           name: ci-base-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
+              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6", "3.12.1" ]
               extras: [ "none", "metrics" ]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
+              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6", "3.12.1" ]
               extras: [ "none", "metrics" ]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>

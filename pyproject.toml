@@ -25,10 +25,11 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.8,<3.13"
 numpy = [
     { version = ">=1.19", python = ">=3.8,<3.11" },
-    { version = ">=1.23", python = ">=3.11" },
+    { version = ">=1.23", python = ">=3.11,<3.12" },
+    { version = ">=1.26", python = ">=3.12" },
 ]
 pandas = [
     { version = ">=1.1,<1.6", python = ">=3.8,<3.11" },
