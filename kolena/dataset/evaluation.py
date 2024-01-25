@@ -102,11 +102,13 @@ def _send_upload_results_request(
     model: str,
     load_uuid: str,
     dataset_id: int,
+    sources: Optional[List[str]] = None,
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
         dataset_id=dataset_id,
+        sources=sources,
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
@@ -164,11 +166,11 @@ def _validate_configs(configs: List[EvalConfig]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-def _upload_results(
+def _prepare_upload_results_request(
     dataset: str,
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
-) -> UploadResultsResponse:
+) -> Tuple[str, int, int]:
     existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
         raise NotFoundError(f"dataset {dataset} does not exist")
@@ -199,8 +201,18 @@ def _upload_results(
                 total_rows += df_result.shape[0]
                 df_results = _process_result(config, df_result, id_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+    dataset_id = existing_dataset.id
+    return load_uuid, dataset_id, total_rows
 
-    response = _send_upload_results_request(model, load_uuid, existing_dataset.id)
+
+def _upload_results(
+    dataset: str,
+    model: str,
+    results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
+) -> UploadResultsResponse:
+    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, model, results)
+
+    response = _send_upload_results_request(model, load_uuid, dataset_id)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
         f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",

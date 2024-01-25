@@ -33,6 +33,7 @@ class RegisterRequest:
     name: str
     id_fields: List[str]
     uuid: str
+    sources: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
