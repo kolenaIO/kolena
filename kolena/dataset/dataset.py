@@ -17,6 +17,7 @@ import sys
 from dataclasses import asdict
 from enum import Enum
 from typing import Any
+from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -272,7 +273,7 @@ def _send_upload_dataset_request(
     name: str,
     id_fields: List[str],
     load_uuid: str,
-    sources: Optional[List[str]] = None,
+    sources: Optional[List[Dict[str, str]]] = None,
 ) -> EntityData:
     request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid, sources=sources)
     response = krequests.post(Path.REGISTER, json=asdict(request))

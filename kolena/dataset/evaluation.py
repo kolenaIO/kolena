@@ -102,7 +102,7 @@ def _send_upload_results_request(
     model: str,
     load_uuid: str,
     dataset_id: int,
-    sources: Optional[List[str]] = None,
+    sources: Optional[List[Dict[str, str]]] = None,
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,

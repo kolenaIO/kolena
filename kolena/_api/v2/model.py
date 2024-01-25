@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from enum import Enum
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -46,7 +47,7 @@ class UploadResultsRequest:
     model: str
     uuid: str
     dataset_id: int
-    sources: Optional[List[str]] = None
+    sources: Optional[List[Dict[str, str]]] = None
 
 
 @dataclass(frozen=True)
