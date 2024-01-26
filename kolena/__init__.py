@@ -11,33 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# flake8: noqa
-# autopep8: off
-# noreorder
-# mypy: ignore-errors
-#
-# (robots do not like this file)
+from importlib.metadata import version
 
 __name__ = "kolena"
-__version__: str
-
-
-def __version_assign() -> None:
-    global __version__
-    try:
-        from importlib.metadata import version
-
-        __version__ = version(__name__)
-    except ModuleNotFoundError:
-        import importlib_metadata  # importlib.metadata was introduced to the standard library in 3.8
-
-        __version__ = importlib_metadata.version(__name__)
-
-
-__version_assign()
-del __version_assign
-
+__version__ = version(__name__)
 
 import kolena.errors
 from .initialize import initialize
@@ -45,5 +22,4 @@ from .initialize import initialize
 __all__ = [
     "initialize",
     "errors",
-    "workflow",
 ]
