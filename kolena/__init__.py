@@ -11,22 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
-# flake8: noqa
-# autopep8: off
-# noreorder
-# mypy: ignore-errors
-#
-# (robots do not like this file)
 from importlib.metadata import version
-
-__name__ = "kolena"
-__version__ = version(__name__)
-
 
 import kolena.errors
 from .initialize import initialize
 
+__name__ = "kolena"
+__version__ = version(__name__)
 __all__ = [
     "initialize",
     "errors",
