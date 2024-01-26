@@ -1,8 +1,8 @@
 # Example Workflows
 
 This directory contains example Kolena integrations for different machine learning workflows. See the
-[Building a Workflow](https://docs.kolena.io/building-a-workflow/) guide to learn how to build a workflow to test any
-arbitrary ML problem.
+[Building a Workflow](https://docs.kolena.io/workflow/building-a-workflow/) guide to learn how to build a workflow to
+test any arbitrary ML problem.
 
 - [Age Estimation](./age_estimation): regression model tested using the
   [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset

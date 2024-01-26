@@ -121,10 +121,10 @@ def create_and_upload_bitmap(
 
 !!! info inline end
     If you are not familiar with the workflow concept, please read the
-    [:kolena-cube-20: Building a Workflow](https://docs.kolena.io/building-a-workflow) guide.
+    [:kolena-cube-20: Building a Workflow](https://docs.kolena.io/workflow/building-a-workflow) guide.
 
 For the purposes of this tutorial, let's assume we already have a workflow built, and we are going to upload
-the activation maps as one of the fields in [`Inference`](https://docs.kolena.io/building-a-workflow/#inference-type).
+the activation maps as one of the fields in [`Inference`](https://docs.kolena.io/workflow/building-a-workflow/#inference-type).
 All we need to do is to update the `Inference` definition to include a new field for the activation map:
 
 ```python
@@ -139,8 +139,8 @@ class Inference(Inf):
 
 !!! info inline end
     If you are not familiar with how to run tests, please read the
-    [Step 4: Running Tests](https://docs.kolena.io/building-a-workflow/#step-4-running-tests)
-    from [:kolena-cube-20: Building a Workflow](https://docs.kolena.io/building-a-workflow) guide.
+    [Step 4: Running Tests](https://docs.kolena.io/workflow/building-a-workflow/#step-4-running-tests)
+    from [:kolena-cube-20: Building a Workflow](https://docs.kolena.io/workflow/building-a-workflow) guide.
 
 Before you run tests, make sure to update your `infer` function to return an `Inference` with the corresponding
 `BitmapMask` as its `activation_map` field. You are now ready to run tests! Once the tests complete, we can now visit

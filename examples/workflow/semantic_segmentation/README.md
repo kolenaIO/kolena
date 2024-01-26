@@ -36,7 +36,7 @@ test suite.
     As part of the evaluation, result masks (i.e. TP/FP/FN masks) are computed and uploaded to a cloud storage for
     better visualization experience on our webapp. Please use `--out-bucket` argument to provide your AWS S3 bucket
     with write access where these result masks are going to be uploaded to. Also, follow the
-    [instructions](https://docs.kolena.io/advanced-usage/connecting-cloud-storage/amazon-s3/) to connect
+    [instructions](https://docs.kolena.io/connecting-cloud-storage/amazon-s3/) to connect
     your bucket to Kolena.
 
     The result masks will be stored under `s3://{args.out_bucket}/coco-stuff-10k/results/{args.model}` directory in
