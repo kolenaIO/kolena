@@ -113,7 +113,7 @@ def iter_image_locators(locators: List[str]) -> Iterator[Tuple[str, Image.Image]
 
 ### Step 3: Extract and Upload Embeddings
 
-We first [retrieve and set](https://docs.kolena.io/installing-kolena/#initialization) our `KOLENA_TOKEN` environment variable.
+We first [retrieve and set](../../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
 This is used by the uploader for authentication against your Kolena instance.
 
 ```shell
