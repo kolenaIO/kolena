@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from enum import Enum
+from typing import Dict
+from typing import List
+from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
@@ -44,6 +47,7 @@ class UploadResultsRequest:
     model: str
     uuid: str
     dataset_id: int
+    sources: Optional[List[Dict[str, str]]]
 
 
 @dataclass(frozen=True)

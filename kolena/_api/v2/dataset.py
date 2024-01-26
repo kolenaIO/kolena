@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from enum import Enum
+from typing import Dict
 from typing import List
 from typing import Optional
 
@@ -33,6 +34,7 @@ class RegisterRequest:
     name: str
     id_fields: List[str]
     uuid: str
+    sources: Optional[List[Dict[str, str]]]
 
 
 @dataclass(frozen=True)
