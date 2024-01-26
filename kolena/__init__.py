@@ -13,13 +13,13 @@
 # limitations under the License.
 from importlib.metadata import version
 
+__name__ = "kolena"
+__version__ = version(__name__)
+
 import kolena.errors
 from .initialize import initialize
 
-__name__ = "kolena"
-__version__ = version(__name__)
 __all__ = [
     "initialize",
     "errors",
-    "workflow",
 ]
