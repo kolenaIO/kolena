@@ -132,6 +132,11 @@ def validate_union(
         if arg_origin is list or arg_origin is List:
             validate_list(field_name, arg, supported_list_types)
             continue
+        if arg_origin is typing.Annotated:  # used by Pydantic StrictBool, StrictStr, etc.
+            annotated_type, *_ = get_args(arg)
+            if not issubclass(annotated_type, tuple(supported_field_types)):
+                raise ValueError(err)
+            continue
         if arg_origin is not None or arg == typing.Any:  # e.g. Optional, Dict
             raise ValueError(err)
         if issubclass(arg, type(None)):

@@ -24,7 +24,6 @@ packages = [
     { include = "kolena" }
 ]
 
-# REMOVEME: bump
 [tool.poetry.dependencies]
 python = ">=3.8,<3.13"
 numpy = [
