@@ -39,6 +39,7 @@ from kolena._experimental.object_detection.utils import compute_pr_curve
 from kolena._experimental.object_detection.utils import compute_pr_plot_multiclass
 from kolena._experimental.object_detection.utils import filter_inferences
 from kolena.workflow import Evaluator
+from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import Plot
 from kolena.workflow.annotation import ScoredLabel
 from kolena.workflow.metrics import f1_score as compute_f1_score
@@ -60,24 +61,28 @@ class MulticlassObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    threshold_cache: Dict[str, Dict[str, float]] = {}  # configuration -> label -> threshold
+    threshold_cache: Dict[str, Dict[str, float]]  # configuration -> label -> threshold
     """
     Assumes that the first test case retrieved for the test suite contains the complete sample set to be used for
     F1-Optimal threshold computation. Subsequent requests for a given threshold strategy (for other test cases) will
     hit this cache and use the previously computed population level confidence thresholds.
     """
 
-    locators_by_test_case: Dict[str, List[str]] = {}
+    locators_by_test_case: Dict[str, List[str]]
     """
     Keeps track of test sample locators for each test case (used for total # of image count in aggregated metrics).
     """
 
-    matchings_by_test_case: Dict[str, Dict[str, List[MulticlassInferenceMatches]]] = defaultdict(
-        lambda: defaultdict(list),
-    )
+    matchings_by_test_case: Dict[str, Dict[str, List[MulticlassInferenceMatches]]]
     """
     Caches matchings per configuration and test case for faster test case metric and plot computation.
     """
+
+    def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
+        super().__init__(configurations)
+        self.threshold_cache = {}
+        self.locators_by_test_case = {}
+        self.matchings_by_test_case = defaultdict(lambda: defaultdict(list))
 
     def test_sample_metrics_ignored(
         self,
