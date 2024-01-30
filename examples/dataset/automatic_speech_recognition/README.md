@@ -71,7 +71,7 @@ this workflow:
 1. [Word Error Rate](https://docs.kolena.io/metrics/wer-cer-mer)
 2. [Character Error Rate](https://docs.kolena.io/metrics/wer-cer-mer/)
 3. [Match Error Rate](https://docs.kolena.io/metrics/wer-cer-mer/)
-4. [Failure Rate (`rate(is_failure=true)`)]
+4. Failure Rate (`rate(is_failure=true)`)
 
 ### Plots
 
