@@ -47,12 +47,15 @@ class ObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    dynamic_evaluator: Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator, None] = None
-
     def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
         super().__init__(configurations)
         self.single_class_evaluator = SingleClassObjectDetectionEvaluator()
         self.multiclass_evaluator = MulticlassObjectDetectionEvaluator()
+        self.dynamic_evaluator: Union[
+            SingleClassObjectDetectionEvaluator,
+            MulticlassObjectDetectionEvaluator,
+            None,
+        ] = None
 
     def compute_test_sample_metrics(
         self,
