@@ -39,9 +39,9 @@ from kolena.annotation import SegmentationMask
 from kolena.asset import BinaryAsset
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
-from kolena.workflow.metrics import f1_score as compute_f1_score
-from kolena.workflow.metrics import precision as compute_precision
-from kolena.workflow.metrics import recall as compute_recall
+from kolena.metrics import f1_score as compute_f1_score
+from kolena.metrics import precision as compute_precision
+from kolena.metrics import recall as compute_recall
 
 
 class RecordType(NamedTuple):
