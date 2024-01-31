@@ -142,6 +142,8 @@ def validate_union(
             if not issubclass(annotated_type, tuple(supported_field_types)):
                 raise ValueError(err)
             continue
+        if arg_origin in set(supported_list_types):  # handle different behavior from typing_extensions.Annotated (<3.9)
+            continue
         if arg_origin is not None or arg == typing.Any:  # e.g. Optional, Dict
             raise ValueError(err)
         if issubclass(arg, type(None)):
