@@ -36,6 +36,7 @@ from kolena.dataset import download_dataset
 BUCKET = "kolena-public-examples"
 DATASET = "coco-stuff-10k"
 IMAGE_S3_DIR = f"s3://{BUCKET}/{DATASET}/data/images/"
+LOCATOR_FIELD = "locator"
 
 
 def image_locators_from_s3_path(
@@ -50,7 +51,8 @@ def image_locators_from_s3_path(
         if local_dir is None:
             locators_and_filepaths.append((locator, None))
         else:
-            target = os.path.join(local_dir, locator.split("/")[-1])
+            relative_locator = os.path.relpath(locator[5:], IMAGE_S3_DIR[5:])
+            target = os.path.join(local_dir, relative_locator)
             if not os.path.exists(target):
                 raise ValueError(f"missing local file: {target}")
             locators_and_filepaths.append((locator, target))
@@ -109,13 +111,12 @@ def extract_image_embeddings(
 
 
 def extract_dataset_embedding(model: StudioModel, df: pd.DataFrame, local_path: Optional[str] = None) -> pd.DataFrame:
-    # TODO: refactor constants
-    locators_and_filepaths = image_locators_from_s3_path(df["locator"].to_list(), local_path)
+    locators_and_filepaths = image_locators_from_s3_path(df[LOCATOR_FIELD].to_list(), local_path)
     locator_and_image_iterator = iter_image_paths(locators_and_filepaths)
     locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
     return pd.DataFrame(
         {
-            "locator": [locator for locator, _ in locator_and_embeddings],
+            LOCATOR_FIELD: [locator for locator, _ in locator_and_embeddings],
             "embedding": [embedding for _, embedding in locator_and_embeddings],
         },
     )
@@ -135,7 +136,7 @@ def run(run_extraction: bool, dataset_name: str, local_path: str) -> None:
     else:
         df_embedding = extract_dataset_embedding(model, df_dataset, local_path)
 
-    df = df_dataset.merge(df_embedding, on="locator")
+    df = df_dataset.merge(df_embedding, on=LOCATOR_FIELD)
     upload_dataset_embeddings(dataset_name, model_key, df)
 
 
