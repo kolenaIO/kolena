@@ -49,7 +49,7 @@ def test__automatic_speech_recognition_upload_dataset__smoke(dataset_name: str) 
 @pytest.mark.depends(on=["test__automatic_speech_recognition_upload_dataset__smoke"])
 def test__automatic_speech_recognition_upload_results__smoke(dataset_name: str) -> None:
     args = Namespace(
-        model="whipser-default",
+        model="whisper-default",
         dataset=dataset_name,
     )
     upload_results_run(args)
