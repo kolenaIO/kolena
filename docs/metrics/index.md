@@ -223,3 +223,18 @@ biases, and its intended uses.
     the similarity between reference and candidate texts, with zero being a perfect score.
 
 </div>
+
+## Kolena Insights
+
+<div class="grid cards" markdown>
+
+- [Statistical Significance](statistical-significance.md)
+
+    ---
+
+    The statistical significance is a statistical representation of the amount of tolerance in the evaluation results
+    based on the chosen confidence level and the size of your test case. The significance is derived from estimating the
+    margin of error which ranges from 0% to 100%. The larger the margin of error, the less confidence one should have
+    that a result would reflect the result of the complete representative test set.
+
+</div>
