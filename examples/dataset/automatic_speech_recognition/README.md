@@ -60,7 +60,7 @@ optional arguments:
 ## Quality Standards Guide
 
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
-test the rain forecast models. See our [QuickStart](https://docs.kolena.io/dataset/quickstart/) guide
+test the automatic speech recognition models. See our [QuickStart](https://docs.kolena.io/dataset/quickstart/) guide
 for details.
 
 Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
