@@ -104,12 +104,14 @@ def _send_upload_results_request(
     load_uuid: str,
     dataset_id: int,
     sources: Optional[List[Dict[str, str]]],
+    dry_run: bool,
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
         dataset_id=dataset_id,
         sources=sources,
+        dry_run=dry_run,
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
@@ -211,10 +213,11 @@ def _upload_results(
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
+    dry_run: bool = False,
 ) -> UploadResultsResponse:
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, model, results)
 
-    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
+    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources, dry_run=dry_run)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
         f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",

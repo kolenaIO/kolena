@@ -48,6 +48,7 @@ class UploadResultsRequest:
     uuid: str
     dataset_id: int
     sources: Optional[List[Dict[str, str]]]
+    dry_run: bool = False
 
 
 @dataclass(frozen=True)
