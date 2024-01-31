@@ -141,7 +141,7 @@ jobs:
           condition:
             not:
               matches:
-                pattern: "^3\\.(10|11).*$"
+                pattern: "^3\\.(10|11|12).*$"
                 value: << parameters.python-version >>
           steps:
             - run: poetry run pre-commit run -a
@@ -398,13 +398,13 @@ workflows:
           name: ci-base-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
+              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6", "3.12.1" ]
               extras: [ "none", "metrics" ]
       - unit-test:
           name: unit-test-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
-              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6" ]
+              python-version: [ "3.8.18", "3.9.18", "3.10.13", "3.11.6", "3.12.1" ]
               extras: [ "none", "metrics" ]
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
@@ -434,6 +434,16 @@ workflows:
               python-version: [ "3.9.18" ]
               extras: [ "metrics" ]
           pytest-group: _experimental
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-experimental-embedding-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: _experimental/search
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
@@ -473,7 +483,7 @@ workflows:
             - aws
           matrix:
             parameters:
-              subproject: [ age_estimation, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization ]
+              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:

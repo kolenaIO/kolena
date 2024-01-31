@@ -11,12 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-# noreorder
-from .embeddings import upload_dataset_embeddings
-from .embeddings import upload_embeddings
-
-__all__ = [
-    "upload_dataset_embeddings",
-    "upload_embeddings",
-]
+BUCKET = "kolena-public-examples"
+DATASET = "LibriSpeech"
+MODEL_NAME = {
+    "whisper-translate": "whisper-1-translate",
+    "whisper-default": "whisper-1-default",
+    "wav2vec2": "wav2vec2-base-960h",
+}

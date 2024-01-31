@@ -11,12 +11,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from enum import Enum
 
-# noreorder
-from .embeddings import upload_dataset_embeddings
-from .embeddings import upload_embeddings
+from pydantic.dataclasses import dataclass
 
-__all__ = [
-    "upload_dataset_embeddings",
-    "upload_embeddings",
-]
+from kolena._api.v1.batched_load import BatchedLoad
+
+
+class Path(str, Enum):
+    EMBEDDINGS = "/search/embeddings"
+
+
+@dataclass(frozen=True)
+class UploadDatasetEmbeddingsRequest(BatchedLoad.WithLoadUUID):
+    name: str
+
+
+@dataclass(frozen=True)
+class UploadDatasetEmbeddingsResponse:
+    n_datapoints: int

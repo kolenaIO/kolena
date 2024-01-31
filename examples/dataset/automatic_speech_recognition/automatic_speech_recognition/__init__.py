@@ -11,17 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
-from abc import ABCMeta
-from abc import abstractmethod
-from typing import Any
-from typing import Dict
-
-
-class Serializable(metaclass=ABCMeta):
-    @abstractmethod
-    def _to_dict(self) -> Dict[str, Any]:
-        ...
-
-    def __hash__(self) -> int:
-        return hash(json.dumps(self._to_dict()))
