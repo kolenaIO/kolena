@@ -61,7 +61,7 @@ def compute_metrics(ground_truth: str, inference: str) -> Dict[str, Any]:
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    df_dataset = download_dataset(DATASET)
+    df_dataset = download_dataset(args.dataset)
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv", storage_options={"anon": True})
     df["transcript"] = df["transcript"].str.lower().apply(preprocess_transcription)
     df = df.merge(df_dataset[["id", "transcript"]], on="id", suffixes=("_inf", "_gt"))
