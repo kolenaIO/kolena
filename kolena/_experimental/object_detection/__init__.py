@@ -28,6 +28,8 @@ from .workflow import TestSuiteMetrics
 from .workflow import ThresholdConfiguration
 
 from .evaluator import ObjectDetectionEvaluator
+from .dataset import upload_dataset
+from .dataset import upload_results
 
 __all__ = [
     "TestSample",
@@ -44,4 +46,6 @@ __all__ = [
     "TestSuiteMetrics",
     "ThresholdConfiguration",
     "ObjectDetectionEvaluator",
+    "upload_dataset",
+    "upload_results",
 ]
