@@ -11,65 +11,50 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import itertools
 from collections import defaultdict
 from typing import Any
 from typing import Dict
-from typing import List
+from typing import Literal
 from typing import Union
 
 import pandas as pd
 
 from kolena import dataset
+from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
+from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
 from kolena._experimental.object_detection.utils import filter_inferences
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabel
+from kolena.errors import IncorrectUsageError
+from kolena.metrics import InferenceMatches
+from kolena.metrics import match_inferences
 from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
-EVAL_CONFIG = {
-    "threshold_strategy": 0.5,
-    "iou_threshold": 0.5,
-    "min_confidence_score": 0.5,
-}
+
+def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
+    tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
+    fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
+    fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
+    scores = [inf.score for inf in tp + fp]
+    return dict(
+        TP=tp,
+        FP=fp,
+        FN=fn,
+        count_TP=len(tp),
+        count_FP=len(fp),
+        count_FN=len(fn),
+        has_TP=len(tp) > 0,
+        has_FP=len(fp) > 0,
+        has_FN=len(fn) > 0,
+        max_confidence_above_t=max(scores) if len(scores) > 0 else None,
+        min_confidence_above_t=min(scores) if len(scores) > 0 else None,
+        thresholds=thresholds,
+    )
 
 
-def format_data(df_source: pd.DataFrame) -> pd.DataFrame:
-    image_to_boxes: Dict[str, List[LabeledBoundingBox]] = defaultdict(list)
-    image_to_metadata: Dict[str, Dict[str, Any]] = defaultdict(dict)
-
-    for record in df_source.itertuples():
-        coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
-        bounding_box = LabeledBoundingBox(*coords, record.label)
-        image_to_boxes[record.locator].append(bounding_box)
-        metadata = {
-            "locator": str(record.locator),
-            "height": float(record.height),
-            "width": float(record.width),
-            "date_captured": str(record.date_captured),
-            "brightness": float(record.brightness),
-        }
-        image_to_metadata[record.locator] = metadata
-
-    df_boxes = pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "bounding_boxes"])
-    df_metadata = pd.DataFrame.from_dict(image_to_metadata, orient="index").reset_index(drop=True)
-    return df_boxes.merge(df_metadata, on="locator")
-
-
-def upload_dataset(name: str, df: pd.DataFrame, eval_config: dict) -> None:
-    """
-    One bounding box per row in the format of
-    locator,min_x,max_x,min_y,max_y
-
-    :param name:
-    :param df:
-    :param eval_config:
-    :return:
-    """
-    prepared_df = format_data(df)
-    dataset.upload_dataset(name, prepared_df)
-
-
-def datapoint_metrics(
+def multiclass_datapoint_metrics(
     bbox_matches: MulticlassInferenceMatches,
     thresholds: Dict[str, float],
 ) -> Dict[str, Any]:
@@ -79,8 +64,7 @@ def datapoint_metrics(
         gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
     ]
     confused = [inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]]
-    non_ignored_inferences = tp + fp
-    scores = [inf.score for inf in non_ignored_inferences]
+    scores = [inf.score for inf in tp + fp]
     inference_labels = {inf.label for _, inf in bbox_matches.matched} | {
         inf.label for inf in bbox_matches.unmatched_inf
     }
@@ -89,61 +73,134 @@ def datapoint_metrics(
         for label in sorted(thresholds.keys())
         if label in inference_labels
     ]
-    return {
-        "TP": tp,
-        "FP": fp,
-        "FN": fn,
-        "matched_inference": [inf for _, inf in bbox_matches.matched],
-        "unmatched_ground_truth": [gt for gt, _ in bbox_matches.unmatched_gt],
-        "unmatched_inference": bbox_matches.unmatched_inf,
-        "Confused": confused,
-        "count_TP": len(tp),
-        "count_FP": len(fp),
-        "count_FN": len(fn),
-        "count_Confused": len(confused),
-        "has_TP": len(tp) > 0,
-        "has_FP": len(fp) > 0,
-        "has_FN": len(fn) > 0,
-        "has_Confused": len(confused) > 0,
-        "ignored": False,
-        "max_confidence_above_t": max(scores) if len(scores) > 0 else None,
-        "min_confidence_above_t": min(scores) if len(scores) > 0 else None,
-        "thresholds": fields,
-    }
+    return dict(
+        TP=tp,
+        FP=fp,
+        FN=fn,
+        matched_inference=[inf for _, inf in bbox_matches.matched],
+        unmatched_ground_truth=[gt for gt, _ in bbox_matches.unmatched_gt],
+        unmatched_inference=bbox_matches.unmatched_inf,
+        Confused=confused,
+        count_TP=len(tp),
+        count_FP=len(fp),
+        count_FN=len(fn),
+        count_Confused=len(confused),
+        has_TP=len(tp) > 0,
+        has_FP=len(fp) > 0,
+        has_FN=len(fn) > 0,
+        has_Confused=len(confused) > 0,
+        max_confidence_above_t=max(scores) if len(scores) > 0 else None,
+        min_confidence_above_t=min(scores) if len(scores) > 0 else None,
+        thresholds=fields,
+    )
 
 
-def compute_metrics(
+def _compute_metrics(
     pred_df: pd.DataFrame,
-    eval_config: Dict[str, Union[float, int]],
+    *,
+    ground_truth: str,
+    inference: str,
+    iou_threshold: float = 0.5,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
+    min_confidence_score: float = 0.5,
 ) -> pd.DataFrame:
-    results: List[Dict[str, Any]] = list()
-    for record in pred_df.itertuples():
-        ground_truths = [LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record.bounding_boxes]
-        inferences = record.raw_inferences
-        matches = match_inferences_multiclass(
-            ground_truths,
-            filter_inferences(inferences, eval_config["min_confidence_score"]),
-            mode="pascal",
-            iou_threshold=eval_config["iou_threshold"],
-        )
-        results.append(
-            datapoint_metrics(matches, defaultdict(lambda: eval_config["threshold_strategy"])),
-        )
-
-    results_df = pd.concat([pd.DataFrame(results), pred_df], axis=1)
-    return results_df.drop(["bounding_boxes"], axis=1)
-
-
-def upload_results(dataset_name: str, model_name: str, pred_df: pd.DataFrame) -> None:
     """
-    One bounding box per row
-    locator,label,confidence_score,min_x,min_y,max_x,max_y
+    Compute metrics for object detection.
 
-    :param dataset_name:
-    :param model_name:
-    :param pred_df:
+    :param df: Dataframe for model results.
+    :param ground_truth: Column name for ground_truth bounding boxes
+    :param inference: Column name for inference bounding boxes
+    :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
+    :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
+        as `0.5` or `0.75`, or the F1-optimal threshold.
+    :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
+        reduce noise by excluding inferences with low confidence score.
+    """
+    labels = {x.label for x in itertools.chain.from_iterable(pred_df[ground_truth])}
+    labels.union({x.label for x in itertools.chain.from_iterable(pred_df[inference])})
+    is_multiclass = len(labels) >= 2
+    match_fn = match_inferences_multiclass if is_multiclass else match_inferences
+
+    all_bbox_matches = []
+    for record in pred_df.itertuples():
+        ground_truths = [LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record[ground_truth]]
+        inferences = record[inference]
+        all_bbox_matches.append(
+            match_fn(
+                ground_truths,
+                filter_inferences(inferences, min_confidence_score),
+                mode="pascal",
+                iou_threshold=iou_threshold,
+            ),
+        )
+
+    if isinstance(threshold_strategy, dict):
+        thresholds = threshold_strategy
+    elif isinstance(threshold_strategy, float):
+        thresholds = defaultdict(lambda: threshold_strategy)
+    else:
+        thresholds = (
+            compute_optimal_f1_threshold_multiclass(
+                all_bbox_matches,
+            )
+            if is_multiclass
+            else compute_optimal_f1_threshold(all_bbox_matches)
+        )
+
+    if is_multiclass:
+        results = [multiclass_datapoint_metrics(matches, thresholds) for matches in all_bbox_matches]
+    else:
+        results = [single_class_datapoint_metrics(matches, thresholds) for matches in all_bbox_matches]
+
+    return pd.concat([pd.DataFrame(results), pred_df], axis=1)
+
+
+def _validate_column_present(df: pd.DataFrame, col: str) -> None:
+    if col not in df.columns:
+        raise IncorrectUsageError(f"Missing column '{col}'")
+
+
+def upload_object_detection_results(
+    dataset_name: str,
+    model_name: str,
+    df: pd.DataFrame,
+    *,
+    ground_truth: str = "bounding_boxes",
+    inference: str = "inferences",
+    iou_threshold: float = 0.5,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
+    min_confidence_score: float = 0.5,
+) -> None:
+    """
+    Compute metrics and upload results of the model for the dataset.
+
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
+    :inference in the Dataframe `df` should be a list of
+    [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox]es.
+
+    :param dataset_name: Dataset name.
+    :param model_name: Model name.
+    :param df: Dataframe for model results.
+    :param ground_truth: Field name in datapoint with ground_truth bounding boxes, default to "bounding_boxes".
+    :param inference: Column in result DataFrame with inference bounding boxes, default to "inferences".
+    :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
+    :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
+        as `0.5` or `0.75`, or the F1-optimal threshold.
+    :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
+        reduce noise by excluding inferences with low confidence score.
     :return:
     """
-    dataset_df = dataset.download_dataset(dataset_name)[["locator", "bounding_boxes"]]
-    results_df = compute_metrics(pred_df.merge(dataset_df, on="locator"), EVAL_CONFIG)
-    dataset.upload_results(dataset_name, model_name, results_df)
+    eval_config = dict(
+        iou_threshold=iou_threshold,
+        threshold_strategy=threshold_strategy,
+        min_confidence_score=min_confidence_score,
+    )
+    _validate_column_present(df, inference)
+
+    dataset_df = dataset.download_dataset(dataset_name)
+    dataset_df = dataset_df[["locator", ground_truth]]
+    _validate_column_present(dataset_df, ground_truth)
+
+    results_df = _compute_metrics(df.merge(dataset_df, on="locator"), ground_truth=ground_truth, inference=inference)
+    results_df.drop(columns=[ground_truth], inplace=True)
+    dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)])
