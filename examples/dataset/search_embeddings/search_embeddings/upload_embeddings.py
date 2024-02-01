@@ -136,8 +136,11 @@ def run(run_extraction: bool, dataset_name: str, local_path: str) -> None:
     else:
         df_embedding = extract_dataset_embedding(model, df_dataset, local_path)
 
-    df = df_dataset.merge(df_embedding, on=LOCATOR_FIELD)
-    upload_dataset_embeddings(dataset_name, model_key, df)
+    # This is not required on this dataset given that the id column is only `locator`
+    # The uploaded embeddings should contain an `embedding` column alone with all id columns of the dataset
+    df_embedding = df_dataset.merge(df_embedding, on=LOCATOR_FIELD)
+
+    upload_dataset_embeddings(dataset_name, model_key, df_embedding)
 
 
 def main() -> None:
@@ -145,8 +148,9 @@ def main() -> None:
 
     ap.add_argument(
         "--run-extraction",
-        type=bool,
-        default=False,
+        type=str,
+        choices=["True", "False"],
+        default="False",
         help="Whether to run extraction. A set of pre-extracted embeddings will be used if set to False.",
     )
 
@@ -172,7 +176,7 @@ def main() -> None:
             "extraction.",
         )
 
-    run(args.run_extraction, args.dataset_name, args.local_path)
+    run(args.run_extraction == "True", args.dataset_name, args.local_path)
 
 
 if __name__ == "__main__":

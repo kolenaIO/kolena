@@ -36,17 +36,17 @@ embeddings or uses pre-extracted embeddings, and uploads them to the Kolena plat
 
 ```shell
 $ poetry run python3 search_embeddings/upload_embeddings.py --help
-usage: upload_embeddings.py [-h] [--run-extraction RUN_EXTRACTION] [--dataset-name DATASET_NAME] [--local-path LOCAL_PATH]
+usage: upload_embeddings.py [-h] [--run-extraction {True,False}] [--dataset-name DATASET_NAME] [--local-path LOCAL_PATH]
 
 options:
   -h, --help            show this help message and exit
-  --run-extraction RUN_EXTRACTION
+  --run-extraction {True,False}
                         Whether to run extraction. A set of pre-extracted embeddings will be used if set to False.
   --dataset-name DATASET_NAME
                         Optionally specify a name of the dataset to upload embeddings
   --local-path LOCAL_PATH
-                        Local path where files have already been pre-downloaded (to the same relative path as
-                        s3://kolena-public-examples/coco-stuff-10k/data/images/)
+                        Local path where files have already been pre-downloaded
+                        (to the same relative path as s3://kolena-public-examples/coco-stuff-10k/data/images/)
 ```
 
 Once the embeddings have been extracted, you will be able to search the relevant
