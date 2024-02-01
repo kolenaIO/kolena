@@ -13,7 +13,6 @@
 # limitations under the License.
 import argparse
 import os
-from typing import Iterable
 from typing import Iterator
 from typing import List
 from typing import Optional
@@ -77,7 +76,7 @@ def iter_image_paths(image_accessors: List[Tuple[str, Optional[str]]]) -> Iterat
 
 def extract_image_embeddings(
     model: StudioModel,
-    locators_and_images: Iterable[Tuple[str, Image.Image]],
+    locators_and_filepaths: List[Tuple[str, Optional[str]]],
     batch_size: int = 50,
 ) -> List[Tuple[str, np.ndarray]]:
     """
@@ -86,8 +85,8 @@ def extract_image_embeddings(
         [Kolena client documentation](https://docs.kolena.io/installing-kolena/?h=initialize#initialization).
 
     :param model: Model used to run embedding extraction
-    :param locators_and_images: An iterator through PIL Image files and their corresponding locators (as provided to
-        the Kolena platform).
+    :param locators_and_filepaths: A list of tuples containing (s3_locator, local_filepath) pairs. The local_filepath
+        is None if the asset has not been pre-downloaded locally.
     :param batch_size: Batch size for number of images to extract embeddings for simultaneously. Defaults to 50 to
         avoid having too many file handlers open at once.
     """
@@ -95,8 +94,9 @@ def extract_image_embeddings(
     locators: List[str] = []
     images: List[Image.Image] = []
 
+    locator_and_image_iterator = iter_image_paths(locators_and_filepaths)
     batch_idx = 0
-    for locator, image in tqdm(locators_and_images):
+    for locator, image in tqdm(locator_and_image_iterator, total=len(locators_and_filepaths), ncols=120):
         if batch_idx >= batch_size:
             locators_and_embeddings.extend(list(zip(locators, extract_embeddings(images, model))))
             locators, images = [], []
@@ -112,8 +112,7 @@ def extract_image_embeddings(
 
 def extract_dataset_embedding(model: StudioModel, df: pd.DataFrame, local_path: Optional[str] = None) -> pd.DataFrame:
     locators_and_filepaths = image_locators_from_s3_path(df[LOCATOR_FIELD].to_list(), local_path)
-    locator_and_image_iterator = iter_image_paths(locators_and_filepaths)
-    locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
+    locator_and_embeddings = extract_image_embeddings(model, locators_and_filepaths)
     return pd.DataFrame(
         {
             LOCATOR_FIELD: [locator for locator, _ in locator_and_embeddings],
