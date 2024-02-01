@@ -141,7 +141,7 @@ upload_dataset_embeddings(dataset_name, model_key, df_embeddings)
 
 Once the upload completes, we can now visit [dataset page](https://app.kolena.io/redirect/datasets),
 open the dataset and navigate to the <nobr>:kolena-studio-16: Studio</nobr> tab to search
-by natural language or similar images over the corresponding [`Image`][kolena.workflow.Image] data.
+by natural language or similar images over the corresponding [`Image`][kolena.asset.ImageAsset] data.
 
 ## Conclusion
 
