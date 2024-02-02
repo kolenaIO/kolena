@@ -74,8 +74,8 @@ def multiclass_datapoint_metrics(
             label=gt.label,
             top_left=gt.top_left,
             bottom_right=gt.bottom_right,
-            predicted_label=inf.label,
-            predicted_score=inf.score,
+            predicted_label=inf.label,  # type: ignore[call-arg]
+            predicted_score=inf.score,  # type: ignore[call-arg]
         )
         if inf
         else gt
