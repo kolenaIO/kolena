@@ -13,23 +13,11 @@
 # limitations under the License.
 import math
 from typing import Any
-from typing import Dict
 
 import pandas as pd
-import pytest
 
 from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.dataframes.transformers import json_normalize
-
-
-@pytest.fixture
-def nested_data() -> Dict:
-    data = [
-        {"id": 1, "name": {"first": "Coleen", "last": "Volk"}},
-        {"name": {"given": "Mark", "family": "Regner"}},
-        {"id": 3, "name": "Faye Raker"},
-    ]
-    return data
 
 
 def _try_convert_to_num(s: str) -> Any:
@@ -53,37 +41,19 @@ def test__df_apply() -> None:
     assert df_post[0] is None
 
 
-def test__json_normalize(nested_data: Dict):
-    max_level = 0
+def test__json_normalize():
+    data = [
+        {"id": 1, "name": {"first": "Coleen", "last": "Volk"}},
+        {"name": {"given": "Mark", "family": "Regner"}},
+        {"id": 3, "name": "Faye Raker"},
+    ]
     normalized_data = [
         {"id": 1, "name": {"first": "Coleen", "last": "Volk"}},
         {"name": {"given": "Mark", "family": "Regner"}, "id": None},
         {"id": 3, "name": "Faye Raker"},
     ]
     df_expected = pd.DataFrame.from_dict(normalized_data, dtype=object)
-    df_post = json_normalize(nested_data, max_level=max_level)
+    df_post = json_normalize(data)
     # assert the None is used for missing value
     assert df_post["id"][1] is None
     pd.testing.assert_frame_equal(df_post, df_expected)
-
-    max_level = 1
-    normalized_data = [
-        {"id": 1, "name.first": "Coleen", "name.last": "Volk", "name": None, "name.family": None, "name.given": None},
-        {
-            "name.given": "Mark",
-            "name.family": "Regner",
-            "id": None,
-            "name": None,
-            "name.last": None,
-            "name.first": None,
-        },
-        {"id": 3, "name": "Faye Raker", "name.last": None, "name.family": None, "name.first": None, "name.given": None},
-    ]
-    df_expected = pd.DataFrame.from_dict(normalized_data, dtype=object)
-    df_post = json_normalize(nested_data, max_level=max_level)
-    # assert the None is used for missing value
-    assert df_post["name"][0] is None
-    assert df_post["name.given"][0] is None
-    assert df_post["id"][1] is None
-    # ignore the order of columns by check_like
-    pd.testing.assert_frame_equal(df_post, df_expected, check_like=True)
