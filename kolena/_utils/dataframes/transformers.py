@@ -57,7 +57,7 @@ def _normalize_dicts(dict_list: List[Dict[str, Any]], sep: str = ".", max_level:
 
 def json_normalize(data: List[Dict[str, Any]], max_level: int = 0) -> pd.DataFrame:
     """
-    pd.json_normalize wrapper
+    hand roll pandas.json_normalize implementation
     use None for missing value
     """
     normalized_data = _normalize_dicts(data, max_level=max_level)
