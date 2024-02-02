@@ -14,7 +14,9 @@
 import itertools
 from collections import defaultdict
 from typing import Any
+from typing import cast
 from typing import Dict
+from typing import List
 from typing import Literal
 from typing import Union
 
@@ -73,7 +75,7 @@ def multiclass_datapoint_metrics(
             score=inf.score,
             top_left=inf.top_left,
             bottom_right=inf.bottom_right,
-            actual_label=gt.label,
+            actual_label=gt.label,  # type: ignore[call-arg]
         )
         for gt, inf in bbox_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
@@ -135,12 +137,16 @@ def _compute_metrics(
     is_multiclass = len(labels) >= 2
     match_fn = match_inferences_multiclass if is_multiclass else match_inferences
 
-    all_bbox_matches = []
+    idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
+
+    all_bbox_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
     for record in pred_df.itertuples():
-        ground_truths = [LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record[ground_truth]]
-        inferences = record[inference]
+        ground_truths = [
+            LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record[idx[ground_truth]]
+        ]
+        inferences = record[idx[inference]]
         all_bbox_matches.append(
-            match_fn(
+            match_fn(  # type: ignore[arg-type]
                 ground_truths,
                 filter_inferences(inferences, min_confidence_score),
                 mode="pascal",
@@ -148,23 +154,28 @@ def _compute_metrics(
             ),
         )
 
+    thresholds: dict[str, float]
     if isinstance(threshold_strategy, dict):
         thresholds = threshold_strategy
     elif isinstance(threshold_strategy, float):
         thresholds = defaultdict(lambda: threshold_strategy)
     else:
         thresholds = (
-            compute_optimal_f1_threshold_multiclass(
-                all_bbox_matches,
-            )
+            compute_optimal_f1_threshold_multiclass(cast(List[MulticlassInferenceMatches], all_bbox_matches))
             if is_multiclass
-            else compute_optimal_f1_threshold(all_bbox_matches)
+            else compute_optimal_f1_threshold(cast(List[InferenceMatches], all_bbox_matches))
         )
 
     if is_multiclass:
-        results = [multiclass_datapoint_metrics(matches, thresholds) for matches in all_bbox_matches]
+        results = [
+            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds)
+            for matches in all_bbox_matches
+        ]
     else:
-        results = [single_class_datapoint_metrics(matches, thresholds) for matches in all_bbox_matches]
+        threshold = next(iter(thresholds.values()))
+        results = [
+            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold) for matches in all_bbox_matches
+        ]
 
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
 
