@@ -11,16 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import math
 import random
 from typing import List
 from typing import Optional
 
+import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from kolena._utils.dataframes.transformers import replace_nan
 from kolena.dataset import download_dataset
 from kolena.dataset import download_results
 from kolena.dataset import upload_dataset
@@ -453,17 +452,19 @@ def test__download_results__reset_dataset() -> None:
     assert len(df_results_by_eval) == 0
 
 
-def test__download_results__no_nan() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__download_results__no_nan")
-    model_name = with_test_prefix(f"{__file__}::test__download_results__no_nan")
+def test__download_results__preserve_none() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__preserve_none")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__preserve_none")
 
-    data = [{"col 1": None, "col 2": ""}, {"col 1": 42, "col 2": 2}]
-    df_dp = pd.DataFrame.from_dict(data)
-    assert math.isnan(df_dp["col 1"][0])
-    upload_dataset(dataset_name, df_dp, id_fields=["col 2"])
+    data = [{"a": None, "id": 1}, {"a": float("inf"), "id": 2}, {"a": np.nan, "id": 3}, {"a": 42, "id": 4}]
+    df_dp = pd.DataFrame.from_dict(data, dtype=object)
+    assert df_dp["a"][0] is None
+    assert np.isinf(df_dp["a"][1])
+    assert np.isnan(df_dp["a"][2])
+    upload_dataset(dataset_name, df_dp, id_fields=["id"])
 
     response = _upload_results(dataset_name, model_name, df_dp)
-    assert response.n_inserted == 2
+    assert response.n_inserted == 4
     assert response.n_updated == 0
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
@@ -473,7 +474,8 @@ def test__download_results__no_nan() -> None:
     assert len(df_results_by_eval) == 1
     assert eval_cfg is None
 
-    _assert_frame_equal(fetched_df_dp, replace_nan(df_dp))
-    _assert_frame_equal(fetched_df_result, replace_nan(df_dp[["col 1"]]))
-    assert fetched_df_dp["col 1"][0] is None
-    assert fetched_df_result["col 1"][0] is None
+    _assert_frame_equal(fetched_df_dp, df_dp)
+    _assert_frame_equal(fetched_df_result, df_dp[["a"]])
+    assert fetched_df_dp["a"][0] is None
+    assert np.isinf(fetched_df_dp["a"][1])
+    assert np.isnan(fetched_df_dp["a"][2])
