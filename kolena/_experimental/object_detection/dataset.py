@@ -155,24 +155,27 @@ def _compute_metrics(
         )
 
     thresholds: dict[str, float]
-    if isinstance(threshold_strategy, dict):
-        thresholds = threshold_strategy
-    elif isinstance(threshold_strategy, float):
-        thresholds = defaultdict(lambda: threshold_strategy)
-    else:
-        thresholds = (
-            compute_optimal_f1_threshold_multiclass(cast(List[MulticlassInferenceMatches], all_bbox_matches))
-            if is_multiclass
-            else compute_optimal_f1_threshold(cast(List[InferenceMatches], all_bbox_matches))
-        )
 
     if is_multiclass:
+        if isinstance(threshold_strategy, dict):
+            thresholds = threshold_strategy
+        elif isinstance(threshold_strategy, float):
+            thresholds = defaultdict(lambda: threshold_strategy)
+        else:
+            thresholds = compute_optimal_f1_threshold_multiclass(
+                cast(List[MulticlassInferenceMatches], all_bbox_matches),
+            )
         results = [
             multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds)
             for matches in all_bbox_matches
         ]
     else:
-        threshold = next(iter(thresholds.values()))
+        if isinstance(threshold_strategy, dict) and threshold_strategy:
+            threshold = next(iter(threshold_strategy.values()))
+        elif isinstance(threshold_strategy, float):
+            threshold = threshold_strategy
+        else:
+            threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_bbox_matches))
         results = [
             single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold) for matches in all_bbox_matches
         ]
