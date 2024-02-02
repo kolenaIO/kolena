@@ -51,15 +51,15 @@ repos:
         name: mypy-default
         # TODO: not exclude tests, _experimental
         exclude: (?x)^(examples/.*|tests/.*|kolena/_experimental/.*)$
-        additional_dependencies: [ types-all, "pydantic<2.0" ]
+        additional_dependencies: [ types-all, pydantic ]
       - id: mypy
         name: mypy-examples-dataset
         files: ^examples/dataset/
-        additional_dependencies: [ types-all, "pydantic<2.0" ]
+        additional_dependencies: [ types-all, pydantic ]
       - id: mypy
         name: mypy-examples-workflow
         files: ^examples/workflow/
-        additional_dependencies: [ types-all, "pydantic<2.0" ]
+        additional_dependencies: [ types-all, pydantic ]
 -   repo: meta
     hooks:
     -   id: check-hooks-apply
