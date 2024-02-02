@@ -46,7 +46,7 @@ def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: f
         FP=fp,
         FN=fn,
         matched_inference=[inf for _, inf in bbox_matches.matched],
-        unmatched_ground_truth=[gt for gt, _ in bbox_matches.unmatched_gt],
+        unmatched_ground_truth=[gt for gt in bbox_matches.unmatched_gt],
         unmatched_inference=bbox_matches.unmatched_inf,
         count_TP=len(tp),
         count_FP=len(fp),
