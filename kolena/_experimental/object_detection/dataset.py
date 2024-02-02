@@ -69,6 +69,18 @@ def multiclass_datapoint_metrics(
     fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
         gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
     ]
+    unmatched_ground_truth = [
+        LabeledBoundingBox(
+            label=gt.label,
+            top_left=gt.top_left,
+            bottom_right=gt.bottom_right,
+            predicted_label=inf.label,
+            predicted_score=inf.score,
+        )
+        if inf
+        else gt
+        for gt, inf in bbox_matches.unmatched_gt
+    ]
     confused = [
         ScoredLabeledBoundingBox(
             label=inf.label,
@@ -94,7 +106,7 @@ def multiclass_datapoint_metrics(
         FP=fp,
         FN=fn,
         matched_inference=[inf for _, inf in bbox_matches.matched],
-        unmatched_ground_truth=[gt for gt, _ in bbox_matches.unmatched_gt],
+        unmatched_ground_truth=unmatched_ground_truth,
         unmatched_inference=bbox_matches.unmatched_inf,
         Confused=confused,
         count_TP=len(tp),

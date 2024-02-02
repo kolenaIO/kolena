@@ -46,8 +46,8 @@ def test__upload_results__single_class() -> None:
             raw_inferences=[
                 ScoredLabeledBoundingBox(
                     label="cat",
-                    top_left=[box.top_left[0] + 5, box.top_left[1] + 10],
-                    bottom_right=[box.bottom_right[0] + 15, box.bottom_right[1] + 20],
+                    top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
+                    bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
                     score=random.random(),
                 )
                 for box in dp["bboxes"]
@@ -95,9 +95,9 @@ def test__upload_results__multiclass() -> None:
             width=i + 500,
             height=i + 400,
             bounding_boxes=[
-                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
-                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
-                LabeledBoundingBox(label="horse", top_left=[i + 15, i + 25], bottom_right=[i + 30, i + 5]),
+                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30]),
+                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50]),
+                LabeledBoundingBox(label="horse", top_left=[i + 15, i + 25], bottom_right=[i + 60, i + 75]),
             ],
         )
         for i in range(10)
@@ -109,16 +109,16 @@ def test__upload_results__multiclass() -> None:
             locator=dp["locator"],
             inferences=[
                 ScoredLabeledBoundingBox(
-                    label="cat",
-                    top_left=[box.top_left[0] + 5, box.top_left[1] + 10],
-                    bottom_right=[box.bottom_right[0] + 15, box.bottom_right[1] + 20],
-                    score=random.uniform(0.3, 0.9),
+                    label=box.label if i % 4 else "dog",
+                    top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
+                    bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
+                    score=0.7,
                 )
                 for box in dp["bounding_boxes"]
             ],
             theme=random.choice(["animal", "sports", "technology"]),
         )
-        for dp in datapoints
+        for i, dp in enumerate(datapoints)
     ]
     eval_config_one = dict(
         iou_threshold=0.3,
@@ -154,8 +154,14 @@ def test__upload_results__multiclass() -> None:
         "unmatched_inference",
         "unmatched_ground_truth",
         "theme",
+        "Confused",
     }
     assert expected_columns.issubset(set(df_results_one.columns))
     assert "bounding_boxes" not in df_results_one.columns
     assert len(df_results_one) == 10
     assert len(df_results_two) == 10
+
+    # check data format
+    confused = next(x for x in df_results_one["unmatched_ground_truth"] if len(x))
+    assert confused[0].predicted_label
+    assert confused[0].predicted_score
