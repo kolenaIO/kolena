@@ -26,6 +26,7 @@ from kolena._experimental.object_detection.utils import compute_optimal_f1_thres
 from kolena._experimental.object_detection.utils import filter_inferences
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabel
+from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.errors import IncorrectUsageError
 from kolena.metrics import InferenceMatches
 from kolena.metrics import match_inferences
@@ -42,6 +43,9 @@ def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: f
         TP=tp,
         FP=fp,
         FN=fn,
+        matched_inference=[inf for _, inf in bbox_matches.matched],
+        unmatched_ground_truth=[gt for gt, _ in bbox_matches.unmatched_gt],
+        unmatched_inference=bbox_matches.unmatched_inf,
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
@@ -63,7 +67,17 @@ def multiclass_datapoint_metrics(
     fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
         gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
     ]
-    confused = [inf for _, inf in bbox_matches.unmatched_gt if inf is not None and inf.score >= thresholds[inf.label]]
+    confused = [
+        ScoredLabeledBoundingBox(
+            label=inf.label,
+            score=inf.score,
+            top_left=inf.top_left,
+            bottom_right=inf.bottom_right,
+            actual_label=gt.label,
+        )
+        for gt, inf in bbox_matches.unmatched_gt
+        if inf is not None and inf.score >= thresholds[inf.label]
+    ]
     scores = [inf.score for inf in tp + fp]
     inference_labels = {inf.label for _, inf in bbox_matches.matched} | {
         inf.label for inf in bbox_matches.unmatched_inf
