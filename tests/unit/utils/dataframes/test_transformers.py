@@ -14,12 +14,10 @@
 import math
 from typing import Any
 
-import numpy as np
 import pandas as pd
-import pytest
 
 from kolena._utils.dataframes.transformers import df_apply
-from kolena._utils.dataframes.transformers import replace_nan
+from kolena._utils.dataframes.transformers import json_normalize
 
 
 def _try_convert_to_num(s: str) -> Any:
@@ -43,10 +41,19 @@ def test__df_apply() -> None:
     assert df_post[0] is None
 
 
-@pytest.mark.parametrize("value", [np.nan, -np.nan, float("NaN"), math.nan, -math.nan])
-def test__replace_nan(value: Any) -> None:
-    df = pd.DataFrame({"A": [value, "2", "3"]})
-
-    assert math.isnan(df["A"][0])
-    df_post = replace_nan(df)
-    assert df_post["A"][0] is None
+def test__json_normalize():
+    data = [
+        {"id": 1, "name": {"first": "Coleen", "last": "Volk"}},
+        {"name": {"given": "Mark", "family": "Regner"}},
+        {"id": 3, "name": "Faye Raker"},
+    ]
+    normalized_data = [
+        {"id": 1, "name": {"first": "Coleen", "last": "Volk"}},
+        {"name": {"given": "Mark", "family": "Regner"}, "id": None},
+        {"id": 3, "name": "Faye Raker"},
+    ]
+    df_expected = pd.DataFrame.from_dict(normalized_data, dtype=object)
+    df_post = json_normalize(data)
+    # assert the None is used for missing value
+    assert df_post["id"][1] is None
+    pd.testing.assert_frame_equal(df_post, df_expected)

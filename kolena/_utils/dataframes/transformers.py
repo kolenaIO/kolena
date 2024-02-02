@@ -13,8 +13,10 @@
 # limitations under the License.
 from collections.abc import Callable
 from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
 
-import numpy as np
 import pandas as pd
 
 
@@ -26,6 +28,37 @@ def df_apply(df: pd.DataFrame, func: Callable, **kwargs: Any) -> pd.DataFrame:
     return df.apply(func, **default_kwargs, **kwargs)
 
 
-def replace_nan(df: pd.DataFrame) -> pd.DataFrame:
-    df_post = df.astype("object").replace(np.nan, None)
-    return df_post
+def _flatten_dict(d: Dict[str, Any], parent_key: str = "", sep: str = ".", max_level: int = 0) -> Dict[str, Any]:
+    items: List[Tuple] = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict) and max_level > 0:
+            items.extend(_flatten_dict(v, new_key, sep, max_level - 1).items())
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+
+def _normalize_dicts(dict_list: List[Dict[str, Any]], sep: str = ".", max_level: int = 0) -> List[Dict[str, Any]]:
+    # Flatten all dictionaries in the list
+    flattened_dicts = [_flatten_dict(d, sep=sep, max_level=max_level) for d in dict_list]
+
+    # Get all unique keys across all dictionaries
+    all_keys = set().union(*flattened_dicts)
+
+    # Normalize all dictionaries to have all keys, filling missing ones with None
+    for d in flattened_dicts:
+        for key in all_keys:
+            if key not in d:
+                d[key] = None
+
+    return flattened_dicts
+
+
+def json_normalize(data: List[Dict[str, Any]], max_level: int = 0) -> pd.DataFrame:
+    """
+    pd.json_normalize wrapper
+    use None for missing value
+    """
+    normalized_data = _normalize_dicts(data, max_level=max_level)
+    return pd.DataFrame.from_dict(normalized_data, dtype=object)
