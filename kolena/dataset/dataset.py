@@ -44,7 +44,7 @@ from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.transformers import df_apply
-from kolena._utils.dataframes.transformers import json_normalize
+from kolena._utils.dataframes.transformers import replace_nan
 from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
@@ -178,6 +178,7 @@ def _infer_id_fields(df: pd.DataFrame) -> List[str]:
 
 def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     result = _dataframe_object_serde(df, _serialize_dataobject)
+    result = replace_nan(result)
     if column == COL_DATAPOINT:
         _add_datatype(result)
     result[column] = result.to_dict("records")
@@ -187,12 +188,13 @@ def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
 
 
 def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    flattened = json_normalize(
+    flattened = pd.json_normalize(
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
         max_level=0,
     )
     flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
+    flattened = replace_nan(flattened)
     df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
     return df_post
 
@@ -200,7 +202,7 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
 def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
         if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
-            flattened = json_normalize(df[key], max_level=0).rename(
+            flattened = pd.json_normalize(df[key], max_level=0).rename(
                 columns=lambda col: f"{key}{_SEP}{col}",
             )
             df = df.join(flattened)
@@ -213,6 +215,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
     df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
 
+    df_serialized = replace_nan(df_serialized)
     upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
 
 
