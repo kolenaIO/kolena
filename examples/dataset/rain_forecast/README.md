@@ -31,12 +31,14 @@ The `upload_results.py` script defines command line arguments to select which mo
 
 ```shell
 $ poetry run python3 rain_forecast/upload_results.py --help
-usage: upload_results.py [-h] [--model {ann,logreg}] [--dataset DATASET]
+usage: upload_results.py [-h] [--dataset DATASET] {ann,logreg}
+
+positional arguments:
+  {ann,logreg}       Name of the model to test.
 
 optional arguments:
-  -h, --help            show this help message and exit
-  --model {ann,logreg}  Name of model to test.
-  --dataset DATASET     Name of dataset to use for testing.
+  -h, --help         show this help message and exit
+  --dataset DATASET  Optionally specify a custom dataset name to test.
 ```
 
 ## Quality Standards Guide
@@ -49,6 +51,7 @@ Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/qu
 this workflow:
 
 ### Metrics
+
 1. [Precision](https://docs.kolena.io/metrics/precision)
 2. [Recall](https://docs.kolena.io/metrics/recall)
 3. [F1-score](https://docs.kolena.io/metrics/f1-score)
@@ -56,6 +59,7 @@ this workflow:
 5. [\# FN](https://docs.kolena.io/metrics/tp-fp-fn-tn)
 
 ### Plots
+
 1. Confusion Matrix: `datapoint.RainTomorrow` vs. `result.will_rain`
 2. `datapoint.Location` vs. `mean(result.is_FN)`
 3. `datapoint.Location` vs. `mean(result.is_FP)`
@@ -63,5 +67,6 @@ this workflow:
 5. `datapoint.Year/Month` vs. `mean(result.is_FP)`
 
 ### Test Cases
+
 1. `datapoint.Year` (with `bin` = 5)
 2. `datapoint.Region`

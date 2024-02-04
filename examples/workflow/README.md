@@ -1,8 +1,8 @@
 # Example Workflows
 
 This directory contains example Kolena integrations for different machine learning workflows. See the
-[Building a Workflow](https://docs.kolena.io/building-a-workflow/) guide to learn how to build a workflow to test any
-arbitrary ML problem.
+[Building a Workflow](https://docs.kolena.io/workflow/building-a-workflow/) guide to learn how to build a workflow to
+test any arbitrary ML problem.
 
 - [Age Estimation](./age_estimation): regression model tested using the
   [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
@@ -14,7 +14,8 @@ arbitrary ML problem.
   [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset
 - [Text Summarization](./text_summarization): abstractive text summarization using the
   [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
-- [Mutliclass Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#multiclass-classification-on-cifar-10): Multiclass Classification
+- [Mutliclass Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#multiclass-classification-on-cifar-10):
+  Multiclass Classification
   on image data from [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
 - [Binary Classification](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#binary-classification-on-dogs-vs-cats):
   Binary Classification on image data from [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
@@ -28,4 +29,5 @@ arbitrary ML problem.
   [LibriSpeech dataset](https://www.openslr.org/12) dataset
 - [Speaker Diarization](./speaker_diarization/): speaker diarization using the
   [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset
-- [Face Recognition 1:1](./face_recognition_11/): End-to-end face recognition one-to-one using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
+- [Face Recognition 1:1](./face_recognition_11/):
+  End-to-end face recognition one-to-one using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset

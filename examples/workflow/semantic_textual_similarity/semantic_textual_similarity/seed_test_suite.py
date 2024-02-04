@@ -49,7 +49,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(similarity=record.similarity / 5.0)  # STS-b's similarity ranges from 0 to 5
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case
@@ -59,7 +59,7 @@ def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     complete_test_case = seed_complete_test_case(args)
     test_suite = TestSuite(
-        f"{args.suite_name}",
+        args.test_suite,
         test_cases=[complete_test_case],
         reset=True,
     )
@@ -69,13 +69,13 @@ def main(args: Namespace) -> None:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default="s3://kolena-public-datasets/sts-benchmark/results/all-distilroberta-v1.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

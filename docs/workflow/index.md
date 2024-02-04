@@ -19,7 +19,8 @@ it into the Kolena web application for analysis and exploration.
 
     ---
 
-    Get started with a quick and easy example for connecting data to Kolena, using either the web application or the Python SDK.
+    Get started with a quick and easy example for connecting data to Kolena,
+    using either the web application or the Python SDK.
 </div>
 
 <div class="grid cards" markdown>
@@ -35,6 +36,7 @@ it into the Kolena web application for analysis and exploration.
     ---
 
     Assemble a Kolena Workflow by describing the structure of your data and model results.
+
 </div>
 
 <div class="grid cards" markdown>

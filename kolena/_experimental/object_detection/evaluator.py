@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+# mypy: disable-error-code="override"
 from typing import List
 from typing import Optional
 from typing import Tuple
@@ -30,6 +31,7 @@ from kolena._experimental.object_detection import ThresholdConfiguration
 from kolena._experimental.object_detection.evaluator_multiclass import MulticlassObjectDetectionEvaluator
 from kolena._experimental.object_detection.evaluator_single_class import SingleClassObjectDetectionEvaluator
 from kolena.workflow import Evaluator
+from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import Plot
 
 
@@ -45,15 +47,21 @@ class ObjectDetectionEvaluator(Evaluator):
     For additional functionality, see the associated [base class documentation][kolena.workflow.evaluator.Evaluator].
     """
 
-    single_class_evaluator = SingleClassObjectDetectionEvaluator()
-    multiclass_evaluator = MulticlassObjectDetectionEvaluator()
-    dynamic_evaluator: Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator, None] = None
+    def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
+        super().__init__(configurations)
+        self.single_class_evaluator = SingleClassObjectDetectionEvaluator()
+        self.multiclass_evaluator = MulticlassObjectDetectionEvaluator()
+        self.dynamic_evaluator: Union[
+            SingleClassObjectDetectionEvaluator,
+            MulticlassObjectDetectionEvaluator,
+            None,
+        ] = None
 
     def compute_test_sample_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> List[Tuple[TestSample, Union[TestSampleMetrics, TestSampleMetricsSingleClass]]]:
         assert configuration is not None, "must specify configuration"
 
@@ -67,7 +75,7 @@ class ObjectDetectionEvaluator(Evaluator):
                 self.dynamic_evaluator = self.single_class_evaluator
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_sample_metrics(
+        return evaluator.compute_test_sample_metrics(  # type: ignore
             test_case=test_case,
             inferences=inferences,
             configuration=configuration,
@@ -76,56 +84,56 @@ class ObjectDetectionEvaluator(Evaluator):
     def compute_test_case_metrics(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[Union[TestSampleMetrics, TestSampleMetricsSingleClass]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[Union[TestSampleMetrics, TestSampleMetricsSingleClass]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> Union[TestCaseMetrics, TestCaseMetricsSingleClass]:
         assert configuration is not None, "must specify configuration"
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_case_metrics(
+        return evaluator.compute_test_case_metrics(  # type: ignore
             test_case=test_case,
             inferences=inferences,
-            metrics=metrics,
+            metrics=metrics,  # type: ignore
             configuration=configuration,
         )
 
     def compute_test_case_plots(
         self,
         test_case: TestCase,
-        inferences: List[Tuple[TestSample, GroundTruth, Inference]],
-        metrics: List[Union[TestSampleMetrics, TestSampleMetricsSingleClass]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        inferences: List[Tuple[TestSample, GroundTruth, Inference]],  # type: ignore
+        metrics: List[Union[TestSampleMetrics, TestSampleMetricsSingleClass]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> Optional[List[Plot]]:
         assert configuration is not None, "must specify configuration"
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_case_plots(
+        return evaluator.compute_test_case_plots(  # type: ignore
             test_case=test_case,
             inferences=inferences,
-            metrics=metrics,
+            metrics=metrics,  # type: ignore
             configuration=configuration,
         )
 
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
-        metrics: List[Tuple[TestCase, Union[TestCaseMetrics, TestCaseMetricsSingleClass]]],
-        configuration: Optional[ThresholdConfiguration] = None,
+        metrics: List[Tuple[TestCase, Union[TestCaseMetrics, TestCaseMetricsSingleClass]]],  # type: ignore
+        configuration: Optional[ThresholdConfiguration] = None,  # type: ignore
     ) -> TestSuiteMetrics:
         assert configuration is not None, "must specify configuration"
 
         evaluator = self._get_evaluator(configuration)
-        return evaluator.compute_test_suite_metrics(
+        return evaluator.compute_test_suite_metrics(  # type: ignore
             test_suite=test_suite,
-            metrics=metrics,
+            metrics=metrics,  # type: ignore
             configuration=configuration,
         )
 
     def _get_evaluator(
         self,
         configuration: Optional[ThresholdConfiguration],
-    ) -> Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator]:
+    ) -> Union[SingleClassObjectDetectionEvaluator, MulticlassObjectDetectionEvaluator, None]:
         assert configuration is not None, "must specify configuration"
 
         if configuration.multiclass is None:

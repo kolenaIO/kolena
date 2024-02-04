@@ -34,7 +34,8 @@ This section contains tutorial documentation for advanced features for Kolena Wo
 
     ---
 
-    Extract and upload embeddings on each [`Image`][kolena.workflow.Image] to set up natural language and similarity search across image data and
+    Extract and upload embeddings on each [`Image`][kolena.workflow.Image]
+    to set up natural language and similarity search across image data and
     results in the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio).
 
 </div>

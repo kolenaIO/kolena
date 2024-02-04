@@ -87,8 +87,8 @@ class TestCaseMetric(MetricsTestCase):
     WordInfoPreserved: float
     CharacterErrorRate: float
 
-    AvgGTWordCount: int
-    AvgInfWordCount: int
+    AvgGTWordCount: float
+    AvgInfWordCount: float
 
 
 @dataclass(frozen=True)

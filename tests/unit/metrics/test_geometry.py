@@ -18,19 +18,19 @@ from typing import Union
 
 import pytest
 
+from kolena.annotation import BoundingBox
+from kolena.annotation import LabeledBoundingBox
+from kolena.annotation import LabeledPolygon
+from kolena.annotation import Polygon
+from kolena.annotation import ScoredBoundingBox
+from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.annotation import ScoredLabeledPolygon
 from kolena.errors import InputValidationError
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import LabeledBoundingBox
-from kolena.workflow.annotation import LabeledPolygon
-from kolena.workflow.annotation import Polygon
-from kolena.workflow.annotation import ScoredBoundingBox
-from kolena.workflow.annotation import ScoredLabeledBoundingBox
-from kolena.workflow.annotation import ScoredLabeledPolygon
-from kolena.workflow.metrics import iou
-from kolena.workflow.metrics import match_inferences
-from kolena.workflow.metrics import match_inferences_multiclass
-from kolena.workflow.metrics._geometry import GT
-from kolena.workflow.metrics._geometry import Inf
+from kolena.metrics import iou
+from kolena.metrics import match_inferences
+from kolena.metrics import match_inferences_multiclass
+from kolena.metrics._geometry import GT
+from kolena.metrics._geometry import Inf
 
 
 @pytest.mark.parametrize(

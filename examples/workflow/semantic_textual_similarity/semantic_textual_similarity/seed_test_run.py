@@ -43,7 +43,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
 
         return Inference(similarity=sample_result["cos_similarity"])
 
-    model = Model(f"{model_name}", infer=infer)
+    model = Model(f"{model_name}", infer=infer)  # type: ignore
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:
@@ -74,8 +74,8 @@ if __name__ == "__main__":
         help="Name(s) of model(s) in directory to test",
     )
     ap.add_argument(
-        "--test_suites",
-        default=[f"{DATASET}"],
+        "--test-suites",
+        default=[DATASET],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )

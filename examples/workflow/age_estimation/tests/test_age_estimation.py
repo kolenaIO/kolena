@@ -22,20 +22,20 @@ from age_estimation.seed_test_suite import main as seed_test_suite_main
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__seed_test_suite__smoke(suite_name: str) -> None:
+def test__seed_test_suite__smoke(test_suite: str) -> None:
     args = Namespace(
         dataset_csv="s3://kolena-public-datasets/labeled-faces-in-the-wild/meta/metadata.tiny5.csv",
-        suite_name=suite_name,
+        test_suite=test_suite,
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke(suite_name: str) -> None:
-    args = Namespace(model="ssrnet", test_suites=[f"age :: {suite_name} [age estimation]"])
+def test__seed_test_run__smoke(test_suite: str) -> None:
+    args = Namespace(model="ssrnet", test_suites=[f"age :: {test_suite} [age estimation]"])
     seed_test_run_main(args)

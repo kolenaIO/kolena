@@ -33,7 +33,7 @@ DATASET = "LibriSpeech"
 def seed_test_suite_duration(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "short duration": lambda x: x < 4,
         "medium duration": lambda x: 4 <= x < 7,
@@ -42,7 +42,11 @@ def seed_test_suite_duration(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["duration_seconds"])]
+        ts_list = [
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["duration_seconds"])
+        ]
 
         new_ts = TestCase(
             f"transcription duration (seconds) :: {name} :: {DATASET}",
@@ -62,7 +66,7 @@ def seed_test_suite_duration(
 def seed_test_suite_speaker_sex(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "male": lambda x: x == " M ",
         "female": lambda x: x == " F ",
@@ -70,7 +74,11 @@ def seed_test_suite_speaker_sex(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["speaker_sex"])]
+        ts_list = [
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["speaker_sex"])
+        ]
 
         new_ts = TestCase(
             f"speaker sex:: {name} :: {DATASET}",
@@ -90,7 +98,7 @@ def seed_test_suite_speaker_sex(
 def seed_test_suite_tempo(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "slower": lambda x: x < 2.5,
         "medium": lambda x: 2.5 <= x < 3.1,
@@ -99,7 +107,9 @@ def seed_test_suite_tempo(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["tempo"])]
+        ts_list = [
+            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["tempo"])  # type: ignore
+        ]
 
         new_ts = TestCase(
             f"tempo (words per second) :: {name} :: {DATASET}",
@@ -152,7 +162,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(transcription=ClassificationLabel(record.text))
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case
@@ -175,9 +185,9 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{args.suite_name} :: audio duration": seed_test_suite_duration,
-        f"{args.suite_name} :: speaker sex": seed_test_suite_speaker_sex,
-        f"{args.suite_name} :: tempo (words per second)": seed_test_suite_tempo,
+        f"{args.test_suite} :: audio duration": seed_test_suite_duration,
+        f"{args.test_suite} :: speaker sex": seed_test_suite_speaker_sex,
+        f"{args.test_suite} :: tempo (words per second)": seed_test_suite_tempo,
     }
 
     seed_test_suites(test_suite_names, complete_tc)
@@ -186,13 +196,13 @@ def main(args: Namespace) -> None:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",

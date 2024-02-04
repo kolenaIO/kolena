@@ -41,7 +41,6 @@ or [Poetry](https://python-poetry.org/):
 
     If you see the error above, please install the latest version of `kolena`.
 
-
 #### Extra Dependency Groups
 
 Certain metrics computation functionality depends on additional packages like
@@ -92,6 +91,7 @@ Additional logging can be configured by specifying `initialize(..., verbose=True
 
 | :fontawesome-brands-python: Python Version                        | :kolena-logo: Compatible `kolena` Versions |
 |-------------------------------------------------------------------|--------------------------------------------|
+| 3.12                                                              | ≥1.3                                       |
 | 3.11                                                              | ≥0.69                                      |
 | 3.10                                                              | _All Versions_                             |
 | 3.9                                                               | _All Versions_                             |

@@ -129,9 +129,9 @@ def seed_test_run(
         return infer
 
     model_name = mod[0]
-    print(f"working on {model_name} and {test_suite.name} v{test_suite.version}")
+    print(f"working on {model_name} and {test_suite.name} v{test_suite.version}")  # type: ignore
     infer = get_stored_inferences(infs)
-    model = Model(f"{mod[1]}", infer=infer, metadata={**MODEL_METADATA[model_name], **COMMON_METADATA})
+    model = Model(f"{mod[1]}", infer=infer, metadata={**MODEL_METADATA[model_name], **COMMON_METADATA})  # type: ignore
     print(model)
 
     test(model, test_suite, evaluate_text_summarization, reset=True)

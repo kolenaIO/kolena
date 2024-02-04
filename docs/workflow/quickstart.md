@@ -12,8 +12,8 @@ icon: kolena/flame-16
 Install Kolena to set up rigorous and repeatable model testing in minutes.
 
 In this quickstart guide, we'll use the
-[`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d) example integration to
-demonstrate the how to curate test data and test models in Kolena.
+[`object_detection_2d`](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d)
+example integration to demonstrate the how to curate test data and test models in Kolena.
 
 ## Install `kolena`
 
@@ -192,8 +192,10 @@ poetry run python3 object_detection_2d/seed_test_suite.py
 After this script has completed, we can visit the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
 page to view our newly created test suites.
 
-In this `object_detection_2d` example, we've created test suites stratifying the [COCO](https://cocodataset.org/#overview) 2014 validation set (which is stored as a CSV in
-S3) into test cases by brightness and bounding box size. In this example will be looking at the following labels:
+In this `object_detection_2d` example,
+we've created test suites stratifying the [COCO](https://cocodataset.org/#overview) 2014 validation set
+(which is stored as a CSV in S3) into test cases by brightness and bounding box size.
+In this example will be looking at the following labels:
 
 `["bicycle", "car", "motorcycle", "bus", "train", "truck", "traffic light", "fire hydrant", "stop sign"]`
 

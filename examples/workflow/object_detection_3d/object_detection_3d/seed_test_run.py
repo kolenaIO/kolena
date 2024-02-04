@@ -75,7 +75,7 @@ def seed_test_run(test_suite_name: str, model_name: str, results: List[Dict[str,
         label_id = Path(test_sample.locator).stem
         return as_inference(inference_by_id[label_id])
 
-    model = Model(model_name, infer=infer)
+    model = Model(model_name, infer=infer)  # type: ignore
     print(f"using model: {model}")
 
     test_suite = TestSuite.load(test_suite_name)

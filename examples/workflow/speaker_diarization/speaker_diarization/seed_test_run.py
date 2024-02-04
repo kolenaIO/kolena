@@ -47,11 +47,12 @@ def seed_test_run(
     align_speakers: bool,
 ) -> None:
     def infer(sample: TestSample) -> Inference:
-        inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")
+        inference_path = sample.metadata["transcription_path"].replace("audio/", f"{mod}_inferences/")  # type: ignore
         inference_df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{inference_path}/", storage_options={"anon": True})
         if align_speakers:
+            file_suffix = f"{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}"  # type: ignore
             gt_df = pd.read_csv(
-                f"s3://{BUCKET}/{DATASET}/{sample.metadata['transcription_path'][:-4] + '_cleaned.csv'}",
+                f"s3://{BUCKET}/{DATASET}/{file_suffix}",
                 storage_options={"anon": True},
             )
             realign_labels(gt_df, inference_df)
@@ -62,14 +63,14 @@ def seed_test_run(
                     start=row.starttime,
                     end=row.endtime,
                     label=row.text,
-                    group=row.speaker,
+                    group=row.speaker,  # type: ignore
                 )
                 for _, row in inference_df.iterrows()
             ],
         )
 
-    print(f"working on {mod} and {test_suite.name} v{test_suite.version}")
-    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[mod]})
+    print(f"working on {mod} and {test_suite.name} v{test_suite.version}")  # type: ignore
+    model = Model(f"{mod}", infer=infer, metadata={**MODEL_METADATA[mod]})  # type: ignore
 
     test(model, test_suite, evaluate_speaker_diarization, reset=True)
 
@@ -80,8 +81,8 @@ def main(args: Namespace) -> None:
     mod = "gcp-stt-video"
 
     print("loading test suite")
-    if "suite_name" in args:
-        test_suites = [TestSuite.load(args.suite_name)]
+    if "test_suite" in args:
+        test_suites = [TestSuite.load(args.test_suite)]
     else:
         test_suites = TestSuite.load_all(tags={DATASET})
     for test_suite in test_suites:
@@ -95,5 +96,10 @@ if __name__ == "__main__":
         type=bool,
         default=False,
         help="Specify whether to perform speaker alignment between the GT and Inf in the preprocessing step.",
+    )
+    ap.add_argument(
+        "--test-suite",
+        type=str,
+        help="Optionally specify a test suite to test. Test against all available test suites when unspecified.",
     )
     main(ap.parse_args())

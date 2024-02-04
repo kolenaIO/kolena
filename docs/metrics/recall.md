@@ -22,9 +22,8 @@ negative ground truths.
 </div>
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`recall` ↗][kolena.workflow.metrics.recall]
+- :kolena-manual-16: API Reference: [`recall` ↗][kolena.metrics.recall]
 </div>
-
 
 ## Implementation Details
 
@@ -111,5 +110,5 @@ As seen in its formula, recall only takes **positive** ground truths (TP and FN)
 (TN and FP) are not considered. Thus, recall only provides one half of the picture, and should always be used in
 tandem with [precision](./precision.md): precision penalizes false positives (FP), whereas recall does not.
 
-For a single metric that takes both precision and recall into account, use F<sub>1</sub>-score, which is the harmonic mean between
-precision and recall.
+For a single metric that takes both precision and recall into account,
+use F<sub>1</sub>-score, which is the harmonic mean between precision and recall.

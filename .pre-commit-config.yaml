@@ -56,12 +56,16 @@ repos:
         name: mypy-examples-dataset
         files: ^examples/dataset/
         additional_dependencies: [ types-all, "pydantic<2.0" ]
-      # TODO: enable
-      # - id: mypy
-      #   name: mypy-examples-workflow
-      #   files: ^examples/workflow/
-      #   additional_dependencies: [ types-all, "pydantic<2.0" ]
+      - id: mypy
+        name: mypy-examples-workflow
+        files: ^examples/workflow/
+        additional_dependencies: [ types-all, "pydantic<2.0" ]
 -   repo: meta
     hooks:
     -   id: check-hooks-apply
     -   id: check-useless-excludes
+-   repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.38.0
+    hooks:
+    -   id: markdownlint
+        args: ["--fix"]

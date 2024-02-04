@@ -6,11 +6,11 @@ and straightforward to calculate.
 Accuracy measures how often a model correctly predicts something (ranging from 0 to 1, with 1 being perfect
 inferences). It reports the ratio of the number of correct inferences to the total number of inferences,
 making it a good metric for assessing model performance in simple cases with balanced data. However, accuracy is much
-less meaningful with imbalanced datasets (e.g. far more negative ground truths than positive ground truths) and should be used with
-caution.
+less meaningful with imbalanced datasets (e.g. far more negative ground truths than positive ground truths)
+and should be used with caution.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`accuracy` ↗][kolena.workflow.metrics.accuracy]
+- :kolena-manual-16: API Reference: [`accuracy` ↗][kolena.metrics.accuracy]
 </div>
 
 ## Implementation Details
@@ -95,10 +95,12 @@ While accuracy generally describes a classifier’s performance, it is important
 especially when [the data is imbalanced](https://stephenallwright.com/imbalanced-data/).
 
 For example, let’s say there
-are a total of 500 ground truths, with 450 belonging to the positive class and 50 to the negative. If the model correctly
-predicts all the positive ground truths but misses all the negative ones, its accuracy is `450 / 500 = 0.9`. An accuracy score
-of 90% indicates a pretty good model — but is a model that fails 100% of the time on negative ground truths useful? Using the
-accuracy metric alone can hide a model’s true performance, so we recommend other metrics that are better suited for
+are a total of 500 ground truths, with 450 belonging to the positive class and 50 to the negative.
+If the model correctly predicts all the positive ground truths but misses all the negative ones,
+its accuracy is `450 / 500 = 0.9`. An accuracy score of 90% indicates a pretty good model —
+but is a model that fails 100% of the time on negative ground truths useful?
+Using the accuracy metric alone can hide a model’s true performance,
+so we recommend other metrics that are better suited for
 imbalanced data, such as:
 
 - [Balanced accuracy](https://stephenallwright.com/balanced-accuracy/)

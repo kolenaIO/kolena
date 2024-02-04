@@ -15,6 +15,8 @@ import sys
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
 
@@ -42,7 +44,7 @@ def create_test_suite_by_question(
     data: List[Tuple[TestSample, GroundTruth]],
 ) -> None:
     question_types = ["what", "who", "how", "did", "where", "was", "when", "is", "why", "other"]
-    samples_by_question_type = {value: [] for value in question_types}
+    samples_by_question_type: Dict[Any, List[Tuple[TestSample, GroundTruth]]] = {value: [] for value in question_types}
 
     # Organize samples into the dictionary
     for ts, gt in data:
@@ -72,7 +74,7 @@ def create_test_suite_by_conversation_length(
     data: List[Tuple[TestSample, GroundTruth]],
 ) -> None:
     depths = sorted({test_sample.turn for test_sample, _ in data})
-    samples_by_turn = {value: [] for value in depths}
+    samples_by_turn: Dict[int, List[Tuple[TestSample, GroundTruth]]] = {value: [] for value in depths}
 
     # Organize samples into the dictionary
     for ts, gt in data:
@@ -148,7 +150,7 @@ def main(args: Namespace) -> int:
     complete_test_case = TestCase(
         f"complete {DATASET}",
         description=f"All questions and answers in the {DATASET} dataset",
-        test_samples=test_samples_and_ground_truths,
+        test_samples=test_samples_and_ground_truths,  # type: ignore
         reset=True,
     )
 
@@ -162,7 +164,7 @@ def main(args: Namespace) -> int:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata/metadata.csv",
         help="CSV file with a stories, questions, and answers.",

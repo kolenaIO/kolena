@@ -28,24 +28,24 @@ from kolena.dataset import upload_results
 
 
 POSITIVE_LABEL = "dog"
-NEGATIVE_LABEL = "not dog"
+NEGATIVE_LABEL = "cat"
 MODELS = ["resnet50v2", "inceptionv3"]
 EVAL_CONFIG = {"threshold": 0.5}
 
 
 def compute_metrics(score: float, ground_truth_label: str) -> Dict[str, Any]:
     threshold = EVAL_CONFIG["threshold"]
-    is_positive_prediction = score >= threshold
-    classification_label = POSITIVE_LABEL if is_positive_prediction else NEGATIVE_LABEL
-    is_positive_sample = ground_truth_label == classification_label
+    label = POSITIVE_LABEL if score >= threshold else NEGATIVE_LABEL
+    is_tn = ground_truth_label != POSITIVE_LABEL and label != POSITIVE_LABEL
+    is_tp = ground_truth_label == POSITIVE_LABEL and label == POSITIVE_LABEL
 
     return {
+        "is_correct": is_tn or is_tp,
+        "is_FN": ground_truth_label == POSITIVE_LABEL and label != POSITIVE_LABEL,
+        "is_FP": ground_truth_label != POSITIVE_LABEL and label == POSITIVE_LABEL,
+        "is_TN": is_tn,
+        "is_TP": is_tp,
         "threshold": threshold,
-        "is_correct": is_positive_prediction == is_positive_sample,
-        "is_TP": is_positive_sample and is_positive_prediction,
-        "is_FP": not is_positive_sample and is_positive_prediction,
-        "is_FN": is_positive_sample and not is_positive_prediction,
-        "is_TN": not is_positive_sample and not is_positive_prediction,
     }
 
 
@@ -66,7 +66,7 @@ def run(args: Namespace) -> None:
 
     df_results = df_results.merge(dataset_df, how="left", on=ID_FIELDS)
     df_results["inference"] = df_results["prediction"].apply(lambda score: create_classification(score))
-    eval_result = df_results.apply(lambda row: pd.Series(compute_metrics(row.prediction, row.label)), axis=1)
+    eval_result = df_results.apply(lambda row: pd.Series(compute_metrics(row.prediction, row.label.label)), axis=1)
     df_results = pd.concat([df_results[ID_FIELDS], df_results["inference"], eval_result], axis=1)
 
     upload_results(args.dataset, args.model, [(EVAL_CONFIG, df_results)])

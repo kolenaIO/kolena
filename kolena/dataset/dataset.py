@@ -17,11 +17,13 @@ import sys
 from dataclasses import asdict
 from enum import Enum
 from typing import Any
+from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Optional
 from typing import Tuple
 from typing import Union
+from urllib.parse import urlparse
 
 import pandas as pd
 import requests
@@ -51,6 +53,7 @@ from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
@@ -95,13 +98,19 @@ def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
 
+def _normalize_url(x: str) -> str:
+    url = urlparse(x)
+    return url._replace(query="", fragment="").geturl()
+
+
 def _infer_datatype_value(x: str) -> str:
-    mtype, _ = mimetypes.guess_type(x)
+    url = _normalize_url(x)
+    mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)
         if datatype is not None:
             return datatype
-    elif x.endswith(".pcd"):
+    elif url.endswith(".pcd"):
         return DatapointType.POINT_CLOUD.value
 
     return DatapointType.TABULAR.value
@@ -236,6 +245,57 @@ def _resolve_id_fields(
     return id_fields
 
 
+def _prepare_upload_dataset_request(
+    name: str,
+    df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
+    *,
+    id_fields: Optional[List[str]] = None,
+) -> Tuple[List[str], str]:
+    load_uuid = init_upload().uuid
+    existing_dataset = _load_dataset_metadata(name)
+    if isinstance(df, pd.DataFrame):
+        id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
+        validate_dataframe_ids(df, id_fields)
+        _upload_dataset_chunk(df, load_uuid, id_fields)
+    else:
+        validated = False
+        for chunk in df:
+            if not validated:
+                id_fields = _resolve_id_fields(chunk, id_fields, existing_dataset)
+                validate_dataframe_ids(chunk, id_fields)
+                validated = True
+            assert id_fields is not None
+            _upload_dataset_chunk(chunk, load_uuid, id_fields)
+    assert id_fields is not None
+    return id_fields, load_uuid
+
+
+def _send_upload_dataset_request(
+    name: str,
+    id_fields: List[str],
+    load_uuid: str,
+    sources: Optional[List[Dict[str, str]]],
+) -> EntityData:
+    request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid, sources=sources)
+    response = krequests.post(Path.REGISTER, json=asdict(request))
+    krequests.raise_for_status(response)
+    data = from_dict(EntityData, response.json())
+    return data
+
+
+def _upload_dataset(
+    name: str,
+    df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
+    *,
+    id_fields: Optional[List[str]] = None,
+    sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
+) -> None:
+    prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
+
+    data = _send_upload_dataset_request(name, prepared_id_fields, load_uuid, sources=sources)
+    log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
+
+
 @with_event(event_name=EventAPI.Event.REGISTER_DATASET)
 def upload_dataset(
     name: str,
@@ -257,27 +317,7 @@ def upload_dataset(
         within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
         that `id_fields` must be hashable.
     """
-    load_uuid = init_upload().uuid
-    existing_dataset = _load_dataset_metadata(name)
-    if isinstance(df, pd.DataFrame):
-        id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
-        validate_dataframe_ids(df, id_fields)
-        _upload_dataset_chunk(df, load_uuid, id_fields)
-    else:
-        validated = False
-        for chunk in df:
-            if not validated:
-                id_fields = _resolve_id_fields(chunk, id_fields, existing_dataset)
-                validate_dataframe_ids(chunk, id_fields)
-                validated = True
-            assert id_fields is not None
-            _upload_dataset_chunk(chunk, load_uuid, id_fields)
-    assert id_fields is not None
-    request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid)
-    response = krequests.post(Path.REGISTER, json=asdict(request))
-    krequests.raise_for_status(response)
-    data = from_dict(EntityData, response.json())
-    log.info(f"registered dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
+    _upload_dataset(name, df, id_fields=id_fields)
 
 
 def _iter_dataset_raw(
@@ -321,7 +361,7 @@ def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame
     :return: A DataFrame containing the specified dataset.
     """
     df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
-    log.info(f"loaded dataset '{name}'")
+    log.info(f"downloaded dataset '{name}'")
     return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
 
 

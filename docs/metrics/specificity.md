@@ -27,9 +27,8 @@ Specificity is often used in conjunction with [sensitivity (recall)](./recall.md
 (TPR). By measuring both specificity and sensitivity, a more complete picture of a model's performance can be drawn.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`Specificity` ↗][kolena.workflow.metrics.specificity]
+- :kolena-manual-16: API Reference: [`Specificity` ↗][kolena.metrics.specificity]
 </div>
-
 
 ## Implementation Details
 

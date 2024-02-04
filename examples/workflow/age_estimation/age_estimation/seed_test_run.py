@@ -37,7 +37,7 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
         age = df_results[df_results["image_path"] == test_sample.locator]["age"].values[0]
         return Inference(age=age if age != -1 else None)
 
-    model = Model(f"{model_name} [age estimation]", infer=infer)
+    model = Model(f"{model_name} [age estimation]", infer=infer)  # type: ignore
     print(f"Model: {model}")
 
     for test_suite_name in test_suite_names:

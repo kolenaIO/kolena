@@ -45,6 +45,8 @@ from kolena.workflow.annotation import ScoredClassificationLabel
     "uri,expected",
     [
         ("s3://public/png", DatapointType.TABULAR),
+        ("s3://public/foo.png?versionId=42", DatapointType.IMAGE),
+        ("s3://public/foo.pcd?bar=42#var", DatapointType.POINT_CLOUD),
         ("/opt/test.png", DatapointType.IMAGE),
         ("https://kolena.io/demo.mp4", DatapointType.VIDEO),
         ("file:///var/mime.csv", DatapointType.DOCUMENT),

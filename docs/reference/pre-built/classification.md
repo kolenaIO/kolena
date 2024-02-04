@@ -22,7 +22,6 @@ There are different types of classification models:
 | **Multiclass**      | Classification model predicts a single class from more than two classes, with highest prediction confidence                                     |
 | **Multi-label**     | Classification model predicts multiple classes, with each prediction over a threshold considered positive (i.e. ensemble of binary classifiers) |
 
-
 This pre-built workflow is work in progress; however, you can refer to the workflow implementation for **binary**
 and **multiclass** types from the examples below:
 
@@ -42,9 +41,11 @@ and **multiclass** types from the examples below:
     ---
 
     Multiclass Classification using the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
+
 </div>
 
 ## Utility Methods
+
 ::: kolena._experimental.classification.utils
     options:
       members_order: alphabetical

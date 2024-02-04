@@ -138,7 +138,6 @@ Using these precision and recall values, per class PR curves can be plotted:
 ![pr.png](../assets/images/metrics-prcurve-example-multiclass-dark.png#only-dark)
 </center>
 
-
 ## Area Under the PR Curve (AUPRC)
 
 The area under the PR curve (AUPRC), also known as AUC-PR or PR-AUC, is a **threshold-independent** metric that

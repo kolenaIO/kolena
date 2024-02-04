@@ -14,11 +14,16 @@ poetry update && poetry install
 
 ## Usage
 
-This example integration will use pre-trained models provided by [MMDetection3D](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/model_zoo.md) library. Please follow the [Installation](https://mmdetection3d.readthedocs.io/en/latest/get_started.html#installation) and set up your environment.
+This example integration will use pre-trained models provided by
+[MMDetection3D](https://github.com/open-mmlab/mmdetection3d/blob/main/docs/en/model_zoo.md) library.
+Please follow the [Installation](https://mmdetection3d.readthedocs.io/en/latest/get_started.html#installation)
+and set up your environment.
 
 ### Data preparation
 
-We will use the same data directory structure as detailed in [KITTI dataset preparation guide](https://mmdetection3d.readthedocs.io/en/latest/advanced_guides/datasets/kitti.html), replacing the root directory in the guide with current project directory.
+We will use the same data directory structure as detailed in
+[KITTI dataset preparation guide](https://mmdetection3d.readthedocs.io/en/latest/advanced_guides/datasets/kitti.html),
+replacing the root directory in the guide with current project directory.
 
 After downloading the dataset, we provide a script to process them into a format that suitable for integration with
 Kolena platform.
@@ -86,16 +91,18 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 This project defines two scripts that perform the following operations:
 
-1. [`seed_test_suite.py`](object_detection_3d/seed_test_suite.py) creates a test suite `KITTI 3D Object Detection :: training :: metrics` using KITTI dataset for 3D object detection.
+1. [`seed_test_suite.py`](object_detection_3d/seed_test_suite.py)
+   creates a test suite `KITTI 3D Object Detection :: training :: metrics` using KITTI dataset for 3D object detection.
 
-2. [`seed_test_run.py`](object_detection_3d/seed_test_run.py) tests a specified model, e.g. `second_hv_secfpn_8xb6-80e_kitti-3d-3class`, on the above test suites.
+2. [`seed_test_run.py`](object_detection_3d/seed_test_run.py)
+   tests a specified model, e.g. `second_hv_secfpn_8xb6-80e_kitti-3d-3class`, on the above test suites.
 
 Command line arguments are defined within each script to specify what model to use and what test suite to seed/evaluate.
 Run a script using the `--help` flag for more information:
 
 ```
 $ poetry run python3 object_detection_3d/seed_test_suite.py --help
-usage: seed_test_suite.py [-h] [--test-suite TEST_SUITE] sample-file
+usage: seed_test_suite.py [-h] [--test-suite TEST_SUITE] sample_file
 
 positional arguments:
   sample_file           File containing test sample and ground truth data
@@ -103,11 +110,10 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
   --test-suite TEST_SUITE
-                        Name of test suite
+                        Optionally specify a name for the created test suite.
 
 $ poetry run python3 object_detection_3d/seed_test_suite.py test_samples_data.json
 ```
-
 
 ```
 $ poetry run python3 object_detection_3d/seed_test_run.py --help

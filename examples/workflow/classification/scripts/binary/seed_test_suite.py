@@ -51,7 +51,7 @@ def main(args: Namespace) -> int:
     complete_test_case = TestCase(
         f"complete {DATASET}",
         description=f"All images in {DATASET} dataset",
-        test_samples=test_samples_and_ground_truths,
+        test_samples=test_samples_and_ground_truths,  # type: ignore
         reset=True,
     )
 
@@ -71,14 +71,14 @@ def main(args: Namespace) -> int:
                 test_samples=[
                     (ts, gt)
                     for ts, gt in test_samples_and_ground_truths
-                    if fn(ts.metadata["width"] * ts.metadata["height"])
+                    if fn(ts.metadata["width"] * ts.metadata["height"])  # type: ignore
                 ],
                 reset=True,
             ),
         )
 
     test_suite = TestSuite(
-        f"image size :: {args.suite_name}",
+        f"image size :: {args.test_suite}",
         test_cases=[complete_test_case, *test_cases],
         reset=True,
     )
@@ -90,13 +90,13 @@ def main(args: Namespace) -> int:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/meta/metadata.csv",
         help="CSV file with a list of image `locator` and its `label`. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suite.",

@@ -42,20 +42,20 @@ from kolena.workflow.evaluator_function import TestCases
 
 
 def compute_test_sample_metrics(gt: GroundTruth, inf: Inference) -> TestSampleMetric:
-    gt = preprocess_transcription(gt)
-    inf = preprocess_transcription(inf)
+    gt_p = preprocess_transcription(gt.transcription.label.lower())
+    inf_p = preprocess_transcription(inf.transcription.label.lower())
 
-    diff = generate_diff_word_level(gt, inf)
+    diff = generate_diff_word_level(gt_p, inf_p)
 
-    wer_metrics = process_words(gt, inf)
+    wer_metrics = process_words(gt_p, inf_p)
     word_errors = diff["ins_count"] + diff["sub_count"] + diff["del_count"]
     word_error_rate = wer_metrics.wer
     match_error_rate = wer_metrics.mer
     word_information_lost = wer_metrics.wil
     word_information_preserved = wer_metrics.wip
-    character_error_rate = cer(gt, inf)
+    character_error_rate = cer(gt_p, inf_p)
 
-    language = langcodes.Language.get(langid.classify(inf)[0]).display_name()
+    language = langcodes.Language.get(langid.classify(inf_p)[0]).display_name()
 
     return TestSampleMetric(
         WordErrors=word_errors,
@@ -115,16 +115,16 @@ def compute_aggregate_metrics(
 
 def compute_score_distribution_plot(
     score: str,
-    metrics: List[Union[TestSampleMetric, Inference]],
+    metrics: Union[List[TestSampleMetric], List[Inference]],
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     logarithmic_y: bool = False,
     logarithmic_x: bool = False,
 ) -> Histogram:
     scores = [getattr(m, score) for m in metrics]
     if logarithmic_x:
-        bins = np.logspace(*binning_info, base=2)
+        bins = np.logspace(*binning_info, base=2)  # type: ignore
     else:
-        bins = np.linspace(*binning_info)
+        bins = np.linspace(*binning_info)  # type: ignore
 
     hist, _ = np.histogram(scores, bins=bins)
     return Histogram(
@@ -141,8 +141,8 @@ def compute_score_distribution_plot(
 def compute_metric_vs_metric_plot(
     x_metric: str,
     y_metric: str,
-    x_metrics: List[Union[TestSampleMetric, Inference]],
-    y_metrics: List[Union[TestSampleMetric, Inference]],
+    x_metrics: List[TestSample],
+    y_metrics: List[TestSampleMetric],
     binning_info: Optional[Tuple[float, float, float]] = None,  # start, end, num
     x_logarithmic: bool = False,
     y_logarithmic: bool = False,
@@ -155,9 +155,9 @@ def compute_metric_vs_metric_plot(
         x_values = [getattr(m, x_metric) for m in x_metrics]
 
     if x_logarithmic:
-        bins = list(np.logspace(*binning_info, base=2))
+        bins = list(np.logspace(*binning_info, base=2))  # type: ignore
     else:
-        bins = list(np.linspace(*binning_info))
+        bins = list(np.linspace(*binning_info))  # type: ignore
 
     bins_centers: List[float] = []
     bins_values: List[float] = []
@@ -235,7 +235,7 @@ def compute_test_suite_metrics(
     inferences: List[Inference],
     metrics: List[Tuple[TestCase, TestCaseMetric]],
 ) -> TestSuiteMetric:
-    failures = [metric[1].FailCount if "complete" in metric[0].name else 0 for metric in metrics]
+    failures = [metric[1].FailCount if "complete" in metric[0].name else 0 for metric in metrics]  # type: ignore
 
     return TestSuiteMetric(
         Transcriptions=len(inferences),
@@ -261,17 +261,17 @@ def evaluate_audio_recognition(
         inferences,
         test_sample_metrics,
     ):
-        print(f"computing aggregate metrics for test case '{test_case.name}'...")
+        print(f"computing aggregate metrics for test case '{test_case.name}'...")  # type: ignore
         test_case_metrics = compute_aggregate_metrics(tc_ts_metrics, tc_test_samples, tc_gts, tc_infs)
         all_test_case_metrics.append((test_case, test_case_metrics))
 
-        print(f"computing plots for test case '{test_case.name}'...")
+        print(f"computing plots for test case '{test_case.name}'...")  # type: ignore
         test_case_plots = compute_test_case_plots(test_sample_metrics, tc_ts_metrics, tc_test_samples)
         all_test_case_plots.append((test_case, test_case_plots))
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
         metrics_test_suite=compute_test_suite_metrics(test_samples, inferences, all_test_case_metrics),
         plots_test_case=all_test_case_plots,
     )

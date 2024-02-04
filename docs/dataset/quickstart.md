@@ -48,9 +48,8 @@ Model evaluations on Kolena starts with datasets. Datasets are tables that conta
 creating test cases.
 
 === "Web App"
-
-    To import the 300-W dataset, select `Import datasets` then `Select from cloud storage`. Using the explorer, navigate to
-    `s3://kolena-pubic-examples/300-W/` and select `300-W.csv`.
+    To import the 300-W dataset, select `Import datasets` then `Select from cloud storage`.
+    Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
@@ -66,13 +65,13 @@ creating test cases.
     Give your dataset a name and select `locator` as the ID column. The ID column is used to uniquely identify a datapoint
     and is used when uploading model results to associate inferences with datapoints.
 
-    Click `Confirm` to import the dataset. Once the dataset has been added, you can add description and tags to them to organize the workspace.
+    Click `Confirm` to import the dataset. Once the dataset has been added,
+    you can add description and tags to them to organize the workspace.
 
     <figure markdown>
         ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow.gif)
         <figcaption>Example Dataset Upload</figcaption>
     </figure>
-
 
 === "SDK"
 
@@ -97,17 +96,17 @@ creating test cases.
     After this script has completed, a new dataset named `300-W` will be created, which you can
     see in [:kolena-dataset-20: Datasets](https://app.kolena.io/redirect/datasets).
 
-
 ## Step 2: Upload Model Results
 
 Model results are supplied as tables containing the ID column chosen when uploading the dataset. For
-this example, we will upload the results for the open-source [RetinaFace](https://github.com/serengil/retinaface) (`RetinaFace` option)
+this example, we will upload the results for the open-source
+[RetinaFace](https://github.com/serengil/retinaface) (`RetinaFace` option)
 keypoint detection model and a random keypoint model.
 
 === "Web App"
 
     To upload new model results, from the Details tab of the dataset, click on `Upload Model Results` in the upper right.
-    Then, select `Upload from cloud storage`. Using the explorer, navigate to `s3://kolena-public-datasets/300-W/results/`
+    Then, select `Upload from cloud storage`. Using the explorer, navigate to `s3://kolena-public-examples/300-W/results/`
     and select `random.csv`, This CSV file contains model results for the random keypoints
     model for each of the datapoints we uploaded to the dataset.
 
@@ -179,7 +178,8 @@ Criteria you define will be calculated on each test case.
 ### Define Metrics
 
 To configure Evaluation Criteria, from the Quality Standards tab, click `Define Metrics` and select `result.mse > mean`.
-Rename the metric to `Average MSE`, and select `Lower is better` as the highlight. Repeat these steps for `result.nmse > mean`.
+Rename the metric to `Average MSE`, and select `Lower is better` as the highlight.
+Repeat these steps for `result.nmse > mean`.
 
 <figure markdown>
 ![Defining Metrics](../assets/images/quickstart-define-metrics.gif)

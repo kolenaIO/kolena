@@ -22,20 +22,20 @@ from text_summarization.seed_test_suite import main as seed_test_suite_main
 
 
 @pytest.fixture(scope="module")
-def suite_prefix() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__seed_test_suite__smoke(suite_prefix: str) -> None:
+def test__seed_test_suite__smoke(test_suite: str) -> None:
     args = Namespace(
         dataset_csv="s3://kolena-public-datasets/CNN-DailyMail/metadata/metadata.tiny1.csv",
-        suite_prefix=suite_prefix,
+        test_suite=test_suite,
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke(suite_prefix: str) -> None:
-    args = Namespace(model="ada", test_suite=f"{suite_prefix} :: text length", local_csv=None)
+def test__seed_test_run__smoke(test_suite: str) -> None:
+    args = Namespace(model="ada", test_suite=f"{test_suite} :: text length", local_csv=None)
     seed_test_run_main(args)

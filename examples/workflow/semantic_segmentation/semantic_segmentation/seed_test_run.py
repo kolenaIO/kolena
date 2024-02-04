@@ -46,16 +46,16 @@ def seed_test_run(model_name: str, test_suite_names: List[str]) -> None:
             activation_map=BitmapMask(locator=activation_map_locator),
         )
 
-    model = Model(f"{model_name}", infer=infer)
+    model = Model(f"{model_name}", infer=infer)  # type: ignore
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
-        configurations = [SegmentationConfiguration(threshold=0.5)]
+        configurations = [SegmentationConfiguration(threshold=0.5)]  # type: ignore
 
         test(
             model,
             test_suite,
-            evaluate_semantic_segmentation,
-            configurations=configurations,
+            evaluate_semantic_segmentation,  # type: ignore
+            configurations=configurations,  # type: ignore
             reset=True,
         )
 
@@ -76,13 +76,13 @@ if __name__ == "__main__":
         help="Name of model in directory to test",
     )
     ap.add_argument(
-        "--test_suites",
+        "--test-suites",
         default=[f"# of people :: {DATASET} [person]"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )
     ap.add_argument(
-        "--out_bucket",
+        "--out-bucket",
         required=True,
         help="Name of AWS S3 bucket with write access to upload result masks to.",
     )

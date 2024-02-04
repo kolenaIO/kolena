@@ -12,8 +12,6 @@ This page answers common questions about Kolena and how to use it to test ML mod
 If you don't see your question here, please reach out to us on Slack or at
 [contact@kolena.com](mailto:contact@kolena.com)!
 
-
-
 ## About Kolena
 
 ??? faq "What data types does Kolena support?"
@@ -50,8 +48,6 @@ If you don't see your question here, please reach out to us on Slack or at
     Kolena is primarily a testing (or "offline evaluation") platform, coming _after_ training and _before_ deployment.
     We believe that increased emphasis on this offline evaluation segment of the model development life cycle can save
     effort upstream in the data collection and training process as well as prevent headaches downstream in deployment.
-
-
 
 ## Using Kolena
 
@@ -96,10 +92,12 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? faq "Who are administrators for my organization?"
 
-    Certain members of each organization have administrator privileges. These administrators can manage users access and privileges,
+    Certain members of each organization have administrator privileges.
+    These administrators can manage users access and privileges,
     as well as configure Integrations.
 
-    You may become an administrator by having an existing administrator grant you privileges using the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=users) page.
+    You may become an administrator by having an existing administrator grant you privileges
+    using the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=users) page.
 
 ??? faq "I'm new to Kolena — how can I learn more about the platform and how to use it?"
 
@@ -114,7 +112,6 @@ If you don't see your question here, please reach out to us on Slack or at
     issues.
 
     Please include any relevant stacktrace or platform URL when reporting an issue.
-
 
 ## Troubleshooting Errors
 

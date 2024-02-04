@@ -5,10 +5,26 @@
 </p>
 
 <p align='center'>
-  <a href="https://pypi.python.org/pypi/kolena"><img src="https://img.shields.io/pypi/v/kolena?logo=python&logoColor=white&style=flat-square" /></a>
-  <a href="https://www.apache.org/licenses/LICENSE-2.0"><img src="https://img.shields.io/pypi/l/kolena?style=flat-square" /></a>
-  <a href="https://github.com/kolenaIO/kolena/actions"><img src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk?logo=circleci&logoColor=white&style=flat-square" /></a>
-  <a href="https://codecov.io/gh/kolenaIO/kolena" ><img src="https://img.shields.io/codecov/c/github/kolenaIO/kolena?logo=codecov&logoColor=white&style=flat-square&token=8WOY5I8SF1" /></a>
+  <a href="https://pypi.python.org/pypi/kolena">
+    <img
+      src="https://img.shields.io/pypi/v/kolena?logo=python&logoColor=white&style=flat-square"
+    />
+  </a>
+  <a href="https://www.apache.org/licenses/LICENSE-2.0">
+    <img
+      src="https://img.shields.io/pypi/l/kolena?style=flat-square"
+    />
+  </a>
+  <a href="https://github.com/kolenaIO/kolena/actions">
+    <img
+      src="https://img.shields.io/github/checks-status/kolenaIO/kolena/trunk?logo=circleci&logoColor=white&style=flat-square"
+    />
+  </a>
+  <a href="https://codecov.io/gh/kolenaIO/kolena" >
+    <img
+      src="https://img.shields.io/codecov/c/github/kolenaIO/kolena?logo=codecov&logoColor=white&style=flat-square&token=8WOY5I8SF1"
+    />
+  </a>
 </p>
 
 ---
@@ -23,7 +39,7 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
 platform. [Install](https://docs.kolena.io/installing-kolena) with your favorite Python package manager and
-[get started in minutes](https://docs.kolena.io/quickstart):
+[get started in minutes](https://docs.kolena.io/dataset/quickstart):
 
 ```
 pip install kolena
@@ -31,6 +47,6 @@ pip install kolena
 
 ## Quick Links
 
-| [Developer Guide](https://docs.kolena.io) | [Quickstart](https://docs.kolena.io/quickstart) | [API Reference](https://docs.kolena.io/reference) | [Examples](./examples) |
+| [Developer Guide](https://docs.kolena.io) | [Quickstart](https://docs.kolena.io/dataset/quickstart) | [API Reference](https://docs.kolena.io/reference) | [Examples](./examples) |
 | --- | --- | --- | --- |
 | Tutorial and usage documentation | Set up rigorous and repeatable model testing in minutes | Detailed `kolena` typing and function documentation | Reference integrations for different machine learning workflows |

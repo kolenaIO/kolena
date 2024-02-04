@@ -25,6 +25,8 @@ COL_DATAPOINT_ID_OBJECT = "datapoint_id_object"
 COL_EVAL_CONFIG = "eval_config"
 COL_RESULT = "result"
 
+DEFAULT_SOURCES = [dict(type="sdk")]
+
 
 def validate_batch_size(batch_size: int) -> None:
     if batch_size <= 0:
@@ -53,7 +55,7 @@ def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -
                 f"invalid id_fields: input dataframe's id field values are not unique for {id_fields}",
             )
     except TypeError as e:
-        raise InputValidationError("id fields must be hashable: ", e)
+        raise InputValidationError("id fields must be hashable") from e
 
 
 def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:

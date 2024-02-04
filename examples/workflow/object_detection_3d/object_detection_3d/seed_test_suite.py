@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import argparse
 import json
 from argparse import ArgumentParser
 from enum import Enum
@@ -30,15 +31,19 @@ import kolena
 DEFAULT_TEST_SUITE_NAME = "KITTI 3D Object Detection :: training :: metrics"
 
 
-def parse_args():
+def parse_args() -> argparse.Namespace:
     parser = ArgumentParser()
     parser.add_argument("sample_file", help="File containing test sample and ground truth data", type=Path)
-    parser.add_argument("--test-suite", help="Name of test suite", default=DEFAULT_TEST_SUITE_NAME)
+    parser.add_argument(
+        "--test-suite",
+        help="Optionally specify a name for the created test suite.",
+        default=DEFAULT_TEST_SUITE_NAME,
+    )
     args = parser.parse_args()
     return args
 
 
-def seed_test_suite(test_suite_name: str, test_samples: List[Tuple[TestSample, GroundTruth]]):
+def seed_test_suite(test_suite_name: str, test_samples: List[Tuple[TestSample, GroundTruth]]) -> None:
     kolena.initialize(verbose=True)
 
     test_cases = TestCase.init_many([(test_suite_name, test_samples)], reset=True)
@@ -46,7 +51,7 @@ def seed_test_suite(test_suite_name: str, test_samples: List[Tuple[TestSample, G
     print(f"created test suite {test_suite.name}")
 
 
-def main(args):
+def main(args: argparse.Namespace) -> None:
     with open(str(args.sample_file)) as f:
         data = json.load(f)["data"]
 

@@ -14,18 +14,11 @@
 from collections import defaultdict
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Set
 from typing import Tuple
 from typing import Union
-
-from kolena.workflow.annotation import ScoredLabeledBoundingBox
-from kolena.workflow.annotation import ScoredLabeledPolygon
-
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
 
 import numpy as np
 
@@ -34,6 +27,8 @@ from kolena._utils import log
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
+from kolena.workflow.annotation import ScoredLabeledBoundingBox
+from kolena.workflow.annotation import ScoredLabeledPolygon
 from kolena.workflow.metrics import InferenceMatches
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
@@ -52,7 +47,7 @@ def filter_inferences(
 
 
 def _compute_sklearn_arrays(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]],
 ) -> Tuple[np.ndarray, np.ndarray]:
     y_true: List[int] = []
     y_score: List[float] = []
@@ -151,7 +146,7 @@ def _compute_multiclass_curves(
 
 
 def compute_pr_curve(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]],
     curve_label: Optional[str] = None,
 ) -> Optional[Curve]:
     """
@@ -166,7 +161,7 @@ def compute_pr_curve(
 
 
 def compute_pr_plot(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]],
     curve_label: Optional[str] = None,
 ) -> Optional[CurvePlot]:
     """
@@ -215,7 +210,7 @@ def compute_pr_plot_multiclass(
 
 
 def compute_f1_plot(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]],
     curve_label: Optional[str] = None,
 ) -> Optional[CurvePlot]:
     """
@@ -320,7 +315,7 @@ def _compute_sklearn_arrays_by_class(
             labels.add(bbox_inf.label)
 
     for label in labels:
-        filtered_matchings = [
+        filtered_matchings: List[InferenceMatches] = [
             InferenceMatches(
                 matched=[(gt, inf) for gt, inf in match.matched if gt.label == label],
                 unmatched_gt=[gt for gt, _ in match.unmatched_gt if gt.label == label],
@@ -366,7 +361,7 @@ def _compute_optimal_f1_with_arrays(
 
 
 def compute_optimal_f1_threshold(
-    all_matches: List[Union[MulticlassInferenceMatches, InferenceMatches]],
+    all_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]],
 ) -> float:
     """
     Computes the optimal F1 threshold for matchings.
@@ -412,8 +407,8 @@ def compute_average_precision(precisions: List[float], recalls: List[float]) -> 
         return 0
 
     pairs = sorted(zip(recalls, precisions), key=lambda x: x[0])
-    recalls, precisions = zip(*pairs)
-
+    recalls = [x[0] for x in pairs]
+    precisions = [x[1] for x in pairs]
     # add (0,0) to left and (1,0) to right
     recalls = [0, *recalls, 1]
     precisions = [0, *precisions, 0]

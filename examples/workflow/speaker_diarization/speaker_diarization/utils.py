@@ -13,6 +13,7 @@
 # limitations under the License.
 import re
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 import numpy as np
@@ -24,6 +25,7 @@ from speaker_diarization.workflow import GroundTruth
 from speaker_diarization.workflow import Inference
 from speaker_diarization.workflow import TestCase
 
+from kolena.workflow.annotation import LabeledTimeSegment
 from kolena.workflow.annotation import TimeSegment
 
 # allowed error (in seconds) when generating identification and missed speech errors.
@@ -37,7 +39,7 @@ def build_speaker_index(inf: List[Tuple[str, float, float]]) -> dict[str, int]:
     return index
 
 
-def compute_intersection_length(A: List[Tuple[float, float]], B: List[Tuple[float, float]]) -> float:
+def compute_intersection_length(A: Tuple[str, float, float], B: Tuple[str, float, float]) -> float:
     # borrowed from https://github.com/wq2012/SimpleDER/blob/master/simpleder/der.py
     max_start = max(A[1], B[1])
     min_end = min(A[2], B[2])
@@ -60,7 +62,7 @@ def build_cost_matrix(ref: List[Tuple[str, float, float]], inf: List[Tuple[str, 
     return cost_matrix
 
 
-def realign_labels(ref_df: pd.DataFrame, inf_df: pd.DataFrame):
+def realign_labels(ref_df: pd.DataFrame, inf_df: pd.DataFrame) -> None:
     """
     Aligns speaker labels using linear sum optimiztion
     """
@@ -81,38 +83,38 @@ def realign_labels(ref_df: pd.DataFrame, inf_df: pd.DataFrame):
     inf_df["speaker"] = inf_df["speaker"].apply(lambda x: f"NA_{int(x)}" if x not in mapping.keys() else mapping[x])
 
 
-def generate_annotation(segments: List[TimeSegment]) -> Annotation:
+def generate_annotation(segments: List[LabeledTimeSegment]) -> Annotation:
     """
     Generates pyannote Annotation objects for calculating metrics
     """
     annotation = Annotation()
     for segment in segments:
-        annotation[Segment(segment.start, segment.end)] = segment.group
+        annotation[Segment(segment.start, segment.end)] = segment.group  # type: ignore
 
     return annotation
 
 
-def preprocess_text(segments: List[TimeSegment]) -> str:
+def preprocess_text(segments: List[LabeledTimeSegment]) -> str:
     """
     Preprocess text by removing punctuation and combining transcriptions.
     """
-    text = " ".join([segment.label for segment in segments])
+    text = " ".join([segment.label for segment in segments])  # type: ignore
     text = re.sub(r"[^\w\s]", "", text.lower())
     return text
 
 
 def create_non_overlapping_segments(
-    transcription: List[TimeSegment],
-    identity=None,
-) -> List[Tuple[float, float]]:
+    transcription: List[TimeSegment],  # type: ignore
+    identity: Optional[str] = None,
+) -> List[List[float]]:
     """
     Takes in a list of TimeSegments (overlapping or not) and returns a non-overlapping segment list.
     """
-    res = []  # [(start, end), ...]
+    res: List[List[float]] = []  # [(start, end), ...]
     transcription = sorted(transcription, key=lambda x: x.start)
 
     for t in transcription:
-        if identity is not None and t.group != identity:
+        if identity is not None and t.group != identity:  # type: ignore
             continue
 
         start_time = t.start
@@ -146,7 +148,7 @@ def create_non_overlapping_segments(
     return res
 
 
-def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> List[Tuple[float, float]]:
+def remove_intersection(inf: List[float], gt: List[float]) -> Optional[List[List[float]]]:
     """
     Takes in two intervals, GT and Inf, and removes the intersect of the two from inf.
     """
@@ -171,7 +173,7 @@ def remove_intersection(inf: Tuple[float, float], gt: Tuple[float, float]) -> Li
         return [[gt_end, inf_end]]
 
 
-def generate_error(gt: List[Tuple[float, float]], inf: List[Tuple[float, float]]) -> List[Tuple[float, float]]:
+def generate_error(gt: List[List[float]], inf: List[List[float]]) -> List[List[float]]:
     """
     Generates error intervals between a GT and Inf interval list.
     generate_error(gt, inf) returns the false positives, whereas generate_error(inf, gt) returns the false negatives.
@@ -202,51 +204,35 @@ def generate_identification_error(gt: GroundTruth, inf: Inference) -> List[TimeS
     """
     unique_identities = set()
     for t in gt.transcription:
-        unique_identities.add(t.group)
+        unique_identities.add(t.group)  # type: ignore
 
     res = []
     for id in unique_identities:
-        gt_no = create_non_overlapping_segments(gt.transcription, id)
-        inf_no = create_non_overlapping_segments(inf.transcription, id)
+        gt_no = create_non_overlapping_segments(gt.transcription, id)  # type: ignore
+        inf_no = create_non_overlapping_segments(inf.transcription, id)  # type: ignore
         res.extend(generate_error(gt_no, inf_no))
         res.extend(generate_error(inf_no, gt_no))
 
-    res = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
+    res_seg = [TimeSegment(start=r[0], end=r[1]) for r in res if r[1] - r[0] >= ERROR_THRESHOLD]
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in create_non_overlapping_segments(res)]
-
-
-def invert_segments(segments: List[TimeSegment], end: float) -> List[Tuple[float, float]]:
-    """
-    Inverts time segments. Ex: [(start1, end1), (start2, end2)] -> [(end1, start2)]
-    """
-    res = []
-
-    for i in range(len(segments) - 1):
-        if segments[i + 1].start - segments[i].end > 0:
-            res.append(segments[i + 1][0] - segments[i][1])
-
-    if end - segments[-1][1] > 0:
-        res.append(segments[-1][1], end)
-
-    return res
+    return [TimeSegment(start=r[0], end=r[1]) for r in create_non_overlapping_segments(res_seg)]
 
 
 def generate_missed_speech_error(gt: GroundTruth, inf: Inference) -> List[TimeSegment]:
     """
     Highlights all missed speech.
     """
-    gt = create_non_overlapping_segments(gt.transcription)
-    inf = create_non_overlapping_segments(inf.transcription)
+    gt_non_overlap = create_non_overlapping_segments(gt.transcription)  # type: ignore
+    inf_non_overlap = create_non_overlapping_segments(inf.transcription)  # type: ignore
 
-    return [TimeSegment(start=r[0], end=r[1]) for r in generate_error(inf, gt)]
+    return [TimeSegment(start=r[0], end=r[1]) for r in generate_error(inf_non_overlap, gt_non_overlap)]
 
 
 def calculate_tertiles(tc: TestCase, feature: str) -> dict:
     """
     Calculates the tertiles of a feature stored in metadata.
     """
-    feature_list = [ts.metadata[feature] for ts, gt in tc.iter_test_samples()]
+    feature_list = [ts.metadata[feature] for ts, gt in tc.iter_test_samples()]  # type: ignore
     percentiles = [np.percentile(feature_list, i) for i in np.linspace(0, 100, 4)]
 
     test_case_name_to_decision_logic_map = {

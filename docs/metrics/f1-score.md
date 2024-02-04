@@ -19,7 +19,7 @@ Thus, the F<sub>1</sub>-score has become a popular metric for the evaluation of 
 object detection, semantic segmentation, and information retrieval.
 
 <div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.workflow.metrics.f1_score]
+- :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.metrics.f1_score]
 </div>
 
 ## Implementation Details
@@ -62,7 +62,6 @@ $$
 \end{align}
 $$
 </div>
-
 
 Partially correct inferences, where every ground truth is recalled by an inference:
 
@@ -143,7 +142,6 @@ $$
 $$
 </div>
 
-
 ### Multiple Classes
 
 In workflows with multiple classes, the F<sub>1</sub>-score can be computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md)
@@ -162,15 +160,20 @@ these methods in the [Averaging Methods](./averaging-methods.md) guide.
 The **F$_\beta$-score** is a generic form of the F<sub>1</sub>-score with a weight parameter, $\beta$, where
 recall is considered $\beta$ times more important than precision:
 
+<!-- markdownlint-disable MD013 -->
 $$
 \text{F}_{\beta} = \frac {(1 + \beta^2) \times \text{precision} \times \text{recall}} {(\beta^2 \times \text{precision}) + \text{recall}}
 $$
+<!-- markdownlint-enable MD013 -->
 
 The three most common values for the beta parameter are as follows:
 
-- **F<sub>0.5</sub>-score** $\left(\beta = 0.5\right)$, where precision is more important than recall, it focuses more on minimizing FPs than minimizing FNs
-- **F<sub>1</sub>-score** $\left(\beta = 1\right)$, the true harmonic mean of precision and recall
-- **F<sub>2</sub>-score** $\left(\beta = 2\right)$, where recall is more important than precision, it focuses more on minimizing FNs than minimizing FPs
+- **F<sub>0.5</sub>-score** $\left(\beta = 0.5\right)$,
+  where precision is more important than recall, it focuses more on minimizing FPs than minimizing FNs
+- **F<sub>1</sub>-score** $\left(\beta = 1\right)$,
+  the true harmonic mean of precision and recall
+- **F<sub>2</sub>-score** $\left(\beta = 2\right)$,
+  where recall is more important than precision, it focuses more on minimizing FNs than minimizing FPs
 
 ## Limitations and Biases
 

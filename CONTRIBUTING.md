@@ -8,7 +8,7 @@ Pre-commit is used for static analysis and to ensure code style consistency. Ple
 errors can be caught before committing code.
 
 ```
-$ poetry run pre-commit install
+poetry run pre-commit install
 ```
 
 ## Documentation

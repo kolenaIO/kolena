@@ -28,6 +28,7 @@ This project defines two scripts that perform the following operations:
    `ICSI-Corpus` by default.
 
    Run this command to create the default dataset:
+
     ```shell
     poetry run python3 speaker_diarization/upload_dataset.py
     ```
@@ -36,6 +37,7 @@ This project defines two scripts that perform the following operations:
    `gcp-stt-video` for the above dataset.
 
    Run this command to upload results of model `gcp-stt-video` for the above dataset:
+
     ```shell
     poetry run python3 speaker_diarization/upload_results.py
     ```

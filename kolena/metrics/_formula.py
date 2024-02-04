@@ -23,7 +23,7 @@ def accuracy(true_positives: int, false_positives: int, false_negatives: int, tr
     $$
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Accuracy ↗](../../metrics/accuracy.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Accuracy ↗](../metrics/accuracy.md)
     </div>
 
     :param true_positives: Number of true positive inferences.
@@ -45,7 +45,7 @@ def precision(true_positives: int, false_positives: int) -> float:
     $$
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Precision ↗](../../metrics/precision.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Precision ↗](../metrics/precision.md)
     </div>
 
     :param true_positives: Number of true positive inferences.
@@ -64,7 +64,7 @@ def recall(true_positives: int, false_negatives: int) -> float:
     $$
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Recall ↗](../../metrics/recall.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Recall ↗](../metrics/recall.md)
     </div>
 
     :param true_positives: Number of true positive inferences.
@@ -76,8 +76,8 @@ def recall(true_positives: int, false_negatives: int) -> float:
 
 def f1_score(true_positives: int, false_positives: int, false_negatives: int) -> float:
     """
-    F<sub>1</sub>-score is the harmonic mean between [`precision`][kolena.workflow.metrics.precision] and
-    [`recall`][kolena.workflow.metrics.recall].
+    F<sub>1</sub>-score is the harmonic mean between [`precision`][kolena.metrics.precision] and
+    [`recall`][kolena.metrics.recall].
 
     $$
     \\begin{align}
@@ -88,7 +88,7 @@ def f1_score(true_positives: int, false_positives: int, false_negatives: int) ->
     $$
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [F<sub>1</sub>-score ↗](../../metrics/f1-score.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [F<sub>1</sub>-score ↗](../metrics/f1-score.md)
     </div>
 
     :param true_positives: Number of true positive inferences.
@@ -111,7 +111,7 @@ def fpr(true_negatives: int, false_positives: int) -> float:
     $$
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [False Positive Rate ↗](../../metrics/fpr.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [False Positive Rate ↗](../metrics/fpr.md)
     </div>
 
     :param true_negatives: Number of true negatives.
@@ -130,7 +130,7 @@ def specificity(true_negatives: int, false_positives: int) -> float:
     $$
 
     <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Specificity ↗](../../metrics/specificity.md)
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Specificity ↗](../metrics/specificity.md)
     </div>
 
     :param true_negatives: Number of true negatives.

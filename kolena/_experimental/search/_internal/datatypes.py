@@ -14,6 +14,10 @@
 import pandera as pa
 from pandera.typing import Series
 
+# Ensure check method is registered or else would get SchemaInitError
+# noreorder
+from kolena._utils.dataframes.validators import _validate_locator  # noqa: F401
+
 
 class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
     key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
@@ -24,5 +28,21 @@ class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
 
     embedding: Series[pa.typing.String] = pa.Field(coerce=True)
     """
-    Embedding vector (`np.ndarray`) corresponding to a searchable representation of the sample.
+    Embedding vector (base64-encoded string of `np.ndarray`) corresponding to a searchable representation of the sample.
+    """
+
+
+class DatasetEmbeddingsDataFrameSchema(pa.SchemaModel):
+    key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
+    """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
+
+    datapoint_id_object: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    String representation of the serialized datapoint id object from the dataset's id fields.
+    """
+
+    embedding: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    Embedding vector (base64-encoded string of `np.ndarray`) corresponding to a searchable representation of the
+        datapoint.
     """

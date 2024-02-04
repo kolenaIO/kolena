@@ -29,7 +29,7 @@ class ExtendedBoundingBox(LabeledBoundingBox):
 
 @dataclass(frozen=True)
 class GroundTruth(BaseGroundTruth):
-    bboxes: List[ExtendedBoundingBox]
+    bboxes: List[ExtendedBoundingBox]  # type: ignore
 
 
 _, TestCase, TestSuite, Model = define_workflow(

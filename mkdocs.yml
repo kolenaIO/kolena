@@ -47,6 +47,7 @@ nav:
     - <code>kolena.errors</code>: reference/errors.md
     - <code>kolena.initialize</code>: reference/initialize.md
     - <code>kolena.io</code>: reference/io.md
+    - <code>kolena.metrics</code>: reference/metrics.md
     - <code>kolena.dataset</code>:
       - <code>kolena.dataset</code>: reference/dataset/index.md
     - <code>kolena.workflow</code>:
@@ -90,8 +91,10 @@ nav:
       - metrics/geometry-matching.md
       - metrics/iou.md
     - Large Language Models:
+      - metrics/consistency-score.md
       - metrics/contradiction-score.md
-      - HEM Score: metrics/vectara-HEM-score.md
+      - HHEM Score: metrics/HHEM-score.md
+      - metrics/prompt-based-hallucination-metric.md
     - Natural Language Processing:
       - metrics/bertscore.md
       - metrics/bleu.md

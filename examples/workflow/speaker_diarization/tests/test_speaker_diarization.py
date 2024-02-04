@@ -25,23 +25,23 @@ DATASET = "ICSI-corpus"
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
 
-def test__seed_test_suite__smoke(suite_name: str) -> None:
+def test__seed_test_suite__smoke(test_suite: str) -> None:
     args = Namespace(
         dataset_csv=f"s3://{BUCKET}/{DATASET}/metadata_test.csv",
-        suite_name=suite_name,
+        test_suite=test_suite,
     )
     seed_test_suite_main(args)
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
-def test__seed_test_run__smoke(suite_name: str) -> None:
+def test__seed_test_run__smoke(test_suite: str) -> None:
     args = Namespace(
         align_speakers=False,
-        suite_name=f"{suite_name} :: average amplitude",
+        test_suite=f"{test_suite} :: average amplitude",
     )
     seed_test_run_main(args)

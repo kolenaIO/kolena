@@ -135,7 +135,11 @@ def seed_test_run(
     groups_df: pd.DataFrame,
 ) -> None:
     # create a model
-    model = Model(model_full_name, infer=get_stored_inferences(groups_df), metadata=MODEL_METADATA[model_alias])
+    model = Model(
+        model_full_name,
+        infer=get_stored_inferences(groups_df),  # type: ignore
+        metadata=MODEL_METADATA[model_alias],
+    )
 
     # customizable configurations for the evaluator
     evaluator = setup_evaluator()

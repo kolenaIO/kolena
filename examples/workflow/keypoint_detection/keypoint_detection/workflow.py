@@ -109,5 +109,5 @@ class NmseThreshold(EvaluatorConfiguration):
     # threshold for NMSE (norm mean square error) above which an image is considered an "alignment failure"
     threshold: float
 
-    def display_name(self):
+    def display_name(self) -> str:
         return f"nme-threshold-{self.threshold}"

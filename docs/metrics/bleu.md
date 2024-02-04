@@ -14,10 +14,14 @@ nature for measuring textual similarity.
 ## Implementation Details
 
 ### Background
+
 The BLEU score consists of two components — the Brevity Penalty and the n-gram Overlap.
 
 ??? question "What are n-grams?"
-    An n-gram is a series of `n` adjacent tokens or words in a text. For example, all 1-grams (or unigrams) of the sentence `The cat chased the squirrel` are `["the", "cat", "chased", "the", "squirrel"]`. The *bigrams* of the same sentence are `["the cat", "cat chased", "chased the", "the squirrel"]`.
+    An n-gram is a series of `n` adjacent tokens or words in a text.
+    For example, all 1-grams (or unigrams) of the sentence
+    `The cat chased the squirrel` are `["the", "cat", "chased", "the", "squirrel"]`.
+    The *bigrams* of the same sentence are `["the cat", "cat chased", "chased the", "the squirrel"]`.
 
 1. The **n-gram Overlap** counts the number of 1-grams, 2-grams, 3-grams, and 4-grams of the output text that match the
 1-, ..., 4-grams in the reference text — which is analogous to a precision score for the text. The 1-gram precision
@@ -26,19 +30,23 @@ ensures that the correct vocabulary is used, whereas the 4-gram precision ensure
 reference text. This is due to the fact that the n-gram Overlap precision tends to give disproportionately high values
 to candidate texts that are very short in length, but mostly contain n-grams in the reference text.
 
-
 ### Definition
+
 The BLEU score is mathematically defined as:
 
+<!-- markdownlint-disable MD013 -->
 $$\begin{align*} \text{BLEU} &= \text{Brevity Penalty} \times \text{n-gram Overlap} \\
 &= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \prod_{i=1}^{4}\text{i-gram Precision}^{\frac{1}{4}}
 \end{align*}$$
+<!-- markdownlint-enable MD013 -->
 
 where the i-gram precision is calculated as:
 
+<!-- markdownlint-disable MD013 -->
 $$
 p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1}{\text{Total number of i-grams in candidate text}}
 $$
+<!-- markdownlint-enable MD013 -->
 
 <div class="footnote-content">
     <p style="font-size: smaller;">
@@ -81,28 +89,34 @@ understanding. While a high BLEU score is promising, it doesn't guarantee flawle
 
     **Generated Sentence**:
 
+    <!-- markdownlint-disable MD013 -->
     | n | n-grams |
     | ---   | ---                        |
     | 1 | [`Fall`, `leaves`, `rustled`, `softly`, `beneath`, `our`, `weary`, `feet`]|
     | 2 | [`Fall leaves`, `leaves rustled`, `rustled softly`, `softly beneath`, `beneath our`, `our weary`, `weary feet`]|
     | 3 | [`Fall leaves rustled`, `leaves rustled softly`, `rustled softly beneath`, `softly beneath our`, `beneath our weary`, `our weary feet`] |
     | 4 | [`Fall leaves rustled softly`, `leaves rustled softly beneath`, `rustled softly beneath our`, `softly beneath our weary`, `beneath our weary feet`]  |
+    <!-- markdownlint-enable MD013 -->
 
     **Reference Sentence**:
 
+    <!-- markdownlint-disable MD013 -->
     | n | n-grams |
     | --- | --- |
     | 1 | [`Crisp`, `autumn`, `leaves`, `rustled`, `softly`, `beneath`, `our`, `weary`, `feet`]|
     | 2 | [`Crisp autumn`, `autumn leaves`, `leaves rustled`, `rustled softly`, `softly beneath`, `beneath our`, `our weary`, `weary feet`]|
     | 3 | [`Crisp autumn leaves`, `autumn leaves rustled`, `leaves rustled softly`, `rustled softly beneath`, `softly beneath our`, `beneath our weary`, `our weary feet`]|
     | 4 | [`Crisp autumn leaves rustled`, `autumn leaves rustled softly`, `leaves rustled softly beneath`, `rustled softly beneath our`, `softly beneath our weary`, `beneath our weary feet`]|
+    <!-- markdownlint-enable MD013 -->
 
 ??? example "Step 2: Calculate n-gram Overlap"
     Next, let's calculate the clipped precision scores for each of the n-grams. Recall that the precision formula is:
 
+    <!-- markdownlint-disable MD013 -->
     $$
     p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated text}^1}{\text{Total number of i-grams in machine-generated text}}
     $$
+    <!-- markdownlint-enable MD013 -->
 
     <center>
 
@@ -142,7 +156,6 @@ understanding. While a high BLEU score is promising, it doesn't guarantee flawle
     — since multiple interpretations of the same sentences can be allowed. For example, if we calculated the BLEU score
     with the reference text being `"Crisp autumn leaves rustled softly beneath our exhausted feet"`, our BLEU score
     would be 0.478 - a much lower score from a small semantic change.
-
 
 ## Advantages and Limitations
 Though BLEU is a popular metric in NLP workflows, it comes with its limitations.

@@ -32,7 +32,7 @@ DATASET = "CNN-DailyMail"
 def seed_test_suite_by_text(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "short": lambda x: x < 500,
         "medium": lambda x: 500 <= x < 1000,
@@ -41,7 +41,7 @@ def seed_test_suite_by_text(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.word_count)]
+        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.word_count)]  # type: ignore
 
         new_ts = TestCase(
             f"text length :: {name} :: {DATASET}",
@@ -61,7 +61,7 @@ def seed_test_suite_by_text(
 def seed_test_suite_by_text_x_gt(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "short text + short GT": lambda x, y: x < 500 and y < 60,
         "short text + long GT": lambda x, y: x < 500 and y >= 60,
@@ -73,7 +73,11 @@ def seed_test_suite_by_text_x_gt(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        ts_list = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.word_count, gt.word_count)]
+        ts_list = [
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.word_count, gt.word_count)
+        ]
 
         new_ts = TestCase(
             f"text X GT length :: {name} :: {DATASET}",
@@ -93,8 +97,8 @@ def seed_test_suite_by_text_x_gt(
 def seed_test_suite_by_category(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
-    complete_test_samples = complete_test_case.load_test_samples()
+) -> None:
+    complete_test_samples = complete_test_case.load_test_samples()  # type: ignore
     categories = list({ts.metadata["category"] for ts, _ in complete_test_samples})
     test_cases = []
     for category in categories:
@@ -118,7 +122,7 @@ def seed_test_suite_by_category(
 def seed_test_suite_by_moderation(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = {
         "low": lambda x: x < 0.01,
         "medium": lambda x: 0.01 <= x < 0.04,
@@ -128,7 +132,11 @@ def seed_test_suite_by_moderation(
 
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
-        samples = [(ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["moderation_score"])]
+        samples = [
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["moderation_score"])
+        ]
 
         ts = TestCase(
             f"moderation score :: {name} :: {DATASET}",
@@ -172,7 +180,7 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
         ground_truth = GroundTruth(summary=get_readable(record.article_summary), word_count=record.summary_word_count)
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case
@@ -193,7 +201,7 @@ def seed_test_suites(
 def main(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     complete_tc = seed_complete_test_case(args)
-    suite_prefix = args.suite_prefix
+    suite_prefix = args.test_suite
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
         f"{suite_prefix} :: text length": seed_test_suite_by_text,
@@ -208,15 +216,15 @@ if __name__ == "__main__":
     ap = ArgumentParser()
 
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default="s3://kolena-public-datasets/CNN-DailyMail/metadata/CNN_DailyMail_metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
     ap.add_argument(
-        "--suite_prefix",
+        "--test-suite",
         type=str,
         default=DATASET,
-        help="Optionally specify a prefix for the created test suite names.",
+        help="Optionally specify a name for the created test suites.",
     )
     main(ap.parse_args())

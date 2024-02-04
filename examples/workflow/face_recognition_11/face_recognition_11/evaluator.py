@@ -11,9 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Any
 from typing import List
 from typing import Optional
 from typing import Tuple
+from typing import Union
 
 import numpy as np
 from face_recognition_11.utils import calculate_mse_nmse
@@ -53,7 +55,7 @@ def compute_per_sample(
     inference: Inference,
     threshold: float,
     configuration: ThresholdConfiguration,
-    test_sample: TestSample = None,
+    test_sample: Optional[TestSample] = None,
 ) -> TestSampleMetrics:
     # Stage 1: Detection
 
@@ -112,7 +114,7 @@ def compute_per_sample(
         distances = np.array([Δ_left_eye, Δ_right_eye, Δ_nose, Δ_left_mouth, Δ_right_mouth])
         mse, nmse = calculate_mse_nmse(distances, normalization_factor)
 
-    if not bbox_fte and (inference.keypoints is None or nmse >= configuration.nmse_threshold):
+    if not bbox_fte and (inference.keypoints is None or (nmse is not None and nmse >= configuration.nmse_threshold)):
         keypoint_fta = True
 
     # Stage 3: Recognition
@@ -185,7 +187,7 @@ def compute_per_bbox_case(
         Label="Bounding Box Detection",
         Total=np.sum([gt.bbox is not None for gt in ground_truths]),
         FTE=np.sum([tsm.bbox_failure_to_enroll for tsm in metrics]),
-        AvgIoU=np.mean([tsm.bbox_IoU for tsm in metrics]),
+        AvgIoU=np.mean([tsm.bbox_IoU for tsm in metrics]),  # type: ignore
         Precision=precision(tp, fp),
         Recall=recall(tp, fn),
         F1=f1_score(tp, fp, fn),
@@ -196,25 +198,27 @@ def compute_per_bbox_case(
 
 
 def compute_per_keypoint_case(ground_truths: List[GroundTruth], metrics: List[TestSampleMetrics]) -> PerKeypointMetrics:
-    def process_metric(metric):
+    def process_metric(metric: Any) -> Union[TestSampleMetrics, float]:
         return metric if metric is not None else 0.0
 
+    keypoint_norm_Δ_left_mouth_lst = [process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]
+    keypoint_norm_Δ_right_mouth_lst = [process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]
     return PerKeypointMetrics(
         Label="Keypoints Detection",
-        Total=np.sum([gt.keypoints is not None for gt in ground_truths]),
-        FTA=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),
-        MSE=np.nanmean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),
-        NMSE=np.nanmean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),
-        AvgΔNose=np.nanmean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),
-        AvgΔLeftEye=np.nanmean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),
-        AvgΔRightEye=np.nanmean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),
-        AvgΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),
-        AvgΔRightMouth=np.nanmean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),
-        AvgNormΔNose=np.nanmean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),
-        AvgNormΔLeftEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),
-        AvgNormΔRightEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),
-        AvgNormΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_mouth) for tsm in metrics]),
-        AvgNormΔRightMouth=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_mouth) for tsm in metrics]),
+        Total=np.sum([gt.keypoints is not None for gt in ground_truths]),  # type: ignore
+        FTA=np.sum([tsm.keypoint_failure_to_align for tsm in metrics]),  # type: ignore
+        MSE=np.nanmean([process_metric(tsm.keypoint_MSE) for tsm in metrics]),  # type: ignore
+        NMSE=np.nanmean([process_metric(tsm.keypoint_NMSE) for tsm in metrics]),  # type: ignore
+        AvgΔNose=np.nanmean([process_metric(tsm.keypoint_Δ_nose) for tsm in metrics]),  # type: ignore
+        AvgΔLeftEye=np.nanmean([process_metric(tsm.keypoint_Δ_left_eye) for tsm in metrics]),  # type: ignore
+        AvgΔRightEye=np.nanmean([process_metric(tsm.keypoint_Δ_right_eye) for tsm in metrics]),  # type: ignore
+        AvgΔLeftMouth=np.nanmean([process_metric(tsm.keypoint_Δ_left_mouth) for tsm in metrics]),  # type: ignore
+        AvgΔRightMouth=np.nanmean([process_metric(tsm.keypoint_Δ_right_mouth) for tsm in metrics]),  # type: ignore
+        AvgNormΔNose=np.nanmean([process_metric(tsm.keypoint_norm_Δ_nose) for tsm in metrics]),  # type: ignore
+        AvgNormΔLeftEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_left_eye) for tsm in metrics]),  # type: ignore
+        AvgNormΔRightEye=np.nanmean([process_metric(tsm.keypoint_norm_Δ_right_eye) for tsm in metrics]),  # type: ignore
+        AvgNormΔLeftMouth=np.nanmean(keypoint_norm_Δ_left_mouth_lst),  # type: ignore
+        AvgNormΔRightMouth=np.nanmean(keypoint_norm_Δ_right_mouth_lst),  # type: ignore
     )
 
 
@@ -254,7 +258,7 @@ def compute_test_case_plots(
     configuration: ThresholdConfiguration,
     baseline_thresholds: List[Tuple[float, float]],
 ) -> Optional[List[Plot]]:
-    plots = []
+    plots: List[Plot] = []
 
     # Plots for BBox
     tp = np.sum([tsm.bbox_has_TP for tsm in metrics])
@@ -375,9 +379,8 @@ def evaluate_face_recognition_11(
         test_sample_metrics,
     ):
         all_test_case_metrics.append((test_case, compute_test_case_metrics(ts_subset, gt, tsm, pair_metrics.fnmr)))
-        all_test_case_plots.append(
-            (test_case, compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, baseline_thresholds)),
-        )
+        plots = compute_test_case_plots(ts_subset, gt, inf, tsm, configuration, baseline_thresholds)
+        all_test_case_plots.append((test_case, plots))  # type: ignore
 
     test_suite_metrics = compute_test_suite_metrics(
         test_sample_metrics,
@@ -389,7 +392,7 @@ def evaluate_face_recognition_11(
 
     return EvaluationResults(
         metrics_test_sample=list(zip(test_samples, test_sample_metrics)),
-        metrics_test_case=all_test_case_metrics,
+        metrics_test_case=all_test_case_metrics,  # type: ignore
         plots_test_case=all_test_case_plots,
         metrics_test_suite=test_suite_metrics,
     )

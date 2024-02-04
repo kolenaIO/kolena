@@ -74,9 +74,9 @@ class TestCaseMetric(MetricsTestCase):
     total_cost: float
     avg_cost: float
     avg_inference_time: float
-    avg_wc_input: int
-    avg_wc_gt: int
-    avg_wc_inf: int
+    avg_wc_input: float
+    avg_wc_gt: float
+    avg_wc_inf: float
     inf_to_gt_word_count: float
     BERT_prec: float
     BERT_rec: float

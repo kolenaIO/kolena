@@ -35,7 +35,7 @@ DATASET = "KITTI 3D Object Detection"
 
 
 @pytest.fixture(scope="module")
-def suite_name() -> str:
+def test_suite() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
     return f"{TEST_PREFIX} - {DATASET}"
 
@@ -102,12 +102,12 @@ def dummy_results() -> List[Dict[str, Any]]:
     ]
 
 
-def test__seed_test_suite__smoke(suite_name: str) -> None:
-    seed_test_suite(suite_name, dummy_test_samples())
+def test__seed_test_suite__smoke(test_suite: str) -> None:
+    seed_test_suite(test_suite, dummy_test_samples())
 
 
 @pytest.mark.depends(on=["test__seed_test_suite__smoke"])
 @pytest.mark.skip("expected to fail until evaluation codes can run without cuda")
-def test__seed_test_run__smoke(suite_name: str) -> None:
+def test__seed_test_run__smoke(test_suite: str) -> None:
     model_name = f"KITTI 3D Object Detection ({uuid.uuid4()})"
-    seed_test_run(suite_name, model_name, dummy_results())
+    seed_test_run(test_suite, model_name, dummy_results())

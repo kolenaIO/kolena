@@ -34,12 +34,14 @@ DATASET = "ICSI-corpus"
 def seed_test_suite_by_avg_amp(
     test_suite_name: str,
     complete_test_case: TestCase,
-) -> TestSuite:
+) -> None:
     test_case_name_to_decision_logic_map = calculate_tertiles(complete_test_case, "Average_Amplitude")
     test_cases = []
     for name, fn in test_case_name_to_decision_logic_map.items():
         ts_list = [
-            (ts, gt) for ts, gt in complete_test_case.iter_test_samples() if fn(ts.metadata["Average_Amplitude"])
+            (ts, gt)
+            for ts, gt in complete_test_case.iter_test_samples()  # type: ignore
+            if fn(ts.metadata["Average_Amplitude"])
         ]
 
         new_tc = TestCase(
@@ -92,14 +94,14 @@ def seed_complete_test_case(args: Namespace) -> TestCase:
                     start=row.starttime,
                     end=row.endtime,
                     label=row.text,
-                    group=row.speaker,
+                    group=row.speaker,  # type: ignore
                 )
                 for idx, row in transcription_df.iterrows()
             ],
         )
         test_samples.append((test_sample, ground_truth))
 
-    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)
+    test_case = TestCase(f"complete :: {DATASET}", test_samples=test_samples, reset=True)  # type: ignore
     print(f"Created test case: {test_case}")
 
     return test_case
@@ -122,7 +124,7 @@ def main(args: Namespace) -> None:
     complete_tc = seed_complete_test_case(args)
 
     test_suite_names: Dict[str, Callable[[str, TestCase], TestSuite]] = {
-        f"{args.suite_name} :: average amplitude": seed_test_suite_by_avg_amp,
+        f"{args.test_suite} :: average amplitude": seed_test_suite_by_avg_amp,
     }
     seed_test_suites(test_suite_names, complete_tc)
 
@@ -130,14 +132,14 @@ def main(args: Namespace) -> None:
 if __name__ == "__main__":
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset_csv",
+        "--dataset-csv",
         type=str,
         default=f"s3://{BUCKET}/{DATASET}/metadata.csv",
         help="CSV file specifying dataset. See default CSV for details",
     )
 
     ap.add_argument(
-        "--suite_name",
+        "--test-suite",
         type=str,
         default=DATASET,
         help="Optionally specify a name for the created test suites.",

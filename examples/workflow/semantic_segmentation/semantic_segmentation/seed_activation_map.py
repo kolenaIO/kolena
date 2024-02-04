@@ -37,7 +37,7 @@ def seed_activation_map(model_name: str, test_suite_names: List[str], out_bucket
         for _, test_samples in test_suite.load_test_samples():
             test_sample_names.update([ts.metadata["basename"] for ts in test_samples])
 
-    uploader.submit(test_sample_names)
+    uploader.submit(test_sample_names)  # type: ignore
 
 
 def main(args: Namespace) -> int:
@@ -54,13 +54,13 @@ if __name__ == "__main__":
         help="Name of model in directory to test",
     )
     ap.add_argument(
-        "--test_suites",
+        "--test-suites",
         default=[f"# of people :: {DATASET} [person]"],
         nargs="+",
         help="Name(s) of test suite(s) to test.",
     )
     ap.add_argument(
-        "--out_bucket",
+        "--out-bucket",
         required=True,
         help="Name of AWS S3 bucket with write access to upload activation maps to.",
     )

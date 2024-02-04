@@ -81,7 +81,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
         return Inference(similarities=similarities, bbox=bbox, keypoints=keypoints)
 
     metadata = dict(model=model_name, detector=detector)
-    model = Model(f"{model_name} + {detector} [FR]", infer=infer, metadata=metadata)
+    model = Model(f"{model_name} + {detector} [FR]", infer=infer, metadata=metadata)  # type: ignore
 
     configurations = [
         ThresholdConfiguration(false_match_rate=1e-1, iou_threshold=0.5, nmse_threshold=0.5),
@@ -89,7 +89,7 @@ def seed_test_run(model_name: str, detector: str, test_suite_names: List[str]) -
 
     for test_suite_name in test_suite_names:
         test_suite = TestSuite.load(test_suite_name)
-        test(model, test_suite, evaluate_face_recognition_11, configurations, reset=True)
+        test(model, test_suite, evaluate_face_recognition_11, configurations, reset=True)  # type: ignore
 
 
 def main(args: Namespace) -> int:
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         help="Name(s) of detectors(s) used with corresponding model(s).",
     )
     ap.add_argument(
-        "--test_suites",
+        "--test-suites",
         default=[f"{DATASET} :: gender [FR]", f"{DATASET} :: race [FR]"],
         help="Name(s) of test suite(s) to test.",
     )
