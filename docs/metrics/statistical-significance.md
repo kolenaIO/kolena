@@ -8,6 +8,12 @@ the evaluation results based on the chosen confidence level and the size of a
 **margin of error** (MOE), which ranges from 0% to 100%. The larger the MOE, the less confidence one should have that a
 result would reflect the complete representation of the test case.
 
+<figure markdown>
+![Example of statistical significance used to highlight improvements and regressions in test cases.](../assets/images/statistical-significance-demo-light.gif#only-light)
+![Example of statistical significance used to highlight improvements and regressions in test cases.](../assets/images/statistical-significance-demo-dark.gif#only-dark)
+<figcaption>Example of statistical significance used to highlight improvements and regressions in test cases.</figcaption>
+</figure>
+
 ## Implementation Details
 
 To calculate the statistical significance, it is necessary to compare the calculated MOE with the observed
