@@ -7,8 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-#kolena = {extras = ["metrics"], version = "^1.3.0"}
-kolena = { path = "../../../", develop = true, extras = ["metrics"] }
+kolena = {extras = ["metrics"], version = "^1.3.0"}
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
 pandera = ">=0.9.0,<0.16"
