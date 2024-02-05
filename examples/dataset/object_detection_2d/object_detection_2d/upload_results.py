@@ -47,7 +47,7 @@ def run(args: Namespace) -> None:
     pred_df = load_data(pred_df_csv)
 
     upload_object_detection_results(
-        DATASET,
+        args.dataset,
         args.model,
         pd.DataFrame(pred_df),
         ground_truth="bounding_boxes",
