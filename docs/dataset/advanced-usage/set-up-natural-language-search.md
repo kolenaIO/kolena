@@ -110,7 +110,7 @@ Once embeddings are extracted for each `locator` on the dataset, we create a dat
 the embeddings.
 
 The dataframe uploaded is required to contain the ID columns of the dataset in order to
-match against the [`Datapoints`](../../core-concepts/dataset/#datapoints) in the dataset.
+match against the [`Datapoints`](../core-concepts/dataset.md/#datapoints) in the dataset.
 In this example, the ID column of the dataset is `locator`.
 
 ```python
