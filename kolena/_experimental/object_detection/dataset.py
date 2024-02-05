@@ -193,7 +193,7 @@ def _compute_metrics(
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
 
 
-def _check_multiclass(ground_truth: pd.Series, inference: pd.Series):
+def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
     labels = {x.label for x in itertools.chain.from_iterable(ground_truth)}.union(
         {x.label for x in itertools.chain.from_iterable(inference)},
     )
