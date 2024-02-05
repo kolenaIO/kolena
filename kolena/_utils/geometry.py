@@ -14,7 +14,7 @@
 from typing import List
 from typing import Tuple
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 from shapely.geometry import Polygon
 from shapely.validation import make_valid
 
@@ -25,7 +25,7 @@ def make_valid_polygon(points: List[Tuple[float, float]]) -> None:
     return make_valid(Polygon(points))
 
 
-@validate_arguments(config=ValidatorConfig)
+@validate_call(config=ValidatorConfig)
 def validate_polygon(points: List[Tuple[float, float]]) -> None:
     try:
         make_valid_polygon(points)
