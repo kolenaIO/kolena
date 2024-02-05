@@ -113,12 +113,7 @@ def extract_image_embeddings(
 def extract_dataset_embedding(model: StudioModel, df: pd.DataFrame, local_path: Optional[str] = None) -> pd.DataFrame:
     locators_and_filepaths = image_locators_from_s3_path(df[LOCATOR_FIELD].to_list(), local_path)
     locator_and_embeddings = extract_image_embeddings(model, locators_and_filepaths)
-    return pd.DataFrame(
-        {
-            LOCATOR_FIELD: [locator for locator, _ in locator_and_embeddings],
-            "embedding": [embedding for _, embedding in locator_and_embeddings],
-        },
-    )
+    return pd.DataFrame(locator_and_embeddings, columns=["locator", "embedding"])
 
 
 def load_precomputed_embedding() -> pd.DataFrame:

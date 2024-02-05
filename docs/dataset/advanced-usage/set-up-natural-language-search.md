@@ -74,8 +74,10 @@ The embedding model and its key are obtained via the `load_embedding_model()` me
 
 ```python
 from kembed.util import load_embedding_model
+import kolena
 from kolena.dataset import download_dataset
 
+kolena.initialize(verbose=True)
 df_dataset = download_dataset("coco-stuff-10k")
 model, model_key = load_embedding_model()
 ```
@@ -119,7 +121,7 @@ Once embeddings are extracted for each `locator` on the dataset, we create a dat
 the embeddings.
 
 The dataframe uploaded is required to contain the ID columns of the dataset in order to
-match against the [`Datapoints`](../core-concepts/dataset.md/#datapoints) in the dataset.
+match against the [datapoints](../core-concepts/dataset.md/#datapoints) in the dataset.
 In this example, the ID column of the dataset is `locator`.
 
 ```python
@@ -129,17 +131,11 @@ from kolena._experimental.search import upload_dataset_embeddings
 locator_and_image_iterator = iter_image_paths(locators)
 locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
 
-df_embeddings = pd.DataFrame(
-    {
-        "locator": [locator for locator, _ in locator_and_embeddings],
-        "embedding": [embedding for _, embedding in locator_and_embeddings],
-    },
-)
-
+df_embeddings = pd.DataFrame(locator_and_embeddings, columns=["locator", "embedding"])
 upload_dataset_embeddings(dataset_name, model_key, df_embeddings)
 ```
 
-Once the upload completes, we can now visit [dataset page](https://app.kolena.io/redirect/datasets),
+Once the upload completes, we can now visit [:kolena-dataset-20: Datasets](https://app.kolena.io/redirect/datasets),
 open the dataset and navigate to the <nobr>:kolena-studio-16: Studio</nobr> tab to search
 by natural language or similar images over the corresponding image data.
 
