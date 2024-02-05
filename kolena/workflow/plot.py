@@ -26,13 +26,13 @@ The following plot types are available:
 from abc import ABCMeta
 from typing import Dict
 from typing import List
+from typing import Literal
 from typing import Optional
 from typing import Sequence
 from typing import Union
 
 import numpy as np
 from pydantic.dataclasses import dataclass
-from pydantic.typing import Literal
 
 from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import DataType
@@ -93,7 +93,7 @@ class Curve(DataObject):
     value at which a given precision-recall point occurs.
     """
 
-    def __post_init_post_parse__(self) -> None:
+    def __post_init__(self) -> None:
         if len(self.x) != len(self.y):
             raise ValueError(
                 f"Series 'x' (length: {len(self.x)}) and 'y' (length: {len(self.y)}) have different lengths",
@@ -197,7 +197,7 @@ class Histogram(Plot):
     [`AxisConfig`][kolena.workflow.AxisConfig] for details.
     """
 
-    def __post_init_post_parse__(self) -> None:
+    def __post_init__(self) -> None:
         n_buckets = len(self.buckets)
         if n_buckets < 2:
             raise ValueError(f"Minimum 2 entries required in 'buckets' series (length: {n_buckets})")
@@ -242,7 +242,7 @@ class BarPlot(Plot):
     config: Optional[AxisConfig] = None
     """Custom format options to allow for control over the display of the numerical plot axis (`values`)."""
 
-    def __post_init_post_parse__(self) -> None:
+    def __post_init__(self) -> None:
         n_labels, n_values = len(self.labels), len(self.values)
         if n_labels == 0 or n_values == 0 or n_labels != n_values:
             raise ValueError(
@@ -297,7 +297,7 @@ class ConfusionMatrix(Plot):
     y_label: str = "Actual"
     """The label for the `y` axis of the confusion matrix."""
 
-    def __post_init_post_parse__(self) -> None:
+    def __post_init__(self) -> None:
         n_labels = len(self.labels)
         if n_labels < 2:
             raise ValueError(f"At least two labels required: got {n_labels}")

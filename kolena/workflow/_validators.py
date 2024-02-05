@@ -20,6 +20,11 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
+try:
+    from typing import Annotated  # type: ignore
+except ImportError:
+    from typing_extensions import Annotated  # type: ignore
+
 from kolena._experimental.workflow.thresholded import ThresholdedMetrics
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
@@ -131,6 +136,13 @@ def validate_union(
         arg_origin = get_origin(arg)
         if arg_origin is list or arg_origin is List:
             validate_list(field_name, arg, supported_list_types)
+            continue
+        if arg_origin is Annotated:  # used by Pydantic StrictBool, StrictStr, etc.
+            annotated_type, *_ = get_args(arg)
+            if not issubclass(annotated_type, tuple(supported_field_types)):
+                raise ValueError(err)
+            continue
+        if arg_origin in set(supported_list_types):  # handle different behavior from typing_extensions.Annotated (<3.9)
             continue
         if arg_origin is not None or arg == typing.Any:  # e.g. Optional, Dict
             raise ValueError(err)

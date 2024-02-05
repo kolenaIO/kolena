@@ -139,11 +139,6 @@ class TestRun:
         n_uploaded: int
 
 
-TestRun.CreateOrRetrieveRequest.__pydantic_model__.update_forward_refs()  # type: ignore
-TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
-TestRun.UploadTestSampleThresholdedMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
-
-
 class Workflow:
     class Path(str, Enum):
         EVALUATOR = "/generic/workflow/evaluator"
@@ -187,7 +182,3 @@ class Search:
     @dataclass(frozen=True)
     class UploadEmbeddingsResponse:
         n_samples: int
-
-
-Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()  # type: ignore
-Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()  # type: ignore

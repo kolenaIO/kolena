@@ -16,7 +16,6 @@ import sys
 
 import pydantic
 import pytest
-from pydantic import Extra
 from pydantic.dataclasses import dataclass
 
 from kolena.workflow import BaseVideo
@@ -124,10 +123,7 @@ def test__data_object__extras_allow() -> None:
 
 
 def test__data_object__extras_allow_invalid() -> None:
-    class Config:
-        extra = Extra.allow
-
-    @dataclass(frozen=True, config=Config)
+    @dataclass(frozen=True, config=dict(extra="allow"))
     class DataclassesTester(DataObject):
         b: float
         a: str

@@ -24,7 +24,7 @@ from typing import Set
 from typing import Tuple
 from typing import Type
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 from kolena._api.v1.core import TestSuite as CoreAPI
 from kolena._api.v1.event import EventAPI
@@ -99,7 +99,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute '_test_case_type'")
         super().__init_subclass__()
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def __init__(
         self,
         name: str,
@@ -271,7 +271,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
         #: The tags associated with this test suite. Modify this list directly to edit this test suite's tags.
         tags: Set[str]
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def __init__(self, test_cases: List[TestCase], description: str, tags: Set[str], reset: bool):
             self._test_cases = test_cases if not reset else []
             self._reset = reset
@@ -281,12 +281,12 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             self._initial_tags = tags
             self.tags = tags
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def description(self, description: str) -> None:
             """Update the description of the test suite."""
             self._description = description
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def add(self, test_case: TestCase) -> None:
             """
             Add a test case to this test suite. If a different version of the test case already exists in this test
@@ -296,7 +296,7 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
             """
             self._test_cases = [*(tc for tc in self._test_cases if tc.name != test_case.name), test_case]
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def remove(self, test_case: TestCase) -> None:
             """
             Remove a test case from this test suite. Does nothing if the test case is not in the test suite.
