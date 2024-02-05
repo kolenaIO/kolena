@@ -57,9 +57,6 @@ class Model:
         id: int
 
 
-Model.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
-
-
 @dataclass(frozen=True)
 class TestCaseInfo:
     id: int
@@ -149,11 +146,6 @@ class TestCase:
         ...
 
 
-TestCase.SingleProcessResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
-TestCase.BulkProcessRequest.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
-TestCase.BulkProcessResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
-
-
 class TestSuite:
     @dataclass(frozen=True)
     class CreateRequest:
@@ -198,9 +190,6 @@ class TestSuite:
     @dataclass(frozen=True)
     class DeleteRequest:
         test_suite_id: int
-
-
-TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
 
 
 class TestRun:

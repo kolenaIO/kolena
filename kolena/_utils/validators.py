@@ -13,16 +13,16 @@
 # limitations under the License.
 from typing import Optional
 
-from pydantic import Extra
+from pydantic import ConfigDict
 
 from kolena._utils.consts import FieldName
 
 
-# Pydantic configuration for dataclasses and @validate_arguments decorators
-class ValidatorConfig:
-    arbitrary_types_allowed = True
-    smart_union = True
-    extra = Extra.allow  # do not fail when unrecognized values are provided
+# Pydantic configuration for dataclasses and @validate_call decorators
+ValidatorConfig = ConfigDict(
+    arbitrary_types_allowed=True,
+    extra="allow",  # do not fail when unrecognized values are provided
+)
 
 
 def validate_name(field: str, field_name: Optional[FieldName] = None) -> None:

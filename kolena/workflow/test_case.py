@@ -24,7 +24,7 @@ from typing import Optional
 from typing import Tuple
 
 import pandas as pd
-from pydantic import validate_arguments
+from pydantic import validate_call
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.core import BulkProcessStatus
@@ -118,7 +118,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")
         super().__init_subclass__()
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def __init__(
         self,
         name: str,
@@ -281,19 +281,19 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         _description: str
         _initial_description: str
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def __init__(self, description: str, reset: bool) -> None:
             self._edits = []
             self._reset = reset
             self._description = description
             self._initial_description = description
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def description(self, description: str) -> None:
             """Update the description of the test case."""
             self._description = description
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def add(self, test_sample: TestSample, ground_truth: GroundTruth) -> None:
             """
             Add a test sample to the test case. When the test sample already exists in the test case, its ground truth
@@ -304,7 +304,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
             """
             self._edits.append(self._Edit(test_sample, ground_truth=ground_truth))
 
-        @validate_arguments(config=ValidatorConfig)
+        @validate_call(config=ValidatorConfig)
         def remove(self, test_sample: TestSample) -> None:
             """
             Remove a test sample from the test case. Does nothing if the test sample is not in the test case.

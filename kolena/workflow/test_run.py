@@ -28,7 +28,7 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import TestRun as API
@@ -97,7 +97,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
     evaluator: Optional[Union[Evaluator, BasicEvaluatorFunction]]
     configurations: Optional[List[EvaluatorConfiguration]]
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def __init__(
         self,
         model: Model,
@@ -226,7 +226,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
                 yield test_sample, ground_truth, inference
         log.info(f"loaded inferences from model '{self.model.name}' on test suite '{self.test_suite.name}'")
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def upload_inferences(self, inferences: List[Tuple[TestSample, Inference]]) -> None:
         """
         Upload inferences from a model.
@@ -443,7 +443,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
 
         return standard_metrics, thresholded_metrics
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def _upload_test_sample_metrics(
         self,
         test_case: Optional[TestCase],
@@ -552,7 +552,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         krequests.raise_for_status(res)
 
 
-@validate_arguments(config=ValidatorConfig)
+@validate_call(config=ValidatorConfig)
 def test(
     model: Model,
     test_suite: TestSuite,

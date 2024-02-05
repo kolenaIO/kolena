@@ -24,7 +24,7 @@ from typing import Set
 from typing import Tuple
 from typing import TypeVar
 
-from pydantic import validate_arguments
+from pydantic import validate_call
 
 from kolena._api.v1.core import Model as CoreAPI
 from kolena._api.v1.event import EventAPI
@@ -94,7 +94,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")
         super().__init_subclass__()
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def __init__(
         self,
         name: str,
@@ -189,7 +189,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info(f"loaded {len(models)} '{cls.workflow.name}' models{tags_message}")
         return models
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def load_inferences(self, test_case: TestCase) -> List[Tuple[TestSample, GroundTruth, Inference]]:
         """
         Load all inferences stored for this model on the provided test case.
@@ -199,7 +199,7 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
         """
         return list(self.iter_inferences(test_case))
 
-    @validate_arguments(config=ValidatorConfig)
+    @validate_call(config=ValidatorConfig)
     def iter_inferences(self, test_case: TestCase) -> Iterator[Tuple[TestSample, GroundTruth, Inference]]:
         """
         Iterate over all inferences stored for this model on the provided test case.
