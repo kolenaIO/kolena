@@ -40,15 +40,24 @@ This is used by the uploader for authentication against your Kolena instance.
 export KOLENA_TOKEN="********"
 ```
 
-Configure an additional poetry source:
-```shell
-poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
-```
+=== "`pip`"
 
-Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
-```shell
-poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
-```
+    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    ```shell
+    pip install --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
+    ```
+
+=== "`poetry`"
+
+    Configure an additional poetry source:
+    ```shell
+    poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
+    ```
+
+    Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    ```shell
+    poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
+    ```
 
 This package provides the `kembed.util.extract_embeddings` method that generates
 embeddings as a numpy array for a given [`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image)
