@@ -232,9 +232,9 @@ biases, and its intended uses.
 
     ---
 
-    The statistical significance is a statistical representation of the amount of tolerance in the evaluation results
-    based on the chosen confidence level and the size of your test case. The significance is derived from estimating the
-    margin of error which ranges from 0% to 100%. The larger the margin of error, the less confidence one should have
-    that a result would reflect the result of the complete representative test set.
+    Statistical significance represents the amount of tolerance in your evaluation results based on a chosen confidence
+    level and the size of your test case. Significance is derived by estimating the margin of error, which ranges from
+    0% to 100%. The larger the margin of error, the less confidence one should have that a result would reflect the
+    result of a fully representative test set.
 
 </div>

@@ -5,7 +5,7 @@ random chance. It is often used by researchers to draw meaningful conclusions an
 their analysis. Within the context of Kolena, it is used as a statistical representation of the amount of tolerance in
 the evaluation results based on the chosen confidence level and the size of a
 [test case](../dataset/core-concepts/quality-standard.md#test-cases). This significance is calculated by estimating the
-margin of error (MOE), which ranges from 0% to 100%. The larger the MOE, the less confidence one should have that a
+**margin of error** (MOE), which ranges from 0% to 100%. The larger the MOE, the less confidence one should have that a
 result would reflect the complete representation of the test case.
 
 ## Implementation Details
@@ -17,9 +17,9 @@ that the difference is not statistically significant.
 
 ### Margin of Error (MOE)
 
-The MOE is determined by two factors: the sample size and the desired level of confidence. Generally, larger samples
-yield smaller MOE, as they provide more reliable estimates of the population. The level of confidence represents
-the probability of capturing the true population parameter within the calculated MOE.
+The MOE is determined by two factors: the **sample size** and the desired **level of confidence**. Larger sample sizes
+yield smaller MOE, as they provide more reliable estimates of the population. The level of confidence represents the
+probability of capturing the true population parameter within the calculated MOE.
 
 Generally, at a confidence level $\gamma$, a sample sized $n$ of a population having an expected proportion $p$ has a
 MOE:
@@ -50,7 +50,7 @@ where
 ??? "Standard Error"
 
     The standard error is often unknown. The common practice is using an approximation value. Consequently, if
-    there is no information available to approximate it, then p = 0.5 can be used to generate the most conservative
+    there is no information available to approximate it, then $p = 0.5$ can be used to generate the most conservative
     significance score.
 
 ### Examples
@@ -96,7 +96,7 @@ the representation of the population in the sample, which reduces the margin of 
 The margin of error is a good metric that can be used to understand the statistical significance of your model results;
 however, there are some limitations that we need to be aware of.
 
-1. The MOE calculation assumes a normal distribution or a sufficiently large sample size.
+1. The MOE calculation assumes a **normal distribution** on a sufficiently large sample size.
 
 2. The exact MOE calculation requires the sample proportion or population standard deviation, which is often unknown.
 
