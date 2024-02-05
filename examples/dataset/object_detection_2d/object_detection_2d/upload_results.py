@@ -14,29 +14,20 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Union
 
 import pandas as pd
 from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import EVAL_CONFIG
 from object_detection_2d.constants import MODELS
-from object_detection_2d.metrics import test_sample_metrics
-from object_detection_2d.model import filter_inferences
 
 import kolena
-from kolena.annotation import LabeledBoundingBox
+from kolena._experimental.object_detection import upload_object_detection_results
 from kolena.annotation import ScoredLabeledBoundingBox
-from kolena.dataset import download_dataset
-from kolena.dataset import upload_results
-from kolena.workflow.metrics._geometry import match_inferences_multiclass
 
 
 def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
-    image_to_boxes: Dict[str, List[ScoredLabeledBoundingBox]] = defaultdict(list)
+    image_to_boxes: dict[str, list[ScoredLabeledBoundingBox]] = defaultdict(list)
 
     for record in df_pred_csv.itertuples():
         coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
@@ -46,54 +37,31 @@ def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inferences"])
 
 
-def compute_metrics(
-    pred_df: pd.DataFrame,
-    eval_config: Dict[str, Union[float, int]],
-) -> pd.DataFrame:
-    results: List[Dict[str, Any]] = list()
-    for record in pred_df.itertuples():
-        ground_truths = [LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record.bounding_boxes]
-        inferences = record.raw_inferences
-        matches = match_inferences_multiclass(
-            ground_truths,
-            filter_inferences(inferences, eval_config["min_confidence_score"]),
-            mode="pascal",
-            iou_threshold=eval_config["iou_threshold"],
-        )
-        results.append(
-            test_sample_metrics(matches, defaultdict(lambda: eval_config["threshold_strategy"])),
-        )
-
-    results_df = pd.concat([pd.DataFrame(results), pred_df], axis=1)
-    return results_df.drop(["bounding_boxes"], axis=1)
-
-
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
+
     pred_df_csv = pd.read_csv(
         f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
         storage_options={"anon": True},
     )
     pred_df = load_data(pred_df_csv)
-    dataset_df = download_dataset(args.dataset)[["locator", "bounding_boxes"]]
-    results_df = compute_metrics(pred_df.merge(dataset_df, on="locator"), EVAL_CONFIG)
-    upload_results(args.dataset, args.model, results_df)
+
+    upload_object_detection_results(
+        DATASET,
+        args.model,
+        pd.DataFrame(pred_df),
+        ground_truth="bounding_boxes",
+        inference="raw_inferences",
+        iou_threshold=EVAL_CONFIG["iou_threshold"],
+        threshold_strategy=EVAL_CONFIG["threshold_strategy"],
+        min_confidence_score=EVAL_CONFIG["min_confidence_score"],
+    )
 
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument(
-        "model",
-        type=str,
-        choices=MODELS,
-        help="Name of the model to test.",
-    )
-    ap.add_argument(
-        "--dataset",
-        type=str,
-        default=DATASET,
-        help="Optionally specify a custom dataset name to test.",
-    )
+    ap.add_argument("model", type=str, choices=MODELS, help="Name of the model to test.")
+    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a custom dataset name to test.")
     run(ap.parse_args())
 
 

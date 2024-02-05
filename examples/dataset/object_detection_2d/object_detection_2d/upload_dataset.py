@@ -62,12 +62,7 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument(
-        "--dataset",
-        type=str,
-        default=DATASET,
-        help="Optionally specify a custom dataset name to upload.",
-    )
+    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a custom dataset name to upload.")
     run(ap.parse_args())
 
 
