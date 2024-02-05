@@ -5,7 +5,7 @@ icon: kolena/comparison-16
 # :kolena-comparison-20: Natural Language Search Setup
 
 Kolena supports natural language and similar image search
-across [`Image`][kolena.asset.ImageAsset] data registered to the platform.
+across image data registered to the platform.
 Users may set up this functionality by extracting and
 uploading the corresponding search embeddings using a Kolena provided package.
 
@@ -67,7 +67,7 @@ object.
 
 Before extracting embeddings on a dataset, we need to load the dataset. The dataset
 seeded in the [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
-example contains [`Image`][kolena.asset.ImageAsset] assets referenced by the `locator`
+example contains image assets referenced by the `locator`
 column, and we load the dataset in to a dataframe.
 
 The embedding model and its key are obtained via the `load_embedding_model()` method.
@@ -141,11 +141,11 @@ upload_dataset_embeddings(dataset_name, model_key, df_embeddings)
 
 Once the upload completes, we can now visit [dataset page](https://app.kolena.io/redirect/datasets),
 open the dataset and navigate to the <nobr>:kolena-studio-16: Studio</nobr> tab to search
-by natural language or similar images over the corresponding [`Image`][kolena.asset.ImageAsset] data.
+by natural language or similar images over the corresponding image data.
 
 ## Conclusion
 
-In this tutorial, we learned how to extract and upload vector embeddings over your [`Image`][kolena.asset.ImageAsset] data.
+In this tutorial, we learned how to extract and upload vector embeddings over your image data.
 
 ## FAQ
 

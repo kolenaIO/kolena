@@ -13,8 +13,7 @@ This section contains tutorial documentation for advanced features for Kolena Da
 
     ---
 
-    Extract and upload embeddings on each [`Image`][kolena.asset.ImageAsset]
-    to set up natural language and similarity search across image data and
-    results on the Kolena platform.
+    Extract and upload embeddings on each image to set up natural language
+    and similarity search across image data and results on the Kolena platform.
 
 </div>
