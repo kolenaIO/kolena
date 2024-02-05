@@ -93,9 +93,9 @@ def multiclass_datapoint_metrics(
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
     scores = [inf.score for inf in tp + fp]
-    inference_labels = {inf.label for _, inf in bbox_matches.matched} | {
-        inf.label for inf in bbox_matches.unmatched_inf
-    }
+    inference_labels = {inf.label for _, inf in bbox_matches.matched}.union(
+        {inf.label for inf in bbox_matches.unmatched_inf},
+    )
     fields = [
         ScoredLabel(label=label, score=thresholds[label])
         for label in sorted(thresholds.keys())
@@ -144,9 +144,7 @@ def _compute_metrics(
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
     """
-    labels = {x.label for x in itertools.chain.from_iterable(pred_df[ground_truth])}
-    labels.union({x.label for x in itertools.chain.from_iterable(pred_df[inference])})
-    is_multiclass = len(labels) >= 2
+    is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
     match_fn = match_inferences_multiclass if is_multiclass else match_inferences
 
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
@@ -193,6 +191,13 @@ def _compute_metrics(
         ]
 
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
+
+
+def _check_multiclass(ground_truth: pd.Series, inference: pd.Series):
+    labels = {x.label for x in itertools.chain.from_iterable(ground_truth)}.union(
+        {x.label for x in itertools.chain.from_iterable(inference)},
+    )
+    return len(labels) >= 2
 
 
 def _validate_column_present(df: pd.DataFrame, col: str) -> None:
