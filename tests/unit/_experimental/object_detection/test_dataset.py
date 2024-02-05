@@ -12,14 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pandas as pd
+import pytest
 
-from kolena._experimental.object_detection.dataset import _check_multiclass
 from kolena.annotation import LabeledBoundingBox
+
+object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
 
 def test__check_multiclass() -> None:
     assert (
-        _check_multiclass(
+        object_detection.dataset._check_multiclass(
             pd.Series(
                 [
                     [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
@@ -37,7 +39,7 @@ def test__check_multiclass() -> None:
     )
 
     assert (
-        _check_multiclass(
+        object_detection.dataset._check_multiclass(
             pd.Series(
                 [
                     [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
