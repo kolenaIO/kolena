@@ -80,7 +80,7 @@ def extract_image_embeddings(
     batch_size: int = 50,
 ) -> List[Tuple[str, np.ndarray]]:
     """
-    Extract and upload a list of search embeddings corresponding to sample locators.
+    Extract a list of search embeddings corresponding to sample locators.
     Expects to have an exported `KOLENA_TOKEN` environment variable, as per
         [Kolena client documentation](https://docs.kolena.io/installing-kolena/?h=initialize#initialization).
 
