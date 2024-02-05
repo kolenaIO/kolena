@@ -72,11 +72,7 @@ column, and we load the dataset in to a dataframe.
 
 The embedding model and its key are obtained via the `load_embedding_model()` method.
 
-```python
-from kembed.util import load_embedding_model
-import kolena
-from kolena.dataset import download_dataset
-
+```{.python .no-copy}
 kolena.initialize(verbose=True)
 df_dataset = download_dataset("coco-stuff-10k")
 model, model_key = load_embedding_model()
@@ -89,14 +85,7 @@ In order to extract embeddings on image data, we must load our image files into 
 In this section, we will load these images from an S3 bucket.
 For other cloud storage services, please refer to your cloud storage's API docs.
 
-```python
-from typing import Iterator
-from typing import List
-from typing import Tuple
-
-import boto3
-from PIL import Image
-
+```{.python .no-copy}
 s3 = boto3.client("s3")
 
 def load_image_from_accessor(accessor: str) -> Image:
@@ -124,9 +113,16 @@ The dataframe uploaded is required to contain the ID columns of the dataset in o
 match against the [datapoints](../core-concepts/dataset.md/#datapoints) in the dataset.
 In this example, the ID column of the dataset is `locator`.
 
-```python
-import pandas as pd
-from kolena._experimental.search import upload_dataset_embeddings
+```{.python .no-copy}
+def extract_image_embeddings(
+    model: StudioModel,
+    locators_and_filepaths: List[Tuple[str, Optional[str]]],
+    batch_size: int = 50,
+) -> List[Tuple[str, np.ndarray]]:
+    """
+    Extract a list of search embeddings corresponding to sample locators.
+    """
+    ...
 
 locator_and_image_iterator = iter_image_paths(locators)
 locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
