@@ -18,7 +18,6 @@ from collections import defaultdict
 import pandas as pd
 from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
-from object_detection_2d.constants import EVAL_CONFIG
 from object_detection_2d.constants import MODELS
 
 import kolena
@@ -34,7 +33,7 @@ def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
         bounding_box = ScoredLabeledBoundingBox(*coords, record.label, record.confidence_score)
         image_to_boxes[record.locator].append(bounding_box)
 
-    return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inferences"])
+    return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inference"])
 
 
 def run(args: Namespace) -> None:
@@ -46,16 +45,7 @@ def run(args: Namespace) -> None:
     )
     pred_df = load_data(pred_df_csv)
 
-    upload_object_detection_results(
-        args.dataset,
-        args.model,
-        pd.DataFrame(pred_df),
-        ground_truth="bounding_boxes",
-        inference="raw_inferences",
-        iou_threshold=EVAL_CONFIG["iou_threshold"],
-        threshold_strategy=EVAL_CONFIG["threshold_strategy"],
-        min_confidence_score=EVAL_CONFIG["min_confidence_score"],
-    )
+    upload_object_detection_results(args.dataset, args.model, pred_df)
 
 
 def main() -> None:

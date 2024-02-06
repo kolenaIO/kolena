@@ -22,8 +22,3 @@ MODELS = [
     "faster_rcnn",
     "mask_rcnn",
 ]
-EVAL_CONFIG = {
-    "threshold_strategy": 0.5,
-    "iou_threshold": 0.5,
-    "min_confidence_score": 0.5,
-}

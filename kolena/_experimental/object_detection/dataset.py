@@ -210,8 +210,8 @@ def upload_object_detection_results(
     model_name: str,
     df: pd.DataFrame,
     *,
-    ground_truth: str = "bounding_boxes",
-    inference: str = "inferences",
+    ground_truth_field: str = "ground_truth",
+    raw_inference_field: str = "raw_inference",
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
@@ -226,8 +226,9 @@ def upload_object_detection_results(
     :param dataset_name: Dataset name.
     :param model_name: Model name.
     :param df: Dataframe for model results.
-    :param ground_truth: Field name in datapoint with ground_truth bounding boxes, default to "bounding_boxes".
-    :param inference: Column in result DataFrame with inference bounding boxes, default to "inferences".
+    :param ground_truth_field: Field name in datapoint with ground_truth bounding boxes, default to `"ground_truth"`.
+    :param raw_inference_field: Column in model result DataFrame with inference bounding boxes, default to
+        `"raw_inference"`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
         as `0.5` or `0.75`, or the F1-optimal threshold.
@@ -240,12 +241,16 @@ def upload_object_detection_results(
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
     )
-    _validate_column_present(df, inference)
+    _validate_column_present(df, raw_inference_field)
 
     dataset_df = dataset.download_dataset(dataset_name)
-    dataset_df = dataset_df[["locator", ground_truth]]
-    _validate_column_present(dataset_df, ground_truth)
+    dataset_df = dataset_df[["locator", ground_truth_field]]
+    _validate_column_present(dataset_df, ground_truth_field)
 
-    results_df = _compute_metrics(df.merge(dataset_df, on="locator"), ground_truth=ground_truth, inference=inference)
-    results_df.drop(columns=[ground_truth], inplace=True)
+    results_df = _compute_metrics(
+        df.merge(dataset_df, on="locator"),
+        ground_truth=ground_truth_field,
+        inference=raw_inference_field,
+    )
+    results_df.drop(columns=[ground_truth_field], inplace=True)
     dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)])
