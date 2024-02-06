@@ -251,6 +251,9 @@ def upload_object_detection_results(
         df.merge(dataset_df, on="locator"),
         ground_truth=ground_truth_field,
         inference=raw_inference_field,
+        threshold_strategy=threshold_strategy,
+        iou_threshold=iou_threshold,
+        min_confidence_score=min_confidence_score,
     )
     results_df.drop(columns=[ground_truth_field], inplace=True)
     dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)])

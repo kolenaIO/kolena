@@ -11,14 +11,19 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from unittest.mock import Mock
+from unittest.mock import patch
+
 import pandas as pd
 import pytest
 
+import kolena.dataset
 from kolena.annotation import LabeledBoundingBox
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
 
+@pytest.mark.metrics
 def test__check_multiclass() -> None:
     assert (
         object_detection.dataset._check_multiclass(
@@ -54,4 +59,36 @@ def test__check_multiclass() -> None:
             ),
         )
         is False
+    )
+
+
+@pytest.mark.metrics
+@patch("kolena.dataset.upload_results")
+def test__upload_object_detection_results_configurations(mocked_upload_results: Mock) -> None:
+    locator = "s3://mybucket/image1.jpg"
+    with patch.object(object_detection.dataset, "_compute_metrics") as patched_metrics:
+        with patch.object(
+            kolena.dataset,
+            "download_dataset",
+            return_value=pd.DataFrame([dict(locator=locator, bboxes=[])]),
+        ):
+            object_detection.dataset.upload_object_detection_results(
+                "my dataset",
+                "my model",
+                pd.DataFrame([dict(locator=locator, predictions=[])]),
+                ground_truth="bboxes",
+                inference="predictions",
+                iou_threshold=0.152,
+                threshold_strategy="F1-Optimal",
+                min_confidence_score=0.222,
+            )
+
+    patched_metrics.assert_called_once()
+    _, kwargs = patched_metrics.call_args
+    assert kwargs == dict(
+        ground_truth="bboxes",
+        inference="predictions",
+        iou_threshold=0.152,
+        threshold_strategy="F1-Optimal",
+        min_confidence_score=0.222,
     )
