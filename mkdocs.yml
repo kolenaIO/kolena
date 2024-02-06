@@ -103,6 +103,8 @@ nav:
       - metrics/perplexity.md
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
+    - Kolena Insights:
+      - metrics/statistical-significance.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.io
