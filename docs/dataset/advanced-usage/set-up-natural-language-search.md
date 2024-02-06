@@ -1,0 +1,149 @@
+---
+icon: kolena/comparison-16
+---
+
+# :kolena-comparison-20: Natural Language Search Setup
+
+Kolena supports natural language and similar image search
+across image data registered to the platform.
+Users may set up this functionality by extracting and
+uploading the corresponding search embeddings using a Kolena provided package.
+
+## Example
+
+The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
+[example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for embeddings extraction and
+upload. This builds off the data uploaded in the
+[semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
+example dataset, and is best run after this data has been uploaded to your Kolena environment.
+
+## How to Set Up Natural Language Search
+
+Uploading embeddings to Kolena can be done in three simple steps:
+
+- [**Step 1**](#step-1-install-kolena_embeddings-package): installing dependency package
+- [**Step 2**](#step-2-load-dataset-and-model): loading dataset and model to run embedding extraction
+- [**Step 3**](#step-3-load-images-for-extraction): loading images for input to extraction library
+- [**Step 4**](#step-4-extract-and-upload-embeddings): extracting and uploading search embeddings
+
+Let's take a look at each step with example code snippets.
+
+### Step 1: Install `kolena_embeddings` Package
+
+The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
+on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
+
+We first [retrieve and set](../../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
+This is used by the uploader for authentication against your Kolena instance.
+
+```shell
+export KOLENA_TOKEN="********"
+```
+
+=== "`pip`"
+
+    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    ```shell
+    pip install --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
+    ```
+
+=== "`poetry`"
+
+    Configure an additional poetry source:
+    ```shell
+    poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
+    ```
+
+    Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    ```shell
+    poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
+    ```
+
+This package provides the `kembed.util.extract_embeddings` method that generates
+embeddings as a numpy array for a given [`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image)
+object.
+
+### Step 2: Load Dataset and Model
+
+Before extracting embeddings on a dataset, we need to load the dataset. The dataset
+seeded in the [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
+example contains image assets referenced by the `locator`
+column, and we load the dataset in to a dataframe.
+
+The embedding model and its key are obtained via the `load_embedding_model()` method.
+
+```{.python .no-copy}
+kolena.initialize(verbose=True)
+df_dataset = download_dataset("coco-stuff-10k")
+model, model_key = load_embedding_model()
+```
+
+### Step 3: Load Images for Extraction
+
+In order to extract embeddings on image data, we must load our image files into a
+[`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image) object.
+In this section, we will load these images from an S3 bucket.
+For other cloud storage services, please refer to your cloud storage's API docs.
+
+```{.python .no-copy}
+s3 = boto3.client("s3")
+
+def load_image_from_accessor(accessor: str) -> Image:
+    bucket_name, *parts = accessor[5:].split("/")
+    file_stream = boto3.resource("s3").Bucket(bucket_name).Object("/".join(parts)).get()["Body"]
+    return Image.open(file_stream)
+
+def iter_image_paths(image_accessors: List[str]) -> Iterator[Tuple[str, Image.Image]]:
+    for locator in image_accessors:
+        image = load_image_from_accessor(locator)
+        yield locator, image
+```
+
+!!! tip end
+    When processing large scales of images, we recommend using an `Iterator` to limit the number
+    of images loaded into memory at once.
+
+### Step 4: Extract and Upload Embeddings
+
+Once embeddings are extracted for each `locator` on the dataset, we create a dataframe with
+`embedding` and `locator` columns, and use the `upload_dataset_embeddings` method to upload
+the embeddings.
+
+The dataframe uploaded is required to contain the ID columns of the dataset in order to
+match against the [datapoints](../core-concepts/dataset.md/#datapoints) in the dataset.
+In this example, the ID column of the dataset is `locator`.
+
+```{.python .no-copy}
+def extract_image_embeddings(
+    model: StudioModel,
+    locators_and_filepaths: List[Tuple[str, Optional[str]]],
+    batch_size: int = 50,
+) -> List[Tuple[str, np.ndarray]]:
+    """
+    Extract a list of search embeddings corresponding to sample locators.
+    """
+    ...
+
+locator_and_image_iterator = iter_image_paths(locators)
+locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
+
+df_embeddings = pd.DataFrame(locator_and_embeddings, columns=["locator", "embedding"])
+upload_dataset_embeddings(dataset_name, model_key, df_embeddings)
+```
+
+Once the upload completes, we can now visit [:kolena-dataset-20: Datasets](https://app.kolena.io/redirect/datasets),
+open the dataset and navigate to the <nobr>:kolena-studio-16: Studio</nobr> tab to search
+by natural language or similar images over the corresponding image data.
+
+## Conclusion
+
+In this tutorial, we learned how to extract and upload vector embeddings over your image data.
+
+## FAQ
+
+??? faq "Can I share embeddings with Kolena even if I do not share the underlying images?"
+    Yes!
+
+    Embeddings extraction is a unidirectional mapping, and used only for natural language search and similarity comparisons.
+    Uploading these embeddings to Kolena does not allow for any reconstruction of these images, nor does it involve
+    sharing these images with Kolena.

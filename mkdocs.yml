@@ -18,6 +18,9 @@ nav:
         - Core Concepts: dataset/core-concepts/index.md
         - Dataset: dataset/core-concepts/dataset.md
         - Quality Standard: dataset/core-concepts/quality-standard.md
+      - Advanced Usage:
+        - Advanced Usage: dataset/advanced-usage/index.md
+        - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
     - Workflows:
       - Workflows: workflow/index.md
       - Quickstart: workflow/quickstart.md
