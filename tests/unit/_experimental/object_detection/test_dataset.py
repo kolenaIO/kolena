@@ -23,6 +23,7 @@ from kolena.annotation import LabeledBoundingBox
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
 
+@pytest.mark.metrics
 def test__check_multiclass() -> None:
     assert (
         object_detection.dataset._check_multiclass(
@@ -61,6 +62,7 @@ def test__check_multiclass() -> None:
     )
 
 
+@pytest.mark.metrics
 @patch("kolena.dataset.upload_results")
 def test__upload_object_detection_results_configurations(mocked_upload_results: Mock) -> None:
     locator = "s3://mybucket/image1.jpg"
