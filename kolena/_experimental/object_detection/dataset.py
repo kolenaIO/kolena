@@ -213,8 +213,8 @@ def upload_object_detection_results(
     ground_truth: str = "bounding_boxes",
     inference: str = "inferences",
     iou_threshold: float = 0.5,
-    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
-    min_confidence_score: float = 0.5,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    min_confidence_score: float = 0.01,
 ) -> None:
     """
     Compute metrics and upload results of the model for the dataset.
