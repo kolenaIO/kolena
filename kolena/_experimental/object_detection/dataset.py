@@ -210,8 +210,8 @@ def upload_object_detection_results(
     model_name: str,
     df: pd.DataFrame,
     *,
-    ground_truth_field: str = "ground_truth",
-    raw_inference_field: str = "raw_inference",
+    ground_truths_field: str = "ground_truth",
+    raw_inferences_field: str = "raw_inference",
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
@@ -226,12 +226,13 @@ def upload_object_detection_results(
     :param dataset_name: Dataset name.
     :param model_name: Model name.
     :param df: Dataframe for model results.
-    :param ground_truth_field: Field name in datapoint with ground_truth bounding boxes, default to `"ground_truth"`.
-    :param raw_inference_field: Column in model result DataFrame with inference bounding boxes, default to
-        `"raw_inference"`.
+    :param ground_truths_field: Field name in datapoint with ground truth bounding boxes, defaulting to
+        `"ground_truths"`.
+    :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes, defaulting to
+        `"raw_inferences"`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
-        as `0.5` or `0.75`, or the F1-optimal threshold.
+        as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score..
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
     :return:
@@ -241,19 +242,19 @@ def upload_object_detection_results(
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
     )
-    _validate_column_present(df, raw_inference_field)
+    _validate_column_present(df, raw_inferences_field)
 
     dataset_df = dataset.download_dataset(dataset_name)
-    dataset_df = dataset_df[["locator", ground_truth_field]]
-    _validate_column_present(dataset_df, ground_truth_field)
+    dataset_df = dataset_df[["locator", ground_truths_field]]
+    _validate_column_present(dataset_df, ground_truths_field)
 
     results_df = _compute_metrics(
         df.merge(dataset_df, on="locator"),
-        ground_truth=ground_truth_field,
-        inference=raw_inference_field,
+        ground_truth=ground_truths_field,
+        inference=raw_inferences_field,
         threshold_strategy=threshold_strategy,
         iou_threshold=iou_threshold,
         min_confidence_score=min_confidence_score,
     )
-    results_df.drop(columns=[ground_truth_field], inplace=True)
+    results_df.drop(columns=[ground_truths_field], inplace=True)
     dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)])
