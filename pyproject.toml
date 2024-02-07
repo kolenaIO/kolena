@@ -39,7 +39,7 @@ pandas = [
 pandera = ">=0.9.0,<0.16"
 pydantic = ">=2,<3"
 dacite = ">=1.6,<2"
-requests = ">=2.20,<2.30"  # TODO: revert upper bound when urllib3 situation sorts out: https://github.com/psf/requests/issues/6432
+requests = ">=2.20,<3"
 requests-toolbelt = "*"
 tqdm = ">=4,<5"
 Pillow = "^10.0.1"
