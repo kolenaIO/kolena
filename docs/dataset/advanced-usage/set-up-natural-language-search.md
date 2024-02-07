@@ -21,14 +21,14 @@ example dataset, and is best run after this data has been uploaded to your Kolen
 
 Uploading embeddings to Kolena can be done in three simple steps:
 
-- [**Step 1**](#step-1-install-kolena_embeddings-package): installing dependency package
+- [**Step 1**](#step-1-install-kolena-embeddings-package): installing dependency package
 - [**Step 2**](#step-2-load-dataset-and-model): loading dataset and model to run embedding extraction
 - [**Step 3**](#step-3-load-images-for-extraction): loading images for input to extraction library
 - [**Step 4**](#step-4-extract-and-upload-embeddings): extracting and uploading search embeddings
 
 Let's take a look at each step with example code snippets.
 
-### Step 1: Install `kolena_embeddings` Package
+### Step 1: Install `kolena-embeddings` Package
 
 The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
@@ -122,7 +122,6 @@ def extract_image_embeddings(
     """
     Extract a list of search embeddings corresponding to sample locators.
     """
-    ...
 
 locator_and_image_iterator = iter_image_paths(locators)
 locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
