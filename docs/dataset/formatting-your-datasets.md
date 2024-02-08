@@ -84,19 +84,27 @@ A snippet like the following:
 from kolena.annotation import BoundingBox
 from kolena.io import dataframe_to_csv
 
-df = pd.read_csv(f"s3://kolena-public-examples/300-W/coco-2014-val/coco-2014-val.csv", storage_options={"anon": True})
+df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/coco-2014-val.csv", storage_options={"anon": True})
 image_to_boxes: Dict[str, List[BoundingBox]] = defaultdict(list)
+image_to_metadata: Dict[str, Dict[str, Any]] = defaultdict(dict)
 
-for record in df_metadata_csv.itertuples():
+for record in df.itertuples():
     coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
     bounding_box = BoundingBox(*coords)
     image_to_boxes[record.locator].append(bounding_box)
+    metadata = {
+            "locator": str(record.locator),
+            "height": float(record.height),
+            "width": float(record.width),
+            "date_captured": str(record.date_captured),
+            "brightness": float(record.brightness),
+        }
+    image_to_metadata[record.locator] = metadata
 
-
-
-df["bounding_boxes"] = [BoundingBox(top_left=(df["min_x"], df["min_y"]),
-                                    bottom_left=(df["max_x"], df["max_y"])) for points in df["points"]]
-dataframe_to_csv(df, "processed.csv")
+df_boxes = pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "ground_truths"])
+df_metadata = pd.DataFrame.from_dict(image_to_metadata, orient="index").reset_index(drop=True)
+df_boxes.merge(df_metadata, on="locator")
+dataframe_to_csv(df_boxes, "processed.csv")
 ```
 
 ## Formatting results for Object Detection
