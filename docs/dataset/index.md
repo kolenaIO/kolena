@@ -19,6 +19,15 @@ standardization and comparison of multiple models.
 </div>
 
 <div class="grid cards" markdown>
+- [:kolena-dataset-16: Formatting your Datasets](./formatting-your-datasets.md)
+
+    ---
+
+    Get started with a quick and easy example for connecting data to Kolena,
+    using either the web application or the Python SDK.
+</div>
+
+<div class="grid cards" markdown>
 - [:kolena-dataset-16: Dataset](./core-concepts/dataset.md)
 
     ---

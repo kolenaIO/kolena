@@ -1,8 +1,5 @@
----
-icon: kolena/dataset-16
----
 
-# :kolena-dataset-20: Formatting your Datasets
+# Formatting your Datasets
 
 ## What is a Dataset
 
@@ -13,17 +10,15 @@ traditionally segmented into test samples, ground truth, and metadata.
 ### What defines a Datapoint
 
 Conceptually a datapoint is a set of inputs that you would want to test on your models.
-Consider a single row of data for a classification problem with the following columns
+Consider a single row of data for a classification problem with the following columns <br>
 
-    | locator | ground_truth | class_id |
-    | ---   | ---                        | --- |
-    | s3://kolena-public-examples/cifar10/data/horse0000.png | horse | 7 |
+| locator                    | ground_truth |
+|---------------------------------------------------------------|----------------------------------------|
+| s3://kolena-public-examples/cifar10/data/horse0000.png        | horse                                  |
 
 An `id_field` is required in order to differentiate between datapoints.
 By default the `locator` or  `text` fields are used if present in your `dataframe` or `.csv`.
 You can specify other fields as the id_field both when importing via the Web App or the SDK.
-
-ADD SECTION ABOUT how to specify an id field
 
 A `locator` is a url path to a file that will be displayed in the platform. Locators can either be urls for common
 cloud storage providers, a local file path or a http url that serves a file. A locator needs to have correct extensions
@@ -57,23 +52,23 @@ You can connect files to datapoints in Kolena by the use of Assets, which can be
 test cases or results. Multiple assets can be attached to a single datapoint allowing you to represent complex scenarios
 on Kolena.  Assets are files stored in a cloud bucket or served at a URL.
 
-    | Asset Type | Description |
-    | ---   | ---                        |
-    | ImageAsset | Useful if your data is modeled as multiple related images |
-    | BinaryAsset | Useful if you want to attach any segmentation or bitmap masks |
-    | AudioAsset | Useful if you want to attach an audio file |
-    | VidioAsset | Useful if you want to attach a video file |
-    | PointCloudAsset | Useful for attaching 3D point cloud data |
+| Asset Type  | Description |
+|-------------|----------------------------|
+| ImageAsset  | Useful if your data is modeled as multiple related images |
+| BinaryAsset | Useful if you want to attach any segmentation or bitmap masks |
+| AudioAsset  | Useful if you want to attach an audio file |
+| VideoAsset  | Useful if you want to attach a video file |
+| PointCloudAsset | Useful for attaching 3D point cloud data |
 
 ### Kolena Annotations
 
 Kolena allows you to visualize overlays on top of datapoints through the use of `Annotations`.
 These annotations are visible on both the Gallery view for groups of datapoints and for individual datapoints.
 
-    | Annotation Type | Description |
-    | ---   | ---                        |
-    | BoundingBox | Used to overlay bounding boxes (including confidence scores and labels) on top of images.  |
-    | SegmentationMask | Used to overaly raster segmentation maps on top of images.|
+| Asset Type  | Description |
+|-------------|----------------------------|
+| BoundingBox  | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
+| SegmentationMask | Used to overaly raster segmentation maps on top of images. |
 
 ### Structured Data
 
@@ -112,11 +107,11 @@ for the best experience.
 If you already have this data and want to upload a .csv directly then you need to make sure the results
 are configured correctly.
 
-    | Column name | Description | Type |
-    | ---   | ---        | --                |
-    | matched_inference | inferences that were matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
-    | unmatched_inference | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
-    | unmatched_ground_truth | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
+| Column name | Description                                           | Type |
+|-------------|-------------------------------------------------------|------|
+| matched_inference  | inferences that were matched to a ground_truth        |  List[ScoredLabeledBoundingBoxes]|
+| unmatched_inference | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
+| unmatched_ground_truth | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
 
 These columns are used to determine `True Postitives`  `False Positives` and `False Negatives`.
 
