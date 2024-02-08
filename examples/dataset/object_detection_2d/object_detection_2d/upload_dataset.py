@@ -45,7 +45,7 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
         }
         image_to_metadata[record.locator] = metadata
 
-    df_boxes = pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "ground_truth"])
+    df_boxes = pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "ground_truths"])
     df_metadata = pd.DataFrame.from_dict(image_to_metadata, orient="index").reset_index(drop=True)
     return df_boxes.merge(df_metadata, on="locator")
 

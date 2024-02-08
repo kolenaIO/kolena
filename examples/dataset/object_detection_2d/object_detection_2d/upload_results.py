@@ -33,7 +33,7 @@ def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
         bounding_box = ScoredLabeledBoundingBox(*coords, record.label, record.confidence_score)
         image_to_boxes[record.locator].append(bounding_box)
 
-    return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inference"])
+    return pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "raw_inferences"])
 
 
 def run(args: Namespace) -> None:
