@@ -52,23 +52,23 @@ You can connect files to datapoints in Kolena by the use of [`asset`](../referen
 when exploring datasets, test cases or results. Multiple assets can be attached to a single datapoint allowing you to
 represent complex scenarios on Kolena. Assets are files stored in a cloud bucket or served at a URL.
 
-| Asset Type  | Description |
-|-------------|----------------------------|
-| ImageAsset  | Useful if your data is modeled as multiple related images |
-| BinaryAsset | Useful if you want to attach any segmentation or bitmap masks |
-| AudioAsset  | Useful if you want to attach an audio file |
-| VideoAsset  | Useful if you want to attach a video file |
-| PointCloudAsset | Useful for attaching 3D point cloud data |
+| Asset Type                                                              | Description |
+|-------------------------------------------------------------------------|----------------------------|
+| [`ImageAsset`](../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images |
+| [`BinaryAsset`](../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks |
+| [`AudioAsset`](../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file |
+| [`VideoAsset`](../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file |
+| [`PointCloudAsset`](../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data |
 
 ### Kolena Annotations
 
 Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../reference/annotation.md).
 These annotations are visible on both the Gallery view for groups of datapoints and for individual datapoints.
 
-| Annotation Type  | Description |
-|-------------|----------------------------|
-| BoundingBox  | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
-| SegmentationMask | Used to overaly raster segmentation maps on top of images. |
+| Annotation Type                                                                      | Description |
+|--------------------------------------------------------------------------------------|----------------------------|
+| [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox)            | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
+| [`SegmentationMask`](../reference/annotation.md#kolena.annotation.SegmentationMask)  | Used to overaly raster segmentation maps on top of images. |
 
 ### Structured Data
 
