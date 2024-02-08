@@ -48,9 +48,9 @@ In order to use the Gallery view you just need to have the `locator` or `text` f
 
 ### Kolena Assets
 
-You can connect files to datapoints in Kolena by the use of Assets, which can be visualized when exploring datasets,
-test cases or results. Multiple assets can be attached to a single datapoint allowing you to represent complex scenarios
-on Kolena.  Assets are files stored in a cloud bucket or served at a URL.
+You can connect files to datapoints in Kolena by the use of [`asset`](../reference/asset.md), which can be visualized
+when exploring datasets, test cases or results. Multiple assets can be attached to a single datapoint allowing you to
+represent complex scenarios on Kolena. Assets are files stored in a cloud bucket or served at a URL.
 
 | Asset Type  | Description |
 |-------------|----------------------------|
@@ -62,10 +62,10 @@ on Kolena.  Assets are files stored in a cloud bucket or served at a URL.
 
 ### Kolena Annotations
 
-Kolena allows you to visualize overlays on top of datapoints through the use of `Annotations`.
+Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../reference/annotation.md).
 These annotations are visible on both the Gallery view for groups of datapoints and for individual datapoints.
 
-| Asset Type  | Description |
+| Annotation Type  | Description |
 |-------------|----------------------------|
 | BoundingBox  | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
 | SegmentationMask | Used to overaly raster segmentation maps on top of images. |
@@ -115,10 +115,10 @@ for the best experience.
 If you already have this data and want to upload a .csv directly then you need to make sure the results
 are configured correctly.
 
-| Column name | Description                                           | Type |
-|-------------|-------------------------------------------------------|------|
-| matched_inference  | inferences that were matched to a ground_truth        |  List[ScoredLabeledBoundingBoxes]|
-| unmatched_inference | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
+| Column Name            | Description                                           | Type |
+|------------------------|-------------------------------------------------------|------|
+| matched_inference      | inferences that were matched to a ground_truth        |  List[ScoredLabeledBoundingBoxes]|
+| unmatched_inference    | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
 | unmatched_ground_truth | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
 
 These columns are used to determine `True Postitives`  `False Positives` and `False Negatives`.
