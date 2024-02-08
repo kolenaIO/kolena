@@ -123,8 +123,8 @@ are configured correctly.
 
 These columns are used to determine `True Postitives`  `False Positives` and `False Negatives`.
 
-We have provided an example that shows how to take raw results (`BoundingBoxes`, `confidence_scores` and `labels` and
-perform bounding box matching to produce the values mentioned above.
+We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
+that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
 
 ## Configuring Thumbnails
 
