@@ -115,11 +115,11 @@ for the best experience.
 If you already have this data and want to upload a .csv directly then you need to make sure the results
 are configured correctly.
 
-| Column Name            | Description                                           | Type |
-|------------------------|-------------------------------------------------------|------|
-| matched_inference      | inferences that were matched to a ground_truth        |  List[ScoredLabeledBoundingBoxes]|
-| unmatched_inference    | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
-| unmatched_ground_truth | inferences that were not matched to a ground_truth| List[ScoredLabeledBoundingBoxes]|
+| Column Name            | Description                                        | Type |
+|------------------------|----------------------------------------------------|------|
+| matched_inference      | Inferences that were matched to a ground_truth     | List[[`ScoredLabeledBoundingBox`]](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+| unmatched_inference    | Inferences that were not matched to a ground_truth | List[[`ScoredLabeledBoundingBox`]](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+| unmatched_ground_truth | Inferences that were not matched to a ground_truth | List[[`ScoredLabeledBoundingBox`]](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
 These columns are used to determine `True Postitives`  `False Positives` and `False Negatives`.
 
