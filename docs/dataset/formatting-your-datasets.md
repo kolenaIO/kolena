@@ -7,21 +7,27 @@ icon: kolena/studio-16
 ## What is a Dataset
 
 A [dataset](../dataset/core-concepts/dataset.md) is a structured assembly of datapoints, designed for model evaluation.
-Each datapoint in a dataset is a comprehensive unit that combines data
-traditionally segmented into test samples, ground truth, and metadata.
+Each datapoint in a dataset is a comprehensive unit that combines data traditionally segmented into test samples,
+ground truth, and metadata.
 
 ### What defines a Datapoint
 
 Conceptually a datapoint is a set of inputs that you would want to test on your models.
-Consider a single row of data for a classification problem with the following columns:
+Consider a single row within the [:kolena-widget-16: Classification (CIFAR-10) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/classification)
+dataset with the following columns:
 
-| locator                    | ground_truth |
-|---------------------------------------------------------------|----------------------------------------|
-| s3://kolena-public-examples/cifar10/data/horse0000.png        | horse                                  |
+| locator                    | ground_truth | image_brightness |   image_contrast |
+|---------------------------------------------------------------|--------------|----------|-----|
+| `s3://kolena-public-examples/cifar10/data/horse0000.png`        | horse        |     153.994     |    84.126  |
+
+From this you can see that image `horse0000.png` has the ground_truth classification of `horse`,
+and has brightness and contrast data.
 
 An `id_field` is required in order to differentiate between datapoints.
 By default the `locator` or  `text` fields are used if present in your dataset, and other fields
-can be specified when importing via the Web App or the SDK.
+can be specified when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+page. or the SDK by using [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
+function.
 
 A `locator` is a url path to a file that will be displayed on the platform and can either be a
 [cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file.
