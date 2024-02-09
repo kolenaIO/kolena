@@ -1,5 +1,8 @@
+---
+icon: kolena/studio-16
+---
 
-# Formatting your Datasets
+# :kolena-studio-20: Formatting your Datasets
 
 ## What is a Dataset
 
@@ -21,9 +24,15 @@ By default the `locator` or  `text` fields are used if present in your dataset, 
 can be specified when importing via the Web App or the SDK.
 
 A `locator` is a url path to a file that will be displayed on the platform and can either be a
-[cloud storage](../connecting-cloud-storage/) url or a http url that serves a file.
+[cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file.
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
+
+| Data Type    | Supported file formats                                                                |
+|--------------|---------------------------------------------------------------------------------------|
+| Image        | `jpg`,`jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.        |
+| Audio        | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
+| Video        | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
 
 For text-based models the `text` field contains the raw text input for the models.
 
@@ -39,8 +48,8 @@ relevant to your problem.
 The first experience is the Gallery view which allows you to view your data in a grid. This is useful as you can see
 chunks of your data (images, video, audio, text) and view results without having to view each datapoint individually.
 
-The second experience is the Tabular view, used when your data is a set of columns and values. For example rain data
-for a set of locations over a period of time.
+The second experience is the Tabular view, used when your data is a set of columns and values.
+An example of this is [:kolena-widget-16: Rain Forcast ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/rain_forecast)
 
 In order to use the Gallery view you just need to have the `locator` or `text` fields specfied in the dataset.
 
