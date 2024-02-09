@@ -10,7 +10,7 @@ traditionally segmented into test samples, ground truth, and metadata.
 ### What defines a Datapoint
 
 Conceptually a datapoint is a set of inputs that you would want to test on your models.
-Consider a single row of data for a classification problem with the following columns <br>
+Consider a single row of data for a classification problem with the following columns
 
 | locator                    | ground_truth |
 |---------------------------------------------------------------|----------------------------------------|
@@ -21,9 +21,9 @@ By default the `locator` or  `text` fields are used if present in your `datafram
 You can specify other fields as the id_field both when importing via the Web App or the SDK.
 
 A `locator` is a url path to a file that will be displayed in the platform. Locators can either be urls for common
-cloud storage providers, a local file path or a http url that serves a file. A locator needs to have correct extensions
-for the corresponding type of file. For example an image should be in a format such as `.jpg` or `.png`,
-whereas locators for audio data should be in forms like `.mp3` or `.wav`.
+[cloud storage](../../connecting-cloud-storage/) providers, a local file path or a http url that serves a file.
+A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
+such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
 
 For text-based models the `text` field contains the raw text input for the models.
 
@@ -52,13 +52,13 @@ You can connect files to datapoints in Kolena by the use of [`asset`](../referen
 when exploring datasets, test cases or results. Multiple assets can be attached to a single datapoint allowing you to
 represent complex scenarios on Kolena. Assets are files stored in a cloud bucket or served at a URL.
 
-| Asset Type                                                              | Description |
-|-------------------------------------------------------------------------|----------------------------|
-| [`ImageAsset`](../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images |
-| [`BinaryAsset`](../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks |
-| [`AudioAsset`](../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file |
-| [`VideoAsset`](../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file |
-| [`PointCloudAsset`](../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data |
+| Asset Type                                                              | Description                                                    |
+|-------------------------------------------------------------------------|----------------------------------------------------------------|
+| [`ImageAsset`](../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
+| [`BinaryAsset`](../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
+| [`AudioAsset`](../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
+| [`VideoAsset`](../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
+| [`PointCloudAsset`](../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
 
 ### Kolena Annotations
 
@@ -73,7 +73,8 @@ These annotations are visible on both the Gallery view for groups of datapoints 
 ### Structured Data
 
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
-`dataframe_to_csv()` function provided by Kolena to save a `.csv` instead of `pandas.to_csv()`.
+[`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
+instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
 
 In order to add structured data like a list of `BoundingBoxes` to your dataset via the sdk all you need to do is have
 field with a list of objects (Works for Kolena annotations) in your dataframe.
@@ -110,16 +111,13 @@ dataframe_to_csv(df_boxes, "processed.csv")
 ## Formatting results for Object Detection
 
 For Object Detection problems, model results need to have the following columns
-for the best experience.
+for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
-If you already have this data and want to upload a .csv directly then you need to make sure the results
-are configured correctly.
-
-| Column Name            | Description                                        | Type |
-|------------------------|----------------------------------------------------|------|
-| matched_inference      | Inferences that were matched to a ground_truth     | List[[`ScoredLabeledBoundingBox`]](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
-| unmatched_inference    | Inferences that were not matched to a ground_truth | List[[`ScoredLabeledBoundingBox`]](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
-| unmatched_ground_truth | Inferences that were not matched to a ground_truth | List[[`ScoredLabeledBoundingBox`]](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+| Column Name            | Description                                         |
+|------------------------|-----------------------------------------------------|
+| matched_inference      | Inferences that were matched to a ground_truth.     |
+| unmatched_inference    | Inferences that were not matched to a ground_truth. |
+| unmatched_ground_truth | Inferences that were not matched to a ground_truth. |
 
 These columns are used to determine `True Postitives`  `False Positives` and `False Negatives`.
 
@@ -131,4 +129,4 @@ that shows how to take raw results and perform bounding box matching to produce 
 Add a field called thumbnail_locator to the data, where the value points to a compressed version of the data.
 This image should have the same dimensions as the original image to ensure that overlays are rendered correctly.
 This will significantly improve the performance of Studio - images load much faster when filtering, sorting or using
-the embedding sort.
+the [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
