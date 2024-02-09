@@ -86,7 +86,7 @@ When uploading `.csv` files for datasets that contain annotations, assets or nes
 [`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
 instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
 
-In order to add structured data like a list of `BoundingBoxes` to your dataset via the sdk all you need to do is have
+In order to add data like a list of `BoundingBox` objects to your dataset via the sdk all you need to do is have
 field with a list of objects in your dataframe.
 
 A snippet like the following:
@@ -94,10 +94,12 @@ A snippet like the following:
 ```python
 from kolena.annotation import BoundingBox
 from kolena.io import dataframe_to_csv
+from collections import defaultdict
+import pandas as pd
 
-df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/coco-2014-val.csv", storage_options={"anon": True})
-image_to_boxes: Dict[str, List[BoundingBox]] = defaultdict(list)
-image_to_metadata: Dict[str, Dict[str, Any]] = defaultdict(dict)
+df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/raw/coco-2014-val.csv", storage_options={"anon": True})
+image_to_boxes = defaultdict(list)
+image_to_metadata = defaultdict(dict)
 
 for record in df.itertuples():
     coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
