@@ -3,7 +3,7 @@
 
 ## What is a Dataset
 
-A **dataset** is a structured assembly of datapoints, designed for model evaluation.
+A [dataset](../dataset/core-concepts/dataset.md) is a structured assembly of datapoints, designed for model evaluation.
 Each datapoint in a dataset is a comprehensive unit that combines data
 traditionally segmented into test samples, ground truth, and metadata.
 
@@ -21,7 +21,7 @@ By default the `locator` or  `text` fields are used if present in your `datafram
 You can specify other fields as the id_field both when importing via the Web App or the SDK.
 
 A `locator` is a url path to a file that will be displayed in the platform. Locators can either be urls for common
-[cloud storage](../../connecting-cloud-storage/) providers, a local file path or a http url that serves a file.
+[cloud storage](../connecting-cloud-storage/) providers, a local file path or a http url that serves a file.
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
 
@@ -44,7 +44,7 @@ for a set of locations over a period of time).
 
 In order to use the Gallery view you just need to have the `locator` or `text` fields specfied in the dataset.
 
-## Enriching you Dataset expirience
+## Enriching your Dataset experience
 
 ### Kolena Assets
 
