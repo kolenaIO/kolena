@@ -49,7 +49,8 @@ The first experience is the Gallery view which allows you to view your data in a
 chunks of your data (images, video, audio, text) and view results without having to view each datapoint individually.
 
 The second experience is the Tabular view, used when your data is a set of columns and values.
-An example of this is [:kolena-widget-16: Rain Forcast ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/rain_forecast)
+An example of this is the [:kolena-widget-16: Rain Forcast ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/rain_forecast)
+dataset.
 
 In order to use the Gallery view you just need to have the `locator` or `text` fields specfied in the dataset.
 
