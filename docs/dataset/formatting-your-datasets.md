@@ -108,7 +108,7 @@ df_boxes.merge(df_metadata, on="locator")
 dataframe_to_csv(df_boxes, "processed.csv")
 ```
 
-## Formatting results for Object Detection
+### Formatting results for Object Detection
 
 For Object Detection problems, model results need to have the following columns
 for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
@@ -124,7 +124,16 @@ These columns are used to determine `True Postitives`  `False Positives` and `Fa
 We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
 that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
 
-## Configuring Thumbnails
+### To use compound metrics on the fly
+
+The Kolena web application currently supports [`precision`](../metrics/precision.md),
+[`recall`](../metrics/recall.md), [`f1_score`](../metrics/f1-score.md),
+[`accuracy`](../metrics/accuracy.md), [`false_positive_rate`](../metrics/fpr.md),
+and [`true_negative_rate`](../metrics/recall.md).
+
+To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
+
+### Configuring Thumbnails
 
 Add a field called thumbnail_locator to the data, where the value points to a compressed version of the data.
 This image should have the same dimensions as the original image to ensure that overlays are rendered correctly.
