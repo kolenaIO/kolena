@@ -34,11 +34,13 @@ A `locator` is a url path to a file that will be displayed on the platform and c
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
 
-| Data Type    | Supported file formats                                                                |
-|--------------|---------------------------------------------------------------------------------------|
-| Image        | `jpg`,`jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.        |
-| Audio        | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
-| Video        | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
+| Data Type   | Supported file formats                                                            |
+|-------------|-----------------------------------------------------------------------------------|
+| Image       | `jpg`,`jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.    |
+| Audio       | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
+| Video       | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.          |
+| Document    | `txt` and `pdf` files.                                                            |
+| Point Cloud | `pcd` files.                                                                      |
 
 For text-based models the `text` field contains the raw text input for the models.
 
@@ -112,18 +114,19 @@ for record in df.itertuples():
     bounding_box = BoundingBox(*coords)
     image_to_boxes[record.locator].append(bounding_box)
     metadata = {
-            "locator": str(record.locator),
-            "height": float(record.height),
-            "width": float(record.width),
-            "date_captured": str(record.date_captured),
-            "brightness": float(record.brightness),
-        }
+        "locator": record.locator,
+        "height": record.height,
+        "width": record.width,
+        "date_captured": record.date_captured,
+        "brightness": record.brightness,
+    }
     image_to_metadata[record.locator] = metadata
 
 df_boxes = pd.DataFrame(list(image_to_boxes.items()), columns=["locator", "ground_truths"])
 df_metadata = pd.DataFrame.from_dict(image_to_metadata, orient="index").reset_index(drop=True)
-df_boxes.merge(df_metadata, on="locator")
-dataframe_to_csv(df_boxes, "processed.csv")
+df_merged = df_metadata.merge(df_boxes, on="locator")
+
+dataframe_to_csv(df_merged, "processed.csv")
 ```
 
 ### Formatting results for Object Detection
