@@ -23,7 +23,7 @@ standardization and comparison of multiple models.
 
     ---
 
-    A guide on how to format your Datasets for the best visualization experience
+    A guide on how to format your Datasets for the best visualization experience.
 </div>
 
 <div class="grid cards" markdown>

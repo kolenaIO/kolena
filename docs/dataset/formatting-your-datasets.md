@@ -10,26 +10,26 @@ traditionally segmented into test samples, ground truth, and metadata.
 ### What defines a Datapoint
 
 Conceptually a datapoint is a set of inputs that you would want to test on your models.
-Consider a single row of data for a classification problem with the following columns
+Consider a single row of data for a classification problem with the following columns:
 
 | locator                    | ground_truth |
 |---------------------------------------------------------------|----------------------------------------|
 | s3://kolena-public-examples/cifar10/data/horse0000.png        | horse                                  |
 
 An `id_field` is required in order to differentiate between datapoints.
-By default the `locator` or  `text` fields are used if present in your `dataframe` or `.csv`.
-You can specify other fields as the id_field both when importing via the Web App or the SDK.
+By default the `locator` or  `text` fields are used if present in your dataset, and other fields
+can be specified when importing via the Web App or the SDK.
 
-A `locator` is a url path to a file that will be displayed in the platform. Locators can either be urls for common
-[cloud storage](../connecting-cloud-storage/) providers, a local file path or a http url that serves a file.
+A `locator` is a url path to a file that will be displayed on the platform and can either be a
+[cloud storage](../connecting-cloud-storage/) url or a http url that serves a file.
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
 
 For text-based models the `text` field contains the raw text input for the models.
 
 Metadata and other additional fields can be added to datasets by adding a column to the `.csv` and providing values for
-datapoints where applicable. For example `image_height` and `image_width` are useful metadata for image datasets and
-fields like `word_count` are useful for text datasets.
+datapoints where applicable. For example `image_height` and `image_width` may be useful metadata for image datasets and
+fields like `word_count` may be useful for text datasets.
 
 ## How are Datasets viewed
 
@@ -40,7 +40,7 @@ The first experience is the Gallery view which allows you to view your data in a
 chunks of your data (images, video, audio, text) and view results without having to view each datapoint individually.
 
 The second experience is the Tabular view, used when your data is a set of columns and values. For example rain data
-for a set of locations over a period of time).
+for a set of locations over a period of time.
 
 In order to use the Gallery view you just need to have the `locator` or `text` fields specfied in the dataset.
 
@@ -49,7 +49,7 @@ In order to use the Gallery view you just need to have the `locator` or `text` f
 ### Kolena Assets
 
 You can connect files to datapoints in Kolena by the use of [`asset`](../reference/asset.md), which can be visualized
-when exploring datasets, test cases or results. Multiple assets can be attached to a single datapoint allowing you to
+in the Studio when exploring datasets and results. Multiple assets can be attached to a single datapoint allowing you to
 represent complex scenarios on Kolena. Assets are files stored in a cloud bucket or served at a URL.
 
 | Asset Type                                                              | Description                                                    |
@@ -77,7 +77,7 @@ When uploading `.csv` files for datasets that contain annotations, assets or nes
 instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
 
 In order to add structured data like a list of `BoundingBoxes` to your dataset via the sdk all you need to do is have
-field with a list of objects (Works for Kolena annotations) in your dataframe.
+field with a list of objects in your dataframe.
 
 A snippet like the following:
 
