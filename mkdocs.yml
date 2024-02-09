@@ -14,7 +14,7 @@ nav:
     - Datasets:
       - Datasets: dataset/index.md
       - Quickstart: dataset/quickstart.md
-      - Dataset Fomratting: dataset/formatting-your-datasets.md
+      - Dataset Formatting: dataset/formatting-your-datasets.md
       - Core Concepts:
         - Core Concepts: dataset/core-concepts/index.md
         - Dataset: dataset/core-concepts/dataset.md
