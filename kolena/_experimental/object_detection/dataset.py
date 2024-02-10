@@ -19,6 +19,7 @@ from typing import cast
 from typing import Dict
 from typing import List
 from typing import Literal
+from typing import Set
 from typing import Union
 
 import numpy as np
@@ -41,26 +42,27 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
 def single_class_datapoint_metrics(
     bbox_matches: InferenceMatches,
     thresholds: float,
+    label: str,
     fixed_thresholds: list[float],
 ) -> Dict[str, Any]:
     tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
     fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
     fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
     scores = [inf.score for inf in tp + fp]
-    raw_TPS = ([sum(1 for _, inf in bbox_matches.matched if inf.score >= thr) for thr in fixed_thresholds],)
-    raw_FPS = ([sum(1 for inf in bbox_matches.unmatched_inf if inf.score >= thr) for thr in fixed_thresholds],)
-    raw_FNS = [
-        len(bbox_matches.unmatched_gt) + sum(1 for _, inf in bbox_matches.matched if inf.score < thr)
-        for thr in fixed_thresholds
-    ]
+    thresholded_metrics = []
+    for thr in fixed_thresholds:
+        raw_TPS = sum(1 for _, inf in bbox_matches.matched if inf.score >= thr)
+        raw_FPS = sum(1 for inf in bbox_matches.unmatched_inf if inf.score >= thr)
+        raw_FNS = len(bbox_matches.unmatched_gt) + sum(1 for _, inf in bbox_matches.matched if inf.score < thr)
+        thresholded_metrics.append(
+            {"threshold": thr, label: dict(count_TP=raw_TPS, count_FP=raw_FPS, count_FN=raw_FNS)},
+        )
+
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        raw_TPS=raw_TPS,
-        raw_FPS=raw_FPS,
-        raw_FNS=raw_FNS,
-        fixed_thresholds=fixed_thresholds,
+        thresholded=thresholded_metrics,
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
@@ -76,23 +78,13 @@ def single_class_datapoint_metrics(
 def multiclass_datapoint_metrics(
     bbox_matches: MulticlassInferenceMatches,
     thresholds: Dict[str, float],
+    labels: Set[str],
+    fixed_thresholds: list[float],
 ) -> Dict[str, Any]:
     tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
     fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
     fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
         gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
-    ]
-    unmatched_ground_truth = [
-        LabeledBoundingBox(
-            label=gt.label,
-            top_left=gt.top_left,
-            bottom_right=gt.bottom_right,
-            predicted_label=inf.label,  # type: ignore[call-arg]
-            predicted_score=inf.score,  # type: ignore[call-arg]
-        )
-        if inf
-        else gt
-        for gt, inf in bbox_matches.unmatched_gt
     ]
     confused = [
         ScoredLabeledBoundingBox(
@@ -114,13 +106,24 @@ def multiclass_datapoint_metrics(
         for label in sorted(thresholds.keys())
         if label in inference_labels
     ]
+    thresholded_metrics = []
+    for thr in fixed_thresholds:
+        m = {"threshold": thr}
+        for label in labels:
+            raw_TPS = sum(1 for _, inf in bbox_matches.matched if inf.score >= thr and inf.label == label)
+            raw_FPS = sum(1 for inf in bbox_matches.unmatched_inf if inf.score >= thr and inf.label == label)
+            raw_FNS = sum(1 for gt, _ in bbox_matches.unmatched_gt if gt.label == label) + sum(
+                1 for _, inf in bbox_matches.matched if inf.label == label and inf.score < thr
+            )
+            m[label] = dict(count_TP=raw_TPS, count_FP=raw_FPS, count_FN=raw_FNS)
+
+        thresholded_metrics.append(m)
+
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in bbox_matches.matched],
-        unmatched_ground_truth=unmatched_ground_truth,
-        unmatched_inference=bbox_matches.unmatched_inf,
+        thresholded=thresholded_metrics,
         Confused=confused,
         count_TP=len(tp),
         count_FP=len(fp),
@@ -157,7 +160,8 @@ def _compute_metrics(
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
     """
-    is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
+    all_labels = _get_all_labels(pred_df[ground_truth], pred_df[inference])
+    is_multiclass = len(all_labels) >= 2
     match_fn = match_inferences_multiclass if is_multiclass else match_inferences
 
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
@@ -170,9 +174,9 @@ def _compute_metrics(
             LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record[idx[ground_truth]]
         ]
         inferences = record[idx[inference]]
-        filtered_inferences = (filter_inferences(inferences, min_confidence_score),)
-        max_score = max(max([f.score for f in filtered_inferences]), max_score)
-        min_score = min(min([f.score for f in filtered_inferences]), min_score)
+        filtered_inferences = filter_inferences(inferences, min_confidence_score)
+        max_score = max(max([f.score for f in filtered_inferences]), max_score) if filtered_inferences else max_score
+        min_score = min(min([f.score for f in filtered_inferences]), min_score) if filtered_inferences else min_score
         all_bbox_matches.append(
             match_fn(  # type: ignore[arg-type]
                 ground_truths,
@@ -195,7 +199,12 @@ def _compute_metrics(
                 cast(List[MulticlassInferenceMatches], all_bbox_matches),
             )
         results = [
-            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds)
+            multiclass_datapoint_metrics(
+                cast(MulticlassInferenceMatches, matches),
+                thresholds,
+                all_labels,
+                fixed_thresholds,
+            )
             for matches in all_bbox_matches
         ]
     else:
@@ -205,19 +214,20 @@ def _compute_metrics(
             threshold = threshold_strategy
         else:
             threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_bbox_matches))
+        label = list(all_labels)[0]
         results = [
-            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, fixed_thresholds)
+            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, label, fixed_thresholds)
             for matches in all_bbox_matches
         ]
 
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
 
 
-def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
+def _get_all_labels(ground_truth: pd.Series, inference: pd.Series) -> Set[str]:
     labels = {x.label for x in itertools.chain.from_iterable(ground_truth)}.union(
         {x.label for x in itertools.chain.from_iterable(inference)},
     )
-    return len(labels) >= 2
+    return labels
 
 
 def _validate_column_present(df: pd.DataFrame, col: str) -> None:
