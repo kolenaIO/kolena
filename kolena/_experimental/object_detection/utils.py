@@ -92,18 +92,18 @@ def _compute_threshold_curve(
         )
 
         # avoid curves with one x-value and two y-values
-        if recall in recalls:
-            idx = recalls.index(recall)
-            precisions[idx] = max(precisions[idx], precision)
-            # if an old point is replaced, replace the f1s and thresholds
-            if precisions[idx] == precision:
-                thresholds[idx] = threshold
-                f1s[idx] = f1
-        else:
-            precisions.append(precision)
-            recalls.append(recall)
-            thresholds.append(threshold)
-            f1s.append(f1)
+        # if recall in recalls:
+        #     idx = recalls.index(recall)
+        #     precisions[idx] = max(precisions[idx], precision)
+        #     # if an old point is replaced, replace the f1s and thresholds
+        #     if precisions[idx] == precision:
+        #         thresholds[idx] = threshold
+        #         f1s[idx] = f1
+        # else:
+        precisions.append(precision)
+        recalls.append(recall)
+        thresholds.append(threshold)
+        f1s.append(f1)
 
     # omit curves with no points
     if len(f1s) == 0 or len(precisions) == 0 or len(recalls) == 0:

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import itertools
+import math
 from collections import defaultdict
 from typing import Any
 from typing import cast
@@ -20,6 +21,7 @@ from typing import List
 from typing import Literal
 from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from kolena import dataset
@@ -36,18 +38,29 @@ from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
-def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
+def single_class_datapoint_metrics(
+    bbox_matches: InferenceMatches,
+    thresholds: float,
+    fixed_thresholds: list[float],
+) -> Dict[str, Any]:
     tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
     fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
     fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
     scores = [inf.score for inf in tp + fp]
+    raw_TPS = ([sum(1 for _, inf in bbox_matches.matched if inf.score >= thr) for thr in fixed_thresholds],)
+    raw_FPS = ([sum(1 for inf in bbox_matches.unmatched_inf if inf.score >= thr) for thr in fixed_thresholds],)
+    raw_FNS = [
+        len(bbox_matches.unmatched_gt) + sum(1 for _, inf in bbox_matches.matched if inf.score < thr)
+        for thr in fixed_thresholds
+    ]
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in bbox_matches.matched],
-        unmatched_ground_truth=bbox_matches.unmatched_gt,
-        unmatched_inference=bbox_matches.unmatched_inf,
+        raw_TPS=raw_TPS,
+        raw_FPS=raw_FPS,
+        raw_FNS=raw_FNS,
+        fixed_thresholds=fixed_thresholds,
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
@@ -150,21 +163,27 @@ def _compute_metrics(
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
     all_bbox_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
+    min_score = math.inf
+    max_score = -math.inf
     for record in pred_df.itertuples():
         ground_truths = [
             LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record[idx[ground_truth]]
         ]
         inferences = record[idx[inference]]
+        filtered_inferences = (filter_inferences(inferences, min_confidence_score),)
+        max_score = max(max([f.score for f in filtered_inferences]), max_score)
+        min_score = min(min([f.score for f in filtered_inferences]), min_score)
         all_bbox_matches.append(
             match_fn(  # type: ignore[arg-type]
                 ground_truths,
-                filter_inferences(inferences, min_confidence_score),
+                filtered_inferences,
                 mode="pascal",
                 iou_threshold=iou_threshold,
             ),
         )
 
     thresholds: dict[str, float]
+    fixed_thresholds = list(np.linspace(min_score, max_score, 501))
 
     if is_multiclass:
         if isinstance(threshold_strategy, dict):
@@ -187,7 +206,8 @@ def _compute_metrics(
         else:
             threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_bbox_matches))
         results = [
-            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold) for matches in all_bbox_matches
+            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, fixed_thresholds)
+            for matches in all_bbox_matches
         ]
 
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
