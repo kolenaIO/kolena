@@ -34,13 +34,13 @@ A `locator` is a url path to a file that will be displayed on the platform and c
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
 
-| Data Type   | Supported file formats                                                            |
-|-------------|-----------------------------------------------------------------------------------|
-| Image       | `jpg`,`jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.    |
+| Data Type   | Supported file formats                                                                |
+|-------------|---------------------------------------------------------------------------------------|
+| Image       | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
 | Audio       | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
-| Video       | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.          |
-| Document    | `txt` and `pdf` files.                                                            |
-| Point Cloud | `pcd` files.                                                                      |
+| Video       | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
+| Document    | `txt` and `pdf` files.                                                                |
+| Point Cloud | `pcd` files.                                                                          |
 
 For text-based models the `text` field contains the raw text input for the models.
 
@@ -136,11 +136,11 @@ for the best experience. The values for each of the columns is a [`List[ScoredLa
 
 | Column Name            | Description                                         |
 |------------------------|-----------------------------------------------------|
-| matched_inference      | Inferences that were matched to a ground_truth.     |
-| unmatched_inference    | Inferences that were not matched to a ground_truth. |
-| unmatched_ground_truth | Inferences that were not matched to a ground_truth. |
+| matched_inference      | Inferences that were matched to a ground truth.     |
+| unmatched_inference    | Inferences that were not matched to a ground truth. |
+| unmatched_ground_truth | Inferences that were not matched to a ground truth. |
 
-These columns are used to determine `True Postitives`  `False Positives` and `False Negatives`.
+These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
 
 We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
 that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
