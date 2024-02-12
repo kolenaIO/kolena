@@ -26,7 +26,7 @@ and has brightness and contrast data.
 An `id_field` is required in order to differentiate between datapoints.
 By default the `locator` or  `text` fields are used if present in your dataset, and other fields
 can be specified when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
-page. or the SDK by using [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
+page, or the SDK by using [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
 
 A `locator` is a url path to a file that will be displayed on the platform and can either be a
