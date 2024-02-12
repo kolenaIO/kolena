@@ -156,7 +156,8 @@ To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`
 
 ### Configuring Thumbnails
 
-Add a field called thumbnail_locator to the data, where the value points to a compressed version of the data.
-This image should have the same dimensions as the original image to ensure that overlays are rendered correctly.
-This will significantly improve the performance of Studio - images load much faster when filtering, sorting or using
-the [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
+As a way to improve the loading performance of your image data, you can upload compressed versions of the image
+with the same dimensions as thumbnails. This will result in an improved Studio experience as images will load much
+faster when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
+This is configured by adding a field called `thumbnail_locator` to the data, where the value points
+to a compressed version of the `locator`image.
