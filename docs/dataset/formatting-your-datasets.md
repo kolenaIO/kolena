@@ -160,4 +160,4 @@ As a way to improve the loading performance of your image data, you can upload c
 with the same dimensions as thumbnails. This will result in an improved Studio experience as images will load much
 faster when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
 This is configured by adding a field called `thumbnail_locator` to the data, where the value points
-to a compressed version of the `locator`image.
+to a compressed version of the `locator` image.
