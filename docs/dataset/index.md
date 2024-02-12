@@ -19,6 +19,14 @@ standardization and comparison of multiple models.
 </div>
 
 <div class="grid cards" markdown>
+- [:kolena-dataset-16: Formatting your Datasets](./formatting-your-datasets.md)
+
+    ---
+
+    A guide on how to format your Datasets for the best visualization experience.
+</div>
+
+<div class="grid cards" markdown>
 - [:kolena-dataset-16: Dataset](./core-concepts/dataset.md)
 
     ---
