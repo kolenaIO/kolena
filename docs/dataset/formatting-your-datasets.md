@@ -39,13 +39,13 @@ such as `.jpg` or `.png`, whereas locators for audio data should be in forms lik
 
 The table below shows the supported file formats for the supported data types:
 
-| Data Type   | Supported file formats                                                                |
-|-------------|---------------------------------------------------------------------------------------|
-| Image       | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
-| Audio       | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
-| Video       | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
-| Document    | `txt` and `pdf` files.                                                                |
-| Point Cloud | `pcd` files.
+| Data Type      | Supported file formats                                                                |
+|----------------|---------------------------------------------------------------------------------------|
+| Image          | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
+| Audio          | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
+| Video          | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
+| Document       | `txt` and `pdf` files.                                                                |
+| Point Cloud    | `pcd` files.                                                                          |
 
 By default the `locator` or  `text` fields are used if present in your dataset, and other fields
 can be specified when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
