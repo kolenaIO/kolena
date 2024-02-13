@@ -149,7 +149,11 @@ When uploading `.csv` files for datasets that contain annotations, assets or nes
 [`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
 instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
 
-A snippet like the following:
+The following snippet shows how to format coco data as a dataset within Kolena. As the input csv contains rows
+for each bounding box within an image, we need to apply some transformations to the raw data.
+This is done by creating a list of all bounding boxes for an image and then merging it with the metadata.
+The produced csv `processed.csv` contains a column called ground_truths where the data is the same format as
+the above bounding boxes.
 
 ```python
 from kolena.annotation import BoundingBox
