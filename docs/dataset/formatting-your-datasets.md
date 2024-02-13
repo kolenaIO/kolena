@@ -115,6 +115,12 @@ bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18))
 ```
 When viewing a bounding box within python the format is
 `BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)`
+A single bounding box would be serialized as the following JSON string within a CSV:
+
+```
+{""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
+ ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+```
 
 The above example has multiple objects within a single image, in order to ingest this you would need a single field
 containing the list of bounding boxes.
@@ -202,11 +208,15 @@ To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`
 
 ### Configuring Thumbnails
 
-As a way to improve the loading performance of your image data, you can upload compressed versions of the image
-with the same dimensions as thumbnails.
-
-This will result in an improved Studio experience as images will load much
-faster when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
+In order to improve the loading performance of your image data, you can upload compressed versions of the image
+with the same dimensions as thumbnails. This results in an improved Studio experience due to faster image loading
+when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
 
 Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
 to a compressed version of the `locator` image.
+
+If you wanted to add a thumbnail to the classification data shown above it would look like:
+
+| locator                    | thumbnail_locator                                                  | ground_truth | image_brightness |   image_contrast |
+|---------------------------------------------------------------|--------------------------------------------------------------------|--------------|----------|-----|
+| `s3://kolena-public-examples/cifar10/data/horse0000.png`        | `s3://kolena-public-examples/cifar10/data/thumbnail/horse0000.png` | horse        |     153.994     |    84.126  |
