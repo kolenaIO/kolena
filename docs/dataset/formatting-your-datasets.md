@@ -98,7 +98,7 @@ These annotations are visible on both the Gallery view for groups of datapoints 
 
 ### Structured Data
 
-Consider a `.csv` file that contains ground truth data (labeled bounding boxes) for an object detection problem:
+Consider a `.csv` file containing ground truth data in the from of bounding boxes for an object detection problem:
 
 | locator                                                                       | label      | min_x     | max_x  | min_y | max_y   |
 |-------------------------------------------------------------------------------|------------|-----------|--------|-------|---------|
@@ -106,7 +106,7 @@ Consider a `.csv` file that contains ground truth data (labeled bounding boxes) 
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | car        | 538.03    | 636.85 | 8.86  | 101.93  |
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
 
-The bounding box for the first image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
+The first bounding box for the image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
 [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) annotation. This looks like:
 
 ```python
@@ -134,7 +134,7 @@ bboxes = [
     BoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84)),
 ]
 ```
-This would be represented within a csv as show below. Note this will be a single line,
+This would be represented within a csv as shown below. Note this will be a single line,
 but is shown here as multiple lines for formatting.
 ```
 "[{""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
@@ -147,9 +147,10 @@ but is shown here as multiple lines for formatting.
 
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
 [`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
-instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
+instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html). The above
+serializations were created using `dataframe_to_csv()`.
 
-The following snippet shows how to format coco data as a dataset within Kolena. As the input csv contains rows
+The following snippet shows how to format COCO data as a dataset within Kolena. As the input csv contains rows
 for each bounding box within an image, we need to apply some transformations to the raw data.
 This is done by creating a list of all bounding boxes for an image and then merging it with the metadata.
 The produced csv `processed.csv` contains a column called ground_truths where the data is the same format as
@@ -184,6 +185,9 @@ df_merged = df_metadata.merge(df_boxes, on="locator")
 
 dataframe_to_csv(df_merged, "processed.csv")
 ```
+
+The file `processed.csv` can be uploaded through the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+page.
 
 ### Formatting results for Object Detection
 
