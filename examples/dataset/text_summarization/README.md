@@ -64,11 +64,11 @@ text summarization:
 
 ### Metrics
 
-1. mean(result.BERT_f1)
-2. mean(result.ROUGE_1)
-3. mean(result.METEOR)
-4. mean(result.BLEU)
-4. mean(result.cost)
+1. [BERT F1 (`mean(result.BERT_f1)`)](https://docs.kolena.io/metrics/bertscore)
+2. [ROUGE 1 (`mean(result.ROUGE_1)`)](https://docs.kolena.io/metrics/rouge-n/)
+3. [BLEU (`mean(result.BLEU)`)](https://docs.kolena.io/metrics/bleu/)
+4. Failure Rate (`rate(is_failure=true)`)
+5. Cost (`sum(result.cost)`)
 
 ### Plots
 

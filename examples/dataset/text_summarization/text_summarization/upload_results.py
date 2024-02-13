@@ -33,14 +33,18 @@ def run(args: Namespace) -> None:
     model = MODELS[args.model]
     df_dataset = download_dataset(args.dataset)
     df_inferences = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv", storage_options={"anon": True})
-    df = df_inferences.merge(df_dataset, on=ID_FIELD)
+    df = df_inferences.merge(df_dataset[["text_id", "text_summary"]], on=ID_FIELD)
 
     results = []
     for record in tqdm(df.itertuples(index=False), total=len(df)):
         metrics = compute_metrics(record.text_summary, record.inference)
         results.append(
             dict(
-                **record._asdict(),
+                text_id=record.text_id,
+                inference=record.inference,
+                inference_time=record.inference_time,
+                tokens_used=record.tokens_used,
+                cost=record.cost,
                 **metrics,
             ),
         )
