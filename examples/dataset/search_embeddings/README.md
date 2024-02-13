@@ -9,7 +9,7 @@ this data has already been uploaded to your Kolena platform.
 
 1. Ensure that data for the [`semantic_segmentation`](../semantic_segmentation) dataset has been seeded through calling
 the [`upload_dataset.py`](../semantic_segmentation/semantic_segmentation/upload_dataset.py) script.
-2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.io/datasets/advanced-usage/set-up-natural-language-search/#poetry)
+2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.com/datasets/advanced-usage/set-up-natural-language-search/#poetry)
 3. This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. Install project
 dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
@@ -29,7 +29,7 @@ aws s3 cp --recursive s3://kolena-public-examples/coco-stuff-10k/data/images/ lo
 The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 [`upload_embeddings.py`](search/extract_embeddings.py) loads data from a publicly accessible S3 bucket, extracts
 embeddings or uses pre-extracted embeddings, and uploads them to the Kolena platform.

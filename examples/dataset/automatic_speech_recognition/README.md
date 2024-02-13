@@ -19,7 +19,7 @@ poetry update && poetry install
 The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 ### Automatic Speech Recognition on LibriSpeech
 
@@ -60,17 +60,17 @@ optional arguments:
 ## Quality Standards Guide
 
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
-test the automatic speech recognition models. See our [QuickStart](https://docs.kolena.io/dataset/quickstart/) guide
+test the automatic speech recognition models. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
 for details.
 
-Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
 this workflow:
 
 ### Metrics
 
-1. [Word Error Rate (`mean(word_error_rate)`)](https://docs.kolena.io/metrics/wer-cer-mer)
-2. [Character Error Rate (`mean(character_error_rate)`)](https://docs.kolena.io/metrics/wer-cer-mer/)
-3. [Match Error Rate (`mean(match_error_rate)`)](https://docs.kolena.io/metrics/wer-cer-mer/)
+1. [Word Error Rate (`mean(word_error_rate)`)](https://docs.kolena.com/metrics/wer-cer-mer)
+2. [Character Error Rate (`mean(character_error_rate)`)](https://docs.kolena.com/metrics/wer-cer-mer/)
+3. [Match Error Rate (`mean(match_error_rate)`)](https://docs.kolena.com/metrics/wer-cer-mer/)
 4. Failure Rate (`rate(is_failure=true)`)
 
 ### Plots

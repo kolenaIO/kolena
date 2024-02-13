@@ -20,7 +20,7 @@ poetry update && poetry install
 The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 This project defines three scripts that perform the following operations:
 
@@ -32,7 +32,7 @@ e.g. `pspnet_r101`, `pspnet_r50`, on the dataset.
     As part of the evaluation, result masks (i.e. TP/FP/FN masks) are computed and uploaded to a cloud storage for
     better visualization experience on our webapp. Please use `--write-bucket` argument to provide your AWS S3 bucket
     with write access where these result masks are going to be uploaded to. Also, follow the
-    [instructions](https://docs.kolena.io/connecting-cloud-storage/amazon-s3/) to connect
+    [instructions](https://docs.kolena.com/connecting-cloud-storage/amazon-s3/) to connect
     your bucket to Kolena.
 
     The result masks will be stored under `s3://{args.write_bucket}/coco-stuff-10k/results/{args.model}/masks` directory
@@ -65,19 +65,19 @@ optional arguments:
 ## Quality Standards Guide
 
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
-test the semantic segmentation models. See our [QuickStart](https://docs.kolena.io/dataset/quickstart/) guide
+test the semantic segmentation models. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
 for details.
 
-Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
 this workflow:
 
 ### Metrics
 
-1. [Precision](https://docs.kolena.io/metrics/precision)
-2. [Recall](https://docs.kolena.io/metrics/recall)
-3. [F1-score](https://docs.kolena.io/metrics/f1-score)
-4. [\# FP](https://docs.kolena.io/metrics/tp-fp-fn-tn)
-5. [\# FN](https://docs.kolena.io/metrics/tp-fp-fn-tn)
+1. [Precision](https://docs.kolena.com/metrics/precision)
+2. [Recall](https://docs.kolena.com/metrics/recall)
+3. [F1-score](https://docs.kolena.com/metrics/f1-score)
+4. [\# FP](https://docs.kolena.com/metrics/tp-fp-fn-tn)
+5. [\# FN](https://docs.kolena.com/metrics/tp-fp-fn-tn)
 
 ### Plots
 

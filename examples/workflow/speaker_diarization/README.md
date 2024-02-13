@@ -18,7 +18,7 @@ poetry update && poetry install
 The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-datasets`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 ### Speaker Diarization on ICSI-Corpus
 

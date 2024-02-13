@@ -87,7 +87,7 @@ next section.
 ### Kolena integration
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 This project defines two scripts that perform the following operations:
 

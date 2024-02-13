@@ -19,7 +19,7 @@ poetry update && poetry install
 The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 This project defines two scripts that perform the following operations:
 
@@ -57,9 +57,9 @@ optional arguments:
 ## Quality Standards Guide
 
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
-[explore the data and results](https://docs.kolena.io/dataset/quickstart/#step-3-explore-data-and-results).
+[explore the data and results](https://docs.kolena.com/dataset/quickstart/#step-3-explore-data-and-results).
 
-Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
 text summarization:
 
 ### Metrics

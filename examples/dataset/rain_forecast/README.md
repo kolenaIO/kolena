@@ -18,7 +18,7 @@ poetry update && poetry install
 The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
-[initialization documentation](https://docs.kolena.io/installing-kolena/#initialization) for details.
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
 This project defines two scripts that perform the following operations:
 
@@ -44,19 +44,19 @@ optional arguments:
 ## Quality Standards Guide
 
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
-test the rain forecast models. See our [QuickStart](https://docs.kolena.io/dataset/quickstart/) guide
+test the rain forecast models. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
 for details.
 
-Here are our [Quality Standards](https://docs.kolena.io/dataset/core-concepts/quality-standard/) recommendations for
+Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
 this workflow:
 
 ### Metrics
 
-1. [Precision](https://docs.kolena.io/metrics/precision)
-2. [Recall](https://docs.kolena.io/metrics/recall)
-3. [F1-score](https://docs.kolena.io/metrics/f1-score)
-4. [\# FP](https://docs.kolena.io/metrics/tp-fp-fn-tn)
-5. [\# FN](https://docs.kolena.io/metrics/tp-fp-fn-tn)
+1. [Precision](https://docs.kolena.com/metrics/precision)
+2. [Recall](https://docs.kolena.com/metrics/recall)
+3. [F1-score](https://docs.kolena.com/metrics/f1-score)
+4. [\# FP](https://docs.kolena.com/metrics/tp-fp-fn-tn)
+5. [\# FN](https://docs.kolena.com/metrics/tp-fp-fn-tn)
 
 ### Plots
 

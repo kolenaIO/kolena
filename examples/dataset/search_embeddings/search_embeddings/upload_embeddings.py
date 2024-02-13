@@ -82,7 +82,7 @@ def extract_image_embeddings(
     """
     Extract a list of search embeddings corresponding to sample locators.
     Expects to have an exported `KOLENA_TOKEN` environment variable, as per
-        [Kolena client documentation](https://docs.kolena.io/installing-kolena/?h=initialize#initialization).
+        [Kolena client documentation](https://docs.kolena.com/installing-kolena/?h=initialize#initialization).
 
     :param model: Model used to run embedding extraction
     :param locators_and_filepaths: A list of tuples containing (s3_locator, local_filepath) pairs. The local_filepath

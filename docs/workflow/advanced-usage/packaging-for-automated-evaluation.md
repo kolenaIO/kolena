@@ -276,7 +276,7 @@ repository must be prefixed with your organization's name.
 poetry run kolena repository create -n my-organization/new-evaluator
 ```
 
-After the repository is created, we can use the Docker CLI to publish a newly built Docker image to `docs.kolena.io`:
+After the repository is created, we can use the Docker CLI to publish a newly built Docker image to `docker.kolena.io`:
 
 ```shell
 docker push docker.kolena.io/my-organization/new-evaluator:v1
