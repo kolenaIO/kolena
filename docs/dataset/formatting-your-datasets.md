@@ -98,7 +98,7 @@ These annotations are visible on both the Gallery view for groups of datapoints 
 
 ### Structured Data
 
-Consider a `.csv` file containing ground truth data in the from of bounding boxes for an object detection problem:
+Consider a `.csv` file containing ground truth data in the from of bounding boxes for an Object Detection problem.
 
 | locator                                                                       | label      | min_x     | max_x  | min_y | max_y   |
 |-------------------------------------------------------------------------------|------------|-----------|--------|-------|---------|
@@ -115,6 +115,7 @@ bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18))
 ```
 When viewing a bounding box within python the format is
 `BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)`
+
 A single bounding box would be serialized as the following JSON string within a CSV:
 
 ```
@@ -153,8 +154,7 @@ serializations were created using `dataframe_to_csv()`.
 The following snippet shows how to format COCO data as a dataset within Kolena. As the input csv contains rows
 for each bounding box within an image, we need to apply some transformations to the raw data.
 This is done by creating a list of all bounding boxes for an image and then merging it with the metadata.
-The produced csv `processed.csv` contains a column called ground_truths where the data is the same format as
-the above bounding boxes.
+The produced csv contains a column called ground_truths where the data is the same format as the above bounding boxes.
 
 ```python
 from kolena.annotation import BoundingBox
@@ -201,6 +201,10 @@ for the best experience. The values for each of the columns is a [`List[ScoredLa
 | `unmatched_ground_truth` | Inferences that were not matched to a ground truth. |
 
 These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
+These results can be formated for upload with a similar process as above. This is done by adding the relavent list of
+bounding boxes to the `matched_inference`, `unmatched_inference`, and `unmatched_ground_truth` columns for each image.
+The results.csv created can be uploaded by opening the corresponding dataset from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+page and navigating to the Studio section.
 
 We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
 example that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
