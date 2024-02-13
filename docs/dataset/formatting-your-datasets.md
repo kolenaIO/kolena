@@ -23,16 +23,21 @@ dataset with the following columns:
 From this you can see that image `horse0000.png` has the ground_truth classification of `horse`,
 and has brightness and contrast data.
 
-An `id_field` is required in order to differentiate between datapoints.
-By default the `locator` or  `text` fields are used if present in your dataset, and other fields
-can be specified when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
-page, or the SDK by using [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
-function.
+When uploading a dataset to Kolena, it is important to be able to differentiate between each datapoint. This is
+accopmplished by configuring an `id_field` - an unique identifier for a datapoint. You can select any field that is
+unique across your data, for example a `uuid` or `article_id` for relevant data.
 
-A `locator` is a url path to a file that will be displayed on the platform and can either be a
-[cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file.
+Kolena handles the following `id_fields` as a special case:
+
+| Field Name  | Description                                                                                                                              |
+|-------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| `locator`     | Url path to a file to be displayed, either a [cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file. |
+| `text`        | Raw text input for text based models.                                                                                                    |
+
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
+
+The table below shows the supported file formats for the supported data types:
 
 | Data Type   | Supported file formats                                                                |
 |-------------|---------------------------------------------------------------------------------------|
@@ -40,9 +45,12 @@ such as `.jpg` or `.png`, whereas locators for audio data should be in forms lik
 | Audio       | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
 | Video       | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
 | Document    | `txt` and `pdf` files.                                                                |
-| Point Cloud | `pcd` files.                                                                          |
+| Point Cloud | `pcd` files.
 
-For text-based models the `text` field contains the raw text input for the models.
+By default the `locator` or  `text` fields are used if present in your dataset, and other fields
+can be specified when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+page, or the SDK by using [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
+function.
 
 Metadata and other additional fields can be added to datasets by adding a column to the `.csv` and providing values for
 datapoints where applicable. For example `image_height` and `image_width` may be useful metadata for image datasets and
@@ -90,12 +98,50 @@ These annotations are visible on both the Gallery view for groups of datapoints 
 
 ### Structured Data
 
+Consider a `.csv` file that contains ground truth data (labeled bounding boxes) for an object detection problem:
+
+| locator                                                                       | label      | min_x     | max_x  | min_y | max_y   |
+|-------------------------------------------------------------------------------|------------|-----------|--------|-------|---------|
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | motorcycle | 270.77    | 621.61 | 44.59 |  254.18  |
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | car        | 538.03    | 636.85 | 8.86  | 101.93  |
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
+
+The bounding box for the first image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
+[`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) annotation. This looks like:
+
+```python
+from kolena.annotation import BoundingBox
+bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18))
+```
+When viewing a bounding box within python the format is
+`BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)`
+
+The above example has multiple objects within a single image, in order to ingest this you would need a single field
+containing the list of bounding boxes.
+
+For example:
+```python
+from kolena.annotation import BoundingBox
+bboxes = [
+    BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18)),
+    BoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93)),
+    BoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84)),
+]
+```
+This would be represented within a csv as show below. Note this will be a single line,
+but is shown here as multiple lines for formatting.
+```
+"[{""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
+ ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+  {""top_left"": [538.03, 8.86], ""bottom_right"": [636.85, 101.93], ""width"": 98.82, ""height"": 93.07,
+   ""area"": 9197.1774, ""aspect_ratio"": 1.062, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+  {""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84], ""width"": 240.96,
+   ""height"": 87.83, ""area"": 21163.5168, ""aspect_ratio"": 2.743, ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
+```
+
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
 [`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
 instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
-
-In order to add data like a list of `BoundingBox` objects to your dataset via the sdk all you need to do is have
-field with a list of objects in your dataframe.
 
 A snippet like the following:
 
@@ -136,14 +182,14 @@ for the best experience. The values for each of the columns is a [`List[ScoredLa
 
 | Column Name            | Description                                         |
 |------------------------|-----------------------------------------------------|
-| matched_inference      | Inferences that were matched to a ground truth.     |
-| unmatched_inference    | Inferences that were not matched to a ground truth. |
-| unmatched_ground_truth | Inferences that were not matched to a ground truth. |
+| `matched_inference`      | Inferences that were matched to a ground truth.     |
+| `unmatched_inference`    | Inferences that were not matched to a ground truth. |
+| `unmatched_ground_truth` | Inferences that were not matched to a ground truth. |
 
 These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
 
 We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
-that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
+example that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
 
 ### To use compound metrics on the fly
 
@@ -157,7 +203,10 @@ To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`
 ### Configuring Thumbnails
 
 As a way to improve the loading performance of your image data, you can upload compressed versions of the image
-with the same dimensions as thumbnails. This will result in an improved Studio experience as images will load much
+with the same dimensions as thumbnails.
+
+This will result in an improved Studio experience as images will load much
 faster when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
-This is configured by adding a field called `thumbnail_locator` to the data, where the value points
+
+Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
 to a compressed version of the `locator` image.
