@@ -38,16 +38,9 @@ def run(args: Namespace) -> None:
     results = []
     for record in tqdm(df.itertuples(index=False), total=len(df)):
         metrics = compute_metrics(record.text_summary, record.inference)
-        results.append(
-            dict(
-                text_id=record.text_id,
-                inference=record.inference,
-                inference_time=record.inference_time,
-                tokens_used=record.tokens_used,
-                cost=record.cost,
-                **metrics,
-            ),
-        )
+        result = record._asdict()
+        result.pop("text_summary")
+        results.append(dict(**result, **metrics))
 
     df_results = pd.DataFrame.from_records(results)
     upload_results(args.dataset, model, df_results)
