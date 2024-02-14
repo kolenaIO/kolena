@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://docs.kolena.io">
-    <img src="https://docs.kolena.io/assets/images/kolena-banner.png" width="640" alt="Kolena" />
+  <a href="https://docs.kolena.com">
+    <img src="https://docs.kolena.com/assets/images/kolena-banner.png" width="640" alt="Kolena" />
   </a>
 </p>
 
@@ -38,8 +38,8 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 - Automate model testing and deployment workflows
 
 This `kolena` package contains the Python client library for programmatic interaction with the Kolena ML testing
-platform. [Install](https://docs.kolena.io/installing-kolena) with your favorite Python package manager and
-[get started in minutes](https://docs.kolena.io/dataset/quickstart):
+platform. [Install](https://docs.kolena.com/installing-kolena) with your favorite Python package manager and
+[get started in minutes](https://docs.kolena.com/dataset/quickstart):
 
 ```
 pip install kolena
@@ -47,6 +47,6 @@ pip install kolena
 
 ## Quick Links
 
-| [Developer Guide](https://docs.kolena.io) | [Quickstart](https://docs.kolena.io/dataset/quickstart) | [API Reference](https://docs.kolena.io/reference) | [Examples](./examples) |
+| [Developer Guide](https://docs.kolena.com) | [Quickstart](https://docs.kolena.com/dataset/quickstart) | [API Reference](https://docs.kolena.com/reference) | [Examples](./examples) |
 | --- | --- | --- | --- |
 | Tutorial and usage documentation | Set up rigorous and repeatable model testing in minutes | Detailed `kolena` typing and function documentation | Reference integrations for different machine learning workflows |

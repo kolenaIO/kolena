@@ -67,7 +67,7 @@ from PIL import Image
 def extract_and_upload_embeddings(locators_and_images: Iterable[Tuple[str, Image.Image]], batch_size: int = 50) -> None:
     """
     Extract and upload a list of search embeddings corresponding to sample locators.
-    Expects to have an exported `KOLENA_TOKEN` environment variable, as per [Kolena client documentation](https://docs.kolena.io/installing-kolena/#initialization).
+    Expects to have an exported `KOLENA_TOKEN` environment variable, as per [Kolena client documentation](https://docs.kolena.com/installing-kolena/#initialization).
 
     :param locators_and_images: An iterator through PIL Image files and their corresponding locators (as provided to
         the Kolena platform).
