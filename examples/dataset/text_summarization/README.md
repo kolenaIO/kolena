@@ -64,7 +64,7 @@ text summarization:
 
 ### Metrics
 
-1. [BERT F1 (`mean(result.BERT_f1)`)](https://docs.kolena.com/metrics/bertscore)
+1. [BERT F1 (`mean(result.BERT_f1)`)](https://docs.kolena.com/metrics/bertscore/)
 2. [ROUGE 1 (`mean(result.ROUGE_1)`)](https://docs.kolena.com/metrics/rouge-n/)
 3. [BLEU (`mean(result.BLEU)`)](https://docs.kolena.com/metrics/bleu/)
 4. Failure Rate (`rate(is_failure=true)`)
