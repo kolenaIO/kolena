@@ -14,18 +14,18 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-import pandas as pd
 from text_summarization.constants import BUCKET
 from text_summarization.constants import DATASET
 from text_summarization.constants import ID_FIELD
 
 import kolena
 from kolena.dataset import upload_dataset
+from kolena.io import dataframe_from_csv
 
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
-    df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
+    df_dataset = dataframe_from_csv(args.dataset_csv, storage_options={"anon": True})
     upload_dataset(args.dataset, df_dataset, id_fields=[ID_FIELD])
 
 
