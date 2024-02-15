@@ -24,7 +24,7 @@ From this you can see that image `horse0000.png` has the ground_truth classifica
 and has brightness and contrast data.
 
 When uploading a dataset to Kolena, it is important to be able to differentiate between each datapoint. This is
-accopmplished by configuring an `id_field` - an unique identifier for a datapoint. You can select any field that is
+accomplished by configuring an `id_field` - an unique identifier for a datapoint. You can select any field that is
 unique across your data, for example a `uuid` or `article_id` for relevant data.
 
 Kolena handles the following `id_fields` as a special case:
@@ -68,7 +68,7 @@ The second experience is the Tabular view, used when your data is a set of colum
 An example of this is the [:kolena-widget-16: Rain Forcast ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/rain_forecast)
 dataset.
 
-In order to use the Gallery view you just need to have the `locator` or `text` fields specfied in the dataset.
+In order to use the Gallery view you just need to have the `locator` or `text` fields specified in the dataset.
 
 ## Enriching your Dataset experience
 
@@ -91,10 +91,10 @@ represent complex scenarios on Kolena. Assets are files stored in a cloud bucket
 Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../reference/annotation.md).
 These annotations are visible on both the Gallery view for groups of datapoints and for individual datapoints.
 
-| Annotation Type                                                                      | Description |
-|--------------------------------------------------------------------------------------|----------------------------|
+| Annotation Type                                                                      | Description                                                                               |
+|--------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
 | [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox)            | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
-| [`SegmentationMask`](../reference/annotation.md#kolena.annotation.SegmentationMask)  | Used to overaly raster segmentation maps on top of images. |
+| [`SegmentationMask`](../reference/annotation.md#kolena.annotation.SegmentationMask)  | Used to overlay raster segmentation maps on top of images.                                |
 
 ### Structured Data
 
@@ -201,7 +201,7 @@ for the best experience. The values for each of the columns is a [`List[ScoredLa
 | `unmatched_ground_truth` | Inferences that were not matched to a ground truth. |
 
 These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
-These results can be formated for upload with a similar process as above. This is done by adding the relavent list of
+These results can be formatted for upload with a similar process as above. This is done by adding the relevant list of
 bounding boxes to the `matched_inference`, `unmatched_inference`, and `unmatched_ground_truth` columns for each image.
 The results.csv created can be uploaded by opening the corresponding dataset from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
 page and navigating to the Studio section.
