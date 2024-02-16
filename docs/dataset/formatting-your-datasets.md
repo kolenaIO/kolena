@@ -27,17 +27,17 @@ When uploading a dataset to Kolena, it is important to be able to differentiate 
 accomplished by configuring an `id_field` - an unique identifier for a datapoint. You can select any field that is
 unique across your data, for example a `uuid` or `article_id` for relevant data.
 
-Kolena handles the following `id_fields` as a special case:
+Kolena will look for the following fields when displaying datapoints:
 
-| Field Name  | Description                                                                                                                              |
-|-------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `locator`     | Url path to a file to be displayed, either a [cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file. |
-| `text`        | Raw text input for text based models.                                                                                                    |
+| Field Name | Description                                                                                                                              |
+|------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| `locator`  | Url path to a file to be displayed, either a [cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file. |
+| `text`     | Raw text input for text based models.                                                                                                    |
 
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
 
-The table below shows the supported file formats for the supported data types:
+#### Locator Support Matrix
 
 | Data Type      | Supported file formats                                                                |
 |----------------|---------------------------------------------------------------------------------------|
@@ -47,9 +47,9 @@ The table below shows the supported file formats for the supported data types:
 | Document       | `txt` and `pdf` files.                                                                |
 | Point Cloud    | `pcd` files.                                                                          |
 
-By default the `locator` or  `text` fields are used if present in your dataset, and other fields
-can be specified when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
-page, or the SDK by using [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
+Kolena will attempt to infer common id fields (eg. locator, text) based on what is present in the dataset during import.
+This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
 
 Metadata and other additional fields can be added to datasets by adding a column to the `.csv` and providing values for
@@ -113,8 +113,10 @@ The first bounding box for the image is `(270.77, 44.59), (621.61,  254.18)`. To
 from kolena.annotation import BoundingBox
 bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18))
 ```
-When viewing a bounding box within python the format is
-`BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)`
+When viewing a bounding box within python the format is:
+```
+BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)
+```
 
 A single bounding box would be serialized as the following JSON string within a CSV:
 
@@ -123,8 +125,7 @@ A single bounding box would be serialized as the following JSON string within a 
  ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
 ```
 
-The above example has multiple objects within a single image, in order to ingest this you would need a single field
-containing the list of bounding boxes.
+The above example has multiple objects within a single image, which is represented in Kolena as a list of bounding boxes.
 
 For example:
 ```python
@@ -148,8 +149,8 @@ but is shown here as multiple lines for formatting.
 
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
 [`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
-instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html). The above
-serializations were created using `dataframe_to_csv()`.
+instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
+`pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
 The following snippet shows how to format COCO data as a dataset within Kolena. As the input csv contains rows
 for each bounding box within an image, we need to apply some transformations to the raw data.
