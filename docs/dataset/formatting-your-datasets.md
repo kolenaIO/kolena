@@ -12,7 +12,7 @@ ground truth, and metadata.
 
 ### What defines a Datapoint
 
-Conceptually a datapoint is a set of inputs that you would want to test on your models.
+Conceptually, a datapoint is a set of inputs that you would want to test on your models.
 Consider a single row within the [:kolena-widget-16: Classification (CIFAR-10) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/classification)
 dataset with the following columns:
 
@@ -26,6 +26,11 @@ and has brightness and contrast data.
 When uploading a dataset to Kolena, it is important to be able to differentiate between each datapoint. This is
 accomplished by configuring an `id_field` - a unique identifier for a datapoint. You can select any field that is
 unique across your data, or generate one if no unique identifiers exist for your dataset.
+
+Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
+This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
+function.
 
 Kolena will look for the following fields when displaying datapoints:
 
@@ -47,11 +52,6 @@ such as `.jpg` or `.png`, whereas locators for audio data should be in forms lik
 | Document       | `txt` and `pdf` files.                                                                |
 | Point Cloud    | `pcd` files.                                                                          |
 
-Kolena will attempt to infer common id fields (eg. locator, text) based on what is present in the dataset during import.
-This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
-page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
-function.
-
 Metadata and other additional fields can be added to datasets by adding a column to the `.csv` and providing values for
 datapoints where applicable. For example `image_height` and `image_width` may be useful metadata for image datasets and
 fields like `word_count` may be useful for text datasets.
@@ -68,7 +68,7 @@ The second experience is the Tabular view, used when your data is a set of colum
 An example of this is the [:kolena-widget-16: Rain Forcast ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/rain_forecast)
 dataset.
 
-In order to use the Gallery view you just need to have the `locator` or `text` fields specified in the dataset.
+In order to use the Gallery view you will need to have the `locator` or `text` fields specified in the dataset.
 
 ## Enriching your Dataset experience
 
@@ -118,7 +118,7 @@ When viewing a bounding box within python the format is:
 BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)
 ```
 
-A single bounding box would be serialized as the following JSON string within a CSV:
+A single bounding box would be serialized as the following JSON string within a `.csv` file:
 
 ```
 {""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
@@ -136,7 +136,7 @@ bboxes = [
     BoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84)),
 ]
 ```
-This would be represented within a csv as shown below. Note this will be a single line,
+This would be represented within a `.csv` file as shown below. Note this will be a single line,
 but is shown here as multiple lines for formatting.
 ```
 "[{""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
@@ -152,10 +152,10 @@ When uploading `.csv` files for datasets that contain annotations, assets or nes
 instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
 `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
-The following snippet shows how to format COCO data as a dataset within Kolena. As the input csv contains rows
+The following snippet shows how to format COCO data as a dataset within Kolena. As the input `.csv` file contains rows
 for each bounding box within an image, we need to apply some transformations to the raw data.
 This is done by creating a list of all bounding boxes for an image and then merging it with the metadata.
-The produced csv contains a column called ground_truths where the data is the same format as the above bounding boxes.
+The produced `.csv` contains a column called ground_truths where the data is the same format as the above bounding boxes.
 
 ```python
 from kolena.annotation import BoundingBox
@@ -204,8 +204,8 @@ for the best experience. The values for each of the columns is a [`List[ScoredLa
 These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
 These results can be formatted for upload with a similar process as above. This is done by adding the relevant list of
 bounding boxes to the `matched_inference`, `unmatched_inference`, and `unmatched_ground_truth` columns for each image.
-The `results.csv` created can be uploaded by opening the corresponding dataset from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
-page and navigating to the Studio section.
+The `results.csv` created can be uploaded by opening the corresponding dataset from the
+[:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets) page and navigating to the Studio section.
 
 We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
 example that shows how to take raw results and perform bounding box matching to produce the values mentioned above.
