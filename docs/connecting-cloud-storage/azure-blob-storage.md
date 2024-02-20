@@ -82,4 +82,4 @@ In some scenarios, CORS permissions are required for Kolena to render content fr
 To configure CORS access, navigate to your storage account in the Azure portal and follow these steps:
 
 1. Click "Resource Sharing (CORS)" under "Settings"
-1. Add `https://app.kolena.io` as an allowed origin with `GET` as an allowed method
+1. Add `https://app.kolena.com` and `https://app.kolena.io` as allowed origins with `GET` as an allowed method
