@@ -96,7 +96,10 @@ To configure CORS access, navigate to your S3 bucket inside your AWS console and
   {
     "AllowedHeaders": ["*"],
     "AllowedMethods": ["GET"],
-    "AllowedOrigins": ["https://app.kolena.io"],
+    "AllowedOrigins": [
+      "https://app.kolena.com",
+      "https://app.kolena.io"
+    ],
     "ExposeHeaders": []
   }
 ]

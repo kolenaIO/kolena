@@ -38,7 +38,10 @@ Create a json file `cors.json` with the following content:
 ```json
 [
   {
-    "origin": ["https://app.kolena.io"],
+    "origin": [
+      "https://app.kolena.com",
+      "https://app.kolena.io"
+    ],
     "method": ["GET"],
     "responseHeader": ["Content-Type"],
     "maxAgeSeconds": 3600
