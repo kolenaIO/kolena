@@ -2,7 +2,7 @@
 name = "rain_forecast"
 version = "0.1.0"
 description = "Kolena Datasets Example integration for rain forecast"
-authors = ["Kolena Engineering <eng@kolena.io>"]
+authors = ["Kolena Engineering <eng@kolena.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]

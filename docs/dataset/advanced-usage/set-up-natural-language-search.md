@@ -31,7 +31,7 @@ Let's take a look at each step with example code snippets.
 ### Step 1: Install `kolena-embeddings` Package
 
 The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
-on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
+on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
 We first [retrieve and set](../../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
 This is used by the uploader for authentication against your Kolena instance.
@@ -130,7 +130,7 @@ df_embeddings = pd.DataFrame(locator_and_embeddings, columns=["locator", "embedd
 upload_dataset_embeddings(dataset_name, model_key, df_embeddings)
 ```
 
-Once the upload completes, we can now visit [:kolena-dataset-20: Datasets](https://app.kolena.io/redirect/datasets),
+Once the upload completes, we can now visit [:kolena-dataset-20: Datasets](https://app.kolena.com/redirect/datasets),
 open the dataset and navigate to the <nobr>:kolena-studio-16: Studio</nobr> tab to search
 by natural language or similar images over the corresponding image data.
 

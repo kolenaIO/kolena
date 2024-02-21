@@ -80,7 +80,7 @@ creating test cases.
     and register it as a dataset in Kolena using the `register_dataset` function.
 
     First, let's first configure our environment by populating the `KOLENA_TOKEN`
-    environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page to
+    environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page to
     generate an API token and copy and paste the code snippet into your environment:
 
     ```shell
@@ -94,7 +94,7 @@ creating test cases.
     ```
 
     After this script has completed, a new dataset named `300-W` will be created, which you can
-    see in [:kolena-dataset-20: Datasets](https://app.kolena.io/redirect/datasets).
+    see in [:kolena-dataset-20: Datasets](https://app.kolena.com/redirect/datasets).
 
 ## Step 2: Upload Model Results
 

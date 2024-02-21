@@ -10,7 +10,7 @@ Data such as images, videos, and documents hosted internally or with cloud stora
 creating an integration.
 
 Integrations can be managed by organization administrators by navigating to the "Integrations" tab on the
-[:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations) page.
+[:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations) page.
 
 <div class="grid cards" markdown>
 - [:simple-amazons3: Amazon S3](./amazon-s3.md)

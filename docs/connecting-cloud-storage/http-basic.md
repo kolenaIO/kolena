@@ -10,12 +10,12 @@ file-serving system that utilizes HTTP basic authentication.
 
 To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the
-[:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
+[:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page and click "Add Integration", then "HTTP Basic".
 
 ### Step 1: Save Integration on Kolena
 
-On the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations),
+On the [Integrations tab](https://app.kolena.com/redirect/organization?tab=integrations),
 fill in the fields for the integration and then click "Save".
 
 | Field | Description |

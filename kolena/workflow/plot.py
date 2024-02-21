@@ -14,7 +14,7 @@
 """
 This module surfaces plot definitions to visualize test-case-level data. [Evaluator](evaluator.md) implementations can
 optionally compute plots using these definitions for visualization on the
-[:kolena-results-16: Results](https://app.kolena.io/redirect/results) page.
+[:kolena-results-16: Results](https://app.kolena.com/redirect/results) page.
 
 The following plot types are available:
 

@@ -46,7 +46,7 @@ def initialize(
 
     A session has a global scope and remains active until interpreter shutdown.
 
-    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page and
+    Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page and
     make it available through one of the following options before initializing:
 
 

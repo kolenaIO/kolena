@@ -45,4 +45,4 @@ optional arguments:
 ```
 
 Once the embeddings have been extracted, you will be able to search the relevant
-age estimation test suite in the [Kolena Studio](https://app.kolena.io/redirect/studio) using natural language.
+age estimation test suite in the [Kolena Studio](https://app.kolena.com/redirect/studio) using natural language.

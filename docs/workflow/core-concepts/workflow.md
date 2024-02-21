@@ -123,7 +123,7 @@ class QuadImage(Composite):
 The ground truth represents the expected output from a model when provided with a test sample. Ground truths are often
 manually annotated and are used to determine the correctness of model predictions.
 
-In the [:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio), ground truths are always displayed alongside
+In the [:kolena-studio-16: Studio](https://app.kolena.com/redirect/studio), ground truths are always displayed alongside
 their paired test samples. Any [annotations][kolena.workflow.annotation.Annotation], such as bounding boxes or polygons,
 are visualized on top of the test sample.
 

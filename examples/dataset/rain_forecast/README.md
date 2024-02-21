@@ -43,7 +43,7 @@ optional arguments:
 
 ## Quality Standards Guide
 
-Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.com/redirect/) to
 test the rain forecast models. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
 for details.
 

@@ -9,7 +9,7 @@ into your browser for visualization. In this tutorial, we'll learn how to establ
 Amazon S3.
 
 To get started, ensure you have administrator access within Kolena.
-Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
+Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page and click "Add Integration", then "Amazon S3".
 
 ### Step 1: Select Integration Scope

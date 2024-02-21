@@ -176,7 +176,7 @@ Each of the example integrations comes with scripts for two flows:
 
 Before running [`seed_test_suite.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/workflow/object_detection_2d/object_detection_2d/seed_test_suite.py),
 let's first configure our environment by populating the `KOLENA_TOKEN`
-environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page to
+environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page to
 generate an API token and copy and paste the code snippet into your environment:
 
 ```shell
@@ -189,7 +189,7 @@ We can now create test suites using the provided seeding script:
 poetry run python3 object_detection_2d/seed_test_suite.py
 ```
 
-After this script has completed, we can visit the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
+After this script has completed, we can visit the [:kolena-test-suite-16: Test Suites](https://app.kolena.com/redirect/testing)
 page to view our newly created test suites.
 
 In this `object_detection_2d` example,
@@ -213,7 +213,7 @@ poetry run python3 object_detection_2d/seed_test_run.py "yolo_v4s"
     plug it into the `infer` method in [`seed_test_run.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/workflow/object_detection_2d/object_detection_2d/seed_test_run.py).
 
 Once this script has completed, click the results link in your console or visit
-[:kolena-results-16: Results](https://app.kolena.io/redirect/results) to view the test results for this newly tested model.
+[:kolena-results-16: Results](https://app.kolena.com/redirect/results) to view the test results for this newly tested model.
 
 ## Conclusion
 
