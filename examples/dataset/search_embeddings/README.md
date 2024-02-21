@@ -31,7 +31,7 @@ The data for this example integration lives in the publicly accessible S3 bucket
 First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
 [initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
 
-[`upload_embeddings.py`](search/extract_embeddings.py) loads data from a publicly accessible S3 bucket, extracts
+[`upload_embeddings.py`](search_embeddings/upload_embeddings.py) loads data from a publicly accessible S3 bucket, extracts
 embeddings or uses pre-extracted embeddings, and uploads them to the Kolena platform.
 
 ```shell
