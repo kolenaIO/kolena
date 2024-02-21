@@ -12,13 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
-from typing import List
-from typing import Optional
 
 import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal
 
 from kolena.dataset import download_dataset
 from kolena.dataset import download_results
@@ -27,19 +24,12 @@ from kolena.dataset.evaluation import _upload_results
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from tests.integration.dataset.test_dataset import batch_iterator
+from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
 JOIN_COLUMN = "user_dp_id"
 ID_FIELDS = [JOIN_COLUMN]
-
-
-def _assert_frame_equal(df1: pd.DataFrame, df2: pd.DataFrame, columns: Optional[List[str]] = None) -> None:
-    """wrapper of assert_frame_equal with selected columns options"""
-    if columns is None:
-        assert_frame_equal(df1, df2, check_dtype=False)
-    else:
-        assert_frame_equal(df1[columns], df2[columns], check_dtype=False)
 
 
 def get_df_dp(n: int = 20) -> pd.DataFrame:
@@ -84,8 +74,8 @@ def test__upload_results() -> None:
     assert eval_cfg is None
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
     expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
-    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
 def test__upload_results__iterator_input() -> None:
@@ -109,8 +99,8 @@ def test__upload_results__iterator_input() -> None:
     assert eval_cfg is None
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
     expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
-    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
 def test__upload_results__align_manually() -> None:
@@ -139,8 +129,8 @@ def test__upload_results__align_manually() -> None:
     assert eval_cfg is None
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
     expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
-    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
 def test__upload_results__multiple_eval_configs() -> None:
@@ -171,7 +161,7 @@ def test__upload_results__multiple_eval_configs() -> None:
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
 
     df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
     fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
@@ -180,8 +170,8 @@ def test__upload_results__multiple_eval_configs() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result_1.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
 def test__upload_results__multiple_eval_configs__iterator_input() -> None:
@@ -212,7 +202,7 @@ def test__upload_results__multiple_eval_configs__iterator_input() -> None:
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
     fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
     fetched_eval_config_2, fetched_df_result_2 = df_results_by_eval[1]
@@ -222,8 +212,8 @@ def test__upload_results__multiple_eval_configs__iterator_input() -> None:
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     result_columns_1.remove(JOIN_COLUMN)
     result_columns_2.remove(JOIN_COLUMN)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
 def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
@@ -254,7 +244,7 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     expected_df_dp = df_dp.reset_index(drop=True)
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
 
     df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
     fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
@@ -270,8 +260,8 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
         df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True).astype("object")
     )
     expected_df_result_2_partial[:5] = None
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1_partial, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2_partial, result_columns_2)
+    assert_frame_equal(fetched_df_result_1, expected_df_result_1_partial, result_columns_1)
+    assert_frame_equal(fetched_df_result_2, expected_df_result_2_partial, result_columns_2)
 
     # insert the missing results, they will have full results
     df_result_1_p2 = df_result[5:10][input_result_columns_1]
@@ -286,7 +276,7 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
 
     df_results_by_eval = sorted(df_results_by_eval, key=lambda x: x[0].get("threshold"))
     fetched_eval_config_1, fetched_df_result_1 = df_results_by_eval[0]
@@ -295,8 +285,8 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     assert fetched_eval_config_2 == eval_config_2
     expected_df_result_1 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_1].reset_index(drop=True)
     expected_df_result_2 = df_result.drop(columns=[JOIN_COLUMN])[result_columns_2].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
-    _assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+    assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
+    assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
 
 
 def test__upload_results__multiple_eval_configs__duplicate() -> None:
@@ -348,8 +338,8 @@ def test__upload_results__missing_result() -> None:
     assert eval_cfg is None
     expected_df_dp = df_dp[3:10].reset_index(drop=True)
     expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
-    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
     # add 3 new datapoints, then we should have missing results in the db records
     upload_dataset(dataset_name, df_dp[:10][dp_columns], id_fields=ID_FIELDS)
@@ -369,8 +359,8 @@ def test__upload_results__missing_result() -> None:
     expected_df_dp = expected_df_dp.sort_values(JOIN_COLUMN)
     fetched_df_dp.reset_index(drop=True, inplace=True)
     expected_df_dp.reset_index(drop=True, inplace=True)
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
-    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
 def test__upload_results__upload_none() -> None:
@@ -405,8 +395,8 @@ def test__upload_results__upload_none() -> None:
     )
     assert len(df_results_by_eval) == 1
     assert eval_cfg is None
-    _assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
-    _assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
 def test__download_results__not_exist() -> None:
@@ -474,8 +464,8 @@ def test__download_results__preserve_none() -> None:
     assert len(df_results_by_eval) == 1
     assert eval_cfg is None
 
-    _assert_frame_equal(fetched_df_dp, df_dp)
-    _assert_frame_equal(fetched_df_result, df_dp[["a"]])
+    assert_frame_equal(fetched_df_dp, df_dp)
+    assert_frame_equal(fetched_df_result, df_dp[["a"]])
     assert fetched_df_dp["a"][0] is None
     assert np.isinf(fetched_df_dp["a"][1])
     assert np.isnan(fetched_df_dp["a"][2])
