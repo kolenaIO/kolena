@@ -14,8 +14,8 @@
 import random
 
 import pandas as pd
+import pytest
 
-from kolena._experimental.object_detection import upload_object_detection_results
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.dataset import download_results
@@ -23,7 +23,11 @@ from kolena.dataset import upload_dataset
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
+object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
+upload_object_detection_results = object_detection.upload_object_detection_results
 
+
+@pytest.mark.metrics
 def test__upload_results__single_class() -> None:
     name = with_test_prefix(f"{__file__}::test__upload_results__single_class")
     datapoints = [
@@ -68,7 +72,7 @@ def test__upload_results__single_class() -> None:
         min_confidence_score=0.2,
     )
 
-    df_datapoint, results = download_results(name, name)
+    _, results = download_results(name, name)
     assert len(results) == 1
     assert results[0][0] == eval_config
 
@@ -87,6 +91,7 @@ def test__upload_results__single_class() -> None:
     assert len(df_results) == 10
 
 
+@pytest.mark.metrics
 def test__upload_results__multiclass() -> None:
     name = with_test_prefix(f"{__file__}::test__upload_results__multiclass")
     datapoints = [
@@ -130,16 +135,20 @@ def test__upload_results__multiclass() -> None:
         name,
         name,
         pd.DataFrame(inferences),
+        ground_truths_field="bounding_boxes",
+        raw_inferences_field="inferences",
         **eval_config_one,
     )
     upload_object_detection_results(
         name,
         name,
         pd.DataFrame(inferences),
+        ground_truths_field="bounding_boxes",
+        raw_inferences_field="inferences",
         **eval_config_two,
     )
 
-    df_datapoint, results = download_results(name, name)
+    _, results = download_results(name, name)
     assert len(results) == 2
     assert results[0][0] == eval_config_one
     assert results[1][0] == eval_config_two
