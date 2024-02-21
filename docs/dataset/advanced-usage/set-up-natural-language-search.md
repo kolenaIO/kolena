@@ -8,6 +8,8 @@ Kolena supports natural language and similar image search
 across image data registered to the platform.
 Users may set up this functionality by extracting and
 uploading the corresponding search embeddings using a Kolena provided package.
+In this document, we will go over main components of the [example](#example)
+and steps you need to take to tailor it for your application.
 
 ## Example
 
