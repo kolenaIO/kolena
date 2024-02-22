@@ -29,7 +29,6 @@ from .workflow import ThresholdConfiguration
 
 from .evaluator import ObjectDetectionEvaluator
 from .dataset import upload_object_detection_results
-from .utils import labeled_bounding_box_as_dict
 
 __all__ = [
     "TestSample",
@@ -47,5 +46,4 @@ __all__ = [
     "ThresholdConfiguration",
     "ObjectDetectionEvaluator",
     "upload_object_detection_results",
-    "labeled_bounding_box_as_dict",
 ]

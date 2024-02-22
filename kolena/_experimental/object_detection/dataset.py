@@ -26,7 +26,6 @@ from kolena import dataset
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
 from kolena._experimental.object_detection.utils import filter_inferences
-from kolena._experimental.object_detection.utils import labeled_bounding_box_as_dict
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabel
@@ -279,6 +278,6 @@ def _inference_to_dict_with_gt_metadata(
     gt: LabeledBoundingBox,
     inf: Union[LabeledBoundingBox, ScoredLabeledBoundingBox],
 ) -> Dict[str, Any]:
-    data_dict = labeled_bounding_box_as_dict(gt)
-    data_dict.update(labeled_bounding_box_as_dict(inf))
+    data_dict = gt.toDict()
+    data_dict.update(inf.toDict())
     return data_dict
