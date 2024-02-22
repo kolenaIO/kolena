@@ -38,15 +38,15 @@ from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
 def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
-    tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
+    tp = [_inference_to_dict_with_gt_metadata(gt, inf) for gt, inf in bbox_matches.matched if inf.score >= thresholds]
     fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
     fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
-    scores = [inf.score for inf in tp + fp]
+    scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in bbox_matches.matched],
+        matched_inference=[_inference_to_dict_with_gt_metadata(gt, inf) for gt, inf in bbox_matches.matched],
         unmatched_ground_truth=bbox_matches.unmatched_gt,
         unmatched_inference=bbox_matches.unmatched_inf,
         count_TP=len(tp),
