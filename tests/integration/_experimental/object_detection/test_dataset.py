@@ -275,6 +275,6 @@ def test__upload_results__multiclass(annotation, gts, infs) -> None:
     assert len(df_results_two) == 10
 
     # check data format
-    confused = next(x for x in df_results_one["unmatched_ground_truth"] if len(x))
-    assert confused[0].predicted_label
-    assert confused[0].predicted_score
+    if confused := next(x for x in df_results_one["unmatched_ground_truth"] if len(x)):
+        assert confused[0].predicted_label
+        assert confused[0].predicted_score
