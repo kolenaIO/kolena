@@ -258,19 +258,3 @@ def upload_object_detection_results(
     )
     results_df.drop(columns=[ground_truths_field], inplace=True)
     dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)])
-
-
-def labeled_bounding_box_as_dict(bbox: Union[LabeledBoundingBox, ScoredLabeledBoundingBox]) -> Dict[str, Any]:
-    """
-    Convert dataclass to an object while preserving data provided during initialization.
-    Adapted from https://stackoverflow.com/a/76371564
-
-    :param bbox:
-    :return:
-    """
-    output_dict = bbox._to_dict()
-    for name, value in bbox.__dict__.items():
-        if name == "__pydantic_initialised__":
-            continue
-        output_dict[name] = value
-    return output_dict

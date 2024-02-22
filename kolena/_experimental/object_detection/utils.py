@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import defaultdict
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Literal
@@ -24,6 +25,7 @@ import numpy as np
 
 from kolena._extras.metrics.sklearn import sklearn_metrics
 from kolena._utils import log
+from kolena.annotation import LabeledBoundingBox
 from kolena.workflow import ConfusionMatrix
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
@@ -427,3 +429,19 @@ def compute_average_precision(precisions: List[float], recalls: List[float]) -> 
     for i in recall_changed_indices:
         ap += (recalls[i] - recalls[i - 1]) * precisions[i]
     return ap
+
+
+def labeled_bounding_box_as_dict(bbox: Union[LabeledBoundingBox, ScoredLabeledBoundingBox]) -> Dict[str, Any]:
+    """
+    Convert dataclass to an object while preserving data provided during initialization.
+    Adapted from https://stackoverflow.com/a/76371564
+
+    :param bbox:
+    :return:
+    """
+    output_dict = bbox._to_dict()
+    for name, value in bbox.__dict__.items():
+        if name == "__pydantic_initialised__":
+            continue
+        output_dict[name] = value
+    return output_dict
