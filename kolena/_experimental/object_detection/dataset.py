@@ -30,8 +30,8 @@ from kolena.annotation import ScoredLabel
 from kolena.errors import IncorrectUsageError
 from kolena.metrics import InferenceMatches
 from kolena.metrics import match_inferences
-from kolena.workflow.metrics import match_inferences_multiclass
-from kolena.workflow.metrics import MulticlassInferenceMatches
+from kolena.metrics import match_inferences_multiclass
+from kolena.metrics import MulticlassInferenceMatches
 
 
 def single_class_datapoint_metrics(object_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
