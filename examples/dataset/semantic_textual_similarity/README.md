@@ -70,9 +70,10 @@ for semantic textual similarity:
 
 1. Distribution of `result.error`
 2. Distribution of `datapoint.total_char_length`
-3. `datapoint.word_count_diff` vs. `mean(result.abs_error)`
+3. `datapoint.similarity` vs. `result.cos_similarity`
 
 ### Test Cases
 
 1. `datapoint.similarity`
 2. `datapoint.total_word_count`
+3. `datapoint.word_count_diff`

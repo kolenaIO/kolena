@@ -24,3 +24,5 @@ This directory contains example Kolena Datasets integrations for different machi
 - [Text Summarization](./text_summarization): OpenAI's [GPT-3](https://platform.openai.com/docs/models/gpt-3) and
   [GPT-3.5](https://platform.openai.com/docs/models/gpt-3-5) model families tested on the
   [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset for text summarization
+- [Semantic Textual Similarity](./semantic_textual_similarity/) semantic textual similarity using the
+  [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset

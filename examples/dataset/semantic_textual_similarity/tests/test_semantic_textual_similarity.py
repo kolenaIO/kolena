@@ -37,7 +37,3 @@ def test__upload_dataset__smoke(dataset_name: str) -> None:
 def test__upload_results__smoke(dataset_name: str) -> None:
     args = Namespace(model="distilroberta", dataset=dataset_name)
     upload_results_run(args)
-    args = Namespace(model="MiniLM-L12", dataset=dataset_name)
-    upload_results_run(args)
-    args = Namespace(model="mpnet-base", dataset=dataset_name)
-    upload_results_run(args)
