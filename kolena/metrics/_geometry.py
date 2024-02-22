@@ -27,8 +27,6 @@ from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
 from kolena.annotation import BoundingBox
-from kolena.annotation import LabeledBoundingBox
-from kolena.annotation import LabeledPolygon
 from kolena.annotation import Polygon
 from kolena.annotation import ScoredBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
@@ -216,12 +214,8 @@ def match_inferences(
     raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
 
 
-GT_Multiclass = TypeVar("GT_Multiclass", bound=Union[LabeledBoundingBox, LabeledPolygon])
-Inf_Multiclass = TypeVar("Inf_Multiclass", bound=Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon])
-
-
 @dataclass(frozen=True)
-class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
+class MulticlassInferenceMatches(Generic[GT, Inf]):
     """
     The result of [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass], providing lists
     of matches between ground truth and inference objects, unmatched ground truths, and unmatched inferences.
@@ -235,30 +229,30 @@ class MulticlassInferenceMatches(Generic[GT_Multiclass, Inf_Multiclass]):
     [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
     """
 
-    matched: List[Tuple[GT_Multiclass, Inf_Multiclass]]
+    matched: List[Tuple[GT, Inf]]
     """
     Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
     detections after applying some confidence threshold.
     """
 
-    unmatched_gt: List[Tuple[GT_Multiclass, Optional[Inf_Multiclass]]]
+    unmatched_gt: List[Tuple[GT, Optional[Inf]]]
     """
     Pairs of unmatched ground truth objects with its confused inference object (i.e. IoU above threshold with
     mismatching `label`), if such an inference exists. Considered as false negatives and "confused" detections.
     """
 
-    unmatched_inf: List[Inf_Multiclass]
+    unmatched_inf: List[Inf]
     """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
 
 
 def match_inferences_multiclass(
-    ground_truths: List[GT_Multiclass],
-    inferences: List[Inf_Multiclass],
+    ground_truths: List[GT],
+    inferences: List[Inf],
     *,
-    ignored_ground_truths: Optional[List[GT_Multiclass]] = None,
+    ignored_ground_truths: Optional[List[GT]] = None,
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
-) -> MulticlassInferenceMatches[GT_Multiclass, Inf_Multiclass]:
+) -> MulticlassInferenceMatches[GT, Inf]:
     """
     Matches model inferences with annotated ground truths using the provided configuration.
 
@@ -294,12 +288,12 @@ def match_inferences_multiclass(
         [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
         (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
     """
-    matched: List[Tuple[GT_Multiclass, Inf_Multiclass]] = []
-    unmatched_gt: List[GT_Multiclass] = []
-    unmatched_inf: List[Inf_Multiclass] = []
-    gts_by_class: Dict[str, List[GT_Multiclass]] = defaultdict(list)
-    infs_by_class: Dict[str, List[Inf_Multiclass]] = defaultdict(list)
-    ignored_gts_by_class: Dict[str, List[GT_Multiclass]] = defaultdict(list)
+    matched: List[Tuple[GT, Inf]] = []
+    unmatched_gt: List[GT] = []
+    unmatched_inf: List[Inf] = []
+    gts_by_class: Dict[str, List[GT]] = defaultdict(list)
+    infs_by_class: Dict[str, List[Inf]] = defaultdict(list)
+    ignored_gts_by_class: Dict[str, List[GT]] = defaultdict(list)
     all_labels: Set[str] = set()
 
     if mode == "pascal":
@@ -309,16 +303,16 @@ def match_inferences_multiclass(
 
     # collect all unique labels, store gts and infs of the same label together
     for gt in ground_truths:
-        gts_by_class[gt.label].append(gt)
-        all_labels.add(gt.label)
+        gts_by_class[gt.label].append(gt)  # type: ignore[union-attr]
+        all_labels.add(gt.label)  # type: ignore[union-attr]
 
     for inf in inferences:
-        infs_by_class[inf.label].append(inf)
-        all_labels.add(inf.label)
+        infs_by_class[inf.label].append(inf)  # type: ignore[union-attr]
+        all_labels.add(inf.label)  # type: ignore[union-attr]
 
     if ignored_ground_truths:
         for ignored_gt in ignored_ground_truths:
-            ignored_gts_by_class[ignored_gt.label].append(ignored_gt)
+            ignored_gts_by_class[ignored_gt.label].append(ignored_gt)  # type: ignore[union-attr]
 
     for label in sorted(all_labels):
         ground_truths_single = gts_by_class[label]
@@ -345,12 +339,12 @@ def match_inferences_multiclass(
 
     confused = []
     for gt, inf in confused_matches.matched:
-        if gt.label != inf.label:
+        if gt.label != inf.label:  # type: ignore[union-attr]
             confused.append((gt, inf))
             unmatched_gt.remove(gt)
 
     return MulticlassInferenceMatches(
         matched=matched,
-        unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],  # type: ignore
+        unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
         unmatched_inf=unmatched_inf,
     )

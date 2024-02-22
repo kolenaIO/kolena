@@ -26,9 +26,7 @@ from kolena import dataset
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold_multiclass
 from kolena._experimental.object_detection.utils import filter_inferences
-from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabel
-from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.errors import IncorrectUsageError
 from kolena.metrics import InferenceMatches
 from kolena.metrics import match_inferences
@@ -36,18 +34,18 @@ from kolena.workflow.metrics import match_inferences_multiclass
 from kolena.workflow.metrics import MulticlassInferenceMatches
 
 
-def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
-    tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds]
-    fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds]
-    fn = bbox_matches.unmatched_gt + [gt for gt, inf in bbox_matches.matched if inf.score < thresholds]
+def single_class_datapoint_metrics(object_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
+    tp = [inf for _, inf in object_matches.matched if inf.score >= thresholds]
+    fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
+    fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf.score for inf in tp + fp]
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in bbox_matches.matched],
-        unmatched_ground_truth=bbox_matches.unmatched_gt,
-        unmatched_inference=bbox_matches.unmatched_inf,
+        matched_inference=[inf for _, inf in object_matches.matched],
+        unmatched_ground_truth=object_matches.unmatched_gt,
+        unmatched_inference=object_matches.unmatched_inf,
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
@@ -61,40 +59,26 @@ def single_class_datapoint_metrics(bbox_matches: InferenceMatches, thresholds: f
 
 
 def multiclass_datapoint_metrics(
-    bbox_matches: MulticlassInferenceMatches,
+    object_matches: MulticlassInferenceMatches,
     thresholds: Dict[str, float],
 ) -> Dict[str, Any]:
-    tp = [inf for _, inf in bbox_matches.matched if inf.score >= thresholds[inf.label]]
-    fp = [inf for inf in bbox_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
-    fn = [gt for gt, _ in bbox_matches.unmatched_gt] + [
-        gt for gt, inf in bbox_matches.matched if inf.score < thresholds[inf.label]
+    tp = [inf for _, inf in object_matches.matched if inf.score >= thresholds[inf.label]]
+    fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
+    fn = [gt for gt, _ in object_matches.unmatched_gt] + [
+        gt for gt, inf in object_matches.matched if inf.score < thresholds[inf.label]
     ]
     unmatched_ground_truth = [
-        LabeledBoundingBox(
-            label=gt.label,
-            top_left=gt.top_left,
-            bottom_right=gt.bottom_right,
-            predicted_label=inf.label,  # type: ignore[call-arg]
-            predicted_score=inf.score,  # type: ignore[call-arg]
-        )
-        if inf
-        else gt
-        for gt, inf in bbox_matches.unmatched_gt
+        dict(gt._to_dict(), predicted_label=inf.label, predicted_score=inf.score) if inf else gt
+        for gt, inf in object_matches.unmatched_gt
     ]
     confused = [
-        ScoredLabeledBoundingBox(
-            label=inf.label,
-            score=inf.score,
-            top_left=inf.top_left,
-            bottom_right=inf.bottom_right,
-            actual_label=gt.label,  # type: ignore[call-arg]
-        )
-        for gt, inf in bbox_matches.unmatched_gt
+        dict(inf._to_dict(), actual_label=gt.label)
+        for gt, inf in object_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
     scores = [inf.score for inf in tp + fp]
-    inference_labels = {inf.label for _, inf in bbox_matches.matched}.union(
-        {inf.label for inf in bbox_matches.unmatched_inf},
+    inference_labels = {inf.label for _, inf in object_matches.matched}.union(
+        {inf.label for inf in object_matches.unmatched_inf},
     )
     fields = [
         ScoredLabel(label=label, score=thresholds[label])
@@ -105,14 +89,14 @@ def multiclass_datapoint_metrics(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in bbox_matches.matched],
+        matched_inference=[inf for _, inf in object_matches.matched],
         unmatched_ground_truth=unmatched_ground_truth,
-        unmatched_inference=bbox_matches.unmatched_inf,
+        unmatched_inference=object_matches.unmatched_inf,
         Confused=confused,
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
-        count_Confused=len(confused),
+        count_Confusedo=len(confused),
         has_TP=len(tp) > 0,
         has_FP=len(fp) > 0,
         has_FN=len(fn) > 0,
@@ -136,8 +120,8 @@ def _compute_metrics(
     Compute metrics for object detection.
 
     :param df: Dataframe for model results.
-    :param ground_truth: Column name for ground_truth bounding boxes
-    :param inference: Column name for inference bounding boxes
+    :param ground_truth: Column name for ground truth object annotations
+    :param inference: Column name for inference object annotations
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
         as `0.5` or `0.75`, or the F1-optimal threshold.
@@ -149,13 +133,11 @@ def _compute_metrics(
 
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
-    all_bbox_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
+    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
     for record in pred_df.itertuples():
-        ground_truths = [
-            LabeledBoundingBox(box.top_left, box.bottom_right, box.label) for box in record[idx[ground_truth]]
-        ]
+        ground_truths = record[idx[ground_truth]]
         inferences = record[idx[inference]]
-        all_bbox_matches.append(
+        all_object_matches.append(
             match_fn(  # type: ignore[arg-type]
                 ground_truths,
                 filter_inferences(inferences, min_confidence_score),
@@ -173,11 +155,11 @@ def _compute_metrics(
             thresholds = defaultdict(lambda: threshold_strategy)
         else:
             thresholds = compute_optimal_f1_threshold_multiclass(
-                cast(List[MulticlassInferenceMatches], all_bbox_matches),
+                cast(List[MulticlassInferenceMatches], all_object_matches),
             )
         results = [
             multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds)
-            for matches in all_bbox_matches
+            for matches in all_object_matches
         ]
     else:
         if isinstance(threshold_strategy, dict) and threshold_strategy:
@@ -185,19 +167,22 @@ def _compute_metrics(
         elif isinstance(threshold_strategy, float):
             threshold = threshold_strategy
         else:
-            threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_bbox_matches))
+            threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_object_matches))
         results = [
-            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold) for matches in all_bbox_matches
+            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold) for matches in all_object_matches
         ]
 
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
 
 
 def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
-    labels = {x.label for x in itertools.chain.from_iterable(ground_truth)}.union(
-        {x.label for x in itertools.chain.from_iterable(inference)},
-    )
-    return len(labels) >= 2
+    try:
+        labels = {x.label for x in itertools.chain.from_iterable(ground_truth)}.union(
+            {x.label for x in itertools.chain.from_iterable(inference)},
+        )
+        return len(labels) >= 2
+    except AttributeError:
+        return False
 
 
 def _validate_column_present(df: pd.DataFrame, col: str) -> None:
@@ -220,16 +205,16 @@ def upload_object_detection_results(
     Compute metrics and upload results of the model for the dataset.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
-    :inference in the Dataframe `df` should be a list of
-    [`ScoredLabeledBoundingBox`][kolena.workflow.annotation.ScoredLabeledBoundingBox]es.
+    :inference in the Dataframe `df` should be a list of scored
+    [`BoundingBoxes`][kolena.annotation.BoundingBox] or [`Polygons`][kolena.annotation.Polygon].
 
     :param dataset_name: Dataset name.
     :param model_name: Model name.
     :param df: Dataframe for model results.
-    :param ground_truths_field: Field name in datapoint with ground truth bounding boxes, defaulting to
-        `"ground_truths"`.
-    :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes, defaulting to
-        `"raw_inferences"`.
+    :param ground_truths_field: Field name in datapoint with ground truth object annotations,
+    defaulting to `"ground_truths"`.
+    :param raw_inferences_field: Column in model result DataFrame with raw inference object annotations,
+    defaulting to `"raw_inferences"`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
         as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score..
