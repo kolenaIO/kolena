@@ -24,18 +24,23 @@ from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import ID_FIELDS
 
 import kolena
+from kolena._experimental.object_detection import labeled_bounding_box_as_dict
 from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import upload_dataset
 
 
 def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
-    image_to_boxes: Dict[str, List[LabeledBoundingBox]] = defaultdict(list)
+    image_to_boxes: Dict[str, List[dict[str, Any]]] = defaultdict(list)
     image_to_metadata: Dict[str, Dict[str, Any]] = defaultdict(dict)
 
     for record in df_metadata_csv.itertuples():
         coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
-        bounding_box = LabeledBoundingBox(*coords, record.label)
-        image_to_boxes[record.locator].append(bounding_box)
+        bounding_box = LabeledBoundingBox(
+            *coords,
+            record.label,
+            supercategory=record.supercategory,  # type: ignore[call-arg]
+        )
+        image_to_boxes[record.locator].append(labeled_bounding_box_as_dict(bounding_box))
         metadata = {
             "locator": str(record.locator),
             "height": float(record.height),
