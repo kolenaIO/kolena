@@ -195,11 +195,11 @@ page.
 For Object Detection problems, model results need to have the following columns
 for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
-| Column Name            | Description                                         |
-|------------------------|-----------------------------------------------------|
+| Column Name              | Description                                         |
+|--------------------------|-----------------------------------------------------|
 | `matched_inference`      | Inferences that were matched to a ground truth.     |
 | `unmatched_inference`    | Inferences that were not matched to a ground truth. |
-| `unmatched_ground_truth` | Inferences that were not matched to a ground truth. |
+| `unmatched_ground_truth` | Ground truths with no matching inference.           |
 
 These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
 These results can be formatted for upload with a similar process as above. This is done by adding the relevant list of
