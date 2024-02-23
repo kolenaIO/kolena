@@ -205,15 +205,14 @@ def upload_object_detection_results(
     Compute metrics and upload results of the model for the dataset.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
-    :inference in the Dataframe `df` should be a list of scored
-    [`BoundingBoxes`][kolena.annotation.BoundingBox] or [`Polygons`][kolena.annotation.Polygon].
+    :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
 
     :param dataset_name: Dataset name.
     :param model_name: Model name.
     :param df: Dataframe for model results.
-    :param ground_truths_field: Field name in datapoint with ground truth object annotations,
+    :param ground_truths_field: Field name in datapoint with ground truth bounding boxes,
     defaulting to `"ground_truths"`.
-    :param raw_inferences_field: Column in model result DataFrame with raw inference object annotations,
+    :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes,
     defaulting to `"raw_inferences"`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
