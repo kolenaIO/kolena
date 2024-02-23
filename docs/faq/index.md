@@ -36,7 +36,7 @@ If you don't see your question here, please reach out to us on Slack or at
     Kolena to only users on your corporate VPN.
 
     We support a variety of integration patterns depending on your organization's requirements and security stance.
-    [Get in touch with us to discuss details](https://www.kolena.io/schedule-a-demo)!
+    [Get in touch with us to discuss details](https://www.kolena.com/schedule-a-demo)!
 
 ??? faq "Do I have to upload my models to Kolena?"
 
@@ -53,14 +53,14 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? faq "How do I generate an API token?"
 
-    Generate an API token by visiting the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer)
+    Generate an API token by visiting the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer)
     page, located at the bottom of the lefthand sidebar, then copy/paste the shell snippet to set this token as
     `KOLENA_TOKEN` in your environment.
 
 ??? faq "How many API tokens can I generate?"
 
     API tokens are scoped to your username. Each user is limited to one valid token at a time — generating a new token
-    on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page invalidates any previous
+    on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page invalidates any previous
     token generated for your user.
 
     To retrieve a service user API token that is not scoped to a specific username, please reach out to us on Slack or
@@ -85,7 +85,7 @@ If you don't see your question here, please reach out to us on Slack or at
 ??? faq "How can I add new users to my organization?"
 
     Administrators for your organization can add new users and grant users administrator privileges by visiting the
-    [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization) page and adding
+    [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization) page and adding
     entries to the **Authorized Users** table.
 
     Note that this page is only visible for organization administrators.
@@ -97,7 +97,7 @@ If you don't see your question here, please reach out to us on Slack or at
     as well as configure Integrations.
 
     You may become an administrator by having an existing administrator grant you privileges
-    using the [:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=users) page.
+    using the [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=users) page.
 
 ??? faq "I'm new to Kolena — how can I learn more about the platform and how to use it?"
 
@@ -106,7 +106,7 @@ If you don't see your question here, please reach out to us on Slack or at
 
 ??? faq "How can I report a bug?"
 
-    If you encounter a bug when using the `kolena` Python client or when using [app.kolena.io](https://app.kolena.io),
+    If you encounter a bug when using the `kolena` Python client or when using [app.kolena.com](https://app.kolena.com),
     message us on Slack, email your support representative or [contact@kolena.com](mailto:contact@kolena.com), or
     [open an issue on the `kolena` repository](https://github.com/kolenaIO/kolena/issues) for Python-client-related
     issues.

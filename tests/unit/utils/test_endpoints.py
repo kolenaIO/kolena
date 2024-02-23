@@ -42,8 +42,8 @@ def assert_url_equals(a: str, b: str) -> None:
 @pytest.mark.parametrize(
     "client_state,expected",
     [
-        (_ClientState(tenant="test-tenant"), "https://app.kolena.io/test-tenant"),
-        (_ClientState(tenant="test-tenant", base_url=BASE_URL_TRUNK), "https://trunk.kolena.io/test-tenant"),
+        (_ClientState(tenant="test-tenant"), "https://app.kolena.com/test-tenant"),
+        (_ClientState(tenant="test-tenant", base_url=BASE_URL_TRUNK), "https://trunk.kolena.com/test-tenant"),
         (_ClientState(tenant="test-tenant", base_url=BASE_URL_LOCALHOST), "http://localhost:3000/test-tenant"),
     ],
 )
@@ -57,12 +57,12 @@ def test__get_platform_url(client_state: _ClientState, expected: str) -> None:
         (
             _ClientState(tenant="test-tenant"),
             WorkflowType.FR.value,
-            "https://app.kolena.io/test-tenant/results/fr?modelIds=1&testSuiteId=2",
+            "https://app.kolena.com/test-tenant/results/fr?modelIds=1&testSuiteId=2",
         ),
         (
             _ClientState(tenant="test-tenant", base_url=BASE_URL_TRUNK),
             WorkflowType.FR.value,
-            "https://trunk.kolena.io/test-tenant/results/fr?modelIds=1&testSuiteId=2",
+            "https://trunk.kolena.com/test-tenant/results/fr?modelIds=1&testSuiteId=2",
         ),
         (
             _ClientState(tenant="test-tenant", base_url=BASE_URL_LOCALHOST),
@@ -72,22 +72,22 @@ def test__get_platform_url(client_state: _ClientState, expected: str) -> None:
         (
             _ClientState(tenant="test-tenant"),
             WorkflowType.DETECTION.value,
-            "https://app.kolena.io/test-tenant/results/object-detection?modelIds=1&testSuiteId=2",
+            "https://app.kolena.com/test-tenant/results/object-detection?modelIds=1&testSuiteId=2",
         ),
         (
             _ClientState(tenant="test-tenant"),
             WorkflowType.CLASSIFICATION.value,
-            "https://app.kolena.io/test-tenant/results/classification?modelIds=1&testSuiteId=2",
+            "https://app.kolena.com/test-tenant/results/classification?modelIds=1&testSuiteId=2",
         ),
         (
             _ClientState(tenant="test-tenant"),
             "example-workflow",
-            "https://app.kolena.io/test-tenant/results?modelIds=1&testSuiteId=2&workflow=example-workflow",
+            "https://app.kolena.com/test-tenant/results?modelIds=1&testSuiteId=2&workflow=example-workflow",
         ),
         (
             _ClientState(tenant="test-tenant"),
             "Example Workflow",
-            "https://app.kolena.io/test-tenant/results?modelIds=1&testSuiteId=2&workflow=Example+Workflow",
+            "https://app.kolena.com/test-tenant/results?modelIds=1&testSuiteId=2&workflow=Example+Workflow",
         ),
     ],
 )
@@ -98,8 +98,8 @@ def test__get_results_url(client_state: _ClientState, workflow: Union[Workflow, 
 @pytest.mark.parametrize(
     "client_state,expected",
     [
-        (_ClientState(tenant="a"), "https://app.kolena.io/a/testing?testSuiteId=1"),
-        (_ClientState(tenant="b", base_url=BASE_URL_TRUNK), "https://trunk.kolena.io/b/testing?testSuiteId=1"),
+        (_ClientState(tenant="a"), "https://app.kolena.com/a/testing?testSuiteId=1"),
+        (_ClientState(tenant="b", base_url=BASE_URL_TRUNK), "https://trunk.kolena.com/b/testing?testSuiteId=1"),
         (_ClientState(tenant="c", base_url=BASE_URL_LOCALHOST), "http://localhost:3000/c/testing?testSuiteId=1"),
     ],
 )
@@ -110,8 +110,8 @@ def test__get_test_suite_url(client_state: _ClientState, expected: str) -> None:
 @pytest.mark.parametrize(
     "client_state,expected",
     [
-        (_ClientState(tenant="a"), "https://app.kolena.io/a/models?modelIds=1"),
-        (_ClientState(tenant="b", base_url=BASE_URL_TRUNK), "https://trunk.kolena.io/b/models?modelIds=1"),
+        (_ClientState(tenant="a"), "https://app.kolena.com/a/models?modelIds=1"),
+        (_ClientState(tenant="b", base_url=BASE_URL_TRUNK), "https://trunk.kolena.com/b/models?modelIds=1"),
         (_ClientState(tenant="c", base_url=BASE_URL_LOCALHOST), "http://localhost:3000/c/models?modelIds=1"),
     ],
 )

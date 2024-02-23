@@ -30,7 +30,7 @@ Let's take a look at each step with example code snippets.
 ### Step 1: Install `kolena_embeddings` Package
 
 The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
-on the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page.
+on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
 === "`pip`"
 
@@ -134,7 +134,7 @@ locators = [
 extract_and_upload_embeddings(iter_image_locators(locators))
 ```
 
-Once the upload completes, we can now visit [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio)
+Once the upload completes, we can now visit [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.com/redirect/studio)
 to search by natural language over the corresponding [`Image`][kolena.workflow.Image] data.
 
 ## Conclusion

@@ -50,7 +50,7 @@ Certain metrics computation functionality depends on additional packages like
 
 Once you have `kolena` installed, initialize a session with `kolena.initialize(api_token=token)`.
 
-From the [:kolena-developer-16: Developer](https://app.kolena.io/redirect/developer) page, generate an API token and set
+From the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page, generate an API token and set
 the `KOLENA_TOKEN` environment variable:
 
 ```bash

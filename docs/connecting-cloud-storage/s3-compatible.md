@@ -17,7 +17,7 @@ S3-compatible API.
 
 To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the
-[:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
+[:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page and click "Add Integration", then "MinIO".
 
 Steps performed outside of Kolena are shown for a subset of possible S3-compatible systems.
@@ -71,7 +71,7 @@ Next, create the policy and attach the policy to the service user created in [st
 
 ### Step 3: Save Integration on Kolena
 
-Return to the Kolena platform [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations).
+Return to the Kolena platform [Integrations tab](https://app.kolena.com/redirect/organization?tab=integrations).
 
 By default, any locators beginning with `s3://` will be loaded using this integration.
 

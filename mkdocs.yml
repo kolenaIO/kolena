@@ -111,7 +111,7 @@ nav:
       - metrics/statistical-significance.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
-  - Sign in ↗: https://app.kolena.io
+  - Sign in ↗: https://app.kolena.com
 
 theme:
   name: material
@@ -232,7 +232,7 @@ extra:
       link: https://github.com/kolenaIO/kolena
       name: Kolena on GitHub
     - icon: kolena/logo
-      link: https://app.kolena.io
+      link: https://app.kolena.com
       name: Kolena Platform
   dd_rum:
     client_token: !ENV [ DD_RUM_CLIENT_TOKEN, blank ]
