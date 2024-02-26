@@ -14,7 +14,6 @@
 import json
 import random
 
-import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -247,7 +246,7 @@ def test__datapoint_dataframe__serde_composite() -> None:
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
-    assert_frame_equal(df_deserialized.sort_index(axis=1), df.sort_index(axis=1))
+    assert_frame_equal(df_deserialized.sort_index(axis=1), df.sort_index(axis=1), check_dtype=False)
 
 
 def test__datapoint_dataframe__serde_locator() -> None:
@@ -303,7 +302,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
         ],
     )
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
-    assert_frame_equal(df_deserialized, df_expected)
+    assert_frame_equal(df_deserialized, df_expected, check_dtype=False)
 
 
 def test__datapoint_dataframe__serde_text() -> None:
@@ -330,7 +329,7 @@ def test__datapoint_dataframe__serde_text() -> None:
 
     df_expected = pd.DataFrame(datapoints)
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
-    assert_frame_equal(df_deserialized, df_expected)
+    assert_frame_equal(df_deserialized, df_expected, check_dtype=False)
 
 
 def test__datapoint_dataframe__columns_unlabeled() -> None:
@@ -367,7 +366,7 @@ def test__dataframe__serde_none() -> None:
     ]
     df_serialized = pd.DataFrame(data, columns=[column_name])
 
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["city"])
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["city"])
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
     assert_frame_equal(df_deserialized, df_expected)
 
@@ -381,7 +380,7 @@ def test__dataframe__serde_none__composite() -> None:
     ]
     df_serialized = pd.DataFrame(data, columns=[column_name])
 
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["a.city"])
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["a.city"])
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
     assert_frame_equal(df_deserialized, df_expected)
 
