@@ -86,6 +86,33 @@ represent complex scenarios on Kolena. Assets are files stored in a cloud bucket
 | [`VideoAsset`](../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
 | [`PointCloudAsset`](../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
 
+The [:kolena-widget-16: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/automatic_speech_recognition)
+example showcases how `AudioAsset`s can be attached to datapoints.
+
+Take a look at `s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv` which contains a raw csv of the
+following format:
+
+| id                | audio                                                                                      | transcript             | word_count |
+|-------------------|--------------------------------------------------------------------------------------------|------------------------|------------|
+| 1272-128104-0014  | `s3://kolena-public-examples/LibriSpeech/data/dev-clean/1272/128104/1272-128104-0014.flac` | `by harry quilter m a` | 5          |
+
+Here the audio column contains a locator but if uploaded as is, it would just be rendered as a text metadata field.
+
+```python
+from kolena.asset import AudioAsset
+from kolena.io import dataframe_to_csv
+import pandas as pd
+
+
+df = pd.read_csv("s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv", storage_options={"anon": True})
+df_dataset["audio"] = df_dataset["audio"].apply(AudioAsset)
+
+```
+
+Attaching assets differs from having a locator reference the file with how it is displayed on the platform.
+Linked assets are attached to a datapoint whereas when specificing the locator the file is the datapoint,
+and metadata and other assests can be attached.
+
 ### Kolena Annotations
 
 Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../reference/annotation.md).
