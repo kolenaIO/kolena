@@ -303,16 +303,19 @@ def match_inferences_multiclass(
 
     # collect all unique labels, store gts and infs of the same label together
     for gt in ground_truths:
-        gts_by_class[gt.label].append(gt)  # type: ignore[union-attr]
-        all_labels.add(gt.label)  # type: ignore[union-attr]
+        assert hasattr(gt, "label")
+        gts_by_class[gt.label].append(gt)
+        all_labels.add(gt.label)
 
     for inf in inferences:
-        infs_by_class[inf.label].append(inf)  # type: ignore[union-attr]
-        all_labels.add(inf.label)  # type: ignore[union-attr]
+        assert hasattr(inf, "label")
+        infs_by_class[inf.label].append(inf)
+        all_labels.add(inf.label)
 
     if ignored_ground_truths:
         for ignored_gt in ignored_ground_truths:
-            ignored_gts_by_class[ignored_gt.label].append(ignored_gt)  # type: ignore[union-attr]
+            assert hasattr(ignored_gt, "label")
+            ignored_gts_by_class[ignored_gt.label].append(ignored_gt)
 
     for label in sorted(all_labels):
         ground_truths_single = gts_by_class[label]
@@ -339,7 +342,8 @@ def match_inferences_multiclass(
 
     confused = []
     for gt, inf in confused_matches.matched:
-        if gt.label != inf.label:  # type: ignore[union-attr]
+        assert hasattr(gt, "label") and hasattr(inf, "label")
+        if gt.label != inf.label:
             confused.append((gt, inf))
             unmatched_gt.remove(gt)
 
