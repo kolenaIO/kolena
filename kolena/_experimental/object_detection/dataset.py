@@ -90,15 +90,12 @@ def multiclass_datapoint_metrics(
         for gt, inf in bbox_matches.unmatched_gt
     ]
     confused = [
-        _inference_to_dict_with_gt_metadata(
-            gt,
-            ScoredLabeledBoundingBox(
-                label=inf.label,
-                score=inf.score,
-                top_left=inf.top_left,
-                bottom_right=inf.bottom_right,
-                actual_label=gt.label,  # type: ignore[call-arg]
-            ),
+        ScoredLabeledBoundingBox(
+            label=inf.label,
+            score=inf.score,
+            top_left=inf.top_left,
+            bottom_right=inf.bottom_right,
+            actual_label=gt.label,  # type: ignore[call-arg]
         )
         for gt, inf in bbox_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]

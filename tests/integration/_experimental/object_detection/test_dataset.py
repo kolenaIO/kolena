@@ -202,11 +202,11 @@ def test__upload_results__multiclass() -> None:
 
     _assert_result_bbox_contains_fields(
         df_results_one,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth", "Confused"],
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
         ["foo"],
     )
     _assert_result_bbox_contains_fields(
         df_results_two,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth", "Confused"],
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
         ["foo"],
     )
