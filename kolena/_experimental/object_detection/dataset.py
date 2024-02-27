@@ -270,6 +270,12 @@ def upload_object_detection_results(
 
 
 def _convert_bbox_to_labeled_bbox(bbox: BoundingBox) -> LabeledBoundingBox:
+    """
+    Convert a BoundingBox object with label to a LabeledBoundingBox object while preserving the metadata fields.
+
+    :param bbox: BoundingBox object with a label.
+    :return: The converted LabeledBoundingBox object.
+    """
     data_dict = {key: value for key, value in bbox.toDict().items() if key not in BoundingBox._reserved_fields()}
     return LabeledBoundingBox(**data_dict)
 
@@ -278,6 +284,14 @@ def _inference_to_dict_with_gt_metadata(
     gt: LabeledBoundingBox,
     inf: Union[LabeledBoundingBox, ScoredLabeledBoundingBox],
 ) -> Dict[str, Any]:
+    """
+    Given a bounding box inference and its corresponding ground truth, create a dictionary containing the inference data
+    along with the metadata from the ground truth object.
+
+    :param gt: Ground truth bounding box.
+    :param inf: Inference bounding box corresponding to `gt`.
+    :return: A dictionary containing data from `inf` as well as all metadata associated with `gt`.
+    """
     data_dict = gt.toDict()
     data_dict.update(inf.toDict())
     return data_dict
