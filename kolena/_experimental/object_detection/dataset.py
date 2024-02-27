@@ -96,7 +96,7 @@ def multiclass_datapoint_metrics(
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
-        count_Confusedo=len(confused),
+        count_Confused=len(confused),
         has_TP=len(tp) > 0,
         has_FP=len(fp) > 0,
         has_FN=len(fn) > 0,
