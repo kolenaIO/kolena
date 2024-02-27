@@ -34,11 +34,7 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
 
     for record in df_metadata_csv.itertuples():
         coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
-        bounding_box = LabeledBoundingBox(
-            *coords,
-            record.label,
-            supercategory=record.supercategory,  # type: ignore[call-arg]
-        )
+        bounding_box = LabeledBoundingBox(*coords, record.label)
         image_to_boxes[record.locator].append(bounding_box)
         metadata = {
             "locator": str(record.locator),
