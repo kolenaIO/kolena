@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
+from typing import List
 
 import pandas as pd
 import pytest
@@ -27,6 +28,17 @@ object_detection = pytest.importorskip("kolena._experimental.object_detection", 
 upload_object_detection_results = object_detection.upload_object_detection_results
 
 
+def _assert_result_bbox_contains_fields(df_results: pd.DataFrame, columns: List[str], fields: List[str]):
+    """
+    Asserts that each bounding box under the specified columns contain fields.
+    """
+    for col in columns:
+        for result_list in df_results[col]:
+            for result in result_list:
+                for field in fields:
+                    assert field in result.toDict()
+
+
 @pytest.mark.metrics
 def test__upload_results__single_class() -> None:
     name = with_test_prefix(f"{__file__}::test__upload_results__single_class")
@@ -36,8 +48,14 @@ def test__upload_results__single_class() -> None:
             width=i + 500,
             height=i + 400,
             bboxes=[
-                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
-                LabeledBoundingBox(label="cat", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
+                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10], flag="T", foo="bar"),
+                LabeledBoundingBox(
+                    label="cat",
+                    top_left=[i + 5, i + 5],
+                    bottom_right=[i + 20, i + 20],
+                    flag="F",
+                    foo="bar2",
+                ),
             ],
         )
         for i in range(10)
@@ -80,6 +98,7 @@ def test__upload_results__single_class() -> None:
     expected_columns = {
         "TP",
         "FP",
+        "FN",
         "raw_inferences",
         "matched_inference",
         "unmatched_inference",
@@ -89,6 +108,11 @@ def test__upload_results__single_class() -> None:
     assert expected_columns.issubset(set(df_results.columns))
     assert "bboxes" not in df_results.columns
     assert len(df_results) == 10
+    _assert_result_bbox_contains_fields(
+        df_results,
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["flag", "foo"],
+    )
 
 
 @pytest.mark.metrics
@@ -100,9 +124,9 @@ def test__upload_results__multiclass() -> None:
             width=i + 500,
             height=i + 400,
             bounding_boxes=[
-                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30]),
-                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50]),
-                LabeledBoundingBox(label="horse", top_left=[i + 15, i + 25], bottom_right=[i + 60, i + 75]),
+                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30], foo="bar1"),
+                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50], foo="bar2"),
+                LabeledBoundingBox(label="horse", top_left=[i + 15, i + 25], bottom_right=[i + 60, i + 75], foo="bar3"),
             ],
         )
         for i in range(10)
@@ -158,6 +182,7 @@ def test__upload_results__multiclass() -> None:
     expected_columns = {
         "TP",
         "FP",
+        "FN",
         "inferences",
         "matched_inference",
         "unmatched_inference",
@@ -174,3 +199,14 @@ def test__upload_results__multiclass() -> None:
     confused = next(x for x in df_results_one["unmatched_ground_truth"] if len(x))
     assert confused[0].predicted_label
     assert confused[0].predicted_score
+
+    _assert_result_bbox_contains_fields(
+        df_results_one,
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["foo"],
+    )
+    _assert_result_bbox_contains_fields(
+        df_results_two,
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["foo"],
+    )
