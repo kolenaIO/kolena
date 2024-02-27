@@ -80,7 +80,7 @@ question answering:
 
 ### Metrics
 
-1. mean(result.gpt4_hallucination_flag)
+1. rate(gpt4_hallucination_flag=true)
 2. mean(result.gpt4_hallucination_score)
 3. mean(result.contradiction_score)
 
