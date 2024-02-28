@@ -13,7 +13,6 @@
 # limitations under the License.
 BUCKET = "kolena-public-examples"
 DATASET = "coco-person-detection"
-LICENSE = "open-license"
 ID_FIELDS = ["locator"]
 MODELS = [
     "yolo_r",

@@ -17,7 +17,6 @@ from argparse import Namespace
 from person_detection.constants import BUCKET
 from person_detection.constants import DATASET
 from person_detection.constants import ID_FIELDS
-from person_detection.constants import LICENSE
 
 import kolena.io
 from kolena.dataset import upload_dataset
@@ -29,15 +28,12 @@ def run(args: Namespace) -> None:
         f"s3://{BUCKET}/{DATASET}/{DATASET}.csv",
         storage_options={"anon": True},
     )
-    if args.license == LICENSE:
-        df_metadata = df_metadata[df_metadata.apply(lambda row: "NonCommercial" not in row["license_name"], axis=1)]
     upload_dataset(args.dataset, df_metadata, id_fields=ID_FIELDS)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a custom dataset name to upload.")
-    ap.add_argument("--license", type=str, default=LICENSE, help="Optionally specify license type for data to upload")
     run(ap.parse_args())
 
 
