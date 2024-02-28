@@ -42,14 +42,14 @@ The `upload_results.py` script defines command line arguments to select which mo
 
 ```shell
 $ poetry run python3 image_retrieval_by_text/upload_results.py --help
-usage: upload_results.py [-h] [--dataset DATASET] {kakaobrain_align-base, google_siglip-base-patch16-224, BAAI_AltCLIP, openai_clip-vit-base-patch32}
-
-positional arguments:
-  {kakaobrain_align-base, google_siglip-base-patch16-224, BAAI_AltCLIP, openai_clip-vit-base-patch32}
-                        Name of the model to test.
+usage: upload_results.py [-h]
+            [--model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}]
+            [--dataset DATASET]
 
 optional arguments:
   -h, --help            show this help message and exit
+  --model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}
+                        Name of the model to test.
   --dataset DATASET     Optionally specify a custom dataset name to test.
 ```
 
