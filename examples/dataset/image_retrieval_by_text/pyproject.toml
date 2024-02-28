@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "image_retrieval_by_text"
+version = "0.1.0"
+description = "Example Kolena integration for Image Retrieval by Text"
+authors = ["Kolena Engineering <eng@kolena.com>"]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+kolena = {extras = ["metrics"], version = "^1.4.0"}
+s3fs = "^2023.12.0"
+pandera = ">=0.9.0,<0.16"
+numpy = "^1.26.4"
+pillow = "^10.2.0"
+pre-commit = "^3.6.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7"
+pytest-depends = "^1.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
