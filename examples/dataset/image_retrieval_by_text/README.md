@@ -1,7 +1,7 @@
-# Example Integration: Image Retrieval By Text
+# Example Integration: Image Retrieval by Text
 
 This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test image
-retrieval by test with Kolena. Only images with the [Attribution 2.0](https://creativecommons.org/licenses/by/2.0/)
+retrieval by text with Kolena. Only images with the [Attribution 2.0](https://creativecommons.org/licenses/by/2.0/)
 license are included.
 
 ## Setup
