@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 BUCKET = "kolena-public-examples"
-DATASET = "coco-person-detection"
+DATASET = "coco-2014-val-person-detection"
 ID_FIELDS = ["locator"]
 MODELS = [
     "yolo_r",
