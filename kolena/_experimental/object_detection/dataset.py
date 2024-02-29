@@ -70,11 +70,11 @@ def multiclass_datapoint_metrics(
         gt for gt, inf in object_matches.matched if inf.score < thresholds[inf.label]
     ]
     unmatched_ground_truth = [
-        dict(gt._to_dict(), predicted_label=inf.label, predicted_score=inf.score) if inf else gt
+        dict(**gt._to_dict(), predicted_label=inf.label, predicted_score=inf.score) if inf else gt
         for gt, inf in object_matches.unmatched_gt
     ]
     confused = [
-        dict(inf._to_dict(), actual_label=gt.label)
+        dict(**inf._to_dict(), actual_label=gt.label)
         for gt, inf in object_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
