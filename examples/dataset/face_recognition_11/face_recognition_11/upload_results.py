@@ -20,7 +20,7 @@ import pandas as pd
 import s3fs
 from face_recognition_11.constants import BUCKET
 from face_recognition_11.constants import DATASET
-from face_recognition_11.constants import WORKFLOW
+from face_recognition_11.constants import TASK
 from face_recognition_11.image import FRImageAsset
 from face_recognition_11.metrics import compute_alignment_metrics
 from face_recognition_11.metrics import compute_detection_metrics
@@ -38,9 +38,9 @@ from kolena.dataset import upload_results
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_dataset = download_dataset(args.dataset)
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{WORKFLOW}/results/raw/{args.model}_{args.detector}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{args.model}_{args.detector}.csv")
     fs = s3fs.S3FileSystem()
-    with fs.open(f"{BUCKET}/{DATASET}/{WORKFLOW}/results/raw/{args.model}_{args.detector}.config.json", "rb") as f:
+    with fs.open(f"{BUCKET}/{DATASET}/{TASK}/results/raw/{args.model}_{args.detector}.config.json", "rb") as f:
         eval_config = json.load(f)
 
     similarity_threshold = compute_recognition_threshold(df_results, eval_config["false_match_rate"])
@@ -102,7 +102,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=DATASET,
+        default=f"{DATASET} [{TASK}]",
         help="Optionally specify a custom dataset name to test.",
     )
     run(ap.parse_args())
