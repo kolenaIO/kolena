@@ -33,7 +33,6 @@ __all__ = [
     "iou",
     "InferenceMatches",
     "match_inferences",
-    "MulticlassInferenceMatches",
     "match_inferences_multiclass",
     "MulticlassInferenceMatches",
 ]
