@@ -13,13 +13,8 @@
 # limitations under the License.
 BUCKET = "kolena-public-examples"
 DATASET = "labeled-faces-in-the-wild"
+WORKFLOW = "face-recognition"
 
-DATASET_METADATA = f"s3://{BUCKET}/{DATASET}/raw/metadata.csv"
-DATASET_PAIRS = f"s3://{BUCKET}/{DATASET}/raw/pairs.csv"
-DATASET_DETECTION = f"s3://{BUCKET}/{DATASET}/raw/detection.csv"
-
-EVAL_CONFIG = dict(
-    false_match_rate=1e-1,
-    iou_threshold=0.5,
-    nrmse_threshold=0.08,
-)
+DATASET_METADATA = f"s3://{BUCKET}/{DATASET}/{WORKFLOW}/raw/metadata.csv"
+DATASET_PAIRS = f"s3://{BUCKET}/{DATASET}/{WORKFLOW}/raw/pairs.csv"
+DATASET_DETECTION = f"s3://{BUCKET}/{DATASET}/{WORKFLOW}/raw/detection.csv"

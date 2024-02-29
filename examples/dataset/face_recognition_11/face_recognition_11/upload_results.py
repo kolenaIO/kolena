@@ -11,14 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 from argparse import ArgumentParser
 from argparse import Namespace
 
 import numpy as np
 import pandas as pd
+import s3fs
 from face_recognition_11.constants import BUCKET
 from face_recognition_11.constants import DATASET
-from face_recognition_11.constants import EVAL_CONFIG
+from face_recognition_11.constants import WORKFLOW
 from face_recognition_11.image import FRImageAsset
 from face_recognition_11.metrics import compute_alignment_metrics
 from face_recognition_11.metrics import compute_detection_metrics
@@ -36,17 +38,20 @@ from kolena.dataset import upload_results
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_dataset = download_dataset(args.dataset)
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}_{args.detector}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{WORKFLOW}/results/raw/{args.model}_{args.detector}.csv")
+    fs = s3fs.S3FileSystem()
+    with fs.open(f"{BUCKET}/{DATASET}/{WORKFLOW}/results/raw/{args.model}_{args.detector}.config.json", "rb") as f:
+        eval_config = json.load(f)
 
-    similarity_threshold = compute_recognition_threshold(df_results, EVAL_CONFIG["false_match_rate"])
+    similarity_threshold = compute_recognition_threshold(df_results, eval_config["false_match_rate"])
 
     results = []
     for locator, df_locator_results in df_results.groupby("locator_1"):
         pairs = [
             FRImageAsset(
                 locator=record.locator_2,
-                is_match=record.is_match,  # type: ignore
-                similarity=record.similarity,  # type: ignore
+                is_match=record.is_match,
+                similarity=record.similarity,
                 **compute_pairwise_recognition_merics(record.is_match, record.similarity, similarity_threshold),
             )
             for record in df_locator_results.itertuples()
@@ -75,19 +80,19 @@ def run(args: Namespace) -> None:
                 pairs=pairs,
                 bbox=bbox,
                 keypoints=keypoints,
-                **compute_detection_metrics(dataset_record.bbox, bbox, EVAL_CONFIG),
+                **compute_detection_metrics(dataset_record.bbox, bbox, eval_config),
                 **compute_alignment_metrics(
                     dataset_record.normalization_factor,
                     dataset_record.keypoints,
                     keypoints,
-                    EVAL_CONFIG,
+                    eval_config,
                 ),
                 **compute_recognition_merics(pairs, similarity_threshold),
             ),
         )
 
     df_results = pd.DataFrame(results)
-    upload_results(args.dataset, f"{args.model}+{args.detector}", [(EVAL_CONFIG, df_results)])
+    upload_results(args.dataset, f"{args.model}_{args.detector}", [(eval_config, df_results)])
 
 
 def main() -> None:
