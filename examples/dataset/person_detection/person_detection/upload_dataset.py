@@ -15,7 +15,8 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 from person_detection.constants import BUCKET
-from person_detection.constants import DATASET
+from person_detection.constants import DATASET_DIR
+from person_detection.constants import DATASET_NAME
 from person_detection.constants import ID_FIELDS
 
 import kolena.io
@@ -25,7 +26,7 @@ from kolena.dataset import upload_dataset
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_metadata = kolena.io.dataframe_from_csv(
-        f"s3://{BUCKET}/{DATASET}/{DATASET}.csv",
+        f"s3://{BUCKET}/{DATASET_DIR}/{DATASET_NAME}.csv",
         storage_options={"anon": True},
     )
     upload_dataset(args.dataset, df_metadata, id_fields=ID_FIELDS)
@@ -33,7 +34,12 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
-    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a custom dataset name to upload.")
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DATASET_NAME,
+        help="Optionally specify a custom dataset name to upload.",
+    )
     run(ap.parse_args())
 
 

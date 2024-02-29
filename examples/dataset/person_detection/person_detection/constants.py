@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 BUCKET = "kolena-public-examples"
-DATASET = "coco-2014-val-person-detection"
+DATASET_DIR = "coco-2014-val"
+TASK_DIR = "person-detection"
+DATASET_NAME = "_".join([DATASET_DIR, TASK_DIR])
 ID_FIELDS = ["locator"]
 MODELS = [
     "yolo_r",
