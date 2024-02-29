@@ -13,6 +13,14 @@ install project dependencies from [`pyproject.toml`](./pyproject.toml) by runnin
 poetry update && poetry install
 ```
 
+Optionally download the COCO images from our s3 bucket to a directory if you want to run inference in real time
+instead of uploading a pre-computed results
+
+```shell
+mkdir coco_images
+aws s3 cp s3://kolena-public-examples/coco-2014-val/data/ coco_images/ --recursive
+```
+
 ## Usage
 
 All data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
@@ -42,15 +50,21 @@ The `upload_results.py` script defines command line arguments to select which mo
 
 ```shell
 $ poetry run python3 image_retrieval_by_text/upload_results.py --help
-usage: upload_results.py [-h]
-            [--model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}]
-            [--dataset DATASET]
+usage: upload_results.py [-h] [--model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}]
+                         [--dataset DATASET] [--run-inference RUN_INFERENCE] [--local-image-dir LOCAL_IMAGE_DIR]
 
 optional arguments:
   -h, --help            show this help message and exit
   --model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}
-                        Name of the model to test.
+                        Name of the model to test. If you want to run inference openai_clip-vit-base-patch32 model
+                        is recommended, as it runs faster (should complete in 30 minutes)
   --dataset DATASET     Optionally specify a custom dataset name to test.
+  --run-inference RUN_INFERENCE
+                        Optionally specify whether to run inference. If this is False, pre-computed inference
+                        results will be used
+  --local-image-dir LOCAL_IMAGE_DIR
+                        Optionally specify a local directory that stores the images to make run inference faster
+
 ```
 
 ## Quality Standards Guide
@@ -74,7 +88,7 @@ for Image Retrieval By Text:
 3. Distribution: `datapoint.caption_derived_interest`
 4. Distribution: `result.is_top_10`
 8. `result.is_top_10` vs. `datapoint.caption_derived_interest`
-8. `result.is_top_10` vs. `datapoint.caption_derived_gender`
+9. `result.is_top_10` vs. `datapoint.caption_derived_gender`
 
 ### Test Cases
 

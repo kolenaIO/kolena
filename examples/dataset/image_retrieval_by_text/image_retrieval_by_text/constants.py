@@ -14,6 +14,7 @@
 BUCKET = "kolena-public-examples"
 DATASET = "image-retrieval-by-text"
 ID_FIELDS = ["caption_id"]
+
 MODELS = [
     "kakaobrain_align-base",
     "google_siglip-base-patch16-224",
