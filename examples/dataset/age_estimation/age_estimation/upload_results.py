@@ -66,7 +66,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=DATASET,
+        default=f"{DATASET} [{TASK}]",
         help="Optionally specify a custom dataset name to test.",
     )
     run(ap.parse_args())
