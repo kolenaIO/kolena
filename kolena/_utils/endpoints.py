@@ -47,7 +47,7 @@ def _get_platform_origin(client_state: _ClientState) -> str:
     hostname = base_url.hostname or ""
     gateway_subdomain, *_ = hostname.split(".")
     subdomain = "trunk" if "trunk" in gateway_subdomain else "app"
-    return f"https://{subdomain}.kolena.io"
+    return f"https://{subdomain}.kolena.com"
 
 
 def get_results_url(workflow: str, model_id: int, test_suite_id: int) -> str:

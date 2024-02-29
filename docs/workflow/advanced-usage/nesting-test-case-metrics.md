@@ -106,7 +106,7 @@ describes performance for each of the given classes within the test case.
 
 When defining nested metrics, e.g. `PerClassMetrics` in the example above, it's important to identify each row by
 including at least one `str`-type column. This column, e.g. `Class` above, is pinned to the left when displaying nested
-metrics on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) page.
+metrics on the [:kolena-results-16: Results](https://app.kolena.com/redirect/results) page.
 
 ## Statistical Significance
 

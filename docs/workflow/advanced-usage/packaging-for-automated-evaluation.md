@@ -210,7 +210,7 @@ option.
 At this point, we are all set to leverage Kolena's automatic metrics evaluation capability. To see it in
 action, let's first use Kolena's Studio to curate a new test case.
 
-Head over to the [:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio) and use the "Explore" tab to learn
+Head over to the [:kolena-studio-16: Studio](https://app.kolena.com/redirect/studio) and use the "Explore" tab to learn
 more about the test samples from a given test case.
 Select multiple test samples of interest and then go to the "Create" tab to create a new test case with the
 "Create Test Case" button. You will notice there's an option to compute metrics on this new test case for applicable
@@ -245,7 +245,7 @@ docker run --rm \
   <evaluator-docker-image>
 ```
 
-You can find a test suite's version on the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
+You can find a test suite's version on the [:kolena-test-suite-16: Test Suites](https://app.kolena.com/redirect/testing)
 page. By default, the latest version is displayed.
 
 ### Using docker.kolena.io
@@ -254,7 +254,7 @@ In this tutorial, we published an evaluator container image to `docker.kolena.io
 section, we'll explain how to use the Docker CLI to interact with `docker.kolena.io`.
 
 The first step is to use `docker login` to log into `docker.kolena.io`. Using your organization's name (e.g.
-`my-organization`, the part after `app.kolena.io` when you visit the app) as a username and
+`my-organization`, the part after `app.kolena.com` when you visit the app) as a username and
 your API token as a password, log in with the following command:
 
 ```shell

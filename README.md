@@ -29,7 +29,7 @@
 
 ---
 
-[Kolena](https://www.kolena.io) is a comprehensive machine learning testing and debugging platform to surface hidden
+[Kolena](https://www.kolena.com) is a comprehensive machine learning testing and debugging platform to surface hidden
 model behaviors and take the mystery out of model development. Kolena helps you:
 
 - Perform high-resolution model evaluation

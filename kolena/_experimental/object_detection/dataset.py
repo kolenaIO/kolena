@@ -35,15 +35,15 @@ from kolena.metrics import MulticlassInferenceMatches
 
 
 def single_class_datapoint_metrics(object_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
-    tp = [inf for _, inf in object_matches.matched if inf.score >= thresholds]
+    tp = [{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched if inf.score >= thresholds]
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
-    scores = [inf.score for inf in tp + fp]
+    scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in object_matches.matched],
+        matched_inference=[{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched],
         unmatched_ground_truth=object_matches.unmatched_gt,
         unmatched_inference=object_matches.unmatched_inf,
         count_TP=len(tp),
@@ -62,7 +62,9 @@ def multiclass_datapoint_metrics(
     object_matches: MulticlassInferenceMatches,
     thresholds: Dict[str, float],
 ) -> Dict[str, Any]:
-    tp = [inf for _, inf in object_matches.matched if inf.score >= thresholds[inf.label]]
+    tp = [
+        {**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched if inf.score >= thresholds[inf.label]
+    ]
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
     fn = [gt for gt, _ in object_matches.unmatched_gt] + [
         gt for gt, inf in object_matches.matched if inf.score < thresholds[inf.label]
@@ -76,7 +78,7 @@ def multiclass_datapoint_metrics(
         for gt, inf in object_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
-    scores = [inf.score for inf in tp + fp]
+    scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     inference_labels = {inf.label for _, inf in object_matches.matched}.union(
         {inf.label for inf in object_matches.unmatched_inf},
     )
@@ -89,7 +91,7 @@ def multiclass_datapoint_metrics(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[inf for _, inf in object_matches.matched],
+        matched_inference=[{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched],
         unmatched_ground_truth=unmatched_ground_truth,
         unmatched_inference=object_matches.unmatched_inf,
         Confused=confused,

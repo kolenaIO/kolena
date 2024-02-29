@@ -14,7 +14,7 @@ a benchmark dataset.
 
 A **test suite** is a collection of test cases. Models are tested on test suites.
 
-Test cases and test suites are found on the [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing)
+Test cases and test suites are found on the [:kolena-test-suite-16: Test Suites](https://app.kolena.com/redirect/testing)
 page on Kolena.
 
 ## Managing Test Cases & Test Suites
@@ -132,7 +132,7 @@ All test data on Kolena is versioned and immutable[^1]. Previous versions of tes
 available and can be visualized on the web and loaded programmatically by specifying a version.
 
 [^1]: Immutability caveat: test suites, along with any test cases and test samples they hold, can be deleted on the
-    [:kolena-test-suite-16: Test Suites](https://app.kolena.io/redirect/testing) page.
+    [:kolena-test-suite-16: Test Suites](https://app.kolena.com/redirect/testing) page.
 
 ```python
 # load a specific version of a test suite

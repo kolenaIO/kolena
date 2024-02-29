@@ -48,7 +48,7 @@ The script generates a file containing structured test samples and ground truths
 velodyne binary file under `$datadir/velodyne_pcd`. Upload the camera images and pointcloud files to the cloud storage
 location specified in the argument `remote_prefix`, mirroring the directory structure as described in
 [Data preparation](#data-preparation) section, you can then view the images and visualize pointcloud data in
-[Kolena studio](https://app.kolena.io/redirect/studio) after a test suite is created in
+[Kolena studio](https://app.kolena.com/redirect/studio) after a test suite is created in
 [Kolena Integration](#kolena-integration).
 
 ### Test the model

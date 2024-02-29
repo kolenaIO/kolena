@@ -10,12 +10,12 @@ between Kolena and Google Cloud Storage.
 
 To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the
-[:kolena-organization-16: Organization Settings](https://app.kolena.io/redirect/organization?tab=integrations)
+[:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page and click "Add Integration", then "Google Cloud Storage".
 
 ### Step 1: Save Integration to Create a Service Account
 
-From the [Integrations tab](https://app.kolena.io/redirect/organization?tab=integrations), saving a Google Cloud Storage
+From the [Integrations tab](https://app.kolena.com/redirect/organization?tab=integrations), saving a Google Cloud Storage
 integration will create a service account.
 Upon creation, the integration's `client_email` will be used to provide
 Kolena permission to load data from your Google Cloud Storage buckets.

@@ -28,7 +28,7 @@ accomplished by configuring an `id_field` - a unique identifier for a datapoint.
 unique across your data, or generate one if no unique identifiers exist for your dataset.
 
 Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
-This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
 
@@ -187,7 +187,7 @@ df_merged = df_metadata.merge(df_boxes, on="locator")
 dataframe_to_csv(df_merged, "processed.csv")
 ```
 
-The file `processed.csv` can be uploaded through the [:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets)
+The file `processed.csv` can be uploaded through the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page.
 
 ### Formatting results for Object Detection
@@ -195,17 +195,17 @@ page.
 For Object Detection problems, model results need to have the following columns
 for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
-| Column Name            | Description                                         |
-|------------------------|-----------------------------------------------------|
+| Column Name              | Description                                         |
+|--------------------------|-----------------------------------------------------|
 | `matched_inference`      | Inferences that were matched to a ground truth.     |
 | `unmatched_inference`    | Inferences that were not matched to a ground truth. |
-| `unmatched_ground_truth` | Inferences that were not matched to a ground truth. |
+| `unmatched_ground_truth` | Ground truths with no matching inference.           |
 
 These columns are used to determine `True Postitives`, `False Positives`, and `False Negatives`.
 These results can be formatted for upload with a similar process as above. This is done by adding the relevant list of
 bounding boxes to the `matched_inference`, `unmatched_inference`, and `unmatched_ground_truth` columns for each image.
 The `results.csv` created can be uploaded by opening the corresponding dataset from the
-[:kolena-dataset-16: Datasets](https://app.kolena.io/redirect/datasets) page and navigating to the Studio section.
+[:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets) page and navigating to the Studio section.
 
 We have provided an [:kolena-widget-16: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
 example that shows how to take raw results and perform bounding box matching to produce the values mentioned above.

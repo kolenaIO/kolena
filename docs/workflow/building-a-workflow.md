@@ -179,7 +179,7 @@ class TestCaseMetrics(MetricsTestCase):
 !!! tip "Tip: Plots"
 
     Evaluators can also compute test-case-level plots using the [`Plot`][kolena.workflow.Plot] API. These plots are
-    visualized on the [:kolena-results-16: Results](https://app.kolena.io/redirect/results) dashboard alongside the
+    visualized on the [:kolena-results-16: Results](https://app.kolena.com/redirect/results) dashboard alongside the
     metrics reported for each test case.
 
 !!! tip "Tip: Test Suite Metrics"
@@ -214,7 +214,7 @@ test_case = TestCase(f"{DATASET} :: basic", test_samples=ts_with_gt)
 
     In this tutorial we created only a single simple test case, but more advanced test cases can be generated in a
     variety of fast and scalable ways, either programmatically with the `kolena` Python client or visually in the
-    [:kolena-studio-16: Studio](https://app.kolena.io/redirect/studio).
+    [:kolena-studio-16: Studio](https://app.kolena.com/redirect/studio).
 
 Now that we have a basic test case for our entire dataset let's create a test suite for it:
 
@@ -320,7 +320,7 @@ test(
 )
 ```
 
-That wraps up the testing process! We can now visit [:kolena-results-16: Results](https://app.kolena.io/redirect/results)
+That wraps up the testing process! We can now visit [:kolena-results-16: Results](https://app.kolena.com/redirect/results)
 to analyze and debug our model's performance on this test suite.
 
 ### Conclusion

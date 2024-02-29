@@ -34,7 +34,7 @@ hide:
 
 ---
 
-[Kolena](https://www.kolena.io) is a comprehensive machine learning testing and debugging platform to surface hidden
+[Kolena](https://www.kolena.com) is a comprehensive machine learning testing and debugging platform to surface hidden
 model behaviors and take the mystery out of model development. Kolena helps you:
 
 - Perform high-resolution model evaluation
@@ -43,7 +43,7 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 - Automate model testing and deployment workflows
 
 Kolena organizes your test data, stores and visualizes your model evaluations, and provides tooling to craft better
-tests. You interface with it through the web at [app.kolena.io](https://app.kolena.io) and programmatically via the
+tests. You interface with it through the web at [app.kolena.com](https://app.kolena.com) and programmatically via the
 [`kolena`](installing-kolena.md) Python client.
 
 ## Why Kolena?
@@ -92,7 +92,7 @@ We built Kolena to solve these two problems.
 
 ## Read More
 
-- Best Practices for ML Model Testing ([Kolena Blog](https://www.kolena.io/blog/best-practices-for-ml-model-testing))
+- Best Practices for ML Model Testing ([Kolena Blog](https://www.kolena.com/blog/best-practices-for-ml-model-testing))
 - Hidden Stratification Causes Clinically Meaningful Failures in Machine Learning for Medical Imaging ([arXiv:1909.12475](https://arxiv.org/abs/1909.12475))
 - No Subclass Left Behind: Fine-Grained Robustness in Coarse-Grained Classification Problems ([arXiv:2011.12945](https://arxiv.org/abs/2011.12945))
 

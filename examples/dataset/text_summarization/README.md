@@ -56,7 +56,7 @@ optional arguments:
 
 ## Quality Standards Guide
 
-Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.io/redirect/) to
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.com/redirect/) to
 [explore the data and results](https://docs.kolena.com/dataset/quickstart/#step-3-explore-data-and-results).
 
 Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for

@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
+from typing import List
 
 import pandas as pd
 import pytest
@@ -36,8 +37,8 @@ N_DATAPOINTS = 10
 
 gt_labeled_bbox_single = [
     [
-        LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
-        LabeledBoundingBox(label="cat", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
+        LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10], foo="bar"),
+        LabeledBoundingBox(label="cat", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20], foo="bar"),
     ]
     for i in range(N_DATAPOINTS)
 ]
@@ -56,8 +57,8 @@ inf_labeled_bbox_single = [
 
 gt_unlabeled_bbox_single = [
     [
-        BoundingBox(top_left=[i, i], bottom_right=[i + 10, i + 10]),
-        BoundingBox(top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
+        BoundingBox(top_left=[i, i], bottom_right=[i + 10, i + 10], foo="bar"),
+        BoundingBox(top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20], foo="bar"),
     ]
     for i in range(N_DATAPOINTS)
 ]
@@ -76,8 +77,12 @@ inf_unlabeled_bbox_single = [
 
 gt_labeled_polygon_single = [
     [
-        LabeledPolygon(label="cat", points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)]),
-        LabeledPolygon(label="cat", points=[(i + 5, i + 5), (i + 20, i + 5), (i + 5, i + 20), (i + 20, i + 20)]),
+        LabeledPolygon(label="cat", points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)], foo="bar"),
+        LabeledPolygon(
+            label="cat",
+            points=[(i + 5, i + 5), (i + 20, i + 5), (i + 5, i + 20), (i + 20, i + 20)],
+            foo="bar",
+        ),
     ]
     for i in range(N_DATAPOINTS)
 ]
@@ -91,8 +96,8 @@ inf_labeled_polygon_single = [
 
 gt_unlabeled_polygon_single = [
     [
-        Polygon(points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)]),
-        Polygon(points=[(i + 5, i + 5), (i + 20, i + 5), (i + 5, i + 20), (i + 20, i + 20)]),
+        Polygon(points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)], foo="bar"),
+        Polygon(points=[(i + 5, i + 5), (i + 20, i + 5), (i + 5, i + 20), (i + 20, i + 20)], foo="bar"),
     ]
     for i in range(N_DATAPOINTS)
 ]
@@ -100,6 +105,17 @@ inf_unlabeled_polygon_single = [
     [ScoredPolygon(points=[(x + 1, y + 1) for x, y in polygon.points], score=random.random()) for polygon in polygons]
     for polygons in gt_unlabeled_polygon_single
 ]
+
+
+def _assert_result_bbox_contains_fields(df_results: pd.DataFrame, columns: List[str], fields: List[str]):
+    """
+    Asserts that each bounding box under the specified columns contain fields.
+    """
+    for col in columns:
+        for result_list in df_results[col]:
+            for result in result_list:
+                for field in fields:
+                    assert field in result.toDict()
 
 
 @pytest.mark.metrics
@@ -151,6 +167,7 @@ def test__upload_results__single_class(annotation, gts, infs) -> None:
     expected_columns = {
         "TP",
         "FP",
+        "FN",
         "raw_inferences",
         "matched_inference",
         "unmatched_inference",
@@ -160,13 +177,18 @@ def test__upload_results__single_class(annotation, gts, infs) -> None:
     assert expected_columns.issubset(set(df_results.columns))
     assert "ground_truths" not in df_results.columns
     assert len(df_results) == 10
+    _assert_result_bbox_contains_fields(
+        df_results,
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["foo"],
+    )
 
 
 gt_labeled_bbox_multi = [
     [
-        LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30]),
-        LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50]),
-        LabeledBoundingBox(label="horse", top_left=[i + 15, i + 15], bottom_right=[i + 60, i + 75]),
+        LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30], foo="bar"),
+        LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50], foo="bar"),
+        LabeledBoundingBox(label="horse", top_left=[i + 15, i + 15], bottom_right=[i + 60, i + 75], foo="bar"),
     ]
     for i in range(N_DATAPOINTS)
 ]
@@ -185,9 +207,17 @@ inf_labeled_bbox_multi = [
 
 gt_labeled_polygon_multi = [
     [
-        LabeledPolygon(label="cat", points=[(i, i), (i + 30, i), (i, i + 30), (i + 30, i + 30)]),
-        LabeledPolygon(label="dog", points=[(i + 5, i + 5), (i + 50, i + 5), (i + 5, i + 50), (i + 50, i + 50)]),
-        LabeledPolygon(label="horse", points=[(i + 15, i + 15), (i + 60, i + 15), (i + 15, i + 75), (i + 60, i + 75)]),
+        LabeledPolygon(label="cat", points=[(i, i), (i + 30, i), (i, i + 30), (i + 30, i + 30)], foo="bar"),
+        LabeledPolygon(
+            label="dog",
+            points=[(i + 5, i + 5), (i + 50, i + 5), (i + 5, i + 50), (i + 50, i + 50)],
+            foo="bar",
+        ),
+        LabeledPolygon(
+            label="horse",
+            points=[(i + 15, i + 15), (i + 60, i + 15), (i + 15, i + 75), (i + 60, i + 75)],
+            foo="bar",
+        ),
     ]
     for i in range(N_DATAPOINTS)
 ]
@@ -262,6 +292,7 @@ def test__upload_results__multiclass(annotation, gts, infs) -> None:
     expected_columns = {
         "TP",
         "FP",
+        "FN",
         "raw_inferences",
         "matched_inference",
         "unmatched_inference",
@@ -278,3 +309,14 @@ def test__upload_results__multiclass(annotation, gts, infs) -> None:
     if confused := next(x for x in df_results_one["unmatched_ground_truth"] if len(x)):
         assert confused[0].predicted_label
         assert confused[0].predicted_score
+
+    _assert_result_bbox_contains_fields(
+        df_results_one,
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["foo"],
+    )
+    _assert_result_bbox_contains_fields(
+        df_results_two,
+        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["foo"],
+    )

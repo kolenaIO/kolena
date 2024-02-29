@@ -28,7 +28,7 @@ This section contains tutorial documentation for advanced features for Kolena Wo
     ---
 
     Upload and visualize your activation map for each [`TestSample`][kolena.workflow.TestSample] along with your model
-    results on the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio).
+    results on the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.com/redirect/studio).
 
 - [:kolena-comparison-16: Setting Up Natural Language Search](set-up-natural-language-search.md)
 
@@ -36,6 +36,6 @@ This section contains tutorial documentation for advanced features for Kolena Wo
 
     Extract and upload embeddings on each [`Image`][kolena.workflow.Image]
     to set up natural language and similarity search across image data and
-    results in the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.io/redirect/studio).
+    results in the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.com/redirect/studio).
 
 </div>
