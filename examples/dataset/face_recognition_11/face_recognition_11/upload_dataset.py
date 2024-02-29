@@ -19,6 +19,7 @@ from face_recognition_11.constants import DATASET
 from face_recognition_11.constants import DATASET_DETECTION
 from face_recognition_11.constants import DATASET_METADATA
 from face_recognition_11.constants import DATASET_PAIRS
+from face_recognition_11.constants import TASK
 
 import kolena
 from kolena.annotation import BoundingBox
@@ -82,7 +83,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=DATASET,
+        default=f"{DATASET} [{TASK}]",
         help="Optionally specify a custom dataset name to upload.",
     )
     run(ap.parse_args())
