@@ -13,6 +13,7 @@
 # limitations under the License.
 import random
 from typing import List
+from typing import Union
 
 import pandas as pd
 import pytest
@@ -32,6 +33,8 @@ from tests.integration.helper import with_test_prefix
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 upload_object_detection_results = object_detection.upload_object_detection_results
+
+ObjectAnnotations = Union[List[BoundingBox], List[Polygon]]
 
 N_DATAPOINTS = 10
 
@@ -128,7 +131,7 @@ def _assert_result_bbox_contains_fields(df_results: pd.DataFrame, columns: List[
         ("unlabeled_polygons", gt_unlabeled_polygon_single, inf_unlabeled_polygon_single),
     ],
 )
-def test__upload_results__single_class(annotation, gts, infs) -> None:
+def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, infs: ObjectAnnotations) -> None:
     name = with_test_prefix(f"{__file__}::test__upload_results__{annotation}__single_class")
     datapoints = [
         dict(
@@ -242,7 +245,7 @@ inf_labeled_polygon_multi = [
         ("labeled_polygons", gt_labeled_polygon_multi, inf_labeled_polygon_multi),
     ],
 )
-def test__upload_results__multiclass(annotation, gts, infs) -> None:
+def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, infs: ObjectAnnotations) -> None:
     name = with_test_prefix(f"{__file__}::test__upload_results__{annotation}__multiclass")
     datapoints = [
         dict(
