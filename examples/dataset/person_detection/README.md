@@ -3,6 +3,12 @@
 This example integration uses the [COCO](https://cocodataset.org/#overview) dataset to demonstrate how to test single
 class 2D object detection problems on Kolena.
 
+To illustrate the single class scenario, the dataset and model outputs have been restricted to images with `person`
+class bounding boxes. In addition, person
+[keypoint](https://docs.kolena.com/reference/annotation/#kolena.annotation.Keypoints)s have also been merged with the
+raw images, and connected by [polyline](https://docs.kolena.com/reference/annotation/#kolena.annotation.Polyline)s to
+provide a `figure` field for pose reference.
+
 ## Setup
 
 This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
