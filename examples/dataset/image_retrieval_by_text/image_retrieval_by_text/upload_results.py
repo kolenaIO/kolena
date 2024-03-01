@@ -26,6 +26,7 @@ import pandas as pd
 import torch
 from image_retrieval_by_text.constants import BUCKET
 from image_retrieval_by_text.constants import DATASET
+from image_retrieval_by_text.constants import EMBEDDING_STORAGE_DIR
 from image_retrieval_by_text.constants import MODELS
 from PIL import Image
 from tqdm import tqdm
@@ -223,12 +224,12 @@ def run(args: Namespace) -> None:
         print("downloading dataset")
         dataset = download_dataset(args.dataset)
 
-        if os.path.exists(f"embeddings/{args.model}/img.parquet") and os.path.exists(
-            f"embeddings/{args.model}/txt.parquet",
+        if os.path.exists(f"{EMBEDDING_STORAGE_DIR}/{args.model}/img.parquet") and os.path.exists(
+            f"{EMBEDDING_STORAGE_DIR}/{args.model}/txt.parquet",
         ):
-            print("loading pre-computed embeddings")
-            df_img_emb = pd.read_parquet(f"{args.model}/img.parquet")
-            df_txt_emb = pd.read_parquet(f"{args.model}/txt.parquet")
+            print(f"loading pre-computed embeddings stored at {EMBEDDING_STORAGE_DIR}")
+            df_img_emb = pd.read_parquet(f"{EMBEDDING_STORAGE_DIR}/{args.model}/img.parquet")
+            df_txt_emb = pd.read_parquet(f"{EMBEDDING_STORAGE_DIR}/{args.model}/txt.parquet")
 
         else:
             print("loading model and processor")
