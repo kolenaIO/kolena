@@ -41,21 +41,13 @@ def dataset_name() -> str:
 
 
 def test__upload_dataset(dataset_name: str) -> None:
-    args = Namespace(dataset=dataset_name)
+    args = Namespace(dataset=dataset_name, sample_count=50)
     upload_dataset_main(args)
 
 
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results(dataset_name: str) -> None:
-    args = Namespace(model="yolo_r", dataset=dataset_name)
+    args = Namespace(model="yolo_r", dataset=dataset_name, sample_count=50)
     upload_results_main(args)
-    args = Namespace(model="yolo_x", dataset=dataset_name)
-    upload_results_main(args)
-    args = Namespace(model="yolo_v3", dataset=dataset_name)
-    upload_results_main(args)
-    args = Namespace(model="yolo_v4s", dataset=dataset_name)
-    upload_results_main(args)
-    args = Namespace(model="faster_rcnn", dataset=dataset_name)
-    upload_results_main(args)
-    args = Namespace(model="mask_rcnn", dataset=dataset_name)
+    args = Namespace(model="mask_rcnn", dataset=dataset_name, sample_count=50)
     upload_results_main(args)

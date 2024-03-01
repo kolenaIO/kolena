@@ -29,6 +29,10 @@ def run(args: Namespace) -> None:
         f"s3://{BUCKET}/{DATASET_DIR}/{DATASET_NAME}.csv",
         storage_options={"anon": True},
     )
+    sample_count = args.sample_count
+    if sample_count:
+        df_metadata.sort_values(by="locator", inplace=True, ignore_index=True)
+        df_metadata = df_metadata[:sample_count]
     upload_dataset(args.dataset, df_metadata, id_fields=ID_FIELDS)
 
 

@@ -61,6 +61,11 @@ def run(args: Namespace) -> None:
         coco_results = json.loads(f.read())
 
     df_pred = map_results(coco_results["images"], coco_results["annotations"], coco_results["categories"])
+    sample_count = args.sample_count
+    if sample_count:
+        df_pred.sort_values(by="locator", inplace=True, ignore_index=True)
+        df_pred = df_pred[:sample_count]
+
     upload_object_detection_results(args.dataset, args.model, df_pred)
 
 
