@@ -48,5 +48,5 @@ def test__upload_dataset(dataset_name: str) -> None:
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results(dataset_name: str) -> None:
     for model in MODELS:
-        args = Namespace(model=model, dataset=dataset_name)
+        args = Namespace(model=model, dataset=dataset_name, run_inference=False, local_image_dir=".")
         upload_results_main(args)

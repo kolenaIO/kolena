@@ -257,7 +257,7 @@ def main() -> None:
         "--model",
         type=str,
         choices=MODELS,
-        default=MODELS[0],
+        default=MODELS[-1],
         help=f"Name of the model to test. If you want to run inference {MODELS[-1]} model is recommended, "
         f"as it runs faster (should complete in 30 minutes)",
     )
