@@ -17,6 +17,7 @@ from argparse import Namespace
 import pandas as pd
 from age_estimation.constants import DATA_FILEPATH
 from age_estimation.constants import DATASET
+from age_estimation.constants import TASK
 
 import kolena
 from kolena.dataset import upload_dataset
@@ -34,7 +35,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=DATASET,
+        default=f"{DATASET} [{TASK}]",
         help="Optionally specify a custom dataset name to upload.",
     )
     run(ap.parse_args())

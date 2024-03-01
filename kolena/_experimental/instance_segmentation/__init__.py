@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from .dataset import upload_instance_segmentation_results
 from .evaluator import InstanceSegmentationEvaluator
 from .workflow import EvaluatorConfiguration
 from .workflow import GroundTruth
@@ -29,4 +30,5 @@ __all__ = [
     "TestCase",
     "TestSuite",
     "InstanceSegmentationEvaluator",
+    "upload_instance_segmentation_results",
 ]
