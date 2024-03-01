@@ -27,6 +27,7 @@ import requests
 import kolena
 import kolena._api.v1.token as API
 from kolena._utils import krequests
+from kolena._utils.log import info
 from kolena._utils.serde import from_dict
 from kolena.errors import InvalidClientStateError
 from kolena.errors import InvalidTokenError
@@ -100,12 +101,9 @@ class _ClientState:
         self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
     def assert_initialized(self) -> None:
-        if self.base_url is None:
-            raise InvalidClientStateError("missing base_url")
         if self.jwt_token is None:
-            raise UninitializedError("client has not been initialized via kolena.initialize(...)")
-        if self.api_token is None:
-            raise InvalidClientStateError("missing client api_token")
+            info("Attempting to initialize client...")
+            kolena.initialize(verbose=True)
 
     def reset(self) -> None:
         # note that base_url remains set
