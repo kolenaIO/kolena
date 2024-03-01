@@ -78,8 +78,8 @@ for Image Retrieval By Text:
 ### Metrics
 
 1. rate(result.is_top_10=true)
-2. mean(result.similarity)
-3. count(result.total_miss)
+2. mean(result.rank)
+3. rate(result.total_miss=true)
 
 ### Plots
 
