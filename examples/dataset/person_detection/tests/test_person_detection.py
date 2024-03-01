@@ -18,6 +18,7 @@ from argparse import Namespace
 from collections.abc import Iterator
 
 import pytest
+from person_detection.constants import DATASET_NAME
 from person_detection.upload_dataset import run as upload_dataset_main
 from person_detection.upload_results import run as upload_results_main
 
@@ -25,7 +26,6 @@ from kolena._utils.state import kolena_session
 
 
 DATASET = "coco-person-detection"
-LICENSE = "open-license"
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -37,11 +37,11 @@ def with_init() -> Iterator[None]:
 @pytest.fixture(scope="module")
 def dataset_name() -> str:
     TEST_PREFIX = "".join(random.choices(string.ascii_uppercase + string.digits, k=12))
-    return f"{TEST_PREFIX} - {DATASET}"
+    return f"{TEST_PREFIX} - {DATASET_NAME}"
 
 
 def test__upload_dataset(dataset_name: str) -> None:
-    args = Namespace(dataset=dataset_name, license=LICENSE)
+    args = Namespace(dataset=dataset_name)
     upload_dataset_main(args)
 
 
