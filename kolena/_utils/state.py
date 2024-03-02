@@ -119,13 +119,16 @@ def get_client_state() -> _ClientState:
     return CLIENT_STATE.get(_client_state)
 
 
+def is_client_uninitialized() -> bool:
+    return get_client_state().jwt_token is None
+
+
 def kolena_initialized(func: Callable) -> Callable:
     """Attempts to initialize client if not initialized"""
 
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        client_state = get_client_state()
-        if client_state.jwt_token is None:
+        if is_client_uninitialized():
             kolena.initialize(verbose=True)
         return func(*args, **kwargs)
 
