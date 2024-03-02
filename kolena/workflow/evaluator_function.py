@@ -33,7 +33,6 @@ from pydantic.dataclasses import dataclass
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
-from kolena._utils.state import is_client_initialized
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth
@@ -210,9 +209,6 @@ class _TestCases(TestCases):
             self._update_progress(tc)
 
     def _update_progress(self, test_case: TestCase) -> None:
-        if not is_client_initialized():
-            return
-
         config_description = (
             f" {_configuration_description(self._wip_configuration)}" if self._wip_configuration else ""
         )
