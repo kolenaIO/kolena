@@ -27,7 +27,6 @@ import requests
 import kolena
 import kolena._api.v1.token as API
 from kolena._utils import krequests
-from kolena._utils.log import info
 from kolena._utils.serde import from_dict
 from kolena.errors import InvalidClientStateError
 from kolena.errors import InvalidTokenError
@@ -100,9 +99,8 @@ class _ClientState:
         self.proxies = proxies or self.proxies
         self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
-    def assert_initialized(self) -> None:
+    def initialized(self) -> None:
         if self.jwt_token is None:
-            info("Attempting to initialize client...")
             kolena.initialize(verbose=True)
 
     def reset(self) -> None:
@@ -129,7 +127,7 @@ def get_client_state() -> _ClientState:
 
 def is_client_initialized() -> bool:
     try:
-        get_client_state().assert_initialized()
+        get_client_state().initialized()
     except (InvalidClientStateError, UninitializedError):
         return False
     return True
@@ -141,7 +139,7 @@ def kolena_initialized(func: Callable) -> Callable:
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         client_state = get_client_state()
-        client_state.assert_initialized()
+        client_state.initialized()
         return func(*args, **kwargs)
 
     return wrapper
