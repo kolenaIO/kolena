@@ -77,7 +77,6 @@ inf_unlabeled_bbox_single = [
     for boxes in gt_labeled_bbox_single
 ]
 
-
 gt_labeled_polygon_single = [
     [
         LabeledPolygon(label="cat", points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)], foo="bar"),
@@ -195,15 +194,16 @@ gt_labeled_bbox_multi = [
     ]
     for i in range(N_DATAPOINTS)
 ]
+inf_score_bbox_multi = [min(0.4 + 0.1 * i, 0.9) for i in range(len(gt_labeled_bbox_multi))]
 inf_labeled_bbox_multi = [
     [
         ScoredLabeledBoundingBox(
             label=box.label if i % 4 else "dog",
             top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
             bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
-            score=random.random(),
+            score=inf_score_bbox_multi[i] + j * 0.01,
         )
-        for box in boxes
+        for j, box in enumerate(boxes)
     ]
     for i, boxes in enumerate(gt_labeled_bbox_multi)
 ]
@@ -224,14 +224,15 @@ gt_labeled_polygon_multi = [
     ]
     for i in range(N_DATAPOINTS)
 ]
+inf_score_polygon_multi = [min(0.2 + 0.15 * i, 0.9) for i in range(len(gt_labeled_polygon_multi))]
 inf_labeled_polygon_multi = [
     [
         ScoredLabeledPolygon(
             label=polygon.label if i % 4 else "dog",
             points=[(x, y) for x, y in polygon.points],
-            score=random.random(),
+            score=inf_score_polygon_multi[i] + 0.01 * j,
         )
-        for polygon in polygons
+        for j, polygon in enumerate(polygons)
     ]
     for i, polygons in enumerate(gt_labeled_polygon_multi)
 ]
@@ -309,9 +310,9 @@ def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, in
     assert len(df_results_two) == 10
 
     # check data format
-    if confused := next(x for x in df_results_one["unmatched_ground_truth"] if len(x)):
-        assert confused[0].predicted_label
-        assert confused[0].predicted_score
+    confused = next(x for x in df_results_one["unmatched_ground_truth"])
+    assert confused[0].predicted_label
+    assert confused[0].predicted_score
 
     _assert_result_bbox_contains_fields(
         df_results_one,
