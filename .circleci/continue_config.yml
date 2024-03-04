@@ -386,7 +386,7 @@ jobs:
       - checkout:
           path: ~/project
       - setup_remote_docker:
-          version: 20.10.14
+          version: default
       - run:
           name: Build evaluator
           command: examples/workflow/text_summarization/docker/build.sh
