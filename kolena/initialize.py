@@ -98,6 +98,7 @@ def initialize(
     :raises InputValidationError: The provided combination or number of args is not valid.
     :raises MissingTokenError: An API token could not be found.
     """
+    log.info("Attempting to initialize client...")
     used_deprecated_signature = "entity" in kwargs
 
     if len(args) > 2:

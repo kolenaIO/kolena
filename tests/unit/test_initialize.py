@@ -35,10 +35,9 @@ from kolena._utils.state import API_URL
 from kolena._utils.state import API_URL_ENV_VAR
 from kolena._utils.state import get_client_state
 from kolena._utils.state import get_endpoint_with_baseurl
+from kolena._utils.state import kolena_initialized
 from kolena._utils.state import kolena_session
-from kolena.dataset import download_dataset
 from kolena.errors import MissingTokenError
-from kolena.errors import UninitializedError
 
 
 def mock_jwt(input: str) -> str:
@@ -74,6 +73,22 @@ def clean_client_state() -> Iterator[None]:
         yield
     finally:
         _client_state.reset()
+
+
+@patch("kolena._utils.state.kolena.initialize")
+def test__auto_initialize(initialize_mock: Mock) -> None:
+    @kolena_initialized
+    def wrapped_func():
+        pass
+
+    initialize_mock.assert_not_called()
+    wrapped_func()
+    initialize_mock.assert_called_once()
+
+    # Should only be called once
+    with patch("kolena._utils.state.is_client_uninitialized", return_value=False):
+        wrapped_func()
+        initialize_mock.assert_called_once()
 
 
 def test__initialize__positional() -> None:
@@ -168,11 +183,6 @@ def test__initialize__token_missing() -> None:
     with patch("netrc.netrc", side_effect=MissingTokenError):
         with pytest.raises(MissingTokenError):
             kolena.initialize()
-
-
-def test__uninitialized_usage() -> None:
-    with pytest.raises(UninitializedError):
-        download_dataset("does not exist")
 
 
 def test__kolena_session() -> None:

@@ -42,10 +42,6 @@ class MissingTokenError(KeyError, KolenaError):
     """Exception indicating that the client could not locate an API token."""
 
 
-class UninitializedError(InvalidClientStateError):
-    """Exception indicating that the client has not been properly initialized before usage."""
-
-
 class DirectInstantiationError(RuntimeError, KolenaError):
     """
     Exception indicating that the default constructor was used for a class that does not support direct instantiation.
