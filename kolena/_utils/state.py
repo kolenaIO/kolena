@@ -129,7 +129,7 @@ def kolena_initialized(func: Callable) -> Callable:
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         if is_client_uninitialized():
-            kolena.initialize(verbose=True)
+            kolena.initialize()
         return func(*args, **kwargs)
 
     return wrapper
