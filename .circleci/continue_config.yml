@@ -280,8 +280,8 @@ jobs:
             or:
               - not: << parameters.enabled >>
               - and:
-                - not: << pipeline.parameters.dataset >>
-                - not: << pipeline.parameters.all >>
+                  - not: << pipeline.parameters.dataset >>
+                  - not: << pipeline.parameters.all >>
           steps:
             - run:
                 name: skip job
@@ -483,7 +483,7 @@ workflows:
             - aws
           matrix:
             parameters:
-              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, object_detection_2d, semantic_textual_similarity, person_detection ]
+              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, object_detection_2d, object_detection_3d, semantic_textual_similarity, person_detection ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
