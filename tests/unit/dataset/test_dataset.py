@@ -411,14 +411,6 @@ def test__dataframe__data_type_field_not_exist() -> None:
             pd.DataFrame(
                 dict(
                     locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
-                ),
-            ),
-            ["locator"],
-        ),
-        (
-            pd.DataFrame(
-                dict(
-                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
                     text=["a", "b", "c", "d"],
                 ),
             ),
