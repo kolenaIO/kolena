@@ -214,9 +214,10 @@ def retrieve_images_by_text(dataset: pd.DataFrame, df_img_emb: pd.DataFrame, df_
 
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
+    args.model = args.model.replace("/", "_")
     if not args.run_inference:
         pred_df_csv = pd.read_csv(
-            f"s3://{BUCKET}/coco-2014-val/coco-2014-val_image-retrieval-by-text/results/raw/{args.model}-raw.csv",
+            f"s3://{BUCKET}/coco-2014-val/image-retrieval-by-text/results/raw/{args.model}-raw.csv",
             storage_options={"anon": True},
         )
         pred_df = _transform_data(pred_df_csv)

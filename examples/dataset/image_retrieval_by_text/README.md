@@ -43,19 +43,19 @@ optional arguments:
 ```
 
 2. [`upload_results.py`](image_retrieval_by_text/upload_results.py) uploads results for one of the following
-models: `kakaobrain_align-base`, `google_siglip-base-patch16-224`, `BAAI_AltCLIP`, and `openai_clip-vit-base-patch32`.
+models: `kakaobrain/align-base`, `google/siglip-base-patch16-224`, `BAAI/AltCLIP`, and `openai/clip-vit-base-patch32`.
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
 `--help` flag for more information:
 
 ```shell
 $ poetry run python3 image_retrieval_by_text/upload_results.py --help
-usage: upload_results.py [-h] [--model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}]
+usage: upload_results.py [-h] [--model {kakaobrain/align-base,google/siglip-base-patch16-224,BAAI/AltCLIP,openai/clip-vit-base-patch32}]
                          [--dataset DATASET] [--run-inference RUN_INFERENCE] [--local-image-dir LOCAL_IMAGE_DIR]
 
 optional arguments:
   -h, --help            show this help message and exit
-  --model {kakaobrain_align-base,google_siglip-base-patch16-224,BAAI_AltCLIP,openai_clip-vit-base-patch32}
+  --model {kakaobrain/align-base,google/siglip-base-patch16-224,BAAI/AltCLIP,openai/clip-vit-base-patch32}
                         Name of the model to test. If you want to run inference openai_clip-vit-base-patch32 model
                         is recommended, as it runs faster (should complete in 30 minutes)
   --dataset DATASET     Optionally specify a custom dataset name to test.

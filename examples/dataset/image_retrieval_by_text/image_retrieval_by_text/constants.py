@@ -19,8 +19,8 @@ EMBEDDING_STORAGE_DIR = path.join(path.dirname(path.realpath(__file__)), "embedd
 ID_FIELDS = ["caption_id"]
 
 MODELS = [
-    "kakaobrain_align-base",
-    "google_siglip-base-patch16-224",
-    "BAAI_AltCLIP",
-    "openai_clip-vit-base-patch32",
+    "kakaobrain/align-base",
+    "google/siglip-base-patch16-224",
+    "BAAI/AltCLIP",
+    "openai/clip-vit-base-patch32",
 ]
