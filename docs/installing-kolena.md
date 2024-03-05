@@ -48,8 +48,8 @@ Certain metrics computation functionality depends on additional packages like
 
 ## Initialization
 
-Once you have `kolena` installed, Kolena will automatically initialize with a token present in your environment in the
-`KOLENA_TOKEN` variable or in your `.netrc` file.
+Once you have `kolena` installed, sessions are automatically authenticated using any token present in your environment
+in the `KOLENA_TOKEN` variable or in your `.netrc` file.
 
 From the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page, generate an API token and set
 the `KOLENA_TOKEN` environment variable:
