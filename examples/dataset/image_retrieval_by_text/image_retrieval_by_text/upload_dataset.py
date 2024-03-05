@@ -34,7 +34,7 @@ def transform_data(df_csv: pd.DataFrame) -> pd.DataFrame:
 def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
     df_csv = pd.read_csv(
-        f"s3://{BUCKET}/coco-2014-val/image-retrieval-by-text/dataset/raw/" f"image-retrieval-by-text-raw.csv",
+        f"s3://{BUCKET}/coco-2014-val/image-retrieval-by-text/dataset/raw/image-retrieval-by-text-raw.csv",
         storage_options={"anon": True},
     )
     df_csv.drop("aspect_ratio", axis=1, inplace=True)
