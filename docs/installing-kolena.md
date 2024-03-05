@@ -59,7 +59,8 @@ export KOLENA_TOKEN="********"
 ```
 
 By default, sessions are automatically initialized when a function requiring initialization is called. To configure
-your session, e.g. to enable extra logging via `verbose=True`, manually initialize a session by running the following:
+your session, e.g. to enable extra logging via `verbose=True`, you can manually initialize by calling
+[`kolena.initialize(...)`](./reference/initialize.md) directly:
 
 ```python
 import kolena
@@ -68,7 +69,7 @@ kolena.initialize(verbose=True)
 ```
 
 By default, sessions have static scope and persist until the interpreter is exited. See the documentation on
-[`kolena.initialize`](./reference/initialize.md) for details.
+[`initialize`](./reference/initialize.md) for details.
 
 !!! tip "Tip: `logging`"
 
