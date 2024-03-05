@@ -44,11 +44,14 @@ def initialize(
     """
     Initialize a client session.
 
+    !!! tip
+        It is often not necessary to call `kolena.initialize()` directly. When a function requiring initialization is
+        called, this method will be called to initialize with a token found in your environment.
+
     A session has a global scope and remains active until interpreter shutdown.
 
     Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page and
     make it available through one of the following options before initializing:
-
 
     1. Directly through the `api_token` keyword argument
     ```python
@@ -56,11 +59,14 @@ def initialize(
 
     kolena.initialize(api_token=your_token, verbose=True)
     ```
-    2. Populate the `KOLENA_TOKEN` environment variable
+
+    2. Populate the `KOLENA_TOKEN` environment variable and call `kolena.initialize()`:
     ```bash
     export KOLENA_TOKEN="********"
     ```
-    3. Store in [`.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+
+    3. Store in your [`.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+      before calling `kolena.initialize()`:
     ```cfg title="~/.netrc"
     machine api.kolena.io password ********
     ```
@@ -87,7 +93,7 @@ def initialize(
         has been deprecated and replaced by `initialize(api_token)`.
 
     :param api_token: Optionally provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
-        or `.netrc` file. This token is a secret and should be treated with caution.
+        or your `.netrc` file. This token is a secret and should be treated with caution.
     :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
         logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
