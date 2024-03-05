@@ -46,7 +46,7 @@ def initialize(
 
     !!! tip
         It is often not necessary to call `kolena.initialize()` directly. When a function requiring initialization is
-        called, this method will be called to initialize with a token found in your environment.
+        called, this method will be called to initialize a session with any token found in your environment.
 
     A session has a global scope and remains active until interpreter shutdown.
 
