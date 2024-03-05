@@ -48,17 +48,18 @@ Certain metrics computation functionality depends on additional packages like
 
 ## Initialization
 
-Once you have `kolena` installed, sessions are automatically authenticated using any token present in the `KOLENA_TOKEN`
-environment variable or in your `.netrc` file.
+When using `kolena`, sessions are automatically authenticated using any token present in the `KOLENA_TOKEN` environment
+variable or in your `.netrc` file.
 
-From the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page, generate an API token and set
-the `KOLENA_TOKEN` environment variable:
+To get an API token, visit the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page to
+generate a token, then set the `KOLENA_TOKEN` variable in your environment:
 
 ```bash
 export KOLENA_TOKEN="********"
 ```
 
-Alternatively, manually initialize a session by running the following:
+By default, sessions are automatically initialized when a function requiring initialization is called. To configure
+your session, e.g. to enable extra logging via `verbose=True`, manually initialize a session by running the following:
 
 ```python
 import kolena
@@ -66,8 +67,7 @@ import kolena
 kolena.initialize(verbose=True)
 ```
 
-By default, sessions have static scope and persist until the interpreter is exited.
-Additional logging can be configured by specifying `verbose=True`. See the documentation on
+By default, sessions have static scope and persist until the interpreter is exited. See the documentation on
 [`kolena.initialize`](./reference/initialize.md) for details.
 
 !!! tip "Tip: `logging`"
