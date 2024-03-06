@@ -13,7 +13,7 @@
 # limitations under the License.
 BUCKET = "kolena-public-examples"
 DATASET = "coco-2014-val"
-WORKFLOW = "transportation"
+TASK = "transportation"
 ID_FIELDS = ["locator"]
 MODELS = [
     "yolo_r",
