@@ -20,7 +20,6 @@ from video_retrieval_by_text.constants import DEFAULT_DATASET_NAME
 from video_retrieval_by_text.constants import MODELS
 from video_retrieval_by_text.constants import RESULTS
 
-import kolena
 from kolena._utils.validators import ValidatorConfig
 from kolena.asset import BaseVideoAsset
 from kolena.dataset import download_dataset
@@ -73,7 +72,6 @@ def _generate_video_series(dataset_df: pd.DataFrame) -> pd.Series:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     video_series = _generate_video_series(download_dataset(args.dataset))
     for model in args.models:
         similarity_df = pd.read_csv(f"{RESULTS}/{model}/similarity/similarities.csv.gz", index_col=0)

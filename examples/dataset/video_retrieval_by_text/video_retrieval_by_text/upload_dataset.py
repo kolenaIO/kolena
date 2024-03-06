@@ -20,7 +20,6 @@ from video_retrieval_by_text.constants import DEFAULT_DATASET_NAME
 from video_retrieval_by_text.constants import ID_FIELDS
 from video_retrieval_by_text.constants import S3_STORAGE_OPTIONS
 
-import kolena
 from kolena.asset import ImageAsset
 from kolena.asset import VideoAsset
 from kolena.dataset.dataset import upload_dataset
@@ -41,7 +40,6 @@ def generate_video_asset(row: pd.Series) -> pd.Series:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     vatex_df = pd.read_csv(DATASET_URI, storage_options=S3_STORAGE_OPTIONS)
     df = prep_data(vatex_df)
     upload_dataset(args.name, df, id_fields=ID_FIELDS)
