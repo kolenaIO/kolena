@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "video-retrieval-by-text"
+version = "0.1.0"
+description = "Example Kolena integration for Video Retrieval by Text"
+authors = ["Kolena Engineering <eng@kolena.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.13"
+kolena = "^1.7.0"
+s3fs = "^2024.2.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
