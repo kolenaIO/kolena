@@ -26,3 +26,4 @@ This directory contains example Kolena Datasets integrations for different machi
   [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset for text summarization
 - [Semantic Textual Similarity](./semantic_textual_similarity/) semantic textual similarity using the
   [STS Benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
+- [Image Retrieval By Text](./image_retrieval_by_text): image retrieval by text using the COCO dataset

@@ -61,6 +61,7 @@ from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.io import _dataframe_object_serde
 
+_FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
 _FIELD_TEXT = "text"
 _SEP = "."
@@ -169,7 +170,9 @@ def _infer_id_fields(df: pd.DataFrame) -> List[str]:
             if isinstance(id_field, str) and id_field.rsplit(_SEP, maxsplit=1)[-1] == field
         ]
 
-    if id_fields := get_id_fields_by(_FIELD_LOCATOR):
+    if id_fields := get_id_fields_by(_FIELD_ID):
+        return id_fields
+    elif id_fields := get_id_fields_by(_FIELD_LOCATOR):
         return id_fields
     elif id_fields := get_id_fields_by(_FIELD_TEXT):
         return id_fields

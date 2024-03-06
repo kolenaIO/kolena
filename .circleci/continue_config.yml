@@ -475,7 +475,7 @@ workflows:
       - example-test-dataset:
           matrix:
             parameters:
-              subproject: [ text_summarization ]
+              subproject: [ text_summarization, image_retrieval_by_text ]
               resource-class: [ large ]
               python-version: [ "3.9.18" ]
       - example-test-dataset:
