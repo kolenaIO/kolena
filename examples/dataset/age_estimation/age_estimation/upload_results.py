@@ -22,7 +22,6 @@ from age_estimation.constants import DATASET
 from age_estimation.constants import TASK
 from tqdm import tqdm
 
-import kolena
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
@@ -40,7 +39,6 @@ def compute_metrics(gt_age: float, inf_age: float) -> Dict[str, Union[bool, floa
 def run(args: Namespace) -> None:
     model = args.model
 
-    kolena.initialize(verbose=True)
     dataset_df = download_dataset(args.dataset)
     gt_age_by_locator = {record["locator"]: record["age"] for record in dataset_df.to_dict(orient="records")}
 

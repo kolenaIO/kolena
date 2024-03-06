@@ -21,7 +21,6 @@ from speaker_diarization.data_loader import load_results
 from speaker_diarization.utils import compute_metrics
 from speaker_diarization.utils import realign_labels
 
-import kolena
 from kolena.dataset import upload_results
 
 
@@ -30,8 +29,6 @@ def align_df_speakers(ref: pd.Series, inf: pd.Series) -> pd.Series:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     model = "gcp-stt-video"
     align_speakers = args.align_speakers
     sample_count = args.sample_count

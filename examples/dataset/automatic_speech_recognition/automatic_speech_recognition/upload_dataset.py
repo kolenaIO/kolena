@@ -19,13 +19,11 @@ from automatic_speech_recognition.constants import BUCKET
 from automatic_speech_recognition.constants import DATASET
 from automatic_speech_recognition.utils import preprocess_transcription
 
-import kolena
 from kolena.asset import AudioAsset
 from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True})
     df_dataset["audio"] = df_dataset["audio"].apply(AudioAsset)
     df_dataset["transcript"] = df_dataset["transcript"].str.lower().apply(preprocess_transcription)

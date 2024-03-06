@@ -19,14 +19,11 @@ from age_estimation.constants import DATA_FILEPATH
 from age_estimation.constants import DATASET
 from age_estimation.constants import TASK
 
-import kolena
 from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
     df = pd.read_csv(DATA_FILEPATH)
-
-    kolena.initialize(verbose=True)
     upload_dataset(args.dataset, df)
 
 

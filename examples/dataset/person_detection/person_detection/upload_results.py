@@ -24,7 +24,6 @@ from person_detection.constants import DATASET_NAME
 from person_detection.constants import MODELS
 from person_detection.constants import TASK_DIR
 
-import kolena.io
 from kolena._experimental.object_detection import upload_object_detection_results
 from kolena.annotation import ScoredLabeledBoundingBox
 
@@ -54,8 +53,6 @@ def map_results(images: list[dict], annotations: list[dict], categories: list[di
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     s3 = s3fs.S3FileSystem()
     with s3.open(f"s3://{BUCKET}/{DATASET_DIR}/{TASK_DIR}/results/raw/{args.model}.json") as f:
         coco_results = json.loads(f.read())

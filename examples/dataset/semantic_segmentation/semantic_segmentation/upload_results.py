@@ -33,7 +33,6 @@ from semantic_segmentation.utils import result_masks_locator_path
 from semantic_segmentation.utils import upload_result_masks
 from tqdm import tqdm
 
-import kolena
 from kolena.annotation import BitmapMask
 from kolena.annotation import SegmentationMask
 from kolena.asset import BinaryAsset
@@ -88,8 +87,6 @@ def compute_metrics(record: RecordType) -> Dict[str, Any]:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     threshold = EVAL_CONFIG["threshold"]
 
     df_dataset = download_dataset(args.dataset)

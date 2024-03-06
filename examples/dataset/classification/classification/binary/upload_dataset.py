@@ -19,7 +19,6 @@ from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
 from classification.binary.constants import ID_FIELDS
 
-import kolena
 from kolena.annotation import ClassificationLabel
 from kolena.dataset import upload_dataset
 
@@ -27,7 +26,6 @@ from kolena.dataset import upload_dataset
 def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     df["label"] = df["label"].apply(lambda label: ClassificationLabel(label))
-    kolena.initialize(verbose=True)
     upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
 
 

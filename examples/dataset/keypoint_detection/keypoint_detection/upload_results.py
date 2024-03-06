@@ -25,7 +25,6 @@ from keypoint_detection.model import infer_from_df
 from keypoint_detection.model import infer_random
 from tqdm import tqdm
 
-import kolena
 from kolena.annotation import Keypoints
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.dataset import download_dataset
@@ -37,7 +36,6 @@ MODELS = ["retinaface", "random"]
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     infer = infer_random
     if args.model == "retinaface":
         retinaface_raw_inferences_df = dataframe_from_csv(

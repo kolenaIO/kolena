@@ -21,7 +21,6 @@ from classification.binary.constants import BUCKET
 from classification.binary.constants import DATASET
 from classification.binary.constants import ID_FIELDS
 
-import kolena
 from kolena.annotation import ScoredClassificationLabel
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
@@ -57,7 +56,6 @@ def create_classification(score: float) -> ScoredClassificationLabel:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     dataset_df = download_dataset(args.dataset)
     df_results = pd.read_csv(
         f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",

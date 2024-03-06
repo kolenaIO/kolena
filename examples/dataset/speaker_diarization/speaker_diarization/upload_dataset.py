@@ -17,12 +17,10 @@ from argparse import Namespace
 from speaker_diarization.data_loader import DATASET
 from speaker_diarization.data_loader import load_data
 
-import kolena
 from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df = load_data()
     sample_count = args.sample_count
     if sample_count:
