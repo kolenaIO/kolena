@@ -11,10 +11,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-DEFAULT_DATASET_NAME = "VATEX"
-
 BUCKET = "s3://kolena-public-examples/VATEX/v1.1"
 RESULTS = f"{BUCKET}/results"
 DATASET_URI = f"{BUCKET}/vatex_metadata.csv"
 S3_STORAGE_OPTIONS = {"anon": True}
+
+DEFAULT_DATASET_NAME = "VATEX"
 ID_FIELDS = ["caption_id"]
+MODELS = ["CLIP-ViTB32", "CLIP2Video-MSRVTT9k", "CLIP2Video-VATEX"]
