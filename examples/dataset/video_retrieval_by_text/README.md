@@ -32,18 +32,22 @@ options:
   -n NAME, --name NAME  Optionally specify a custom name for the dataset.
 ```
 
-2. [`upload_results.py`](video_retrieval_by_text/upload_results.py) tests a specified model, e.g. `CLIP`, on the above dataset.
+2. [`upload_results.py`](video_retrieval_by_text/upload_results.py) tests a specified model, e.g. `CLIP2Video-VATEX`,
+on the above dataset.
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run using the
 `--help` flag for more information:
 
 ```shell
 $ poetry run python3 video_retrieval_by_text/upload_results.py --help
-usage: upload_results.py [-h] [--model {CLIP}] [--dataset DATASET]
+usage: upload_results.py [-h] [-d DATASET] [{CLIP-ViTB32,CLIP2Video-MSRVTT9k,CLIP2Video-VATEX} ...]
+
+positional arguments:
+  {CLIP-ViTB32,CLIP2Video-MSRVTT9k,CLIP2Video-VATEX}
+                        Select model(s) to test.
 
 options:
   -h, --help            show this help message and exit
-  --model {CLIP}
-                        Name of model to test.
-  --dataset DATASET     Optionally specify a custom dataset name to test.
+  -d DATASET, --dataset DATASET
+                        Optionally specify the name of the dataset to test against.
 ```
