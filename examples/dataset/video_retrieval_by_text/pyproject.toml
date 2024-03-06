@@ -7,10 +7,14 @@ license = "Apache-2.0"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.13"
+python = ">=3.9,<3.13"
 kolena = "^1.8.0"
 s3fs = "^2024.2.0"
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8"
+pytest-depends = "^1.0.1"
+pre-commit = "^3.6.2"
 
 [build-system]
 requires = ["poetry-core"]
