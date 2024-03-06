@@ -14,4 +14,5 @@
 
 BUCKET = "kolena-public-datasets"
 DATASET = "JAAD"
-ID_FIELDS = ["pid"]
+ID_FIELDS = ["locator"]
+IOU = 0.5

@@ -19,12 +19,14 @@ import s3fs
 from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import ID_FIELDS
-from crossing_pedestrian_detection.utils import process_ped_annotations
+from crossing_pedestrian_detection.utils import process_gt_bboxes
 from smart_open import open as smart_open
 from tqdm import tqdm
 
 import kolena
 from kolena.annotation import ClassificationLabel
+from kolena.annotation import LabeledBoundingBox
+
 from kolena.dataset import upload_dataset
 
 
@@ -36,9 +38,10 @@ def thumbnail_locator(filename: str) -> str:
     return f"s3://{BUCKET}/{DATASET}/images/{filename}/00000.png"
 
 
+
 def process_data() -> pd.DataFrame:
     s3 = s3fs.S3FileSystem(anon=True)
-    video_files = s3.glob("kolena-public-datasets/JAAD/JAAD_clips/*.mp4")
+    video_files = s3.glob(f"{BUCKET}/{DATASET}/JAAD_clips/*.mp4")
     raw_data_pkl = f"s3://{BUCKET}/{DATASET}/data_cache/jaad_database.pkl"
     with smart_open(raw_data_pkl, "rb") as gt_file:
         gt_annotations = pickle.load(gt_file)
@@ -46,18 +49,12 @@ def process_data() -> pd.DataFrame:
     datapoints = []
     for video_file in tqdm(video_files):
         filename = Path(video_file).stem
-        bboxes_per_ped = process_ped_annotations(gt_annotations[filename]["ped_annotations"])
-        bboxes = []
-
-        for pid, ped_bboxes in bboxes_per_ped.items():
-            bboxes.extend(ped_bboxes)
+        bboxes, risk_pids = process_gt_bboxes(gt_annotations[filename]["ped_annotations"])
 
         if len(bboxes) > 0:
             datapoints.append(
                 {
                     "locator": video_locator(video_file),
-                    "ped_id_label": ClassificationLabel(label=pid),
-                    "pid": pid,
                     "video_id": int(filename.split("_")[-1]),
                     "filename": filename,
                     "thumbnail_locator": thumbnail_locator(filename),
@@ -67,9 +64,11 @@ def process_data() -> pd.DataFrame:
                     "time_of_day": gt_annotations[filename]["time_of_day"],
                     "weather": gt_annotations[filename]["weather"],
                     "location": gt_annotations[filename]["location"],
-                    "focus": bboxes,
-                    "is_crossing": bboxes[0].label == "is_crossing",
-                    "n_pedestrians": len(bboxes_per_ped),
+                    "high_risk": bboxes[0],
+                    "low_risk": bboxes[1],
+                    "high_risk_pids": risk_pids[0],
+                    "low_risk_pids": risk_pids[1],
+                    "n_pedestrians": len(list(gt_annotations[filename]["ped_annotations"].keys())),
                 },
             )
 
@@ -79,4 +78,4 @@ def process_data() -> pd.DataFrame:
 if __name__ == "__main__":
     kolena.initialize(verbose=True)
     df = process_data()
-    upload_dataset("JAAD", df, id_fields=ID_FIELDS)
+    upload_dataset("JAAD [crossing-pedestrian-detection]", df, id_fields=ID_FIELDS)
