@@ -97,7 +97,7 @@ def initialize(
     :param verbose: Run the client in verbose mode, providing more information about execution. All logging
         events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
-    :param proxies: Configure the client to run with `http` or `https` proxies. The `proxies` parameter
+    :param proxies: Run the client with `http` or `https` proxies. The `proxies` parameter
         is passed through to the `requests` package and can be
         [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
     :raises InvalidTokenError: The provided `api_token` is not valid.
