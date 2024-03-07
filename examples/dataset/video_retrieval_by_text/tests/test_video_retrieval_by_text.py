@@ -35,5 +35,5 @@ def test__upload_dataset(dataset_name: str) -> None:
 @pytest.mark.depends(on=["test__upload_dataset"])
 def test__upload_results(dataset_name: str) -> None:
     # Test random model since each takes >5 minutes to run
-    args = Namespace(models=random.choice(MODELS), dataset=dataset_name)
+    args = Namespace(models=[random.choice(MODELS)], dataset=dataset_name)
     upload_results_main(args)
