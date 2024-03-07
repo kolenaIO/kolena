@@ -196,7 +196,7 @@ def _resolve_id_fields(
         if existing_id_fields:
             return existing_id_fields
         else:
-            id_fields = list(_infer_id_field(df))
+            id_fields = [_infer_id_field(df)]
     return id_fields
 
 
