@@ -37,7 +37,7 @@ from kolena.errors import MissingTokenError
 def initialize(
     *args: Any,
     api_token: Optional[str] = None,
-    verbose: bool = False,
+    verbose: bool = True,
     proxies: Optional[Dict[str, str]] = None,
     **kwargs: Any,
 ) -> None:
@@ -57,7 +57,7 @@ def initialize(
     ```python
     import kolena
 
-    kolena.initialize(api_token=your_token, verbose=True)
+    kolena.initialize(api_token=your_token)
     ```
 
     2. Populate the `KOLENA_TOKEN` environment variable and call `kolena.initialize()`:
@@ -92,12 +92,12 @@ def initialize(
         As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
         has been deprecated and replaced by `initialize(api_token)`.
 
-    :param api_token: Optionally provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
+    :param api_token: Directly provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
         or your `.netrc` file. This token is a secret and should be treated with caution.
-    :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
-        logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
+    :param verbose: Run the client in verbose mode, providing more information about execution. All logging
+        events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
-    :param proxies: Optionally configure client to run with `http` or `https` proxies. The `proxies` parameter
+    :param proxies: Configure the client to run with `http` or `https` proxies. The `proxies` parameter
         is passed through to the `requests` package and can be
         [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
     :raises InvalidTokenError: The provided `api_token` is not valid.
