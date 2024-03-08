@@ -336,7 +336,7 @@ jobs:
           path: ~/project
       - run: |
           poetry config installer.max-workers 4
-          poetry install --no-ansi
+          poetry install -v --no-ansi
       - run:
           name: Run pre-commit checks
           command: poetry run pre-commit run -a
