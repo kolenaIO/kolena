@@ -484,7 +484,7 @@ workflows:
           matrix:
             parameters:
               subproject: [ object_detection_3d ]
-              resource-class: [ small ]
+              resource-class: [ large ]
               python-version: [ "3.9.18" ]
   #      - example-test-workflow:
   #          matrix:
