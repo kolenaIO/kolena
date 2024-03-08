@@ -39,6 +39,7 @@ from object_detection_3d.vendored.kitti_eval import kitti_eval  # type: ignore[a
 
 import kolena
 from kolena import dataset
+from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
 from kolena.dataset import upload_results
@@ -236,7 +237,10 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             TP_3D = [record.raw_inferences_3d[j] for j, tp in enumerate(TP) if tp]
             FN_2D = [record.image_bboxes[j] for j, fn in enumerate(FN) if fn]
             FN_3D = [
-                dataclasses.replace(record.velodyne_bboxes[j], max_overlap=np.max(overlaps[i][:, j]))
+                LabeledBoundingBox3D(
+                    **record.velodyne_bboxes[j]._to_dict(),
+                    max_overlap=np.max(overlaps[i][:, j]) if len(overlaps[i][:, j]) else None,  # type: ignore[call-arg]
+                )
                 for j, fn in enumerate(FN)
                 if fn
             ]
