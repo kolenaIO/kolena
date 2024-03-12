@@ -29,6 +29,14 @@
 
 ---
 
+[**Try it out yourself!**](https://app.kolena.com/try)
+
+<!-- markdownlint-disable MD013 -->
+<div style="position: relative; padding-bottom: 62.864%; height: 0;">
+  <iframe src="https://www.loom.com/embed/dbb4ac4ebdea463180d2de6339e34d41" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>
+</div>
+<!-- markdownlint-enable MD013 -->
+
 [Kolena](https://www.kolena.com) is a comprehensive machine learning testing and debugging platform to surface hidden
 model behaviors and take the mystery out of model development. Kolena helps you:
 
