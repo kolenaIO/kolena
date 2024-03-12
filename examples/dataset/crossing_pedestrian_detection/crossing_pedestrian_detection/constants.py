@@ -12,7 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-BUCKET = "kolena-public-datasets"
+BUCKET = "kolena-public-examples"
 DATASET = "JAAD"
 ID_FIELDS = ["locator"]
-IOU = 0.5
+MODELS = [
+    "c3d_sort",
+    "c3d_deepsort",
+    "static_sort",
+    "static_deepsort",
+]

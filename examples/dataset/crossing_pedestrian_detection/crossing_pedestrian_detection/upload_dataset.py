@@ -24,9 +24,6 @@ from smart_open import open as smart_open
 from tqdm import tqdm
 
 import kolena
-from kolena.annotation import ClassificationLabel
-from kolena.annotation import LabeledBoundingBox
-
 from kolena.dataset import upload_dataset
 
 
@@ -35,23 +32,22 @@ def video_locator(video_path: str) -> str:
 
 
 def thumbnail_locator(filename: str) -> str:
-    return f"s3://{BUCKET}/{DATASET}/images/{filename}/00000.png"
-
+    return f"s3://{BUCKET}/{DATASET}/data/images/{filename}/00000.png"
 
 
 def process_data() -> pd.DataFrame:
     s3 = s3fs.S3FileSystem(anon=True)
-    video_files = s3.glob(f"{BUCKET}/{DATASET}/JAAD_clips/*.mp4")
-    raw_data_pkl = f"s3://{BUCKET}/{DATASET}/data_cache/jaad_database.pkl"
+    video_files = s3.glob(f"{BUCKET}/{DATASET}/data/videos/*.mp4")
+    raw_data_pkl = f"s3://{BUCKET}/{DATASET}/raw/jaad_database.pkl"
     with smart_open(raw_data_pkl, "rb") as gt_file:
         gt_annotations = pickle.load(gt_file)
 
     datapoints = []
     for video_file in tqdm(video_files):
         filename = Path(video_file).stem
-        bboxes, risk_pids = process_gt_bboxes(gt_annotations[filename]["ped_annotations"])
+        processed_gts = process_gt_bboxes(gt_annotations[filename]["ped_annotations"])
 
-        if len(bboxes) > 0:
+        if len(processed_gts.high_risk_bboxes) > 0:
             datapoints.append(
                 {
                     "locator": video_locator(video_file),
@@ -64,10 +60,10 @@ def process_data() -> pd.DataFrame:
                     "time_of_day": gt_annotations[filename]["time_of_day"],
                     "weather": gt_annotations[filename]["weather"],
                     "location": gt_annotations[filename]["location"],
-                    "high_risk": bboxes[0],
-                    "low_risk": bboxes[1],
-                    "high_risk_pids": risk_pids[0],
-                    "low_risk_pids": risk_pids[1],
+                    "high_risk": processed_gts.high_risk_bboxes,
+                    "low_risk": processed_gts.low_risk_bboxes,
+                    "high_risk_pids": processed_gts.high_risk_pids,
+                    "low_risk_pids": processed_gts.low_risk_pids,
                     "n_pedestrians": len(list(gt_annotations[filename]["ped_annotations"].keys())),
                 },
             )

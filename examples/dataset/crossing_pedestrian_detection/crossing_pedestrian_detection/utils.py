@@ -16,15 +16,22 @@ from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Tuple
-from kolena.metrics import iou
 
+from pydantic.dataclasses import dataclass
 
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
-from crossing_pedestrian_detection.constants import IOU
-from pydantic.dataclasses import dataclass
 
 HIGH_RISK_THRESHOLD = 0.9
+
+
+@dataclass(frozen=True)
+class ProccessedGroundTruth:
+    high_risk_bboxes: List[LabeledBoundingBox]
+    low_risk_bboxes: List[LabeledBoundingBox]
+    high_risk_pids: List[str]
+    low_risk_pids: List[str]
+
 
 def compute_collision_risk(ground_truth_boxes: List[LabeledBoundingBox]) -> float:
     """Estimates the collision risk by computing the maximum area of the focus pedestrian's bboxes
@@ -36,7 +43,7 @@ def compute_collision_risk(ground_truth_boxes: List[LabeledBoundingBox]) -> floa
     return score
 
 
-def process_gt_bboxes(ped_annotations: Dict[str, Dict[str, Any]]):
+def process_gt_bboxes(ped_annotations: Dict[str, Dict[str, Any]]) -> ProccessedGroundTruth:
     bboxes_per_ped = process_ped_annotations(ped_annotations)
     high_risk_bboxes = []
     low_risk_bboxes = []
@@ -52,10 +59,15 @@ def process_gt_bboxes(ped_annotations: Dict[str, Dict[str, Any]]):
             low_risk_bboxes.extend(bboxes_per_ped[ped_id])
             low_risk_pids.append(ped_id)
 
-    return [high_risk_bboxes, low_risk_bboxes], [high_risk_pids, low_risk_pids]
+    return ProccessedGroundTruth(
+        high_risk_bboxes=high_risk_bboxes,
+        low_risk_bboxes=low_risk_bboxes,
+        high_risk_pids=high_risk_pids,
+        low_risk_pids=low_risk_pids,
+    )
 
 
-def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]):
+def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[str, List[LabeledBoundingBox]]:
     bboxes_per_ped = {}
     for ped_id, ped_ann in ped_annotations.items():
         bboxes = []
@@ -87,8 +99,6 @@ class FrameMatch:
     matched_pedestrian: Optional[ScoredLabeledBoundingBox] = None
 
 
-
-
 @dataclass(frozen=True)
 class BoundingBoxMatch:
     matched: Optional[
@@ -98,40 +108,3 @@ class BoundingBoxMatch:
 
     def is_matched(self) -> bool:
         return self.matched is not None
-
-
-def create_labeled_bbox(bbox):
-    return LabeledBoundingBox(top_left=bbox.top_left,
-                              bottom_right=bbox.bottom_right,
-                              label=bbox.label,
-                              frame_id=bbox.frame_id,
-                              ped_id=bbox.ped_id,
-                              occlusion=bbox.occlusion)
-
-
-def match_bounding_boxes(
-    gt_bbox: LabeledBoundingBox,
-    inf_bboxes: List[ScoredLabeledBoundingBox],
-) -> BoundingBoxMatch:
-    """Match inferences to ground truths on a given image using the provided configuration."""
-    matched_inf: Optional[ScoredLabeledBoundingBox] = None
-    matched_iou: float = 0.0
-
-    # Find the inference with the highest IOU (don't have the detection confidence yet)
-    best_iou = 0.0
-    for inf in inf_bboxes:
-        iou_value = iou(gt_bbox, inf)
-        if iou_value < 0.5:
-            continue
-
-        if iou_value > best_iou:
-            matched_inf = inf
-            best_iou = iou_value
-            matched_iou = iou_value
-
-    matches = BoundingBoxMatch(
-        matched=(create_labeled_bbox(gt_bbox), matched_inf) if matched_inf is not None else None,
-        matched_iou=matched_iou,
-    )
-
-    return matches
