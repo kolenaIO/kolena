@@ -13,8 +13,8 @@
 # limitations under the License.
 import json
 import random
+from typing import List
 
-import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -247,7 +247,7 @@ def test__datapoint_dataframe__serde_composite() -> None:
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
 
     assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
-    assert_frame_equal(df_deserialized.sort_index(axis=1), df.sort_index(axis=1))
+    assert_frame_equal(df_deserialized.sort_index(axis=1), df.sort_index(axis=1), check_dtype=False)
 
 
 def test__datapoint_dataframe__serde_locator() -> None:
@@ -303,7 +303,7 @@ def test__datapoint_dataframe__serde_locator() -> None:
         ],
     )
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
-    assert_frame_equal(df_deserialized, df_expected)
+    assert_frame_equal(df_deserialized, df_expected, check_dtype=False)
 
 
 def test__datapoint_dataframe__serde_text() -> None:
@@ -330,7 +330,7 @@ def test__datapoint_dataframe__serde_text() -> None:
 
     df_expected = pd.DataFrame(datapoints)
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
-    assert_frame_equal(df_deserialized, df_expected)
+    assert_frame_equal(df_deserialized, df_expected, check_dtype=False)
 
 
 def test__datapoint_dataframe__columns_unlabeled() -> None:
@@ -367,7 +367,7 @@ def test__dataframe__serde_none() -> None:
     ]
     df_serialized = pd.DataFrame(data, columns=[column_name])
 
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["city"])
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["city"])
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
     assert_frame_equal(df_deserialized, df_expected)
 
@@ -381,7 +381,7 @@ def test__dataframe__serde_none__composite() -> None:
     ]
     df_serialized = pd.DataFrame(data, columns=[column_name])
 
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [np.nan]], columns=["a.city"])
+    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["a.city"])
     df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
     assert_frame_equal(df_deserialized, df_expected)
 
@@ -395,49 +395,62 @@ def test__dataframe__data_type_field_not_exist() -> None:
         assert DATA_TYPE_FIELD not in row[column_name]
 
 
-def test__infer_id_fields() -> None:
-    assert _infer_id_fields(
-        pd.DataFrame(
-            dict(
-                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
-            ),
-        ),
-    ) == ["locator"]
-    assert _infer_id_fields(
-        pd.DataFrame(
-            dict(
-                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
-                text=["a", "b", "c", "d"],
-            ),
-        ),
-    ) == ["locator"]
-    assert _infer_id_fields(
-        pd.DataFrame(
-            dict(
-                text=["a", "b", "c", "d"],
-            ),
-        ),
-    ) == ["text"]
-    assert _infer_id_fields(pd.DataFrame({"a.text": ["a", "b"], "b.text": ["c", "d"]})) == [
-        "a.text",
-        "b.text",
-    ]
-
-    try:
-        assert _infer_id_fields(
+@pytest.mark.parametrize(
+    "input_df, expected",
+    [
+        (
             pd.DataFrame(
                 dict(
-                    text1=["a", "b", "c", "d"],
+                    id=[1, 2, 3, 4],
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
                 ),
             ),
-        )
-    except Exception as e:
-        assert str(e) == "Failed to infer the id_fields, please provide id_fields explicitly"
+            ["id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                    text=["a", "b", "c", "d"],
+                ),
+            ),
+            ["locator"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    text=["a", "b", "c", "d"],
+                ),
+            ),
+            ["text"],
+        ),
+        (
+            pd.DataFrame({"a.text": ["a", "b"], "b.text": ["c", "d"]}),
+            ["a.text", "b.text"],
+        ),
+    ],
+)
+def test__infer_id_fields(input_df: pd.DataFrame, expected: List[str]) -> None:
+    assert _infer_id_fields(input_df) == expected
+
+
+@pytest.mark.parametrize(
+    "input_df",
+    [
+        pd.DataFrame(dict(text1=["a", "b", "c", "d"])),
+    ],
+)
+def test__infer_id_fields__error(input_df: pd.DataFrame) -> None:
+    with pytest.raises(Exception) as e:
+        _infer_id_fields(input_df)
+
+    error_msg = "Failed to infer the id_fields, please provide id_fields explicitly"
+    assert str(e.value) == error_msg
 
 
 def test__resolve_id_fields() -> None:
-    df = pd.DataFrame(dict(id=["a", "b", "c"], newid=["d", "e", "f"]))
-    dataset = EntityData(id=1, name="foo", description="", id_fields=["id"])
+    df = pd.DataFrame(dict(user_dp_id=["a", "b", "c"], new_user_dp_id=["d", "e", "f"]))
+    dataset = EntityData(id=1, name="foo", description="", id_fields=["user_dp_id"])
     inferrable_df = pd.DataFrame(dict(locator=["x", "y", "z"]))
 
     # new dataset without id_fields
@@ -445,7 +458,7 @@ def test__resolve_id_fields() -> None:
         _resolve_id_fields(df, None, None)
 
     # existing dataset without id_fields, different inferred id_fields, should use existing id_fields
-    assert _resolve_id_fields(inferrable_df, None, dataset) == ["id"]
+    assert _resolve_id_fields(inferrable_df, None, dataset) == ["user_dp_id"]
 
     # existing dataset without id_fields, same inferred id_fields
     assert _resolve_id_fields(
@@ -455,13 +468,13 @@ def test__resolve_id_fields() -> None:
     ) == ["locator"]
 
     # new dataset with explicit id_fields should resolve to explicit id_fields
-    assert _resolve_id_fields(df, ["id"], None) == ["id"]
+    assert _resolve_id_fields(df, ["user_dp_id"], None) == ["user_dp_id"]
 
     # existing dataset id_fields are the same as explicit id_fields
-    assert _resolve_id_fields(df, ["id"], dataset) == ["id"]
+    assert _resolve_id_fields(df, ["user_dp_id"], dataset) == ["user_dp_id"]
 
     # explicit id_fields override existing dataset id_fields
-    assert _resolve_id_fields(df, ["newid"], dataset) == ["newid"]
+    assert _resolve_id_fields(df, ["new_user_dp_id"], dataset) == ["new_user_dp_id"]
 
     # new dataset with implicit datatype support, e.g. locator, without id_fields
     assert _resolve_id_fields(inferrable_df, None, None) == ["locator"]

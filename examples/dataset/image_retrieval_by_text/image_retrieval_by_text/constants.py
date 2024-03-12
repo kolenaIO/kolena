@@ -11,8 +11,16 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-BUCKET = "kolena-public-examples"
-DATASET = "labeled-faces-in-the-wild"
-TASK = "age-estimation"
+from os import path
 
-DATA_FILEPATH = f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.csv"
+BUCKET = "kolena-public-examples"
+DATASET = "image-retrieval-by-text"
+EMBEDDING_STORAGE_DIR = path.join(path.dirname(path.realpath(__file__)), "embeddings")
+ID_FIELDS = ["caption_id"]
+
+MODELS = [
+    "kakaobrain/align-base",
+    "google/siglip-base-patch16-224",
+    "BAAI/AltCLIP",
+    "openai/clip-vit-base-patch32",
+]

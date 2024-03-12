@@ -23,6 +23,7 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.datatypes import _DATA_TYPE_MAP
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
@@ -113,7 +114,7 @@ def _dataframe_object_serde(df: pd.DataFrame, serde_fn: Callable[[Any], Any]) ->
     df_post = pd.DataFrame(columns=columns)
     for column in columns:
         if df.dtypes[column] == "object":
-            df_post[column] = df[column].apply(serde_fn)
+            df_post[column] = df_apply(df[column], serde_fn)
         else:
             df_post[column] = df[column]
     return df_post

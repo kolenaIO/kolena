@@ -14,6 +14,10 @@
 import uuid
 from typing import Any
 from typing import Iterable
+from typing import List
+from typing import Optional
+
+import pandas as pd
 
 from tests.integration.conftest import TEST_PREFIX
 
@@ -32,3 +36,11 @@ def with_test_prefix(value: str) -> str:
 
 def assert_sorted_list_equal(list_a: Iterable[Any], list_b: Iterable[Any]) -> None:
     assert sorted(list_a) == sorted(list_b)
+
+
+def assert_frame_equal(df1: pd.DataFrame, df2: pd.DataFrame, columns: Optional[List[str]] = None) -> None:
+    """wrapper of assert_frame_equal with selected columns options"""
+    if columns is None:
+        pd.testing.assert_frame_equal(df1, df2, check_dtype=False)
+    else:
+        pd.testing.assert_frame_equal(df1[columns], df2[columns], check_dtype=False)

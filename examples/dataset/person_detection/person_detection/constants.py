@@ -12,7 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 BUCKET = "kolena-public-examples"
-DATASET = "labeled-faces-in-the-wild"
-TASK = "age-estimation"
-
-DATA_FILEPATH = f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.csv"
+DATASET_DIR = "coco-2014-val"
+TASK_DIR = "person-detection"
+DATASET_NAME = "_".join([DATASET_DIR, TASK_DIR])
+ID_FIELDS = ["locator"]
+MODELS = [
+    "yolo_r",
+    "yolo_x",
+    "yolo_v3",
+    "yolo_v4s",
+    "faster_rcnn",
+    "mask_rcnn",
+]

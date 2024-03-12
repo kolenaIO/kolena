@@ -16,9 +16,9 @@ from typing import Iterator
 from typing import List
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 import pytest
-from pandas.testing import assert_frame_equal
 
 from kolena._api.v2.dataset import CommitData
 from kolena.dataset import download_dataset
@@ -27,6 +27,7 @@ from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
+from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
@@ -269,3 +270,21 @@ def test__download_dataset__commit_not_exist(with_dataset_commits: Tuple[int, Li
     # check download_dataset with a commit that does not exist
     with pytest.raises(NotFoundError):
         download_dataset(TEST_DATASET_HISTORY_NAME, commit="non-existent-commit")
+
+
+def test__download_dataset__preserve_none() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_dataset__preserve_none")
+
+    data = [{"a": None, "id": 1}, {"a": float("inf"), "id": 2}, {"a": np.nan, "id": 3}, {"a": 42, "id": 4}]
+    df_dp = pd.DataFrame.from_dict(data, dtype=object)
+    assert df_dp["a"][0] is None
+    assert np.isinf(df_dp["a"][1])
+    assert np.isnan(df_dp["a"][2])
+    upload_dataset(dataset_name, df_dp, id_fields=["id"])
+
+    fetched_df_dp = download_dataset(dataset_name)
+
+    assert_frame_equal(fetched_df_dp, df_dp)
+    assert fetched_df_dp["a"][0] is None
+    assert np.isinf(fetched_df_dp["a"][1])
+    assert np.isnan(fetched_df_dp["a"][2])

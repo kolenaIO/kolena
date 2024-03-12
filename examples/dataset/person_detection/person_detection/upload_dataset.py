@@ -14,20 +14,26 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 
-import pandas as pd
-from age_estimation.constants import DATA_FILEPATH
-from age_estimation.constants import DATASET
-from age_estimation.constants import TASK
+from person_detection.constants import BUCKET
+from person_detection.constants import DATASET_DIR
+from person_detection.constants import DATASET_NAME
+from person_detection.constants import ID_FIELDS
 
-import kolena
+import kolena.io
 from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
-    df = pd.read_csv(DATA_FILEPATH)
-
     kolena.initialize(verbose=True)
-    upload_dataset(args.dataset, df)
+    df_metadata = kolena.io.dataframe_from_csv(
+        f"s3://{BUCKET}/{DATASET_DIR}/{DATASET_NAME}.csv",
+        storage_options={"anon": True},
+    )
+    sample_count = args.sample_count
+    if sample_count:
+        df_metadata.sort_values(by="locator", inplace=True, ignore_index=True)
+        df_metadata = df_metadata[:sample_count]
+    upload_dataset(args.dataset, df_metadata, id_fields=ID_FIELDS)
 
 
 def main() -> None:
@@ -35,7 +41,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=f"{DATASET} [{TASK}]",
+        default=DATASET_NAME,
         help="Optionally specify a custom dataset name to upload.",
     )
     run(ap.parse_args())

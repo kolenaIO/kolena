@@ -43,6 +43,8 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.dataframes.transformers import df_apply
+from kolena._utils.dataframes.transformers import json_normalize
 from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
@@ -59,6 +61,7 @@ from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.io import _dataframe_object_serde
 
+_FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
 _FIELD_TEXT = "text"
 _SEP = "."
@@ -152,7 +155,7 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if _FIELD_LOCATOR in df.columns:
-        return df[_FIELD_LOCATOR].apply(_infer_datatype_value)
+        return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
     elif _FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
@@ -167,7 +170,9 @@ def _infer_id_fields(df: pd.DataFrame) -> List[str]:
             if isinstance(id_field, str) and id_field.rsplit(_SEP, maxsplit=1)[-1] == field
         ]
 
-    if id_fields := get_id_fields_by(_FIELD_LOCATOR):
+    if id_fields := get_id_fields_by(_FIELD_ID):
+        return id_fields
+    elif id_fields := get_id_fields_by(_FIELD_LOCATOR):
         return id_fields
     elif id_fields := get_id_fields_by(_FIELD_TEXT):
         return id_fields
@@ -179,25 +184,26 @@ def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     if column == COL_DATAPOINT:
         _add_datatype(result)
     result[column] = result.to_dict("records")
-    result[column] = result[column].apply(lambda x: json.dumps(x))
+    result[column] = df_apply(result[column], lambda x: json.dumps(x))
 
     return result[[column]]
 
 
 def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
-    flattened = pd.json_normalize(
+    flattened = json_normalize(
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
         max_level=0,
     )
     flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
-    return _dataframe_object_serde(flattened, _deserialize_dataobject)
+    df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
+    return df_post
 
 
 def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
     for key, value in df.iloc[0].items():
         if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
-            flattened = pd.json_normalize(df[key], max_level=0).rename(
+            flattened = json_normalize(df[key], max_level=0).rename(
                 columns=lambda col: f"{key}{_SEP}{col}",
             )
             df = df.join(flattened)
@@ -362,7 +368,8 @@ def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame
     """
     df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
     log.info(f"downloaded dataset '{name}'")
-    return pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
+    df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
+    return df_dataset
 
 
 def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: int = 50) -> ListCommitHistoryResponse:
