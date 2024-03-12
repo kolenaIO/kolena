@@ -149,7 +149,6 @@ def _to_serialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     return result[[column]]
 
 
-# Is flattening needed now???
 def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
     flattened = json_normalize(
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
