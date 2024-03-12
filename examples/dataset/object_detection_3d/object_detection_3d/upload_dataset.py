@@ -32,27 +32,25 @@ from kolena.workflow.asset import PointCloudAsset
 # KITTI only supports evaluation of the first three classes but "Van" and "Person_sitting" GTs
 # are used to avoid penalizing inferences labeled as "Car" and "Pedestrian" respectively.
 SUPPORTED_LABELS = ["Car", "Pedestrian", "Cyclist", "Van", "Person_sitting", "DontCare"]
-LABEL_FILE_COLUMNS = [
-    "type",
-    "truncated",
-    "occluded",
-    "alpha",
-    "bbox_x0",
-    "bbox_y0",
-    "bbox_x1",
-    "bbox_y1",
-    "dim_y",
-    "dim_z",
-    "dim_x",
-    "loc_x",
-    "loc_y",
-    "loc_z",
-    "rotation_y",
-]
+LABEL_FILE_COLUMNS = {
+    "image_id",
+    "left_image",
+    "right_image",
+    "velodyne",
+    "objects",
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "R0_rect",
+    "Tr_velo_to_cam",
+    "Tr_imu_to_velo",
+}
 
 
 def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
     records = []
+    meta_cols = [col for col in df_raw.columns if col not in LABEL_FILE_COLUMNS]
 
     for record in df_raw.itertuples():
         bboxes_2d = [
@@ -82,6 +80,7 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
             for box in record.objects
         ]
         counts = Counter([r["label"] for r in record.objects])
+        metadata = {col: getattr(record, col) for col in meta_cols}
         records.append(
             {
                 "image_id": record.image_id,
@@ -97,6 +96,7 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
                 "velodyne_to_camera_transformation": record.Tr_velo_to_cam,
                 "camera_rectification": record.R0_rect,
                 "image_projection": record.P2,
+                **metadata,
             },
         )
 

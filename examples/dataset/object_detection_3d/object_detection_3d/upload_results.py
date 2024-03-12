@@ -234,7 +234,15 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 if fp
             ]
             TP_2D = [record.raw_inferences_2d[j] for j, tp in enumerate(TP) if tp]
-            TP_3D = [record.raw_inferences_3d[j] for j, tp in enumerate(TP) if tp]
+            TP_3D = [
+                ScoredLabeledBoundingBox3D(
+                    **record.raw_inferences_3d[j]._to_dict(),
+                    overlap=np.max(overlaps[i][j]),  # type: ignore[call-arg]
+                    matched_index=np.argmax(overlaps[i][j]),  # type: ignore[call-arg]
+                )
+                for j, tp in enumerate(TP)
+                if tp
+            ]
             FN_2D = [record.image_bboxes[j] for j, fn in enumerate(FN) if fn]
             FN_3D = [
                 LabeledBoundingBox3D(
@@ -344,7 +352,7 @@ def run(args: Namespace) -> None:
     kolena.initialize(verbose=True)
 
     pred_df = load_results(args.model)
-    dataset_df = dataset.download_dataset(args.dataset)
+    dataset_df = dataset.download_dataset(args.dataset).sort_values(by="image_id", ignore_index=True)
     results_df = dataset_df.merge(pred_df, on=ID_FIELDS)
     results = compute_metrics_by_difficulty(results_df)
     upload_results(args.dataset, args.model, results)

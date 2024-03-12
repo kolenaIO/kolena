@@ -14,7 +14,7 @@
 BUCKET = "kolena-public-examples"
 DATASET = "kitti"
 TASK = "object-detection-3d"
-DEFAULT_DATASET_NAME = f"{DATASET} [{TASK}]"
+DEFAULT_DATASET_NAME = f"KITTI [{TASK}]"
 ID_FIELDS = ["image_id"]
 MODELS = [
     "parta2_hv_secfpn_8xb2-cyclic-80e_kitti-3d-3class",
