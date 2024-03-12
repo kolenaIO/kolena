@@ -48,7 +48,6 @@ from kolena._utils.dataframes.transformers import json_normalize
 from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
-from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
@@ -89,13 +88,8 @@ _DATAPOINT_TYPE_MAP = {
 }
 
 
-def _dataobject_type(obj: TypedDataObject) -> str:
-    obj_type = obj._data_type()
-    return f"{obj_type._data_category()}/{obj_type.value}"
-
-
 def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
-    main_type, sub_type = mimetype_str.split("/")
+    main_type, _ = mimetype_str.split("/")
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
 
