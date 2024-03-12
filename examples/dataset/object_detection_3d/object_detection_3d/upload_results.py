@@ -248,6 +248,9 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 LabeledBoundingBox3D(
                     **record.velodyne_bboxes[j]._to_dict(),
                     max_overlap=np.max(overlaps[i][:, j]) if len(overlaps[i][:, j]) else None,  # type: ignore[call-arg]
+                    match_index=(
+                        np.argmax(overlaps[i][:, j]) if len(overlaps[i][:, j]) else None
+                    ),  # type: ignore[call-arg]
                 )
                 for j, fn in enumerate(FN)
                 if fn
