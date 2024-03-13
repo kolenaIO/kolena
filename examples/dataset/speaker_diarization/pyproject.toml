@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
-kolena = "^1.8.0"
+kolena = "^1.9.0"
 pyannote-metrics = "^3.2.1"
 s3fs = "^2023.10.0"
 pyannote-core = "^5.0.0"

@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
-kolena = "^1.8.0"
+kolena = "^1.9.0"
 s3fs = "^2022.7.1"
 scikit-learn = "^1.1.2"
 numba = "^0.56.0"
