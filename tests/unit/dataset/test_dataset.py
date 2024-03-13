@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 import random
+from typing import List
 
 import pandas as pd
 import pytest
@@ -271,7 +272,7 @@ def test__dataframe__data_type_field_not_exist() -> None:
         ),
     ],
 )
-def test__infer_id_fields(input_df: pd.DataFrame, expected: str) -> None:
+def test__infer_id_fields(input_df: pd.DataFrame, expected: List[str]) -> None:
     assert _infer_id_fields(input_df) == expected
 
 
@@ -281,7 +282,7 @@ def test__infer_id_fields(input_df: pd.DataFrame, expected: str) -> None:
         pd.DataFrame(dict(text1=["a", "b", "c", "d"])),
     ],
 )
-def test__infer_id_field__error(input_df: pd.DataFrame) -> None:
+def test__infer_id_fields__error(input_df: pd.DataFrame) -> None:
     with pytest.raises(Exception) as e:
         _infer_id_fields(input_df)
 
