@@ -11,25 +11,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import random
 import string
 from argparse import Namespace
-from collections.abc import Iterator
 
 import pytest
 from semantic_segmentation.constants import BUCKET
 from semantic_segmentation.constants import DATASET
 from semantic_segmentation.upload_dataset import run as upload_dataset_run
 from semantic_segmentation.upload_results import run as upload_results_run
-
-from kolena._utils.state import kolena_session
-
-
-@pytest.fixture(scope="session", autouse=True)
-def with_init() -> Iterator[None]:
-    with kolena_session(api_token=os.environ["KOLENA_TOKEN"]):
-        yield
 
 
 @pytest.fixture(scope="module")

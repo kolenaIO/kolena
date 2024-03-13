@@ -22,14 +22,11 @@ from text_summarization.constants import MODELS
 from text_summarization.metrics import compute_metrics
 from tqdm import tqdm
 
-import kolena
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     model = MODELS[args.model]
     df_dataset = download_dataset(args.dataset)
     df_inferences = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv", storage_options={"anon": True})

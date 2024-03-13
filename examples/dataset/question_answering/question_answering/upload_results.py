@@ -17,13 +17,11 @@ from argparse import Namespace
 from question_answering.constants import DATASET_TO_RESULTS
 from question_answering.constants import MODELS
 
-import kolena
 from kolena.dataset import upload_results
 from kolena.workflow.io import dataframe_from_csv
 
 
 def main(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     for dataset in args.datasets:
         print(f"loading {dataset}...")
         for model in args.models:

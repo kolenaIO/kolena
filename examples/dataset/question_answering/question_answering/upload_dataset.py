@@ -16,13 +16,11 @@ from argparse import Namespace
 
 from question_answering.constants import DATASET_TO_LOCATOR
 
-import kolena
 from kolena.dataset import upload_dataset
 from kolena.workflow.io import dataframe_from_csv
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     for dataset in args.datasets:
         print(f"loading {dataset}...")
         df_datapoint = dataframe_from_csv(DATASET_TO_LOCATOR[dataset])

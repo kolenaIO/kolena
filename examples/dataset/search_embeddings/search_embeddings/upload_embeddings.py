@@ -27,7 +27,6 @@ from kembed.util import load_embedding_model
 from PIL import Image
 from tqdm import tqdm
 
-import kolena
 from kolena._experimental.search import upload_dataset_embeddings
 from kolena.dataset import download_dataset
 
@@ -121,7 +120,6 @@ def load_precomputed_embedding() -> pd.DataFrame:
 
 
 def run(run_extraction: bool, dataset_name: str, local_path: str) -> None:
-    kolena.initialize(verbose=True)
     df_dataset = download_dataset(dataset_name)
 
     model, model_key = load_embedding_model()

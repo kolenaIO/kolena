@@ -24,7 +24,6 @@ from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import ID_FIELDS
 from object_detection_2d.constants import TASK
 
-import kolena
 from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import upload_dataset
 
@@ -56,7 +55,6 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df_metadata_csv = pd.read_csv(
         f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.csv",
         storage_options={"anon": True},

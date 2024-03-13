@@ -24,7 +24,6 @@ from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df_metadata = kolena.io.dataframe_from_csv(
         f"s3://{BUCKET}/{DATASET_DIR}/{DATASET_NAME}.csv",
         storage_options={"anon": True},

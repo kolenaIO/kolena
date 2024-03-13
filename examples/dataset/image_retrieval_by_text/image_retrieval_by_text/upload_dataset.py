@@ -19,7 +19,6 @@ from image_retrieval_by_text.constants import BUCKET
 from image_retrieval_by_text.constants import DATASET
 from image_retrieval_by_text.constants import ID_FIELDS
 
-import kolena
 from kolena.asset import ImageAsset
 from kolena.dataset import upload_dataset
 
@@ -32,7 +31,6 @@ def transform_data(df_csv: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df_csv = pd.read_csv(
         f"s3://{BUCKET}/coco-2014-val/image-retrieval-by-text/dataset/raw/image-retrieval-by-text-raw.csv",
         storage_options={"anon": True},

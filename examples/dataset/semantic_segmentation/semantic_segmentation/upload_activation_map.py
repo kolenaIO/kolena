@@ -22,7 +22,6 @@ from semantic_segmentation.constants import MODEL_NAME
 from semantic_segmentation.utils import activation_map_locator_path
 from semantic_segmentation.utils import inference_locator_path
 
-import kolena
 from kolena.dataset import download_dataset
 
 
@@ -35,7 +34,6 @@ def upload_activation_map(model_name: str, write_bucket: str) -> None:
 
 
 def main(args: Namespace) -> int:
-    kolena.initialize(verbose=True)
     upload_activation_map(args.model, args.write_bucket)
     return 0
 
