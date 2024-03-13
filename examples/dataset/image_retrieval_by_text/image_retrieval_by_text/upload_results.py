@@ -38,7 +38,6 @@ from transformers import AutoProcessor
 from transformers import CLIPModel
 from transformers import CLIPProcessor
 
-import kolena
 from kolena.asset import ImageAsset
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
@@ -213,7 +212,6 @@ def retrieve_images_by_text(dataset: pd.DataFrame, df_img_emb: pd.DataFrame, df_
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     args.model = args.model.replace("/", "_")
     if not args.run_inference:
         pred_df_csv = pd.read_csv(
