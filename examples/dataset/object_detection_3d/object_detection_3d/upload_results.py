@@ -168,16 +168,17 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
     gt_annos, dt_annos, labels = to_kitti_format(df)
     f1_optimal_thresholds = compute_f1_optimal_thresholds(gt_annos, dt_annos, labels)
     class_name_value = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
-    overlaps, parted_overlaps, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
+    overlaps, _, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
     ignored_gts_combined = [[True] * len(gt_bboxes) for gt_bboxes in df["image_bboxes"]]
 
     def compute_metrics_with_difficulty(difficulty: int) -> pd.DataFrame:
         sample_metrics = []
         results: List[Dict[str, Dict[Any, Any]]] = [{} for _ in range(len(df))]
         raw_results: List[Dict[str, Dict[Any, Any]]] = [{} for _ in range(len(df))]
+        current_optimal_thresholds = f1_optimal_thresholds[difficulty]
 
         for current_class in VALID_LABELS:
-            threshold = f1_optimal_thresholds[difficulty][current_class]
+            threshold = current_optimal_thresholds[current_class]
             class_value = class_name_value[current_class]
 
             rets = _prepare_data(gt_annos, dt_annos, class_value, difficulty)
@@ -204,6 +205,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     dontcares[i],
                     "3d",
                     min_overlap=min_overlaps[class_value],
+                    compute_fp=True,
                 )
                 tp, fp, fn, similarity, thresholds, tps, fps, fns = compute_statistics_jit(
                     overlaps[i],
@@ -229,7 +231,11 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
             FP_2D = [record.raw_inferences_2d[j] for j, fp in enumerate(FP) if fp]
             FP_3D = [
-                dataclasses.replace(record.raw_inferences_3d[j], max_overlap=np.max(overlaps[i][j]))
+                dataclasses.replace(
+                    record.raw_inferences_3d[j],
+                    max_overlap=np.max(overlaps[i][j]),  # type: ignore[call-arg]
+                    match_index=np.argmax(overlaps[i][j]),  # type: ignore[call-arg]
+                )
                 for j, fp in enumerate(FP)
                 if fp
             ]
@@ -238,7 +244,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 ScoredLabeledBoundingBox3D(
                     **record.raw_inferences_3d[j]._to_dict(),
                     overlap=np.max(overlaps[i][j]),  # type: ignore[call-arg]
-                    matched_index=np.argmax(overlaps[i][j]),  # type: ignore[call-arg]
+                    match_index=np.argmax(overlaps[i][j]),  # type: ignore[call-arg]
                 )
                 for j, tp in enumerate(TP)
                 if tp
@@ -288,7 +294,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     nMatchedInferences=len(TP_2D),
                     nMissedObjects=len(FN_2D),
                     nMismatchedInferences=len(FP_2D),
-                    thresholds=f1_optimal_thresholds[difficulty],
+                    thresholds=current_optimal_thresholds,
                     FP_2D=FP_2D,
                     FP_3D=FP_3D,
                     TP_2D=TP_2D,
