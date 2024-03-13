@@ -138,11 +138,11 @@ labels the base [`BoundingBox`](../reference/annotation.md#kolena.annotation.Bou
 This looks like:
 ```python
 from kolena.annotation import LabeledBoundingBox
-bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18), label="motorcycle")
+bbox = LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18), label="motorcycle")
 ```
 When viewing a bounding box within python the format is:
 ```
-BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle", width=350.84,
+LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle", width=350.84,
  height=209.59, area=73532.5556, aspect_ratio=1.67)
 ```
 
@@ -186,7 +186,7 @@ This is done by creating a list of all bounding boxes for an image and then merg
 The produced `.csv` contains a column called ground_truths where the data is the same format as the above bounding boxes.
 
 ```python
-from kolena.annotation import BoundingBox
+from kolena.annotation import LabeledBoundingBox
 from kolena.io import dataframe_to_csv
 from collections import defaultdict
 import pandas as pd
@@ -197,7 +197,7 @@ image_to_metadata = defaultdict(dict)
 
 for record in df.itertuples():
     coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
-    bounding_box = BoundingBox(*coords)
+    bounding_box = LabeledBoundingBox(*coords, record.label)
     image_to_boxes[record.locator].append(bounding_box)
     metadata = {
         "locator": record.locator,
