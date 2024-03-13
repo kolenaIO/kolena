@@ -25,7 +25,7 @@ from kolena.dataset._common import COL_RESULT
 from kolena.dataset.dataset import _add_datatype
 from kolena.dataset.dataset import _infer_datatype
 from kolena.dataset.dataset import _infer_datatype_value
-from kolena.dataset.dataset import _infer_id_field
+from kolena.dataset.dataset import _infer_id_fields
 from kolena.dataset.dataset import _resolve_id_fields
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
@@ -250,7 +250,7 @@ def test__dataframe__data_type_field_not_exist() -> None:
                     locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
                 ),
             ),
-            "id",
+            ["id"],
         ),
         (
             pd.DataFrame(
@@ -259,7 +259,7 @@ def test__dataframe__data_type_field_not_exist() -> None:
                     text=["a", "b", "c", "d"],
                 ),
             ),
-            "locator",
+            ["locator"],
         ),
         (
             pd.DataFrame(
@@ -267,12 +267,12 @@ def test__dataframe__data_type_field_not_exist() -> None:
                     text=["a", "b", "c", "d"],
                 ),
             ),
-            "text",
+            ["text"],
         ),
     ],
 )
-def test__infer_id_field(input_df: pd.DataFrame, expected: str) -> None:
-    assert _infer_id_field(input_df) == expected
+def test__infer_id_fields(input_df: pd.DataFrame, expected: str) -> None:
+    assert _infer_id_fields(input_df) == expected
 
 
 @pytest.mark.parametrize(
@@ -283,7 +283,7 @@ def test__infer_id_field(input_df: pd.DataFrame, expected: str) -> None:
 )
 def test__infer_id_field__error(input_df: pd.DataFrame) -> None:
     with pytest.raises(Exception) as e:
-        _infer_id_field(input_df)
+        _infer_id_fields(input_df)
 
     error_msg = "Failed to infer the id_fields, please provide id_fields explicitly"
     assert str(e.value) == error_msg

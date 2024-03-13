@@ -125,10 +125,10 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     return DatapointType.TABULAR.value
 
 
-def _infer_id_field(df: pd.DataFrame) -> str:
+def _infer_id_fields(df: pd.DataFrame) -> List[str]:
     for field in [_FIELD_ID, _FIELD_LOCATOR, _FIELD_TEXT]:
         if field in df.columns:
-            return field
+            return [field]
     raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")
 
 
@@ -188,7 +188,7 @@ def _resolve_id_fields(
         if existing_id_fields:
             return existing_id_fields
         else:
-            id_fields = [_infer_id_field(df)]
+            id_fields = _infer_id_fields(df)
     return id_fields
 
 
