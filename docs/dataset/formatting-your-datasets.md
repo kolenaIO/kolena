@@ -28,7 +28,7 @@ accomplished by configuring an `id_field` - a unique identifier for a datapoint.
 unique across your data, or generate one if no unique identifiers exist for your dataset.
 
 Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
-This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
+This can be overridden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
 
@@ -89,8 +89,7 @@ represent complex scenarios on Kolena. Assets are files stored in a cloud bucket
 The [:kolena-widget-16: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/automatic_speech_recognition)
 example showcases how `AudioAsset`s can be attached to datapoints.
 
-Take a look at `s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv` which contains a raw csv of the
-following format:
+The `s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv` csv contains data of following format:
 
 | id                | audio                                                                                      | transcript             | word_count |
 |-------------------|--------------------------------------------------------------------------------------------|------------------------|------------|
@@ -109,10 +108,8 @@ df = pd.read_csv("s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv", 
 df["audio"] = df["audio"].apply(AudioAsset)
 dataframe_to_csv(df, "audio-asset.csv")
 ```
-
-Attaching assets differs from having a locator reference the file with how it is displayed on the platform.
-Linked assets are attached to a datapoint whereas when specificing the locator the file is the datapoint,
-and metadata and other assests can be attached.
+Now the data in `audio-asset.csv` can be uploaded as a tabular dataset with audio assets attached to each row.
+Any name can be used for the `audio` column in this example.
 
 ### Kolena Annotations
 
@@ -135,15 +132,18 @@ Consider a `.csv` file containing ground truth data in the from of bounding boxe
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
 
 The first bounding box for the image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
-[`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) annotation. This looks like:
+[`LabeledBoundingBox`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) annotation. If you want to ignore
+labels the base [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) can be used.
 
+This looks like:
 ```python
 from kolena.annotation import LabeledBoundingBox
 bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18), label="motorcycle")
 ```
 When viewing a bounding box within python the format is:
 ```
-BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle", width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)
+BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle", width=350.84,
+ height=209.59, area=73532.5556, aspect_ratio=1.67)
 ```
 
 A single bounding box would be serialized as the following JSON string within a `.csv` file:
@@ -217,7 +217,6 @@ dataframe_to_csv(df_merged, "processed.csv")
 
 The file `processed.csv` can be uploaded through the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page.
-
 
 ### Configuring Thumbnails
 
