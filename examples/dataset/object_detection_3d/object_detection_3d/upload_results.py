@@ -43,6 +43,7 @@ from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
 from kolena.dataset import upload_results
 
+CLASS_NAME_VALUE = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
 VALID_LABELS = ["Car", "Pedestrian", "Cyclist"]
 KITTY_DIFFICULTY = {"easy": 0, "moderate": 1, "hard": 2}
 KITTY_DIFFICULTY_INV = ["easy", "moderate", "hard"]
@@ -140,8 +141,7 @@ def compute_f1_optimal_thresholds(
     kitti_inferences: List[Dict[str, Any]],
     labels: Set[str],
 ) -> Dict[int, Dict[str, float]]:
-    target_labels = {"Car", "Pedestrian", "Cyclist"}
-    labels = {label for label in labels if label in target_labels}
+    labels = {label for label in labels if label in VALID_LABELS}
     f1_optimal_thresholds = {}
 
     _, metrics = kitti_eval(kitti_ground_truths, kitti_inferences, list(labels), eval_types=["bbox", "bev", "3d"])
@@ -166,7 +166,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
     min_overlaps = [0.7, 0.5, 0.5]
     gt_annos, dt_annos, labels = to_kitti_format(df)
     f1_optimal_thresholds = compute_f1_optimal_thresholds(gt_annos, dt_annos, labels)
-    class_name_value = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
     overlaps, _, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
     ignored_gts_combined = [[True] * len(gt_bboxes) for gt_bboxes in df["image_bboxes"]]
 
@@ -178,7 +177,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
 
         for current_class in VALID_LABELS:
             threshold = current_optimal_thresholds[current_class]
-            class_value = class_name_value[current_class]
+            class_value = CLASS_NAME_VALUE[current_class]
 
             rets = _prepare_data(gt_annos, dt_annos, class_value, difficulty)
             (
@@ -228,7 +227,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
-            FP_2D = [record.raw_inferences_2d[j] for j, fp in enumerate(FP) if fp]
+            FP_2D = [inferences for inferences, fp in zip(record.raw_inferences_2d, FP) if fp]
             FP_3D = [
                 dataclasses.replace(
                     record.raw_inferences_3d[j],
@@ -238,7 +237,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, fp in enumerate(FP)
                 if fp
             ]
-            TP_2D = [record.raw_inferences_2d[j] for j, tp in enumerate(TP) if tp]
+            TP_2D = [inferences for inferences, tp in zip(record.raw_inferences_2d, TP) if tp]
             TP_3D = [
                 ScoredLabeledBoundingBox3D(
                     **record.raw_inferences_3d[j]._to_dict(),
@@ -248,7 +247,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, tp in enumerate(TP)
                 if tp
             ]
-            FN_2D = [record.image_bboxes[j] for j, fn in enumerate(FN) if fn]
+            FN_2D = [image_bboxes for image_bboxes, fn in zip(record.image_bboxes, FN) if fn]
             FN_3D = [
                 LabeledBoundingBox3D(
                     **record.velodyne_bboxes[j]._to_dict(),
@@ -261,22 +260,25 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 if fn
             ]
             matched_inference = [
-                record.raw_inferences_2d[j]
-                for j, tps in enumerate(
+                inferences
+                for inferences, tps in zip(
+                    record.raw_inferences_2d,
                     zip(raw_result["Car"]["tp"], raw_result["Cyclist"]["tp"], raw_result["Pedestrian"]["tp"]),
                 )
                 if sum(tps)
             ]
             unmatched_inference = [
-                record.raw_inferences_2d[j]
-                for j, fps in enumerate(
+                inferences
+                for inferences, fps in zip(
+                    record.raw_inferences_2d,
                     zip(raw_result["Car"]["fp"], raw_result["Cyclist"]["fp"], raw_result["Pedestrian"]["fp"]),
                 )
                 if sum(fps)
             ]
             unmatched_ground_truth = [
-                record.image_bboxes[j]
-                for j, fns in enumerate(
+                image_bboxes
+                for image_bboxes, fns in zip(
+                    record.image_bboxes,
                     zip(raw_result["Car"]["fn"], raw_result["Cyclist"]["fn"], raw_result["Pedestrian"]["fn"]),
                 )
                 if sum(fns)
