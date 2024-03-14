@@ -28,7 +28,7 @@ accomplished by configuring an `id_field` - a unique identifier for a datapoint.
 unique across your data, or generate one if no unique identifiers exist for your dataset.
 
 Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
-This can be overriden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
+This can be overridden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
 
@@ -86,6 +86,31 @@ represent complex scenarios on Kolena. Assets are files stored in a cloud bucket
 | [`VideoAsset`](../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
 | [`PointCloudAsset`](../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
 
+The [:kolena-widget-16: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/automatic_speech_recognition)
+example showcases how `AudioAsset`s can be attached to datapoints.
+
+The `s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv` csv contains data of following format:
+
+| id                | audio                                                                                      | transcript             | word_count |
+|-------------------|--------------------------------------------------------------------------------------------|------------------------|------------|
+| 1272-128104-0014  | `s3://kolena-public-examples/LibriSpeech/data/dev-clean/1272/128104/1272-128104-0014.flac` | `by harry quilter m a` | 5          |
+
+Here the audio column contains a locator but if uploaded as is, it would just be rendered as a text metadata field.
+We need to use the `AudioAsset` annotation when uploading in order for the Audio file to be rendered as an asset.
+
+```python
+from kolena.asset import AudioAsset
+from kolena.io import dataframe_to_csv
+import pandas as pd
+
+
+df = pd.read_csv("s3://kolena-public-examples/LibriSpeech/raw/LibriSpeech.csv", storage_options={"anon": True})
+df["audio"] = df["audio"].apply(AudioAsset)
+dataframe_to_csv(df, "audio-asset.csv")
+```
+Now the data in `audio-asset.csv` can be uploaded as a tabular dataset with audio assets attached to each row.
+Any name can be used for the `audio` column in this example.
+
 ### Kolena Annotations
 
 Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../reference/annotation.md).
@@ -107,44 +132,47 @@ Consider a `.csv` file containing ground truth data in the from of bounding boxe
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
 
 The first bounding box for the image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
-[`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) annotation. This looks like:
+[`LabeledBoundingBox`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) annotation. If you want to ignore
+labels the base [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) can be used.
 
+This looks like:
 ```python
-from kolena.annotation import BoundingBox
-bbox = BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18))
+from kolena.annotation import LabeledBoundingBox
+bbox = LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61,  254.18), label="motorcycle")
 ```
 When viewing a bounding box within python the format is:
 ```
-BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), width=350.84, height=209.59, area=73532.5556, aspect_ratio=1.67)
+LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle", width=350.84,
+ height=209.59, area=73532.5556, aspect_ratio=1.67)
 ```
 
 A single bounding box would be serialized as the following JSON string within a `.csv` file:
 
 ```
 {""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
- ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+ ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""label"": ""motorcycle"",  ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
 ```
 
 The above example has multiple objects within a single image, which is represented in Kolena as a list of bounding boxes.
 
 For example:
 ```python
-from kolena.annotation import BoundingBox
+from kolena.annotation import LabeledBoundingBox
 bboxes = [
-    BoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18)),
-    BoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93)),
-    BoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84)),
+    LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle"),
+    LabeledBoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93), label="car"),
+    LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="trunk"),
 ]
 ```
 This would be represented within a `.csv` file as shown below. Note this will be a single line,
 but is shown here as multiple lines for formatting.
 ```
 "[{""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
- ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+ ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""label"": ""motorcycle"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
   {""top_left"": [538.03, 8.86], ""bottom_right"": [636.85, 101.93], ""width"": 98.82, ""height"": 93.07,
-   ""area"": 9197.1774, ""aspect_ratio"": 1.062, ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+   ""area"": 9197.1774, ""aspect_ratio"": 1.062, ""label"": ""car"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
   {""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84], ""width"": 240.96,
-   ""height"": 87.83, ""area"": 21163.5168, ""aspect_ratio"": 2.743, ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
+   ""height"": 87.83, ""area"": 21163.5168, ""aspect_ratio"": 2.743, ""label"": ""trunk"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
 ```
 
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
@@ -158,18 +186,19 @@ This is done by creating a list of all bounding boxes for an image and then merg
 The produced `.csv` contains a column called ground_truths where the data is the same format as the above bounding boxes.
 
 ```python
-from kolena.annotation import BoundingBox
+from kolena.annotation import LabeledBoundingBox
 from kolena.io import dataframe_to_csv
 from collections import defaultdict
 import pandas as pd
 
-df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/raw/coco-2014-val.csv", storage_options={"anon": True})
+df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/transportation/raw/coco-2014-val.csv",
+                 storage_options={"anon": True})
 image_to_boxes = defaultdict(list)
 image_to_metadata = defaultdict(dict)
 
 for record in df.itertuples():
     coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
-    bounding_box = BoundingBox(*coords)
+    bounding_box = LabeledBoundingBox(*coords, record.label)
     image_to_boxes[record.locator].append(bounding_box)
     metadata = {
         "locator": record.locator,
@@ -189,6 +218,23 @@ dataframe_to_csv(df_merged, "processed.csv")
 
 The file `processed.csv` can be uploaded through the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page.
+
+### Configuring Thumbnails
+
+In order to improve the loading performance of your image data, you can upload compressed versions of the image
+with the same dimensions as thumbnails. This results in an improved Studio experience due to faster image loading
+when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
+
+Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
+to a compressed version of the `locator` image.
+
+If you wanted to add a thumbnail to the classification data shown above it would look like:
+
+| locator                    | thumbnail_locator                                                  | ground_truth | image_brightness |   image_contrast |
+|---------------------------------------------------------------|--------------------------------------------------------------------|--------------|----------|-----|
+| `s3://kolena-public-examples/cifar10/data/horse0000.png`        | `s3://kolena-public-examples/cifar10/data/thumbnail/horse0000.png` | horse        |     153.994     |    84.126  |
+
+## Formatting Results
 
 ### Formatting results for Object Detection
 
@@ -218,18 +264,3 @@ The Kolena web application currently supports [`precision`](../metrics/precision
 and [`true_negative_rate`](../metrics/recall.md).
 
 To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
-
-### Configuring Thumbnails
-
-In order to improve the loading performance of your image data, you can upload compressed versions of the image
-with the same dimensions as thumbnails. This results in an improved Studio experience due to faster image loading
-when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
-
-Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
-to a compressed version of the `locator` image.
-
-If you wanted to add a thumbnail to the classification data shown above it would look like:
-
-| locator                    | thumbnail_locator                                                  | ground_truth | image_brightness |   image_contrast |
-|---------------------------------------------------------------|--------------------------------------------------------------------|--------------|----------|-----|
-| `s3://kolena-public-examples/cifar10/data/horse0000.png`        | `s3://kolena-public-examples/cifar10/data/thumbnail/horse0000.png` | horse        |     153.994     |    84.126  |
