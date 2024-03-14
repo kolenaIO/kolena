@@ -41,10 +41,12 @@ def _deserialize_dataobject(x: Any) -> Any:
     if isinstance(x, list):
         return [_deserialize_dataobject(item) for item in x]
 
-    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
+    if isinstance(x, dict):
         if data_type := x.get(DATA_TYPE_FIELD):
             if typed_dataobject := _DATA_TYPE_MAP.get(data_type):
                 return typed_dataobject._from_dict(x)
+        else:
+            return {k: _deserialize_dataobject(v) for k, v in x.items()}
 
     return x
 
