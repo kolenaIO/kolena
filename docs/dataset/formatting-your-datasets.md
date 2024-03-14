@@ -191,7 +191,8 @@ from kolena.io import dataframe_to_csv
 from collections import defaultdict
 import pandas as pd
 
-df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/raw/coco-2014-val.csv", storage_options={"anon": True})
+df = pd.read_csv(f"s3://kolena-public-examples/coco-2014-val/transportation/raw/coco-2014-val.csv",
+                 storage_options={"anon": True})
 image_to_boxes = defaultdict(list)
 image_to_metadata = defaultdict(dict)
 
