@@ -31,7 +31,7 @@ DF_TEST = pd.DataFrame.from_dict(
             LabeledBoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)
         ],
         "deep_data": [
-            dict(asset=LabeledBoundingBox(label=f"bar-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]))
+            dict(asset=[LabeledBoundingBox(label=f"bar-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10])])
             for i in range(10)
         ],
         "id": list(range(10)),
@@ -54,7 +54,8 @@ DF_EXPECTED = pd.DataFrame.from_dict(
         "partial": [None, ""] + ["fan"] * 8,
         "data": [BoundingBox(label=f"foo-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10]) for i in range(10)],
         "deep_data": [
-            dict(asset=BoundingBox(label=f"bar-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10])) for i in range(10)
+            dict(asset=[BoundingBox(label=f"bar-{i}", top_left=[i, i], bottom_right=[i + 10, i + 10])])
+            for i in range(10)
         ],
         "id": list(range(10)),
         "bad actor": [
