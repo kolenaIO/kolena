@@ -37,7 +37,6 @@ from object_detection_3d.vendored.kitti_eval import calculate_iou_partly  # type
 from object_detection_3d.vendored.kitti_eval import compute_statistics_jit  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import kitti_eval  # type: ignore[attr-defined]
 
-import kolena
 from kolena import dataset
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
@@ -358,8 +357,6 @@ def load_results(model: str) -> pd.DataFrame:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     pred_df = load_results(args.model)
     dataset_df = dataset.download_dataset(args.dataset).sort_values(by="image_id", ignore_index=True)
     results_df = dataset_df.merge(pred_df, on=ID_FIELDS)

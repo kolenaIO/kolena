@@ -22,7 +22,6 @@ from object_detection_3d.constants import DEFAULT_DATASET_NAME
 from object_detection_3d.constants import ID_FIELDS
 from object_detection_3d.constants import TASK
 
-import kolena
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.asset import ImageAsset
 from kolena.dataset import upload_dataset
@@ -104,7 +103,6 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(args: Namespace) -> int:
-    kolena.initialize(verbose=True)
     df_raw = pd.read_json(
         f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.jsonl",
         lines=True,
