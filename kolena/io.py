@@ -37,6 +37,17 @@ class DataObjectJSONEncoder(json.JSONEncoder):
         return super().default(o)
 
 
+class DataObjectJSONDecoder(json.JSONDecoder):
+    def __init__(self) -> None:
+        super().__init__(object_hook=self.object_hook)
+
+    def object_hook(self, dct: Dict) -> Any:
+        if data_type := dct.get(DATA_TYPE_FIELD):
+            if typed_dataobject := _DATA_TYPE_MAP.get(data_type):
+                return typed_dataobject._from_dict(dct)
+        return dct
+
+
 def _deserialize_dataobject(x: Any) -> Any:
     if isinstance(x, list):
         return [_deserialize_dataobject(item) for item in x]
@@ -56,14 +67,12 @@ def _serialize_dataobject_str(x: Any) -> Any:
 
 
 def _deserialize_dataobject_str(x: Any) -> Any:
-    y = x
     if isinstance(x, str):
         try:
-            y = json.loads(x)
-        except Exception:
+            return json.loads(x, cls=DataObjectJSONDecoder)
+        except (json.JSONDecodeError, TypeError):
             ...
-
-    return _deserialize_dataobject(y)
+    return x
 
 
 def dataframe_to_csv(df: pd.DataFrame, *args: Any, **kwargs: Any) -> Union[str, None]:
