@@ -19,6 +19,7 @@ non-primitive data objects.
 import json
 from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import Union
 
 import pandas as pd
@@ -29,33 +30,29 @@ from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
 
 
-def _serialize_dataobject(x: Any) -> Any:
-    if isinstance(x, list):
-        return [item._to_dict() if isinstance(item, DataObject) else item for item in x]
-
-    return x._to_dict() if isinstance(x, DataObject) else x
+class DataObjectJSONEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Dict:
+        if isinstance(o, DataObject):
+            return o._to_dict()
+        return super().default(o)
 
 
 def _deserialize_dataobject(x: Any) -> Any:
     if isinstance(x, list):
         return [_deserialize_dataobject(item) for item in x]
 
-    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
-        data = {**x}
-        data_type = data.pop(DATA_TYPE_FIELD)
-        typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
-        if typed_dataobject:
-            return typed_dataobject._from_dict(data)
+    if isinstance(x, dict):
+        if data_type := x.get(DATA_TYPE_FIELD):
+            if typed_dataobject := _DATA_TYPE_MAP.get(data_type):
+                return typed_dataobject._from_dict(x)
+        else:
+            return {k: _deserialize_dataobject(v) for k, v in x.items()}
 
     return x
 
 
 def _serialize_dataobject_str(x: Any) -> Any:
-    y = _serialize_dataobject(x)
-    if isinstance(y, list) or isinstance(y, dict):
-        return json.dumps(y)
-
-    return y
+    return json.dumps(x, cls=DataObjectJSONEncoder)
 
 
 def _deserialize_dataobject_str(x: Any) -> Any:
@@ -63,7 +60,7 @@ def _deserialize_dataobject_str(x: Any) -> Any:
     if isinstance(x, str):
         try:
             y = json.loads(x)
-        except Exception:
+        except (json.JSONDecodeError, TypeError):
             ...
 
     return _deserialize_dataobject(y)
