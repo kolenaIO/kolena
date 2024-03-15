@@ -63,12 +63,10 @@ from kolena.io import _dataframe_object_serde
 _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
 _FIELD_TEXT = "text"
-_SEP = "."
 
 
 class DatapointType(str, Enum):
     AUDIO = "DATAPOINT/AUDIO"
-    COMPOSITE = "DATAPOINT/COMPOSITE"
     DOCUMENT = "DATAPOINT/DOCUMENT"
     IMAGE = "DATAPOINT/IMAGE"
     POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
@@ -115,36 +113,7 @@ def _infer_datatype_value(x: str) -> str:
 
 def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
-    prefixes = {
-        column.rsplit(sep=_SEP, maxsplit=1)[0]
-        for column in df.columns.values
-        if isinstance(column, str) and _SEP in column
-    }
-    if prefixes:
-        df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
-        for prefix in prefixes:
-            if not prefix.strip():
-                raise InputValidationError(
-                    "Empty prefix encountered when parsing composite dataset. "
-                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{_SEP}'.",
-                )
-            if prefix in df.columns:
-                raise InputValidationError(
-                    f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
-                )
-            if _SEP in prefix:
-                raise InputValidationError(
-                    f"More than one delimeter '{_SEP}' in prefix: '{prefix}'.",
-                )
-
-            composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
-            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(_SEP)[-1])
-            composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
-
-            df[prefix] = composite.to_dict("records")
-            df.drop(columns=composite_columns, inplace=True)
-    else:
-        df[DATA_TYPE_FIELD] = _infer_datatype(df)
+    df[DATA_TYPE_FIELD] = _infer_datatype(df)
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
@@ -157,19 +126,9 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 
 def _infer_id_fields(df: pd.DataFrame) -> List[str]:
-    def get_id_fields_by(field: str) -> List[str]:
-        return [
-            id_field
-            for id_field in df.columns.array
-            if isinstance(id_field, str) and id_field.rsplit(_SEP, maxsplit=1)[-1] == field
-        ]
-
-    if id_fields := get_id_fields_by(_FIELD_ID):
-        return id_fields
-    elif id_fields := get_id_fields_by(_FIELD_LOCATOR):
-        return id_fields
-    elif id_fields := get_id_fields_by(_FIELD_TEXT):
-        return id_fields
+    for field in [_FIELD_ID, _FIELD_LOCATOR, _FIELD_TEXT]:
+        if field in df.columns:
+            return [field]
     raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")
 
 
@@ -188,21 +147,9 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
         max_level=0,
     )
-    flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
     return df_post
-
-
-def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
-    for key, value in df.iloc[0].items():
-        if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
-            flattened = json_normalize(df[key], max_level=0).rename(
-                columns=lambda col: f"{key}{_SEP}{col}",
-            )
-            df = df.join(flattened)
-            df.drop(columns=[key], inplace=True)
-    return df
 
 
 def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]) -> None:
