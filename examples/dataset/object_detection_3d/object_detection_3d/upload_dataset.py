@@ -85,7 +85,10 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
                 "image_id": record.image_id,
                 "locator": record.left_image,
                 "image_bboxes": bboxes_2d,
-                "right": ImageAsset(locator=record.right_image),
+                "views": [
+                    ImageAsset(locator=record.right_image, camera="right"),  # type: ignore[call-arg]
+                    ImageAsset(locator=record.left_image, camera="left"),  # type: ignore[call-arg]
+                ],
                 "velodyne": PointCloudAsset(locator=record.velodyne),
                 "total_objects": len(bboxes_3d),
                 "n_car": counts["Car"],
