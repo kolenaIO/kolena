@@ -185,7 +185,8 @@ def _prepare_upload_results_request(
     _validate_configs([cfg for cfg, _ in results])
     total_rows = 0
     for config, df_result_input in results:
-        log.info(f"uploading test results with configuration {config}" if config else "uploading test results")
+        log_slug = f"uploading results with configuration {config}" if config else "uploading results"
+        log.info(f"{log_slug} for model '{model}' on dataset '{dataset}'")
         if isinstance(df_result_input, pd.DataFrame):
             total_rows += df_result_input.shape[0]
             validate_dataframe_ids(df_result_input, id_fields)
@@ -216,8 +217,8 @@ def _upload_results(
 
     response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
     log.info(
-        f"uploaded test results for model '{model}' on dataset '{dataset}': "
-        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",
+        f"uploaded {total_rows} results for model '{model}' on dataset '{dataset}' "
+        f"({response.n_inserted} inserted, {response.n_updated} updated)",
     )
     return response
 

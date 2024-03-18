@@ -49,7 +49,7 @@ def init_upload() -> API.InitiateUploadResponse:
 
 def upload_data_frame(df: pd.DataFrame, batch_size: int, load_uuid: str) -> None:
     num_chunks = math.ceil(len(df) / batch_size)
-    chunk_iter = np.array_split(df, num_chunks) if num_chunks > 0 else []
+    chunk_iter = np.array_split(df, num_chunks) if num_chunks > 1 else [df] if num_chunks > 0 else []
 
     # only display progress bar if there are multiple chunks to upload
     chunk_iter_logged = log.progress_bar(chunk_iter) if num_chunks > 1 else chunk_iter
