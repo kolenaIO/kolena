@@ -248,10 +248,31 @@ def test__dataframe__data_type_field_not_exist() -> None:
             pd.DataFrame(
                 dict(
                     id=[1, 2, 3, 4],
+                    image_id=[1, 2, 3, 4],
                     locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
                 ),
             ),
             ["id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    image_id=[1, 2, 3, 4],
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                ),
+            ),
+            ["image_id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    image_id=[1, 2, 3, 4],
+                    other_id=[9, 8, 7, 6],
+                    id_locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                    other=[3, 1, 4, 1],
+                ),
+            ),
+            ["image_id", "other_id", "id_locator"],
         ),
         (
             pd.DataFrame(
@@ -291,8 +312,8 @@ def test__infer_id_fields__error(input_df: pd.DataFrame) -> None:
 
 
 def test__resolve_id_fields() -> None:
-    df = pd.DataFrame(dict(user_dp_id=["a", "b", "c"], new_user_dp_id=["d", "e", "f"]))
-    dataset = EntityData(id=1, name="foo", description="", id_fields=["user_dp_id"])
+    df = pd.DataFrame(dict(user_dp=["a", "b", "c"], new_user_dp=["d", "e", "f"]))
+    dataset = EntityData(id=1, name="foo", description="", id_fields=["user_dp"])
     inferrable_df = pd.DataFrame(dict(locator=["x", "y", "z"]))
 
     # new dataset without id_fields
@@ -300,7 +321,7 @@ def test__resolve_id_fields() -> None:
         _resolve_id_fields(df, None, None)
 
     # existing dataset without id_fields, different inferred id_fields, should use existing id_fields
-    assert _resolve_id_fields(inferrable_df, None, dataset) == ["user_dp_id"]
+    assert _resolve_id_fields(inferrable_df, None, dataset) == ["user_dp"]
 
     # existing dataset without id_fields, same inferred id_fields
     assert _resolve_id_fields(
@@ -310,13 +331,13 @@ def test__resolve_id_fields() -> None:
     ) == ["locator"]
 
     # new dataset with explicit id_fields should resolve to explicit id_fields
-    assert _resolve_id_fields(df, ["user_dp_id"], None) == ["user_dp_id"]
+    assert _resolve_id_fields(df, ["user_dp"], None) == ["user_dp"]
 
     # existing dataset id_fields are the same as explicit id_fields
-    assert _resolve_id_fields(df, ["user_dp_id"], dataset) == ["user_dp_id"]
+    assert _resolve_id_fields(df, ["user_dp"], dataset) == ["user_dp"]
 
     # explicit id_fields override existing dataset id_fields
-    assert _resolve_id_fields(df, ["new_user_dp_id"], dataset) == ["new_user_dp_id"]
+    assert _resolve_id_fields(df, ["new_user_dp"], dataset) == ["new_user_dp"]
 
     # new dataset with implicit datatype support, e.g. locator, without id_fields
     assert _resolve_id_fields(inferrable_df, None, None) == ["locator"]
