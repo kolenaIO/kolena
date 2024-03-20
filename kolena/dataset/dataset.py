@@ -126,7 +126,12 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 
 def _infer_id_fields(df: pd.DataFrame) -> List[str]:
-    for field in [_FIELD_ID, _FIELD_LOCATOR, _FIELD_TEXT]:
+    if _FIELD_ID in df.columns:
+        return [_FIELD_ID]
+    id_columns = [col for col in df.columns if col.startswith("id_") or col.endswith("_id")]
+    if len(id_columns) > 0:
+        return id_columns
+    for field in [_FIELD_LOCATOR, _FIELD_TEXT]:
         if field in df.columns:
             return [field]
     raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")

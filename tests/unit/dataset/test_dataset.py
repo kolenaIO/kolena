@@ -248,10 +248,31 @@ def test__dataframe__data_type_field_not_exist() -> None:
             pd.DataFrame(
                 dict(
                     id=[1, 2, 3, 4],
+                    image_id=[1, 2, 3, 4],
                     locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
                 ),
             ),
             ["id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    image_id=[1, 2, 3, 4],
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                ),
+            ),
+            ["image_id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    image_id=[1, 2, 3, 4],
+                    other_id=[9, 8, 7, 6],
+                    id_locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                    other=[3, 1, 4, 1],
+                ),
+            ),
+            ["image_id", "other_id", "id_locator"],
         ),
         (
             pd.DataFrame(
