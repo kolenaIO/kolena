@@ -107,6 +107,8 @@ nav:
       - metrics/perplexity.md
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
+    - Regression:
+      - metrics/mean-absolute-error.md
     - Kolena Insights:
       - metrics/statistical-significance.md
   - Help & FAQ:
