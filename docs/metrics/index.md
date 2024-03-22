@@ -131,14 +131,37 @@ biases, and its intended uses.
 
 <div class="grid cards" markdown>
 
-- [Mean Absolute Error](consistency-score.md)
+- [Mean Absolute Error](mean-absolute-error.md)
 
     ---
 
-    Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
-    localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any
-    metrics built on top of these, like [precision](precision.md), [recall](recall.md), and
-    [F<sub>1</sub>-score](f1-score.md).
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error](mean-squared-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error](root-mean-squared-error.md)
+
+    ---
+
+    RMSE calculates the square root of the average squared differences between the predicted values and the actual
+    values. This operation provides a measure that is in the same units as the output variable, making it particularly
+    useful for interpreting the magnitude of prediction errors and penalizing larger discrepancies more than smaller
+    ones.
+
+- [Coefficient of Determination](coefficient-of-determination.md)
+
+    ---
+
+    R² provides a scale from 0 to 1, where higher values indicate a better fit and imply that the model can better
+    explain the variation of the output with the input variables.
 
 </div>
 

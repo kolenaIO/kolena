@@ -94,6 +94,11 @@ nav:
     - Computer Vision:
       - metrics/geometry-matching.md
       - metrics/iou.md
+    - Regression:
+      - metrics/mean-absolute-error.md
+      - metrics/mean-squared-error.md
+      - metrics/root-mean-squared-error.md
+      - metrics/coefficient-of-determination.md
     - Large Language Models:
       - metrics/consistency-score.md
       - metrics/contradiction-score.md
