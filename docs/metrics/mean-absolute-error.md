@@ -47,7 +47,7 @@ Age Estimation::
 
 $$
 \begin{align}
-\text{MAE} &= \frac{|60 - 70| + |40 - 30|}{2} \\[1em]
+\text{MAE} &= \frac{|60 - 70| + |40 - 20|}{2} \\[1em]
 &= 15
 \end{align}
 $$
