@@ -236,6 +236,14 @@ biases, and its intended uses.
     the mean of the absolute differences between predicted and actual values across a dataset, treating each
     discrepancy equally.
 
+- [Mean Squared Error](mean-squared-error.md)
+
+    ---
+
+    MSE measures the average squared difference between the predicted values and the actual values,
+    emphasizing larger errors more significantly than smaller ones. It is mainly different from MAE in that
+    larger errors are penalized more heavily.
+
 </div>
 
 ## Kolena Insights

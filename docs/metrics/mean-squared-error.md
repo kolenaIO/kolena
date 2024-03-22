@@ -1,7 +1,7 @@
 # Mean Squared Error
 
 Mean Squared Error (MSE) is a widely used metric for evaluating the performance of regression models,
-popular for its ability to quantify prediction errors.
+popular for its ability to accentuate larger errors.
 
 MSE measures the average squared difference between the predicted values and the actual values,
 emphasizing larger errors more significantly than smaller ones. It represents the mean of the squared
@@ -47,7 +47,7 @@ Age Estimation::
 
 $$
 \begin{align}
-\text{MSE} &= \frac{(60 - 70)^2 + (40 - 30)^2}{2} \\
+\text{MSE} &= \frac{(60 - 70)^2 + (40 - 20)^2}{2} \\
 &= 250
 \end{align}
 $$
