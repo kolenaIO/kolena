@@ -127,6 +127,44 @@ biases, and its intended uses.
 
 </div>
 
+## Regression
+
+<div class="grid cards" markdown>
+
+- [Mean Absolute Error](mean-absolute-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error](mean-squared-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error](root-mean-squared-error.md)
+
+    ---
+
+    RMSE calculates the square root of the average squared differences between the predicted values and the actual
+    values. This operation provides a measure that is in the same units as the output variable, making it particularly
+    useful for interpreting the magnitude of prediction errors and penalizing larger discrepancies more than smaller
+    ones.
+
+- [Coefficient of Determination](coefficient-of-determination.md)
+
+    ---
+
+    R² provides a scale from 0 to 1, where higher values indicate a better fit and imply that the model can better
+    explain the variation of the output with the input variables.
+
+</div>
+
 ## Large Language Models
 
 <div class="grid cards" markdown>
