@@ -127,6 +127,21 @@ biases, and its intended uses.
 
 </div>
 
+## Regression
+
+<div class="grid cards" markdown>
+
+- [Mean Absolute Error](consistency-score.md)
+
+    ---
+
+    Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a
+    localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any
+    metrics built on top of these, like [precision](precision.md), [recall](recall.md), and
+    [F<sub>1</sub>-score](f1-score.md).
+
+</div>
+
 ## Large Language Models
 
 <div class="grid cards" markdown>
