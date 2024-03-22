@@ -1,11 +1,12 @@
 # Mean Squared Error
 
 Mean Squared Error (MSE) is a widely used metric for evaluating the performance of regression models,
-popular for its ability to accentuate larger errors.
+popular for its ability to accentuate larger errors. It measures the average squared difference between the
+predicted values and the actual values, emphasizing larger errors more significantly than smaller ones.
 
-MSE measures the average squared difference between the predicted values and the actual values,
-emphasizing larger errors more significantly than smaller ones. It represents the mean of the squared
-discrepancies between predicted and actual values across a dataset, penalizing larger errors more heavily.
+MSE represents the mean of the squared discrepancies between predicted and actual values across a dataset,
+penalizing larger errors more heavily. A large value is indicative of poor performance, however the metric is not in
+the same scale/unit as the predictions and ground truths.
 
 ## Implementation Details
 
@@ -37,7 +38,7 @@ $$
 $$
 </div>
 
-Age Estimation::
+Age Estimation:
 
 <div class="grid" markdown>
 | Ground Truth Age (Years) | Predicted Age (Years) |
@@ -61,8 +62,9 @@ outliers or extreme errors on the overall model performance, potentially leading
 predictive ability.
 
 In contexts where outliers are significant or the distribution of errors is important, relying solely on MSE may not
-provide a fully accurate evaluation. It is crucial to supplement MSE with other metrics, such as Mean Absolute Error
-(MAE) or Root Mean Squared Error (RMSE), to gain a more nuanced understanding of model performance.
+provide a fully accurate evaluation. It is crucial to supplement MSE with other metrics, such as [Mean Absolute Error
+(MAE)](./mean-absolute-error.md) or Root Mean Squared Error (RMSE), to gain a more nuanced understanding of model
+performance.
 
 Therefore, while MSE is valuable for identifying and correcting large prediction errors, it's advisable to consider a
 range of metrics for a comprehensive assessment of regression models.

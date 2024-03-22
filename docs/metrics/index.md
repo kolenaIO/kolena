@@ -241,8 +241,8 @@ biases, and its intended uses.
     ---
 
     MSE measures the average squared difference between the predicted values and the actual values,
-    emphasizing larger errors more significantly than smaller ones. It is mainly different from MAE in that
-    larger errors are penalized more heavily.
+    emphasizing larger errors more significantly than smaller ones. It is mainly different from
+    [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
 
 </div>
 
