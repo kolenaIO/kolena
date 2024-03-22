@@ -224,6 +224,20 @@ biases, and its intended uses.
 
 </div>
 
+## Regression
+
+<div class="grid cards" markdown>
+
+- [Mean Absolute Error](mean-absolute-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+</div>
+
 ## Kolena Insights
 
 <div class="grid cards" markdown>
