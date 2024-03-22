@@ -50,6 +50,8 @@ from kolena.workflow.annotation import ScoredClassificationLabel
         ("test.pcd", DatapointType.POINT_CLOUD),
         ("gcp://summary.pdf", DatapointType.DOCUMENT),
         ("//my.mp3", DatapointType.AUDIO),
+        (None, DatapointType.TABULAR),
+        (123, DatapointType.TABULAR),
     ],
 )
 def test__infer_datatype_value(uri: str, expected: str) -> None:
@@ -59,12 +61,21 @@ def test__infer_datatype_value(uri: str, expected: str) -> None:
 def test__add_datatype() -> None:
     df = pd.DataFrame(
         dict(
-            locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+            locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd", None, 123],
         ),
     )
     _add_datatype(df)
     assert df[DATA_TYPE_FIELD].equals(
-        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
+        pd.Series(
+            [
+                DatapointType.DOCUMENT,
+                DatapointType.IMAGE,
+                DatapointType.VIDEO,
+                DatapointType.POINT_CLOUD,
+                DatapointType.TABULAR,
+                DatapointType.TABULAR,
+            ],
+        ),
     )
 
 

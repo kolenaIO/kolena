@@ -99,7 +99,11 @@ def _normalize_url(x: str) -> str:
 
 
 def _infer_datatype_value(x: str) -> str:
-    url = _normalize_url(x)
+    try:
+        url = _normalize_url(x or "")
+    except Exception:
+        return DatapointType.TABULAR.value
+
     mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)
