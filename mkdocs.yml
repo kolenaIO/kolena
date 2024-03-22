@@ -109,6 +109,7 @@ nav:
       - metrics/wer-cer-mer.md
     - Regression:
       - metrics/mean-absolute-error.md
+      - metrics/mean-squared-error.md
     - Kolena Insights:
       - metrics/statistical-significance.md
   - Help & FAQ:
