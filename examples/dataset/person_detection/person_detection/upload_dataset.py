@@ -43,6 +43,12 @@ def main() -> None:
         default=DATASET_NAME,
         help="Optionally specify a custom dataset name to upload.",
     )
+    ap.add_argument(
+        "--sample-count",
+        type=int,
+        default=0,
+        help="Number of samples to use. All samples are used by default.",
+    )
     run(ap.parse_args())
 
 
