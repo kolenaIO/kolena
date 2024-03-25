@@ -19,7 +19,7 @@ import pytest
 from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset._common import validate_id_fields
-from kolena.errors import DuplicateDatasetIdError
+from kolena.errors import DuplicateDatapointIdError
 from kolena.errors import InputValidationError
 
 
@@ -89,7 +89,7 @@ def test__validate_dataframe_ids__error(df: pd.DataFrame, id_fields: List[str]) 
 
 
 def test__validate_dataframe_ids__duplicate_id() -> None:
-    with pytest.raises(DuplicateDatasetIdError) as e:
+    with pytest.raises(DuplicateDatapointIdError) as e:
         data = list(range(15))
         a = data + data
         b = data + data[:12] + [1, 2, 3]

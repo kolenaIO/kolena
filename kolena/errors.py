@@ -30,8 +30,8 @@ class InputValidationError(ValueError, KolenaError):
     """Exception indicating that provided input data failed validation."""
 
 
-class DuplicateDatasetIdError(InputValidationError):
-    """Exception when provided input contains multiple references to the same dataset id values"""
+class DuplicateDatapointIdError(InputValidationError):
+    """Exception when provided input contains multiple references to the same datapoint id values"""
 
     def __init__(self, *args: Any, duplicate_ids: List[Dict[str, Any]]) -> None:
         super().__init__(args)

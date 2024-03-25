@@ -18,7 +18,7 @@ from typing import Optional
 import pandas as pd
 
 from kolena._utils import log
-from kolena.errors import DuplicateDatasetIdError
+from kolena.errors import DuplicateDatapointIdError
 from kolena.errors import InputValidationError
 
 COL_DATAPOINT = "datapoint"
@@ -56,7 +56,7 @@ def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -
         if duplicates.any():
             duplicate_ids = df[duplicates][id_fields]
             duplicate_ids.drop_duplicates(inplace=True)
-            raise DuplicateDatasetIdError(
+            raise DuplicateDatapointIdError(
                 f"invalid id_fields: input dataframe's id field values are not unique for {id_fields}",
                 duplicate_ids=duplicate_ids[:_MAX_DUPLICATE_ID_REPORT].to_dict(orient="records"),
             )
