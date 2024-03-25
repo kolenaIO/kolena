@@ -52,7 +52,9 @@ def _deserialize_dataobject(x: Any) -> Any:
 
 
 def _serialize_dataobject_str(x: Any) -> Any:
-    return json.dumps(x, cls=DataObjectJSONEncoder)
+    if isinstance(x, list) or isinstance(x, dict):
+        return json.dumps(x, cls=DataObjectJSONEncoder)
+    return x
 
 
 def _deserialize_dataobject_str(x: Any) -> Any:
