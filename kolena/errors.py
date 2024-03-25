@@ -34,7 +34,7 @@ class DuplicateDatapointIdError(InputValidationError):
     """Exception when provided input contains multiple references to the same datapoint id values"""
 
     def __init__(self, *args: Any, duplicate_ids: List[Dict[str, Any]]) -> None:
-        super().__init__(args)
+        super().__init__(*args)
         self.duplicate_ids = duplicate_ids
 
 
