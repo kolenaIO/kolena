@@ -98,12 +98,11 @@ def _normalize_url(x: str) -> str:
     return url._replace(query="", fragment="").geturl()
 
 
-def _infer_datatype_value(x: str) -> str:
-    try:
-        url = _normalize_url(x or "")
-    except Exception:
+def _infer_datatype_value(x: Any) -> str:
+    if not isinstance(x, str):
         return DatapointType.TABULAR.value
 
+    url = _normalize_url(x or "")
     mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)

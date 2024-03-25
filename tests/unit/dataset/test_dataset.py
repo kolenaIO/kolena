@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 import random
+from typing import Any
 from typing import List
 
 import pandas as pd
@@ -54,7 +55,7 @@ from kolena.workflow.annotation import ScoredClassificationLabel
         (123, DatapointType.TABULAR),
     ],
 )
-def test__infer_datatype_value(uri: str, expected: str) -> None:
+def test__infer_datatype_value(uri: Any, expected: str) -> None:
     assert _infer_datatype_value(uri) == expected
 
 
