@@ -42,7 +42,7 @@ def _deserialize_dataobject(x: Any) -> Any:
         return [_deserialize_dataobject(item) for item in x]
 
     if isinstance(x, dict):
-        if data_type := x.get(DATA_TYPE_FIELD):
+        if data_type := x.pop(DATA_TYPE_FIELD, None):
             if typed_dataobject := _DATA_TYPE_MAP.get(data_type):
                 return typed_dataobject._from_dict(x)
         else:
@@ -52,7 +52,7 @@ def _deserialize_dataobject(x: Any) -> Any:
 
 
 def _serialize_dataobject_str(x: Any) -> Any:
-    if isinstance(x, list) or isinstance(x, dict):
+    if isinstance(x, list) or isinstance(x, dict) or isinstance(x, DataObject):
         return json.dumps(x, cls=DataObjectJSONEncoder)
     return x
 
