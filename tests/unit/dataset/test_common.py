@@ -60,6 +60,8 @@ def test__validate_id_fields__validation_error(
     [
         (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"]),
         (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"]),
+        (pd.DataFrame(dict(a=[None, ""])), ["a"]),
+        (pd.DataFrame(dict(a=[None, ""], b=[None, None])), ["a", "b"]),
     ],
 )
 def test__validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
