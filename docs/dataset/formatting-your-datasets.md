@@ -32,7 +32,7 @@ for generating/selecting a unique identifier if your data does not have a natura
   field is usually used as the ID field.
 - For datapoints with a `text` field for text-based models, we recommend either generating and saving a UUID for each
   datapoint or generating a hash of the `text` field to use as the ID field. You can also use the `text` field itself
-- as the ID field.
+  as the ID field.
 - For other kinds of datapoints, we recommend generating and saving a UUID for each datapoint to use as the ID field.
 
 Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
