@@ -68,9 +68,10 @@ When you upload your dataset, you will need to specify one or more ID fields. Th
 key for the dataset. In other words, each datapoint should have a distinct combination of values in the specified ID
 field(s).
 
-Kolena uses the ID field(s) in your dataset to associate model results with the appropriate datapoints, and
-you will need to include the ID field(s) as fields in any model results. For this reason, we recommend that your
-ID fields be convenient to generate and pass around with your model results.
+Kolena uses the ID field(s) in your dataset to associate your model results with the appropriate datapoints, and
+you will need to include the ID field(s) as fields in any model results you upload. For this reason, we recommend
+that your ID fields be convenient to generate and pass around with your model results. Typically, this means selecting
+a single short string or integer field as the ID.
 
 For more information on how to specify your ID fields, see the relevant documentation on
 [formatting your datasets](../formatting-your-datasets.md#what-defines-a-datapoint).
