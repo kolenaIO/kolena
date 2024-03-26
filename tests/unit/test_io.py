@@ -40,7 +40,7 @@ DF_TEST = pd.DataFrame.from_dict(
         "id": list(range(10)),
         "bad actor": [
             "{",
-            dict(value="box"),
+            dict(value="box", data_type="MY/DATATYPE"),
             15,
             None,
             "foo",
@@ -69,7 +69,7 @@ def test__dataframe_json() -> None:
             "id": list(range(10)),
             "bad actor": [
                 "{",
-                dict(value="box"),
+                dict(value="box", data_type="MY/DATATYPE"),
                 15,
                 None,
                 "foo",
@@ -102,7 +102,7 @@ def test__dataframe_csv() -> None:
             "id": list(range(10)),
             "bad actor": [
                 "{",
-                dict(value="box"),
+                dict(value="box", data_type="MY/DATATYPE"),
                 15,
                 NAN,
                 "foo",
