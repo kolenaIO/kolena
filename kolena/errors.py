@@ -15,6 +15,10 @@
 Reference for various exceptions raised from `kolena`. All custom exceptions extend the base
 [`KolenaError`][kolena.errors.KolenaError].
 """
+from typing import Any
+from typing import Dict
+from typing import List
+
 from requests import HTTPError
 
 
@@ -24,6 +28,14 @@ class KolenaError(Exception):
 
 class InputValidationError(ValueError, KolenaError):
     """Exception indicating that provided input data failed validation."""
+
+
+class DuplicateDatapointIdError(InputValidationError):
+    """Exception when provided input contains multiple references to the same datapoint id values"""
+
+    def __init__(self, *args: Any, duplicate_ids: List[Dict[str, Any]]) -> None:
+        super().__init__(*args)
+        self.duplicate_ids = duplicate_ids
 
 
 class IncorrectUsageError(RuntimeError, KolenaError):

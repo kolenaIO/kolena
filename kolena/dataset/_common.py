@@ -18,12 +18,14 @@ from typing import Optional
 import pandas as pd
 
 from kolena._utils import log
+from kolena.errors import DuplicateDatapointIdError
 from kolena.errors import InputValidationError
 
 COL_DATAPOINT = "datapoint"
 COL_DATAPOINT_ID_OBJECT = "datapoint_id_object"
 COL_EVAL_CONFIG = "eval_config"
 COL_RESULT = "result"
+_MAX_DUPLICATE_ID_REPORT = 10
 
 DEFAULT_SOURCES = [dict(type="sdk")]
 
@@ -50,9 +52,13 @@ def validate_id_fields(id_fields: List[str], existing_id_fields: Optional[List[s
 
 def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -> None:
     try:
-        if df[id_fields].duplicated().any():
-            raise InputValidationError(
+        duplicates = df[id_fields].duplicated()
+        if duplicates.any():
+            duplicate_ids = df[duplicates][id_fields]
+            duplicate_ids.drop_duplicates(inplace=True)
+            raise DuplicateDatapointIdError(
                 f"invalid id_fields: input dataframe's id field values are not unique for {id_fields}",
+                duplicate_ids=duplicate_ids[:_MAX_DUPLICATE_ID_REPORT].to_dict(orient="records"),
             )
     except TypeError as e:
         raise InputValidationError("id fields must be hashable") from e
