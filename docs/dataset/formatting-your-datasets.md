@@ -25,7 +25,15 @@ and has brightness and contrast data.
 
 When uploading a dataset to Kolena, it is important to be able to differentiate between each datapoint. This is
 accomplished by configuring an `id_field` - a unique identifier for a datapoint. You can select any field that is
-unique across your data, or generate one if no unique identifiers exist for your dataset.
+unique across your data, or generate one if no unique identifiers exist for your dataset. Below are some common patterns
+for generating/selecting a unique identifier if your data does not have a natural ID field:
+
+- If your datapoints contain a `locator` field pointing to the external files representing your model inputs, the `locator`
+  field is usually used as the ID field.
+- For datapoints with a `text` field for text-based models, we recommend either generating and saving a UUID for each
+  datapoint or generating a hash of the `text` field to use as the ID field. You can also use the `text` field itself
+  as the ID field.
+- For other kinds of datapoints, we recommend generating and saving a UUID for each datapoint to use as the ID field.
 
 Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
 This can be overridden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
