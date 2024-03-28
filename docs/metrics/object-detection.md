@@ -18,20 +18,20 @@ and [ImageNet](https://paperswithcode.com/dataset/imagenet).
 
 Object detection has a wide range of applications from self-driving cars, facial recognition, video surveillance,
 medical imaging, robotics, and more. Therefore, it is crucial to evaluate object detection models to understand their
-performance and applicability any real-world situation.
+performance and applicability in any real-world situation.
 
 ## Evaluation Metrics for Object Detection Models
 
 Evaluation of object detection models requires ground truths and model inferences. The ground truths in an image are
-objects outlined by bounding boxes each labelled with a class, typically annotated by human labellers. The model
-inferences for an image are the labelled bounding boxes having confidence scores (the model's certainty of
+objects outlined by bounding boxes each labeled with a class, typically annotated by human labelers. The model
+inferences for an image are the labeled bounding boxes having confidence scores (the model's certainty of
 correctness), as if the model annotated the image.
 
 A [bounding box matcher](./geometry-matching.md) can align an image's ground truths and model inferences to produce
-[TP / FP / FN counts](./tp-fp-fn-tn.md). These counts are foundational for computing more detailed metrics, which
-provide insight into the model performance. Different evaluation configurations can be tuned to filter out model
+[TP / FP / FN counts](./tp-fp-fn-tn.md). These counts are fundamental for computing more detailed metrics, which
+provide insight into the model's performance. Different evaluation configurations can be tuned to filter out model
 inferences before/after employing a matching algorithm such as filtering out inferences with a confidence score under
-0.01 and/or ignoring matches where the [IoU](./iou.md) (the overlap between the ground truth and and inference
+0.01 and/or ignoring matches where the [IoU](./iou.md) (the overlap between the ground truth and inference
 bounding box) under 0.5.
 
 Below are some of the commonly used metrics for evaluating object detection models:
@@ -42,7 +42,7 @@ Below are some of the commonly used metrics for evaluating object detection mode
     $$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}$$
 
 2. [**Recall**](./recall.md): Recall measures the ratio of correctly detected objects to all actual objects (the
-    annotations). High recall indicates that the model is good at detecting most of the objects labelled by humans.
+    ground truths). High recall indicates that the model is good at detecting most of the objects labeled by humans.
 
     $$\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
 
@@ -69,7 +69,7 @@ Below are some of the commonly used metrics for evaluating object detection mode
 
     !!! info "Guide: Averaging Methods"
 
-        Read the [averaging methods](./averaging-methods.md) guide if you're not familiar with "macro" and "micro"
+        Read the [averaging methods](./averaging-methods.md) guide if you are not familiar with "macro" and "micro"
         terminology.
 
 ## Evaluation Plots for Object Detection Models
@@ -108,14 +108,14 @@ There are several common plots used to analyze the performance of object detecti
     ![pr.png](../assets/images/metrics-confusion-matrix-dark.png#only-dark)
     </center>
 
-    From the plot above, we can see if the model is confused when detecting for cats and dogs.
+    From the plot above, we can see if the model is confused when detecting cats and dogs.
 
 Note that any plot suitable for a classification task is also suitable for an object detection task, as object
 detection is a combination of a classification and localization task. However, it is important to consider what
 matters to your project and design custom plots to describe your model's performance in the best way possible.
 For example: an F1-Score vs confidence threshold plot, a histogram of IoUs, or mAP across different IoUs.
 
-In conclusion, evaluating object detection models is a multifaceted process based on the comparison ground truths
+In conclusion, evaluating object detection models is a multifaceted process based on the comparison of ground truths
 and model inferences. Depending on your own project needs, custom metrics and plots should be considered.
 Understanding and effectively applying these evaluation metrics are essential for optimizing object detection
 models to meet the demands of real-world applications.
