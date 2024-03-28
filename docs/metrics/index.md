@@ -12,6 +12,20 @@ Each ML use case requires different metrics. Using the right metrics is critical
 comparing model performance. In each metrics guide, you can learn about the metric with examples, its limitations and
 biases, and its intended uses.
 
+## Common Machine Learning Tasks
+
+<div class="grid cards" markdown>
+
+- [Object Detection](object-detection.md)
+
+    ---
+
+    A guide to common metrics and plots for object detection.
+
+</div>
+
+## Common Metrics
+
 <div class="grid cards" markdown>
 
 - [Accuracy](accuracy.md)
