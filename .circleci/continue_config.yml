@@ -53,7 +53,7 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-          key: &ci-base-cache ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: &poetry-cache poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - when:
           condition:
             equal: [ "none", << parameters.extras >> ]
@@ -73,7 +73,7 @@ jobs:
                   poetry config installer.max-workers 10
                   poetry install -vv --all-extras --no-ansi
       - save_cache:
-          key: *ci-base-cache
+          key: *poetry-cache
           paths:
             - /home/circleci/project/.poetry/virtualenvs
             - poetry.lock
