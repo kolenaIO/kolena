@@ -93,7 +93,7 @@ jobs:
       - checkout
       - restore_cache:
           name: Restore Poetry cache
-          key: ci-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+          key: poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
       - restore_cache:
           name: Restore MkDocs cache
           key: mkdocs-cache
