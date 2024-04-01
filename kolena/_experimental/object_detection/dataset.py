@@ -179,12 +179,16 @@ def _compute_metrics(
 
 def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
     try:
-        labels = {x.label for x in itertools.chain.from_iterable(ground_truth)}.union(
-            {x.label for x in itertools.chain.from_iterable(inference)},
+        labels = {x.label for x in itertools.chain.from_iterable(_filter_null(ground_truth))}.union(
+            {x.label for x in itertools.chain.from_iterable(_filter_null(inference))},
         )
         return len(labels) >= 2
     except AttributeError:
         return False
+
+
+def _filter_null(series: pd.Series) -> pd.Series:
+    return series[series.notnull()]
 
 
 def _validate_column_present(df: pd.DataFrame, col: str) -> None:
