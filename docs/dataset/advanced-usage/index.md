@@ -15,5 +15,13 @@ This section contains tutorial documentation for advanced features for Kolena Da
 
     Extract and upload embeddings on each image to set up natural language
     and similarity search across image data and results on the Kolena platform.
+</div>
 
+<div class="grid cards" markdown>
+- [:kolena-comparison-16: Extracting Text Metadata](extract-metadata-text.md)
+
+    ---
+
+    Extract metadata and properties from fields in a dataset with textual data
+    to enable potential insights.
 </div>

@@ -26,11 +26,14 @@ Also select the properties of the fields you wish to extract.
 
 **Edit Metadata Configuration**: To make additional metadata visible (or to hide existing metadata),
 the configuration can be edited. If it is desired to add properties without re-running the extraction process,
-the box that says "Run extractions on save" must be **unchecked**. This will add/remove metadata properties.
+the box that says "Run extractions on save" must be **unchecked**.
+
+This will add/remove metadata properties. The example below shows how to add the `character_count` property
+to the `best_answer` field without re-running the extraction pipeline.
 
 <figure markdown>
 ![Edit Which Properties Are Visible](../../assets/images/edit-text-extraction-properties.gif)
-<figcaption>Add/Remove Text Metadata by Reconfiguring Extraction</figcaption>
+<figcaption>Example of adding `character_count` to the list of extracted properties</figcaption>
 </figure>
 
 !!! example
