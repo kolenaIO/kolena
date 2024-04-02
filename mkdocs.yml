@@ -22,7 +22,6 @@ nav:
       - Advanced Usage:
         - Advanced Usage: dataset/advanced-usage/index.md
         - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
-        - Extract Metadata for Text: dataset/advanced-usage/extract-metadata-text.md
     - Workflows:
       - Workflows: workflow/index.md
       - Quickstart: workflow/quickstart.md
@@ -112,6 +111,7 @@ nav:
       - metrics/mean-absolute-error.md
     - Kolena Insights:
       - metrics/statistical-significance.md
+      - metrics/extract-metadata-text.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
   - Sign in ↗: https://app.kolena.com
