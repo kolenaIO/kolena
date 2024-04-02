@@ -1,4 +1,8 @@
-# Text Metadata Hydration
+---
+icon: kolena/comparison-16
+---
+
+# :kolena-comparison-20: Text Metadata Hydration
 
 This guide outlines how to configure the extraction of metadata from text data on Kolena. Follow the steps below
 to get started with Automatic Metadata Hydration for Text.
@@ -8,7 +12,7 @@ to get started with Automatic Metadata Hydration for Text.
 **Navigate to Dataset Details**: Scroll down to the "Details" page of your dataset.
 
 <figure markdown>
-![Navigating to Configuration](../assets/images/navigate-to-text-extraction-config.gif)
+![Navigating to Configuration](../../assets/images/navigate-to-text-extraction-config.gif)
 <figcaption>Navigating to Metadata Configuration</figcaption>
 </figure>
 
@@ -16,7 +20,7 @@ to get started with Automatic Metadata Hydration for Text.
 Also select the properties of the fields you wish to extract.
 
 <figure markdown>
-![Select Properties of Text Fields](../assets/images/select-text-extraction-properties.gif)
+![Select Properties of Text Fields](../../assets/images/select-text-extraction-properties.gif)
 <figcaption>Select Specific Properties of Interest For Relevant Fields</figcaption>
 </figure>
 
@@ -25,14 +29,14 @@ the configuration can be edited. If it is desired to add properties without re-r
 the box that says "Run extractions on save" must be **unchecked**. This will add/remove metadata properties.
 
 <figure markdown>
-![Edit Which Properties Are Visible](../assets/images/edit-text-extraction-properties.gif)
+![Edit Which Properties Are Visible](../../assets/images/edit-text-extraction-properties.gif)
 <figcaption>Add/Remove Text Metadata by Reconfiguring Extraction</figcaption>
 </figure>
 
 !!! example
 
     <figure markdown>
-    ![Hydrated Question](../assets/images/hydrated-text-example.png)
+    ![Hydrated Question](../../assets/images/hydrated-text-example.png)
     <figcaption>Example of Hydrated Text </figcaption>
     </figure>
 
