@@ -25,7 +25,7 @@ from kolena.dataset import upload_dataset
 def run(args: Namespace) -> None:
     df_dataset = pd.read_csv(args.dataset_csv, storage_options={"anon": True}, converters={"captions": pd.eval})
     df_dataset["mask"] = df_dataset["mask"].apply(lambda mask: SegmentationMask(locator=mask, labels={1: "PERSON"}))
-    upload_dataset(args.dataset_name, df_dataset)
+    upload_dataset(args.dataset_name, df_dataset, id_fields=["locator"])
 
 
 def main() -> None:
