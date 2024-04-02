@@ -19,6 +19,10 @@ to get started with Automatic Metadata Hydration for Text.
 **Select Text Fields and Properties**: Identify and select the text fields from your dataset that you want to analyze.
 Also select the properties of the fields you wish to extract.
 
+In the examble below we extract properties from the `best_answer` and `question` fields. For the `best_answer` field,
+we display `word_count` and `topic_tag`, whereas for the `question` field we display `word_count`, `readability` and
+`question_type`.
+
 <figure markdown>
 ![Select Properties of Text Fields](../../assets/images/select-text-extraction-properties.gif)
 <figcaption>Select Specific Properties of Interest For Relevant Fields</figcaption>
