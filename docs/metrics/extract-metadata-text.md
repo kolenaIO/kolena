@@ -1,13 +1,9 @@
-# Text Data Analysis Feature Configuration Guide
+# Text Metadata Hydration
 
 This guide outlines how to configure the extraction of metadata from text data on Kolena. Follow the steps below
 to get started with Automatic Metadata Hydration for Text.
 
 ## Configuring Metadata Extraction
-
-To begin, navigate to the dataset's "Details" page to configure the metadata you wish to extract. This involves
-selecting which text fields you want to analyze in addition to specifying the type of metadata to extract
-for each field.
 
 **Navigate to Dataset Details**: Scroll down to the "Details" page of your dataset.
 
