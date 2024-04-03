@@ -5,7 +5,7 @@ icon: kolena/comparison-16
 # :kolena-comparison-20: Text Metadata Extraction
 
 This guide outlines how to configure the extraction of metadata from text data on Kolena. Follow the steps below
-to get started with Automatic Metadata Hydration for Text.
+to get started with Automatic Metadata Extraction for Text.
 
 ## Configuring Metadata Extraction
 
@@ -33,7 +33,7 @@ to get started with Automatic Metadata Hydration for Text.
 ??? "3. Edit Metadata Configuration"
     To make additional metadata visible (or to hide existing metadata),
     the configuration can be edited. If it is desired to add properties without re-running the extraction process,
-    the box that says "Run extractions on save" must be **unchecked**.
+    the box that says "Run extractions on save" must be **unchecked** otherwise the pipeline is re-run.
 
     This will add/remove metadata properties. The example below shows how to add the `character_count` property
     to the `best_answer` field without re-running the extraction pipeline.
@@ -51,9 +51,6 @@ to get started with Automatic Metadata Hydration for Text.
     </figure>
 
 ## Available Text Metadata Properties
-
-Below is a table of the metadata features available for extraction, along with brief descriptions of each. Click on a
-feature name to jump to a more detailed description further down in this document.
 
 | Feature Name                  | Brief Description                              |
 |-------------------------------|------------------------------------------------|
@@ -75,9 +72,6 @@ feature name to jump to a more detailed description further down in this documen
 
 ## Feature Descriptions
 
-Each of the following sections provides an in-depth look at the available features, explaining when and how to use
-them for extracting insights from your data and enhancing model testing.
-
 ### Character Count
 
 This property measures the total number of characters in a text, excluding spaces. It can be useful in scenarios for
@@ -92,7 +86,7 @@ count is simply the sum of all characters present in the text.
 
 Word count quantifies the number of words in a text. This measure might inform scenarios for model testing, especially
 in understanding performance across texts with different information densities. The count is determined by tokenizing
-the text and counting the total number of words.
+the text using the [nltk toolkit](https://www.nltk.org/) and counting the total number of words.
 
 !!! example
 
@@ -102,7 +96,7 @@ the text and counting the total number of words.
 
 Sentence count tallies the total number of sentences in a text. This could provide insights into model testing
 scenarios where the structure and complexity of texts are varied, potentially impacting comprehension or output
-structure. Sentences are identified and counted using natural language processing (NLP) techniques.
+structure. Sentences are identified and counted using the [nltk toolkit](https://www.nltk.org/)'s sentence tokenizer.
 
 !!! example
 
@@ -154,7 +148,7 @@ tools, and leverages the
 Sentiment polarity indicates the overall sentiment tone of a text, from positive to negative. Testing how models
 interpret or generate texts with varying emotional tones could be informed by this property. The polarity score
 leverages the [TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments)
-toolkit which averages subjectivity scores of words in the entire text.
+toolkit.
 
 ??? "Polarity Levels"
     There are 5 possible levels of polarity supported:
@@ -204,7 +198,8 @@ which factors in multiple standard readability formulas to represent how general
 
 The misspelled count identifies the number of words in a text that are not spelled correctly. This could be useful for
 testing models in scenarios involving text quality or educational applications. The count is generated using
-the [textstat](https://pypi.org/project/textstat/) toolkit's spellchecker.
+the [textstat](https://pypi.org/project/textstat/) toolkit's spellchecker. This property can often be a proxy to
+unrecognized named entities as well.
 
 !!! example
 
@@ -268,8 +263,8 @@ classification schema and performed using an [NLP classification model](https://
 
 ### Emotion Tag
 
-An emotion tag assigns a specific emotion to the text, such as happiness or sadness. This could inform scenarios for
-testing models on emotional analysis or content generation. Emotion classification is performed using an
+An emotion tag assigns a specific emotion to the text, such as happiness or sadness. This could give insight into
+how models on texts with different emotional undertones. Emotion classification is performed using an
 [NLP classification model](https://huggingface.co/michellejieli/emotion_text_classifier).
 
 ??? Emotions
@@ -295,8 +290,8 @@ testing models on emotional analysis or content generation. Emotion classificati
 
 ### Topic Tag
 
-Topic tagging determines the main topic or theme of the text. This property might be useful for testing models in
-scenarios where accurate content categorization or recommendation is crucial. Topics are identified using inferences
+Topic tagging determines the main topic or theme of the text. This property might be useful to gauge model
+performance with relation to different topics pertaining to content. Topics are identified using inferences
 from an [NLP classification model](https://huggingface.co/cardiffnlp/tweet-topic-21-multi).
 
 ??? Topics
@@ -333,8 +328,8 @@ from an [NLP classification model](https://huggingface.co/cardiffnlp/tweet-topic
 ### Non-ASCII Character Count
 
 Counts non-ASCII characters, which can indicate the use of emojis, special symbols, or non-English text. This feature
-can reveal insights into user behavior, cultural nuances, and text encoding issues. It's valuable for preparing
-datasets for models that are sensitive to character encoding and for analyzing text for multicultural engagement.
+could be potentially helpful in ascertaining how models deal with non-ascii characters, i.e when there are multiple
+languages in the same text, etc.
 
 !!! example
 
