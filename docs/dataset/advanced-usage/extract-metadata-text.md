@@ -36,7 +36,8 @@ to get started with Automatic Metadata Extraction for Text.
     the box that says "Run extractions on save" must be **unchecked** otherwise the pipeline is re-run.
 
     This will add/remove metadata properties. The example below shows how to add the `character_count` property
-    to the `best_answer` field without re-running the extraction pipeline.
+    to the `best_answer` field without re-running the extraction pipeline. The properties shown in purple
+    are the automatically extracted properties.
 
     <figure markdown>
     ![Edit Which Properties Are Visible](../../assets/images/edit-text-extraction-properties.gif)
@@ -47,7 +48,8 @@ to get started with Automatic Metadata Extraction for Text.
 
     <figure markdown>
     ![Hydrated Question](../../assets/images/hydrated-text-example.png)
-    <figcaption>Example of Hydrated Text </figcaption>
+    <figcaption>Example of Hydrated Text - Note that the
+        purple metadata indicate that they are auto-extracted </figcaption>
     </figure>
 
 ## Available Text Metadata Properties
@@ -76,13 +78,13 @@ The following properties are available for automatic text metadata extraction:
 
 ### Character Count
 
-**Character count** measures the total number of characters in a text, excluding spaces. It can be useful in scenarios
+**Character count** measures the total number of characters in a text. It can be useful in scenarios
 for testing how models handle texts of varying lengths, perhaps affecting processing time or output coherency.
 Character count is simply the sum of all characters present in the text.
 
 !!! example
 
-    "What phenomenon was conclusively proven by J. B. Rhine?" has  **47** characters (excluding spaces).
+    "What phenomenon was conclusively proven by J. B. Rhine?" has  **55** characters (including spaces).
 
 ### Word Count
 
@@ -122,28 +124,27 @@ unique words by the total word count.
 ### Sentiment: Subjectivity
 
 **Sentiment subjectivity** assesses the subjectivity level of the text, which could be useful in model testing
-scenarios that require differentiation between objective and subjective texts. Subjectivity is calculated using
+scenarios that require differentiation between objective and subjective texts.
+Subjectivity is calculated using
 the
 [TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments) toolkit.
 
-??? "Subjectivity Levels"
-    There are 5 possible levels of subjectivity supported:
+!!! info inline end "Note"
 
-    1. very objective
-    2. mildly objective
-    3. neutral
-    4. mildly subjective
-    5. very subjective
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+There are 5 possible levels of subjectivity supported: <br>
+&nbsp;&nbsp;&nbsp;1. `very objective`<br>
+&nbsp;&nbsp;&nbsp;2. `mildly objective`<br>
+&nbsp;&nbsp;&nbsp;3. `neutral`<br>
+&nbsp;&nbsp;&nbsp;4. `mildly subjective`<br>
+&nbsp;&nbsp;&nbsp;5. `very subjective`<br>
 
 !!! example
 
     "Magic mirror on the wall, who is the fairest one of all" would have a subjectivity of **5 - very subjective**.
 
     "The watermelon seeds pass through your digestive system" would have a subjectivity of **1 - very objective**.
-
-!!! info "These are predictions from NLP models and not ground truths!"
-
-    These are predictions from models - so there is a degree of uncertainty pertaining to predictions.
 
 ### Sentiment: Polarity
 
@@ -153,24 +154,22 @@ is calculated using the
 [TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments)
 toolkit.
 
-??? "Polarity Levels"
-    There are 5 possible levels of polarity supported:
+!!! info inline end "Note"
 
-    1. very negative
-    2. mildly negative
-    3. neutral
-    4. mildly positive
-    5. very positive
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+There are 5 possible levels of polarity supported: <br>
+&nbsp;&nbsp;&nbsp;1. `very negative`<br>
+&nbsp;&nbsp;&nbsp;2. `mildly negative`<br>
+&nbsp;&nbsp;&nbsp;3. `neutral`<br>
+&nbsp;&nbsp;&nbsp;4. `mildly positive`<br>
+&nbsp;&nbsp;&nbsp;5. `very positive`<br>
 
 !!! example
 
     "Ugly ducklings become ducks when they grow up" would have a sentiment_polarity of **1-very negative**.
 
     "I love ice-cream!" would have a sentiment_polarity of **5-very positive**.
-
-!!! info "These are predictions from NLP models and not ground truths!"
-
-    These are predictions from models - so there is a degree of uncertainty pertaining to predictions.
 
 ### Readability
 
@@ -179,14 +178,12 @@ generating or analyzing texts for specific audience groups. This property is cal
 [textstat](https://pypi.org/project/textstat/) toolkit
 which factors in multiple standard readability formulas to represent how generally difficult it is to read a text.
 
-??? "Readability Levels"
-    There are 5 possible levels of readability supported:
-
-    1. 04th Grade and Below
-    2. 04th Grade to 08th Grade
-    3. 08th Grade to 12th Grade
-    4. 12th Grade to 16th Grade
-    5. 16th Grade and Above
+There are 5 possible levels of readability supported: <br>
+&nbsp;&nbsp;&nbsp;1. `04th Grade and Below`<br>
+&nbsp;&nbsp;&nbsp;2. `04th Grade to 08th Grade`<br>
+&nbsp;&nbsp;&nbsp;3. `08th Grade to 12th Grade`<br>
+&nbsp;&nbsp;&nbsp;4. `12th Grade to 16th Grade`<br>
+&nbsp;&nbsp;&nbsp;5. `16th Grade and Above`<br>
 
 !!! example
 
@@ -225,6 +222,10 @@ the [spaCy](https://spacy.io/) toolkit's Named Entity Recognition (NER) module.
 
 ### Toxicity Flag
 
+!!! info inline end "Note"
+
+    These are predictions from models - so they encompass a degree of uncertainty.
+
 A **Toxicity flag** indicates the presence of toxic content within a text, such as insults or hate speech.
 This property might be suggestive for testing models in content moderation scenarios. Toxicity is determined by the
 [detoxify](https://pypi.org/project/detoxify/) toolkit's toxicity classifier.
@@ -234,10 +235,6 @@ This property might be suggestive for testing models in content moderation scena
     "No, it is legal to kill a praying mantis" is something that is flagged as toxic due to the phrase
     "legal to kill"
 
-!!! info "These are predictions from NLP models and not ground truths!"
-
-    These are predictions from models - so there is a degree of uncertainty pertaining to predictions.
-
 ### Question Type
 
 **Question type** classification identifies the nature of a question posed in the text. It might suggest scenarios for
@@ -245,15 +242,17 @@ testing how models understand and respond to different types of inquiries. The c
 the [TREC](https://huggingface.co/datasets/trec) dataset's
 classification schema and performed using an [NLP classification model](https://huggingface.co/datasets/trec).
 
-??? "Question Types"
-    There are 6 possible question types supported:
+!!! info inline end "Note"
 
-    1. Abbreviation (~What)
-    2. Entity (~What)
-    3. Description (~Describe)
-    4. Human being (~Who)
-    5. Location (~Where)
-    6. Numeric (~How Much)
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+There are 6 possible question types supported: <br>
+&nbsp;&nbsp;&nbsp;1. `Abbreviation (~What)` <br>
+&nbsp;&nbsp;&nbsp;2. `Entity (~What)` <br>
+&nbsp;&nbsp;&nbsp;3. `Description (~Describe)` <br>
+&nbsp;&nbsp;&nbsp;4. `Human being (~Who)` <br>
+&nbsp;&nbsp;&nbsp;5. `Location (~Where)` <br>
+&nbsp;&nbsp;&nbsp;6. `Numeric (~How Much)` <br>
 
 !!! example
 
@@ -261,26 +260,21 @@ classification schema and performed using an [NLP classification model](https://
 
     "Who composed the tune of "Twinkle, Twinkle, Little Star"?" would be classified as **Human being (~Who)**
 
-!!! info "These are predictions from NLP models and not ground truths!"
-
-    These are predictions from models - so there is a degree of uncertainty pertaining to predictions.
-
 ### Emotion Tag
 
 An **Emotion tag** assigns a specific emotion to the text, such as happiness or sadness. This could give insight into
 how models on texts with different emotional undertones. Emotion classification is performed using an
 [NLP classification model](https://huggingface.co/michellejieli/emotion_text_classifier).
 
-??? Emotions
-    The 7 following emotions are supported:
+!!! info inline end "Note"
 
-    1. Anger
-    2. Disgust
-    3. Fear
-    4. Joy
-    5. Neutral
-    6. Sadness
-    7. Surprise
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+The 7 following emotions are supported: <br>
+&nbsp;&nbsp;&nbsp;1. `Anger` &ensp;&ensp;&ensp;&nbsp; 5. `Neutral` <br>
+&nbsp;&nbsp;&nbsp;2. `Disgust` &ensp; 6. `Sadness` <br>
+&nbsp;&nbsp;&nbsp;3. `Fear` &ensp;&ensp;&ensp;&ensp; 7. `Surprise` <br>
+&nbsp;&nbsp;&nbsp;4. `Joy` <br>
 
 !!! example
 
@@ -288,46 +282,39 @@ how models on texts with different emotional undertones. Emotion classification 
 
     "Yes, Nigeria has won a Nobel Prize" would be classified with the emotion of **joy**.
 
-!!! info "These are predictions from NLP models and not ground truths!"
-
-    These are predictions from models - so there is a degree of uncertainty pertaining to predictions.
-
 ### Topic Tag
 
 **Topic tagging** determines the main topic or theme of the text. This property might be useful to gauge model
 performance with relation to different topics pertaining to content. Topics are identified using inferences
 from an [NLP classification model](https://huggingface.co/cardiffnlp/tweet-topic-21-multi).
 
-??? Topics
-    The following topics are supported:
+!!! info inline end "Note"
 
-    1. business & entrepreneurs
-    2. celebrity & pop_culture
-    3. diaries & daily life
-    4. family
-    5. fashion & style
-    6. film_tv & video
-    7. fitness & health
-    8. food & dining
-    9. gaming
-    10. learning & educational
-    11. music
-    12. news & social_concern
-    13. other hobbies
-    14. relationships
-    15. science & technology
-    16. sports
-    17. travel & adventure
-    18. youth & student life
-    19. arts & culture
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+The following topics are supported: <br>
+&nbsp;&nbsp;&nbsp;1. `business & entrepreneurs` &nbsp; 11. `music` <br>
+&nbsp;&nbsp;&nbsp;2. `celebrity & pop culture` &nbsp;&nbsp;  12. `news & society` <br>
+&nbsp;&nbsp;&nbsp;3. `diaries & daily life` &nbsp;&nbsp;&nbsp;&nbsp;&ensp;&ensp; 13. `other hobbies` <br>
+&nbsp;&nbsp;&nbsp;4. `family` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 14. `relationships` <br>
+&nbsp;&nbsp;&nbsp;5. `fashion & style`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 15. `science` <br>
+&nbsp;&nbsp;&nbsp;6. `film_tv & video`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16. `sports` <br>
+&nbsp;&nbsp;&nbsp;7. `fitness & health` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp; 17. `travel & adventure` <br>
+&nbsp;&nbsp;&nbsp;8. `food & dining` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 18. `youth & student life` <br>
+&nbsp;&nbsp;&nbsp;9. `gaming`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 19. `arts & culture` <br>
+&nbsp;&nbsp;&nbsp;10. `learning & educational` <br>
 
 !!! example
 
     "The spiciest part of a chili pepper is the placenta" would be classified with the topic of **food and dining**.
-
-!!! info "These are predictions from NLP models and not ground truths!"
-
-    These are predictions from models - so there is a degree of uncertainty pertaining to predictions.
 
 ### Non-ASCII Character Count
 
