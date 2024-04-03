@@ -1,8 +1,8 @@
 ---
-icon: kolena/citation-16
+icon: kolena/properties-16
 ---
 
-# :kolena-citation-20: Text Metadata Extraction
+# :kolena-properties-20: Text Metadata Extraction
 
 This guide outlines how to configure the extraction of metadata from text data on Kolena. Follow the steps below
 to get started with Automatic Metadata Extraction for Text.
