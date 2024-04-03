@@ -35,9 +35,12 @@ from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
+from kolena._utils.batched_load import get_preflight_export_size
 from kolena._utils.batched_load import init_upload
-from kolena._utils.batched_load import upload_data_frame_chunk
+from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.consts import MB_BATCH_LIMIT
+from kolena._utils.consts import MB_CONVERSION
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
@@ -242,7 +245,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         df_serializable = df_validated.as_serializable()
 
         init_response = init_upload()
-        upload_data_frame_chunk(df_serializable, init_response.uuid)
+        batch_size = (
+            len(df_serializable) // MB_BATCH_LIMIT // (get_preflight_export_size(df_serializable) // MB_CONVERSION)
+        )
+        upload_data_frame(df_serializable, batch_size, init_response.uuid)
 
         request = API.UploadInferencesRequest(uuid=init_response.uuid, test_run_id=self._id, reset=self.reset)
         res = krequests.put(
@@ -459,7 +465,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         df_serializable = df_validated.as_serializable()
 
         init_response = init_upload()
-        upload_data_frame_chunk(df_serializable, init_response.uuid)
+        batch_size = (
+            len(df_serializable) // MB_BATCH_LIMIT // (get_preflight_export_size(df_serializable) // MB_CONVERSION)
+        )
+        upload_data_frame(df_serializable, batch_size, init_response.uuid)
 
         request = API.UploadTestSampleMetricsRequest(
             uuid=init_response.uuid,
@@ -479,7 +488,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_serializable = df_validated.as_serializable()
 
             init_response = init_upload()
-            upload_data_frame_chunk(df_serializable, init_response.uuid)
+            batch_size = (
+                len(df_serializable) // MB_BATCH_LIMIT // (get_preflight_export_size(df_serializable) // MB_CONVERSION)
+            )
+            upload_data_frame(df_serializable, batch_size, init_response.uuid)
 
             thresholded_metrics_request = API.UploadTestSampleThresholdedMetricsRequest(
                 uuid=init_response.uuid,
@@ -536,7 +548,10 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         df_serializable = df_validated.as_serializable()
 
         init_response = init_upload()
-        upload_data_frame_chunk(df_serializable, init_response.uuid)
+        batch_size = (
+            len(df_serializable) // MB_BATCH_LIMIT // (get_preflight_export_size(df_serializable) // MB_CONVERSION)
+        )
+        upload_data_frame(df_serializable, batch_size, init_response.uuid)
 
         request = API.UploadAggregateMetricsRequest(
             uuid=init_response.uuid,

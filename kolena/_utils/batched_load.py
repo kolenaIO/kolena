@@ -15,6 +15,7 @@ import dataclasses
 import io
 import json
 import math
+import os
 import tempfile
 from typing import Generic
 from typing import Iterable
@@ -77,6 +78,13 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 
 
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
+
+
+def get_preflight_export_size(df: pd.DataGrame, rows: int = 1000) -> int:
+    df_subset = df[:rows]
+    with tempfile.NamedTemporaryFile() as temp:
+        df_subset.to_parquet(temp.name)
+        return os.stat(temp.name).st_size
 
 
 class _BatchedLoader(Generic[DFType]):
