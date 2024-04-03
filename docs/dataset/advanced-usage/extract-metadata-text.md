@@ -52,6 +52,8 @@ to get started with Automatic Metadata Extraction for Text.
 
 ## Available Text Metadata Properties
 
+The following properties are available for automatic text metadata extraction:
+
 | Feature Name                  | Brief Description                              |
 |-------------------------------|------------------------------------------------|
 | [Character Count](#character-count) | Counts all characters, excluding spaces |
@@ -74,9 +76,9 @@ to get started with Automatic Metadata Extraction for Text.
 
 ### Character Count
 
-This property measures the total number of characters in a text, excluding spaces. It can be useful in scenarios for
-testing how models handle texts of varying lengths, perhaps affecting processing time or output coherency. Character
-count is simply the sum of all characters present in the text.
+**Character count** measures the total number of characters in a text, excluding spaces. It can be useful in scenarios
+for testing how models handle texts of varying lengths, perhaps affecting processing time or output coherency.
+Character count is simply the sum of all characters present in the text.
 
 !!! example
 
@@ -84,9 +86,9 @@ count is simply the sum of all characters present in the text.
 
 ### Word Count
 
-Word count quantifies the number of words in a text. This measure might inform scenarios for model testing, especially
-in understanding performance across texts with different information densities. The count is determined by tokenizing
-the text using the [nltk toolkit](https://www.nltk.org/) and counting the total number of words.
+**Word count** quantifies the number of words in a text. This measure might inform scenarios for model testing,
+especially in understanding performance across texts with different information densities. The count is determined by
+tokenizing the text using the [nltk toolkit](https://www.nltk.org/) and counting the total number of words.
 
 !!! example
 
@@ -94,7 +96,7 @@ the text using the [nltk toolkit](https://www.nltk.org/) and counting the total 
 
 ### Sentence Count
 
-Sentence count tallies the total number of sentences in a text. This could provide insights into model testing
+**Sentence count** tallies the total number of sentences in a text. This could provide insights into model testing
 scenarios where the structure and complexity of texts are varied, potentially impacting comprehension or output
 structure. Sentences are identified and counted using the [nltk toolkit](https://www.nltk.org/)'s sentence tokenizer.
 
@@ -106,7 +108,7 @@ structure. Sentences are identified and counted using the [nltk toolkit](https:/
 
 ### Vocabulary Level
 
-Vocabulary level calculates the ratio of unique words to the total number of words, offering a measure of lexical
+**Vocabulary level**  calculates the ratio of unique words to the total number of words, offering a measure of lexical
 diversity. It might be suggestive for testing models in contexts where linguistic diversity or the richness of content
 varies but can be biased/misleading when there are only a few words. This ratio is computed by dividing the count of
 unique words by the total word count.
@@ -119,9 +121,9 @@ unique words by the total word count.
 
 ### Sentiment: Subjectivity
 
-This property assesses the subjectivity level of the text, which could be useful in model testing scenarios that
-require differentiation between objective and subjective texts. Subjectivity is calculated using sentiment analysis
-tools, and leverages the
+**Sentiment subjectivity** assesses the subjectivity level of the text, which could be useful in model testing
+scenarios that require differentiation between objective and subjective texts. Subjectivity is calculated using
+the
 [TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments) toolkit.
 
 ??? "Subjectivity Levels"
@@ -145,9 +147,10 @@ tools, and leverages the
 
 ### Sentiment: Polarity
 
-Sentiment polarity indicates the overall sentiment tone of a text, from positive to negative. Testing how models
+**Sentiment polarity** indicates the overall sentiment tone of a text, from positive to negative. Testing how models
 interpret or generate texts with varying emotional tones could be informed by this property. The polarity score
-leverages the [TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments)
+is calculated using the
+[TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments)
 toolkit.
 
 ??? "Polarity Levels"
@@ -161,9 +164,9 @@ toolkit.
 
 !!! example
 
-    "Ugly ducklings become ducks when they grow up" would have a sentiment_polarity of **1-Very Negative**.
+    "Ugly ducklings become ducks when they grow up" would have a sentiment_polarity of **1-very negative**.
 
-    "I love ice-cream!" would have a sentiment_polarity of **5-Very Positive**.
+    "I love ice-cream!" would have a sentiment_polarity of **5-very positive**.
 
 !!! info "These are predictions from NLP models and not ground truths!"
 
@@ -171,7 +174,7 @@ toolkit.
 
 ### Readability
 
-Readability assesses how accessible the text is to readers, which might suggest scenarios for testing models on
+**Readability** assesses how accessible the text is to readers, which might suggest scenarios for testing models on
 generating or analyzing texts for specific audience groups. This property is calculated using the
 [textstat](https://pypi.org/project/textstat/) toolkit
 which factors in multiple standard readability formulas to represent how generally difficult it is to read a text.
@@ -196,7 +199,7 @@ which factors in multiple standard readability formulas to represent how general
 
 ### Misspelled Count
 
-The misspelled count identifies the number of words in a text that are not spelled correctly. This could be useful for
+**Misspelled count** identifies the number of words in a text that are not spelled correctly. This could be useful for
 testing models in scenarios involving text quality or educational applications. The count is generated using
 the [textstat](https://pypi.org/project/textstat/) toolkit's spellchecker. This property can often be a proxy to
 unrecognized named entities as well.
@@ -209,9 +212,10 @@ unrecognized named entities as well.
 
 ### Named Entity Count
 
-This count measures the number of named entities (like people, places, and organizations) in a text. It could inform
-model testing scenarios focused on information extraction or content categorization. Named entities are identified
-using the [spaCy](https://spacy.io/) toolkit's Named Entity Recognition (NER) module.
+**Named entity count** measures the number of named entities (like people, places, and organizations) in a text.
+It could inform model testing scenarios focused on information extraction or content categorization.
+Named entities are identified using
+the [spaCy](https://spacy.io/) toolkit's Named Entity Recognition (NER) module.
 
 !!! example
 
@@ -221,8 +225,8 @@ using the [spaCy](https://spacy.io/) toolkit's Named Entity Recognition (NER) mo
 
 ### Toxicity Flag
 
-A toxicity flag indicates the presence of toxic content within a text, such as insults or hate speech. This property
-might be suggestive for testing models in content moderation scenarios. Toxicity is determined by the
+A **Toxicity flag** indicates the presence of toxic content within a text, such as insults or hate speech.
+This property might be suggestive for testing models in content moderation scenarios. Toxicity is determined by the
 [detoxify](https://pypi.org/project/detoxify/) toolkit's toxicity classifier.
 
 !!! example
@@ -236,7 +240,7 @@ might be suggestive for testing models in content moderation scenarios. Toxicity
 
 ### Question Type
 
-Question type classification identifies the nature of a question posed in the text. It might suggest scenarios for
+**Question type** classification identifies the nature of a question posed in the text. It might suggest scenarios for
 testing how models understand and respond to different types of inquiries. The classification is discretized into
 the [TREC](https://huggingface.co/datasets/trec) dataset's
 classification schema and performed using an [NLP classification model](https://huggingface.co/datasets/trec).
@@ -263,7 +267,7 @@ classification schema and performed using an [NLP classification model](https://
 
 ### Emotion Tag
 
-An emotion tag assigns a specific emotion to the text, such as happiness or sadness. This could give insight into
+An **Emotion tag** assigns a specific emotion to the text, such as happiness or sadness. This could give insight into
 how models on texts with different emotional undertones. Emotion classification is performed using an
 [NLP classification model](https://huggingface.co/michellejieli/emotion_text_classifier).
 
@@ -290,7 +294,7 @@ how models on texts with different emotional undertones. Emotion classification 
 
 ### Topic Tag
 
-Topic tagging determines the main topic or theme of the text. This property might be useful to gauge model
+**Topic tagging** determines the main topic or theme of the text. This property might be useful to gauge model
 performance with relation to different topics pertaining to content. Topics are identified using inferences
 from an [NLP classification model](https://huggingface.co/cardiffnlp/tweet-topic-21-multi).
 
@@ -327,7 +331,7 @@ from an [NLP classification model](https://huggingface.co/cardiffnlp/tweet-topic
 
 ### Non-ASCII Character Count
 
-Counts non-ASCII characters, which can indicate the use of emojis, special symbols, or non-English text. This feature
+Counts **non-ASCII characters**, which can indicate the use of emojis, special symbols, or non-English text. This feature
 could be potentially helpful in ascertaining how models deal with non-ascii characters, i.e when there are multiple
 languages in the same text, etc.
 
@@ -337,7 +341,8 @@ languages in the same text, etc.
 
 ### Difficult Word Fraction
 
-Measures the proportion of "difficult" words present in a text. This property can reveal insight into the
+**Difficult word fraction** measures the proportion of "difficult" words present in a text.
+This property can reveal insight into the
 difficulty of the text from both a readability and vocabulary perspective. This property is calculated using the
 [textstat](https://pypi.org/project/textstat/) toolkit.
 
