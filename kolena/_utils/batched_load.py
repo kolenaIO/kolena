@@ -80,7 +80,7 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-def get_preflight_export_size(df: pd.DataGrame, rows: int = 1000) -> int:
+def get_preflight_export_size(df: pd.DataFrame, rows: int = 1000) -> int:
     df_subset = df[:rows]
     with tempfile.NamedTemporaryFile() as temp:
         df_subset.to_parquet(temp.name)
