@@ -206,9 +206,9 @@ unrecognized named entities as well.
 
 !!! example
 
-    Thaat is wrong! would have a misspelled count of **1**.
+    "Thaat is wrong!" would have a misspelled count of **1**.
 
-    That is wrong! would have a misspelled count of **0**.
+    "That is wrong!" would have a misspelled count of **0**.
 
 ### Named Entity Count
 
