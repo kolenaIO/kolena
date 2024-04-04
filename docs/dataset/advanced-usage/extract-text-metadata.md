@@ -4,7 +4,7 @@ icon: kolena/properties-16
 
 # :kolena-properties-20: Extracting Metadata from Text Fields
 
-This guide outlines how to configure the extraction of metadata from text data on Kolena. Follow the steps below
+This guide outlines how to configure the extraction of metadata from text fields on Kolena. Follow the steps below
 to get started with Automatic Metadata Extraction for Text.
 
 ## Configuring Metadata Extraction
@@ -13,7 +13,8 @@ to get started with Automatic Metadata Extraction for Text.
     Scroll down to the "Details" page of your dataset.
 
     <figure markdown>
-    ![Navigating to Configuration](../../assets/images/navigate-to-text-extraction-config.gif)
+    ![Navigating to Configuration](../../assets/images/navigate-to-text-extraction-config-dark.gif#only-dark)
+    ![Navigating to Configuration](../../assets/images/navigate-to-text-extraction-config-light.gif#only-light)
     <figcaption>Navigating to Metadata Configuration</figcaption>
     </figure>
 
@@ -26,28 +27,29 @@ to get started with Automatic Metadata Extraction for Text.
     `question_type`.
 
     <figure markdown>
-    ![Select Properties of Text Fields](../../assets/images/select-text-extraction-properties.gif)
+    ![Select Properties of Text Fields](../../assets/images/select-text-extraction-properties-dark.gif#only-dark)
+    ![Select Properties of Text Fields](../../assets/images/select-text-extraction-properties-light.gif#only-light)
     <figcaption>Select Specific Properties of Interest For Relevant Fields</figcaption>
     </figure>
 
 ??? "3. Edit Metadata Configuration"
-    To make additional metadata visible (or to hide existing metadata),
-    the configuration can be edited. If it is desired to add properties without re-running the extraction process,
-    the box that says "Run extractions on save" must be **unchecked** otherwise the pipeline is re-run.
+    To make additional metadata visible (or to hide existing metadata), the configuration can be edited.
 
     This will add/remove metadata properties. The example below shows how to add the `character_count` property
-    to the `best_answer` field without re-running the extraction pipeline. The properties shown in purple
+    to the `best_answer`. The properties shown in purple
     are the automatically extracted properties.
 
     <figure markdown>
-    ![Edit Which Properties Are Visible](../../assets/images/edit-text-extraction-properties.gif)
+    ![Edit Which Properties Are Visible](../../assets/images/edit-text-extraction-properties-dark.gif#only-dark)
+    ![Edit Which Properties Are Visible](../../assets/images/edit-text-extraction-properties-light.gif#only-light)
     <figcaption>Example of adding `character_count` to the list of extracted properties</figcaption>
     </figure>
 
 !!! example
 
     <figure markdown>
-    ![Hydrated Question](../../assets/images/hydrated-text-example-light.png)
+    ![Hydrated Question](../../assets/images/hydrated-text-example-light.png#only-light)
+    ![Hydrated Question](../../assets/images/hydrated-text-example-dark.png#only-dark)
     <figcaption>Example of Hydrated Text - Note that the
         purple metadata indicate that they are auto-extracted </figcaption>
     </figure>
