@@ -103,6 +103,22 @@ biases, and its intended uses.
     are the building blocks of many other metrics, including [accuracy](accuracy.md), [precision](precision.md),
     and [recall](recall.md).
 
+- [Mean Absolute Error](mean-absolute-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error](mean-squared-error.md)
+
+    ---
+
+    MSE measures the average squared difference between the predicted values and the actual values,
+    emphasizing larger errors more significantly than smaller ones. It is mainly different from
+    [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
+
 </div>
 
 ## Computer Vision
@@ -221,28 +237,6 @@ biases, and its intended uses.
     Word Error Rate (WER), Character Error Rate (CER), and Match Error Rate (MER) are essential metrics used in the
     evaluation of speech recognition and natural language processing systems. From a high level, they each quantify
     the similarity between reference and candidate texts, with zero being a perfect score.
-
-</div>
-
-## Regression
-
-<div class="grid cards" markdown>
-
-- [Mean Absolute Error](mean-absolute-error.md)
-
-    ---
-
-    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
-    the mean of the absolute differences between predicted and actual values across a dataset, treating each
-    discrepancy equally.
-
-- [Mean Squared Error](mean-squared-error.md)
-
-    ---
-
-    MSE measures the average squared difference between the predicted values and the actual values,
-    emphasizing larger errors more significantly than smaller ones. It is mainly different from
-    [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
 
 </div>
 
