@@ -26,6 +26,7 @@ predicted values for a total of $N$ number of predictions.
 
 Temperature Estimation:
 
+<div class="grid" markdown>
 | Ground Truth Temperature (&deg;C) | Predicted Temperature (&deg;C) |
 | --- | --- |
 | 25 | 27 |
@@ -38,9 +39,11 @@ $$
 &\approx 3.81
 \end{align}
 $$
+</div>
 
 Age Estimation:
 
+<div class="grid" markdown>
 | Ground Truth Age (Years) | Predicted Age (Years) |
 | --- | --- |
 | 60 | 70 |
@@ -53,6 +56,7 @@ $$
 &\approx 15.8
 \end{align}
 $$
+</div>
 
 ## Limitations and Biases
 
