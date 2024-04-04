@@ -22,7 +22,7 @@ nav:
       - Advanced Usage:
         - Advanced Usage: dataset/advanced-usage/index.md
         - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
-        - Extract Metadata for Text: dataset/advanced-usage/extract-text-metadata.md
+        - Extracting Metadata from Text Fields: dataset/advanced-usage/extract-text-metadata.md
     - Workflows:
       - Workflows: workflow/index.md
       - Quickstart: workflow/quickstart.md

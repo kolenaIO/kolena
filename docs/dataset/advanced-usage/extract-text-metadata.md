@@ -238,15 +238,14 @@ This property might be suggestive for testing models in content moderation scena
 
 ### Question Flag
 
-**Question flag** classifies whether a given text is a question or not. It is useful in model testing
-scenarios when distinguishing between statements and questions is particularly useful. It is also used
-in the determination of the [question type](#question-type) property - as a statement would not have
-a question type. This classification is performed using an
-[NLP classification model](https://huggingface.co/shahrukhx01/question-vs-statement-classifier).
-
 !!! info inline end "Note"
 
     These are predictions from models - so they encompass a degree of uncertainty.
+
+**Question flag** classifies whether a given text is a question or not. It is useful in model testing
+scenarios when distinguishing between statements and questions is particularly useful. It is also used
+in the determination of the [question type](#question-type) property. This classification is performed using an
+[NLP classification model](https://huggingface.co/shahrukhx01/question-vs-statement-classifier).
 
 !!! example
 
@@ -260,7 +259,8 @@ a question type. This classification is performed using an
 testing how models understand and respond to different types of inquiries. The classification is discretized into
 the [TREC](https://huggingface.co/datasets/trec) dataset's
 classification schema and performed using an
-[NLP classification model](https://huggingface.co/aychang/bert-base-cased-trec-coarse).
+[NLP classification model](https://huggingface.co/aychang/bert-base-cased-trec-coarse). Note that if the text is not
+flagged as a question by the [question flagger](#question-flag), the question type will be `N/A`.
 
 !!! info inline end "Note"
 
