@@ -92,6 +92,7 @@ nav:
     - metrics/pr-curve.md
     - metrics/recall.md
     - metrics/roc-curve.md
+    - metrics/root-mean-squared-error.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
     - Computer Vision:
