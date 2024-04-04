@@ -61,21 +61,21 @@ The following properties are available for automatic text metadata extraction:
 | Feature Name                  | Brief Description                              |
 |-------------------------------|------------------------------------------------|
 | [Character Count](#character-count) | Counts all characters, excluding spaces |
-| [Word Count](#word-count) | Measures the total number of words |
-| [Sentence Count](#sentence-count) | Tallies the sentences in the text |
-| [Vocabulary Level](#vocabulary-level) | Ratio of unique words to total words |
-| [Sentiment: Subjectivity](#sentiment-subjectivity) | Subjectivity score of the text |
-| [Sentiment: Polarity](#sentiment-polarity) | Polarity score indicating sentiment tone |
-| [Readability](#readability) | Assessment of text readability level |
+| [Difficult Word Fraction](#difficult-word-fraction) | The proportion of difficult words |
+| [Emotion Tag](#emotion-tag) | Classifies the text's associated emotion |
 | [Misspelled Count](#misspelled-count) | Count of misspelled words |
 | [Named Entity Count](#named-entity-count) | Number of named entities in the text |
-| [Toxicity Flag](#toxicity-flag) | Flags potentially toxic content |
+| [Non-ASCII Character Count](#non-ascii-character-count) | Counts non-ASCII characters present |
 | [Question Flag](#question-flag) | Identifies whether the text is a question |
 | [Question Type](#question-type) | Identifies the type of question posed |
-| [Emotion Tag](#emotion-tag) | Classifies the text's associated emotion |
+| [Readability](#readability) | Assessment of text readability level |
+| [Sentence Count](#sentence-count) | Tallies the sentences in the text |
+| [Sentiment: Polarity](#sentiment-polarity) | Polarity score indicating sentiment tone |
+| [Sentiment: Subjectivity](#sentiment-subjectivity) | Subjectivity score of the text |
 | [Topic Tag](#topic-tag) | Determines the overarching topic |
-| [Non-ASCII Character Count](#non-ascii-character-count) | Counts non-ASCII characters present |
-| [Difficult Word Fraction](#difficult-word-fraction) | The proportion of difficult words |
+| [Toxicity Flag](#toxicity-flag) | Flags potentially toxic content |
+| [Vocabulary Level](#vocabulary-level) | Ratio of unique words to total words |
+| [Word Count](#word-count) | Measures the total number of words |
 
 ## Feature Descriptions
 
@@ -89,113 +89,38 @@ Character count is simply the sum of all characters present in the text.
 
     "What phenomenon was conclusively proven by J. B. Rhine?" has  **55** characters (including spaces).
 
-### Word Count
+### Difficult Word Fraction
 
-**Word count** quantifies the number of words in a text. This measure might inform scenarios for model testing,
-especially in understanding performance across texts with different information densities. The count is determined by
-tokenizing the text using the [nltk toolkit](https://www.nltk.org/) and counting the total number of words.
-
-!!! example
-
-    "Hello, world!" consists of **2** words.
-
-### Sentence Count
-
-**Sentence count** tallies the total number of sentences in a text. This could provide insights into model testing
-scenarios where the structure and complexity of texts are varied, potentially impacting comprehension or output
-structure. Sentences are identified and counted using the [nltk toolkit](https://www.nltk.org/)'s sentence tokenizer.
+**Difficult word fraction** measures the proportion of "difficult" words present in a text.
+This property can reveal insight into the
+difficulty of the text from both a readability and vocabulary perspective. This property is calculated using the
+[textstat](https://pypi.org/project/textstat/) toolkit.
 
 !!! example
 
-    "How are you?" contains  **1** sentence.
+    "Lindenstrauss" is considered a difficult word.
 
-    "No. I am your father." contains  **2** sentences.
+### Emotion Tag
 
-### Vocabulary Level
-
-**Vocabulary level**  calculates the ratio of unique words to the total number of words, offering a measure of lexical
-diversity. It might be suggestive for testing models in contexts where linguistic diversity or the richness of content
-varies but can be biased/misleading when there are only a few words. This ratio is computed by dividing the count of
-unique words by the total word count.
-
-!!! example
-
-    "How are you?" has a vocabulary level of  **1** as every word is unique.
-
-    "No, No - Please No!" has a vocabulary level of  **0.25** as there is 1 unique word and a total of 4 words.
-
-### Sentiment: Subjectivity
-
-**Sentiment subjectivity** assesses the subjectivity level of the text, which could be useful in model testing
-scenarios that require differentiation between objective and subjective texts.
-Subjectivity is calculated using
-the
-[TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments) toolkit.
+An **Emotion tag** assigns a specific emotion to the text, such as happiness or sadness. This could give insight into
+how models on texts with different emotional undertones. Emotion classification is performed using an
+[NLP classification model](https://huggingface.co/michellejieli/emotion_text_classifier).
 
 !!! info inline end "Note"
 
     These are predictions from models - so they encompass a degree of uncertainty.
 
-There are 5 possible levels of subjectivity supported: <br>
-&nbsp;&nbsp;&nbsp;1. `very objective`<br>
-&nbsp;&nbsp;&nbsp;2. `mildly objective`<br>
-&nbsp;&nbsp;&nbsp;3. `neutral`<br>
-&nbsp;&nbsp;&nbsp;4. `mildly subjective`<br>
-&nbsp;&nbsp;&nbsp;5. `very subjective`<br>
+The 7 following emotions are supported: <br>
+&nbsp;&nbsp;&nbsp;1. `Anger` &ensp;&ensp;&ensp;&nbsp; 5. `Neutral` <br>
+&nbsp;&nbsp;&nbsp;2. `Disgust` &ensp; 6. `Sadness` <br>
+&nbsp;&nbsp;&nbsp;3. `Fear` &ensp;&ensp;&ensp;&ensp; 7. `Surprise` <br>
+&nbsp;&nbsp;&nbsp;4. `Joy` <br>
 
 !!! example
 
-    "Magic mirror on the wall, who is the fairest one of all" would have a subjectivity of **5 - very subjective**.
+    "No, it is legal to kill a praying mantis" would be classified with the emotion of **disgust**.
 
-    "The watermelon seeds pass through your digestive system" would have a subjectivity of **1 - very objective**.
-
-### Sentiment: Polarity
-
-**Sentiment polarity** indicates the overall sentiment tone of a text, from positive to negative. Testing how models
-interpret or generate texts with varying emotional tones could be informed by this property. The polarity score
-is calculated using the
-[TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments)
-toolkit.
-
-!!! info inline end "Note"
-
-    These are predictions from models - so they encompass a degree of uncertainty.
-
-There are 5 possible levels of polarity supported: <br>
-&nbsp;&nbsp;&nbsp;1. `very negative`<br>
-&nbsp;&nbsp;&nbsp;2. `mildly negative`<br>
-&nbsp;&nbsp;&nbsp;3. `neutral`<br>
-&nbsp;&nbsp;&nbsp;4. `mildly positive`<br>
-&nbsp;&nbsp;&nbsp;5. `very positive`<br>
-
-!!! example
-
-    "Ugly ducklings become ducks when they grow up" would have a sentiment_polarity of **1-very negative**.
-
-    "I love ice-cream!" would have a sentiment_polarity of **5-very positive**.
-
-### Readability
-
-**Readability** assesses how accessible the text is to readers, which might suggest scenarios for testing models on
-generating or analyzing texts for specific audience groups. This property is calculated using the
-[textstat](https://pypi.org/project/textstat/) toolkit
-which factors in multiple standard readability formulas to represent how generally difficult it is to read a text.
-
-There are 5 possible levels of readability supported: <br>
-&nbsp;&nbsp;&nbsp;1. `04th Grade and Below`<br>
-&nbsp;&nbsp;&nbsp;2. `04th Grade to 08th Grade`<br>
-&nbsp;&nbsp;&nbsp;3. `08th Grade to 12th Grade`<br>
-&nbsp;&nbsp;&nbsp;4. `12th Grade to 16th Grade`<br>
-&nbsp;&nbsp;&nbsp;5. `16th Grade and Above`<br>
-
-!!! example
-
-    "No. I am your father" would have a readability score of **04th Grade and Below**.
-
-    "No, there are no rigorous scientific studies showing that MSG is harmful to humans in small doses"
-    would have a readability score of **08th Grade to 12th Grade**.
-
-    "LindenStrauss" would have a readability of **16th Grade and Above** (as it is a difficult word alone)
+    "Yes, Nigeria has won a Nobel Prize" would be classified with the emotion of **joy**.
 
 ### Misspelled Count
 
@@ -223,20 +148,15 @@ the [spaCy](https://spacy.io/) toolkit's Named Entity Recognition (NER) module.
 
     "All Germans are German" would have a named entity count of **2** (German twice)
 
-### Toxicity Flag
+### Non-ASCII Character Count
 
-!!! info inline end "Note"
-
-    These are predictions from models - so they encompass a degree of uncertainty.
-
-A **Toxicity flag** indicates the presence of toxic content within a text, such as insults or hate speech.
-This property might be suggestive for testing models in content moderation scenarios. Toxicity is determined by the
-[detoxify](https://pypi.org/project/detoxify/) toolkit's toxicity classifier.
+Counts **non-ASCII characters**, which can indicate the use of emojis, special symbols, or non-English text. This feature
+could be potentially helpful in ascertaining how models deal with non-ascii characters, i.e when there are multiple
+languages in the same text, etc.
 
 !!! example
 
-    "No, it is legal to kill a praying mantis" is something that is flagged as toxic due to the phrase
-    "legal to kill"
+    "Régarder" would have a non ascii character count of **1**.
 
 ### Question Flag
 
@@ -251,9 +171,9 @@ in the determination of the [question type](#question-type) property. This class
 
 !!! example
 
-    "What did SOS originally stand for?" would be flagged as a question and thus be `true`
+    "What did SOS originally stand for?" would be flagged as a question and thus be **true**
 
-    "Albert is 28 years old" would not be flagged as a question and thus be `false`
+    "Albert is 28 years old" would not be flagged as a question and thus be **false**
 
 ### Question Type
 
@@ -282,27 +202,90 @@ There are 6 possible question types supported: <br>
 
     "Who composed the tune of "Twinkle, Twinkle, Little Star"?" would be classified as **Human being (~Who)**
 
-### Emotion Tag
+### Readability
 
-An **Emotion tag** assigns a specific emotion to the text, such as happiness or sadness. This could give insight into
-how models on texts with different emotional undertones. Emotion classification is performed using an
-[NLP classification model](https://huggingface.co/michellejieli/emotion_text_classifier).
+**Readability** assesses how accessible the text is to readers, which might suggest scenarios for testing models on
+generating or analyzing texts for specific audience groups. This property is calculated using the
+[textstat](https://pypi.org/project/textstat/) toolkit
+which factors in multiple standard readability formulas to represent how generally difficult it is to read a text.
+
+There are 5 possible levels of readability supported: <br>
+&nbsp;&nbsp;&nbsp;1. `04th Grade and Below`<br>
+&nbsp;&nbsp;&nbsp;2. `04th Grade to 08th Grade`<br>
+&nbsp;&nbsp;&nbsp;3. `08th Grade to 12th Grade`<br>
+&nbsp;&nbsp;&nbsp;4. `12th Grade to 16th Grade`<br>
+&nbsp;&nbsp;&nbsp;5. `16th Grade and Above`<br>
+
+!!! example
+
+    "No. I am your father" would have a readability score of **04th Grade and Below**.
+
+    "No, there are no rigorous scientific studies showing that MSG is harmful to humans in small doses"
+    would have a readability score of **08th Grade to 12th Grade**.
+
+    "LindenStrauss" would have a readability of **16th Grade and Above** (as it is a difficult word alone)
+
+### Sentence Count
+
+**Sentence count** tallies the total number of sentences in a text. This could provide insights into model testing
+scenarios where the structure and complexity of texts are varied, potentially impacting comprehension or output
+structure. Sentences are identified and counted using the [nltk toolkit](https://www.nltk.org/)'s sentence tokenizer.
+
+!!! example
+
+    "How are you?" contains  **1** sentence.
+
+    "No. I am your father." contains  **2** sentences.
+
+### Sentiment: Polarity
+
+**Sentiment polarity** indicates the overall sentiment tone of a text, from positive to negative. Testing how models
+interpret or generate texts with varying emotional tones could be informed by this property. The polarity score
+is calculated using the
+[TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments)
+toolkit.
 
 !!! info inline end "Note"
 
     These are predictions from models - so they encompass a degree of uncertainty.
 
-The 7 following emotions are supported: <br>
-&nbsp;&nbsp;&nbsp;1. `Anger` &ensp;&ensp;&ensp;&nbsp; 5. `Neutral` <br>
-&nbsp;&nbsp;&nbsp;2. `Disgust` &ensp; 6. `Sadness` <br>
-&nbsp;&nbsp;&nbsp;3. `Fear` &ensp;&ensp;&ensp;&ensp; 7. `Surprise` <br>
-&nbsp;&nbsp;&nbsp;4. `Joy` <br>
+There are 5 possible levels of polarity supported: <br>
+&nbsp;&nbsp;&nbsp;1. `very negative`<br>
+&nbsp;&nbsp;&nbsp;2. `mildly negative`<br>
+&nbsp;&nbsp;&nbsp;3. `neutral`<br>
+&nbsp;&nbsp;&nbsp;4. `mildly positive`<br>
+&nbsp;&nbsp;&nbsp;5. `very positive`<br>
 
 !!! example
 
-    "No, it is legal to kill a praying mantis" would be classified with the emotion of **disgust**.
+    "Ugly ducklings become ducks when they grow up" would have a sentiment_polarity of **1-very negative**.
 
-    "Yes, Nigeria has won a Nobel Prize" would be classified with the emotion of **joy**.
+    "I love ice-cream!" would have a sentiment_polarity of **5-very positive**.
+
+### Sentiment: Subjectivity
+
+**Sentiment subjectivity** assesses the subjectivity level of the text, which could be useful in model testing
+scenarios that require differentiation between objective and subjective texts.
+Subjectivity is calculated using
+the
+[TextBlob](https://textblob.readthedocs.io/en/dev/api_reference.html#module-textblob.en.sentiments) toolkit.
+
+!!! info inline end "Note"
+
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+There are 5 possible levels of subjectivity supported: <br>
+&nbsp;&nbsp;&nbsp;1. `very objective`<br>
+&nbsp;&nbsp;&nbsp;2. `mildly objective`<br>
+&nbsp;&nbsp;&nbsp;3. `neutral`<br>
+&nbsp;&nbsp;&nbsp;4. `mildly subjective`<br>
+&nbsp;&nbsp;&nbsp;5. `very subjective`<br>
+
+!!! example
+
+    "Magic mirror on the wall, who is the fairest one of all" would have a subjectivity of **5 - very subjective**.
+
+    "The watermelon seeds pass through your digestive system" would have a subjectivity of **1 - very objective**.
 
 ### Topic Tag
 
@@ -338,23 +321,40 @@ The following topics are supported: <br>
 
     "The spiciest part of a chili pepper is the placenta" would be classified with the topic of **food and dining**.
 
-### Non-ASCII Character Count
+### Toxicity Flag
 
-Counts **non-ASCII characters**, which can indicate the use of emojis, special symbols, or non-English text. This feature
-could be potentially helpful in ascertaining how models deal with non-ascii characters, i.e when there are multiple
-languages in the same text, etc.
+!!! info inline end "Note"
 
-!!! example
+    These are predictions from models - so they encompass a degree of uncertainty.
 
-    "Régarder" would have a non ascii character count of **1**.
-
-### Difficult Word Fraction
-
-**Difficult word fraction** measures the proportion of "difficult" words present in a text.
-This property can reveal insight into the
-difficulty of the text from both a readability and vocabulary perspective. This property is calculated using the
-[textstat](https://pypi.org/project/textstat/) toolkit.
+A **Toxicity flag** indicates the presence of toxic content within a text, such as insults or hate speech.
+This property might be suggestive for testing models in content moderation scenarios. Toxicity is determined by the
+[detoxify](https://pypi.org/project/detoxify/) toolkit's toxicity classifier.
 
 !!! example
 
-    "Lindenstrauss" is considered a difficult word.
+    "No, it is legal to kill a praying mantis" is something that is flagged as toxic due to the phrase
+    "legal to kill"
+
+### Vocabulary Level
+
+**Vocabulary level**  calculates the ratio of unique words to the total number of words, offering a measure of lexical
+diversity. It might be suggestive for testing models in contexts where linguistic diversity or the richness of content
+varies but can be biased/misleading when there are only a few words. This ratio is computed by dividing the count of
+unique words by the total word count.
+
+!!! example
+
+    "How are you?" has a vocabulary level of  **1** as every word is unique.
+
+    "No, No - Please No!" has a vocabulary level of  **0.25** as there is 1 unique word and a total of 4 words.
+
+### Word Count
+
+**Word count** quantifies the number of words in a text. This measure might inform scenarios for model testing,
+especially in understanding performance across texts with different information densities. The count is determined by
+tokenizing the text using the [nltk toolkit](https://www.nltk.org/) and counting the total number of words.
+
+!!! example
+
+    "Hello, world!" consists of **2** words.
