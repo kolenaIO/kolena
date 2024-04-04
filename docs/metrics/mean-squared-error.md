@@ -1,4 +1,4 @@
-# Mean Squared Error
+# Mean Squared Error (MSE)
 
 Mean Squared Error (MSE) is a widely used metric for evaluating the performance of regression models,
 popular for its ability to accentuate larger errors. It measures the average squared difference between the

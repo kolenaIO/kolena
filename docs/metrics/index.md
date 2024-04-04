@@ -56,7 +56,7 @@ biases, and its intended uses.
     False positive rate (FPR) measures the proportion of negative ground truths that a model incorrectly predicts as
     positive, ranging from 0 to 1. It is useful when the objective is to measure and reduce false positive inferences.
 
-- [Mean Absolute Error](mean-absolute-error.md)
+- [Mean Absolute Error (MAE)](mean-absolute-error.md)
 
     ---
 
@@ -64,7 +64,7 @@ biases, and its intended uses.
     the mean of the absolute differences between predicted and actual values across a dataset, treating each
     discrepancy equally.
 
-- [Mean Squared Error](mean-squared-error.md)
+- [Mean Squared Error (MSE)](mean-squared-error.md)
 
     ---
 
