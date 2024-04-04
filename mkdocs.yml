@@ -91,6 +91,8 @@ nav:
     - metrics/roc-curve.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
+    - metrics/mean-absolute-error.md
+    - metrics/mean-squared-error.md
     - Computer Vision:
       - metrics/geometry-matching.md
       - metrics/iou.md
@@ -107,9 +109,6 @@ nav:
       - metrics/perplexity.md
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
-    - Regression:
-      - metrics/mean-absolute-error.md
-      - metrics/mean-squared-error.md
     - Kolena Insights:
       - metrics/statistical-significance.md
   - Help & FAQ:
