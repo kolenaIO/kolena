@@ -47,7 +47,7 @@ to get started with Automatic Metadata Extraction for Text.
 !!! example
 
     <figure markdown>
-    ![Hydrated Question](../../assets/images/hydrated-text-example.png)
+    ![Hydrated Question](../../assets/images/hydrated-text-example-light.png)
     <figcaption>Example of Hydrated Text - Note that the
         purple metadata indicate that they are auto-extracted </figcaption>
     </figure>

@@ -56,6 +56,22 @@ biases, and its intended uses.
     False positive rate (FPR) measures the proportion of negative ground truths that a model incorrectly predicts as
     positive, ranging from 0 to 1. It is useful when the objective is to measure and reduce false positive inferences.
 
+- [Mean Absolute Error](mean-absolute-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error](mean-squared-error.md)
+
+    ---
+
+    MSE measures the average squared difference between the predicted values and the actual values,
+    emphasizing larger errors more significantly than smaller ones. It is mainly different from
+    [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
+
 - [Precision](precision.md)
 
     ---
@@ -102,22 +118,6 @@ biases, and its intended uses.
     The counts of TP, FP, FN and TN ground truths and inferences are essential for summarizing model performance. They
     are the building blocks of many other metrics, including [accuracy](accuracy.md), [precision](precision.md),
     and [recall](recall.md).
-
-- [Mean Absolute Error](mean-absolute-error.md)
-
-    ---
-
-    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
-    the mean of the absolute differences between predicted and actual values across a dataset, treating each
-    discrepancy equally.
-
-- [Mean Squared Error](mean-squared-error.md)
-
-    ---
-
-    MSE measures the average squared difference between the predicted values and the actual values,
-    emphasizing larger errors more significantly than smaller ones. It is mainly different from
-    [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
 
 </div>
 

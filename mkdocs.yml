@@ -86,14 +86,14 @@ nav:
     - metrics/confusion-matrix.md
     - metrics/f1-score.md
     - metrics/fpr.md
+    - metrics/mean-absolute-error.md
+    - metrics/mean-squared-error.md
     - metrics/precision.md
     - metrics/pr-curve.md
     - metrics/recall.md
     - metrics/roc-curve.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
-    - metrics/mean-absolute-error.md
-    - metrics/mean-squared-error.md
     - Computer Vision:
       - metrics/geometry-matching.md
       - metrics/iou.md
