@@ -21,8 +21,8 @@ nav:
         - Quality Standard: dataset/core-concepts/quality-standard.md
       - Advanced Usage:
         - Advanced Usage: dataset/advanced-usage/index.md
+        - Extracting Metadata from Text Fields: dataset/advanced-usage/extract-text-metadata.md
         - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
-        - Extract Metadata for Text: dataset/advanced-usage/extract-metadata-text.md
     - Workflows:
       - Workflows: workflow/index.md
       - Quickstart: workflow/quickstart.md
@@ -86,14 +86,14 @@ nav:
     - metrics/confusion-matrix.md
     - metrics/f1-score.md
     - metrics/fpr.md
+    - metrics/mean-absolute-error.md
+    - metrics/mean-squared-error.md
     - metrics/precision.md
     - metrics/pr-curve.md
     - metrics/recall.md
     - metrics/roc-curve.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
-    - metrics/mean-absolute-error.md
-    - metrics/mean-squared-error.md
     - Computer Vision:
       - metrics/geometry-matching.md
       - metrics/iou.md

@@ -1,4 +1,4 @@
-# Mean Absolute Error
+# Mean Absolute Error (MAE)
 
 Mean Absolute Error (MAE) is a popular metric used in assessing regression model performance
 for its overall simplicity and interpretability. It measures the average magnitude of errors in predictions,
