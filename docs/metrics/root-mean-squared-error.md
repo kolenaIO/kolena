@@ -26,10 +26,10 @@ predicted values for a total of $N$ number of predictions.
 
 Temperature Estimation:
 
-| Ground Truth Temperature (°C) | Predicted Temperature (°C) |
-| ----------------------------- | -------------------------- |
-| 25                            | 27                         |
-| 35                            | 30                         |
+| Ground Truth Temperature (&deg;C) | Predicted Temperature (&deg;C) |
+| --- | --- |
+| 25 | 27 |
+| 35 | 30 |
 
 $$
 \begin{align}
@@ -42,9 +42,9 @@ $$
 Age Estimation:
 
 | Ground Truth Age (Years) | Predicted Age (Years) |
-| ------------------------ | --------------------- |
-| 60                       | 70                    |
-| 40                       | 20                    |
+| --- | --- |
+| 60 | 70 |
+| 40 | 20 |
 
 $$
 \begin{align}
