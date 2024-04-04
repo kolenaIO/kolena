@@ -2,7 +2,7 @@
 icon: kolena/properties-16
 ---
 
-# :kolena-properties-20: Text Metadata Extraction
+# :kolena-properties-20: Extracting Metadata from Text Fields
 
 This guide outlines how to configure the extraction of metadata from text data on Kolena. Follow the steps below
 to get started with Automatic Metadata Extraction for Text.
@@ -68,6 +68,7 @@ The following properties are available for automatic text metadata extraction:
 | [Misspelled Count](#misspelled-count) | Count of misspelled words |
 | [Named Entity Count](#named-entity-count) | Number of named entities in the text |
 | [Toxicity Flag](#toxicity-flag) | Flags potentially toxic content |
+| [Question Flag](#question-flag) | Identifies whether the text is a question |
 | [Question Type](#question-type) | Identifies the type of question posed |
 | [Emotion Tag](#emotion-tag) | Classifies the text's associated emotion |
 | [Topic Tag](#topic-tag) | Determines the overarching topic |
@@ -235,12 +236,31 @@ This property might be suggestive for testing models in content moderation scena
     "No, it is legal to kill a praying mantis" is something that is flagged as toxic due to the phrase
     "legal to kill"
 
+### Question Flag
+
+**Question flag** classifies whether a given text is a question or not. It is useful in model testing
+scenarios when distinguishing between statements and questions is particularly useful. It is also used
+in the determination of the [question type](#question-type) property - as a statement would not have
+a question type. This classification is performed using an
+[NLP classification model](https://huggingface.co/shahrukhx01/question-vs-statement-classifier).
+
+!!! info inline end "Note"
+
+    These are predictions from models - so they encompass a degree of uncertainty.
+
+!!! example
+
+    "What did SOS originally stand for?" would be flagged as a question and thus be `true`
+
+    "Albert is 28 years old" would not be flagged as a question and thus be `false`
+
 ### Question Type
 
 **Question type** classification identifies the nature of a question posed in the text. It might suggest scenarios for
 testing how models understand and respond to different types of inquiries. The classification is discretized into
 the [TREC](https://huggingface.co/datasets/trec) dataset's
-classification schema and performed using an [NLP classification model](https://huggingface.co/datasets/trec).
+classification schema and performed using an
+[NLP classification model](https://huggingface.co/aychang/bert-base-cased-trec-coarse).
 
 !!! info inline end "Note"
 

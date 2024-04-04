@@ -18,7 +18,7 @@ This section contains tutorial documentation for advanced features for Kolena Da
 </div>
 
 <div class="grid cards" markdown>
-- [:kolena-properties-16: Extracting Text Metadata](extract-metadata-text.md)
+- [:kolena-properties-16: Extracting Metadata from Text Fields](extract-text-metadata.md)
 
     ---
 
