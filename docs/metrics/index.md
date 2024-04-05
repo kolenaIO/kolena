@@ -103,6 +103,14 @@ biases, and its intended uses.
     classification models by using the [true positive rate (TPR)](./recall.md) and the
     [false positive rate (FPR)](./fpr.md).
 
+- [Root Mean Squared Error (RMSE)](root-mean-squared-error.md)
+
+    ---
+
+    RMSE measures the square root of the average squared difference between the predicted values and the
+    actual values, emphasizing larger errors more significantly than smaller ones while maintaing the same
+    unit as the predicted and actual values which is what differentiates it from [MSE](mean-squared-error.md).
+
 - [Specificity (TNR)](specificity.md)
 
     ---
