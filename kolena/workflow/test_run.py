@@ -36,7 +36,7 @@ from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
-from kolena._utils.batched_load import upload_smart_chunk_data_frame
+from kolena._utils.batched_load import upload_data_frame_in_smart_chunks
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.endpoints import get_results_url
@@ -242,7 +242,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         df_serializable = df_validated.as_serializable()
 
         init_response = init_upload()
-        upload_smart_chunk_data_frame(df_serializable, init_response.uuid)
+        upload_data_frame_in_smart_chunks(df_serializable, init_response.uuid)
         request = API.UploadInferencesRequest(uuid=init_response.uuid, test_run_id=self._id, reset=self.reset)
         res = krequests.put(
             endpoint_path=API.Path.UPLOAD_INFERENCES.value,
@@ -458,7 +458,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         df_serializable = df_validated.as_serializable()
 
         init_response = init_upload()
-        upload_smart_chunk_data_frame(df_serializable, init_response.uuid)
+        upload_data_frame_in_smart_chunks(df_serializable, init_response.uuid)
 
         request = API.UploadTestSampleMetricsRequest(
             uuid=init_response.uuid,
@@ -477,7 +477,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
             df_validated = MetricsDataFrame(validate_df_schema(df, MetricsDataFrameSchema, trusted=True))
             df_serializable = df_validated.as_serializable()
             init_response = init_upload()
-            upload_smart_chunk_data_frame(df_serializable, init_response.uuid)
+            upload_data_frame_in_smart_chunks(df_serializable, init_response.uuid)
 
             thresholded_metrics_request = API.UploadTestSampleThresholdedMetricsRequest(
                 uuid=init_response.uuid,
@@ -534,7 +534,7 @@ class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
         df_serializable = df_validated.as_serializable()
 
         init_response = init_upload()
-        upload_smart_chunk_data_frame(df_serializable, init_response.uuid)
+        upload_data_frame_in_smart_chunks(df_serializable, init_response.uuid)
 
         request = API.UploadAggregateMetricsRequest(
             uuid=init_response.uuid,

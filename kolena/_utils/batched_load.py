@@ -39,8 +39,8 @@ from kolena._utils.state import DEFAULT_API_VERSION
 
 VALIDATION_COUNT_LIMIT = 100
 STAGE_STATUS__LOADED = "LOADED"
-MB_CONVERSION = 1024 * 1024
-BATCH_LIMIT = 250 * MB_CONVERSION
+BATCH_LIMIT = 250 * pow(1024, 2)
+SHORT_CIRCUT_LIMIT = 2 * pow(1024, 3)
 
 
 def init_upload() -> API.InitiateUploadResponse:
@@ -82,16 +82,22 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-def upload_smart_chunk_data_frame(df: pd.DataFrame, uuid: str, rows: int = 1000) -> None:
-    batch_size = (BATCH_LIMIT // get_preflight_export_size(df, rows)) * rows
+def upload_data_frame_in_smart_chunks(df: pd.DataFrame, uuid: str, rows: int = 1000) -> None:
+    df_memory = df.memory_usage(index=True, deep=True).sum()
+    batch_size = (
+        len(df) if df_memory <= SHORT_CIRCUT_LIMIT else (BATCH_LIMIT // _get_preflight_export_size(df, rows)) * rows
+    )
     upload_data_frame(df, batch_size, uuid)
 
 
-def get_preflight_export_size(df: pd.DataFrame, rows: int) -> int:
+def _get_preflight_export_size(df: pd.DataFrame, rows: int) -> int:
     df_subset = df[:rows]
     with tempfile.NamedTemporaryFile() as temp:
         df_subset.to_parquet(temp.name)
-        return os.stat(temp.name).st_size
+        file_size = os.stat(temp.name).st_size
+        if not file_size:
+            raise ValueError("Exported file has size 0")
+        return file_size
 
 
 class _BatchedLoader(Generic[DFType]):
