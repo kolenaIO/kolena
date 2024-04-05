@@ -39,6 +39,8 @@ from kolena._utils.state import DEFAULT_API_VERSION
 
 VALIDATION_COUNT_LIMIT = 100
 STAGE_STATUS__LOADED = "LOADED"
+MB_CONVERSION = 1024 * 1024
+MB_BATCH_LIMIT = 250
 
 
 def init_upload() -> API.InitiateUploadResponse:
@@ -78,6 +80,11 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 
 
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
+
+
+def upload_smart_chunk_data_frame(df: pd.DataFrame, uuid: str) -> None:
+    batch_size = len(df) // MB_BATCH_LIMIT // math.ceil(get_preflight_export_size(df) / MB_CONVERSION)
+    upload_data_frame(df, batch_size, uuid)
 
 
 def get_preflight_export_size(df: pd.DataFrame, rows: int = 1000) -> int:

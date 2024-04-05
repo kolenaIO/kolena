@@ -15,9 +15,6 @@ from enum import Enum
 
 KOLENA_TOKEN_ENV = "KOLENA_TOKEN"
 
-MB_CONVERSION = 1024 * 1024
-MB_BATCH_LIMIT = 250
-
 
 class BatchSize(int, Enum):
     UPLOAD_RECORDS = 10_000_000
