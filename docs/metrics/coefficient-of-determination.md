@@ -25,6 +25,7 @@ actual values, and $N$ is the total number of observations.
 
 Temperature Estimation:
 
+<div class="grid" markdown>
 | Ground Truth Temperature (°C) | Predicted Temperature (°C) |
 | ----------------------------- | -------------------------- |
 | 25                            | 27                         |
@@ -33,12 +34,14 @@ Temperature Estimation:
 $$
 \begin{align}
 R² &= 1 - \frac{(25 - 27)^2 + (35 - 30)^2}{(25 - 30)^2 + (35 - 30)^2} \\
-&\approx 15.8
+&= 0.42
 \end{align}
 $$
+</div>
 
 Age Estimation:
 
+<div class="grid" markdown>
 | Ground Truth Age (Years) | Predicted Age (Years) |
 | ------------------------ | --------------------- |
 | 60                       | 70                    |
@@ -47,22 +50,28 @@ Age Estimation:
 $$
 \begin{align}
 R² &= 1 - \frac{(60 - 70)^2 + (40 - 20)^2}{(60 - 50)^2 + (40 - 50)^2} \\
-&\approx 15.8
+&= -1.5
 \end{align}
 $$
+</div>
 
 ## Limitations and Biases
 
-While R² is a powerful tool for evaluating the fit of a regression model, it has limitations and can sometimes be
-misleading:
+When assessing regression models on unseen data, R² quantifies how well model predictions align with observed outcomes
+indicating the variance in the dependent variable explained by the model. However, its utility is nuanced:
 
-- R² always increases when more predictors are added to the model, even if those variables are irrelevant. This can
-lead to overfitting where the model performs well on training data but poorly on unseen data.
-- A high R² does not imply causation between the independent and dependent variables.
-- In cases where the relationship between variables is non-linear, R² may not accurately reflect the model's effectiveness.
+- R² might overly favor the model's performance if the unseen data's distribution diverges from the training data,
+hinting at potential data characteristic shifts rather than model overfitting.
+- It might not capture the full spectrum of model accuracy in complex, non-linear scenarios, where direct error
+metrics offer clearer insights.
+- High R² values do not imply that changes in predictors causally affect the outcome variable; R² measures
+correlation strength, not causation.
 
-To address these issues, it's often recommended to look at adjusted R², which adjusts for the number of predictors in
-the model, or to use other metrics in conjunction with R² for a more comprehensive evaluation.
+It is also important to note that when stratifying properties to see how the model performances differ in varying
+conditions, it is important to note the affect of those conditions on the mean of the ground truth - as it influences
+the R² value. This is why if you were to stratify by age in an age estimation problem, you may even get negative values
+depending on the granularity of the strata.
 
-Therefore, while R² can provide valuable insights into the fit of a model, it's essential to consider its limitations
-and use it alongside other metrics and validation techniques to thoroughly assess model performance.
+Error metrics like Mean Absolute Error (MAE) and Mean Squared Error (MSE) enrich model evaluation. MAE provides the
+average prediction error magnitude, while MSE emphasizes larger errors, offering a balance to R²'s variance explanation by
+underscoring prediction accuracy and error severity.
