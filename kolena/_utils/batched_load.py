@@ -40,7 +40,7 @@ from kolena._utils.state import DEFAULT_API_VERSION
 VALIDATION_COUNT_LIMIT = 100
 STAGE_STATUS__LOADED = "LOADED"
 MB_CONVERSION = 1024 * 1024
-MB_BATCH_LIMIT = 250
+MB_BATCH_LIMIT = 250 * MB_CONVERSION
 
 
 def init_upload() -> API.InitiateUploadResponse:
@@ -82,12 +82,12 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-def upload_smart_chunk_data_frame(df: pd.DataFrame, uuid: str) -> None:
-    batch_size = len(df) // MB_BATCH_LIMIT // math.ceil(get_preflight_export_size(df) / MB_CONVERSION)
+def upload_smart_chunk_data_frame(df: pd.DataFrame, uuid: str, rows: int = 1000) -> None:
+    batch_size = (MB_BATCH_LIMIT // get_preflight_export_size(df, rows)) * rows
     upload_data_frame(df, batch_size, uuid)
 
 
-def get_preflight_export_size(df: pd.DataFrame, rows: int = 1000) -> int:
+def get_preflight_export_size(df: pd.DataFrame, rows: int) -> int:
     df_subset = df[:rows]
     with tempfile.NamedTemporaryFile() as temp:
         df_subset.to_parquet(temp.name)
