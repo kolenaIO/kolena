@@ -85,7 +85,9 @@ DFType = TypeVar("DFType", bound=LoadableDataFrame)
 def upload_data_frame_in_smart_chunks(df: pd.DataFrame, uuid: str, rows: int = 1000) -> None:
     df_memory = df.memory_usage(index=True, deep=True).sum()
     batch_size = (
-        len(df) if df_memory <= SHORT_CIRCUT_LIMIT else (BATCH_LIMIT // _get_preflight_export_size(df, rows)) * rows
+        len(df)
+        if df_memory <= SHORT_CIRCUT_LIMIT and len(df) > 0
+        else (BATCH_LIMIT // _get_preflight_export_size(df, rows)) * rows
     )
     upload_data_frame(df, batch_size, uuid)
 
