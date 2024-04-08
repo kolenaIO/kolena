@@ -79,8 +79,6 @@ nav:
       - Classification: reference/pre-built/classification.md
   - Metrics Glossary:
     - Metrics Glossary: metrics/index.md
-    - Common Tasks:
-      - metrics/object-detection.md
     - Common Metrics:
       - metrics/accuracy.md
       - metrics/average-precision.md
@@ -88,6 +86,7 @@ nav:
       - metrics/confusion-matrix.md
       - metrics/f1-score.md
       - metrics/fpr.md
+      - metrics/mean-absolute-error.md
       - metrics/precision.md
       - metrics/pr-curve.md
       - metrics/recall.md
@@ -95,6 +94,8 @@ nav:
       - metrics/specificity.md
       - metrics/tp-fp-fn-tn.md
     - Computer Vision:
+      - Computer Vision Tasks:
+        - metrics/object-detection.md
       - metrics/geometry-matching.md
       - metrics/iou.md
     - Large Language Models:
@@ -110,8 +111,6 @@ nav:
       - metrics/perplexity.md
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
-    - Regression:
-      - metrics/mean-absolute-error.md
     - Kolena Insights:
       - metrics/statistical-significance.md
   - Help & FAQ:
