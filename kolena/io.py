@@ -17,6 +17,7 @@ to and from common serializable formats while adhering to the JSON specification
 non-primitive data objects.
 """
 import json
+from functools import partial
 from typing import Any
 from typing import Callable
 from typing import Dict
@@ -89,6 +90,32 @@ def dataframe_from_csv(*args: Any, **kwargs: Any) -> pd.DataFrame:
     :return: DataFrame.
     """
     df = pd.read_csv(*args, **kwargs)
+    df_post = _dataframe_object_serde(df, _deserialize_dataobject_str)
+
+    return df_post
+
+
+def dataframe_to_parquet(df: pd.DataFrame, *args: Any, **kwargs: Any) -> Union[bytes, None]:
+    """
+    Helper function to export pandas DataFrame containing annotation or asset to Parquet format.
+
+    :param args: positional arguments to `pandas.DataFrame.to_parquet`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.to_parquet`.
+    :return: None or str.
+    """
+    df_post = _dataframe_object_serde(df, partial(json.dumps, cls=DataObjectJSONEncoder))
+    return df_post.to_parquet(*args, **kwargs)
+
+
+def dataframe_from_parquet(*args: Any, **kwargs: Any) -> pd.DataFrame:
+    """
+    Helper function to load pandas DataFrame exported to Parquet with `dataframe_to_parquet`.
+
+    :param args: positional arguments to `pandas.DataFrame.read_parquet`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.read_parquet`.
+    :return: DataFrame.
+    """
+    df = pd.read_parquet(*args, **kwargs)
     df_post = _dataframe_object_serde(df, _deserialize_dataobject_str)
 
     return df_post
