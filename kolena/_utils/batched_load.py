@@ -15,7 +15,6 @@ import dataclasses
 import io
 import json
 import math
-import os
 import tempfile
 from typing import Generic
 from typing import Iterable
@@ -94,12 +93,12 @@ def upload_data_frame_in_smart_chunks(df: pd.DataFrame, uuid: str, rows: int = 1
 
 def _get_preflight_export_size(df: pd.DataFrame, rows: int) -> int:
     df_subset = df[:rows]
-    with tempfile.NamedTemporaryFile() as temp:
-        df_subset.to_parquet(temp.name)
-        file_size = os.stat(temp.name).st_size
-        if not file_size:
-            raise ValueError("Exported file has size 0")
-        return file_size
+    df_chunk_buffer = io.BytesIO()
+    df_subset.to_parquet(df_chunk_buffer)
+    file_size = df_chunk_buffer.getbuffer().nbytes
+    if not file_size:
+        raise ValueError("Exported file has size 0")
+    return file_size
 
 
 class _BatchedLoader(Generic[DFType]):
