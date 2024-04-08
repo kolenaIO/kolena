@@ -137,7 +137,7 @@ Consider a `.csv` file containing ground truth data in the from of bounding boxe
 |-------------------------------------------------------------------------------|------------|-----------|--------|-------|---------|
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | motorcycle | 270.77    | 621.61 | 44.59 |  254.18  |
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | car        | 538.03    | 636.85 | 8.86  | 101.93  |
-| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | truck      | 313.02    | 553.98 | 12.01 | 99.84   |
 
 The first bounding box for the image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
 [`LabeledBoundingBox`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) annotation. If you want to ignore
@@ -169,18 +169,18 @@ from kolena.annotation import LabeledBoundingBox
 bboxes = [
     LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle"),
     LabeledBoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93), label="car"),
-    LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="trunk"),
+    LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="truck"),
 ]
 ```
 This would be represented within a `.csv` file as shown below. Note this will be a single line,
 but is shown here as multiple lines for formatting.
 ```
 "[{""top_left"": [270.77, 44.59], ""bottom_right"": [621.61, 254.18], ""width"": 350.84, ""height"": 209.59,
- ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""label"": ""motorcycle"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+   ""area"": 73532.5556, ""aspect_ratio"": 1.67, ""label"": ""motorcycle"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
   {""top_left"": [538.03, 8.86], ""bottom_right"": [636.85, 101.93], ""width"": 98.82, ""height"": 93.07,
    ""area"": 9197.1774, ""aspect_ratio"": 1.062, ""label"": ""car"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
-  {""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84], ""width"": 240.96,
-   ""height"": 87.83, ""area"": 21163.5168, ""aspect_ratio"": 2.743, ""label"": ""trunk"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
+  {""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84], ""width"": 240.96, ""height"": 87.83,
+   ""area"": 21163.5168, ""aspect_ratio"": 2.743, ""label"": ""truck"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
 ```
 
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
