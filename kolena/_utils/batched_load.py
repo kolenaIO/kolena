@@ -49,7 +49,7 @@ def init_upload() -> API.InitiateUploadResponse:
     return init_response
 
 
-def upload_data_frame(df: pd.DataFrame, batch_size: int, load_uuid: str) -> None:
+def _upload_data_frame(df: pd.DataFrame, batch_size: int, load_uuid: str) -> None:
     num_chunks = math.ceil(len(df) / batch_size)
     chunk_iter = np.array_split(df, num_chunks) if num_chunks > 0 else []
 
@@ -81,14 +81,14 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-def upload_data_frame_in_smart_chunks(df: pd.DataFrame, uuid: str, rows: int = 1000) -> None:
+def upload_data_frame(df: pd.DataFrame, load_uuid: str, rows: int = 1000) -> None:
     df_memory = df.memory_usage(index=True, deep=True).sum()
     batch_size = (
         len(df)
         if df_memory <= SHORT_CIRCUT_LIMIT and len(df) > 0
         else (BATCH_LIMIT // _get_preflight_export_size(df, rows)) * rows
     )
-    upload_data_frame(df, batch_size, uuid)
+    _upload_data_frame(df, batch_size, load_uuid)
 
 
 def _get_preflight_export_size(df: pd.DataFrame, rows: int) -> int:

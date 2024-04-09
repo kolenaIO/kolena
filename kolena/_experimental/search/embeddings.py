@@ -34,7 +34,6 @@ from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
-from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
@@ -66,7 +65,7 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     df_validated = validate_df_schema(df_embeddings, LocatorEmbeddingsDataFrameSchema)
 
     log.info(f"uploading embeddings for key '{key}'")
-    upload_data_frame(df=df_validated, batch_size=BatchSize.UPLOAD_EMBEDDINGS.value, load_uuid=init_response.uuid)
+    upload_data_frame(df=df_validated, load_uuid=init_response.uuid)
     request = API.UploadEmbeddingsRequest(
         uuid=init_response.uuid,
     )
@@ -122,7 +121,7 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
 
     log.info(f"uploading embeddings for dataset '{dataset_name}' and key '{key}'")
     init_response = init_upload()
-    upload_data_frame(df=df_validated, batch_size=BatchSize.UPLOAD_EMBEDDINGS.value, load_uuid=init_response.uuid)
+    upload_data_frame(df=df_validated, load_uuid=init_response.uuid)
     request = UploadDatasetEmbeddingsRequest(
         uuid=init_response.uuid,
         name=dataset_name,

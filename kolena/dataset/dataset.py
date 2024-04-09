@@ -165,7 +165,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
     df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
 
-    upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+    upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
 
 def _load_dataset_metadata(name: str) -> Optional[EntityData]:
