@@ -1,11 +1,11 @@
 # Coefficient of Determination (R²)
 
 The Coefficient of Determination, commonly denoted as R², is a statistical measure used to assess the goodness of fit
-of a regression model. It represents the proportion of the variance in the dependent variable that is predictable from
-the independent variables.
+of a regression model. It represents the proportion of the variance in the dependent variable (model output) that is
+predictable from the independent variables (model input).
 
 R² provides a scale that is **generally** from 0 to 1, where higher values indicate a better fit and imply that
-the model can better explain the variation of the output with the input variables. It is particularly useful for
+the model can better explain the variation of the output (inferences). It is particularly useful for
 comparing the explanatory power of different models and their overall fit. Negative values are possible and indicate
 that the mean of the data itself is a better fit to the data than the regressor/model itself.
 
@@ -60,18 +60,19 @@ $$
 When assessing regression models on unseen data, R² quantifies how well model predictions align with observed outcomes
 indicating the variance in the dependent variable explained by the model. However, its utility is nuanced:
 
-- R² might overly favor the model's performance if the unseen data's distribution diverges from the training data,
-hinting at potential data characteristic shifts rather than model overfitting.
+- R² might be misleading if the unseen data's distribution diverges from the training data,
+hinting at potential data characteristic shifts in addition to model overfitting.
 - It might not capture the full spectrum of model accuracy in complex, non-linear scenarios, where direct error
 metrics offer clearer insights.
 - High R² values do not imply that changes in predictors causally affect the outcome variable; R² measures
 correlation strength, not causation.
 
-It is also important to note that when stratifying properties to see how the model performances differ in varying
-conditions, it is important to note the affect of those conditions on the mean of the ground truth - as it influences
-the R² value. This is why if you were to stratify by age in an age estimation problem, you may even get negative values
-depending on the granularity of the strata.
+It is also important to note that when probing how the model performs in varying conditions, it is important to note
+the affect of those conditions on the mean of the ground truth - as it influences the R² value.
+This is why if you were to stratify by age in an age estimation problem, you may even get negative values
+depending on the granularity of the strata/test-cases.
 
-Error metrics like Mean Absolute Error (MAE) and Mean Squared Error (MSE) enrich model evaluation. MAE provides the
+Error metrics like [Mean Absolute Error (MAE)](./mean-absolute-error.md) and
+[Mean Squared Error (MSE)](./mean-squared-error.md) enrich model evaluation. MAE provides the
 average prediction error magnitude, while MSE emphasizes larger errors, offering a balance to R²'s variance explanation by
 underscoring prediction accuracy and error severity.
