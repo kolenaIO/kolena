@@ -166,7 +166,7 @@ To showcase the value of BERTScore, let's consider the following candidate and r
     Between different tasks, the baseline for a "good" BERTScore may vary based on different factors, like text length
     and BERT model type.
 
-## Advantages and Limitations
+## Limitations and Biases
 
 BERTScore, originally designed to be a replacement to the BLEU score and other n-gram similarity metrics, is a powerful
 metric that closely aligns with human judgement. However, it comes with limitations.

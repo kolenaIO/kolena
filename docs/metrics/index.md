@@ -35,6 +35,13 @@ biases, and its intended uses.
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
 
+- [Cohen's Kappa](cohen-kappa.md)
+
+    ---
+
+    Cohen's Kappa measures the agreement between model inferences and ground truths. It's a good performance metric
+    that considers class imbalance.
+
 - [Confusion Matrix](confusion-matrix.md)
 
     ---
