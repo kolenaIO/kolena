@@ -157,7 +157,7 @@ understanding. While a high BLEU score is promising, it doesn't guarantee flawle
     with the reference text being `"Crisp autumn leaves rustled softly beneath our exhausted feet"`, our BLEU score
     would be 0.478 - a much lower score from a small semantic change.
 
-## Advantages and Limitations
+## Limitations and Biases
 Though BLEU is a popular metric in NLP workflows, it comes with its limitations.
 
 1. BLEU fails to consider the semantics of texts. As seen in the example, simply changing "take the mystery out of" to
