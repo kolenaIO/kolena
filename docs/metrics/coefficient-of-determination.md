@@ -1,11 +1,11 @@
 # Coefficient of Determination (R²)
 
 The Coefficient of Determination, commonly denoted as R², is a statistical measure used to assess the goodness of fit
-of a regression model. It represents the proportion of the variance in the dependent variable (model output) that is
-predictable from the independent variables (model input).
+of a regression model. It represents the proportion of the variance in the model inferences that is
+explainable by the model itself.
 
 R² provides a scale that is **generally** from 0 to 1, where higher values indicate a better fit and imply that
-the model can better explain the variation of the output (inferences). It is particularly useful for
+the model can better explain the variation of the inferences. It is particularly useful for
 comparing the explanatory power of different models and their overall fit. Negative values are possible and indicate
 that the mean of the data itself is a better fit to the data than the regressor/model itself.
 
@@ -58,7 +58,7 @@ $$
 ## Limitations and Biases
 
 When assessing regression models on unseen data, R² quantifies how well model predictions align with observed outcomes
-indicating the variance in the dependent variable explained by the model. However, its utility is nuanced:
+indicating the variance explained by the model. However, its utility is nuanced:
 
 - R² might be misleading if the unseen data's distribution diverges from the training data,
 hinting at potential data characteristic shifts in addition to model overfitting.
@@ -67,8 +67,8 @@ metrics offer clearer insights.
 - High R² values do not imply that changes in predictors causally affect the outcome variable; R² measures
 correlation strength, not causation.
 
-It is also important to note that when probing how the model performs in varying conditions, it is important to note
-the affect of those conditions on the mean of the ground truth - as it influences the R² value.
+When evaluating the model's performance under varying conditions, it is important to consider the impact of
+these conditions on the mean of the ground truth, as this influences the R² value.
 This is why if you were to stratify by age in an age estimation problem, you may even get negative values
 depending on the granularity of the strata/test-cases.
 
