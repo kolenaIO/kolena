@@ -20,6 +20,7 @@ from typing import List
 from typing import Literal
 from typing import Union
 
+import numpy as np
 import pandas as pd
 
 from kolena import dataset
@@ -34,18 +35,67 @@ from kolena.metrics import match_inferences_multiclass
 from kolena.metrics import MulticlassInferenceMatches
 
 
-def single_class_datapoint_metrics(object_matches: InferenceMatches, thresholds: float) -> Dict[str, Any]:
+def _bbox_matches_and_count_for_one_label(
+    match: MulticlassInferenceMatches,
+    label: str,
+) -> MulticlassInferenceMatches:
+    match_matched = []
+    match_unmatched_gt = []
+    match_unmatched_inf = []
+    for gt, inf in match.matched:
+        if gt.label == label:
+            match_matched.append((gt, inf))
+    for gt, inf in match.unmatched_gt:
+        if gt.label == label:
+            match_unmatched_gt.append((gt, inf))
+    for inf in match.unmatched_inf:
+        if inf.label == label:
+            match_unmatched_inf.append(inf)
+
+    bbox_matches_for_one_label = MulticlassInferenceMatches(
+        matched=match_matched,
+        unmatched_gt=match_unmatched_gt,
+        unmatched_inf=match_unmatched_inf,
+    )
+
+    return bbox_matches_for_one_label
+
+
+def _prepare_thresholded_metrics(
+    object_matches: Union[MulticlassInferenceMatches, InferenceMatches],
+    thresholds: List[float],
+    labels: List[str] = None,
+) -> List[dict[str, Any]]:
+    thresholded_metrics = []
+    labels = labels or [None]
+    for label in labels:
+        class_matches = _bbox_matches_and_count_for_one_label(object_matches, label)
+        for threshold in thresholds:
+            count_tp = sum(1 for gt, inf in class_matches.matched if inf.score >= threshold)
+            count_fp = sum(1 for inf in class_matches.unmatched_inf if inf.score >= threshold)
+            count_fn = len(class_matches.unmatched_gt) + sum(
+                1 for _, inf in class_matches.matched if inf.score < threshold
+            )
+            thresholded_metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
+
+    return thresholded_metrics
+
+
+def single_class_datapoint_metrics(
+    object_matches: InferenceMatches,
+    thresholds: float,
+    all_thresholds: List[float],
+) -> Dict[str, Any]:
     tp = [{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched if inf.score >= thresholds]
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
+    thresholded = _prepare_thresholded_metrics(object_matches, thresholds=all_thresholds)
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched],
-        unmatched_ground_truth=object_matches.unmatched_gt,
-        unmatched_inference=object_matches.unmatched_inf,
+        thresholded=thresholded,
         count_TP=len(tp),
         count_FP=len(fp),
         count_FN=len(fn),
@@ -61,6 +111,7 @@ def single_class_datapoint_metrics(object_matches: InferenceMatches, thresholds:
 def multiclass_datapoint_metrics(
     object_matches: MulticlassInferenceMatches,
     thresholds: Dict[str, float],
+    all_thresholds: List[float],
 ) -> Dict[str, Any]:
     tp = [
         {**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched if inf.score >= thresholds[inf.label]
@@ -69,16 +120,19 @@ def multiclass_datapoint_metrics(
     fn = [gt for gt, _ in object_matches.unmatched_gt] + [
         gt for gt, inf in object_matches.matched if inf.score < thresholds[inf.label]
     ]
-    unmatched_ground_truth = [
-        dict(**gt._to_dict(), predicted_label=inf.label, predicted_score=inf.score) if inf else gt
-        for gt, inf in object_matches.unmatched_gt
-    ]
     confused = [
         dict(**inf._to_dict(), actual_label=gt.label)
         for gt, inf in object_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
+    labels = sorted(
+        {inf.label for _, inf in object_matches.matched}
+        .union(
+            {inf.label for inf in object_matches.unmatched_inf},
+        )
+        .union({gt.label for gt, _ in object_matches.unmatched_gt}),
+    )
     inference_labels = {inf.label for _, inf in object_matches.matched}.union(
         {inf.label for inf in object_matches.unmatched_inf},
     )
@@ -87,13 +141,12 @@ def multiclass_datapoint_metrics(
         for label in sorted(thresholds.keys())
         if label in inference_labels
     ]
+    thresholded = _prepare_thresholded_metrics(object_matches, thresholds=all_thresholds, labels=labels)
     return dict(
         TP=tp,
         FP=fp,
         FN=fn,
-        matched_inference=[{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched],
-        unmatched_ground_truth=unmatched_ground_truth,
-        unmatched_inference=object_matches.unmatched_inf,
+        thresholded=thresholded,
         Confused=confused,
         count_TP=len(tp),
         count_FP=len(fp),
@@ -136,6 +189,7 @@ def _compute_metrics(
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
+    all_thresholds = []
     for record in pred_df.itertuples():
         ground_truths = record[idx[ground_truth]]
         inferences = record[idx[inference]]
@@ -147,6 +201,12 @@ def _compute_metrics(
                 iou_threshold=iou_threshold,
             ),
         )
+        all_thresholds.extend(inf.score for inf in inferences)
+
+    if len(all_thresholds) >= 501:
+        all_thresholds = list(np.linspace(min(all_thresholds), max(all_thresholds), 501))
+    else:
+        all_thresholds = sorted(all_thresholds)
 
     thresholds: dict[str, float]
 
@@ -160,7 +220,7 @@ def _compute_metrics(
                 cast(List[MulticlassInferenceMatches], all_object_matches),
             )
         results = [
-            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds)
+            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds, all_thresholds)
             for matches in all_object_matches
         ]
     else:
@@ -171,7 +231,8 @@ def _compute_metrics(
         else:
             threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_object_matches))
         results = [
-            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold) for matches in all_object_matches
+            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, all_thresholds)
+            for matches in all_object_matches
         ]
 
     return pd.concat([pd.DataFrame(results), pred_df], axis=1)
@@ -247,4 +308,4 @@ def upload_object_detection_results(
         min_confidence_score=min_confidence_score,
     )
     results_df.drop(columns=[ground_truths_field], inplace=True)
-    dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)])
+    dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)], thresholded_fields=["thresholded"])
