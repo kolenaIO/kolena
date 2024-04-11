@@ -158,15 +158,17 @@ def download_results(
         df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
 
     eval_configs = df[COL_EVAL_CONFIG].unique()
+    has_thresholded = not df[COL_THRESHOLDED_OBJECT].isnull().all()
     df_results_by_eval = []
     for eval_config in eval_configs:
         df_matched = df[df[COL_EVAL_CONFIG] == eval_config if eval_config is not None else df[COL_EVAL_CONFIG].isnull()]
-        df_results_by_eval.append(
-            (
-                json.loads(eval_config) if eval_config is not None else None,
-                _to_deserialized_dataframe(df_matched, column=COL_RESULT),
-            ),
-        )
+        df_result = _to_deserialized_dataframe(df_matched, column=COL_RESULT)
+        if has_thresholded:
+            df_result = pd.concat(
+                [df_result, _to_deserialized_dataframe(df_matched, column=COL_THRESHOLDED_OBJECT)],
+                axis=1,
+            )
+        df_results_by_eval.append((json.loads(eval_config) if eval_config is not None else None, df_result))
     log.info(f"downloaded results for model '{model}' on dataset '{dataset}'")
     return df_datapoints, df_results_by_eval
 

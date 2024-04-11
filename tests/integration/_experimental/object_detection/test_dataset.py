@@ -171,9 +171,7 @@ def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, 
         "FP",
         "FN",
         "raw_inferences",
-        "matched_inference",
-        "unmatched_inference",
-        "unmatched_ground_truth",
+        "thresholded",
         "theme",
     }
     assert expected_columns.issubset(set(df_results.columns))
@@ -181,7 +179,7 @@ def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, 
     assert len(df_results) == 10
     _assert_result_bbox_contains_fields(
         df_results,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["TP", "FN", "thresholded"],
         ["foo"],
     )
 
@@ -298,9 +296,7 @@ def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, in
         "FP",
         "FN",
         "raw_inferences",
-        "matched_inference",
-        "unmatched_inference",
-        "unmatched_ground_truth",
+        "thresholded",
         "theme",
         "Confused",
     }
@@ -310,17 +306,17 @@ def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, in
     assert len(df_results_two) == 10
 
     # check data format
-    confused = next(x for x in df_results_one["unmatched_ground_truth"])
+    confused = next(x for x in df_results_one["thresholded"])
     assert confused[0].predicted_label
     assert confused[0].predicted_score
 
     _assert_result_bbox_contains_fields(
         df_results_one,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["TP", "FN", "thresholded"],
         ["foo"],
     )
     _assert_result_bbox_contains_fields(
         df_results_two,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
+        ["TP", "FN", "thresholded"],
         ["foo"],
     )
