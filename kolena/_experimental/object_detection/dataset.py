@@ -61,22 +61,33 @@ def _bbox_matches_and_count_for_one_label(
     return bbox_matches_for_one_label
 
 
-def _prepare_thresholded_metrics(
-    object_matches: Union[MulticlassInferenceMatches, InferenceMatches],
+def _compute_thresholded_metrics(
+    matches: Union[MulticlassInferenceMatches, InferenceMatches],
     thresholds: List[float],
-    labels: List[str] = None,
+    label: Union[str, None] = None,
+) -> List[dict[str, Any]]:
+    metrics = []
+    for threshold in thresholds:
+        count_tp = sum(1 for gt, inf in matches.matched if inf.score >= threshold)
+        count_fp = sum(1 for inf in matches.unmatched_inf if inf.score >= threshold)
+        count_fn = len(matches.unmatched_gt) + sum(1 for _, inf in matches.matched if inf.score < threshold)
+        if label:
+            metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
+        else:
+            metrics.append(dict(threshold=threshold, tp=count_tp, fp=count_fp, fn=count_fn))
+
+    return metrics
+
+
+def _prepare_thresholded_metrics(
+    object_matches: MulticlassInferenceMatches,
+    thresholds: List[float],
+    labels: List[str],
 ) -> List[dict[str, Any]]:
     thresholded_metrics = []
-    labels = labels or [None]
     for label in labels:
         class_matches = _bbox_matches_and_count_for_one_label(object_matches, label)
-        for threshold in thresholds:
-            count_tp = sum(1 for gt, inf in class_matches.matched if inf.score >= threshold)
-            count_fp = sum(1 for inf in class_matches.unmatched_inf if inf.score >= threshold)
-            count_fn = len(class_matches.unmatched_gt) + sum(
-                1 for _, inf in class_matches.matched if inf.score < threshold
-            )
-            thresholded_metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
+        thresholded_metrics.extend(_compute_thresholded_metrics(class_matches, thresholds, label))
 
     return thresholded_metrics
 
@@ -90,7 +101,7 @@ def single_class_datapoint_metrics(
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    thresholded = _prepare_thresholded_metrics(object_matches, thresholds=all_thresholds)
+    thresholded = _compute_thresholded_metrics(object_matches, all_thresholds)
     return dict(
         TP=tp,
         FP=fp,
@@ -189,7 +200,7 @@ def _compute_metrics(
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
-    all_thresholds = []
+    all_thresholds: List[float] = []
     for record in pred_df.itertuples():
         ground_truths = record[idx[ground_truth]]
         inferences = record[idx[inference]]
