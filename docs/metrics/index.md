@@ -35,6 +35,13 @@ biases, and its intended uses.
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
 
+- [Coefficient of Determination (R²)](coefficient-of-determination.md)
+
+    ---
+
+    R² provides a scale that is generally from 0 to 1, where higher values indicate a better fit and imply that
+    the model can better explain the variation of the model inferences.
+
 - [Confusion Matrix](confusion-matrix.md)
 
     ---

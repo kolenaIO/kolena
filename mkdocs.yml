@@ -83,6 +83,7 @@ nav:
     - metrics/accuracy.md
     - metrics/average-precision.md
     - metrics/averaging-methods.md
+    - metrics/coefficient-of-determination.md
     - metrics/confusion-matrix.md
     - metrics/f1-score.md
     - metrics/fpr.md
