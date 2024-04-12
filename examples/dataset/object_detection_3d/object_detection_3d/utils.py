@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import numpy as np
 
@@ -97,3 +98,14 @@ def transform_to_camera_frame(
         )
         for center, dim, yaw in zip(centers, dimensions, yaws)
     ]
+
+
+def kitti_matrix_to_array(arr: List[float], shape: Tuple[int, int]) -> np.array:
+    return np.array(arr).reshape(shape)
+
+
+def create_velo_to_pixel_matrix(velo_to_cam: List[float], cam_to_pixel: List[float]) -> List[List[float]]:
+    velo_to_cam_arr = kitti_matrix_to_array(velo_to_cam, (4, 4))
+    cam_to_pixel_arr = kitti_matrix_to_array(cam_to_pixel, (4, 4))
+    composed_arr = cam_to_pixel_arr @ velo_to_cam_arr  # type: ignore[operator]
+    return composed_arr[:3, :].tolist()

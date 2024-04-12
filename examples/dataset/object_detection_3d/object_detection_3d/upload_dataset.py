@@ -21,11 +21,11 @@ from object_detection_3d.constants import DATASET
 from object_detection_3d.constants import DEFAULT_DATASET_NAME
 from object_detection_3d.constants import ID_FIELDS
 from object_detection_3d.constants import TASK
+from object_detection_3d.utils import create_velo_to_pixel_matrix
 
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.asset import ImageAsset
 from kolena.dataset import upload_dataset
-from kolena.workflow.annotation import LabeledBoundingBox
 from kolena.workflow.asset import PointCloudAsset
 
 # KITTI only supports evaluation of the first three classes but "Van" and "Person_sitting" GTs
@@ -52,18 +52,18 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
     meta_cols = [col for col in df_raw.columns if col not in LABEL_FILE_COLUMNS]
 
     for record in df_raw.itertuples():
-        bboxes_2d = [
-            LabeledBoundingBox(
-                label=box["label"],
-                top_left=tuple(box["left_top_left"]),
-                bottom_right=tuple(box["left_bottom_right"]),
-                occluded=box["occluded"],  # type: ignore[call-arg]
-                truncated=box["truncated"],  # type: ignore[call-arg]
-                alpha=box["alpha"],  # type: ignore[call-arg]
-                difficulty=box["difficulty"],  # type: ignore[call-arg]
-            )
-            for box in record.objects
-        ]
+        # bboxes_2d = [
+        #     LabeledBoundingBox(
+        #         label=box["label"],
+        #         top_left=tuple(box["left_top_left"]),
+        #         bottom_right=tuple(box["left_bottom_right"]),
+        #         occluded=box["occluded"],  # type: ignore[call-arg]
+        #         truncated=box["truncated"],  # type: ignore[call-arg]
+        #         alpha=box["alpha"],  # type: ignore[call-arg]
+        #         difficulty=box["difficulty"],  # type: ignore[call-arg]
+        #     )
+        #     for box in record.objects
+        # ]
         bboxes_3d = [
             LabeledBoundingBox3D(
                 label=box["label"],
@@ -80,12 +80,28 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
         ]
         counts = Counter([r["label"] for r in record.objects])
         metadata = {col: getattr(record, col) for col in meta_cols}
+
         records.append(
             {
                 "image_id": record.image_id,
                 "locator": record.left_image,
-                "image_bboxes": bboxes_2d,
-                "right": ImageAsset(locator=record.right_image),
+                # "image_bboxes": bboxes_2d,
+                "images": [
+                    ImageAsset(
+                        locator=record.left_image,
+                        side="left",  # type: ignore[call-arg]
+                        # type: ignore[call-arg]
+                        projection=create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P2),
+                        velodyne_bboxes=bboxes_3d,  # type: ignore[call-arg]
+                    ),
+                    ImageAsset(
+                        locator=record.right_image,
+                        side="right",  # type: ignore[call-arg]
+                        # type: ignore[call-arg]
+                        projection=create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P3),
+                        velodyne_bboxes=bboxes_3d,  # type: ignore[call-arg]
+                    ),
+                ],
                 "velodyne": PointCloudAsset(locator=record.velodyne),
                 "total_objects": len(bboxes_3d),
                 "n_car": counts["Car"],
@@ -94,7 +110,7 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
                 "velodyne_bboxes": bboxes_3d,
                 "velodyne_to_camera_transformation": record.Tr_velo_to_cam,
                 "camera_rectification": record.R0_rect,
-                "image_projection": record.P2,
+                "projection": create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P2),
                 **metadata,
             },
         )
@@ -112,7 +128,6 @@ def run(args: Namespace) -> int:
     )
     df = load_data(df_raw)
     upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
-
     return 0
 
 
