@@ -42,7 +42,7 @@ biases, and its intended uses.
     R² provides a scale that is generally from 0 to 1, where higher values indicate a better fit and imply that
     the model can better explain the variation of the model inferences.
 
-- [Cohen's Kappa](cohen-kappa.md)
+- [Cohen's Kappa](cohens-kappa.md)
 
     ---
 
