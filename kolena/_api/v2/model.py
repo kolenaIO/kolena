@@ -54,6 +54,8 @@ class UploadResultsRequest:
 class UploadResultsResponse:
     n_inserted: int
     n_updated: int
+    model_id: int
+    eval_config_id: int
 
 
 @dataclass(frozen=True)

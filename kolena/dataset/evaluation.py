@@ -34,6 +34,8 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.endpoints import get_platform_url
+from kolena._utils.endpoints import serialize_models_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
@@ -215,10 +217,12 @@ def _upload_results(
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, model, results)
 
     response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
+    models = serialize_models_url(response.model_id, response.eval_config_id)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
         f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",
     )
+    log.info(f"{get_platform_url()}/dataset/studio?datasetId={dataset_id}&models={models}")
     return response
 
 
