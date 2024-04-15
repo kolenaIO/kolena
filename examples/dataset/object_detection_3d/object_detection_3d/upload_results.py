@@ -228,7 +228,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
-            # FP_2D = [inferences for inferences, fp in zip(record.raw_inferences_2d, FP) if fp]
+            FP_2D = [inferences for inferences, fp in zip(record.raw_inferences_2d, FP) if fp]
             FP_3D = [
                 dataclasses.replace(
                     record.raw_inferences_3d[j],
@@ -238,7 +238,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, fp in enumerate(FP)
                 if fp
             ]
-            # TP_2D = [inferences for inferences, tp in zip(record.raw_inferences_2d, TP) if tp]
+            TP_2D = [inferences for inferences, tp in zip(record.raw_inferences_2d, TP) if tp]
             TP_3D = [
                 ScoredLabeledBoundingBox3D(
                     **record.raw_inferences_3d[j]._to_dict(),
@@ -248,7 +248,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, tp in enumerate(TP)
                 if tp
             ]
-            # FN_2D = [image_bboxes for image_bboxes, fn in zip(record.image_bboxes, FN) if fn]
+            FN_2D = [image_bboxes for image_bboxes, fn in zip(record.image_bboxes, FN) if fn]
             FN_3D = [
                 LabeledBoundingBox3D(
                     **record.velodyne_bboxes[j]._to_dict(),
@@ -297,17 +297,20 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     nMissedObjects=len(FN_3D),
                     nMismatchedInferences=len(FP_3D),
                     thresholds=current_optimal_thresholds,
-                    # FP_2D=FP_2D,
+                    FP_2D=FP_2D,
                     FP_3D=FP_3D,
-                    # TP_2D=TP_2D,
+                    TP_2D=TP_2D,
                     TP_3D=TP_3D,
-                    # FN_2D=FN_2D,
+                    FN_2D=FN_2D,
                     FN_3D=FN_3D,
                     images_with_inferences=[
                         ImageAsset(
                             **img._to_dict(),
+                            FP_2D=FP_2D,  # type: ignore[call-arg]
                             FP_3D=FP_3D,  # type: ignore[call-arg]
+                            TP_2D=TP_2D,  # type: ignore[call-arg]
                             TP_3D=TP_3D,  # type: ignore[call-arg]
+                            FN_2D=FN_2D,  # type: ignore[call-arg]
                             FN_3D=FN_3D,  # type: ignore[call-arg]
                         )
                         for img in record.images
