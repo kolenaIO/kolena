@@ -27,20 +27,6 @@ from kolena.dataset import upload_dataset
 # KITTI only supports evaluation of the first three classes but "Van" and "Person_sitting" GTs
 # are used to avoid penalizing inferences labeled as "Car" and "Pedestrian" respectively.
 SUPPORTED_LABELS = ["Car", "Pedestrian", "Cyclist", "Van", "Person_sitting", "DontCare"]
-LABEL_FILE_COLUMNS = {
-    "image_id",
-    "left_image",
-    "right_image",
-    "velodyne",
-    "objects",
-    "P0",
-    "P1",
-    "P2",
-    "P3",
-    "R0_rect",
-    "Tr_velo_to_cam",
-    "Tr_imu_to_velo",
-}
 
 
 def run(args: Namespace) -> int:
