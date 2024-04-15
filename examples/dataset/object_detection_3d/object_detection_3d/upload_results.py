@@ -41,6 +41,7 @@ from kolena import dataset
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
+from kolena.asset import ImageAsset
 from kolena.dataset import upload_results
 
 CLASS_NAME_VALUE = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
@@ -303,14 +304,14 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     # FN_2D=FN_2D,
                     FN_3D=FN_3D,
                     images_with_inferences=[
-                        dataclasses.replace(
-                            img,
-                            FP_3D=FP_3D,
-                            TP_3D=TP_3D,
-                            FN_3D=FN_3D,
-                            matched_inference=matched_inference,
-                            unmatched_ground_truth=unmatched_ground_truth,
-                            unmatched_inference=unmatched_inference,
+                        ImageAsset(
+                            **img._to_dict(),
+                            FP_3D=FP_3D,  # type: ignore[call-arg]
+                            TP_3D=TP_3D,  # type: ignore[call-arg]
+                            FN_3D=FN_3D,  # type: ignore[call-arg]
+                            matched_inference=matched_inference,  # type: ignore[call-arg]
+                            unmatched_ground_truth=unmatched_ground_truth,  # type: ignore[call-arg]
+                            unmatched_inference=unmatched_inference,  # type: ignore[call-arg]
                         )
                         for img in record.images
                     ],
