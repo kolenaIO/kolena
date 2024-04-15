@@ -1,10 +1,13 @@
 # Cohen's Kappa
 
 Cohen's Kappa is a statistical metric that evaluates the reliability of an algorithm's predictions with similar goals
-as [accuracy](./accuracy.md) or [F<sub>1</sub>-score](./f1-score.md). However, the Cohen Kappa score magnifies the
+as [accuracy](./accuracy.md) or [F<sub>1</sub>-score](./f1-score.md). However, the Cohen's Kappa score magnifies the
 advantage a classifier has over a random classifier based on class frequencies. The Kappa statistic is a robust metric,
 particularly when there is significant class imbalance for binary and multiclass classification problems, which
 extends to more complicated ML tasks such as object detection.
+
+Like statistical correlation coefficients, Cohen's Kappa ranges from -1 to +1, but typically ranges from 0 to 1. A
+value of 0 means that a model agrees with a completely random model, with the same level of performance.
 
 ## Implementation Details
 
@@ -23,7 +26,7 @@ where:
 - \(P_o\) is the `observed agreement`
 - \(P_e\) is the hypothetical probability of `chance agreement`
 
-??? question "Understanding \(P_o\) and \(P_e\)"
+!!! info "Understanding \(P_o\) and \(P_e\)"
     [Accuracy](./accuracy.md) measures the overall correctness of predictions. Cohen's Kappa adjusts for any agreement
     that may happen by chance, providing a more detailed understanding of the classifier's performance.
 
@@ -56,7 +59,7 @@ where:
         P_e = \sum_{c} \text{chance}_{c}
         $$
 
-There is an alternative method using [TP, FP, FN, and TN](./tp-fp-fn-tn.md):
+There is an alternative method using [TP, FP, FN, and TN](./tp-fp-fn-tn.md) when only two classes are involved:
 
 $$
 \kappa = \frac{2 \cdot (TP \cdot TN - FP \cdot FN)}{(TP + FP) \cdot (FP + TN) + (TP + FN) \cdot (FN + TN)}
@@ -77,6 +80,19 @@ indicate a model that is less performant than a random guesser.
 | > 0.6             | Substantial           |
 | > 0.8             | Almost perfect        |
 | = 1.0             | Perfect               |
+
+### Multiple Classes
+
+In workflows with multiple classes, Kappa can be computed per class. In the [TP / FP / FN / TN](./tp-fp-fn-tn.md)
+guide, we learned how to compute per-class metrics when there are multiple classes, using the
+[one-vs-rest](./tp-fp-fn-tn.md#multiclass) (OvR) strategy. Once you have TP, FP, and FN counts computed for each
+class, you can compute Cohen's Kappa for each class by treating each as a single-class problem.
+
+### Aggregating Per-class Metrics
+
+If you are looking for a **single** Kappa score that summarizes model performance across all classes, there are
+different ways to aggregate the scores: **macro**, **micro**, and **weighted**. Read more about
+these methods in the [Averaging Methods](./averaging-methods.md) guide.
 
 ## Example
 
