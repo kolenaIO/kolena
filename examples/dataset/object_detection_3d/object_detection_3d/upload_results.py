@@ -145,7 +145,7 @@ def compute_f1_optimal_thresholds(
     labels = {label for label in labels if label in VALID_LABELS}
     f1_optimal_thresholds = {}
 
-    _, metrics = kitti_eval(kitti_ground_truths, kitti_inferences, list(labels), eval_types=["bev", "3d"])
+    _, metrics = kitti_eval(kitti_ground_truths, kitti_inferences, list(labels), eval_types=["bbox", "bev", "3d"])
     for name, difficulty in KITTY_DIFFICULTY.items():
         thresholds = {}
         for current_class in VALID_LABELS:
