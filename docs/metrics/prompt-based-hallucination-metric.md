@@ -141,7 +141,7 @@ Based on GPT-4's response, the inference in the first example pair is definitely
 second pair is factually consistent. However, the inference in the last pair seems to be neutral or inconclusive, as the
 judging model predicted `yes` twice out of the five times it was prompted.
 
-## Limitations and Advantages
+## Limitations and Biases
 
 1. **Cost** - Running a large model entails significant expenses. The cost of operating an API model such as GPT-4 is
 determined by the number of tokens used. However, if you employ your own model as a judging model, the payment might not

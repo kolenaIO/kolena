@@ -39,7 +39,7 @@ print(compute_metric("The duck crossed the road", "The duck did not cross the ro
 | `The duck crossed the road` | `The animal crossed the road` | `0.9817` |
 | `The duck crossed the road` | `The duck crossed my path` | `0.5381` |
 
-## Limitations and Advantages
+## Limitations and Biases
 
 1. The model provided on Hugging Face suggests that expected input is simply pairs of text. This means that lengthy
 context cannot be provided. If relevant, context can be added to the front of both texts within the pair. For example:
