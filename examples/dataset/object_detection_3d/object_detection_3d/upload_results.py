@@ -319,7 +319,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             thresholds=f1_optimal_thresholds[difficulty],
         )
         metrics_df = compute_metrics_with_difficulty(difficulty)
-        results_df = df[["image_id", "raw_inferences_2d", "raw_inferences_3d", *gt_info_columns]].merge(
+        results_df = df[["image_id", "raw_inferences_3d", *gt_info_columns]].merge(
             metrics_df,
             on="image_id",
         )
