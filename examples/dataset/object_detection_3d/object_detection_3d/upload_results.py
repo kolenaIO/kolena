@@ -309,9 +309,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                             FP_3D=FP_3D,  # type: ignore[call-arg]
                             TP_3D=TP_3D,  # type: ignore[call-arg]
                             FN_3D=FN_3D,  # type: ignore[call-arg]
-                            matched_inference=matched_inference,  # type: ignore[call-arg]
-                            unmatched_ground_truth=unmatched_ground_truth,  # type: ignore[call-arg]
-                            unmatched_inference=unmatched_inference,  # type: ignore[call-arg]
                         )
                         for img in record.images
                     ],
