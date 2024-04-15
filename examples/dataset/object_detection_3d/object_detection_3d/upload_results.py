@@ -31,13 +31,13 @@ from object_detection_3d.constants import TASK
 from object_detection_3d.utils import alpha_from_bbox3D
 from object_detection_3d.utils import bbox_to_kitti_format
 from object_detection_3d.utils import center_to_kitti_format
+from object_detection_3d.utils import load_data
 from object_detection_3d.utils import transform_to_camera_frame
 from object_detection_3d.vendored.kitti_eval import _prepare_data  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import calculate_iou_partly  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import compute_statistics_jit  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import kitti_eval  # type: ignore[attr-defined]
 
-from kolena import dataset
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
@@ -369,7 +369,15 @@ def load_results(model: str) -> pd.DataFrame:
 
 def run(args: Namespace) -> None:
     pred_df = load_results(args.model)
-    dataset_df = dataset.download_dataset(args.dataset).sort_values(by="image_id", ignore_index=True)
+
+    raw_dataset_df = pd.read_json(
+        f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.jsonl",
+        lines=True,
+        orient="records",
+        dtype=False,
+        storage_options={"anon": True},
+    )
+    dataset_df = load_data(raw_dataset_df).sort_values(by="image_id", ignore_index=True)
     results_df = dataset_df.merge(pred_df, on=ID_FIELDS)
     results = compute_metrics_by_difficulty(results_df)
     upload_results(args.dataset, args.model, results)
