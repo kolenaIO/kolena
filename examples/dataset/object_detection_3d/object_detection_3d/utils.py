@@ -26,23 +26,20 @@ from kolena.annotation import LabeledBoundingBox3D
 from kolena.asset import ImageAsset
 from kolena.asset import PointCloudAsset
 
-LABEL_FILE_COLUMNS = [
-    "type",
-    "truncated",
-    "occluded",
-    "alpha",
-    "bbox_x0",
-    "bbox_y0",
-    "bbox_x1",
-    "bbox_y1",
-    "dim_y",
-    "dim_z",
-    "dim_x",
-    "loc_x",
-    "loc_y",
-    "loc_z",
-    "rotation_y",
-]
+LABEL_FILE_COLUMNS = {
+    "image_id",
+    "left_image",
+    "right_image",
+    "velodyne",
+    "objects",
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "R0_rect",
+    "Tr_velo_to_cam",
+    "Tr_imu_to_velo",
+}
 
 
 def extend_matrix(mat: np.ndarray) -> np.ndarray:

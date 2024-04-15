@@ -369,7 +369,6 @@ def load_results(model: str) -> pd.DataFrame:
 
 def run(args: Namespace) -> None:
     pred_df = load_results(args.model)
-
     raw_dataset_df = pd.read_json(
         f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.jsonl",
         lines=True,
