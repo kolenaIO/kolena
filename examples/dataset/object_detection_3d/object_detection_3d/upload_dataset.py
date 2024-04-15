@@ -23,6 +23,7 @@ from object_detection_3d.constants import ID_FIELDS
 from object_detection_3d.constants import TASK
 from object_detection_3d.utils import create_velo_to_pixel_matrix
 
+from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.asset import ImageAsset
 from kolena.dataset import upload_dataset
@@ -52,18 +53,18 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
     meta_cols = [col for col in df_raw.columns if col not in LABEL_FILE_COLUMNS]
 
     for record in df_raw.itertuples():
-        # bboxes_2d = [
-        #     LabeledBoundingBox(
-        #         label=box["label"],
-        #         top_left=tuple(box["left_top_left"]),
-        #         bottom_right=tuple(box["left_bottom_right"]),
-        #         occluded=box["occluded"],  # type: ignore[call-arg]
-        #         truncated=box["truncated"],  # type: ignore[call-arg]
-        #         alpha=box["alpha"],  # type: ignore[call-arg]
-        #         difficulty=box["difficulty"],  # type: ignore[call-arg]
-        #     )
-        #     for box in record.objects
-        # ]
+        bboxes_2d = [
+            LabeledBoundingBox(
+                label=box["label"],
+                top_left=tuple(box["left_top_left"]),
+                bottom_right=tuple(box["left_bottom_right"]),
+                occluded=box["occluded"],  # type: ignore[call-arg]
+                truncated=box["truncated"],  # type: ignore[call-arg]
+                alpha=box["alpha"],  # type: ignore[call-arg]
+                difficulty=box["difficulty"],  # type: ignore[call-arg]
+            )
+            for box in record.objects
+        ]
         bboxes_3d = [
             LabeledBoundingBox3D(
                 label=box["label"],
@@ -85,7 +86,7 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
             {
                 "image_id": record.image_id,
                 "locator": record.left_image,
-                # "image_bboxes": bboxes_2d,
+                "image_bboxes": bboxes_2d,
                 "images": [
                     ImageAsset(
                         locator=record.left_image,

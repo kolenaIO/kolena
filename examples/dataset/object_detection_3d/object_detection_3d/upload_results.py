@@ -29,6 +29,7 @@ from object_detection_3d.constants import ID_FIELDS
 from object_detection_3d.constants import MODELS
 from object_detection_3d.constants import TASK
 from object_detection_3d.utils import alpha_from_bbox3D
+from object_detection_3d.utils import bbox_to_kitti_format
 from object_detection_3d.utils import center_to_kitti_format
 from object_detection_3d.utils import transform_to_camera_frame
 from object_detection_3d.vendored.kitti_eval import _prepare_data  # type: ignore[attr-defined]
@@ -53,9 +54,9 @@ def to_kitti_format(df: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[Dict[s
     dt_annos = []
     labels = set()
     for record in df.itertuples():
-        # gt_bboxes_2d = record.image_bboxes
+        gt_bboxes_2d = record.image_bboxes
         gt_bboxes_3d = record.velodyne_bboxes
-        # inf_bboxes_2d = record.raw_inferences_2d
+        inf_bboxes_2d = record.raw_inferences_2d
         inf_bboxes_3d = record.raw_inferences_3d
         velo_to_camera = record.velodyne_to_camera_transformation
         camera_rect = record.camera_rectification
@@ -86,6 +87,7 @@ def to_kitti_format(df: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[Dict[s
                 alpha=np.array(
                     [alpha_from_bbox3D(bbox, bbox_lidar) for bbox, bbox_lidar in zip(camera_bboxes, gt_bboxes_3d)],
                 ),
+                bbox=np.array([bbox_to_kitti_format(bbox) for bbox in gt_bboxes_2d]),
                 dimensions=np.array([bbox.dimensions for bbox in camera_bboxes]),
                 location=np.array([center_to_kitti_format(bbox) for bbox in camera_bboxes]),
                 rotation_y=np.array([bbox.rotations[1] for bbox in camera_bboxes]),
@@ -121,6 +123,7 @@ def to_kitti_format(df: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[Dict[s
                         for bbox, bbox_lidar in zip(pred_camera_bboxes, inf_bboxes_3d)
                     ],
                 ),
+                bbox=np.array([bbox_to_kitti_format(bbox) for bbox in inf_bboxes_2d]),
                 dimensions=np.array([bbox.dimensions for bbox in pred_camera_bboxes]),
                 location=np.array([center_to_kitti_format(bbox) for bbox in pred_camera_bboxes]),
                 rotation_y=np.array([bbox.rotations[1] for bbox in pred_camera_bboxes]),
@@ -224,7 +227,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
-            # FP_2D = [inferences for inferences, fp in zip(record.raw_inferences_2d, FP) if fp]
+            FP_2D = [inferences for inferences, fp in zip(record.raw_inferences_2d, FP) if fp]
             FP_3D = [
                 dataclasses.replace(
                     record.raw_inferences_3d[j],
@@ -234,7 +237,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, fp in enumerate(FP)
                 if fp
             ]
-            # TP_2D = [inferences for inferences, tp in zip(record.raw_inferences_2d, TP) if tp]
+            TP_2D = [inferences for inferences, tp in zip(record.raw_inferences_2d, TP) if tp]
             TP_3D = [
                 ScoredLabeledBoundingBox3D(
                     **record.raw_inferences_3d[j]._to_dict(),
@@ -244,7 +247,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, tp in enumerate(TP)
                 if tp
             ]
-            # FN_2D = [image_bboxes for image_bboxes, fn in zip(record.image_bboxes, FN) if fn]
+            FN_2D = [image_bboxes for image_bboxes, fn in zip(record.image_bboxes, FN) if fn]
             FN_3D = [
                 LabeledBoundingBox3D(
                     **record.velodyne_bboxes[j]._to_dict(),
@@ -293,11 +296,11 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     nMissedObjects=len(FN_3D),
                     nMismatchedInferences=len(FP_3D),
                     thresholds=current_optimal_thresholds,
-                    # FP_2D=FP_2D,
+                    FP_2D=FP_2D,
                     FP_3D=FP_3D,
-                    # TP_2D=TP_2D,
+                    TP_2D=TP_2D,
                     TP_3D=TP_3D,
-                    # FN_2D=FN_2D,
+                    FN_2D=FN_2D,
                     FN_3D=FN_3D,
                 ),
             )
