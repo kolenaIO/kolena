@@ -31,16 +31,17 @@ from object_detection_3d.constants import TASK
 from object_detection_3d.utils import alpha_from_bbox3D
 from object_detection_3d.utils import bbox_to_kitti_format
 from object_detection_3d.utils import center_to_kitti_format
+from object_detection_3d.utils import load_data
 from object_detection_3d.utils import transform_to_camera_frame
 from object_detection_3d.vendored.kitti_eval import _prepare_data  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import calculate_iou_partly  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import compute_statistics_jit  # type: ignore[attr-defined]
 from object_detection_3d.vendored.kitti_eval import kitti_eval  # type: ignore[attr-defined]
 
-from kolena import dataset
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
+from kolena.asset import ImageAsset
 from kolena.dataset import upload_results
 
 CLASS_NAME_VALUE = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
@@ -60,7 +61,7 @@ def to_kitti_format(df: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[Dict[s
         inf_bboxes_3d = record.raw_inferences_3d
         velo_to_camera = record.velodyne_to_camera_transformation
         camera_rect = record.camera_rectification
-        if len(gt_bboxes_2d) == 0:
+        if len(gt_bboxes_3d) == 0:
             gt = dict(
                 name=np.array([]),
                 truncated=np.array([]),
@@ -93,7 +94,7 @@ def to_kitti_format(df: pd.DataFrame) -> Tuple[List[Dict[str, Any]], List[Dict[s
                 rotation_y=np.array([bbox.rotations[1] for bbox in camera_bboxes]),
             )
 
-        if len(inf_bboxes_2d) == 0:
+        if len(inf_bboxes_3d) == 0:
             inf = dict(
                 name=np.array([]),
                 truncated=np.array([]),
@@ -227,7 +228,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
-            FP_2D = [inferences for inferences, fp in zip(record.raw_inferences_2d, FP) if fp]
             FP_3D = [
                 dataclasses.replace(
                     record.raw_inferences_3d[j],
@@ -237,7 +237,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, fp in enumerate(FP)
                 if fp
             ]
-            TP_2D = [inferences for inferences, tp in zip(record.raw_inferences_2d, TP) if tp]
             TP_3D = [
                 ScoredLabeledBoundingBox3D(
                     **record.raw_inferences_3d[j]._to_dict(),
@@ -247,7 +246,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, tp in enumerate(TP)
                 if tp
             ]
-            FN_2D = [image_bboxes for image_bboxes, fn in zip(record.image_bboxes, FN) if fn]
             FN_3D = [
                 LabeledBoundingBox3D(
                     **record.velodyne_bboxes[j]._to_dict(),
@@ -262,7 +260,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             matched_inference = [
                 inferences
                 for inferences, tps in zip(
-                    record.raw_inferences_2d,
+                    record.raw_inferences_3d,
                     zip(raw_result["Car"]["tp"], raw_result["Cyclist"]["tp"], raw_result["Pedestrian"]["tp"]),
                 )
                 if sum(tps)
@@ -270,15 +268,15 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             unmatched_inference = [
                 inferences
                 for inferences, fps in zip(
-                    record.raw_inferences_2d,
+                    record.raw_inferences_3d,
                     zip(raw_result["Car"]["fp"], raw_result["Cyclist"]["fp"], raw_result["Pedestrian"]["fp"]),
                 )
                 if sum(fps)
             ]
             unmatched_ground_truth = [
-                image_bboxes
-                for image_bboxes, fns in zip(
-                    record.image_bboxes,
+                velodyne_bboxes
+                for velodyne_bboxes, fns in zip(
+                    record.velodyne_bboxes,
                     zip(raw_result["Car"]["fn"], raw_result["Cyclist"]["fn"], raw_result["Pedestrian"]["fn"]),
                 )
                 if sum(fns)
@@ -292,16 +290,22 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     unmatched_inference=unmatched_inference,
                     nInferences=len(record.raw_inferences_3d),
                     nValidObjects=sum(1 for ignore in ignored_gts_combined[i] if not ignore),
-                    nMatchedInferences=len(TP_2D),
-                    nMissedObjects=len(FN_2D),
-                    nMismatchedInferences=len(FP_2D),
+                    nMatchedInferences=len(TP_3D),
+                    nMissedObjects=len(FN_3D),
+                    nMismatchedInferences=len(FP_3D),
                     thresholds=current_optimal_thresholds,
-                    FP_2D=FP_2D,
                     FP_3D=FP_3D,
-                    TP_2D=TP_2D,
                     TP_3D=TP_3D,
-                    FN_2D=FN_2D,
                     FN_3D=FN_3D,
+                    images_with_inferences=[
+                        ImageAsset(
+                            **img._to_dict(),
+                            FP_3D=FP_3D,  # type: ignore[call-arg]
+                            TP_3D=TP_3D,  # type: ignore[call-arg]
+                            FN_3D=FN_3D,  # type: ignore[call-arg]
+                        )
+                        for img in record.images
+                    ],
                 ),
             )
         return pd.DataFrame(sample_metrics)
@@ -315,7 +319,7 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
             thresholds=f1_optimal_thresholds[difficulty],
         )
         metrics_df = compute_metrics_with_difficulty(difficulty)
-        results_df = df[["image_id", "raw_inferences_2d", "raw_inferences_3d", *gt_info_columns]].merge(
+        results_df = df[["image_id", "raw_inferences_3d", *gt_info_columns]].merge(
             metrics_df,
             on="image_id",
         )
@@ -353,14 +357,26 @@ def _get_box(bboxes: List) -> pd.Series:
 
 
 def load_results(model: str) -> pd.DataFrame:
-    df = pd.read_json(f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{model}.jsonl", lines=True, dtype=False)
+    df = pd.read_json(
+        f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{model}.jsonl",
+        lines=True,
+        dtype=False,
+        storage_options={"anon": True},
+    )
     df[["raw_inferences_2d", "raw_inferences_3d"]] = df["bboxes"].apply(_get_box)
     return df
 
 
 def run(args: Namespace) -> None:
     pred_df = load_results(args.model)
-    dataset_df = dataset.download_dataset(args.dataset).sort_values(by="image_id", ignore_index=True)
+    raw_dataset_df = pd.read_json(
+        f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.jsonl",
+        lines=True,
+        orient="records",
+        dtype=False,
+        storage_options={"anon": True},
+    )
+    dataset_df = load_data(raw_dataset_df).sort_values(by="image_id", ignore_index=True)
     results_df = dataset_df.merge(pred_df, on=ID_FIELDS)
     results = compute_metrics_by_difficulty(results_df)
     upload_results(args.dataset, args.model, results)

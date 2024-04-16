@@ -11,31 +11,35 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from collections import Counter
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import numpy as np
+import pandas as pd
 
 from kolena.annotation import BoundingBox
 from kolena.annotation import BoundingBox3D
+from kolena.annotation import LabeledBoundingBox
+from kolena.annotation import LabeledBoundingBox3D
+from kolena.asset import ImageAsset
+from kolena.asset import PointCloudAsset
 
-LABEL_FILE_COLUMNS = [
-    "type",
-    "truncated",
-    "occluded",
-    "alpha",
-    "bbox_x0",
-    "bbox_y0",
-    "bbox_x1",
-    "bbox_y1",
-    "dim_y",
-    "dim_z",
-    "dim_x",
-    "loc_x",
-    "loc_y",
-    "loc_z",
-    "rotation_y",
-]
+LABEL_FILE_COLUMNS = {
+    "image_id",
+    "left_image",
+    "right_image",
+    "velodyne",
+    "objects",
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "R0_rect",
+    "Tr_velo_to_cam",
+    "Tr_imu_to_velo",
+}
 
 
 def extend_matrix(mat: np.ndarray) -> np.ndarray:
@@ -97,3 +101,85 @@ def transform_to_camera_frame(
         )
         for center, dim, yaw in zip(centers, dimensions, yaws)
     ]
+
+
+def kitti_matrix_to_array(arr: List[float], shape: Tuple[int, int]) -> np.array:
+    return np.array(arr).reshape(shape)
+
+
+def create_velo_to_pixel_matrix(velo_to_cam: List[float], cam_to_pixel: List[float]) -> List[List[float]]:
+    velo_to_cam_arr = kitti_matrix_to_array(velo_to_cam, (4, 4))
+    cam_to_pixel_arr = kitti_matrix_to_array(cam_to_pixel, (4, 4))
+    composed_arr = cam_to_pixel_arr @ velo_to_cam_arr  # type: ignore[operator]
+    return composed_arr[:3, :].tolist()
+
+
+def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
+    records = []
+    meta_cols = [col for col in df_raw.columns if col not in LABEL_FILE_COLUMNS]
+
+    for record in df_raw.itertuples():
+        bboxes_2d = [
+            LabeledBoundingBox(
+                label=box["label"],
+                top_left=tuple(box["left_top_left"]),
+                bottom_right=tuple(box["left_bottom_right"]),
+                occluded=box["occluded"],  # type: ignore[call-arg]
+                truncated=box["truncated"],  # type: ignore[call-arg]
+                alpha=box["alpha"],  # type: ignore[call-arg]
+                difficulty=box["difficulty"],  # type: ignore[call-arg]
+            )
+            for box in record.objects
+        ]
+        bboxes_3d = [
+            LabeledBoundingBox3D(
+                label=box["label"],
+                dimensions=(box["dim_x"], box["dim_y"], box["dim_z"]),
+                center=(box["loc_x"], box["loc_y"], box["loc_z"] + (box["dim_z"] / 2.0)),
+                # translate in z (up) axis to be in center
+                rotations=(0.0, 0.0, box["rotation_y"]),  # Z yaw axis for lidar coordinates
+                occluded=box["occluded"],  # type: ignore[call-arg]
+                truncated=box["truncated"],  # type: ignore[call-arg]
+                alpha=box["alpha"],  # type: ignore[call-arg]
+                difficulty=box["difficulty"],  # type: ignore[call-arg]
+            )
+            for box in record.objects
+        ]
+        counts = Counter([r["label"] for r in record.objects])
+        metadata = {col: getattr(record, col) for col in meta_cols}
+
+        records.append(
+            {
+                "image_id": record.image_id,
+                "locator": record.left_image,
+                "image_bboxes": bboxes_2d,
+                "images": [
+                    ImageAsset(
+                        locator=record.left_image,
+                        side="left",  # type: ignore[call-arg]
+                        # type: ignore[call-arg]
+                        projection=create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P2),
+                        velodyne_bboxes=bboxes_3d,  # type: ignore[call-arg]
+                    ),
+                    ImageAsset(
+                        locator=record.right_image,
+                        side="right",  # type: ignore[call-arg]
+                        # type: ignore[call-arg]
+                        projection=create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P3),
+                        velodyne_bboxes=bboxes_3d,  # type: ignore[call-arg]
+                    ),
+                ],
+                "velodyne": PointCloudAsset(locator=record.velodyne),
+                "total_objects": len(bboxes_3d),
+                "n_car": counts["Car"],
+                "n_pedestrian": counts["Pedestrian"],
+                "n_cyclist": counts["Cyclist"],
+                "velodyne_bboxes": bboxes_3d,
+                "velodyne_to_camera_transformation": record.Tr_velo_to_cam,
+                "camera_rectification": record.R0_rect,
+                "projection": create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P2),
+                **metadata,
+            },
+        )
+
+    return pd.DataFrame(records)
