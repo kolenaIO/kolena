@@ -220,9 +220,8 @@ def _upload_results(
     models = serialize_models_url(response.model_id, response.eval_config_id)
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
-        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",
+        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated ({get_platform_url()}/dataset/standards?datasetId={dataset_id}&models={models})",  # noqa: E501
     )
-    log.info(f"{get_platform_url()}/dataset/studio?datasetId={dataset_id}&models={models}")
     return response
 
 
