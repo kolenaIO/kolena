@@ -16,12 +16,14 @@ from collections import defaultdict
 from typing import Any
 from typing import cast
 from typing import Dict
+from typing import Iterator
 from typing import List
 from typing import Literal
 from typing import Union
 
 import numpy as np
 import pandas as pd
+import tqdm
 
 from kolena import dataset
 from kolena._experimental.object_detection.utils import compute_optimal_f1_threshold
@@ -67,14 +69,20 @@ def _compute_thresholded_metrics(
     label: Union[str, None] = None,
 ) -> List[dict[str, Any]]:
     metrics = []
+    prev_count_tp = -1
+    prev_count_fp = -1
+    prev_count_fn = -1
     for threshold in thresholds:
         count_tp = sum(1 for gt, inf in matches.matched if inf.score >= threshold)
         count_fp = sum(1 for inf in matches.unmatched_inf if inf.score >= threshold)
         count_fn = len(matches.unmatched_gt) + sum(1 for _, inf in matches.matched if inf.score < threshold)
-        if label:
-            metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
-        else:
-            metrics.append(dict(threshold=threshold, tp=count_tp, fp=count_fp, fn=count_fn))
+        if (count_tp, count_fp, count_fn) != (prev_count_tp, prev_count_fp, prev_count_fn):
+            if label:
+                metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
+            else:
+                metrics.append(dict(threshold=threshold, tp=count_tp, fp=count_fp, fn=count_fn))
+
+        prev_count_tp, prev_count_fp, prev_count_fn = count_tp, count_fp, count_fn
 
     return metrics
 
@@ -173,6 +181,38 @@ def multiclass_datapoint_metrics(
     )
 
 
+def _iter_single_class_metrics(
+    pred_df: pd.DataFrame,
+    all_object_matches: List[InferenceMatches],
+    *,
+    threshold: float,
+    all_thresholds: List[float],
+    batch_size: int,
+) -> Iterator[pd.DataFrame]:
+    for i in tqdm.tqdm(range(0, pred_df.shape[0], batch_size)):
+        metrics = [
+            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, all_thresholds)
+            for matches in all_object_matches[i : i + batch_size]
+        ]
+        yield pd.concat([pd.DataFrame(metrics), pred_df.reset_index(drop=True)], axis=1)
+
+
+def _iter_multi_class_metrics(
+    pred_df: pd.DataFrame,
+    all_object_matches: List[MulticlassInferenceMatches],
+    *,
+    thresholds: Dict[str, float],
+    all_thresholds: List[float],
+    batch_size: int,
+) -> Iterator[pd.DataFrame]:
+    for i in tqdm.tqdm(range(0, len(all_object_matches), batch_size)):
+        metrics = [
+            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds, all_thresholds)
+            for matches in all_object_matches[i : i + batch_size]
+        ]
+        yield pd.concat([pd.DataFrame(metrics), pred_df[i : i + batch_size].reset_index(drop=True)], axis=1)
+
+
 def _compute_metrics(
     pred_df: pd.DataFrame,
     *,
@@ -181,7 +221,8 @@ def _compute_metrics(
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     min_confidence_score: float = 0.5,
-) -> pd.DataFrame:
+    batch_size: int = 10_000,
+) -> Iterator[pd.DataFrame]:
     """
     Compute metrics for object detection.
 
@@ -193,6 +234,7 @@ def _compute_metrics(
         as `0.5` or `0.75`, or the F1-optimal threshold.
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
+    :param batch_size: number of results to process per iteration.
     """
     is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
     match_fn = match_inferences_multiclass if is_multiclass else match_inferences
@@ -220,6 +262,7 @@ def _compute_metrics(
         all_thresholds = sorted(all_thresholds)
 
     thresholds: dict[str, float]
+    pred_df.drop(columns=ground_truth, inplace=True)
 
     if is_multiclass:
         if isinstance(threshold_strategy, dict):
@@ -230,10 +273,13 @@ def _compute_metrics(
             thresholds = compute_optimal_f1_threshold_multiclass(
                 cast(List[MulticlassInferenceMatches], all_object_matches),
             )
-        results = [
-            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds, all_thresholds)
-            for matches in all_object_matches
-        ]
+        yield from _iter_multi_class_metrics(
+            pred_df,
+            all_object_matches,
+            thresholds=thresholds,
+            all_thresholds=all_thresholds,
+            batch_size=batch_size,
+        )
     else:
         if isinstance(threshold_strategy, dict) and threshold_strategy:
             threshold = next(iter(threshold_strategy.values()))
@@ -241,12 +287,14 @@ def _compute_metrics(
             threshold = threshold_strategy
         else:
             threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_object_matches))
-        results = [
-            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, all_thresholds)
-            for matches in all_object_matches
-        ]
 
-    return pd.concat([pd.DataFrame(results), pred_df], axis=1)
+        yield from _iter_single_class_metrics(
+            pred_df,
+            all_object_matches,
+            threshold=threshold,
+            all_thresholds=all_thresholds,
+            batch_size=batch_size,
+        )
 
 
 def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
@@ -278,6 +326,7 @@ def upload_object_detection_results(
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
+    batch_size: int = 10_000,
 ) -> None:
     """
     Compute metrics and upload results of the model for the dataset.
@@ -294,9 +343,10 @@ def upload_object_detection_results(
     defaulting to `"raw_inferences"`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
-        as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score..
+        as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score.
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
+    :param batch_size: number of results to process per iteration.
     :return:
     """
     eval_config = dict(
@@ -307,16 +357,26 @@ def upload_object_detection_results(
     _validate_column_present(df, raw_inferences_field)
 
     dataset_df = dataset.download_dataset(dataset_name)
-    dataset_df = dataset_df[["locator", ground_truths_field]]
+    dataset_df = dataset_df[["image_id", "locator", ground_truths_field]]
     _validate_column_present(dataset_df, ground_truths_field)
 
-    results_df = _compute_metrics(
-        df.merge(dataset_df, on="locator"),
-        ground_truth=ground_truths_field,
-        inference=raw_inferences_field,
-        threshold_strategy=threshold_strategy,
-        iou_threshold=iou_threshold,
-        min_confidence_score=min_confidence_score,
+    merged_df = df.merge(dataset_df, on=["locator"])
+    dataset.upload_results(
+        dataset_name,
+        model_name,
+        [
+            (
+                eval_config,
+                _compute_metrics(
+                    merged_df,
+                    ground_truth=ground_truths_field,
+                    inference=raw_inferences_field,
+                    iou_threshold=iou_threshold,
+                    threshold_strategy=threshold_strategy,
+                    min_confidence_score=min_confidence_score,
+                    batch_size=batch_size,
+                ),
+            ),
+        ],
+        thresholded_fields=["thresholded"],
     )
-    results_df.drop(columns=[ground_truths_field], inplace=True)
-    dataset.upload_results(dataset_name, model_name, [(eval_config, results_df)], thresholded_fields=["thresholded"])
