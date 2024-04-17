@@ -191,7 +191,7 @@ def _iter_single_class_metrics(
 ) -> Iterator[pd.DataFrame]:
     for i in tqdm.tqdm(range(0, pred_df.shape[0], batch_size)):
         metrics = [
-            single_class_datapoint_metrics(cast(InferenceMatches, matches), threshold, all_thresholds)
+            single_class_datapoint_metrics(matches, threshold, all_thresholds)
             for matches in all_object_matches[i : i + batch_size]
         ]
         yield pd.concat([pd.DataFrame(metrics), pred_df.reset_index(drop=True)], axis=1)
@@ -207,7 +207,7 @@ def _iter_multi_class_metrics(
 ) -> Iterator[pd.DataFrame]:
     for i in tqdm.tqdm(range(0, len(all_object_matches), batch_size)):
         metrics = [
-            multiclass_datapoint_metrics(cast(MulticlassInferenceMatches, matches), thresholds, all_thresholds)
+            multiclass_datapoint_metrics(matches, thresholds, all_thresholds)
             for matches in all_object_matches[i : i + batch_size]
         ]
         yield pd.concat([pd.DataFrame(metrics), pred_df[i : i + batch_size].reset_index(drop=True)], axis=1)
@@ -275,7 +275,7 @@ def _compute_metrics(
             )
         yield from _iter_multi_class_metrics(
             pred_df,
-            all_object_matches,
+            cast(List[MulticlassInferenceMatches], all_object_matches),
             thresholds=thresholds,
             all_thresholds=all_thresholds,
             batch_size=batch_size,
@@ -290,7 +290,7 @@ def _compute_metrics(
 
         yield from _iter_single_class_metrics(
             pred_df,
-            all_object_matches,
+            cast(List[InferenceMatches], all_object_matches),
             threshold=threshold,
             all_thresholds=all_thresholds,
             batch_size=batch_size,
