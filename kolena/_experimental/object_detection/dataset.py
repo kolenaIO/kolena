@@ -69,20 +69,14 @@ def _compute_thresholded_metrics(
     label: Union[str, None] = None,
 ) -> List[dict[str, Any]]:
     metrics = []
-    prev_count_tp = -1
-    prev_count_fp = -1
-    prev_count_fn = -1
     for threshold in thresholds:
         count_tp = sum(1 for gt, inf in matches.matched if inf.score >= threshold)
         count_fp = sum(1 for inf in matches.unmatched_inf if inf.score >= threshold)
         count_fn = len(matches.unmatched_gt) + sum(1 for _, inf in matches.matched if inf.score < threshold)
-        if (count_tp, count_fp, count_fn) != (prev_count_tp, prev_count_fp, prev_count_fn):
-            if label:
-                metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
-            else:
-                metrics.append(dict(threshold=threshold, tp=count_tp, fp=count_fp, fn=count_fn))
-
-        prev_count_tp, prev_count_fp, prev_count_fn = count_tp, count_fp, count_fn
+        if label:
+            metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
+        else:
+            metrics.append(dict(threshold=threshold, tp=count_tp, fp=count_fp, fn=count_fn))
 
     return metrics
 
