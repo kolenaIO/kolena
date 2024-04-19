@@ -6,7 +6,7 @@ icon: kolena/studio-16
 
 ## What is a Dataset
 
-A [dataset](../dataset/core-concepts/dataset.md) is a version controlled collection of datapoints.
+A [dataset](../dataset/core-concepts/dataset.md) is a version-controlled collection of datapoints.
 Datapoints represent customizable "units" of testing relevant to your problem,
 such as images or text with associated ground truths.
 
@@ -21,10 +21,10 @@ dataset with the following columns:
 | `s3://kolena-public-examples/cifar10/data/horse0000.png`        | horse        |     153.994     |    84.126  |
 
 This datapoint is the image `horse0000.png` with a classification of `horse`
-and has brightness and contrast data.
+and brightness and contrast data.
 
 Each datapoint is uniquely identified by a column or set of columns known as `id_field`(s).
-`id_field` also allow model results to be associated to a datapoint. You can select any field that is
+`id_field`s also allow model results to be associated to a datapoint. You can select any field that is
 unique across your data, or generate one if no unique identifiers exist for your dataset. Some common patterns
 for generating or selecting a `id_field` include:
 
@@ -36,9 +36,11 @@ for generating or selecting a `id_field` include:
 - For other kinds of datapoints, we recommend generating and saving a UUID for each datapoint to use as the ID field.
 
 Kolena will attempt to infer common `id_field`s (e.g. `locator`, `text`) based on what is present in the dataset during import.
-This can be overridden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
+This can be overridden by explicitly declaring `id_field`s when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
+
+### Special Fields
 
 Kolena will look for the following fields when displaying datapoints:
 

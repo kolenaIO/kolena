@@ -14,7 +14,7 @@ testing. For a quick overview, refer to the [Quickstart Guide](../quickstart.md)
 
     ---
 
-    A dataset is a version controlled collection of datapoints.
+    A dataset is a version-controlled collection of datapoints.
     Datapoints represent customizable "units" of testing relevant to your problem,
     such as images or text with associated ground truths.
 

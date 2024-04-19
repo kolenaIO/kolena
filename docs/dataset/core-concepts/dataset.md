@@ -6,7 +6,7 @@ search:
 
 # :kolena-dataset-20: Dataset
 
-A **dataset** is a version controlled collection of datapoints.
+A **dataset** is a version-controlled collection of datapoints.
 Datapoints within a given version are immutable.
 This immutability ensures the integrity and traceability of the data used in model evaluation.
 
