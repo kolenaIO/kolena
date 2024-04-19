@@ -4,10 +4,10 @@ icon: kolena/flame-16
 
 # :kolena-flame-20: Quickstart
 
-Install Kolena to set up rigorous and repeatable model testing in minutes.
+Set up rigorous and repeatable model testing in minutes.
 
 In this quickstart guide, we will use the [300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/)
-example dataset to demonstrate the how to curate test data and test models in Kolena, using both the web app and
+example dataset to demonstrate test data curation and model evaluation in Kolena, using both the web app and
 the `kolena` Python SDK.
 
 ??? note "Using the SDK"
@@ -42,13 +42,14 @@ the `kolena` Python SDK.
     poetry update && poetry install
     ```
 
-## Step 1: Upload dataset
+## Step 1: Upload Dataset
 
 Model evaluations on Kolena starts with datasets. Datasets are tables that contain the data you wish to use for
 creating test cases.
 
 === "Web App"
-    To import the 300-W dataset, select `Import datasets` then `Select from cloud storage`.
+    To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
+    click `Import Dataset` then `Select From Cloud Storage`.
     Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
@@ -62,11 +63,11 @@ creating test cases.
 
     You will now see a preview of how the information is going to be consumed by Kolena.
 
-    Give your dataset a name and select `locator` as the ID column. The ID column is used to uniquely identify a datapoint
-    and is used when uploading model results to associate inferences with datapoints.
+    Give your dataset a name and select `locator` as the ID field. The ID field uniquely identifies a datapoint
+    and is used when uploading model results to associate results with datapoints.
 
-    Click `Confirm` to import the dataset. Once the dataset has been added,
-    you can add description and tags to them to organize the workspace.
+    Click `Import` to create the dataset. Once the import has completed,
+    you can add descriptions and tags to organize your datasets.
 
     <figure markdown>
         ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow.gif)
@@ -98,23 +99,23 @@ creating test cases.
 
 ## Step 2: Upload Model Results
 
-Model results are supplied as tables containing the ID column chosen when uploading the dataset. For
+Model results are supplied as tables containing the ID field chosen when uploading the dataset. For
 this example, we will upload the results for the open-source
 [RetinaFace](https://github.com/serengil/retinaface) (`RetinaFace` option)
 keypoint detection model and a random keypoint model.
 
 === "Web App"
 
-    To upload new model results, from the Details tab of the dataset, click on `Upload Model Results` in the upper right.
-    Then, select `Upload from cloud storage`. Using the explorer, navigate to `s3://kolena-public-examples/300-W/results/`
-    and select `random.csv`, This CSV file contains model results for the random keypoints
+    To upload new model results, from the `Details` tab of the dataset, click on `Upload Model Results` in the upper right.
+    Then, select `Upload From Cloud Storage`. Using the explorer, navigate to `s3://kolena-public-examples/300-W/results/`
+    and select `random.csv`. This CSV file contains model results for the random keypoints
     model for each of the datapoints we uploaded to the dataset.
 
     ??? note "Generating Model Results"
         See the [`keypoint_detection/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
         script in the code example for details on how results were generated.
 
-    You will now see a preview of how Kolena will ingest the model results. Give your model a name, and click `Confirm` to
+    You will now see a preview of how Kolena will ingest the model results. Give your model a name, and click `Import` to
     upload the model results.
 
     <figure markdown>
@@ -127,7 +128,7 @@ keypoint detection model and a random keypoint model.
 === "SDK"
 
     The example code contains a script [`keypoint_detection/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
-    which will compute metrics on a CSV of model inferences and upload them to Kolena.
+    which will compute metrics on a CSV of model results and upload them to Kolena.
 
     ```shell
     poetry run python3 keypoint_detection/upload_results.py RetinaFace
@@ -140,7 +141,7 @@ keypoint detection model and a random keypoint model.
 
 Once you have uploaded your dataset and model results, you can visualize the data using Kolena’s plotting tools.
 
-You can quickly see the distribution of any datapoint or model inference field in the `Distributions` tab.
+You can quickly see the distribution of any datapoint or model results field in the `Distributions` tab.
 
 <figure markdown>
 ![Distribution Plots](../assets/images/quickstart-distribution.jpg)
@@ -159,7 +160,7 @@ and `result.mse > mean` as the y-axis to plot these two fields against each othe
 ## Step 4: Define Quality Standards
 
 Quality Standards define the criteria by which models are evaluated on each dataset. A Quality Standard consists of
-Test Cases, which organize your data into key scenarios, and Metric, which define key performance indicators.
+Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators.
 
 ### Define Test Cases
 
@@ -167,8 +168,8 @@ To configure test cases, navigate to the `Quality Standards` tab and click on `D
 `datapoint.condition` to create test cases based on the condition field. Click the check mark to
 save your test cases to your Quality Standard.
 
-You will now see that your dataset has been organized into test cases based on the category field. Any Evaluation
-Criteria you define will be calculated on each test case.
+You will now see that your dataset has been organized into test cases based on the category field.
+Any Metrics you define will be calculated on each test case.
 
 <figure markdown>
 ![Creating Test Cases](../assets/images/quickstart-create-test-cases.gif)
@@ -177,7 +178,7 @@ Criteria you define will be calculated on each test case.
 
 ### Define Metrics
 
-To configure Evaluation Criteria, from the Quality Standards tab, click `Define Metrics` and select `result.mse > mean`.
+To configure Metrics, from the Quality Standards tab, click `Define Metrics` and select `result.mse > mean`.
 Rename the metric to `Average MSE`, and select `Lower is better` as the highlight.
 Repeat these steps for `result.nmse > mean`.
 
