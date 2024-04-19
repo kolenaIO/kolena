@@ -6,9 +6,9 @@ icon: kolena/studio-16
 
 ## What is a Dataset
 
-A [dataset](../dataset/core-concepts/dataset.md) is a structured assembly of datapoints, designed for model evaluation.
-Each datapoint in a dataset is a comprehensive unit that combines data traditionally segmented into test samples,
-ground truth, and metadata.
+A [dataset](../dataset/core-concepts/dataset.md) is a version controlled collection of datapoints.
+Datapoints represent customizable "units" of testing relevant to your problem,
+such as images or text with associated ground truths.
 
 ### What defines a Datapoint
 
@@ -20,13 +20,13 @@ dataset with the following columns:
 |---------------------------------------------------------------|--------------|----------|-----|
 | `s3://kolena-public-examples/cifar10/data/horse0000.png`        | horse        |     153.994     |    84.126  |
 
-From this you can see that image `horse0000.png` has the ground_truth classification of `horse`,
+This datapoint is the image `horse0000.png` with a classification of `horse`
 and has brightness and contrast data.
 
-When uploading a dataset to Kolena, it is important to be able to differentiate between each datapoint. This is
-accomplished by configuring an `id_field` - a unique identifier for a datapoint. You can select any field that is
-unique across your data, or generate one if no unique identifiers exist for your dataset. Below are some common patterns
-for generating/selecting a unique identifier if your data does not have a natural ID field:
+Each datapoint is uniquely identified by a column or set of columns known as `id_field`(s).
+`id_field` also allow model results to be associated to a datapoint. You can select any field that is
+unique across your data, or generate one if no unique identifiers exist for your dataset. Some common patterns
+for generating or selecting a `id_field` include:
 
 - If your datapoints contain a `locator` field pointing to the external files representing your model inputs, the `locator`
   field is usually used as the ID field.
@@ -35,7 +35,7 @@ for generating/selecting a unique identifier if your data does not have a natura
   as the ID field.
 - For other kinds of datapoints, we recommend generating and saving a UUID for each datapoint to use as the ID field.
 
-Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
+Kolena will attempt to infer common `id_field`s (e.g. `locator`, `text`) based on what is present in the dataset during import.
 This can be overridden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
@@ -66,15 +66,9 @@ fields like `word_count` may be useful for text datasets.
 
 ## How are Datasets viewed
 
-Kolena allows you to visualize your datasets by use of the Studio. The studio experience depends on the type of data
-relevant to your problem.
-
-The first experience is the Gallery view which allows you to view your data in a grid. This is useful as you can see
-chunks of your data (images, video, audio, text) and view results without having to view each datapoint individually.
-
-The second experience is the Tabular view, used when your data is a set of columns and values.
-An example of this is the [:kolena-widget-16: Rain Forcast ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/rain_forecast)
-dataset.
+Kolena allows you to visualize your datasets by use of the Studio.
+Datapoints represented as images, video, audio, point clouds, or text can be viewed within a gallery layout,
+while all other datapoints may be viewed within a tablular layout.
 
 In order to use the Gallery view you will need to have the `locator` or `text` fields specified in the dataset.
 
@@ -242,7 +236,7 @@ If you wanted to add a thumbnail to the classification data shown above it would
 |---------------------------------------------------------------|--------------------------------------------------------------------|--------------|----------|-----|
 | `s3://kolena-public-examples/cifar10/data/horse0000.png`        | `s3://kolena-public-examples/cifar10/data/thumbnail/horse0000.png` | horse        |     153.994     |    84.126  |
 
-## Formatting Results
+## Formatting Model Results
 
 ### Formatting results for Object Detection
 
