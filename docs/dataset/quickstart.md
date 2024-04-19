@@ -48,7 +48,8 @@ Model evaluations on Kolena starts with datasets. Datasets are tables that conta
 creating test cases.
 
 === "Web App"
-    To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and click `Import Dataset` then `Select From Cloud Storage`.
+    To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
+    click `Import Dataset` then `Select From Cloud Storage`.
     Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
@@ -167,7 +168,8 @@ To configure test cases, navigate to the `Quality Standards` tab and click on `D
 `datapoint.condition` to create test cases based on the condition field. Click the check mark to
 save your test cases to your Quality Standard.
 
-You will now see that your dataset has been organized into test cases based on the category field. Any Metrics you define will be calculated on each test case.
+You will now see that your dataset has been organized into test cases based on the category field.
+Any Metrics you define will be calculated on each test case.
 
 <figure markdown>
 ![Creating Test Cases](../assets/images/quickstart-create-test-cases.gif)
