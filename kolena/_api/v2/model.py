@@ -15,6 +15,7 @@ from enum import Enum
 from typing import Dict
 from typing import List
 from typing import Optional
+from typing import Union
 
 from pydantic.dataclasses import dataclass
 
@@ -55,7 +56,7 @@ class UploadResultsResponse:
     n_inserted: int
     n_updated: int
     model_id: int
-    eval_config_id: int
+    eval_config_id: Union[int, List[int]]
 
 
 @dataclass(frozen=True)

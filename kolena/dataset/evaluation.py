@@ -217,10 +217,15 @@ def _upload_results(
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, model, results)
 
     response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
-    models = serialize_models_url(response.model_id, response.eval_config_id)
+    if isinstance(response.eval_config_id, list):
+        models = [serialize_models_url(response.model_id, eval_config_id) for eval_config_id in response.eval_config_id]
+    else:
+        models = [serialize_models_url(response.model_id, response.eval_config_id)]
+    models_str = "&".join([f"models={model}" for model in models])
+
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
-        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated ({get_platform_url()}/dataset/standards?datasetId={dataset_id}&models={models})",  # noqa: E501
+        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated ({get_platform_url()}/dataset/standards?datasetId={dataset_id}&{models_str})",  # noqa: E501
     )
     return response
 
