@@ -12,7 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from collections import Counter
+from typing import Any
+from typing import Dict
 from typing import List
+from typing import NamedTuple
 from typing import Optional
 from typing import Tuple
 
@@ -183,3 +186,65 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
         )
 
     return pd.DataFrame(records)
+
+
+def _compute_thresholded_metrics(
+    matched_inference: List,
+    unmatched_inference: List,
+    unmatched_ground_truth: List,
+    thresholds: List[float],
+    label: str,
+) -> List[dict[str, Any]]:
+    metrics = []
+    for threshold in thresholds:
+        count_tp = sum(1 for inf in matched_inference if inf.score >= threshold)
+        count_fp = sum(1 for inf in unmatched_inference if inf.score >= threshold)
+        count_fn = len(unmatched_ground_truth) + len(matched_inference) - count_tp
+        metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
+
+    return metrics
+
+
+def _prepare_thresholded_metrics(
+    record: NamedTuple,
+    raw_result: Dict[str, Dict],
+    thresholds: List[float],
+    labels: List[str],
+) -> List[dict[str, Any]]:
+    thresholded_metrics = []
+    for label in labels:
+        matched_inference = [
+            inferences
+            for inferences, tp in zip(
+                record.raw_inferences_3d,  # type: ignore
+                raw_result[label]["tp"],
+            )
+            if tp
+        ]
+        unmatched_inference = [
+            inferences
+            for inferences, fp in zip(
+                record.raw_inferences_3d,  # type: ignore
+                raw_result[label]["fp"],
+            )
+            if fp
+        ]
+        unmatched_ground_truth = [
+            velodyne_bboxes
+            for velodyne_bboxes, fn in zip(
+                record.velodyne_bboxes,  # type: ignore
+                raw_result[label]["fn"],
+            )
+            if fn
+        ]
+        thresholded_metrics.extend(
+            _compute_thresholded_metrics(
+                matched_inference,
+                unmatched_inference,
+                unmatched_ground_truth,
+                thresholds,
+                label,
+            ),
+        )
+
+    return thresholded_metrics
