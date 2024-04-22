@@ -399,6 +399,43 @@ def test__upload_results__upload_none() -> None:
     assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
+def test__upload_results__thresholded() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__thresholded")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__thresholded")
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
+
+    records = [
+        dict(
+            user_dp_id=i,
+            softmax_bitmap=fake_locator(i, "softmax_bitmap"),
+            score=i * 0.1,
+            bev=[dict(threshold=(j + 1) * 0.1, label="cat", foo=i + j) for j in range(3)],
+        )
+        for i in range(20)
+    ]
+    df_result = pd.DataFrame(records)
+    result_columns = ["softmax_bitmap", "score"]
+    response = _upload_results(
+        dataset_name,
+        model_name,
+        df_result,
+        thresholded_fields=["bev"],
+    )
+    assert response.n_inserted == 7
+    assert response.n_updated == 0
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    eval_cfg, fetched_df_result = df_results_by_eval[0]
+    assert len(df_results_by_eval) == 1
+    assert eval_cfg is None
+    expected_df_dp = df_dp[3:10].reset_index(drop=True)
+    expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
+    assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
+    assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+
+
 def test__download_results__not_exist() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__download_results__not_exist")
     model_name = with_test_prefix(f"{__file__}::test__download_results__not_exist")
