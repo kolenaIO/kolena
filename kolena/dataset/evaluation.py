@@ -251,6 +251,7 @@ def upload_results(
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
                     an eval configuration and a DataFrame.
+    :param thresholded_fields: Columns in result DataFrame containing data associated with different thresholds.
 
     :return: None
     """
