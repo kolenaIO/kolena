@@ -416,7 +416,7 @@ def test__upload_results__thresholded() -> None:
         for i in range(20)
     ]
     df_result = pd.DataFrame(records)
-    result_columns = ["softmax_bitmap", "score"]
+    result_columns = ["softmax_bitmap", "score", "bev"]
     response = _upload_results(
         dataset_name,
         model_name,
