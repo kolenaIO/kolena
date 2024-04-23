@@ -141,13 +141,11 @@ def dataframe_from_jsonl(*args: Any, **kwargs: Any) -> pd.DataFrame:
     Handles errors in JSON parsing to provide clearer feedback on failures.
 
     :param args: positional arguments for `pandas.DataFrame.read_json`.
-    :param kwargs: keyword arguments for `pandas.DataFrame.read_json`. `lines=True` is
-    included by default to specify the JSON Lines format.
+    :param kwargs: keyword arguments for `pandas.DataFrame.read_json`.
     :return: DataFrame.
     """
     df = pd.read_json(*args, **kwargs, lines=True)
-    df_post = _dataframe_object_serde(df, _deserialize_dataobject)
-    return df_post
+    return df
 
 
 def dataframe_to_jsonl(df: pd.DataFrame, *args: Any, **kwargs: Any) -> str:
@@ -156,8 +154,7 @@ def dataframe_to_jsonl(df: pd.DataFrame, *args: Any, **kwargs: Any) -> str:
 
     :param df: DataFrame to serialize.
     :param args: positional arguments for `pandas.DataFrame.to_json`.
-    :param kwargs: keyword arguments for `pandas.DataFrame.to_json`. All arguments
-    except 'orient' and 'lines' can be modified.
+    :param kwargs: keyword arguments for `pandas.DataFrame.to_json`.
     :return: JSON Lines string.
 
     The function enforces 'orient' to 'records' and 'lines' to True to ensure output in JSON Lines format.
