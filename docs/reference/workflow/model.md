@@ -1,3 +1,3 @@
-# `kolena.worfklow.Model`
+# `kolena.workflow.Model`
 
 ::: kolena.workflow.model
