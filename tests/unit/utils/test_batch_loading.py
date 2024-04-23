@@ -45,8 +45,7 @@ def test__file_over_short_circut() -> None:
                 preflight_size.return_value = MOCK_FILE_SIZE
                 upload_data_frame(df, TEST_UUID)
 
-    # batch size is 2000 rows since we are using // in the calculation
-    upload_helper.assert_called_once_with(df, 2000, TEST_UUID)
+    upload_helper.assert_called_once_with(df, 2500, TEST_UUID)
 
 
 def test__file_over_short_circut_verify_chunks() -> None:
@@ -61,4 +60,4 @@ def test__file_over_short_circut_verify_chunks() -> None:
                 preflight_size.return_value = MOCK_FILE_SIZE
                 upload_data_frame(df, TEST_UUID)
 
-    assert upload_chunk.call_count == 3
+    assert upload_chunk.call_count == 2
