@@ -38,7 +38,7 @@ def run(args: Namespace) -> int:
         storage_options={"anon": True},
     )
     df = load_data(df_raw)
-    df.drop(columns=["image_bboxes", "images"], inplace=True)
+    df.drop(columns=["image_bboxes"], inplace=True)
     upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
     return 0
 
