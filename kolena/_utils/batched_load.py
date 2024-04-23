@@ -81,19 +81,25 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
 
 
-def _calcuate_batch_size_preflight(df: pd.DataFrame, rows: int) -> int:
-    return (BATCH_LIMIT // _get_preflight_export_size(df, rows)) * rows
+def _calcuate_batch_size_preflight(df: pd.DataFrame, rows: int, batch_limit: int) -> int:
+    return math.ceil((batch_limit / _get_preflight_export_size(df, rows)) * rows)
 
 
 def _calculate_memory_size(df: pd.DataFrame) -> int:
     return df.memory_usage(index=True, deep=True).sum()
 
 
-def upload_data_frame(df: pd.DataFrame, load_uuid: str, rows: int = 1000) -> None:
+def upload_data_frame(
+    df: pd.DataFrame,
+    load_uuid: str,
+    rows: int = 1000,
+    batch_limit: int = BATCH_LIMIT,
+    short_circut_limit: int = SHORT_CIRCUT_LIMIT,
+) -> None:
     batch_size = (
         len(df)
-        if _calculate_memory_size(df) <= SHORT_CIRCUT_LIMIT and len(df) > 0
-        else _calcuate_batch_size_preflight(df, rows)
+        if _calculate_memory_size(df) <= short_circut_limit and len(df) > 0
+        else _calcuate_batch_size_preflight(df, rows, batch_limit)
     )
     _upload_data_frame(df, batch_size, load_uuid)
 
