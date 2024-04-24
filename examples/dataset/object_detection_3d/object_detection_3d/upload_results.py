@@ -28,6 +28,7 @@ from object_detection_3d.constants import DEFAULT_DATASET_NAME
 from object_detection_3d.constants import ID_FIELDS
 from object_detection_3d.constants import MODELS
 from object_detection_3d.constants import TASK
+from object_detection_3d.utils import _prepare_thresholded_metrics
 from object_detection_3d.utils import alpha_from_bbox3D
 from object_detection_3d.utils import bbox_to_kitti_format
 from object_detection_3d.utils import center_to_kitti_format
@@ -41,6 +42,7 @@ from object_detection_3d.vendored.kitti_eval import kitti_eval  # type: ignore[a
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
+from kolena.asset import ImageAsset
 from kolena.dataset import upload_results
 
 CLASS_NAME_VALUE = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
@@ -168,6 +170,16 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
     f1_optimal_thresholds = compute_f1_optimal_thresholds(gt_annos, dt_annos, labels)
     overlaps, _, total_dt_num, total_gt_num = calculate_iou_partly(dt_annos, gt_annos, 2, 200)
     ignored_gts_combined = [[True] * len(gt_bboxes) for gt_bboxes in df["image_bboxes"]]
+    all_scores = {score for x in dt_annos for score in x["score"]}
+    all_thresholds = (
+        sorted(all_scores)
+        if len(all_scores) <= 500
+        else np.linspace(
+            min(all_scores),
+            max(all_scores),
+            501,
+        )
+    )
 
     def compute_metrics_with_difficulty(difficulty: int) -> pd.DataFrame:
         sample_metrics = []
@@ -223,7 +235,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
 
         for i, record in enumerate(df.itertuples()):
             result = results[i]
-            raw_result = raw_results[i]
             TP = [sum(tp) for tp in zip(result["Car"]["tp"], result["Cyclist"]["tp"], result["Pedestrian"]["tp"])]
             FP = [sum(fp) for fp in zip(result["Car"]["fp"], result["Cyclist"]["fp"], result["Pedestrian"]["fp"])]
             FN = [sum(fn) for fn in zip(result["Car"]["fn"], result["Cyclist"]["fn"], result["Pedestrian"]["fn"])]
@@ -256,37 +267,12 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                 for j, fn in enumerate(FN)
                 if fn
             ]
-            matched_inference = [
-                inferences
-                for inferences, tps in zip(
-                    record.raw_inferences_3d,
-                    zip(raw_result["Car"]["tp"], raw_result["Cyclist"]["tp"], raw_result["Pedestrian"]["tp"]),
-                )
-                if sum(tps)
-            ]
-            unmatched_inference = [
-                inferences
-                for inferences, fps in zip(
-                    record.raw_inferences_3d,
-                    zip(raw_result["Car"]["fp"], raw_result["Cyclist"]["fp"], raw_result["Pedestrian"]["fp"]),
-                )
-                if sum(fps)
-            ]
-            unmatched_ground_truth = [
-                velodyne_bboxes
-                for velodyne_bboxes, fns in zip(
-                    record.velodyne_bboxes,
-                    zip(raw_result["Car"]["fn"], raw_result["Cyclist"]["fn"], raw_result["Pedestrian"]["fn"]),
-                )
-                if sum(fns)
-            ]
+            thresholded = _prepare_thresholded_metrics(record, raw_results[i], all_thresholds, VALID_LABELS)
 
             sample_metrics.append(
                 dict(
                     image_id=record.image_id,
-                    matched_inference=matched_inference,
-                    unmatched_ground_truth=unmatched_ground_truth,
-                    unmatched_inference=unmatched_inference,
+                    thresholded=thresholded,
                     nInferences=len(record.raw_inferences_3d),
                     nValidObjects=sum(1 for ignore in ignored_gts_combined[i] if not ignore),
                     nMatchedInferences=len(TP_3D),
@@ -296,6 +282,15 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     FP_3D=FP_3D,
                     TP_3D=TP_3D,
                     FN_3D=FN_3D,
+                    images_with_inferences=[
+                        ImageAsset(
+                            **img._to_dict(),
+                            FP_3D=FP_3D,  # type: ignore[call-arg]
+                            TP_3D=TP_3D,  # type: ignore[call-arg]
+                            FN_3D=FN_3D,  # type: ignore[call-arg]
+                        )
+                        for img in record.images
+                    ],
                 ),
             )
         return pd.DataFrame(sample_metrics)
@@ -369,7 +364,7 @@ def run(args: Namespace) -> None:
     dataset_df = load_data(raw_dataset_df).sort_values(by="image_id", ignore_index=True)
     results_df = dataset_df.merge(pred_df, on=ID_FIELDS)
     results = compute_metrics_by_difficulty(results_df)
-    upload_results(args.dataset, args.model, results)
+    upload_results(args.dataset, args.model, results, thresholded_fields=["thresholded"])
 
 
 def main() -> None:
