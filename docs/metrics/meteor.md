@@ -116,7 +116,7 @@ Lets try the same reference example with a slightly different candidate.
     massive improvement over something like [ROUGE-1](rouge-n.md) which would not have considered the orders of the
     sentences, and given a perfect score of 1.0.
 
-## Limitations and Advantages
+## Limitations and Biases
 
 Although METEOR was created to address some of the major limitations of [BLEU](bleu.md), it still comes with its own
 limitations.
