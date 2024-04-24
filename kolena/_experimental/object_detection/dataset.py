@@ -67,7 +67,7 @@ def _compute_thresholded_metrics(
     matches: Union[MulticlassInferenceMatches, InferenceMatches],
     thresholds: List[float],
     label: Union[str, None] = None,
-) -> List[dict[str, Any]]:
+) -> List[Dict[str, Any]]:
     metrics = []
     for threshold in thresholds:
         count_tp = sum(1 for gt, inf in matches.matched if inf.score >= threshold)
@@ -85,7 +85,7 @@ def _prepare_thresholded_metrics(
     object_matches: MulticlassInferenceMatches,
     thresholds: List[float],
     labels: List[str],
-) -> List[dict[str, Any]]:
+) -> List[Dict[str, Any]]:
     thresholded_metrics = []
     for label in labels:
         class_matches = _bbox_matches_and_count_for_one_label(object_matches, label)
@@ -255,7 +255,7 @@ def _compute_metrics(
     else:
         all_thresholds = sorted(all_thresholds)
 
-    thresholds: dict[str, float]
+    thresholds: Dict[str, float]
     pred_df.drop(columns=ground_truth, inplace=True)
 
     if is_multiclass:
