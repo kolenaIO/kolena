@@ -128,7 +128,7 @@ vocabulary. Let's calculate the perplexity of the hypothetical model.
     Note that in reality, the assigned output probabilities may be much lower due to models having extremely large
     vocabularies. So, a perplexity of 1.869 may not be realistic and representative of an actual language model.
 
-## Limitations and Advantages
+## Limitations and Biases
 
 While perplexity is a valuable metric for comparing and fine-tuning language models, it has its limitations and
 should always be used in conjunction with other evaluation metrics and methods.

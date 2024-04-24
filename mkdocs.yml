@@ -21,6 +21,7 @@ nav:
         - Quality Standard: dataset/core-concepts/quality-standard.md
       - Advanced Usage:
         - Advanced Usage: dataset/advanced-usage/index.md
+        - Extracting Metadata from Text Fields: dataset/advanced-usage/extract-text-metadata.md
         - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
     - Workflows:
       - Workflows: workflow/index.md
@@ -82,13 +83,18 @@ nav:
     - metrics/accuracy.md
     - metrics/average-precision.md
     - metrics/averaging-methods.md
+    - metrics/coefficient-of-determination.md
+    - metrics/cohens-kappa.md
     - metrics/confusion-matrix.md
     - metrics/f1-score.md
     - metrics/fpr.md
+    - metrics/mean-absolute-error.md
+    - metrics/mean-squared-error.md
     - metrics/precision.md
     - metrics/pr-curve.md
     - metrics/recall.md
     - metrics/roc-curve.md
+    - metrics/root-mean-squared-error.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
     - Computer Vision:
@@ -107,8 +113,6 @@ nav:
       - metrics/perplexity.md
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
-    - Regression:
-      - metrics/mean-absolute-error.md
     - Kolena Insights:
       - metrics/statistical-significance.md
   - Help & FAQ:

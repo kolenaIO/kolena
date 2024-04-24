@@ -1,11 +1,12 @@
-# Mean Absolute Error
+# Mean Absolute Error (MAE)
 
 Mean Absolute Error (MAE) is a popular metric used in assessing regression model performance
-for its overall simplicity and interpretability.
+for its overall simplicity and interpretability. It measures the average magnitude of errors in predictions,
+without considering their direction.
 
-MAE measures the average magnitude of errors in predictions, without considering their direction.
-It represents the mean of the absolute differences between predicted and actual values across a dataset,
-treating each discrepancy equally.
+MAE represents the mean of the absolute differences between predicted and actual values across a dataset,
+treating each discrepancy equally. A large value is indicative of poor performance, and communicates
+how much on average a prediction will deviate from the actual value in the units of the ground truth.
 
 ## Implementation Details
 
@@ -37,7 +38,7 @@ $$
 $$
 </div>
 
-Age Estimation::
+Age Estimation:
 
 <div class="grid" markdown>
 | Ground Truth Age (Years) | Predicted Age (Years) |
