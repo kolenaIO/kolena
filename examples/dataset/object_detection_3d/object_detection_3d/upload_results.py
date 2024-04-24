@@ -42,7 +42,6 @@ from object_detection_3d.vendored.kitti_eval import kitti_eval  # type: ignore[a
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox3D
-from kolena.asset import ImageAsset
 from kolena.dataset import upload_results
 
 CLASS_NAME_VALUE = {"Car": 0, "Cyclist": 2, "Pedestrian": 1}
@@ -282,15 +281,6 @@ def compute_metrics_by_difficulty(df: pd.DataFrame) -> List[Tuple[Dict[str, Any]
                     FP_3D=FP_3D,
                     TP_3D=TP_3D,
                     FN_3D=FN_3D,
-                    images_with_inferences=[
-                        ImageAsset(
-                            **img._to_dict(),
-                            FP_3D=FP_3D,  # type: ignore[call-arg]
-                            TP_3D=TP_3D,  # type: ignore[call-arg]
-                            FN_3D=FN_3D,  # type: ignore[call-arg]
-                        )
-                        for img in record.images
-                    ],
                 ),
             )
         return pd.DataFrame(sample_metrics)

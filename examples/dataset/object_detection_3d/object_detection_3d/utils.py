@@ -162,14 +162,12 @@ def load_data(df_raw: pd.DataFrame) -> pd.DataFrame:
                         side="left",  # type: ignore[call-arg]
                         # type: ignore[call-arg]
                         projection=create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P2),
-                        velodyne_bboxes=bboxes_3d,  # type: ignore[call-arg]
                     ),
                     ImageAsset(
                         locator=record.right_image,
                         side="right",  # type: ignore[call-arg]
                         # type: ignore[call-arg]
                         projection=create_velo_to_pixel_matrix(record.Tr_velo_to_cam, record.P3),
-                        velodyne_bboxes=bboxes_3d,  # type: ignore[call-arg]
                     ),
                 ],
                 "velodyne": PointCloudAsset(locator=record.velodyne),
