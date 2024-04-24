@@ -41,6 +41,7 @@ from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import COL_EVAL_CONFIG
 from kolena.dataset._common import COL_RESULT
+from kolena.dataset._common import COL_THRESHOLDED_OBJECT
 from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
@@ -79,7 +80,7 @@ def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
         pd.concat(df_result_batch)
         if df_result_batch
         else pd.DataFrame(
-            columns=["datapoint_id", COL_DATAPOINT, COL_RESULT, COL_EVAL_CONFIG],
+            columns=["datapoint_id", COL_DATAPOINT, COL_RESULT, COL_THRESHOLDED_OBJECT, COL_EVAL_CONFIG],
         )
     )
 
@@ -88,12 +89,23 @@ def _process_result(
     eval_config: EvalConfig,
     df_result: pd.DataFrame,
     id_fields: List[str],
+    thresholded_fields: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     df_serialized_datapoint_id_object = _to_serialized_dataframe(
         df_result[sorted(id_fields)],
         column=COL_DATAPOINT_ID_OBJECT,
     )
-    df_result_eval = _to_serialized_dataframe(df_result.drop(columns=id_fields), column=COL_RESULT)
+    if thresholded_fields:
+        excludes = id_fields + thresholded_fields
+        selected = [col for col in df_result.columns.tolist() if col not in excludes]
+        df_result_eval = _to_serialized_dataframe(df_result[selected], column=COL_RESULT)
+        df_result_eval[COL_THRESHOLDED_OBJECT] = _to_serialized_dataframe(
+            df_result[thresholded_fields],
+            column=COL_THRESHOLDED_OBJECT,
+        )
+    else:
+        selected = [col for col in df_result.columns.tolist() if col not in id_fields]
+        df_result_eval = _to_serialized_dataframe(df_result[selected], column=COL_RESULT)
     df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
     df_result_eval = pd.concat([df_result_eval, df_serialized_datapoint_id_object], axis=1)
     return df_result_eval
@@ -146,15 +158,17 @@ def download_results(
         df_datapoints = _to_deserialized_dataframe(df.drop_duplicates(subset=[COL_DATAPOINT]), column=COL_DATAPOINT)
 
     eval_configs = df[COL_EVAL_CONFIG].unique()
+    has_thresholded = not df[COL_THRESHOLDED_OBJECT].isnull().all()
     df_results_by_eval = []
     for eval_config in eval_configs:
         df_matched = df[df[COL_EVAL_CONFIG] == eval_config if eval_config is not None else df[COL_EVAL_CONFIG].isnull()]
-        df_results_by_eval.append(
-            (
-                json.loads(eval_config) if eval_config is not None else None,
-                _to_deserialized_dataframe(df_matched, column=COL_RESULT),
-            ),
-        )
+        df_result = _to_deserialized_dataframe(df_matched, column=COL_RESULT)
+        if has_thresholded:
+            df_result = pd.concat(
+                [df_result, _to_deserialized_dataframe(df_matched, column=COL_THRESHOLDED_OBJECT)],
+                axis=1,
+            )
+        df_results_by_eval.append((json.loads(eval_config) if eval_config is not None else None, df_result))
     log.info(f"downloaded results for model '{model}' on dataset '{dataset}'")
     return df_datapoints, df_results_by_eval
 
@@ -169,8 +183,8 @@ def _validate_configs(configs: List[EvalConfig]) -> None:
 
 def _prepare_upload_results_request(
     dataset: str,
-    model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
+    thresholded_fields: Optional[List[str]] = None,
 ) -> Tuple[str, int, int]:
     existing_dataset = _load_dataset_metadata(dataset)
     if not existing_dataset:
@@ -190,7 +204,7 @@ def _prepare_upload_results_request(
             total_rows += df_result_input.shape[0]
             validate_dataframe_ids(df_result_input, id_fields)
             validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
-            df_results = _process_result(config, df_result_input, id_fields)
+            df_results = _process_result(config, df_result_input, id_fields, thresholded_fields)
             upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
         else:
             id_column_validated = False
@@ -200,7 +214,7 @@ def _prepare_upload_results_request(
                     validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
                     id_column_validated = True
                 total_rows += df_result.shape[0]
-                df_results = _process_result(config, df_result, id_fields)
+                df_results = _process_result(config, df_result, id_fields, thresholded_fields)
                 upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
     dataset_id = existing_dataset.id
     return load_uuid, dataset_id, total_rows
@@ -211,8 +225,9 @@ def _upload_results(
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
+    thresholded_fields: Optional[List[str]] = None,
 ) -> UploadResultsResponse:
-    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, model, results)
+    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields)
 
     response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
     log.info(
@@ -227,6 +242,7 @@ def upload_results(
     dataset: str,
     model: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
+    thresholded_fields: Optional[List[str]] = None,
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.
@@ -235,7 +251,8 @@ def upload_results(
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of tuples, where each tuple consists of
                     an eval configuration and a DataFrame.
+    :param thresholded_fields: Columns in result DataFrame containing data associated with different thresholds.
 
     :return: None
     """
-    _upload_results(dataset, model, results)
+    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields)
