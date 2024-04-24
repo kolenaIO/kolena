@@ -145,7 +145,8 @@ def dataframe_from_jsonl(*args: Any, **kwargs: Any) -> pd.DataFrame:
     :return: DataFrame.
     """
     df = pd.read_json(*args, **kwargs, lines=True)
-    return df
+    df_post = _dataframe_object_serde(df, _deserialize_dataobject)
+    return df_post
 
 
 def dataframe_to_jsonl(df: pd.DataFrame, *args: Any, **kwargs: Any) -> str:
