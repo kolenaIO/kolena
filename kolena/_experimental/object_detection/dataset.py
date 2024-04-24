@@ -351,7 +351,7 @@ def upload_object_detection_results(
     _validate_column_present(df, raw_inferences_field)
 
     dataset_df = dataset.download_dataset(dataset_name)
-    dataset_df = dataset_df[["image_id", "locator", ground_truths_field]]
+    dataset_df = dataset_df[["locator", ground_truths_field]]
     _validate_column_present(dataset_df, ground_truths_field)
 
     merged_df = df.merge(dataset_df, on=["locator"])
