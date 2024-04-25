@@ -272,3 +272,26 @@ The Kolena web application currently supports [`precision`](../metrics/precision
 and [`true_negative_rate`](../metrics/recall.md).
 
 To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
+
+## Supported File Data Formats
+
+The Kolena web application currently supports various file formats for both dataset uploads and model
+results processing. The following table lists the supported file formats:
+
+| Format    | Description                                              |
+|-----------|----------------------------------------------------------|
+| `.csv`     | Comma-separated values file, ideal for tabular data.     |
+| `.parquet` | Apache Parquet format, efficient for columnar storage.   |
+| `.jsonl`   | JSON Lines format, suitable for handling nested data.    |
+
+**CSV Files**: Widely used for simple tabular datasets, CSV files are easy to generate and manipulate,
+making them a popular choice for data scientists and developers.
+
+**Parquet Files**: Offering efficient storage and fast retrieval, Parquet files are optimal for
+handling large datasets with a significant number of columns.
+
+**JSON Lines (JSONL) Files**: Each line in a JSONL file is a complete JSON object, making this format
+ideal for datasets with complex or nested data structures.
+
+When preparing your dataset or model results files for upload, ensure that they conform to one of these
+supported file formats to guarantee compatibility with Kolena's data processing capabilities.

@@ -28,6 +28,7 @@ from kolena.io import dataframe_from_parquet
 from kolena.io import dataframe_to_csv
 from kolena.io import dataframe_to_parquet
 
+
 NAN = float("nan")
 DF_TEST = pd.DataFrame.from_dict(
     {
