@@ -171,19 +171,17 @@ def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, 
         "FP",
         "FN",
         "raw_inferences",
-        "matched_inference",
-        "unmatched_inference",
-        "unmatched_ground_truth",
+        "thresholded",
         "theme",
     }
     assert expected_columns.issubset(set(df_results.columns))
     assert "ground_truths" not in df_results.columns
     assert len(df_results) == 10
-    _assert_result_bbox_contains_fields(
-        df_results,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
-        ["foo"],
-    )
+    _assert_result_bbox_contains_fields(df_results, ["TP", "FN"], ["foo"])
+
+    thresholded_object = df_results["thresholded"].iloc[0][0]
+    assert "label" not in thresholded_object
+    assert "threshold" in thresholded_object
 
 
 gt_labeled_bbox_multi = [
@@ -298,9 +296,7 @@ def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, in
         "FP",
         "FN",
         "raw_inferences",
-        "matched_inference",
-        "unmatched_inference",
-        "unmatched_ground_truth",
+        "thresholded",
         "theme",
         "Confused",
     }
@@ -309,18 +305,9 @@ def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, in
     assert len(df_results_one) == 10
     assert len(df_results_two) == 10
 
-    # check data format
-    confused = next(x for x in df_results_one["unmatched_ground_truth"])
-    assert confused[0].predicted_label
-    assert confused[0].predicted_score
+    _assert_result_bbox_contains_fields(df_results_one, ["TP", "FN"], ["foo"])
+    _assert_result_bbox_contains_fields(df_results_two, ["TP", "FN"], ["foo"])
 
-    _assert_result_bbox_contains_fields(
-        df_results_one,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
-        ["foo"],
-    )
-    _assert_result_bbox_contains_fields(
-        df_results_two,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
-        ["foo"],
-    )
+    thresholded_object = df_results_one["thresholded"].iloc[0][0]
+    assert "label" in thresholded_object
+    assert "threshold" in thresholded_object

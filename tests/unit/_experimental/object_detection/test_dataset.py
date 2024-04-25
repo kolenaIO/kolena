@@ -99,6 +99,7 @@ def test__upload_object_detection_results_configurations(mocked_upload_results: 
     patched_metrics.assert_called_once()
     _, kwargs = patched_metrics.call_args
     assert kwargs == dict(
+        batch_size=10000,
         ground_truth="bboxes",
         inference="predictions",
         iou_threshold=0.152,
