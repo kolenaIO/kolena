@@ -135,34 +135,6 @@ def dataframe_from_json(*args: Any, **kwargs: Any) -> pd.DataFrame:
     return df_post
 
 
-def dataframe_from_jsonl(*args: Any, **kwargs: Any) -> pd.DataFrame:
-    """
-    Load pandas DataFrame from JSON Lines file or string.
-    Handles errors in JSON parsing to provide clearer feedback on failures.
-
-    :param args: positional arguments for `pandas.DataFrame.read_json`.
-    :param kwargs: keyword arguments for `pandas.DataFrame.read_json`.
-    :return: DataFrame.
-    """
-    df = pd.read_json(*args, **kwargs, lines=True)
-    df_post = _dataframe_object_serde(df, _deserialize_dataobject)
-    return df_post
-
-
-def dataframe_to_jsonl(df: pd.DataFrame, *args: Any, **kwargs: Any) -> str:
-    """
-    Export pandas DataFrame to JSON Lines format.
-
-    :param df: DataFrame to serialize.
-    :param args: positional arguments for `pandas.DataFrame.to_json`.
-    :param kwargs: keyword arguments for `pandas.DataFrame.to_json`.
-    :return: JSON Lines string.
-
-    The function enforces 'orient' to 'records' and 'lines' to True to ensure output in JSON Lines format.
-    """
-    return df.to_json(*args, **kwargs, orient="records", lines=True)
-
-
 def _dataframe_object_serde(df: pd.DataFrame, serde_fn: Callable[[Any], Any]) -> pd.DataFrame:
     columns = list(df.columns)
     df_post = pd.DataFrame(columns=columns)

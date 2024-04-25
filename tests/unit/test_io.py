@@ -24,10 +24,8 @@ from kolena.annotation import LabeledBoundingBox
 from kolena.io import _serialize_dataobject_str
 from kolena.io import dataframe_from_csv
 from kolena.io import dataframe_from_json
-from kolena.io import dataframe_from_jsonl
 from kolena.io import dataframe_from_parquet
 from kolena.io import dataframe_to_csv
-from kolena.io import dataframe_to_jsonl
 from kolena.io import dataframe_to_parquet
 
 
@@ -162,12 +160,3 @@ def test__dataframe_csv__malformed_input() -> None:
         ),
     )
     assert_frame_equal(df, df_expected)
-
-
-def test__dataframe_jsonl() -> None:
-    jsonl_str = dataframe_to_jsonl(DF_TEST)
-    df_deserialized = dataframe_from_jsonl(jsonl_str)
-
-    assert_frame_equal(df_deserialized, DF_EXPECTED)
-    assert df_deserialized.iloc[0]["id"] == 0
-    assert df_deserialized.iloc[0]["data"].label == "foo-0"
