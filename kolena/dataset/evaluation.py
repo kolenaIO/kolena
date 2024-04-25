@@ -205,7 +205,8 @@ def _prepare_upload_results_request(
             validate_dataframe_ids(df_result_input, id_fields)
             validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
             df_results = _process_result(config, df_result_input, id_fields, thresholded_fields)
-            upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+            upload_data_frame(df=df_results, load_uuid=load_uuid)
+
         else:
             id_column_validated = False
             for df_result in df_result_input:
@@ -215,7 +216,7 @@ def _prepare_upload_results_request(
                     id_column_validated = True
                 total_rows += df_result.shape[0]
                 df_results = _process_result(config, df_result, id_fields, thresholded_fields)
-                upload_data_frame(df=df_results, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+                upload_data_frame(df=df_results, load_uuid=load_uuid)
     dataset_id = existing_dataset.id
     return load_uuid, dataset_id, total_rows
 

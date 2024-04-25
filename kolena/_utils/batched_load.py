@@ -38,6 +38,8 @@ from kolena._utils.state import DEFAULT_API_VERSION
 
 VALIDATION_COUNT_LIMIT = 100
 STAGE_STATUS__LOADED = "LOADED"
+BATCH_LIMIT = 250 * pow(1024, 2)
+SHORT_CIRCUT_LIMIT = 2 * pow(1024, 3)
 
 
 def init_upload() -> API.InitiateUploadResponse:
@@ -47,7 +49,7 @@ def init_upload() -> API.InitiateUploadResponse:
     return init_response
 
 
-def upload_data_frame(df: pd.DataFrame, batch_size: int, load_uuid: str) -> None:
+def _upload_data_frame(df: pd.DataFrame, batch_size: int, load_uuid: str) -> None:
     num_chunks = math.ceil(len(df) / batch_size)
     chunk_iter = np.array_split(df, num_chunks) if num_chunks > 0 else []
 
@@ -77,6 +79,39 @@ def upload_data_frame_chunk(df_chunk: pd.DataFrame, load_uuid: str) -> None:
 
 
 DFType = TypeVar("DFType", bound=LoadableDataFrame)
+
+
+def _calcuate_batch_size_preflight(df: pd.DataFrame, rows: int, batch_limit: int) -> int:
+    return math.ceil((batch_limit / _get_preflight_export_size(df, rows)) * rows)
+
+
+def _calculate_memory_size(df: pd.DataFrame) -> int:
+    return df.memory_usage(index=True, deep=True).sum()
+
+
+def upload_data_frame(
+    df: pd.DataFrame,
+    load_uuid: str,
+    rows: int = 1000,
+    batch_limit: int = BATCH_LIMIT,
+    short_circut_limit: int = SHORT_CIRCUT_LIMIT,
+) -> None:
+    batch_size = (
+        len(df)
+        if _calculate_memory_size(df) <= short_circut_limit and len(df) > 0
+        else _calcuate_batch_size_preflight(df, rows, batch_limit)
+    )
+    _upload_data_frame(df, batch_size, load_uuid)
+
+
+def _get_preflight_export_size(df: pd.DataFrame, rows: int) -> int:
+    df_subset = df[:rows]
+    df_chunk_buffer = io.BytesIO()
+    df_subset.to_parquet(df_chunk_buffer)
+    file_size = df_chunk_buffer.getbuffer().nbytes
+    if not file_size:
+        raise ValueError("Exported file has size 0")
+    return file_size
 
 
 class _BatchedLoader(Generic[DFType]):
