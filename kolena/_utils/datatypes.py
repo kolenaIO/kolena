@@ -36,6 +36,7 @@ import pandera as pa
 from pydantic.dataclasses import dataclass
 from pydantic.dataclasses import is_pydantic_dataclass
 
+from kolena._utils import log
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.validators import ValidatorConfig
 
@@ -111,6 +112,8 @@ def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
             data_category, _ = name.split("/")
             module = DataCategory(data_category).data_category_to_module_name()
             importlib.import_module(module)
+        except (ValueError, ModuleNotFoundError) as e:
+            log.error(f"Failed to import module for data type '{name}'", e)
         finally:
             return _DATA_TYPE_MAP.get(name, None)
     return class_type
