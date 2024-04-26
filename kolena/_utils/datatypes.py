@@ -102,7 +102,7 @@ class DataCategory(str, Enum):
 
 def _get_full_type(obj: Type["TypedDataObject"]) -> str:
     data_type = obj._data_type()
-    return f"{data_type._data_category()}/{data_type.value}"
+    return f"{data_type._data_category().value}/{data_type.value}"
 
 
 def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
@@ -329,5 +329,5 @@ class TypedDataObject(Generic[U], DataObject, metaclass=ABCMeta):
     def _to_dict(self) -> Dict[str, Any]:
         self_dict = super()._to_dict()
         self_type = self._data_type()
-        self_dict[DATA_TYPE_FIELD] = f"{self_type._data_category()}/{self_type.value}"
+        self_dict[DATA_TYPE_FIELD] = f"{self_type._data_category().value}/{self_type.value}"
         return self_dict
