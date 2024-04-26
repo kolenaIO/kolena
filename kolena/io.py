@@ -26,7 +26,7 @@ from typing import Union
 import pandas as pd
 
 from kolena._utils.dataframes.transformers import df_apply
-from kolena._utils.datatypes import _DATA_TYPE_MAP
+from kolena._utils.datatypes import _get_data_type
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
 
@@ -44,7 +44,7 @@ def _deserialize_dataobject(x: Any) -> Any:
 
     if isinstance(x, dict):
         if data_type := x.pop(DATA_TYPE_FIELD, None):
-            if typed_dataobject := _DATA_TYPE_MAP.get(data_type):
+            if typed_dataobject := _get_data_type(data_type):
                 return typed_dataobject._from_dict(x)
         else:
             return {k: _deserialize_dataobject(v) for k, v in x.items()}

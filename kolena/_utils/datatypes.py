@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import importlib
 from abc import ABC
 from abc import ABCMeta
 from abc import abstractmethod
@@ -77,13 +78,42 @@ def _allow_extra(cls: Type[T]) -> bool:
 _DATA_TYPE_MAP: Dict[str, Type["TypedDataObject"]] = {}
 
 
+class DataCategory(str, Enum):
+    TEST_SAMPLE = "TEST_SAMPLE"
+    PLOT = "PLOT"
+    METRICS = "METRICS"
+    ASSET = "ASSET"
+    ANNOTATION = "ANNOTATION"
+
+    def data_category_to_module_name(self) -> str:
+        if self == DataCategory.TEST_SAMPLE:
+            return "kolena.workflow.testing"
+        if self == DataCategory.PLOT:
+            return "kolena.workflow.plot"
+        if self == DataCategory.METRICS:
+            return "kolena._experimental.workflow.thresholded"
+        if self == DataCategory.ASSET:
+            return "kolena.asset"
+        if self == DataCategory.ANNOTATION:
+            return "kolena.annotation"
+        raise ValueError(f"Must specify module name for data category: {self}")
+
+
 def _get_full_type(obj: Type["TypedDataObject"]) -> str:
     data_type = obj._data_type()
     return f"{data_type._data_category()}/{data_type.value}"
 
 
 def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
-    return _DATA_TYPE_MAP.get(name, None)
+    class_type = _DATA_TYPE_MAP.get(name, None)
+    if not class_type:
+        try:
+            data_category, _ = name.split("/")
+            module = DataCategory(data_category).data_category_to_module_name()
+            importlib.import_module(module)
+        finally:
+            return _DATA_TYPE_MAP.get(name, None)
+    return class_type
 
 
 # used for TypedBaseDataObject to register themselves to be used in dataclass extra fields deserialization
@@ -278,7 +308,7 @@ def _deserialize_dataobject(x: Any) -> Any:
 
 class DataType(str, Enum):
     @staticmethod
-    def _data_category() -> str:
+    def _data_category() -> DataCategory:
         raise NotImplementedError
 
 

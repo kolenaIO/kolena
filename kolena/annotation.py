@@ -41,6 +41,7 @@ from typing import Tuple
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
@@ -58,8 +59,8 @@ class _AnnotationType(DataType):
     TIME_SEGMENT = "TIME_SEGMENT"
 
     @staticmethod
-    def _data_category() -> str:
-        return "ANNOTATION"
+    def _data_category() -> DataCategory:
+        return DataCategory.ANNOTATION
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

@@ -32,6 +32,7 @@ from typing import Optional
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
@@ -46,8 +47,8 @@ class _AssetType(DataType):
     AUDIO = "AUDIO"
 
     @staticmethod
-    def _data_category() -> str:
-        return "ASSET"
+    def _data_category() -> DataCategory:
+        return DataCategory.ASSET
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
