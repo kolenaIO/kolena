@@ -17,6 +17,7 @@ from abc import ABC
 from abc import ABCMeta
 from abc import abstractmethod
 from collections import OrderedDict
+from collections.abc import Sequence
 from enum import Enum
 from typing import Any
 from typing import cast
@@ -221,7 +222,7 @@ class DataObject(metaclass=ABCMeta):
             field_type = field_type or field.type
             origin = get_origin(field_type)  # non-None for typing.X types
 
-            if origin is list:
+            if origin is list or origin is Sequence:
                 (arg,) = get_args(field_type)
                 if not isinstance(field_value, list):
                     return default_value_or_raise(field, field_value)

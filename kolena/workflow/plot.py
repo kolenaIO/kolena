@@ -40,7 +40,7 @@ from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
 
-NumberSeries = list[Union[float, int]]
+NumberSeries = Sequence[Union[float, int]]
 """A sequence of numeric values."""
 
 NullableNumberSeries = list[Union[float, int, None]]
