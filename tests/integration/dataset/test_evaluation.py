@@ -67,6 +67,8 @@ def test__upload_results() -> None:
     )
     assert response.n_inserted == 7
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -92,6 +94,8 @@ def test__upload_results__iterator_input() -> None:
     response = _upload_results(dataset_name, model_name, df_result_iterator)
     assert response.n_inserted == 7
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -122,6 +126,8 @@ def test__upload_results__align_manually() -> None:
     )
     assert response.n_inserted == 7
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -157,6 +163,8 @@ def test__upload_results__multiple_eval_configs() -> None:
     )
     assert response.n_inserted == 14
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert len(response.eval_config_id) == 2
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
@@ -198,6 +206,8 @@ def test__upload_results__multiple_eval_configs__iterator_input() -> None:
     )
     assert response.n_inserted == 14
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert len(response.eval_config_id) == 2
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
@@ -240,6 +250,8 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     )
     assert response.n_inserted == 10
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert len(response.eval_config_id) == 2
 
     expected_df_dp = df_dp.reset_index(drop=True)
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
@@ -273,6 +285,8 @@ def test__upload_results__multiple_eval_configs__partial_uploading() -> None:
     )
     assert response.n_inserted == 10
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert len(response.eval_config_id) == 2
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     assert len(df_results_by_eval) == 2
@@ -331,6 +345,8 @@ def test__upload_results__missing_result() -> None:
     )
     assert response.n_inserted == 7
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -380,6 +396,8 @@ def test__upload_results__upload_none() -> None:
     )
     assert response.n_inserted == 10
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -463,6 +481,8 @@ def test__download_results__reset_dataset() -> None:
     )
     assert response.n_inserted == 10
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]
@@ -493,6 +513,8 @@ def test__download_results__preserve_none() -> None:
     response = _upload_results(dataset_name, model_name, df_dp)
     assert response.n_inserted == 4
     assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     eval_cfg, fetched_df_result = df_results_by_eval[0]

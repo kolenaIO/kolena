@@ -34,6 +34,8 @@ from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
+from kolena._utils.endpoints import get_platform_url
+from kolena._utils.endpoints import serialize_models_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
@@ -231,9 +233,16 @@ def _upload_results(
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields)
 
     response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
+    if isinstance(response.eval_config_id, list):
+        models = [serialize_models_url(response.model_id, eval_config_id) for eval_config_id in response.eval_config_id]
+    else:
+        models = [serialize_models_url(response.model_id, response.eval_config_id)]
+    models_str = "&".join([f"models={model}" for model in models])
+
+    link = f"{get_platform_url()}/dataset/standards?datasetId={dataset_id}&{models_str}"
     log.info(
         f"uploaded test results for model '{model}' on dataset '{dataset}': "
-        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated",
+        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated ({link})",
     )
     return response
 

@@ -53,6 +53,7 @@ scipy = [  # transient dependency of scikit-learn, pin required to unbreak insta
     { version = ">=1,<1.11", python = ">=3.8,<3.9", optional = true },
     { version = ">=1.12,<2", python = ">=3.12", optional = true }
 ]
+lzstring = "^1.0.4"
 
 [tool.poetry.extras]
 metrics = ["scikit-learn", "scipy"]
