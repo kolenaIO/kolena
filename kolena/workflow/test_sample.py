@@ -57,7 +57,6 @@ from pydantic import StrictInt
 from pydantic import StrictStr
 from pydantic.dataclasses import dataclass
 
-from kolena._utils.datatypes import _register_data_type
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
@@ -150,9 +149,6 @@ class TestSample(TypedDataObject[_TestSampleType], metaclass=ABCMeta):
     [`Model`][kolena.workflow.Model] computes inferences, or when an implementation of
     [`Evaluator`][kolena.workflow.Evaluator] evaluates metrics.
     """
-
-    def __init_subclass__(cls, **kwargs: Any):
-        _register_data_type(cls)
 
     @staticmethod
     def _data_type() -> _TestSampleType:

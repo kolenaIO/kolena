@@ -88,7 +88,7 @@ class DataCategory(str, Enum):
 
     def data_category_to_module_name(self) -> str:
         if self == DataCategory.TEST_SAMPLE:
-            return "kolena.workflow.testing"
+            return "kolena.workflow"
         if self == DataCategory.PLOT:
             return "kolena.workflow.plot"
         if self == DataCategory.METRICS:
@@ -112,7 +112,7 @@ def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
             data_category, _ = name.split("/")
             module = DataCategory(data_category).data_category_to_module_name()
             importlib.import_module(module)
-        except (ValueError, ModuleNotFoundError) as e:
+        except Exception as e:
             log.error(f"Failed to import module for data type '{name}'", e)
         finally:
             return _DATA_TYPE_MAP.get(name, None)
@@ -295,20 +295,6 @@ def _serialize_dataobject(x: Any) -> Any:
     return x._to_dict() if isinstance(x, DataObject) else x
 
 
-def _deserialize_dataobject(x: Any) -> Any:
-    if isinstance(x, list):
-        return [_deserialize_dataobject(item) for item in x]
-
-    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
-        data = {**x}
-        data_type = data.pop(DATA_TYPE_FIELD)
-        typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
-        if typed_dataobject:
-            return typed_dataobject._from_dict(data)
-
-    return x
-
-
 class DataType(str, Enum):
     @staticmethod
     def _data_category() -> DataCategory:
@@ -331,3 +317,9 @@ class TypedDataObject(Generic[U], DataObject, metaclass=ABCMeta):
         self_type = self._data_type()
         self_dict[DATA_TYPE_FIELD] = f"{self_type._data_category().value}/{self_type.value}"
         return self_dict
+
+    def __init_subclass__(cls, **kwargs: Any):
+        try:
+            _register_data_type(cls)
+        except NotImplementedError:
+            pass

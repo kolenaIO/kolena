@@ -26,12 +26,10 @@ The following asset types are available:
 
 """
 from abc import ABCMeta
-from typing import Any
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
-from kolena._utils.datatypes import _register_data_type
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
@@ -54,9 +52,6 @@ class _AssetType(DataType):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Asset(TypedDataObject[_AssetType], metaclass=ABCMeta):
     """Base class for all asset types."""
-
-    def __init_subclass__(cls, **kwargs: Any):
-        _register_data_type(cls)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

@@ -33,14 +33,12 @@ rendered on top of the image.
 import dataclasses
 from abc import ABCMeta
 from functools import reduce
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
 
 from pydantic.dataclasses import dataclass
 
-from kolena._utils.datatypes import _register_data_type
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
@@ -66,9 +64,6 @@ class _AnnotationType(DataType):
 @dataclass(frozen=True, config=ValidatorConfig)
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """The base class for all annotation types."""
-
-    def __init_subclass__(cls, **kwargs: Any):
-        _register_data_type(cls)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

@@ -45,7 +45,6 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.dataframes.transformers import json_normalize
-from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.endpoints import get_dataset_url
@@ -59,6 +58,7 @@ from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.io import _dataframe_object_serde
+from kolena.io import _deserialize_dataobject
 
 _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"

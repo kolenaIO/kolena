@@ -14,9 +14,7 @@
 from abc import ABCMeta
 from dataclasses import dataclass
 from dataclasses import fields
-from typing import Any
 
-from kolena._utils.datatypes import _register_data_type
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
@@ -92,9 +90,6 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
     """
 
     threshold: float
-
-    def __init_subclass__(cls, **kwargs: Any):
-        _register_data_type(cls)
 
     @classmethod
     def _data_type(cls) -> _MetricsType:

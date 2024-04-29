@@ -44,7 +44,7 @@ def test__serde__simple() -> None:
     assert obj_dict == {
         "label": "test",
         "points": [[1, 1], [2, 2], [3, 3]],
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.POLYGON.value}",
     }
     assert LabeledPolygon._from_dict(obj_dict) == obj
 
@@ -59,7 +59,7 @@ def test__serde__derived() -> None:
         "height": 0,
         "area": 0,
         "aspect_ratio": 0,
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.BOUNDING_BOX.value}",
     }
     # deserialization from dict containing all fields, including derived
     assert BoundingBox._from_dict(obj_dict) == obj
@@ -87,7 +87,7 @@ def test__serde__derived__extended(dataclass_decorator: Callable[..., Any]) -> N
         "a": "a",
         "b": False,
         "c": 0,
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.BOUNDING_BOX.value}",
     }
     assert ExtendedBoundingBox._from_dict(obj_dict) == obj
 
@@ -131,7 +131,7 @@ def test__serde__nested() -> None:
     assert obj_dict["e"] == {
         "points": [[0, 0], [1, 1], [2, 2], [0, 0]],
         "label": "e",
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.POLYGON.value}",
     }
     assert Tester._from_dict(obj_dict) == obj
 
