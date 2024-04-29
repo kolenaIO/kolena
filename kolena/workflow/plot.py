@@ -43,7 +43,7 @@ from kolena._utils.validators import ValidatorConfig
 NumberSeries = Sequence[Union[float, int]]
 """A sequence of numeric values."""
 
-NullableNumberSeries = list[Union[float, int, None]]
+NullableNumberSeries = Sequence[Union[float, int, None]]
 """A sequence of numeric values or `None`."""
 
 
