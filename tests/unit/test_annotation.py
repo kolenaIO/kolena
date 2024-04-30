@@ -141,7 +141,11 @@ def test__serde__nested() -> None:
     [
         ((0, 0), (0, 0), dict(width=0, height=0, area=0, aspect_ratio=0)),
         ((10, 10), (10, 10), dict(width=0, height=0, area=0, aspect_ratio=0)),
+        # test different permutations to ensure that we're robust to coordinate swapping
         ((10, 10), (20, 30), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+        ((20, 30), (10, 10), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+        ((20, 10), (10, 30), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+        ((10, 30), (20, 10), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
     ],
 )
 def test__bounding_box__derived(
