@@ -91,8 +91,8 @@ class BoundingBox(Annotation):
         return _AnnotationType.BOUNDING_BOX
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "width", self.bottom_right[0] - self.top_left[0])
-        object.__setattr__(self, "height", self.bottom_right[1] - self.top_left[1])
+        object.__setattr__(self, "width", abs(self.bottom_right[0] - self.top_left[0]))
+        object.__setattr__(self, "height", abs(self.bottom_right[1] - self.top_left[1]))
         object.__setattr__(self, "area", self.width * self.height)
         object.__setattr__(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
 
