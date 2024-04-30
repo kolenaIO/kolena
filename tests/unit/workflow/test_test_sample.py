@@ -336,7 +336,7 @@ def test__serialize() -> None:
         l=LabeledPolygon(label="test", points=[(1, 1), (2, 2), (3, 3)])._to_dict(),
         m=BoundingBox(top_left=(0, 0), bottom_right=(10, 10))._to_dict(),
         n=[1, 2, 3],
-        data_type=f"{_TestSampleType._data_category()}/{_TestSampleType.CUSTOM.value}",
+        data_type=f"{_TestSampleType._data_category().value}/{_TestSampleType.CUSTOM.value}",
     )
 
     assert Tester._from_dict(obj_dict) == obj

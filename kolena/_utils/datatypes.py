@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import dataclasses
+import importlib
 from abc import ABC
 from abc import ABCMeta
 from abc import abstractmethod
 from collections import OrderedDict
+from collections.abc import Sequence
 from enum import Enum
 from typing import Any
 from typing import cast
@@ -35,6 +37,7 @@ import pandera as pa
 from pydantic.dataclasses import dataclass
 from pydantic.dataclasses import is_pydantic_dataclass
 
+from kolena._utils import log
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.validators import ValidatorConfig
 
@@ -77,13 +80,44 @@ def _allow_extra(cls: Type[T]) -> bool:
 _DATA_TYPE_MAP: Dict[str, Type["TypedDataObject"]] = {}
 
 
+class DataCategory(str, Enum):
+    TEST_SAMPLE = "TEST_SAMPLE"
+    PLOT = "PLOT"
+    METRICS = "METRICS"
+    ASSET = "ASSET"
+    ANNOTATION = "ANNOTATION"
+
+    def data_category_to_module_name(self) -> str:
+        if self == DataCategory.TEST_SAMPLE:
+            return "kolena.workflow"
+        if self == DataCategory.PLOT:
+            return "kolena.workflow.plot"
+        if self == DataCategory.METRICS:
+            return "kolena._experimental.workflow.thresholded"
+        if self == DataCategory.ASSET:
+            return "kolena.asset"
+        if self == DataCategory.ANNOTATION:
+            return "kolena.annotation"
+        raise ValueError(f"Must specify module name for data category: {self}")
+
+
 def _get_full_type(obj: Type["TypedDataObject"]) -> str:
     data_type = obj._data_type()
-    return f"{data_type._data_category()}/{data_type.value}"
+    return f"{data_type._data_category().value}/{data_type.value}"
 
 
 def _get_data_type(name: str) -> Optional[Type["TypedDataObject"]]:
-    return _DATA_TYPE_MAP.get(name, None)
+    class_type = _DATA_TYPE_MAP.get(name, None)
+    if not class_type:
+        try:
+            data_category, _ = name.split("/")
+            module = DataCategory(data_category).data_category_to_module_name()
+            importlib.import_module(module)
+        except Exception as e:
+            log.error(f"Failed to import module for data type '{name}'", e)
+        finally:
+            return _DATA_TYPE_MAP.get(name, None)
+    return class_type
 
 
 # used for TypedBaseDataObject to register themselves to be used in dataclass extra fields deserialization
@@ -188,7 +222,7 @@ class DataObject(metaclass=ABCMeta):
             field_type = field_type or field.type
             origin = get_origin(field_type)  # non-None for typing.X types
 
-            if origin is list:
+            if origin is list or origin is Sequence:
                 (arg,) = get_args(field_type)
                 if not isinstance(field_value, list):
                     return default_value_or_raise(field, field_value)
@@ -262,23 +296,9 @@ def _serialize_dataobject(x: Any) -> Any:
     return x._to_dict() if isinstance(x, DataObject) else x
 
 
-def _deserialize_dataobject(x: Any) -> Any:
-    if isinstance(x, list):
-        return [_deserialize_dataobject(item) for item in x]
-
-    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
-        data = {**x}
-        data_type = data.pop(DATA_TYPE_FIELD)
-        typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
-        if typed_dataobject:
-            return typed_dataobject._from_dict(data)
-
-    return x
-
-
 class DataType(str, Enum):
     @staticmethod
-    def _data_category() -> str:
+    def _data_category() -> DataCategory:
         raise NotImplementedError
 
 
@@ -296,5 +316,11 @@ class TypedDataObject(Generic[U], DataObject, metaclass=ABCMeta):
     def _to_dict(self) -> Dict[str, Any]:
         self_dict = super()._to_dict()
         self_type = self._data_type()
-        self_dict[DATA_TYPE_FIELD] = f"{self_type._data_category()}/{self_type.value}"
+        self_dict[DATA_TYPE_FIELD] = f"{self_type._data_category().value}/{self_type.value}"
         return self_dict
+
+    def __init_subclass__(cls, **kwargs: Any):
+        try:
+            _register_data_type(cls)
+        except NotImplementedError:
+            pass

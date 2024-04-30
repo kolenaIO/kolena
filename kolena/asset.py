@@ -26,12 +26,11 @@ The following asset types are available:
 
 """
 from abc import ABCMeta
-from typing import Any
 from typing import Optional
 
 from pydantic.dataclasses import dataclass
 
-from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
@@ -46,16 +45,13 @@ class _AssetType(DataType):
     AUDIO = "AUDIO"
 
     @staticmethod
-    def _data_category() -> str:
-        return "ASSET"
+    def _data_category() -> DataCategory:
+        return DataCategory.ASSET
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Asset(TypedDataObject[_AssetType], metaclass=ABCMeta):
     """Base class for all asset types."""
-
-    def __init_subclass__(cls, **kwargs: Any):
-        _register_data_type(cls)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
