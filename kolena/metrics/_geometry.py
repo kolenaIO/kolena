@@ -11,7 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import math
 from collections import defaultdict
+from typing import Callable
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -22,14 +24,18 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
+import numpy as np
 from pydantic.dataclasses import dataclass
 from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
 from kolena.annotation import BoundingBox
+from kolena.annotation import BoundingBox3D
 from kolena.annotation import Polygon
 from kolena.annotation import ScoredBoundingBox
+from kolena.annotation import ScoredBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.annotation import ScoredLabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledPolygon
 from kolena.annotation import ScoredPolygon
 from kolena.errors import InputValidationError
@@ -64,7 +70,7 @@ def _iou_bbox(box1: BoundingBox, box2: BoundingBox) -> float:
     return iou
 
 
-def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float:
+def iou_2d(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float:
     """
     Compute the Intersection Over Union (IoU) of two geometries.
 
@@ -92,8 +98,76 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
     return polygon_a.intersection(polygon_b).area / union if union > 0 else 0
 
 
-GT = TypeVar("GT", bound=Union[BoundingBox, Polygon])
-Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon])
+iou = iou_2d
+
+
+def _create_rotation_matrix(x: float, y: float, z: float) -> np.ndarray:
+    sin_x, cos_x = math.sin(x), math.cos(x)
+    sin_y, cos_y = math.sin(y), math.cos(y)
+    sin_z, cos_z = math.sin(z), math.cos(z)
+
+    # https://en.wikipedia.org/wiki/Rotation_matrix
+    return np.array(
+        [
+            [cos_y * cos_z, sin_x * sin_y * cos_z - cos_x * sin_z, cos_x * sin_y * cos_z + sin_x * sin_z],
+            [cos_y * sin_z, sin_x * sin_y * sin_z + cos_x * cos_z, cos_x * sin_y * sin_z - sin_x * cos_z],
+            [-sin_y, sin_x * cos_y, cos_x * cos_y],
+        ],
+    )
+
+
+def _dist(x: Tuple[float, float, float], y: Tuple[float, float, float]) -> float:
+    return math.sqrt((x[0] - y[0]) ** 2 + (x[1] - y[1]) ** 2 + (x[2] - y[2]) ** 2)
+
+
+def _boxes_have_intersecting_inscribing_spheres(box1: BoundingBox3D, box2: BoundingBox3D) -> bool:
+    box1_radius = _dist((0, 0, 0), (box1.dimensions[0] / 2, box1.dimensions[1] / 2, box1.dimensions[2] / 2))
+    box2_radius = _dist((0, 0, 0), (box2.dimensions[0] / 2, box2.dimensions[1] / 2, box2.dimensions[2] / 2))
+    dist_between_centers = _dist(box1.center, box2.center)
+    return dist_between_centers <= box1_radius + box2_radius
+
+
+def iou_3d_approx(box1: BoundingBox3D, box2: BoundingBox3D, n: int = 10_000, seed: int = 31415) -> float:
+    if not _boxes_have_intersecting_inscribing_spheres(box1, box2):
+        return 0.0
+    box1_center = np.array(box1.center).reshape((3, 1))
+    box2_center = np.array(box2.center).reshape((3, 1))
+    rotation_matrix_box1 = _create_rotation_matrix(*box1.rotations)
+    rotation_matrix_box2_inv = _create_rotation_matrix(*box2.rotations).T
+    box1_dimensions = np.array(box1.dimensions).reshape((3, 1))
+    box2_dimensions = np.array(box2.dimensions).reshape((3, 1))
+    rng = np.random.default_rng(seed)
+    samples = (
+        np.dot(rotation_matrix_box1, rng.uniform(low=-box1_dimensions / 2, high=box1_dimensions / 2, size=(3, n)))
+        + box1_center
+    )
+    samples_box2_coordinates = np.dot(rotation_matrix_box2_inv, samples - box2_center)
+    num_samples_in_box2 = (
+        np.logical_and(-box2_dimensions / 2 <= samples_box2_coordinates, samples_box2_coordinates < box2_dimensions / 2)
+        .all(axis=0)
+        .sum()
+    )
+    frac = num_samples_in_box2 / n
+    intersection = frac * box1.volume
+    return intersection / (box1.volume + box2.volume - intersection)
+
+
+GT = TypeVar("GT", bound=Union[BoundingBox, Polygon, BoundingBox3D])
+Inf = TypeVar(
+    "Inf",
+    bound=Union[
+        ScoredBoundingBox,
+        ScoredPolygon,
+        ScoredLabeledBoundingBox,
+        ScoredLabeledPolygon,
+        ScoredBoundingBox3D,
+        ScoredLabeledBoundingBox3D,
+    ],
+)
+
+
+def _is_3d_annotation(a: Union[BoundingBox, Polygon, BoundingBox3D]) -> bool:
+    return isinstance(a, BoundingBox3D)
 
 
 @dataclass(frozen=True)
@@ -122,6 +196,9 @@ class InferenceMatches(Generic[GT, Inf]):
     """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
 
 
+MatchingFunction = Callable[[List[GT], List[Inf], Optional[List[GT]], float], InferenceMatches[GT, Inf]]
+
+
 def _match_inferences_single_class_pascal_voc(
     ground_truths: List[GT],
     inferences: List[Inf],
@@ -144,7 +221,14 @@ def _match_inferences_single_class_pascal_voc(
         best_gt = None
         best_gt_iou = -1.0
         for g, gt in enumerate(gt_objects):
-            inf_gt_iou = iou(gt, inf)
+            if isinstance(gt, BoundingBox3D) and isinstance(inf, BoundingBox3D):
+                inf_gt_iou = iou_3d_approx(gt, inf)
+            elif (isinstance(gt, BoundingBox) or isinstance(gt, Polygon)) and (
+                isinstance(inf, BoundingBox) or isinstance(inf, Polygon)
+            ):
+                inf_gt_iou = iou_2d(gt, inf)
+            else:
+                raise InputValidationError("Could not compute IOU between 2D and 3D object")
             # track the highest IoU over the threshold
             if inf_gt_iou >= iou_threshold and inf_gt_iou > best_gt_iou:
                 best_gt_iou = inf_gt_iou

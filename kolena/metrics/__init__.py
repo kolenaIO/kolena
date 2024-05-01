@@ -19,6 +19,8 @@ from ._formula import recall
 from ._formula import specificity
 from ._geometry import InferenceMatches
 from ._geometry import iou
+from ._geometry import iou_2d
+from ._geometry import iou_3d_approx
 from ._geometry import match_inferences
 from ._geometry import match_inferences_multiclass
 from ._geometry import MulticlassInferenceMatches
@@ -31,6 +33,8 @@ __all__ = [
     "fpr",
     "specificity",
     "iou",
+    "iou_2d",
+    "iou_3d_approx",
     "InferenceMatches",
     "match_inferences",
     "match_inferences_multiclass",
