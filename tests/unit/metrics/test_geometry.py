@@ -19,6 +19,7 @@ from typing import Union
 import pytest
 
 from kolena.annotation import BoundingBox
+from kolena.annotation import BoundingBox3D
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import LabeledPolygon
 from kolena.annotation import Polygon
@@ -26,7 +27,8 @@ from kolena.annotation import ScoredBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.annotation import ScoredLabeledPolygon
 from kolena.errors import InputValidationError
-from kolena.metrics import iou
+from kolena.metrics import iou_2d
+from kolena.metrics import iou_3d_approx
 from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
 from kolena.metrics._geometry import GT
@@ -78,7 +80,17 @@ from kolena.metrics._geometry import Inf
     ],
 )
 def test__iou__bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -> None:
-    assert iou(box1, box2) == pytest.approx(expected_iou, abs=1e-5)
+    assert iou_2d(box1, box2) == pytest.approx(expected_iou, abs=1e-5)
+
+
+@pytest.mark.parametrize(
+    "box1, box2, expected_iou",
+    [
+        # TODO: Add tests
+    ],
+)
+def test__iou__bbox__3d(box1: BoundingBox3D, box2: BoundingBox3D, expected_iou: float) -> None:
+    assert iou_3d_approx(box1, box2) == pytest.approx(expected_iou, abs=5 * 1e-2)
 
 
 @pytest.mark.parametrize(
@@ -106,7 +118,7 @@ def test__iou__bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -
     ],
 )
 def test__iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, Polygon], expected_iou: float) -> None:
-    iou_value = iou(points1, points2)
+    iou_value = iou_2d(points1, points2)
     assert iou_value == pytest.approx(expected_iou, abs=1e-5)
 
 
