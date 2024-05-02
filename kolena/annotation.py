@@ -483,8 +483,8 @@ def extract_labeled_text_segments_from_keywords(
     labeled_text_segments_column: str = "labeled_text_segments",
 ) -> pd.DataFrame:
     """
-    Extracts and labels text segments from specified text fields within a DataFrame based on given keywords,
-    and annotates them with optional colors. The resulting labeled segments are stored in a new column.
+    Extracts and labels text segments from specified text fields within a DataFrame based on given keywords. 
+    The resulting labeled segments are stored in a new column.
 
     :param df: DataFrame containing the text data.
     :param text_fields: Names of the columns in `df` that contain the text to be analyzed.
