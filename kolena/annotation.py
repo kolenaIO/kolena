@@ -388,7 +388,7 @@ class ScoredLabeledTimeSegment(TimeSegment):
 @dataclass(frozen=True, config=ValidatorConfig)
 class TextSegment(Annotation):
     """
-    Segments of text in the associated text field
+    Segment of text in the associated text field
 
     ```py
     text_segments: List[TextSegment] = [
