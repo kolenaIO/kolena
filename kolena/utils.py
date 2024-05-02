@@ -12,13 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import re
+from typing import Dict
+from typing import List
 
 import pandas as pd
 
 from kolena.annotation import LabeledTextSegment
 
 
-def _find_substring_indices(field_name: str, text: str, substrings: list[str], label: str) -> list[LabeledTextSegment]:
+def _find_substring_indices(field_name: str, text: str, substrings: List[str], label: str) -> List[LabeledTextSegment]:
     segments = []
     for substring in substrings:
         escaped_search = re.escape(substring)
@@ -38,9 +40,9 @@ def _find_substring_indices(field_name: str, text: str, substrings: list[str], l
 
 
 def _extract_labeled_text_segments_from_keywords_single_row(
-    texts: dict[str, str],
-    keyword_labels: dict[str, list[str]],
-) -> list[LabeledTextSegment]:
+    texts: Dict[str, str],
+    keyword_labels: Dict[str, List[str]],
+) -> List[LabeledTextSegment]:
     labeled_segments = []
     for label, keywords in keyword_labels.items():
         for field_name, text in texts.items():
@@ -50,8 +52,8 @@ def _extract_labeled_text_segments_from_keywords_single_row(
 
 def extract_labeled_text_segments_from_keywords(
     df: pd.DataFrame,
-    text_fields: list[str],
-    keyword_labels: dict[str, list[str]],
+    text_fields: List[str],
+    keyword_labels: Dict[str, List[str]],
     labeled_text_segments_column: str = "labeled_text_segments",
 ) -> pd.DataFrame:
     """
