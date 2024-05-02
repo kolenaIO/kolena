@@ -11,6 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
+from typing import Tuple
+
 import pandas as pd
 import pytest
 
@@ -38,8 +41,8 @@ from kolena.utils import extract_labeled_text_segments_from_keywords
 )
 def test__extract_labeled_text_segments_from_keywords(
     text: str,
-    keywords: list[str],
-    expected_segments: list[tuple[int, int]],
+    keywords: List[str],
+    expected_segments: List[Tuple[int, int]],
 ) -> None:
     df = pd.DataFrame({"text": [text]})
     labeled_text_segments = extract_labeled_text_segments_from_keywords(
