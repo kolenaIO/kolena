@@ -30,13 +30,16 @@ from kolena.annotation import _AnnotationType
 from kolena.annotation import BitmapMask
 from kolena.annotation import BoundingBox
 from kolena.annotation import BoundingBox3D
+from kolena.annotation import extract_labeled_text_segments_from_keywords
 from kolena.annotation import Keypoints
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import LabeledPolygon
-from kolena.annotation import LabeledTextSegments
+from kolena.annotation import LabeledTextSegment
 from kolena.annotation import Polygon
 from kolena.annotation import Polyline
+from kolena.annotation import ScoredLabeledTextSegment
+from kolena.annotation import ScoredTextSegment
 from kolena.annotation import SegmentationMask
 from kolena.annotation import TextSegment
 
@@ -112,7 +115,10 @@ def test__serde__nested() -> None:
         m: Optional[LabeledBoundingBox3D]
         n: SegmentationMask
         o: BitmapMask
-        p: LabeledTextSegments
+        p: TextSegment
+        q: LabeledTextSegment
+        r: ScoredTextSegment
+        s: ScoredLabeledTextSegment
 
     obj = Tester(
         b=BoundingBox(top_left=(0, 0), bottom_right=(1, 1)),
@@ -129,7 +135,10 @@ def test__serde__nested() -> None:
         m=None,
         n=SegmentationMask(labels={1: "cat", 10: "dog"}, locator="s3://abc"),
         o=BitmapMask(locator="s3://def"),
-        p=LabeledTextSegments(text_segments=[TextSegment(text_field="text", segments=[(3, 8), (9, 21)])], label="name"),
+        p=TextSegment(text_field="text", start=0, end=10),
+        q=LabeledTextSegment(label="location", text_field="text", start=0, end=10),
+        r=ScoredTextSegment(socre=0.91, text_field="text", start=0, end=10),
+        s=ScoredLabeledTextSegment(score=0.91, label="location", text_field="text", start=0, end=10),
     )
     obj_dict = obj._to_dict()
 
@@ -201,23 +210,24 @@ def test__extract_labeled_text_segments_from_keywords(
     expected_segments: list[tuple[int, int]],
 ) -> None:
     df = pd.DataFrame({"text": [text]})
-    labeled_text_segments = LabeledTextSegments.extract_labeled_text_segments_from_keywords(
+    labeled_text_segments = extract_labeled_text_segments_from_keywords(
         df,
         ["text"],
         {"test_label": keywords},
-        colors={"test_label": "red"},
     )
     actual_segments_row = labeled_text_segments["labeled_text_segments"].iloc[0]
     expected = [
-        LabeledTextSegments(
-            text_segments=[TextSegment(text_field="text", segments=expected_segments)],
+        LabeledTextSegment(
+            text_field="text",
+            start=start,
+            end=end,
             label="test_label",
-            color="red",
-        ),
+        )
+        for start, end in expected_segments
     ]
     assert actual_segments_row == expected
-    for start, end in actual_segments_row[0].text_segments[0].segments:
-        assert text[start:end] in keywords
+    for segment in actual_segments_row:
+        assert text[segment.start : segment.end] in keywords
 
 
 def test__extract_labeled_text_segments_from_keywords__multi_label_and_field() -> None:
@@ -226,52 +236,61 @@ def test__extract_labeled_text_segments_from_keywords__multi_label_and_field() -
     text3 = "Meaningfully communicate model capabilities"
     text4 = "Automate model testing and deployment workflows"
     df = pd.DataFrame({"text_field1": [text1, text2], "text_field2": [text3, text4]})
-    labeled_text_segments = LabeledTextSegments.extract_labeled_text_segments_from_keywords(
+    labeled_text_segments = extract_labeled_text_segments_from_keywords(
         df,
         ["text_field1", "text_field2"],
         {
             "test_label1": ["model", "track"],
             "test_label2": ["evaluation", "testing", "communicate"],
         },
-        colors={
-            "test_label1": "red",
-            "test_label2": "green",
-        },
     )
     actual_segments_row_1 = labeled_text_segments["labeled_text_segments"].iloc[0]
     actual_segments_row_2 = labeled_text_segments["labeled_text_segments"].iloc[1]
     expected_segments_row_1 = [
-        LabeledTextSegments(
-            text_segments=[
-                TextSegment(text_field="text_field1", segments=[(24, 29)]),
-                TextSegment(text_field="text_field2", segments=[(25, 30)]),
-            ],
+        LabeledTextSegment(
+            text_field="text_field1",
+            start=24,
+            end=29,
             label="test_label1",
-            color="red",
         ),
-        LabeledTextSegments(
-            text_segments=[
-                TextSegment(text_field="text_field1", segments=[(30, 40)]),
-                TextSegment(text_field="text_field2", segments=[(13, 24)]),
-            ],
+        LabeledTextSegment(
+            text_field="text_field2",
+            start=25,
+            end=30,
+            label="test_label1",
+        ),
+        LabeledTextSegment(
+            text_field="text_field1",
+            start=30,
+            end=40,
             label="test_label2",
-            color="green",
+        ),
+        LabeledTextSegment(
+            text_field="text_field2",
+            start=13,
+            end=24,
+            label="test_label2",
         ),
     ]
 
     expected_segments_row_2 = [
-        LabeledTextSegments(
-            text_segments=[
-                TextSegment(text_field="text_field1", segments=[(15, 20)]),
-                TextSegment(text_field="text_field2", segments=[(9, 14)]),
-            ],
+        LabeledTextSegment(
+            text_field="text_field1",
+            start=15,
+            end=20,
             label="test_label1",
-            color="red",
         ),
-        LabeledTextSegments(
-            text_segments=[TextSegment(text_field="text_field2", segments=[(15, 22)])],
+        LabeledTextSegment(
+            text_field="text_field2",
+            start=9,
+            end=14,
+            label="test_label1",
+        ),
+        LabeledTextSegment(
+            text_field="text_field2",
+            start=15,
+            end=22,
             label="test_label2",
-            color="green",
         ),
     ]
 
