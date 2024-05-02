@@ -2,10 +2,7 @@ site_name: Testing with Kolena
 site_description: Python client for Kolena's machine learning testing platform
 site_url: https://docs.kolena.com
 strict: true
-repo_name: kolenaIO/kolena
-# repo_url: https://github.com/kolenaIO/kolena
 copyright: Copyright &copy; 2021-2024 Kolena
-# edit_uri: edit/trunk/docs/
 
 nav:
   - Developer Guide:
