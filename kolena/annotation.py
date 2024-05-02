@@ -31,15 +31,19 @@ For example, when viewing images in the Studio, any annotations (such as lists o
 rendered on top of the image.
 """  # noqa: E501
 import dataclasses
+import re
 from abc import ABCMeta
 from functools import reduce
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 
+import pandas as pd
 from pydantic.dataclasses import dataclass
 
 from kolena._utils.datatypes import DataCategory
+from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
@@ -55,6 +59,7 @@ class _AnnotationType(DataType):
     BITMAP_MASK = "BITMAP_MASK"
     LABEL = "LABEL"
     TIME_SEGMENT = "TIME_SEGMENT"
+    LabeledTextSegments = "LABELED_TEXT_SEGMENTS"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -380,6 +385,123 @@ class ScoredLabeledTimeSegment(TimeSegment):
 
     score: float
     """The score associated with this time segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class TextSegment(DataObject):
+    """
+    Segments of text in the associated text field
+    """
+
+    text_field: str
+    """Text field column name containing the text segments."""
+
+    segments: List[Tuple[int, int]]
+    """List of text segments. The first item of each tuple is the start index of the segment,
+    and the second item is the end index."""
+
+    def __post_init__(self) -> None:
+        if not self.segments:
+            raise ValueError("At least one text segment must be provided")
+        for start, end in self.segments:
+            if start < 0:
+                raise ValueError(f"Start index must be non-negative ({start} provided)")
+            if end < 0:
+                raise ValueError(f"End index must be non-negative ({end} provided)")
+            if start > end:
+                raise ValueError(f"Start index must be less than or equal to end index ({start} > {end})")
+
+
+def find_substring_indices(field_name: str, text: str, substrings: list[str]) -> Optional[TextSegment]:
+    indices = []
+    for substring in substrings:
+        escaped_search = re.escape(substring)
+
+        pattern = rf"\b{escaped_search}\b"
+
+        matches = re.finditer(pattern, text, re.IGNORECASE)
+
+        indices.extend([(match.start(), match.end()) for match in matches])
+
+    if indices:
+        return TextSegment(field_name, indices)
+    return None
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class LabeledTextSegments(Annotation):
+    """
+    Segments of text in the associated text field with labels
+    ```
+    """
+
+    text_segments: List[TextSegment]
+    """List of text segments."""
+
+    label: str
+    """The label for the specified segments."""
+
+    color: Optional[str] = None
+    """Color of the segments for display."""
+
+    def __post_init__(self) -> None:
+        if not self.text_segments:
+            raise ValueError("At least one text segment must be provided")
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.LabeledTextSegments
+
+    @staticmethod
+    def _create_from_keyword_single_row(
+        texts: dict[str, str],
+        keyword_labels: dict[str, list[str]],
+        colors: dict[str, str],
+    ) -> list["LabeledTextSegments"]:
+        labeled_segments = []
+        for label, keywords in keyword_labels.items():
+            segments = []
+            for field_name, text in texts.items():
+                segment = find_substring_indices(field_name, text, keywords)
+                if segment:
+                    segments.append(segment)
+            if segments:
+                labeled_segments.append(LabeledTextSegments(segments, label, colors.get(label, None)))
+        return labeled_segments
+
+    @staticmethod
+    def extract_labeled_text_segments_from_keywords(
+        df: pd.DataFrame,
+        text_fields: list[str],
+        keyword_labels: dict[str, list[str]],
+        colors: Optional[dict[str, str]] = None,
+        labeled_text_segments_column: str = "labeled_text_segments",
+    ) -> pd.DataFrame:
+        """
+        Extracts and labels text segments from specified text fields within a DataFrame based on given keywords,
+        and annotates them with optional colors. The resulting labeled segments are stored in a new column.
+
+        :param df: DataFrame containing the text data.
+        :param text_fields: Names of the columns in `df` that contain the text to be analyzed.
+        :param keyword_labels: A dictionary where each key is a label and each value is a list of
+            keywords. Any text segment containing a keyword will be tagged with the corresponding label.
+        :param colors: Optional dictionary mapping labels to colors for visual representation.
+            Defaults to None, in which case no color coding is applied.
+        :param labeled_text_segments_column: The name of the column in `df` where the resulting labeled text segments
+            will be stored. Defaults to "labeled_text_segments".
+
+        :return: The modified DataFrame with an additional column containing the labeled text segments.
+
+        """
+        df[labeled_text_segments_column] = df[text_fields].apply(
+            lambda texts: LabeledTextSegments._create_from_keyword_single_row(
+                texts.to_dict(),
+                keyword_labels,
+                colors if colors else {},
+            ),
+            axis=1,
+        )
+        return df
 
 
 _ANNOTATION_TYPES = [
