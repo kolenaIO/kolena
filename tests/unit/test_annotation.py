@@ -20,7 +20,6 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-import pandas as pd
 import pydantic
 import pytest
 
@@ -30,7 +29,6 @@ from kolena.annotation import _AnnotationType
 from kolena.annotation import BitmapMask
 from kolena.annotation import BoundingBox
 from kolena.annotation import BoundingBox3D
-from kolena.annotation import extract_labeled_text_segments_from_keywords
 from kolena.annotation import Keypoints
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import LabeledBoundingBox3D
@@ -137,7 +135,7 @@ def test__serde__nested() -> None:
         o=BitmapMask(locator="s3://def"),
         p=TextSegment(text_field="text", start=0, end=10),
         q=LabeledTextSegment(label="location", text_field="text", start=0, end=10),
-        r=ScoredTextSegment(socre=0.91, text_field="text", start=0, end=10),
+        r=ScoredTextSegment(score=0.91, text_field="text", start=0, end=10),
         s=ScoredLabeledTextSegment(score=0.91, label="location", text_field="text", start=0, end=10),
     )
     obj_dict = obj._to_dict()
@@ -184,115 +182,3 @@ def test__bounding_box__derived(
 def test__bounding_box_3d__derived(dimensions: Tuple[float, float, float], expected: float) -> None:
     bbox = BoundingBox3D(center=(0, 0, 0), dimensions=dimensions, rotations=(0, 0, 0))
     assert bbox.volume == expected
-
-
-@pytest.mark.parametrize(
-    "text,keywords,expected_segments",
-    [
-        (
-            "Kolena is a comprehensive machine learning testing and debugging platform to surface hidden"
-            " model behaviors and take the mystery out of model development.",
-            ["Kolena", "machine learning", "model development"],
-            [(0, 6), (26, 42), (136, 153)],
-        ),
-        ("The king himself told the audience that he is him", ["queen", "him"], [(46, 49)]),
-        (
-            "Creating fine-grained tests is labor-intensive and typically involves manual annotation of countless "
-            "images, a costly and time-consuming process",
-            ["fine-grained tests", "manual annotation", "and"],
-            [(9, 27), (70, 87), (47, 50), (118, 121)],
-        ),
-    ],
-)
-def test__extract_labeled_text_segments_from_keywords(
-    text: str,
-    keywords: list[str],
-    expected_segments: list[tuple[int, int]],
-) -> None:
-    df = pd.DataFrame({"text": [text]})
-    labeled_text_segments = extract_labeled_text_segments_from_keywords(
-        df,
-        ["text"],
-        {"test_label": keywords},
-    )
-    actual_segments_row = labeled_text_segments["labeled_text_segments"].iloc[0]
-    expected = [
-        LabeledTextSegment(
-            text_field="text",
-            start=start,
-            end=end,
-            label="test_label",
-        )
-        for start, end in expected_segments
-    ]
-    assert actual_segments_row == expected
-    for segment in actual_segments_row:
-        assert text[segment.start : segment.end] in keywords
-
-
-def test__extract_labeled_text_segments_from_keywords__multi_label_and_field() -> None:
-    text1 = "Perform high-resolution model evaluation"
-    text2 = "Understand and track behavioral improvements and regressions"
-    text3 = "Meaningfully communicate model capabilities"
-    text4 = "Automate model testing and deployment workflows"
-    df = pd.DataFrame({"text_field1": [text1, text2], "text_field2": [text3, text4]})
-    labeled_text_segments = extract_labeled_text_segments_from_keywords(
-        df,
-        ["text_field1", "text_field2"],
-        {
-            "test_label1": ["model", "track"],
-            "test_label2": ["evaluation", "testing", "communicate"],
-        },
-    )
-    actual_segments_row_1 = labeled_text_segments["labeled_text_segments"].iloc[0]
-    actual_segments_row_2 = labeled_text_segments["labeled_text_segments"].iloc[1]
-    expected_segments_row_1 = [
-        LabeledTextSegment(
-            text_field="text_field1",
-            start=24,
-            end=29,
-            label="test_label1",
-        ),
-        LabeledTextSegment(
-            text_field="text_field2",
-            start=25,
-            end=30,
-            label="test_label1",
-        ),
-        LabeledTextSegment(
-            text_field="text_field1",
-            start=30,
-            end=40,
-            label="test_label2",
-        ),
-        LabeledTextSegment(
-            text_field="text_field2",
-            start=13,
-            end=24,
-            label="test_label2",
-        ),
-    ]
-
-    expected_segments_row_2 = [
-        LabeledTextSegment(
-            text_field="text_field1",
-            start=15,
-            end=20,
-            label="test_label1",
-        ),
-        LabeledTextSegment(
-            text_field="text_field2",
-            start=9,
-            end=14,
-            label="test_label1",
-        ),
-        LabeledTextSegment(
-            text_field="text_field2",
-            start=15,
-            end=22,
-            label="test_label2",
-        ),
-    ]
-
-    assert actual_segments_row_1 == expected_segments_row_1
-    assert actual_segments_row_2 == expected_segments_row_2
