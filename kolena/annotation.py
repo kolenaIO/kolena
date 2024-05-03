@@ -409,8 +409,8 @@ class TextSegment(Annotation):
             raise ValueError(f"Start index must be non-negative ({self.start} provided)")
         if self.end < 0:
             raise ValueError(f"End index must be non-negative ({self.end} provided)")
-        if self.start > self.end:
-            raise ValueError(f"Start index must be less than or equal to end index ({self.start} > {self.end})")
+        if self.start >= self.end:
+            raise ValueError(f"Start index must be less than end index ({self.start} >= {self.end})")
 
     @staticmethod
     def _data_type() -> _AnnotationType:
