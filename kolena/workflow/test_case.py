@@ -349,7 +349,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         log.info(f"editing test case '{self.name}' (v{self.version})")
         init_response = init_upload()
         df_serialized = editor._to_data_frame().as_serializable()
-        upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=init_response.uuid)
+        upload_data_frame(df=df_serialized, load_uuid=init_response.uuid)
 
         request = CoreAPI.CompleteEditRequest(
             test_case_id=self._id,
@@ -429,7 +429,7 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
         load_uuid: Optional[str] = None
         if len(df_serialized):
             load_uuid = init_upload().uuid
-            upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+            upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
         request = CoreAPI.BulkProcessRequest(
             test_cases=[CoreAPI.SingleProcessRequest(name=name, reset=reset) for name, _ in data],

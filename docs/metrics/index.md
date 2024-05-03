@@ -35,6 +35,20 @@ biases, and its intended uses.
     Different averaging methods for aggregating metrics for **multiclass** workflows, such as classification and
     object detection.
 
+- [Coefficient of Determination (R²)](coefficient-of-determination.md)
+
+    ---
+
+    R² provides a scale that is generally from 0 to 1, where higher values indicate a better fit and imply that
+    the model can better explain the variation of the model inferences.
+
+- [Cohen's Kappa](cohens-kappa.md)
+
+    ---
+
+    Cohen's Kappa measures the agreement between model inferences and ground truths. It's a good performance metric
+    that considers class imbalance.
+
 - [Confusion Matrix](confusion-matrix.md)
 
     ---
@@ -55,6 +69,22 @@ biases, and its intended uses.
 
     False positive rate (FPR) measures the proportion of negative ground truths that a model incorrectly predicts as
     positive, ranging from 0 to 1. It is useful when the objective is to measure and reduce false positive inferences.
+
+- [Mean Absolute Error (MAE)](mean-absolute-error.md)
+
+    ---
+
+    MAE measures the average magnitude of errors in predictions, without considering their direction. It represents
+    the mean of the absolute differences between predicted and actual values across a dataset, treating each
+    discrepancy equally.
+
+- [Mean Squared Error (MSE)](mean-squared-error.md)
+
+    ---
+
+    MSE measures the average squared difference between the predicted values and the actual values,
+    emphasizing larger errors more significantly than smaller ones. It is mainly different from
+    [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
 
 - [Precision](precision.md)
 
@@ -86,6 +116,14 @@ biases, and its intended uses.
     A receiver operating characteristic (ROC) curve is a plot that is used to evaluate the performance of binary
     classification models by using the [true positive rate (TPR)](./recall.md) and the
     [false positive rate (FPR)](./fpr.md).
+
+- [Root Mean Squared Error (RMSE)](root-mean-squared-error.md)
+
+    ---
+
+    RMSE measures the square root of the average squared difference between the predicted values and the
+    actual values, emphasizing larger errors more significantly than smaller ones while maintaing the same
+    unit as the predicted and actual values which is what differentiates it from [MSE](mean-squared-error.md).
 
 - [Specificity (TNR)](specificity.md)
 

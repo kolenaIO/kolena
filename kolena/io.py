@@ -17,45 +17,45 @@ to and from common serializable formats while adhering to the JSON specification
 non-primitive data objects.
 """
 import json
+from functools import partial
 from typing import Any
 from typing import Callable
+from typing import Dict
 from typing import Union
 
 import pandas as pd
 
 from kolena._utils.dataframes.transformers import df_apply
-from kolena._utils.datatypes import _DATA_TYPE_MAP
+from kolena._utils.datatypes import _get_data_type
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
 
 
-def _serialize_dataobject(x: Any) -> Any:
-    if isinstance(x, list):
-        return [item._to_dict() if isinstance(item, DataObject) else item for item in x]
-
-    return x._to_dict() if isinstance(x, DataObject) else x
+class DataObjectJSONEncoder(json.JSONEncoder):
+    def default(self, o: Any) -> Dict:
+        if isinstance(o, DataObject):
+            return o._to_dict()
+        return super().default(o)
 
 
 def _deserialize_dataobject(x: Any) -> Any:
     if isinstance(x, list):
         return [_deserialize_dataobject(item) for item in x]
 
-    if isinstance(x, dict) and DATA_TYPE_FIELD in x:
-        data = {**x}
-        data_type = data.pop(DATA_TYPE_FIELD)
-        typed_dataobject = _DATA_TYPE_MAP.get(data_type, None)
-        if typed_dataobject:
-            return typed_dataobject._from_dict(data)
+    if isinstance(x, dict):
+        if data_type := x.pop(DATA_TYPE_FIELD, None):
+            if typed_dataobject := _get_data_type(data_type):
+                return typed_dataobject._from_dict(x)
+        else:
+            return {k: _deserialize_dataobject(v) for k, v in x.items()}
 
     return x
 
 
 def _serialize_dataobject_str(x: Any) -> Any:
-    y = _serialize_dataobject(x)
-    if isinstance(y, list) or isinstance(y, dict):
-        return json.dumps(y)
-
-    return y
+    if isinstance(x, (list, dict, DataObject)):
+        return json.dumps(x, cls=DataObjectJSONEncoder)
+    return x
 
 
 def _deserialize_dataobject_str(x: Any) -> Any:
@@ -63,7 +63,7 @@ def _deserialize_dataobject_str(x: Any) -> Any:
     if isinstance(x, str):
         try:
             y = json.loads(x)
-        except Exception:
+        except (json.JSONDecodeError, TypeError):
             ...
 
     return _deserialize_dataobject(y)
@@ -90,6 +90,32 @@ def dataframe_from_csv(*args: Any, **kwargs: Any) -> pd.DataFrame:
     :return: DataFrame.
     """
     df = pd.read_csv(*args, **kwargs)
+    df_post = _dataframe_object_serde(df, _deserialize_dataobject_str)
+
+    return df_post
+
+
+def dataframe_to_parquet(df: pd.DataFrame, *args: Any, **kwargs: Any) -> Union[bytes, None]:
+    """
+    Helper function to export pandas DataFrame containing annotation or asset to Parquet format.
+
+    :param args: positional arguments to `pandas.DataFrame.to_parquet`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.to_parquet`.
+    :return: None or str.
+    """
+    df_post = _dataframe_object_serde(df, partial(json.dumps, cls=DataObjectJSONEncoder))
+    return df_post.to_parquet(*args, **kwargs)
+
+
+def dataframe_from_parquet(*args: Any, **kwargs: Any) -> pd.DataFrame:
+    """
+    Helper function to load pandas DataFrame exported to Parquet with `dataframe_to_parquet`.
+
+    :param args: positional arguments to `pandas.DataFrame.read_parquet`.
+    :param kwargs: keyword arguments to `pandas.DataFrame.read_parquet`.
+    :return: DataFrame.
+    """
+    df = pd.read_parquet(*args, **kwargs)
     df_post = _dataframe_object_serde(df, _deserialize_dataobject_str)
 
     return df_post

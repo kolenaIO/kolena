@@ -13,12 +13,19 @@
 # limitations under the License.
 import random
 from typing import List
+from typing import Union
 
 import pandas as pd
 import pytest
 
+from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
+from kolena.annotation import LabeledPolygon
+from kolena.annotation import Polygon
+from kolena.annotation import ScoredBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.annotation import ScoredLabeledPolygon
+from kolena.annotation import ScoredPolygon
 from kolena.dataset import download_results
 from kolena.dataset import upload_dataset
 from tests.integration.helper import fake_locator
@@ -26,6 +33,80 @@ from tests.integration.helper import with_test_prefix
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 upload_object_detection_results = object_detection.upload_object_detection_results
+
+ObjectAnnotations = Union[List[BoundingBox], List[Polygon]]
+
+N_DATAPOINTS = 10
+
+gt_labeled_bbox_single = [
+    [
+        LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10], foo="bar"),
+        LabeledBoundingBox(label="cat", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20], foo="bar"),
+    ]
+    for i in range(N_DATAPOINTS)
+]
+inf_labeled_bbox_single = [
+    [
+        ScoredLabeledBoundingBox(
+            label="cat",
+            top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
+            bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
+            score=random.random(),
+        )
+        for box in boxes
+    ]
+    for boxes in gt_labeled_bbox_single
+]
+
+gt_unlabeled_bbox_single = [
+    [
+        BoundingBox(top_left=[i, i], bottom_right=[i + 10, i + 10], foo="bar"),
+        BoundingBox(top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20], foo="bar"),
+    ]
+    for i in range(N_DATAPOINTS)
+]
+inf_unlabeled_bbox_single = [
+    [
+        ScoredBoundingBox(
+            top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
+            bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
+            score=random.random(),
+        )
+        for box in boxes
+    ]
+    for boxes in gt_labeled_bbox_single
+]
+
+gt_labeled_polygon_single = [
+    [
+        LabeledPolygon(label="cat", points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)], foo="bar"),
+        LabeledPolygon(
+            label="cat",
+            points=[(i + 5, i + 5), (i + 20, i + 5), (i + 5, i + 20), (i + 20, i + 20)],
+            foo="bar",
+        ),
+    ]
+    for i in range(N_DATAPOINTS)
+]
+inf_labeled_polygon_single = [
+    [
+        ScoredLabeledPolygon(label="cat", points=[(x + 1, y + 1) for x, y in polygon.points], score=random.random())
+        for polygon in polygons
+    ]
+    for polygons in gt_labeled_polygon_single
+]
+
+gt_unlabeled_polygon_single = [
+    [
+        Polygon(points=[(i, i), (i + 10, i), (i, i + 10), (i + 10, i + 10)], foo="bar"),
+        Polygon(points=[(i + 5, i + 5), (i + 20, i + 5), (i + 5, i + 20), (i + 20, i + 20)], foo="bar"),
+    ]
+    for i in range(N_DATAPOINTS)
+]
+inf_unlabeled_polygon_single = [
+    [ScoredPolygon(points=[(x + 1, y + 1) for x, y in polygon.points], score=random.random()) for polygon in polygons]
+    for polygons in gt_unlabeled_polygon_single
+]
 
 
 def _assert_result_bbox_contains_fields(df_results: pd.DataFrame, columns: List[str], fields: List[str]):
@@ -40,51 +121,41 @@ def _assert_result_bbox_contains_fields(df_results: pd.DataFrame, columns: List[
 
 
 @pytest.mark.metrics
-def test__upload_results__single_class() -> None:
-    name = with_test_prefix(f"{__file__}::test__upload_results__single_class")
+@pytest.mark.parametrize(
+    "annotation,gts,infs",
+    [
+        ("labeled_bboxes", gt_labeled_bbox_single, inf_labeled_bbox_single),
+        ("unlabeled_bboxes", gt_unlabeled_bbox_single, inf_unlabeled_bbox_single),
+        ("labeled_polygons", gt_labeled_polygon_single, inf_labeled_polygon_single),
+        ("unlabeled_polygons", gt_unlabeled_polygon_single, inf_unlabeled_polygon_single),
+    ],
+)
+def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, infs: ObjectAnnotations) -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_results__{annotation}__single_class")
     datapoints = [
         dict(
             locator=fake_locator(i, name),
             width=i + 500,
             height=i + 400,
-            bboxes=[
-                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10], flag="T", foo="bar"),
-                LabeledBoundingBox(
-                    label="cat",
-                    top_left=[i + 5, i + 5],
-                    bottom_right=[i + 20, i + 20],
-                    flag="F",
-                    foo="bar2",
-                ),
-            ],
+            ground_truths=gt,
         )
-        for i in range(10)
+        for i, gt in enumerate(gts)
     ]
     upload_dataset(name, pd.DataFrame(datapoints))
 
     inferences = [
         dict(
             locator=dp["locator"],
-            raw_inferences=[
-                ScoredLabeledBoundingBox(
-                    label="cat",
-                    top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
-                    bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
-                    score=random.random(),
-                )
-                for box in dp["bboxes"]
-            ],
+            raw_inferences=inf,
             theme=random.choice(["animal", "sports", "technology"]),
         )
-        for dp in datapoints
+        for dp, inf in zip(datapoints, infs)
     ]
     eval_config = dict(iou_threshold=0.3, threshold_strategy=0.7, min_confidence_score=0.2)
     upload_object_detection_results(
         name,
         name,
         pd.DataFrame(inferences),
-        ground_truths_field="bboxes",
-        raw_inferences_field="raw_inferences",
         iou_threshold=0.3,
         threshold_strategy=0.7,
         min_confidence_score=0.2,
@@ -100,54 +171,99 @@ def test__upload_results__single_class() -> None:
         "FP",
         "FN",
         "raw_inferences",
-        "matched_inference",
-        "unmatched_inference",
-        "unmatched_ground_truth",
+        "thresholded",
         "theme",
     }
     assert expected_columns.issubset(set(df_results.columns))
-    assert "bboxes" not in df_results.columns
+    assert "ground_truths" not in df_results.columns
     assert len(df_results) == 10
-    _assert_result_bbox_contains_fields(
-        df_results,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
-        ["flag", "foo"],
-    )
+    _assert_result_bbox_contains_fields(df_results, ["TP", "FN"], ["foo"])
+
+    thresholded_object = df_results["thresholded"].iloc[0][0]
+    assert "label" not in thresholded_object
+    assert "threshold" in thresholded_object
+
+
+gt_labeled_bbox_multi = [
+    [
+        LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30], foo="bar"),
+        LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50], foo="bar"),
+        LabeledBoundingBox(label="horse", top_left=[i + 15, i + 15], bottom_right=[i + 60, i + 75], foo="bar"),
+    ]
+    for i in range(N_DATAPOINTS)
+]
+inf_score_bbox_multi = [min(0.4 + 0.1 * i, 0.9) for i in range(len(gt_labeled_bbox_multi))]
+inf_labeled_bbox_multi = [
+    [
+        ScoredLabeledBoundingBox(
+            label=box.label if i % 4 else "dog",
+            top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
+            bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
+            score=inf_score_bbox_multi[i] + j * 0.01,
+        )
+        for j, box in enumerate(boxes)
+    ]
+    for i, boxes in enumerate(gt_labeled_bbox_multi)
+]
+
+gt_labeled_polygon_multi = [
+    [
+        LabeledPolygon(label="cat", points=[(i, i), (i + 30, i), (i, i + 30), (i + 30, i + 30)], foo="bar"),
+        LabeledPolygon(
+            label="dog",
+            points=[(i + 5, i + 5), (i + 50, i + 5), (i + 5, i + 50), (i + 50, i + 50)],
+            foo="bar",
+        ),
+        LabeledPolygon(
+            label="horse",
+            points=[(i + 15, i + 15), (i + 60, i + 15), (i + 15, i + 75), (i + 60, i + 75)],
+            foo="bar",
+        ),
+    ]
+    for i in range(N_DATAPOINTS)
+]
+inf_score_polygon_multi = [min(0.2 + 0.15 * i, 0.9) for i in range(len(gt_labeled_polygon_multi))]
+inf_labeled_polygon_multi = [
+    [
+        ScoredLabeledPolygon(
+            label=polygon.label if i % 4 else "dog",
+            points=[(x, y) for x, y in polygon.points],
+            score=inf_score_polygon_multi[i] + 0.01 * j,
+        )
+        for j, polygon in enumerate(polygons)
+    ]
+    for i, polygons in enumerate(gt_labeled_polygon_multi)
+]
 
 
 @pytest.mark.metrics
-def test__upload_results__multiclass() -> None:
-    name = with_test_prefix(f"{__file__}::test__upload_results__multiclass")
+@pytest.mark.parametrize(
+    "annotation,gts,infs",
+    [
+        ("labeled_bboxes", gt_labeled_bbox_multi, inf_labeled_bbox_multi),
+        ("labeled_polygons", gt_labeled_polygon_multi, inf_labeled_polygon_multi),
+    ],
+)
+def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, infs: ObjectAnnotations) -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_results__{annotation}__multiclass")
     datapoints = [
         dict(
             locator=fake_locator(i, name),
             width=i + 500,
             height=i + 400,
-            bounding_boxes=[
-                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 30, i + 30], foo="bar1"),
-                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 50, i + 50], foo="bar2"),
-                LabeledBoundingBox(label="horse", top_left=[i + 15, i + 25], bottom_right=[i + 60, i + 75], foo="bar3"),
-            ],
+            ground_truths=gt,
         )
-        for i in range(10)
+        for i, gt in enumerate(gts)
     ]
     upload_dataset(name, pd.DataFrame(datapoints))
 
     inferences = [
         dict(
             locator=dp["locator"],
-            inferences=[
-                ScoredLabeledBoundingBox(
-                    label=box.label if i % 4 else "dog",
-                    top_left=[box.top_left[0] + 1, box.top_left[1] + 1],
-                    bottom_right=[box.bottom_right[0] + 3, box.bottom_right[1] + 3],
-                    score=0.7,
-                )
-                for box in dp["bounding_boxes"]
-            ],
+            raw_inferences=inf,
             theme=random.choice(["animal", "sports", "technology"]),
         )
-        for i, dp in enumerate(datapoints)
+        for dp, inf in zip(datapoints, infs)
     ]
     eval_config_one = dict(
         iou_threshold=0.3,
@@ -159,16 +275,12 @@ def test__upload_results__multiclass() -> None:
         name,
         name,
         pd.DataFrame(inferences),
-        ground_truths_field="bounding_boxes",
-        raw_inferences_field="inferences",
         **eval_config_one,
     )
     upload_object_detection_results(
         name,
         name,
         pd.DataFrame(inferences),
-        ground_truths_field="bounding_boxes",
-        raw_inferences_field="inferences",
         **eval_config_two,
     )
 
@@ -183,30 +295,19 @@ def test__upload_results__multiclass() -> None:
         "TP",
         "FP",
         "FN",
-        "inferences",
-        "matched_inference",
-        "unmatched_inference",
-        "unmatched_ground_truth",
+        "raw_inferences",
+        "thresholded",
         "theme",
         "Confused",
     }
     assert expected_columns.issubset(set(df_results_one.columns))
-    assert "bounding_boxes" not in df_results_one.columns
+    assert "ground_truths" not in df_results_one.columns
     assert len(df_results_one) == 10
     assert len(df_results_two) == 10
 
-    # check data format
-    confused = next(x for x in df_results_one["unmatched_ground_truth"] if len(x))
-    assert confused[0].predicted_label
-    assert confused[0].predicted_score
+    _assert_result_bbox_contains_fields(df_results_one, ["TP", "FN"], ["foo"])
+    _assert_result_bbox_contains_fields(df_results_two, ["TP", "FN"], ["foo"])
 
-    _assert_result_bbox_contains_fields(
-        df_results_one,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
-        ["foo"],
-    )
-    _assert_result_bbox_contains_fields(
-        df_results_two,
-        ["TP", "FN", "matched_inference", "unmatched_ground_truth"],
-        ["foo"],
-    )
+    thresholded_object = df_results_one["thresholded"].iloc[0][0]
+    assert "label" in thresholded_object
+    assert "threshold" in thresholded_object

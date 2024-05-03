@@ -2,10 +2,7 @@ site_name: Testing with Kolena
 site_description: Python client for Kolena's machine learning testing platform
 site_url: https://docs.kolena.com
 strict: true
-repo_name: kolenaIO/kolena
-repo_url: https://github.com/kolenaIO/kolena
 copyright: Copyright &copy; 2021-2024 Kolena
-edit_uri: edit/trunk/docs/
 
 nav:
   - Developer Guide:
@@ -21,6 +18,7 @@ nav:
         - Quality Standard: dataset/core-concepts/quality-standard.md
       - Advanced Usage:
         - Advanced Usage: dataset/advanced-usage/index.md
+        - Extracting Metadata from Text Fields: dataset/advanced-usage/extract-text-metadata.md
         - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
     - Workflows:
       - Workflows: workflow/index.md
@@ -82,13 +80,18 @@ nav:
     - metrics/accuracy.md
     - metrics/average-precision.md
     - metrics/averaging-methods.md
+    - metrics/coefficient-of-determination.md
+    - metrics/cohens-kappa.md
     - metrics/confusion-matrix.md
     - metrics/f1-score.md
     - metrics/fpr.md
+    - metrics/mean-absolute-error.md
+    - metrics/mean-squared-error.md
     - metrics/precision.md
     - metrics/pr-curve.md
     - metrics/recall.md
     - metrics/roc-curve.md
+    - metrics/root-mean-squared-error.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
     - Computer Vision:

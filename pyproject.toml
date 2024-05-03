@@ -32,20 +32,20 @@ numpy = [
     { version = ">=1.26", python = ">=3.12" },
 ]
 pandas = [
-    { version = ">=1.1,<1.6", python = ">=3.8,<3.11" },
-    { version = ">=1.5,<1.6", python = ">=3.11,<3.12" },
+    { version = ">=1.1,<3", python = ">=3.8,<3.11" },
+    { version = ">=1.5,<3", python = ">=3.11,<3.12" },
     { version = ">=2.1.1,<3", python = ">=3.12" },
 ]
-pandera = ">=0.9.0,<0.16"
+pandera = ">=0.9,<1"
 pydantic = ">=2,<3"
 dacite = ">=1.6,<2"
 requests = ">=2.20,<3"
 requests-toolbelt = "*"
 tqdm = ">=4,<5"
-Pillow = "^10.0.1"
-retrying = "^1.3.3"
+Pillow = ">=10.0.1,<11"
+retrying = ">=1.3.3,<2"
 Shapely = ">=1.8.5,<3"
-termcolor = "^1.1.0"
+termcolor = ">=1.1,<3"
 pyarrow = ">=8"
 click = ">=8"
 scikit-learn = { version = ">=1.2,<2", optional = true }
@@ -53,6 +53,7 @@ scipy = [  # transient dependency of scikit-learn, pin required to unbreak insta
     { version = ">=1,<1.11", python = ">=3.8,<3.9", optional = true },
     { version = ">=1.12,<2", python = ">=3.12", optional = true }
 ]
+lzstring = "^1.0.4"
 
 [tool.poetry.extras]
 metrics = ["scikit-learn", "scipy"]

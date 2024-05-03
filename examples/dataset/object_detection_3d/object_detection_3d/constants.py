@@ -11,15 +11,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-a_text = [
-    "A plane is taking off.",
-    "A man is playing a large flute.",
-    "A man is spreading shredded cheese on a pizza.",
-]
-
-b_text = [
-    "An air plane is taking off.",
-    "A man is playing a flute.",
-    "A man is spreading shredded cheese on an uncooked pizza.",
+BUCKET = "kolena-public-examples"
+DATASET = "kitti"
+TASK = "object-detection-3d"
+DEFAULT_DATASET_NAME = f"KITTI [{TASK}]"
+ID_FIELDS = ["image_id"]
+MODELS = [
+    "parta2_hv_secfpn_8xb2-cyclic-80e_kitti-3d-3class",
+    "pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class",
 ]

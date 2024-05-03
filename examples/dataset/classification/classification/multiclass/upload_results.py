@@ -22,7 +22,6 @@ from classification.multiclass.constants import BUCKET
 from classification.multiclass.constants import DATASET
 from classification.multiclass.constants import ID_FIELDS
 
-import kolena
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.workflow.annotation import ScoredClassificationLabel
@@ -49,7 +48,6 @@ def list_inferences(scores: List[float]) -> List[ScoredClassificationLabel]:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     dataset_df = download_dataset(args.dataset)
     df_results = pd.read_csv(
         f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",

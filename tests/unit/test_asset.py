@@ -42,7 +42,10 @@ def test__serialize__locator(asset_class: Type[Asset], asset_type: _AssetType) -
     asset = asset_class(locator=locator)  # type: ignore
     asset_dict = asset._to_dict()
 
-    assert asset_dict == {"locator": locator, DATA_TYPE_FIELD: f"{_AssetType._data_category()}/{asset_type.value}"}
+    assert asset_dict == {
+        "locator": locator,
+        DATA_TYPE_FIELD: f"{_AssetType._data_category().value}/{asset_type.value}",
+    }
     assert asset == asset_class._from_dict(asset_dict)
 
 
@@ -53,7 +56,7 @@ def test__serialize__video() -> None:
 
     assert asset_dict == {
         "locator": locator,
-        DATA_TYPE_FIELD: f"{_AssetType.VIDEO._data_category()}/{_AssetType.VIDEO.value}",
+        DATA_TYPE_FIELD: f"{_AssetType.VIDEO._data_category().value}/{_AssetType.VIDEO.value}",
         "thumbnail": None,
         "start": 0,
         "end": 1,

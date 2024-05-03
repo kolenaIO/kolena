@@ -19,7 +19,6 @@ import pandas as pd
 from keypoint_detection.constants import BUCKET
 from keypoint_detection.constants import DATASET
 
-import kolena
 from kolena.annotation import Keypoints
 from kolena.dataset import upload_dataset
 
@@ -29,7 +28,6 @@ def run(args: Namespace) -> None:
     df["face"] = df["points"].apply(lambda points: Keypoints(points=json.loads(points)))
     df["condition"] = df["locator"].apply(lambda locator: "indoor" if "indoor" in locator else "outdoor")
 
-    kolena.initialize(verbose=True)
     upload_dataset(args.dataset, df[["locator", "face", "normalization_factor", "condition"]])
 
 

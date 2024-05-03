@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import math
 from unittest.mock import Mock
 from unittest.mock import patch
 
@@ -31,12 +32,18 @@ def test__check_multiclass() -> None:
                 [
                     [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
                     [LabeledBoundingBox(label="dog", top_left=[10, 10], bottom_right=[15, 15])],
+                    [],
+                    math.nan,
+                    None,
                 ],
             ),
             pd.Series(
                 [
                     [LabeledBoundingBox(label="cat", top_left=[3, 3], bottom_right=[9, 9])],
                     [LabeledBoundingBox(label="dog", top_left=[11, 10], bottom_right=[15, 15])],
+                    [],
+                    math.nan,
+                    None,
                 ],
             ),
         )
@@ -49,12 +56,18 @@ def test__check_multiclass() -> None:
                 [
                     [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
                     [LabeledBoundingBox(label="dog", top_left=[10, 10], bottom_right=[15, 15])],
+                    [],
+                    math.nan,
+                    None,
                 ],
             ),
             pd.Series(
                 [
                     [LabeledBoundingBox(label="dog", top_left=[3, 3], bottom_right=[9, 9])],
                     [LabeledBoundingBox(label="dog", top_left=[11, 10], bottom_right=[15, 15])],
+                    [],
+                    math.nan,
+                    None,
                 ],
             ),
         )
@@ -86,6 +99,7 @@ def test__upload_object_detection_results_configurations(mocked_upload_results: 
     patched_metrics.assert_called_once()
     _, kwargs = patched_metrics.call_args
     assert kwargs == dict(
+        batch_size=10000,
         ground_truth="bboxes",
         inference="predictions",
         iou_threshold=0.152,

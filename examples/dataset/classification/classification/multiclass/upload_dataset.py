@@ -19,7 +19,6 @@ from classification.multiclass.constants import BUCKET
 from classification.multiclass.constants import DATASET
 from classification.multiclass.constants import ID_FIELDS
 
-import kolena
 from kolena.annotation import ClassificationLabel
 from kolena.dataset import upload_dataset
 
@@ -28,7 +27,6 @@ def run(args: Namespace) -> None:
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv", storage_options={"anon": True})
     df["ground_truth"] = df["ground_truth"].apply(lambda label: ClassificationLabel(label))
 
-    kolena.initialize(verbose=True)
     upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
 
 

@@ -34,6 +34,7 @@ from typing import Union
 import numpy as np
 from pydantic.dataclasses import dataclass
 
+from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
@@ -53,8 +54,8 @@ class _PlotType(DataType):
     BAR = "BAR"
 
     @staticmethod
-    def _data_category() -> str:
-        return "PLOT"
+    def _data_category() -> DataCategory:
+        return DataCategory.PLOT
 
 
 @dataclass(frozen=True, config=ValidatorConfig)

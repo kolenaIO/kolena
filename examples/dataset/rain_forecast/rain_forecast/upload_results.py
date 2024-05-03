@@ -23,7 +23,6 @@ from rain_forecast.constants import EVAL_CONFIG
 from rain_forecast.constants import MODEL_NAME
 from tqdm import tqdm
 
-import kolena
 from kolena.dataset import upload_results
 
 
@@ -70,8 +69,6 @@ def run(args: Namespace) -> None:
         )
 
     df_results = pd.DataFrame.from_records(results)
-
-    kolena.initialize(verbose=True)
     upload_results(args.dataset, MODEL_NAME[args.model], [(EVAL_CONFIG, df_results)])
 
 

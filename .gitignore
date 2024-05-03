@@ -5,6 +5,8 @@
 **/coverage.xml
 **/coverage.lcov
 
+.envrc
+.direnv/
 .idea/
 .vscode/
 *.code-workspace

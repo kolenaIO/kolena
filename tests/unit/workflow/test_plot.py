@@ -97,7 +97,7 @@ def test__curve_plot__serialize() -> None:
         "x_label": "x",
         "y_label": "y",
         "curves": [{"label": "a", "x": [1, 2, 3], "y": [2, 3, 4], "extra": None}],
-        "data_type": f"{_PlotType._data_category()}/{_PlotType.CURVE.value}",
+        "data_type": f"{_PlotType._data_category().value}/{_PlotType.CURVE.value}",
         "x_config": None,
         "y_config": {"type": "log"},
     }
@@ -149,7 +149,7 @@ def test__confusion_matrix__serialize() -> None:
         y_label="y",
         labels=["a", "b"],
         matrix=[[90, 10], [20, 80]],
-        data_type=f"{_PlotType._data_category()}/{_PlotType.CONFUSION_MATRIX.value}",
+        data_type=f"{_PlotType._data_category().value}/{_PlotType.CONFUSION_MATRIX.value}",
     )
 
     # TODO: list of lists fails to deserialize, but not critical for plots (plots are never pulled down)
@@ -217,7 +217,7 @@ def test__histogram__serialize() -> None:
         "labels": ["a", "b"],
         "x_config": None,
         "y_config": {"type": "log"},
-        "data_type": f"{_PlotType._data_category()}/{_PlotType.HISTOGRAM.value}",
+        "data_type": f"{_PlotType._data_category().value}/{_PlotType.HISTOGRAM.value}",
     }
 
 

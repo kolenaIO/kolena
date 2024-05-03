@@ -13,19 +13,18 @@
 # limitations under the License.
 import json
 import random
+from typing import Any
+from typing import List
 
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from .data import a_text
-from .data import b_text
 from kolena._api.v2.dataset import EntityData
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_RESULT
 from kolena.dataset.dataset import _add_datatype
-from kolena.dataset.dataset import _flatten_composite
 from kolena.dataset.dataset import _infer_datatype
 from kolena.dataset.dataset import _infer_datatype_value
 from kolena.dataset.dataset import _infer_id_fields
@@ -52,101 +51,33 @@ from kolena.workflow.annotation import ScoredClassificationLabel
         ("test.pcd", DatapointType.POINT_CLOUD),
         ("gcp://summary.pdf", DatapointType.DOCUMENT),
         ("//my.mp3", DatapointType.AUDIO),
+        (None, DatapointType.TABULAR),
+        (123, DatapointType.TABULAR),
     ],
 )
-def test__infer_datatype_value(uri: str, expected: str) -> None:
+def test__infer_datatype_value(uri: Any, expected: str) -> None:
     assert _infer_datatype_value(uri) == expected
 
 
 def test__add_datatype() -> None:
     df = pd.DataFrame(
         dict(
-            locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+            locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd", None, 123],
         ),
     )
     _add_datatype(df)
     assert df[DATA_TYPE_FIELD].equals(
-        pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
+        pd.Series(
+            [
+                DatapointType.DOCUMENT,
+                DatapointType.IMAGE,
+                DatapointType.VIDEO,
+                DatapointType.POINT_CLOUD,
+                DatapointType.TABULAR,
+                DatapointType.TABULAR,
+            ],
+        ),
     )
-
-
-def test__add_datatype__composite() -> None:
-    composite_dataset = pd.DataFrame(
-        {
-            "a.text": a_text,
-        },
-    )
-    _add_datatype(composite_dataset)
-
-    assert "a.text" not in composite_dataset
-    assert (composite_dataset[DATA_TYPE_FIELD] == DatapointType.COMPOSITE).all()
-    assert (composite_dataset["a"] == [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in a_text]).all()
-
-    similarity = [5.0, 3.799999952316284, 3.799999952316284]
-    composite_dataset = pd.DataFrame(
-        {
-            "a.text": a_text,
-            "b.text": b_text,
-            "similarity": similarity,
-        },
-    )
-    _add_datatype(composite_dataset)
-
-    assert (composite_dataset[DATA_TYPE_FIELD] == DatapointType.COMPOSITE).all()
-    assert (composite_dataset["similarity"] == similarity).all()
-    assert (composite_dataset["a"] == [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in a_text]).all()
-    assert (composite_dataset["b"] == [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT} for text in b_text]).all()
-
-
-def test__flatten_composite():
-    composite_dataset = pd.DataFrame(
-        {
-            "a": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT.value} for text in a_text],
-            "b": [{"text": text, DATA_TYPE_FIELD: DatapointType.TEXT.value} for text in b_text],
-            "c": [dict(text=a + b) for a, b in zip(a_text, b_text)],  # Should not flatten because no DATA_TYPE_FIELD
-            DATA_TYPE_FIELD: DatapointType.COMPOSITE,
-        },
-    )
-    composite_dataset = _flatten_composite(composite_dataset)
-
-    expected = pd.DataFrame(
-        {
-            "a.text": a_text,
-            f"a.{DATA_TYPE_FIELD}": DatapointType.TEXT,
-            "b.text": b_text,
-            f"b.{DATA_TYPE_FIELD}": DatapointType.TEXT,
-            "c": [dict(text=a + b) for a, b in zip(a_text, b_text)],
-            DATA_TYPE_FIELD: DatapointType.COMPOSITE,
-        },
-    )
-    assert (composite_dataset.sort_index(axis=1) == expected.sort_index(axis=1)).all().all()
-
-
-def test__add_datatype__invalid():
-    composite_dataset = pd.DataFrame(
-        {
-            "a": [i for i in range(5)],
-            "a.locator": [f"{i}.png" for i in range(5)],
-        },
-    )
-    with pytest.raises(InputValidationError):
-        _add_datatype(composite_dataset)
-
-    composite_dataset = pd.DataFrame(
-        {
-            "too.many.dots": [i for i in range(5)],
-        },
-    )
-    with pytest.raises(InputValidationError):
-        _add_datatype(composite_dataset)
-
-    composite_dataset = pd.DataFrame(
-        {
-            ".empty_prefix": [i for i in range(5)],
-        },
-    )
-    with pytest.raises(InputValidationError):
-        _add_datatype(composite_dataset)
 
 
 def test__infer_datatype() -> None:
@@ -189,64 +120,6 @@ def test__infer_datatype() -> None:
         )
         == DatapointType.TABULAR
     )
-
-
-def test__datapoint_dataframe__serde_composite() -> None:
-    datapoints = [
-        {
-            "category": "outdoor" if i < 5 else "indoor",
-            "is_same": True if i % 3 else False,
-            "a.locator": f"https://test-iamge-{i}.png",
-            "a.width": 500 + i,
-            "a.height": 400 + i,
-            "a.bboxes": [
-                BoundingBox(top_left=(i, i), bottom_right=(i + 50, i + 50)) for i in range(random.randint(2, 6))
-            ],
-            "a.label": ClassificationLabel(label="dog"),
-            "b.locator": f"https://test-iamge-{i}.png",
-            "b.width": 500 + i,
-            "b.height": 400 + i,
-            "b.bboxes": [
-                BoundingBox(top_left=(i, i), bottom_right=(i + 50, i + 50)) for i in range(random.randint(2, 6))
-            ],
-            "b.label": ClassificationLabel(label="cat"),
-        }
-        for i in range(10)
-    ]
-    df = pd.DataFrame(datapoints)
-    df_expected = pd.DataFrame(
-        dict(
-            datapoint=[
-                dict(
-                    category=dp["category"],
-                    is_same=dp["is_same"],
-                    a={
-                        DATA_TYPE_FIELD: DatapointType.IMAGE,
-                        "label": dp["a.label"]._to_dict(),
-                        "width": dp["a.width"],
-                        "height": dp["a.height"],
-                        "locator": dp["a.locator"],
-                        "bboxes": [bbox._to_dict() for bbox in dp["a.bboxes"]],
-                    },
-                    b={
-                        DATA_TYPE_FIELD: DatapointType.IMAGE,
-                        "label": dp["b.label"]._to_dict(),
-                        "width": dp["b.width"],
-                        "height": dp["b.height"],
-                        "locator": dp["b.locator"],
-                        "bboxes": [bbox._to_dict() for bbox in dp["b.bboxes"]],
-                    },
-                    data_type=DatapointType.COMPOSITE,
-                )
-                for dp in datapoints
-            ],
-        ),
-    )
-    df_serialized = _to_serialized_dataframe(df, column=COL_DATAPOINT)
-    df_deserialized = _to_deserialized_dataframe(df_serialized, column=COL_DATAPOINT)
-
-    assert df_serialized[COL_DATAPOINT].apply(json.loads).equals(df_expected[COL_DATAPOINT])
-    assert_frame_equal(df_deserialized.sort_index(axis=1), df.sort_index(axis=1), check_dtype=False)
 
 
 def test__datapoint_dataframe__serde_locator() -> None:
@@ -371,20 +244,6 @@ def test__dataframe__serde_none() -> None:
     assert_frame_equal(df_deserialized, df_expected)
 
 
-def test__dataframe__serde_none__composite() -> None:
-    column_name = COL_RESULT
-    data = [
-        ['{"a.city": "London"}'],
-        ['{"a.city": "Tokyo"}'],
-        [None],
-    ]
-    df_serialized = pd.DataFrame(data, columns=[column_name])
-
-    df_expected = pd.DataFrame([["London"], ["Tokyo"], [None]], columns=["a.city"])
-    df_deserialized = _to_deserialized_dataframe(df_serialized, column=column_name)
-    assert_frame_equal(df_deserialized, df_expected)
-
-
 def test__dataframe__data_type_field_not_exist() -> None:
     column_name = COL_RESULT
     df_expected = pd.DataFrame([["a", "b", "c"], ["d", "e", "f"]])
@@ -394,49 +253,79 @@ def test__dataframe__data_type_field_not_exist() -> None:
         assert DATA_TYPE_FIELD not in row[column_name]
 
 
-def test__infer_id_fields() -> None:
-    assert _infer_id_fields(
-        pd.DataFrame(
-            dict(
-                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
-            ),
-        ),
-    ) == ["locator"]
-    assert _infer_id_fields(
-        pd.DataFrame(
-            dict(
-                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
-                text=["a", "b", "c", "d"],
-            ),
-        ),
-    ) == ["locator"]
-    assert _infer_id_fields(
-        pd.DataFrame(
-            dict(
-                text=["a", "b", "c", "d"],
-            ),
-        ),
-    ) == ["text"]
-    assert _infer_id_fields(pd.DataFrame({"a.text": ["a", "b"], "b.text": ["c", "d"]})) == [
-        "a.text",
-        "b.text",
-    ]
-
-    try:
-        assert _infer_id_fields(
+@pytest.mark.parametrize(
+    "input_df, expected",
+    [
+        (
             pd.DataFrame(
                 dict(
-                    text1=["a", "b", "c", "d"],
+                    id=[1, 2, 3, 4],
+                    image_id=[1, 2, 3, 4],
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
                 ),
             ),
-        )
-    except Exception as e:
-        assert str(e) == "Failed to infer the id_fields, please provide id_fields explicitly"
+            ["id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    image_id=[1, 2, 3, 4],
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                ),
+            ),
+            ["image_id"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    image_id=[1, 2, 3, 4],
+                    other_id=[9, 8, 7, 6],
+                    id_locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                    other=[3, 1, 4, 1],
+                ),
+            ),
+            ["image_id", "other_id", "id_locator"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                    text=["a", "b", "c", "d"],
+                ),
+            ),
+            ["locator"],
+        ),
+        (
+            pd.DataFrame(
+                dict(
+                    text=["a", "b", "c", "d"],
+                ),
+            ),
+            ["text"],
+        ),
+    ],
+)
+def test__infer_id_fields(input_df: pd.DataFrame, expected: List[str]) -> None:
+    assert _infer_id_fields(input_df) == expected
+
+
+@pytest.mark.parametrize(
+    "input_df",
+    [
+        pd.DataFrame(dict(text1=["a", "b", "c", "d"])),
+    ],
+)
+def test__infer_id_fields__error(input_df: pd.DataFrame) -> None:
+    with pytest.raises(Exception) as e:
+        _infer_id_fields(input_df)
+
+    error_msg = "Failed to infer the id_fields, please provide id_fields explicitly"
+    assert str(e.value) == error_msg
 
 
 def test__resolve_id_fields() -> None:
-    df = pd.DataFrame(dict(id=["a", "b", "c"], newid=["d", "e", "f"]))
-    dataset = EntityData(id=1, name="foo", description="", id_fields=["id"])
+    df = pd.DataFrame(dict(user_dp=["a", "b", "c"], new_user_dp=["d", "e", "f"]))
+    dataset = EntityData(id=1, name="foo", description="", id_fields=["user_dp"])
     inferrable_df = pd.DataFrame(dict(locator=["x", "y", "z"]))
 
     # new dataset without id_fields
@@ -444,7 +333,7 @@ def test__resolve_id_fields() -> None:
         _resolve_id_fields(df, None, None)
 
     # existing dataset without id_fields, different inferred id_fields, should use existing id_fields
-    assert _resolve_id_fields(inferrable_df, None, dataset) == ["id"]
+    assert _resolve_id_fields(inferrable_df, None, dataset) == ["user_dp"]
 
     # existing dataset without id_fields, same inferred id_fields
     assert _resolve_id_fields(
@@ -454,13 +343,13 @@ def test__resolve_id_fields() -> None:
     ) == ["locator"]
 
     # new dataset with explicit id_fields should resolve to explicit id_fields
-    assert _resolve_id_fields(df, ["id"], None) == ["id"]
+    assert _resolve_id_fields(df, ["user_dp"], None) == ["user_dp"]
 
     # existing dataset id_fields are the same as explicit id_fields
-    assert _resolve_id_fields(df, ["id"], dataset) == ["id"]
+    assert _resolve_id_fields(df, ["user_dp"], dataset) == ["user_dp"]
 
     # explicit id_fields override existing dataset id_fields
-    assert _resolve_id_fields(df, ["newid"], dataset) == ["newid"]
+    assert _resolve_id_fields(df, ["new_user_dp"], dataset) == ["new_user_dp"]
 
     # new dataset with implicit datatype support, e.g. locator, without id_fields
     assert _resolve_id_fields(inferrable_df, None, None) == ["locator"]

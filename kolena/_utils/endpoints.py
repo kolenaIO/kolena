@@ -11,10 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
 from typing import Any
 from typing import Dict
 from urllib.parse import urlencode
 from urllib.parse import urlparse
+
+from lzstring import LZString
 
 from kolena._utils.state import _ClientState
 from kolena._utils.state import get_client_state
@@ -97,3 +100,17 @@ def get_model_url(model_id: int) -> str:
 def _get_model_url(client_state: _ClientState, model_id: int) -> str:
     platform_url = _get_platform_url(client_state)
     return f"{platform_url}/models?{urlencode(dict(modelIds=model_id))}"
+
+
+def serialize_models_url(model_id: int, eval_config_id: int) -> str:
+    # Compress and encode to a URL-safe base64 string using LZString
+    return LZString.compressToBase64(
+        json.dumps(
+            {
+                "id": model_id,
+                "configuration": {
+                    "id": eval_config_id,
+                },
+            },
+        ),
+    )

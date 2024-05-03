@@ -37,30 +37,36 @@ from kolena.errors import MissingTokenError
 def initialize(
     *args: Any,
     api_token: Optional[str] = None,
-    verbose: bool = False,
+    verbose: bool = True,
     proxies: Optional[Dict[str, str]] = None,
     **kwargs: Any,
 ) -> None:
     """
     Initialize a client session.
 
+    !!! tip
+        It is often not necessary to call `kolena.initialize()` directly. When a function requiring initialization is
+        called, this method will be called to initialize a session with any token found in your environment.
+
     A session has a global scope and remains active until interpreter shutdown.
 
     Retrieve an API token from the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page and
     make it available through one of the following options before initializing:
 
-
     1. Directly through the `api_token` keyword argument
     ```python
     import kolena
 
-    kolena.initialize(api_token=your_token, verbose=True)
+    kolena.initialize(api_token=your_token)
     ```
-    2. Populate the `KOLENA_TOKEN` environment variable
+
+    2. Populate the `KOLENA_TOKEN` environment variable and call `kolena.initialize()`:
     ```bash
     export KOLENA_TOKEN="********"
     ```
-    3. Store in [`.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+
+    3. Store in your [`.netrc` file](https://www.gnu.org/software/inetutils/manual/html_node/The-_002enetrc-file.html)
+      before calling `kolena.initialize()`:
     ```cfg title="~/.netrc"
     machine api.kolena.io password ********
     ```
@@ -86,18 +92,19 @@ def initialize(
         As of version 0.29.0: the `entity` argument is no longer needed; the signature `initialize(entity, api_token)`
         has been deprecated and replaced by `initialize(api_token)`.
 
-    :param api_token: Optionally provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
-        or `.netrc` file. This token is a secret and should be treated with caution.
-    :param verbose: Optionally configure client to run in verbose mode, providing more information about execution. All
-        logging events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
+    :param api_token: Directly provide an API token, otherwise attempts to find a token in `$KOLENA_TOKEN`
+        or your `.netrc` file. This token is a secret and should be treated with caution.
+    :param verbose: Run the client in verbose mode, providing more information about execution. All logging
+        events are emitted as Python standard library `logging` events from the `"kolena"` logger as well as
         to stdout/stderr directly.
-    :param proxies: Optionally configure client to run with `http` or `https` proxies. The `proxies` parameter
+    :param proxies: Run the client with `http` or `https` proxies. The `proxies` parameter
         is passed through to the `requests` package and can be
         [configured accordingly](https://requests.readthedocs.io/en/latest/user/advanced/#proxies).
     :raises InvalidTokenError: The provided `api_token` is not valid.
     :raises InputValidationError: The provided combination or number of args is not valid.
     :raises MissingTokenError: An API token could not be found.
     """
+    log.info("Attempting to initialize client...")
     used_deprecated_signature = "entity" in kwargs
 
     if len(args) > 2:

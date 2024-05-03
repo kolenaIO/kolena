@@ -28,10 +28,8 @@ import kolena
 import kolena._api.v1.token as API
 from kolena._utils import krequests
 from kolena._utils.serde import from_dict
-from kolena.errors import InvalidClientStateError
 from kolena.errors import InvalidTokenError
 from kolena.errors import UnauthenticatedError
-from kolena.errors import UninitializedError
 
 API_V1 = "v1"
 API_V2 = "v2"
@@ -99,14 +97,6 @@ class _ClientState:
         self.proxies = proxies or self.proxies
         self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
-    def assert_initialized(self) -> None:
-        if self.base_url is None:
-            raise InvalidClientStateError("missing base_url")
-        if self.jwt_token is None:
-            raise UninitializedError("client has not been initialized via kolena.initialize(...)")
-        if self.api_token is None:
-            raise InvalidClientStateError("missing client api_token")
-
     def reset(self) -> None:
         # note that base_url remains set
         self.api_token = None
@@ -129,21 +119,17 @@ def get_client_state() -> _ClientState:
     return CLIENT_STATE.get(_client_state)
 
 
-def is_client_initialized() -> bool:
-    try:
-        get_client_state().assert_initialized()
-    except (InvalidClientStateError, UninitializedError):
-        return False
-    return True
+def is_client_uninitialized() -> bool:
+    return get_client_state().jwt_token is None
 
 
 def kolena_initialized(func: Callable) -> Callable:
-    """Raises InvalidKolenaStateError if not initialized"""
+    """Attempts to initialize client if not initialized"""
 
     @functools.wraps(func)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
-        client_state = get_client_state()
-        client_state.assert_initialized()
+        if is_client_uninitialized():
+            kolena.initialize()
         return func(*args, **kwargs)
 
     return wrapper

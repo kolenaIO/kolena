@@ -122,7 +122,7 @@ Assume we have the same following candidate and reference texts:
     texts. It is always important to consider multiple n-grams when using ROUGE-N, as one value of N does not give a
     holistic view of candidate text quality.
 
-## Limitations and Advantages
+## Limitations and Biases
 
 ROUGE-N, like any other n-gram based metric, suffers from the following limitations:
 

@@ -11,11 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 import random
 import string
 from argparse import Namespace
-from collections.abc import Iterator
 
 import pytest
 from classification.binary.upload_dataset import run as upload_binary_dataset
@@ -23,17 +21,9 @@ from classification.binary.upload_results import run as upload_binary_results
 from classification.multiclass.upload_dataset import run as upload_multiclass_dataset
 from classification.multiclass.upload_results import run as upload_multiclass_results
 
-from kolena._utils.state import kolena_session
-
 BUCKET = "kolena-public-examples"
 BINARY_DATASET = "dogs-vs-cats"
 MULTICLASS_DATASET = "cifar10"
-
-
-@pytest.fixture(scope="session", autouse=True)
-def with_init() -> Iterator[None]:
-    with kolena_session(api_token=os.environ["KOLENA_TOKEN"]):
-        yield
 
 
 @pytest.fixture(scope="module")

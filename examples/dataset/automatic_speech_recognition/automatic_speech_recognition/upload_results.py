@@ -28,7 +28,6 @@ from jiwer import cer
 from jiwer import process_words
 from tqdm import tqdm
 
-import kolena
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
@@ -60,7 +59,6 @@ def compute_metrics(ground_truth: str, inference: str) -> Dict[str, Any]:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df_dataset = download_dataset(args.dataset)
     df = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv", storage_options={"anon": True})
     df["transcript"] = df["transcript"].str.lower().apply(preprocess_transcription)

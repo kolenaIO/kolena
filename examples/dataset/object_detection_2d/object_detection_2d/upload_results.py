@@ -19,8 +19,8 @@ import pandas as pd
 from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import MODELS
+from object_detection_2d.constants import TASK
 
-import kolena
 from kolena._experimental.object_detection import upload_object_detection_results
 from kolena.annotation import ScoredLabeledBoundingBox
 
@@ -37,10 +37,8 @@ def load_data(df_pred_csv: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     pred_df_csv = pd.read_csv(
-        f"s3://{BUCKET}/{DATASET}/results/raw/{args.model}.csv",
+        f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{args.model}.csv",
         storage_options={"anon": True},
     )
     pred_df = load_data(pred_df_csv)

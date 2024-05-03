@@ -22,8 +22,8 @@ import pandas as pd
 from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import ID_FIELDS
+from object_detection_2d.constants import TASK
 
-import kolena
 from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import upload_dataset
 
@@ -34,7 +34,11 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
 
     for record in df_metadata_csv.itertuples():
         coords = (float(record.min_x), float(record.min_y)), (float(record.max_x), float(record.max_y))
-        bounding_box = LabeledBoundingBox(*coords, record.label)
+        bounding_box = LabeledBoundingBox(
+            *coords,
+            record.label,
+            supercategory=record.supercategory,  # type: ignore[call-arg]
+        )
         image_to_boxes[record.locator].append(bounding_box)
         metadata = {
             "locator": str(record.locator),
@@ -51,9 +55,8 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     df_metadata_csv = pd.read_csv(
-        f"s3://{BUCKET}/{DATASET}/raw/{DATASET}.csv",
+        f"s3://{BUCKET}/{DATASET}/{TASK}/raw/{DATASET}.csv",
         storage_options={"anon": True},
     )
     df_metadata = load_data(df_metadata_csv)

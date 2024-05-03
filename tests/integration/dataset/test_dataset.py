@@ -138,44 +138,6 @@ def test__upload_dataset_chunks() -> None:
     assert_frame_equal(loaded_datapoints, expected)
 
 
-def test__upload_dataset__composite() -> None:
-    name = with_test_prefix(f"{__file__}::test__upload_dataset__composite")
-    datapoints = [
-        {
-            "a.text": "Something " * i,
-            "b.text": "Something else " * i,
-            "a.word_count": 1 * i,
-            "b.word_count": 2 * i,
-            "a.char_length": 10 * i,
-            "b.char_length": 15 * i,
-            "c": dict(text="nested " * i, word_count=3 * i, char_length=7 * i),
-            "total_word_count": 3 * i,
-            "total_char_length": 25 * i,
-            "word_count_diff": i,
-            "char_length_diff": 5 * i,
-        }
-        for i in range(1, 20)
-    ]
-    columns = datapoints[0].keys()
-    id_fields = ["a.text"]
-
-    df = pd.DataFrame(datapoints[:10], columns=columns)
-    upload_dataset(name, df, id_fields=id_fields)
-
-    loaded_datapoints = download_dataset(name)
-    loaded_datapoints = loaded_datapoints.sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
-    assert_frame_equal(df, loaded_datapoints)
-
-    # update dataset
-    df = pd.DataFrame(datapoints[:5] + datapoints[7:15], columns=columns)
-    upload_dataset(name, df, id_fields=id_fields)
-
-    loaded_datapoints = (
-        download_dataset(name).sort_values("total_word_count", ignore_index=True).reindex(columns=columns)
-    )
-    assert_frame_equal(df, loaded_datapoints)
-
-
 def test__download_dataset__not_exist() -> None:
     name = with_test_prefix(f"{__file__}::test__download_dataset__not_exist")
     with pytest.raises(NotFoundError):

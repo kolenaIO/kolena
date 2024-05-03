@@ -121,7 +121,7 @@ $$
 
 The consistency score for these responses is 0.5.
 
-## Limitations and Advantages
+## Limitations and Biases
 
 The consistency score is a powerful black-box evaluation metric that has the advantage of evaluating factual consistency
 without requiring labeled data. However, it can be limiting when evaluating incorrect responses that are consistently

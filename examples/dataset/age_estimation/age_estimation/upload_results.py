@@ -19,9 +19,9 @@ from typing import Union
 import pandas as pd
 from age_estimation.constants import BUCKET
 from age_estimation.constants import DATASET
+from age_estimation.constants import TASK
 from tqdm import tqdm
 
-import kolena
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
@@ -39,11 +39,10 @@ def compute_metrics(gt_age: float, inf_age: float) -> Dict[str, Union[bool, floa
 def run(args: Namespace) -> None:
     model = args.model
 
-    kolena.initialize(verbose=True)
     dataset_df = download_dataset(args.dataset)
     gt_age_by_locator = {record["locator"]: record["age"] for record in dataset_df.to_dict(orient="records")}
 
-    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/results/raw/{model}.csv")
+    df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{model}.csv")
 
     results = []
     for record in tqdm(df_results.itertuples(), total=len(df_results)):
@@ -65,7 +64,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=DATASET,
+        default=f"{DATASET} [{TASK}]",
         help="Optionally specify a custom dataset name to test.",
     )
     run(ap.parse_args())

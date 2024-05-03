@@ -45,10 +45,8 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.dataframes.transformers import json_normalize
-from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
-from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.endpoints import get_dataset_url
 from kolena._utils.instrumentation import with_event
 from kolena._utils.serde import from_dict
@@ -60,15 +58,15 @@ from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
 from kolena.io import _dataframe_object_serde
+from kolena.io import _deserialize_dataobject
 
+_FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
 _FIELD_TEXT = "text"
-_SEP = "."
 
 
 class DatapointType(str, Enum):
     AUDIO = "DATAPOINT/AUDIO"
-    COMPOSITE = "DATAPOINT/COMPOSITE"
     DOCUMENT = "DATAPOINT/DOCUMENT"
     IMAGE = "DATAPOINT/IMAGE"
     POINT_CLOUD = "DATAPOINT/POINT_CLOUD"
@@ -90,13 +88,8 @@ _DATAPOINT_TYPE_MAP = {
 }
 
 
-def _dataobject_type(obj: TypedDataObject) -> str:
-    obj_type = obj._data_type()
-    return f"{obj_type._data_category()}/{obj_type.value}"
-
-
 def _get_datapoint_type(mimetype_str: str) -> Optional[str]:
-    main_type, sub_type = mimetype_str.split("/")
+    main_type, _ = mimetype_str.split("/")
     return _DATAPOINT_TYPE_MAP.get(mimetype_str, None) or _DATAPOINT_TYPE_MAP.get(main_type, None)
 
 
@@ -105,8 +98,11 @@ def _normalize_url(x: str) -> str:
     return url._replace(query="", fragment="").geturl()
 
 
-def _infer_datatype_value(x: str) -> str:
-    url = _normalize_url(x)
+def _infer_datatype_value(x: Any) -> str:
+    if not isinstance(x, str):
+        return DatapointType.TABULAR.value
+
+    url = _normalize_url(x or "")
     mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)
@@ -120,36 +116,7 @@ def _infer_datatype_value(x: str) -> str:
 
 def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
-    prefixes = {
-        column.rsplit(sep=_SEP, maxsplit=1)[0]
-        for column in df.columns.values
-        if isinstance(column, str) and _SEP in column
-    }
-    if prefixes:
-        df[DATA_TYPE_FIELD] = DatapointType.COMPOSITE.value
-        for prefix in prefixes:
-            if not prefix.strip():
-                raise InputValidationError(
-                    "Empty prefix encountered when parsing composite dataset. "
-                    f"Columns must lead with at least one non-whitespace character prior to delimeter '{_SEP}'.",
-                )
-            if prefix in df.columns:
-                raise InputValidationError(
-                    f"Conflicting column '{prefix}' encountered when formatting composite dataset.",
-                )
-            if _SEP in prefix:
-                raise InputValidationError(
-                    f"More than one delimeter '{_SEP}' in prefix: '{prefix}'.",
-                )
-
-            composite_columns = df.filter(regex=rf"^{prefix}", axis=1).columns.to_list()
-            composite = df.loc[:, composite_columns].rename(columns=lambda col: col.split(_SEP)[-1])
-            composite[DATA_TYPE_FIELD] = _infer_datatype(composite)
-
-            df[prefix] = composite.to_dict("records")
-            df.drop(columns=composite_columns, inplace=True)
-    else:
-        df[DATA_TYPE_FIELD] = _infer_datatype(df)
+    df[DATA_TYPE_FIELD] = _infer_datatype(df)
 
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
@@ -162,17 +129,14 @@ def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
 
 
 def _infer_id_fields(df: pd.DataFrame) -> List[str]:
-    def get_id_fields_by(field: str) -> List[str]:
-        return [
-            id_field
-            for id_field in df.columns.array
-            if isinstance(id_field, str) and id_field.rsplit(_SEP, maxsplit=1)[-1] == field
-        ]
-
-    if id_fields := get_id_fields_by(_FIELD_LOCATOR):
-        return id_fields
-    elif id_fields := get_id_fields_by(_FIELD_TEXT):
-        return id_fields
+    if _FIELD_ID in df.columns:
+        return [_FIELD_ID]
+    id_columns = [col for col in df.columns if col.startswith("id_") or col.endswith("_id")]
+    if len(id_columns) > 0:
+        return id_columns
+    for field in [_FIELD_LOCATOR, _FIELD_TEXT]:
+        if field in df.columns:
+            return [field]
     raise InputValidationError("Failed to infer the id_fields, please provide id_fields explicitly")
 
 
@@ -191,21 +155,9 @@ def _to_deserialized_dataframe(df: pd.DataFrame, column: str) -> pd.DataFrame:
         [json.loads(r[column]) if r[column] is not None else {} for r in df.to_dict("records")],
         max_level=0,
     )
-    flattened = _flatten_composite(flattened)
     flattened = flattened.loc[:, ~flattened.columns.str.endswith(DATA_TYPE_FIELD)]
     df_post = _dataframe_object_serde(flattened, _deserialize_dataobject)
     return df_post
-
-
-def _flatten_composite(df: pd.DataFrame) -> pd.DataFrame:
-    for key, value in df.iloc[0].items():
-        if isinstance(value, dict) and DatapointType.has_value(value.get(DATA_TYPE_FIELD)):
-            flattened = json_normalize(df[key], max_level=0).rename(
-                columns=lambda col: f"{key}{_SEP}{col}",
-            )
-            df = df.join(flattened)
-            df.drop(columns=[key], inplace=True)
-    return df
 
 
 def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]) -> None:
@@ -213,7 +165,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     df_serialized_datapoint_id_object = _to_serialized_dataframe(df[sorted(id_fields)], column=COL_DATAPOINT_ID_OBJECT)
     df_serialized = pd.concat([df_serialized_datapoint, df_serialized_datapoint_id_object], axis=1)
 
-    upload_data_frame(df=df_serialized, batch_size=BatchSize.UPLOAD_RECORDS.value, load_uuid=load_uuid)
+    upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
 
 def _load_dataset_metadata(name: str) -> Optional[EntityData]:
