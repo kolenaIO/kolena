@@ -320,9 +320,8 @@ def _validate_column_present(df: pd.DataFrame, col: str) -> None:
         raise IncorrectUsageError(f"Missing column '{col}'")
 
 
-def create_object_detection_results(
+def iter_object_detection_results(
     dataset_name: str,
-    model_name: str,
     df: pd.DataFrame,
     *,
     ground_truths_field: str = "ground_truths",
@@ -348,6 +347,30 @@ def create_object_detection_results(
         min_confidence_score=min_confidence_score,
         batch_size=batch_size,
     )
+
+
+def create_object_detection_results(
+    dataset_name: str,
+    df: pd.DataFrame,
+    *,
+    ground_truths_field: str = "ground_truths",
+    raw_inferences_field: str = "raw_inferences",
+    iou_threshold: float = 0.5,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    min_confidence_score: float = 0.01,
+    batch_size: int = 10_000,
+) -> pd.DataFrame:
+    results_iter = iter_object_detection_results(
+        dataset_name,
+        df,
+        ground_truths_field=ground_truths_field,
+        raw_inferences_field=raw_inferences_field,
+        iou_threshold=iou_threshold,
+        threshold_strategy=threshold_strategy,
+        min_confidence_score=min_confidence_score,
+        batch_size=batch_size,
+    )
+    return pd.concat(list(results_iter))
 
 
 def upload_object_detection_results(
@@ -388,16 +411,13 @@ def upload_object_detection_results(
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
     )
-    results = create_object_detection_results(
+    results = iter_object_detection_results(
         dataset_name,
-        model_name,
         df,
-        ground_truths_field,
-        raw_inferences_field,
-        iou_threshold,
-        threshold_strategy,
-        min_confidence_score,
-        batch_size,
+        ground_truths_field=ground_truths_field,
+        raw_inferences_field=raw_inferences_field,
+        **eval_config,
+        batch_size=batch_size,
     )
     dataset.upload_results(
         dataset_name,
