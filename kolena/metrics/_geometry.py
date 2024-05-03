@@ -94,6 +94,7 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
 
 GT = TypeVar("GT", bound=Union[BoundingBox, Polygon])
 Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon])
+IoU = float
 
 
 @dataclass(frozen=True)
@@ -109,17 +110,20 @@ class InferenceMatches(Generic[GT, Inf]):
     [`match_inferences`][kolena.metrics.match_inferences].
     """
 
-    matched: List[Tuple[GT, Inf, float]]
+    matched: List[Tuple[GT, Inf, IoU]]
     """
-    Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
-    detections after applying some confidence threshold.
+    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
+    Considered as true positive detections after applying some confidence threshold.
     """
 
     unmatched_gt: List[GT]
     """Unmatched ground truth objects. Considered as false negatives."""
 
-    unmatched_inf: List[Tuple[Inf, float]]
-    """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
+    unmatched_inf: List[Tuple[Inf, IoU]]
+    """
+    Unmatched inference objects, along with the maximum IoU over all ground truths. Considered as false positives
+    after applying some confidence threshold.
+    """
 
 
 def _match_inferences_single_class_pascal_voc(
@@ -128,8 +132,8 @@ def _match_inferences_single_class_pascal_voc(
     ignored_ground_truths: Optional[List[GT]] = None,
     iou_threshold: float = 0.5,
 ) -> InferenceMatches[GT, Inf]:
-    matched: List[Tuple[GT, Inf, float]] = []
-    unmatched_inf: List[Tuple[Inf, float]] = []
+    matched: List[Tuple[GT, Inf, IoU]] = []
+    unmatched_inf: List[Tuple[Inf, IoU]] = []
     taken_gts: Set[int] = set()
 
     gt_objects = ground_truths
@@ -231,20 +235,24 @@ class MulticlassInferenceMatches(Generic[GT, Inf]):
     [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
     """
 
-    matched: List[Tuple[GT, Inf, float]]
+    matched: List[Tuple[GT, Inf, IoU]]
     """
-    Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
-    detections after applying some confidence threshold.
+    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
+    Considered as true positive detections after applying some confidence threshold.
     """
 
-    unmatched_gt: List[Tuple[GT, Optional[Inf]]]
+    unmatched_gt: List[Tuple[GT, Optional[Inf], Optional[IoU]]]
     """
     Pairs of unmatched ground truth objects with its confused inference object (i.e. IoU above threshold with
-    mismatching `label`), if such an inference exists. Considered as false negatives and "confused" detections.
+    mismatching `label`) and calculated IoU, if such an inference exists. Considered as false negatives and
+    "confused" detections.
     """
 
-    unmatched_inf: List[Tuple[Inf, float]]
-    """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
+    unmatched_inf: List[Tuple[Inf, IoU]]
+    """
+    Unmatched inference objects, along with the maximum IoU over all ground truths.
+    Considered as false positives after applying some confidence threshold.
+    """
 
 
 def match_inferences_multiclass(
@@ -342,15 +350,15 @@ def match_inferences_multiclass(
         iou_threshold=iou_threshold,
     )
 
-    confused = []
-    for gt, inf in confused_matches.matched:
+    confused: List[Tuple[GT, Inf, IoU]] = []
+    for gt, inf, iou_val in confused_matches.matched:
         assert hasattr(gt, "label") and hasattr(inf, "label")
         if gt.label != inf.label:
-            confused.append((gt, inf))
+            confused.append((gt, inf, iou_val))
             unmatched_gt.remove(gt)
 
     return MulticlassInferenceMatches(
         matched=matched,
-        unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
+        unmatched_gt=confused + [(gt, None, None) for gt in unmatched_gt],
         unmatched_inf=unmatched_inf,
     )
