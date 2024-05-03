@@ -109,7 +109,7 @@ class InferenceMatches(Generic[GT, Inf]):
     [`match_inferences`][kolena.metrics.match_inferences].
     """
 
-    matched: List[Tuple[GT, Inf]]
+    matched: List[Tuple[GT, Inf, float]]
     """
     Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
     detections after applying some confidence threshold.
@@ -118,7 +118,7 @@ class InferenceMatches(Generic[GT, Inf]):
     unmatched_gt: List[GT]
     """Unmatched ground truth objects. Considered as false negatives."""
 
-    unmatched_inf: List[Inf]
+    unmatched_inf: List[Tuple[Inf, float]]
     """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
 
 
@@ -128,8 +128,8 @@ def _match_inferences_single_class_pascal_voc(
     ignored_ground_truths: Optional[List[GT]] = None,
     iou_threshold: float = 0.5,
 ) -> InferenceMatches[GT, Inf]:
-    matched: List[Tuple[GT, Inf]] = []
-    unmatched_inf: List[Inf] = []
+    matched: List[Tuple[GT, Inf, float]] = []
+    unmatched_inf: List[Tuple[Inf, float]] = []
     taken_gts: Set[int] = set()
 
     gt_objects = ground_truths
@@ -141,22 +141,24 @@ def _match_inferences_single_class_pascal_voc(
 
     # for each inference, find the ground truth with the highest IoU
     for inf in inferences:
-        best_gt = None
-        best_gt_iou = -1.0
+        match_gt = None
+        match_gt_iou = -1.0
+        best_gt_iou = 0.0
         for g, gt in enumerate(gt_objects):
             inf_gt_iou = iou(gt, inf)
+            best_gt_iou = max(best_gt_iou, inf_gt_iou)
             # track the highest IoU over the threshold
-            if inf_gt_iou >= iou_threshold and inf_gt_iou > best_gt_iou:
-                best_gt_iou = inf_gt_iou
-                best_gt = g
+            if inf_gt_iou >= iou_threshold and inf_gt_iou > match_gt_iou:
+                match_gt_iou = inf_gt_iou
+                match_gt = g
 
-        if best_gt is None or (best_gt in taken_gts and best_gt < len(ground_truths)):
+        if match_gt is None or (match_gt in taken_gts and match_gt < len(ground_truths)):
             # if there are no potential matches, or the best non-ignored gt is already taken, this inf has no match
-            unmatched_inf.append(inf)
-        elif best_gt < len(ground_truths):
+            unmatched_inf.append((inf, best_gt_iou))
+        elif match_gt < len(ground_truths):
             # if the best non-ignored gt is able to be taken
-            matched.append((ground_truths[best_gt], inf))
-            taken_gts.add(best_gt)
+            matched.append((ground_truths[match_gt], inf, match_gt_iou))
+            taken_gts.add(match_gt)
 
     unmatched_gt = [gt for gt_idx, gt in enumerate(ground_truths) if gt_idx not in taken_gts]
     return InferenceMatches(matched=matched, unmatched_gt=unmatched_gt, unmatched_inf=unmatched_inf)
@@ -229,7 +231,7 @@ class MulticlassInferenceMatches(Generic[GT, Inf]):
     [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
     """
 
-    matched: List[Tuple[GT, Inf]]
+    matched: List[Tuple[GT, Inf, float]]
     """
     Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
     detections after applying some confidence threshold.
@@ -241,7 +243,7 @@ class MulticlassInferenceMatches(Generic[GT, Inf]):
     mismatching `label`), if such an inference exists. Considered as false negatives and "confused" detections.
     """
 
-    unmatched_inf: List[Inf]
+    unmatched_inf: List[Tuple[Inf, float]]
     """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
 
 
@@ -288,9 +290,9 @@ def match_inferences_multiclass(
         [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
         (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
     """
-    matched: List[Tuple[GT, Inf]] = []
+    matched: List[Tuple[GT, Inf, float]] = []
     unmatched_gt: List[GT] = []
-    unmatched_inf: List[Inf] = []
+    unmatched_inf: List[Tuple[Inf, float]] = []
     gts_by_class: Dict[str, List[GT]] = defaultdict(list)
     infs_by_class: Dict[str, List[Inf]] = defaultdict(list)
     ignored_gts_by_class: Dict[str, List[GT]] = defaultdict(list)
@@ -335,7 +337,7 @@ def match_inferences_multiclass(
 
     confused_matches = matching_function(
         unmatched_gt,
-        unmatched_inf,
+        [inf for inf, _ in unmatched_inf],
         ignored_ground_truths=ignored_ground_truths,
         iou_threshold=iou_threshold,
     )

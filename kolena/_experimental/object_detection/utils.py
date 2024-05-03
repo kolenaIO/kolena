@@ -52,13 +52,13 @@ def _compute_sklearn_arrays(
     y_true: List[int] = []
     y_score: List[float] = []
     for image_bbox_matches in all_matches:
-        for _, bbox_inf in image_bbox_matches.matched:  # TP (if above threshold)
+        for _, bbox_inf, _ in image_bbox_matches.matched:  # TP (if above threshold)
             y_true.append(1)
             y_score.append(bbox_inf.score)
         for _ in image_bbox_matches.unmatched_gt:  # FN
             y_true.append(1)
             y_score.append(-1)
-        for bbox_inf in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
+        for bbox_inf, _ in image_bbox_matches.unmatched_inf:  # FP (if above threshold)
             y_true.append(0)
             y_score.append(bbox_inf.score)
     return np.array(y_true), np.array(y_score)
@@ -276,7 +276,7 @@ def compute_confusion_matrix_plot(
 
     confusion_matrix: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     for match in all_matches:
-        for gt, _ in match.matched:
+        for gt, _, _ in match.matched:
             actual_label = gt.label
             confusion_matrix[actual_label][actual_label] += 1
             labels.add(actual_label)
@@ -307,19 +307,19 @@ def _compute_sklearn_arrays_by_class(
 
     labels: Set[str] = set()
     for match in all_matches:
-        for _, bbox_inf in match.matched:
+        for _, bbox_inf, _ in match.matched:
             labels.add(bbox_inf.label)
         for bbox_gt, _ in match.unmatched_gt:
             labels.add(bbox_gt.label)
-        for bbox_inf in match.unmatched_inf:
+        for bbox_inf, _ in match.unmatched_inf:
             labels.add(bbox_inf.label)
 
     for label in labels:
         filtered_matchings: List[InferenceMatches] = [
             InferenceMatches(
-                matched=[(gt, inf) for gt, inf in match.matched if gt.label == label],
+                matched=[(gt, inf, iou) for gt, inf, iou in match.matched if gt.label == label],
                 unmatched_gt=[gt for gt, _ in match.unmatched_gt if gt.label == label],
-                unmatched_inf=[inf for inf in match.unmatched_inf if inf.label == label],
+                unmatched_inf=[(inf, iou) for inf, iou in match.unmatched_inf if inf.label == label],
             )
             for match in all_matches
         ]
