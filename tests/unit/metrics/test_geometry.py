@@ -676,9 +676,13 @@ def test__match_inferences(
         ignored_ground_truths=ignored_ground_truths,
     )
 
-    assert expected_matched == matches.matched
+    assert expected_matched == [(gt, inf) for gt, inf, _ in matches.matched]
     assert expected_unmatched_gt == matches.unmatched_gt
-    assert expected_unmatched_inf == matches.unmatched_inf
+    assert expected_unmatched_inf == [inf for inf, _ in matches.unmatched_inf]
+    unignored_gt = [gt for gt in ground_truths if gt not in (ignored_ground_truths or [])]
+    for inf, iou_inf in matches.unmatched_inf:
+        expected_iou = max(iou(inf, gt) for gt in unignored_gt) if unignored_gt else 0.0
+        assert iou_inf == pytest.approx(expected_iou, abs=1e-5)
 
 
 def test__match_inferences__invalid_mode() -> None:
@@ -2451,9 +2455,20 @@ def test__match_inferences_multiclass(
         iou_threshold=0.5,
     )
 
-    assert expected_matched == matches.matched
-    assert expected_unmatched_gt == matches.unmatched_gt
-    assert expected_unmatched_inf == matches.unmatched_inf
+    assert expected_matched == [(gt, inf) for gt, inf, _ in matches.matched]
+    assert expected_unmatched_gt == [(gt, inf) for gt, inf, _ in matches.unmatched_gt]
+    for gt, inf, iou_inf in matches.unmatched_gt:
+        assert inf is None or iou(gt, inf) == pytest.approx(iou_inf, abs=1e-5)
+
+    assert expected_unmatched_inf == [inf for inf, _ in matches.unmatched_inf]
+    unignored_gt = [gt for gt in ground_truths if gt not in (ignored_ground_truths or [])]
+    for inf, iou_inf in matches.unmatched_inf:
+        expected_iou = (
+            max(iou(inf, gt) for gt in unignored_gt if gt.label == inf.label)
+            if any(gt.label == inf.label for gt in unignored_gt)
+            else 0.0
+        )
+        assert iou_inf == pytest.approx(expected_iou, abs=1e-5)
 
 
 def test__match_inferences_multiclass__invalid_mode() -> None:
@@ -2529,6 +2544,15 @@ def test__match_inferences_multiclass__iou(
         iou_threshold=0.999,
     )
 
-    assert expected_matched == matches.matched
-    assert expected_unmatched_gt == matches.unmatched_gt
-    assert expected_unmatched_inf == matches.unmatched_inf
+    assert expected_matched == [(gt, inf) for gt, inf, _ in matches.matched]
+    for gt, inf, iou_inf in matches.matched:
+        assert iou(gt, inf) == pytest.approx(iou_inf, abs=1e-5)
+
+    assert expected_unmatched_gt == [(gt, inf) for gt, inf, _ in matches.unmatched_gt]
+    for gt, inf, iou_inf in matches.unmatched_gt:
+        assert inf is None or iou(gt, inf) == pytest.approx(iou_inf, abs=1e-5)
+
+    assert expected_unmatched_inf == [inf for inf, _ in matches.unmatched_inf]
+    for inf, iou_inf in matches.unmatched_inf:
+        expected_iou = max(iou(inf, gt) for gt in ground_truths) if ground_truths else 0.0
+        assert iou_inf == pytest.approx(expected_iou, abs=1e-5)
