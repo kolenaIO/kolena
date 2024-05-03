@@ -2456,6 +2456,9 @@ def test__match_inferences_multiclass(
     )
 
     assert expected_matched == [(gt, inf) for gt, inf, _ in matches.matched]
+    for gt, inf, iou_inf in matches.matched:
+        assert iou_inf == pytest.approx(iou(gt, inf), abs=1e-5)
+
     assert expected_unmatched_gt == [(gt, inf) for gt, inf, _ in matches.unmatched_gt]
     for gt, inf, iou_inf in matches.unmatched_gt:
         assert inf is None or iou(gt, inf) == pytest.approx(iou_inf, abs=1e-5)

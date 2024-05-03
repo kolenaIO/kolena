@@ -299,9 +299,9 @@ def match_inferences_multiclass(
         [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
         (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
     """
-    matched: List[Tuple[GT, Inf, float]] = []
+    matched: List[Tuple[GT, Inf, IoU]] = []
     unmatched_gt: List[GT] = []
-    unmatched_inf: List[Tuple[Inf, float]] = []
+    unmatched_inf: List[Tuple[Inf, IoU]] = []
     gts_by_class: Dict[str, List[GT]] = defaultdict(list)
     infs_by_class: Dict[str, List[Inf]] = defaultdict(list)
     ignored_gts_by_class: Dict[str, List[GT]] = defaultdict(list)
