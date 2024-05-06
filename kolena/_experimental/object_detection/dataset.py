@@ -44,13 +44,13 @@ def _bbox_matches_and_count_for_one_label(
     match_matched = []
     match_unmatched_gt = []
     match_unmatched_inf = []
-    for gt, inf, _ in match.matched:
+    for gt, inf in match.matched:
         if gt.label == label:
             match_matched.append((gt, inf))
     for gt, inf in match.unmatched_gt:
         if gt.label == label:
             match_unmatched_gt.append((gt, inf))
-    for inf, _ in match.unmatched_inf:
+    for inf in match.unmatched_inf:
         if inf.label == label:
             match_unmatched_inf.append(inf)
 
@@ -70,9 +70,9 @@ def _compute_thresholded_metrics(
 ) -> List[Dict[str, Any]]:
     metrics = []
     for threshold in thresholds:
-        count_tp = sum(1 for gt, inf, _ in matches.matched if inf.score >= threshold)
-        count_fp = sum(1 for inf, _ in matches.unmatched_inf if inf.score >= threshold)
-        count_fn = len(matches.unmatched_gt) + sum(1 for _, inf, _ in matches.matched if inf.score < threshold)
+        count_tp = sum(1 for gt, inf in matches.matched if inf.score >= threshold)
+        count_fp = sum(1 for inf in matches.unmatched_inf if inf.score >= threshold)
+        count_fn = len(matches.unmatched_gt) + sum(1 for _, inf in matches.matched if inf.score < threshold)
         if label:
             metrics.append(dict(threshold=threshold, label=label, tp=count_tp, fp=count_fp, fn=count_fn))
         else:
@@ -99,14 +99,10 @@ def single_class_datapoint_metrics(
     thresholds: float,
     all_thresholds: List[float],
 ) -> Dict[str, Any]:
-    tp = [
-        {**gt._to_dict(), **inf._to_dict(), "iou": iou}
-        for gt, inf, iou in object_matches.matched
-        if inf.score >= thresholds
-    ]
-    fp = [{**inf._to_dict(), "iou": iou} for inf, iou in object_matches.unmatched_inf if inf.score >= thresholds]
-    fn = object_matches.unmatched_gt + [gt for gt, inf, _ in object_matches.matched if inf.score < thresholds]
-    scores = [inf["score"] for inf in tp] + [inf["score"] for inf in fp]
+    tp = [{**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched if inf.score >= thresholds]
+    fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
+    fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
+    scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     thresholded = _compute_thresholded_metrics(object_matches, all_thresholds)
     return dict(
         TP=tp,
@@ -131,33 +127,27 @@ def multiclass_datapoint_metrics(
     all_thresholds: List[float],
 ) -> Dict[str, Any]:
     tp = [
-        {**gt._to_dict(), **inf._to_dict(), "iou": iou}
-        for gt, inf, iou in object_matches.matched
-        if inf.score >= thresholds[inf.label]
+        {**gt._to_dict(), **inf._to_dict()} for gt, inf in object_matches.matched if inf.score >= thresholds[inf.label]
     ]
-    fp = [
-        {**inf._to_dict(), "iou": iou}
-        for inf, iou in object_matches.unmatched_inf
-        if inf.score >= thresholds[inf.label]
-    ]
+    fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds[inf.label]]
     fn = [gt for gt, _ in object_matches.unmatched_gt] + [
-        gt for gt, inf, _ in object_matches.matched if inf.score < thresholds[inf.label]
+        gt for gt, inf in object_matches.matched if inf.score < thresholds[inf.label]
     ]
     confused = [
         dict(**inf._to_dict(), actual_label=gt.label)
         for gt, inf in object_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
-    scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
+    scores = [inf["score"] for inf in tp] + [inf["score"] for inf in fp]
     labels = sorted(
-        {inf.label for _, inf, _ in object_matches.matched}
+        {inf.label for _, inf in object_matches.matched}
         .union(
-            {inf.label for inf, _ in object_matches.unmatched_inf},
+            {inf.label for inf in object_matches.unmatched_inf},
         )
         .union({gt.label for gt, _ in object_matches.unmatched_gt}),
     )
-    inference_labels = {inf.label for _, inf, _ in object_matches.matched}.union(
-        {inf.label for inf, _ in object_matches.unmatched_inf},
+    inference_labels = {inf.label for _, inf in object_matches.matched}.union(
+        {inf.label for inf in object_matches.unmatched_inf},
     )
     fields = [
         ScoredLabel(label=label, score=thresholds[label])
@@ -416,7 +406,9 @@ def upload_object_detection_results(
         df,
         ground_truths_field=ground_truths_field,
         raw_inferences_field=raw_inferences_field,
-        **eval_config,
+        iou_threshold=iou_threshold,
+        threshold_strategy=threshold_strategy,
+        min_confidence_score=min_confidence_score,
         batch_size=batch_size,
     )
     dataset.upload_results(
