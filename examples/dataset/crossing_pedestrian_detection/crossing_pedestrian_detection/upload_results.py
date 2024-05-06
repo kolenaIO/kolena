@@ -16,8 +16,10 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
 from pathlib import Path
+from typing import Any
 from typing import Dict
 from typing import List
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -30,7 +32,7 @@ from pydantic.dataclasses import dataclass
 from smart_open import open as smart_open
 
 import kolena
-from kolena._experimental.object_detection.dataset import _convert_bbox_to_labeled_bbox
+from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.dataset import download_dataset
@@ -46,13 +48,10 @@ CONFIDENCE = 0.01
 
 @dataclass(frozen=True)
 class FrameMetrics:
-    frame_id: int
     TP: List[ScoredLabeledBoundingBox]
     FP: List[ScoredLabeledBoundingBox]
-    FN: List[LabeledBoundingBox]
-    TN: List[LabeledBoundingBox]
-    FrameLevelPrecision: float
-    FrameLevelRecall: float
+    FN: List[BoundingBox]
+    TN: List[BoundingBox]
 
 
 def postprocess_inferences(inferences: List[ScoredLabeledBoundingBox]) -> List[ScoredLabeledBoundingBox]:
@@ -163,7 +162,7 @@ def compute_pedestrian_metrics(
                 frame_id=frame_id,
                 matched_pedestrian=matches.matched[0][1] if len(matches.matched) > 0 else None,
                 iou_threshold=0.5,
-                gt=_convert_bbox_to_labeled_bbox(matches.matched[0][0]) if len(matches.matched) > 0 else None,
+                gt=matches.matched[0][0] if len(matches.matched) > 0 else None,
                 gt_label=gt_bbox_per_frame[frame_id].label,
                 inf_label=matches.matched[0][1].label if len(matches.matched) > 0 else None,
                 unmatched_gt=matches.unmatched_gt,
@@ -174,79 +173,85 @@ def compute_pedestrian_metrics(
     return frame_metrics
 
 
+def compute_frame_metrics_row(
+    gt_bboxes: List[LabeledBoundingBox],
+    high_risk_pids: List[str],
+    inference_bboxes: List[ScoredLabeledBoundingBox],
+) -> Tuple[Dict[str, Any], List[ScoredLabeledBoundingBox]]:
+    frame_metrics_combined = {}
+    df_raw_inferences = []
+    for pid in high_risk_pids:
+        filtered_gt_bboxes = [bbox for bbox in gt_bboxes if bbox.ped_id == pid]  # type: ignore
+        filtered_inference_bboxes = [
+            bbox for bbox in inference_bboxes if bbox.ped_id == pid and bbox.score >= CONFIDENCE  # type: ignore
+        ]
+        df_raw_inferences.extend(filtered_inference_bboxes)
+        frame_metrics_combined[pid] = compute_pedestrian_metrics(filtered_gt_bboxes, filtered_inference_bboxes)
+
+    return frame_metrics_combined, df_raw_inferences
+
+
+def compute_match_arrays(matches: List[FrameMatch]) -> FrameMetrics:
+    tps, fps, tns, fns = [], [], [], []
+    for match in matches:
+        if match.matched_pedestrian is not None and match.matched_pedestrian.score is not None:
+            if (
+                match.gt_label == match.inf_label
+                and match.inf_label == "is_crossing"
+                and match.matched_pedestrian.score >= THRESHOLD
+            ):
+                tps.append(match.matched_pedestrian)  # pred crossing and gt crossing
+            elif (
+                match.gt_label != match.inf_label
+                and match.inf_label == "is_crossing"
+                and match.matched_pedestrian.score >= THRESHOLD
+            ):
+                continue
+            elif (
+                match.inf_label == "not_crossing"
+                and match.gt_label == "is_crossing"
+                and match.matched_pedestrian.score < THRESHOLD
+            ):
+                continue
+            else:
+                tns.append(match.gt)
+
+        fps = [inf for inf in match.unmatched_inf if inf.score >= THRESHOLD]
+        fns = match.unmatched_gt + [gt for gt, inf in match.matched if inf.score < THRESHOLD]
+
+    return FrameMetrics(TP=tps, FP=fps, TN=tns, FN=fns)  # type: ignore
+
+
 def compute_metrics(dataset: str, inference_data: Dict[str, List[ScoredLabeledBoundingBox]]) -> pd.DataFrame:
     dataset_df = download_dataset(dataset)
     results = []
     for row in dataset_df.itertuples():
         filemapping = Path(row.locator.split("/")[-1]).stem
         inference_bboxes = inference_data[filemapping]
-        gt_bboxes = row.high_risk
-        frame_metrics_combined = {}
-        df_raw_inferences = []
-
-        for pid in row.high_risk_pids:
-            filtered_gt_bboxes = [bbox for bbox in gt_bboxes if bbox.ped_id == pid]
-            filtered_inference_bboxes = [
-                bbox for bbox in inference_bboxes if bbox.ped_id == pid and bbox.score >= CONFIDENCE  # type: ignore
-            ]
-            df_raw_inferences.extend(filtered_inference_bboxes)
-            frame_metrics_combined[pid] = compute_pedestrian_metrics(filtered_gt_bboxes, filtered_inference_bboxes)
-
+        frame_metrics_combined, df_raw_inferences = compute_frame_metrics_row(
+            row.high_risk,
+            row.high_risk_pids,
+            inference_bboxes,
+        )
         all_pedestrian_by_frames = defaultdict(list)
         for pid, frame_metrics in frame_metrics_combined.items():
             for frame_id, metrics in frame_metrics.items():
                 all_pedestrian_by_frames[frame_id].append(metrics)
 
-        cross_frame_precisions = []
-        cross_frame_recalls = []
-        cross_frame_f1 = []
+        cross_frame_precisions, cross_frame_recalls, cross_frame_f1 = [], [], []
+        final_tps, final_fps, final_fns, final_tns = [], [], [], []
         frame_metrics_lst = []
-        final_tps = []
-        final_fps = []
-        final_fns = []
-        final_tns = []
         cross_frame_tp_rate = []
 
         for frame_id, match_lst in all_pedestrian_by_frames.items():
-            tps = []
-            fps = []
-            tns = []
-            fns = []
-            for match in match_lst:
-                if match.matched_pedestrian is not None and match.matched_pedestrian.score is not None:
-                    if (
-                        match.gt_label == match.inf_label
-                        and match.inf_label == "is_crossing"
-                        and match.matched_pedestrian.score >= THRESHOLD
-                    ):
-                        tps.append(match.matched_pedestrian)  # pred crossing and gt crossing
-                    elif (
-                        match.gt_label != match.inf_label
-                        and match.inf_label == "is_crossing"
-                        and match.matched_pedestrian.score >= THRESHOLD
-                    ):
-                        continue
-                    elif (
-                        match.inf_label == "not_crossing"
-                        and match.gt_label == "is_crossing"
-                        and match.matched_pedestrian.score < THRESHOLD
-                    ):
-                        continue
-                    else:
-                        tns.append(match.gt)
-
-                fps = [inf for inf in match.unmatched_inf if inf.score >= THRESHOLD]
-                fns = match.unmatched_gt + [gt for gt, inf in match.matched if inf.score < THRESHOLD]
-
-            # now have frame level tps etc
-            tp_count = len(tps)
-            fp_count = len(fps)
-            fns_count = len(fns)
-
-            final_tps.extend(tps)
-            final_fps.extend(fps)
-            final_fns.extend(fns)
-            final_tns.extend(tns)
+            frame_metrics_match = compute_match_arrays(match_lst)
+            tp_count = len(frame_metrics_match.TP)
+            fp_count = len(frame_metrics_match.FP)
+            fns_count = len(frame_metrics_match.FN)
+            final_tps.extend(frame_metrics_match.TP)
+            final_fps.extend(frame_metrics_match.FP)
+            final_fns.extend(frame_metrics_match.FN)
+            final_tns.extend(frame_metrics_match.TN)
 
             frame_precision = precision(tp_count, fp_count)
             frame_recall = recall(tp_count, fns_count)
@@ -254,7 +259,7 @@ def compute_metrics(dataset: str, inference_data: Dict[str, List[ScoredLabeledBo
             cross_frame_precisions.append(frame_precision)
             cross_frame_recalls.append(frame_recall)
             cross_frame_f1.append(frame_f1)
-            cross_frame_tp_rate.append(tp_count / len(gt_bboxes))
+            cross_frame_tp_rate.append(tp_count / len(row.high_risk))
             frame_metrics_lst.append(
                 {
                     "frame_id": frame_id,

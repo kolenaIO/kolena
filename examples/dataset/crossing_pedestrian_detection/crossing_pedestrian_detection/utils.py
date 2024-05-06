@@ -19,6 +19,7 @@ from typing import Tuple
 
 from pydantic.dataclasses import dataclass
 
+from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
 
@@ -94,7 +95,7 @@ class FrameMatch:
     matched: Any
     gt_label: Optional[str]
     inf_label: Optional[str]
-    gt: Optional[LabeledBoundingBox]
+    gt: Optional[BoundingBox]
     iou_threshold: float
     matched_pedestrian: Optional[ScoredLabeledBoundingBox] = None
 
