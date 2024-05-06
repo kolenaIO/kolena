@@ -324,10 +324,8 @@ def iter_object_detection_results(
     """
     Compute metrics of the model for the dataset.
 
-    Similar to
-    [`create_object_detection_results`](kolena._experimental.object_detection.create_object_detection_results),
-    but returns an `Iterator[DataFrame]` instead of a `DataFrame`. Useful if you do not want to load the entire result
-    set into memory.
+    Similar to `create_object_detection_results` but returns an `Iterator[DataFrame]` instead of a `DataFrame`.
+    Useful if you do not want to load the entire result set into memory.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
     :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
@@ -378,8 +376,7 @@ def create_object_detection_results(
     """
     Compute metrics of the model for the dataset.
 
-    Similar to [`iter_object_detection_results`](kolena._experimental.object_detection.iter_object_detection_results),
-    but returns an `DataFrame` instead of an `Iterator[DataFrame]`.
+    Similar to `iter_object_detection_results`, but returns an `DataFrame` instead of an `Iterator[DataFrame]`.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
     :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
