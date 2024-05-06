@@ -350,12 +350,12 @@ def match_inferences_multiclass(
 
     confused_matches = matching_function(
         unmatched_gt,
-        [inf for inf in unmatched_inf],
+        unmatched_inf,
         ignored_ground_truths=ignored_ground_truths,
         iou_threshold=iou_threshold,
     )
 
-    confused: List[Tuple[GT, Inf]] = []
+    confused = []
     for gt, inf in confused_matches.matched:
         assert hasattr(gt, "label") and hasattr(inf, "label")
         if gt.label != inf.label:
