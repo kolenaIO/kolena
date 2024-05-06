@@ -60,11 +60,11 @@ def postprocess_inferences(inferences: List[ScoredPedestrianBoundingBox]) -> Lis
     previous_conf = -1.0
     processed_inferences = []
     for i, inf in enumerate(inferences):
-        confidence_score = inf.score  # type: ignore
+        confidence_score = inf.score
         if in_observation_state and i > n_observation_frames:
             in_observation_state = False
 
-        if inf.failed_to_infer:  # type: ignore
+        if inf.failed_to_infer:
             if previous_conf >= 0.0:
                 confidence_score = previous_conf
             else:
@@ -72,12 +72,12 @@ def postprocess_inferences(inferences: List[ScoredPedestrianBoundingBox]) -> Lis
         else:
             if in_observation_state:
                 in_observation_state = False
-                if inf.score is not None:  # type: ignore
-                    previous_conf = inf.score  # type: ignore
+                if inf.score is not None:
+                    previous_conf = inf.score
             else:
-                if inf.score is not None:  # type: ignore
-                    previous_conf = inf.score  # type: ignore
-        fail_inf = inf.failed_to_infer if not in_observation_state and previous_conf < 0 else False  # type: ignore
+                if inf.score is not None:
+                    previous_conf = inf.score
+        fail_inf = inf.failed_to_infer if not in_observation_state and previous_conf < 0 else False
         processed_inferences.append(
             ScoredPedestrianBoundingBox(
                 ped_id=inf.ped_id,
@@ -104,10 +104,10 @@ def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[
     results_pkl = f"s3://{BUCKET}/{DATASET}/results/raw/{action_model_name}_{detection_model_name}.pkl"
     with smart_open(results_pkl, "rb") as results_file:
         results = pickle.load(results_file)
-        predictions: Dict[str, Dict[int, Dict[str, float]]] = defaultdict(lambda: defaultdict(dict))
+        predictions: Dict[str, Dict[str, Dict[str, float]]] = defaultdict(lambda: defaultdict(dict))
         for pid, tte, y, img in zip(results["pid"], results["tte"], results["y"], results["image"]):
             pid = pid[0][0]
-            frame_id = int(Path(img[0]).stem)
+            frame_id = Path(img[0]).stem
             predictions[pid][frame_id]["tte"] = tte[0]
             predictions[pid][frame_id]["confidence"] = y[0]
 
@@ -117,12 +117,12 @@ def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[
         scored_bboxes_lst = []
         for ped_id, bboxes in bboxes_per_file.items():
             for bbox in bboxes:
-                if bbox.ped_id not in predictions or bbox.frame_id not in predictions[ped_id]:  # type: ignore
+                if bbox.ped_id not in predictions or bbox.frame_id not in predictions[ped_id]:
                     failed_to_infer = True
                 else:
                     failed_to_infer = False
-                    confidence = predictions[bbox.ped_id][bbox.frame_id]["confidence"]  # type: ignore
-                    time_to_event = predictions[bbox.ped_id][bbox.frame_id]["tte"]  # type: ignore
+                    confidence = predictions[bbox.ped_id][bbox.frame_id]["confidence"]
+                    time_to_event = predictions[bbox.ped_id][bbox.frame_id]["tte"]
 
                 scored_bboxes_lst.append(
                     ScoredPedestrianBoundingBox(
