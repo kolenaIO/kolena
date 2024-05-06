@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pickle
+from argparse import ArgumentParser
+from argparse import Namespace
 from pathlib import Path
 
 import pandas as pd
@@ -25,6 +27,8 @@ from tqdm import tqdm
 
 import kolena
 from kolena.dataset import upload_dataset
+
+DEFAULT_DATASET_NAME = "JAAD [crossing-pedestrian-detection]"
 
 
 def video_locator(video_path: str) -> str:
@@ -71,7 +75,19 @@ def process_data() -> pd.DataFrame:
     return pd.DataFrame(datapoints)
 
 
-if __name__ == "__main__":
+def run(args: Namespace) -> int:
     kolena.initialize(verbose=True)
     df = process_data()
-    upload_dataset("JAAD [crossing-pedestrian-detection]", df, id_fields=ID_FIELDS)
+    upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
+    return 0
+
+
+if __name__ == "__main__":
+    ap = ArgumentParser()
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DEFAULT_DATASET_NAME,
+        help="Optionally specify a custom dataset name to upload.",
+    )
+    run(ap.parse_args())
