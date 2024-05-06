@@ -25,16 +25,16 @@ import numpy as np
 import pandas as pd
 from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
+from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import MODELS
 from crossing_pedestrian_detection.utils import FrameMatch
+from crossing_pedestrian_detection.utils import PedestrianBoundingBox
 from crossing_pedestrian_detection.utils import process_ped_annotations
+from crossing_pedestrian_detection.utils import ScoredPedestrianBoundingBox
 from pydantic.dataclasses import dataclass
 from smart_open import open as smart_open
 
-import kolena
 from kolena.annotation import BoundingBox
-from kolena.annotation import LabeledBoundingBox
-from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 from kolena.metrics import f1_score
@@ -48,13 +48,13 @@ CONFIDENCE = 0.01
 
 @dataclass(frozen=True)
 class FrameMetrics:
-    TP: List[ScoredLabeledBoundingBox]
-    FP: List[ScoredLabeledBoundingBox]
+    TP: List[ScoredPedestrianBoundingBox]
+    FP: List[ScoredPedestrianBoundingBox]
     FN: List[BoundingBox]
     TN: List[BoundingBox]
 
 
-def postprocess_inferences(inferences: List[ScoredLabeledBoundingBox]) -> List[ScoredLabeledBoundingBox]:
+def postprocess_inferences(inferences: List[ScoredPedestrianBoundingBox]) -> List[ScoredPedestrianBoundingBox]:
     n_observation_frames = 16
     in_observation_state = True
     previous_conf = -1.0
@@ -79,13 +79,13 @@ def postprocess_inferences(inferences: List[ScoredLabeledBoundingBox]) -> List[S
                     previous_conf = inf.score  # type: ignore
         fail_inf = inf.failed_to_infer if not in_observation_state and previous_conf < 0 else False  # type: ignore
         processed_inferences.append(
-            ScoredLabeledBoundingBox(  # type: ignore
-                ped_id=inf.ped_id,  # type: ignore
-                top_left=inf.top_left,  # type: ignore
-                bottom_right=inf.bottom_right,  # type: ignore
-                frame_id=inf.frame_id,  # type: ignore
-                occlusion=inf.occlusion,  # type: ignore
-                time_to_event=inf.time_to_event,  # type: ignore
+            ScoredPedestrianBoundingBox(
+                ped_id=inf.ped_id,
+                top_left=inf.top_left,
+                bottom_right=inf.bottom_right,
+                frame_id=inf.frame_id,
+                occlusion=inf.occlusion,
+                time_to_event=inf.time_to_event,
                 failed_to_infer=fail_inf,
                 score=confidence_score,
                 observation=in_observation_state,
@@ -96,7 +96,7 @@ def postprocess_inferences(inferences: List[ScoredLabeledBoundingBox]) -> List[S
     return processed_inferences
 
 
-def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[str, List[ScoredLabeledBoundingBox]]:
+def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[str, List[ScoredPedestrianBoundingBox]]:
     model_pkl_name = f"s3://{BUCKET}/{DATASET}/raw/jaad_{action_model_name}_{detection_model_name}_database.pkl"
     with smart_open(model_pkl_name, "rb") as inf_file:
         inf_annotations = pickle.load(inf_file)
@@ -111,7 +111,7 @@ def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[
             predictions[pid][frame_id]["tte"] = tte[0]
             predictions[pid][frame_id]["confidence"] = y[0]
 
-    scored_bboxes_per_ped: Dict[str, List[ScoredLabeledBoundingBox]] = {}
+    scored_bboxes_per_ped: Dict[str, List[ScoredPedestrianBoundingBox]] = {}
     for filename in inf_annotations:
         bboxes_per_file = process_ped_annotations(inf_annotations[filename]["ped_annotations"])
         scored_bboxes_lst = []
@@ -125,12 +125,12 @@ def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[
                     time_to_event = predictions[bbox.ped_id][bbox.frame_id]["tte"]  # type: ignore
 
                 scored_bboxes_lst.append(
-                    ScoredLabeledBoundingBox(  # type: ignore
-                        ped_id=bbox.ped_id,  # type: ignore
-                        top_left=bbox.top_left,  # type: ignore
-                        bottom_right=bbox.bottom_right,  # type: ignore
-                        frame_id=bbox.frame_id,  # type: ignore
-                        occlusion=bbox.occlusion,  # type: ignore
+                    ScoredPedestrianBoundingBox(
+                        ped_id=bbox.ped_id,
+                        top_left=bbox.top_left,
+                        bottom_right=bbox.bottom_right,
+                        frame_id=bbox.frame_id,
+                        occlusion=bbox.occlusion,
                         time_to_event=time_to_event if not failed_to_infer else None,
                         failed_to_infer=failed_to_infer,
                         score=confidence if not failed_to_infer else 0,
@@ -143,13 +143,13 @@ def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[
 
 
 def compute_pedestrian_metrics(
-    gt_bboxes: List[LabeledBoundingBox],
-    inference_bboxes: List[ScoredLabeledBoundingBox],
+    gt_bboxes: List[PedestrianBoundingBox],
+    inference_bboxes: List[ScoredPedestrianBoundingBox],
 ) -> Dict[str, FrameMatch]:
-    gt_bbox_per_frame = {bbox.frame_id: bbox for bbox in gt_bboxes}  # type: ignore
+    gt_bbox_per_frame = {bbox.frame_id: bbox for bbox in gt_bboxes}
     inf_bboxes_per_frame = defaultdict(list)
     for bbox in inference_bboxes:
-        inf_bboxes_per_frame[bbox.frame_id].append(bbox)  # type: ignore
+        inf_bboxes_per_frame[bbox.frame_id].append(bbox)
 
     frame_metrics = {}
     for frame_id in gt_bbox_per_frame:
@@ -174,16 +174,16 @@ def compute_pedestrian_metrics(
 
 
 def compute_frame_metrics_row(
-    gt_bboxes: List[LabeledBoundingBox],
+    gt_bboxes: List[PedestrianBoundingBox],
     high_risk_pids: List[str],
-    inference_bboxes: List[ScoredLabeledBoundingBox],
-) -> Tuple[Dict[str, Any], List[ScoredLabeledBoundingBox]]:
+    inference_bboxes: List[ScoredPedestrianBoundingBox],
+) -> Tuple[Dict[str, Any], List[ScoredPedestrianBoundingBox]]:
     frame_metrics_combined = {}
     df_raw_inferences = []
     for pid in high_risk_pids:
-        filtered_gt_bboxes = [bbox for bbox in gt_bboxes if bbox.ped_id == pid]  # type: ignore
+        filtered_gt_bboxes = [bbox for bbox in gt_bboxes if bbox.ped_id == pid]
         filtered_inference_bboxes = [
-            bbox for bbox in inference_bboxes if bbox.ped_id == pid and bbox.score >= CONFIDENCE  # type: ignore
+            bbox for bbox in inference_bboxes if bbox.ped_id == pid and bbox.score >= CONFIDENCE
         ]
         df_raw_inferences.extend(filtered_inference_bboxes)
         frame_metrics_combined[pid] = compute_pedestrian_metrics(filtered_gt_bboxes, filtered_inference_bboxes)
@@ -200,7 +200,7 @@ def compute_match_arrays(matches: List[FrameMatch]) -> FrameMetrics:
                 and match.inf_label == "is_crossing"
                 and match.matched_pedestrian.score >= THRESHOLD
             ):
-                tps.append(match.matched_pedestrian)  # pred crossing and gt crossing
+                tps.append(match.matched_pedestrian)
             elif (
                 match.gt_label != match.inf_label
                 and match.inf_label == "is_crossing"
@@ -222,7 +222,7 @@ def compute_match_arrays(matches: List[FrameMatch]) -> FrameMetrics:
     return FrameMetrics(TP=tps, FP=fps, TN=tns, FN=fns)  # type: ignore
 
 
-def compute_metrics(dataset: str, inference_data: Dict[str, List[ScoredLabeledBoundingBox]]) -> pd.DataFrame:
+def compute_metrics(dataset: str, inference_data: Dict[str, List[ScoredPedestrianBoundingBox]]) -> pd.DataFrame:
     dataset_df = download_dataset(dataset)
     results = []
     for row in dataset_df.itertuples():
@@ -292,7 +292,6 @@ def compute_metrics(dataset: str, inference_data: Dict[str, List[ScoredLabeledBo
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
     eval_config = dict(
         iou_threshold=0.5,
         threshold_strategy=0.5,
@@ -300,14 +299,19 @@ def run(args: Namespace) -> None:
     )
     split_model = args.model.split("_")
     inference_data = process_inf_data(split_model[0], split_model[1])
-    results_df = compute_metrics("JAAD [crossing-pedestrian-detection]", inference_data)
-    upload_results("JAAD [crossing-pedestrian-detection]", args.model, [(eval_config, results_df)])
+    results_df = compute_metrics(args.dataset, inference_data)
+    upload_results(args.dataset, args.model, [(eval_config, results_df)])
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument("model", type=str, choices=MODELS, help="Name of the model to test.")
-    ap.add_argument("--dataset", type=str, default=DATASET, help="Optionally specify a custom dataset name to test.")
+    ap.add_argument(
+        "--dataset",
+        type=str,
+        default=DEFAULT_DATASET_NAME,
+        help="Optionally specify a custom dataset name to test.",
+    )
     run(ap.parse_args())
 
 

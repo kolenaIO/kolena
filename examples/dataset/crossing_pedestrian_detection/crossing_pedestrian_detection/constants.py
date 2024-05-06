@@ -21,3 +21,4 @@ MODELS = [
     "static_sort",
     "static_deepsort",
 ]
+DEFAULT_DATASET_NAME = "JAAD [crossing-pedestrian-detection]"

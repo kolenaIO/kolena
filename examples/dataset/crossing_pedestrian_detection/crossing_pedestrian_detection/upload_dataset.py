@@ -20,15 +20,13 @@ import pandas as pd
 import s3fs
 from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
+from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import ID_FIELDS
 from crossing_pedestrian_detection.utils import process_gt_bboxes
 from smart_open import open as smart_open
 from tqdm import tqdm
 
-import kolena
 from kolena.dataset import upload_dataset
-
-DEFAULT_DATASET_NAME = "JAAD [crossing-pedestrian-detection]"
 
 
 def video_locator(video_path: str) -> str:
@@ -76,7 +74,6 @@ def process_data() -> pd.DataFrame:
 
 
 def run(args: Namespace) -> int:
-    kolena.initialize(verbose=True)
     df = process_data()
     upload_dataset(args.dataset, df, id_fields=ID_FIELDS)
     return 0

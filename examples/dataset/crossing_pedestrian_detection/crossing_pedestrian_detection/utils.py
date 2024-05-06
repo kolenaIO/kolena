@@ -27,14 +27,31 @@ HIGH_RISK_THRESHOLD = 0.9
 
 
 @dataclass(frozen=True)
+class PedestrianBoundingBox(LabeledBoundingBox):
+    frame_id: str
+    ped_id: str
+    occlusion: str
+
+
+@dataclass(frozen=True)
+class ScoredPedestrianBoundingBox(ScoredLabeledBoundingBox):
+    frame_id: str
+    ped_id: str
+    occlusion: str
+    time_to_event: Optional[float]
+    failed_to_infer: bool
+    observation: Optional[bool] = None
+
+
+@dataclass(frozen=True)
 class ProccessedGroundTruth:
-    high_risk_bboxes: List[LabeledBoundingBox]
-    low_risk_bboxes: List[LabeledBoundingBox]
+    high_risk_bboxes: List[PedestrianBoundingBox]
+    low_risk_bboxes: List[PedestrianBoundingBox]
     high_risk_pids: List[str]
     low_risk_pids: List[str]
 
 
-def compute_collision_risk(ground_truth_boxes: List[LabeledBoundingBox]) -> float:
+def compute_collision_risk(ground_truth_boxes: List[PedestrianBoundingBox]) -> float:
     """Estimates the collision risk by computing the maximum area of the focus pedestrian's bboxes
     and assign 0-1 score. 0 being no risk (area == 1000) and 1 being high risk (area == 45000)."""
     high_risk_bbox_area: float = 45000.0
@@ -68,12 +85,12 @@ def process_gt_bboxes(ped_annotations: Dict[str, Dict[str, Any]]) -> ProccessedG
     )
 
 
-def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[str, List[LabeledBoundingBox]]:
+def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[str, List[PedestrianBoundingBox]]:
     bboxes_per_ped = {}
     for ped_id, ped_ann in ped_annotations.items():
         bboxes = []
         for frame_id, bbox, occlusion in zip(ped_ann["frames"], ped_ann["bbox"], ped_ann["occlusion"]):
-            bbox = LabeledBoundingBox(  # type: ignore
+            bbox = PedestrianBoundingBox(
                 top_left=(bbox[0], bbox[1]),
                 bottom_right=(bbox[2], bbox[3]),
                 frame_id=frame_id,
@@ -89,7 +106,7 @@ def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[
 
 @dataclass(frozen=True)
 class FrameMatch:
-    frame_id: int
+    frame_id: str
     unmatched_gt: Any
     unmatched_inf: Any
     matched: Any
