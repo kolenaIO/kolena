@@ -333,7 +333,6 @@ def iter_object_detection_results(
     :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
 
     :param dataset_name: Dataset name.
-    :param model_name: Model name.
     :param df: Dataframe for model results.
     :param ground_truths_field: Field name in datapoint with ground truth bounding boxes,
     defaulting to `"ground_truths"`.
@@ -386,7 +385,6 @@ def create_object_detection_results(
     :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
 
     :param dataset_name: Dataset name.
-    :param model_name: Model name.
     :param df: Dataframe for model results.
     :param ground_truths_field: Field name in datapoint with ground truth bounding boxes,
     defaulting to `"ground_truths"`.
