@@ -676,18 +676,13 @@ def test__match_inferences(
         ignored_ground_truths=ignored_ground_truths,
     )
 
-    assert expected_matched == [(gt, inf) for gt, inf in matches.matched]
+    assert expected_matched == matches.matched
     for gt, inf in matches.matched:
         assert inf.iou == pytest.approx(iou(gt, inf), abs=1e-5)
 
     assert expected_unmatched_gt == matches.unmatched_gt
 
-    for expected_inf, inf in zip(expected_unmatched_inf, matches.unmatched_inf):
-        # ignore iou for now, validated in next loop
-        expected_inf_dict, inf_dict = expected_inf._to_dict(), inf._to_dict()
-        for key in expected_inf_dict:
-            assert expected_inf_dict[key] == inf_dict[key]
-
+    assert expected_unmatched_inf == matches.unmatched_inf
     unignored_gt = [gt for gt in ground_truths if gt not in (ignored_ground_truths or [])]
     for inf in matches.unmatched_inf:
         expected_iou = max(iou(inf, gt) for gt in unignored_gt) if unignored_gt else 0.0
@@ -2464,20 +2459,15 @@ def test__match_inferences_multiclass(
         iou_threshold=0.5,
     )
 
-    assert expected_matched == [(gt, inf) for gt, inf in matches.matched]
+    assert expected_matched == matches.matched
     for gt, inf in matches.matched:
         assert inf.iou == pytest.approx(iou(gt, inf), abs=1e-5)
 
-    assert expected_unmatched_gt == [(gt, inf) for gt, inf in matches.unmatched_gt]
+    assert expected_unmatched_gt == matches.unmatched_gt
     for gt, inf in matches.unmatched_gt:
         assert inf is None or iou(gt, inf) == pytest.approx(inf.iou, abs=1e-5)
 
-    for expected_inf, inf in zip(expected_unmatched_inf, matches.unmatched_inf):
-        # ignore iou for now, validated in next loop
-        expected_inf_dict, inf_dict = expected_inf._to_dict(), inf._to_dict()
-        for key in expected_inf_dict:
-            assert expected_inf_dict[key] == inf_dict[key]
-
+    assert expected_unmatched_inf == matches.unmatched_inf
     unignored_gt = [gt for gt in ground_truths if gt not in (ignored_ground_truths or [])]
     for inf in matches.unmatched_inf:
         expected_iou = (
@@ -2561,20 +2551,15 @@ def test__match_inferences_multiclass__iou(
         iou_threshold=0.999,
     )
 
-    assert expected_matched == [(gt, inf) for gt, inf in matches.matched]
+    assert expected_matched == matches.matched
     for gt, inf in matches.matched:
         assert inf.iou == pytest.approx(iou(gt, inf), abs=1e-5)
 
-    assert expected_unmatched_gt == [(gt, inf) for gt, inf in matches.unmatched_gt]
+    assert expected_unmatched_gt == matches.unmatched_gt
     for gt, inf in matches.unmatched_gt:
         assert inf is None or iou(gt, inf) == pytest.approx(inf.iou, abs=1e-5)
 
-    for expected_inf, inf in zip(expected_unmatched_inf, matches.unmatched_inf):
-        # ignore iou for now, validated in next loop
-        expected_inf_dict, inf_dict = expected_inf._to_dict(), inf._to_dict()
-        for key in expected_inf_dict:
-            assert expected_inf_dict[key] == inf_dict[key]
-
+    assert expected_unmatched_inf == matches.unmatched_inf
     for inf in matches.unmatched_inf:
         expected_iou = max(iou(inf, gt) for gt in ground_truths) if ground_truths else 0.0
         assert inf.iou == pytest.approx(expected_iou, abs=1e-5)
