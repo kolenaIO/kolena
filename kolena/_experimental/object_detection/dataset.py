@@ -138,7 +138,7 @@ def multiclass_datapoint_metrics(
         for gt, inf in object_matches.unmatched_gt
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
-    scores = [inf["score"] for inf in tp] + [inf["score"] for inf in fp]
+    scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     labels = sorted(
         {inf.label for _, inf in object_matches.matched}
         .union(
