@@ -321,6 +321,32 @@ def iter_object_detection_results(
     min_confidence_score: float = 0.01,
     batch_size: int = 10_000,
 ) -> Iterator[pd.DataFrame]:
+    """
+    Compute metrics of the model for the dataset.
+
+    Similar to
+    [`create_object_detection_results`](kolena._experimental.object_detection.create_object_detection_results),
+    but returns an `Iterator[DataFrame]` instead of a `DataFrame`. Useful if you do not want to load the entire result
+    set into memory.
+
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
+    :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
+
+    :param dataset_name: Dataset name.
+    :param model_name: Model name.
+    :param df: Dataframe for model results.
+    :param ground_truths_field: Field name in datapoint with ground truth bounding boxes,
+    defaulting to `"ground_truths"`.
+    :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes,
+    defaulting to `"raw_inferences"`.
+    :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
+    :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
+        as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score.
+    :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
+        reduce noise by excluding inferences with low confidence score.
+    :param batch_size: number of results to process per iteration.
+    :return: An `Iterator[DataFrame]` of the computed results
+    """
     _validate_column_present(df, raw_inferences_field)
 
     dataset_df = dataset.download_dataset(dataset_name)
@@ -350,6 +376,30 @@ def create_object_detection_results(
     min_confidence_score: float = 0.01,
     batch_size: int = 10_000,
 ) -> pd.DataFrame:
+    """
+    Compute metrics of the model for the dataset.
+
+    Similar to [`iter_object_detection_results`](kolena._experimental.object_detection.iter_object_detection_results),
+    but returns an `DataFrame` instead of an `Iterator[DataFrame]`.
+
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
+    :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
+
+    :param dataset_name: Dataset name.
+    :param model_name: Model name.
+    :param df: Dataframe for model results.
+    :param ground_truths_field: Field name in datapoint with ground truth bounding boxes,
+    defaulting to `"ground_truths"`.
+    :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes,
+    defaulting to `"raw_inferences"`.
+    :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
+    :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
+        as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score.
+    :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
+        reduce noise by excluding inferences with low confidence score.
+    :param batch_size: number of results to process per iteration.
+    :return: A `DataFrame` of the computed results
+    """
     results_iter = iter_object_detection_results(
         dataset_name,
         df,
@@ -376,7 +426,9 @@ def upload_object_detection_results(
     batch_size: int = 10_000,
 ) -> None:
     """
-    Compute metrics and upload results of the model for the dataset.
+    Compute metrics and upload results of the model computed by
+    [`iter_object_detection_results`][kolena._experimental.object_detection.iter_object_detection_results]
+    for the dataset.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
     :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
