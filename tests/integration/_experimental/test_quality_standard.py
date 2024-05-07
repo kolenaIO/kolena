@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import json
+from typing import List
+from typing import Tuple
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -19,6 +23,7 @@ from pandas.testing import assert_frame_equal
 from kolena._experimental.quality_standard import download_quality_standard_result
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
+from kolena.dataset.evaluation import EvalConfig
 from tests.integration._experimental.helper import create_quality_standard
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
@@ -28,7 +33,7 @@ ID_FIELDS = ["locator"]
 
 
 @pytest.fixture
-def datapoint_df() -> pd.DataFrame:
+def datapoints() -> pd.DataFrame:
     return pd.DataFrame(
         [
             dict(
@@ -41,23 +46,33 @@ def datapoint_df() -> pd.DataFrame:
 
 
 @pytest.fixture
-def result_df() -> pd.DataFrame:
-    return pd.DataFrame([dict(locator=fake_locator(i, "datapoints"), score=i * 0.1) for i in range(N_DATAPOINTS)])
+def results() -> List[Tuple[EvalConfig, pd.DataFrame]]:
+    return [
+        (None, pd.DataFrame([dict(locator=fake_locator(i, "datapoints"), score=i * 0.1) for i in range(N_DATAPOINTS)])),
+        (
+            dict(double=True),
+            pd.DataFrame([dict(locator=fake_locator(i, "datapoints"), score=i * 0.2) for i in range(N_DATAPOINTS)]),
+        ),
+    ]
 
 
-def test__download_quality_standard_result(datapoint_df: pd.DataFrame, result_df: pd.DataFrame) -> None:
+def test__download_quality_standard_result(
+    datapoints: pd.DataFrame,
+    results: List[Tuple[EvalConfig, pd.DataFrame]],
+) -> None:
     dataset_name = with_test_prefix("test__download_quality_standard_result__dataset")
     model_name = with_test_prefix("test__download_quality_standard_result__model")
-    upload_dataset(dataset_name, datapoint_df, id_fields=ID_FIELDS)
+    eval_configs = [eval_config for eval_config, _ in results]
+    upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
     _upload_results(
         dataset_name,
         model_name,
-        result_df,
+        results,
     )
 
+    test_case_name = "city"
     metric_group_name = "test group"
     metric_name = "Min Score"
-    test_case_name = "city"
     quality_standard = dict(
         name=with_test_prefix("test__download_quality_standard_result__quality_standard"),
         stratifications=[
@@ -88,13 +103,30 @@ def test__download_quality_standard_result(datapoint_df: pd.DataFrame, result_df
 
     df_columns: pd.MultiIndex = quality_standard_df.columns
     assert df_columns.names == ["model", "eval_config", "metric_group", "metric"]
-    assert df_columns.levels == [[model_name], ["null"], [metric_group_name], [metric_name]]
+    assert all(df_columns.levels[0] == [model_name])
+    assert all(df_columns.levels[1] == [json.dumps(eval_config) for eval_config in eval_configs])
+    assert all(df_columns.levels[2] == [metric_group_name])
+    assert all(df_columns.levels[3] == [metric_name])
 
     df_index: pd.MultiIndex = quality_standard_df.index
     assert df_index.names == ["stratification", "test_case"]
     assert all(df_index.levels[0] == ["Dataset", test_case_name])
     assert all(df_index.levels[1] == ["new york", "waterloo"])
 
-    assert quality_standard_df.loc[("Dataset", np.nan), (model_name, "null", metric_group_name, metric_name)] == 0.0
-    assert quality_standard_df.loc[("city", "new york"), (model_name, "null", metric_group_name, metric_name)] == 0.0
-    assert quality_standard_df.loc[("city", "waterloo"), (model_name, "null", metric_group_name, metric_name)] == 0.1
+    for eval_config in eval_configs:
+        json_config = json.dumps(eval_config)
+        newyork_minimum = 0.0
+        waterloo_minimum = 0.2 if eval_config else 0.1
+        dataset_minimum = min(newyork_minimum, waterloo_minimum)
+        assert (
+            quality_standard_df.loc[("Dataset", np.nan), (model_name, json_config, metric_group_name, metric_name)]
+            == dataset_minimum
+        )
+        assert (
+            quality_standard_df.loc[("city", "new york"), (model_name, json_config, metric_group_name, metric_name)]
+            == newyork_minimum
+        )
+        assert (
+            quality_standard_df.loc[("city", "waterloo"), (model_name, json_config, metric_group_name, metric_name)]
+            == waterloo_minimum
+        )
