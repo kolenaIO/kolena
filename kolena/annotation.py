@@ -55,6 +55,7 @@ class _AnnotationType(DataType):
     BITMAP_MASK = "BITMAP_MASK"
     LABEL = "LABEL"
     TIME_SEGMENT = "TIME_SEGMENT"
+    TEXT_SEGMENT = "TEXT_SEGMENT"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -382,6 +383,67 @@ class ScoredLabeledTimeSegment(TimeSegment):
     """The score associated with this time segment."""
 
 
+@dataclass(frozen=True, config=ValidatorConfig)
+class TextSegment(Annotation):
+    """
+    Segment of text in the associated text field
+
+    ```py
+    text_segments: List[TextSegment] = [
+        TextSegment(text_field="text", start=0, end=5),
+        TextSegment(text_field="summary", start=10, end=51),
+    ]
+    """
+
+    text_field: str
+    """Text field column name containing the text segments."""
+
+    start: int
+    """Start index of the text segment."""
+
+    end: int
+    """End index of the text segment."""
+
+    def __post_init__(self) -> None:
+        if self.start < 0:
+            raise ValueError(f"Start index must be non-negative ({self.start} provided)")
+        if self.end < 0:
+            raise ValueError(f"End index must be non-negative ({self.end} provided)")
+        if self.start >= self.end:
+            raise ValueError(f"Start index must be less than end index ({self.start} >= {self.end})")
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.TEXT_SEGMENT
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class LabeledTextSegment(TextSegment):
+    """Text segment with accompanying label, e.g. Location."""
+
+    label: str
+    """The label associated with this text segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredTextSegment(TextSegment):
+    """Text segment with additional float score, representing e.g. model prediction confidence."""
+
+    score: float
+    """The score associated with this text segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredLabeledTextSegment(TextSegment):
+    """Text segment with accompanying label and score."""
+
+    label: str
+    """The label associated with this text segment."""
+
+    score: float
+    """The score associated with this text segment."""
+
+
 _ANNOTATION_TYPES = [
     BoundingBox,
     LabeledBoundingBox,
@@ -407,4 +469,8 @@ _ANNOTATION_TYPES = [
     LabeledTimeSegment,
     ScoredTimeSegment,
     ScoredLabeledTimeSegment,
+    TextSegment,
+    LabeledTextSegment,
+    ScoredTextSegment,
+    ScoredLabeledTextSegment,
 ]
