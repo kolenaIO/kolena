@@ -25,10 +25,9 @@ import pandas as pd
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
-from kolena._api.v2.model import Path as ModelPath
+from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
 from kolena._api.v2.model import UploadResultsResponse
-from kolena._api.v2.quality_standard import Path as QualityStandardPath
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.batched_load import _BatchedLoader
@@ -71,7 +70,7 @@ def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.D
     init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size)
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
-        endpoint_path=ModelPath.LOAD_RESULTS.value,
+        endpoint_path=Path.LOAD_RESULTS.value,
         df_class=None,
         endpoint_api_version=API_V2,
     )
@@ -126,7 +125,7 @@ def _send_upload_results_request(
         dataset_id=dataset_id,
         sources=sources,
     )
-    response = krequests.post(ModelPath.UPLOAD_RESULTS, json=asdict(request))
+    response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
     return from_dict(UploadResultsResponse, response.json())
 
@@ -267,52 +266,3 @@ def upload_results(
     :return: None
     """
     _upload_results(dataset, model, results, thresholded_fields=thresholded_fields)
-
-
-def _format_quality_standard_result_df(quality_standard_result: dict) -> pd.DataFrame:
-    df = pd.DataFrame.from_dict(quality_standard_result).rename_axis("stratification")
-
-    df = df.explode("results_by_stratification")
-    df = pd.concat(
-        [df.drop(["results_by_stratification"], axis=1), df["results_by_stratification"].apply(pd.Series)],
-        axis=1,
-    )
-    df.set_index(["test_case"], append=True, drop=True, inplace=True)
-
-    df = df.explode("model_results")
-    df["model"] = df["model_results"].apply(lambda x: x["model"]["name"])
-    df["eval_config"] = df["model_results"].apply(lambda x: json.dumps(x["model"]["eval_config"]))
-    df["metric_group"] = df["model_results"].apply(lambda x: list(x["results"].keys()))
-
-    df = df.explode("metric_group")
-    df["metric"] = df.apply(lambda x: list(x["model_results"]["results"][x["metric_group"]].keys()), axis=1)
-
-    df = df.explode("metric")
-    df["value"] = df.apply(lambda x: x["model_results"]["results"][x["metric_group"]][x["metric"]], axis=1)
-
-    return df.pivot(columns=["model", "eval_config", "metric_group", "metric"], values="value")
-
-
-def download_quality_standard_result(
-    dataset: str,
-    models: List[str],
-    metric_groups: Union[List[str], None] = None,
-) -> pd.DataFrame:
-    """
-    Download the quality standard results given a dataset and list of models.
-
-    :param dataset: The name of the dataset.
-    :param models: The names of the models.
-    :param metric_groups: The names of the metric groups to include in the results.
-    All metric groups are included when this value is `None`.
-    :return: A Dataframe containing the quality standard results.
-    """
-    model_log = ", ".join([f"'{model}'" for model in models])
-    log.info(f"downloading quality standard results for model(s) {model_log} on dataset '{dataset}'")
-    response = krequests.get(
-        QualityStandardPath.RESULT,
-        params=dict(dataset_name=dataset, models=models, metric_groups=metric_groups),
-        api_version="v2",
-    )
-    krequests.raise_for_status(response)
-    return _format_quality_standard_result_df(response.json())
