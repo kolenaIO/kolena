@@ -154,9 +154,10 @@ def _match_inferences_single_class_pascal_voc(
         best_gt_iou = 0.0
         for g, gt in enumerate(gt_objects):
             inf_gt_iou = iou(gt, inf)
+            # track the highest IoU, regardless of threshold
             if gt not in (ignored_ground_truths or []):
                 best_gt_iou = max(best_gt_iou, inf_gt_iou)
-                # track the highest IoU over the threshold
+            # track the highest IoU over the threshold
             if inf_gt_iou >= iou_threshold and inf_gt_iou > match_gt_iou:
                 match_gt_iou = inf_gt_iou
                 match_gt = g
