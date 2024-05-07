@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import numpy as np
 import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
@@ -95,3 +96,7 @@ def test__download_quality_standard_result(datapoint_df: pd.DataFrame, result_df
     assert df_index.names == ["stratification", "test_case"]
     assert all(df_index.levels[0] == ["Dataset", test_case_name])
     assert all(df_index.levels[1] == ["new york", "waterloo"])
+
+    assert quality_standard_df.loc[("Dataset", np.nan), (model_name, "null", metric_group_name, metric_name)] == 0.0
+    assert quality_standard_df.loc[("city", "new york"), (model_name, "null", metric_group_name, metric_name)] == 0.0
+    assert quality_standard_df.loc[("city", "waterloo"), (model_name, "null", metric_group_name, metric_name)] == 0.1
