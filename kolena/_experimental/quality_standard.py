@@ -52,13 +52,13 @@ def download_quality_standard_result(
     metric_groups: Union[List[str], None] = None,
 ) -> pd.DataFrame:
     """
-    Download the quality standard results given a dataset and list of models.
+    Download quality standard result given a dataset and list of models.
 
     :param dataset: The name of the dataset.
     :param models: The names of the models.
-    :param metric_groups: The names of the metric groups to include in the results.
-    All metric groups are included when this value is `None`.
-    :return: A Dataframe containing the quality standard results.
+    :param metric_groups: The names of the metric groups to include in the result.
+    Note all metric groups are included when this value is `None`.
+    :return: A Dataframe containing the quality standard result.
     """
     model_log = ", ".join([f"'{model}'" for model in models])
     log.info(f"downloading quality standard results for model(s) {model_log} on dataset '{dataset}'")

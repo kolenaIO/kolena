@@ -33,8 +33,6 @@ def datapoint_df() -> pd.DataFrame:
         [
             dict(
                 locator=fake_locator(i, "datapoints"),
-                width=i + 500,
-                height=i + 400,
                 city=["new york", "waterloo"][i % 2],
             )
             for i in range(N_DATAPOINTS)
