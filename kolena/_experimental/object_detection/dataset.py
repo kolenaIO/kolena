@@ -310,6 +310,79 @@ def _validate_column_present(df: pd.DataFrame, col: str) -> None:
         raise IncorrectUsageError(f"Missing column '{col}'")
 
 
+def _iter_object_detection_results(
+    dataset_name: str,
+    df: pd.DataFrame,
+    *,
+    ground_truths_field: str = "ground_truths",
+    raw_inferences_field: str = "raw_inferences",
+    iou_threshold: float = 0.5,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    min_confidence_score: float = 0.01,
+    batch_size: int = 10_000,
+) -> Iterator[pd.DataFrame]:
+    _validate_column_present(df, raw_inferences_field)
+
+    dataset_df = dataset.download_dataset(dataset_name)
+    dataset_df = dataset_df[["locator", ground_truths_field]]
+    _validate_column_present(dataset_df, ground_truths_field)
+
+    merged_df = df.merge(dataset_df, on=["locator"])
+    return _compute_metrics(
+        merged_df,
+        ground_truth=ground_truths_field,
+        inference=raw_inferences_field,
+        iou_threshold=iou_threshold,
+        threshold_strategy=threshold_strategy,
+        min_confidence_score=min_confidence_score,
+        batch_size=batch_size,
+    )
+
+
+def compute_object_detection_results(
+    dataset_name: str,
+    df: pd.DataFrame,
+    *,
+    ground_truths_field: str = "ground_truths",
+    raw_inferences_field: str = "raw_inferences",
+    iou_threshold: float = 0.5,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    min_confidence_score: float = 0.01,
+    batch_size: int = 10_000,
+) -> pd.DataFrame:
+    """
+    Compute metrics of the model for the dataset.
+
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
+    :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
+
+    :param dataset_name: Dataset name.
+    :param df: Dataframe for model results.
+    :param ground_truths_field: Field name in datapoint with ground truth bounding boxes,
+    defaulting to `"ground_truths"`.
+    :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes,
+    defaulting to `"raw_inferences"`.
+    :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
+    :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
+        as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score.
+    :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
+        reduce noise by excluding inferences with low confidence score.
+    :param batch_size: number of results to process per iteration.
+    :return: A `DataFrame` of the computed results
+    """
+    results_iter = _iter_object_detection_results(
+        dataset_name,
+        df,
+        ground_truths_field=ground_truths_field,
+        raw_inferences_field=raw_inferences_field,
+        iou_threshold=iou_threshold,
+        threshold_strategy=threshold_strategy,
+        min_confidence_score=min_confidence_score,
+        batch_size=batch_size,
+    )
+    return pd.concat(list(results_iter))
+
+
 def upload_object_detection_results(
     dataset_name: str,
     model_name: str,
@@ -323,7 +396,9 @@ def upload_object_detection_results(
     batch_size: int = 10_000,
 ) -> None:
     """
-    Compute metrics and upload results of the model for the dataset.
+    Compute metrics and upload results of the model computed by
+    [`compute_object_detection_results`][kolena._experimental.object_detection.compute_object_detection_results]
+    for the dataset.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
     :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
@@ -348,29 +423,19 @@ def upload_object_detection_results(
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
     )
-    _validate_column_present(df, raw_inferences_field)
-
-    dataset_df = dataset.download_dataset(dataset_name)
-    dataset_df = dataset_df[["locator", ground_truths_field]]
-    _validate_column_present(dataset_df, ground_truths_field)
-
-    merged_df = df.merge(dataset_df, on=["locator"])
+    results = _iter_object_detection_results(
+        dataset_name,
+        df,
+        ground_truths_field=ground_truths_field,
+        raw_inferences_field=raw_inferences_field,
+        iou_threshold=iou_threshold,
+        threshold_strategy=threshold_strategy,
+        min_confidence_score=min_confidence_score,
+        batch_size=batch_size,
+    )
     dataset.upload_results(
         dataset_name,
         model_name,
-        [
-            (
-                eval_config,
-                _compute_metrics(
-                    merged_df,
-                    ground_truth=ground_truths_field,
-                    inference=raw_inferences_field,
-                    iou_threshold=iou_threshold,
-                    threshold_strategy=threshold_strategy,
-                    min_confidence_score=min_confidence_score,
-                    batch_size=batch_size,
-                ),
-            ),
-        ],
+        [(eval_config, results)],
         thresholded_fields=["thresholded"],
     )
