@@ -25,7 +25,7 @@ import pandas as pd
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import LoadResultsRequest
-from kolena._api.v2.model import Path
+from kolena._api.v2.model import Path as ModelPath
 from kolena._api.v2.model import UploadResultsRequest
 from kolena._api.v2.model import UploadResultsResponse
 from kolena._api.v2.quality_standard import Path as QualityStandardPath
@@ -71,7 +71,7 @@ def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.D
     init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size)
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
-        endpoint_path=Path.LOAD_RESULTS.value,
+        endpoint_path=ModelPath.LOAD_RESULTS.value,
         df_class=None,
         endpoint_api_version=API_V2,
     )
@@ -126,7 +126,7 @@ def _send_upload_results_request(
         dataset_id=dataset_id,
         sources=sources,
     )
-    response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
+    response = krequests.post(ModelPath.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
     return from_dict(UploadResultsResponse, response.json())
 
@@ -295,8 +295,8 @@ def _format_quality_standard_result_df(quality_standard_result: dict) -> pd.Data
 
 def download_quality_standard_result(
     dataset: str,
-    models: list[str],
-    metric_groups: Union[list[str], None] = None,
+    models: List[str],
+    metric_groups: Union[List[str], None] = None,
 ) -> pd.DataFrame:
     """
     Download the quality standard results given a dataset and list of models.
