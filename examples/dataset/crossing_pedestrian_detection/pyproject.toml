@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "crossing-pedestrian-detection"
 version = "0.1.0"
-description = ""
-authors = ["Nitesh Sandal <nitesh@kolena.io>"]
+description = "Example Kolena integration for Crossing Pedestrian Detection"
+authors = ["Kolena Engineering <eng@kolena.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
