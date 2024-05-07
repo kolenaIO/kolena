@@ -113,7 +113,6 @@ class FrameMatch:
     gt_label: Optional[str]
     inf_label: Optional[str]
     gt: Optional[BoundingBox]
-    iou_threshold: float
     matched_pedestrian: Optional[ScoredLabeledBoundingBox] = None
 
 

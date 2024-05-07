@@ -161,7 +161,6 @@ def compute_pedestrian_metrics(
             frame_metrics[frame_id] = FrameMatch(
                 frame_id=frame_id,
                 matched_pedestrian=matches.matched[0][1] if len(matches.matched) > 0 else None,
-                iou_threshold=0.5,
                 gt=matches.matched[0][0] if len(matches.matched) > 0 else None,
                 gt_label=gt_bbox_per_frame[frame_id].label,
                 inf_label=matches.matched[0][1].label if len(matches.matched) > 0 else None,
@@ -193,30 +192,20 @@ def compute_frame_metrics_row(
 def compute_match_arrays(matches: List[FrameMatch]) -> FrameMetrics:
     tps, fps, tns, fns = [], [], [], []
     for match in matches:
-        if match.matched_pedestrian is not None and match.matched_pedestrian.score is not None:
-            if (
-                match.gt_label == match.inf_label
-                and match.inf_label == "is_crossing"
-                and match.matched_pedestrian.score >= THRESHOLD
-            ):
-                tps.append(match.matched_pedestrian)
-            elif (
-                match.gt_label != match.inf_label
-                and match.inf_label == "is_crossing"
-                and match.matched_pedestrian.score >= THRESHOLD
-            ):
-                continue
-            elif (
-                match.inf_label == "not_crossing"
-                and match.gt_label == "is_crossing"
-                and match.matched_pedestrian.score < THRESHOLD
-            ):
-                continue
+        if match.matched_pedestrian is not None:
+            if match.inf_label == "is_crossing":
+                if match.gt_label == match.inf_label and match.matched_pedestrian.score >= THRESHOLD:
+                    tps.append(match.matched_pedestrian)
+                elif match.gt_label != match.inf_label and match.matched_pedestrian.score >= THRESHOLD:
+                    continue
             else:
-                tns.append(match.gt)
+                if match.gt_label != match.inf_label and match.matched_pedestrian.score < THRESHOLD:
+                    continue
+                else:
+                    tns.append(match.gt)
 
-        fps = [inf for inf in match.unmatched_inf if inf.score >= THRESHOLD]
-        fns = match.unmatched_gt + [gt for gt, inf in match.matched if inf.score < THRESHOLD]
+        fps.extend([inf for inf in match.unmatched_inf if inf.score >= THRESHOLD])
+        fns.extend(match.unmatched_gt + [gt for gt, inf in match.matched if inf.score < THRESHOLD])
 
     return FrameMetrics(TP=tps, FP=fps, TN=tns, FN=fns)  # type: ignore
 
@@ -292,9 +281,9 @@ def compute_metrics(dataset: str, inference_data: Dict[str, List[ScoredPedestria
 
 def run(args: Namespace) -> None:
     eval_config = dict(
-        iou_threshold=0.5,
-        threshold_strategy=0.5,
-        min_confidence_score=0.01,
+        iou_threshold=THRESHOLD,
+        threshold_strategy=THRESHOLD,
+        min_confidence_score=CONFIDENCE,
     )
     split_model = args.model.split("_")
     inference_data = process_inf_data(split_model[0], split_model[1])
