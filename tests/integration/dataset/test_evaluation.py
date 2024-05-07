@@ -21,8 +21,10 @@ from kolena.dataset import download_dataset
 from kolena.dataset import download_results
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
+from kolena.dataset.evaluation import download_quality_standard_result
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
+from tests.integration.dataset.helper import create_quality_standard
 from tests.integration.dataset.test_dataset import batch_iterator
 from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
@@ -528,3 +530,57 @@ def test__download_results__preserve_none() -> None:
     assert fetched_df_dp["a"][0] is None
     assert np.isinf(fetched_df_dp["a"][1])
     assert np.isnan(fetched_df_dp["a"][2])
+
+
+def test__download_quality_standard_result() -> None:
+    # Create dataset and upload results
+    dataset_name = with_test_prefix("test__download_quality_standard_result__dataset")
+    model_name = with_test_prefix("test__download_quality_standard_result__model")
+    df_datapoint = get_df_dp()
+    upload_dataset(dataset_name, df_datapoint, id_fields=ID_FIELDS)
+
+    df_result = get_df_result()
+    _upload_results(
+        dataset_name,
+        model_name,
+        df_result,
+    )
+
+    # Create quality standard by calling galleon directly
+    metric_group_name = "test group"
+    metric_name = "Min Score"
+    test_case_name = "city"
+    quality_standard = dict(
+        name=with_test_prefix("test__download_quality_standard_result__quality_standard"),
+        stratifications=[
+            dict(
+                name=test_case_name,
+                stratify_fields=[dict(source="datapoint", field="city", values=["new york", "waterloo"])],
+                test_cases=[
+                    dict(name="new york", stratification=[dict(value="new york")]),
+                    dict(name="waterloo", stratification=[dict(value="waterloo")]),
+                ],
+            ),
+        ],
+        metric_groups=[
+            dict(
+                name=metric_group_name,
+                metrics=[dict(label=metric_name, source="result", aggregator="min", params=dict(key="score"))],
+            ),
+        ],
+        version="1.0",
+    )
+    create_quality_standard(dataset_name, quality_standard)
+
+    # Test new endpoint
+    # Test with and without metric group
+    quality_standard_df = download_quality_standard_result(dataset_name, [model_name])
+
+    df_columns: pd.MultiIndex = quality_standard_df.columns
+    assert df_columns.names == ["model", "eval_config", "metric_group", "metric"]
+    assert df_columns.levels == [[model_name], ["null"], [metric_group_name], [metric_name]]
+
+    df_index: pd.MultiIndex = quality_standard_df.index
+    assert df_index.names == ["stratification", "test_case"]
+    assert all(df_index.levels[0] == ["Dataset", test_case_name])
+    assert all(df_index.levels[1] == ["new york", "waterloo"])
