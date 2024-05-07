@@ -28,14 +28,14 @@ HIGH_RISK_THRESHOLD = 0.9
 
 @dataclass(frozen=True)
 class PedestrianBoundingBox(LabeledBoundingBox):
-    frame_id: str
+    frame_id: int
     ped_id: str
     occlusion: str
 
 
 @dataclass(frozen=True)
 class ScoredPedestrianBoundingBox(ScoredLabeledBoundingBox):
-    frame_id: str
+    frame_id: int
     ped_id: str
     occlusion: str
     time_to_event: Optional[float]
@@ -95,7 +95,7 @@ def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[
                 bottom_right=(bbox[2], bbox[3]),
                 frame_id=frame_id,
                 ped_id=ped_id,
-                occlusion=occlusion,
+                occlusion=str(occlusion),
                 label="is_crossing" if "b" in ped_id and ped_ann["attributes"]["crossing"] > 0 else "not_crossing",
             )
             if bbox.area > 100:
@@ -106,7 +106,7 @@ def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[
 
 @dataclass(frozen=True)
 class FrameMatch:
-    frame_id: str
+    frame_id: int
     unmatched_gt: Any
     unmatched_inf: Any
     matched: Any
