@@ -28,7 +28,7 @@ from tests.integration._experimental.helper import create_quality_standard
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
 
-N_DATAPOINTS = 20
+N_DATAPOINTS = 10
 ID_FIELDS = ["locator"]
 
 
@@ -72,7 +72,8 @@ def test__download_quality_standard_result(
 
     test_case_name = "city"
     metric_group_name = "test group"
-    metric_name = "Min Score"
+    max_metric_label = "Max Score"
+    min_metric_label = "Min Score"
     quality_standard = dict(
         name=with_test_prefix("test__download_quality_standard_result__quality_standard"),
         stratifications=[
@@ -88,7 +89,10 @@ def test__download_quality_standard_result(
         metric_groups=[
             dict(
                 name=metric_group_name,
-                metrics=[dict(label=metric_name, source="result", aggregator="min", params=dict(key="score"))],
+                metrics=[
+                    dict(label="Max Score", source="result", aggregator="max", params=dict(key="score")),
+                    dict(label="Min Score", source="result", aggregator="min", params=dict(key="score")),
+                ],
             ),
         ],
         version="1.0",
@@ -106,7 +110,7 @@ def test__download_quality_standard_result(
     assert all(df_columns.levels[0] == [model_name])
     assert all(df_columns.levels[1] == [json.dumps(eval_config) for eval_config in eval_configs])
     assert all(df_columns.levels[2] == [metric_group_name])
-    assert all(df_columns.levels[3] == [metric_name])
+    assert all(df_columns.levels[3] == [max_metric_label, min_metric_label])
 
     df_index: pd.MultiIndex = quality_standard_df.index
     assert df_index.names == ["stratification", "test_case"]
@@ -115,18 +119,48 @@ def test__download_quality_standard_result(
 
     for eval_config in eval_configs:
         json_config = json.dumps(eval_config)
+
+        newyork_maximum = 0.8 * 2 if eval_config else 0.8
+        waterloo_maximum = 0.9 * 2 if eval_config else 0.9
+        dataset_maximum = max(newyork_maximum, waterloo_maximum)
+
+        assert (
+            quality_standard_df.loc[("Dataset", np.nan), (model_name, json_config, metric_group_name, max_metric_label)]
+            == dataset_maximum
+        )
+        assert (
+            quality_standard_df.loc[
+                ("city", "new york"),
+                (model_name, json_config, metric_group_name, max_metric_label),
+            ]
+            == newyork_maximum
+        )
+        assert (
+            quality_standard_df.loc[
+                ("city", "waterloo"),
+                (model_name, json_config, metric_group_name, max_metric_label),
+            ]
+            == waterloo_maximum
+        )
+
         newyork_minimum = 0.0
-        waterloo_minimum = 0.2 if eval_config else 0.1
+        waterloo_minimum = 0.1 * 2 if eval_config else 0.1
         dataset_minimum = min(newyork_minimum, waterloo_minimum)
         assert (
-            quality_standard_df.loc[("Dataset", np.nan), (model_name, json_config, metric_group_name, metric_name)]
+            quality_standard_df.loc[("Dataset", np.nan), (model_name, json_config, metric_group_name, min_metric_label)]
             == dataset_minimum
         )
         assert (
-            quality_standard_df.loc[("city", "new york"), (model_name, json_config, metric_group_name, metric_name)]
+            quality_standard_df.loc[
+                ("city", "new york"),
+                (model_name, json_config, metric_group_name, min_metric_label),
+            ]
             == newyork_minimum
         )
         assert (
-            quality_standard_df.loc[("city", "waterloo"), (model_name, json_config, metric_group_name, metric_name)]
+            quality_standard_df.loc[
+                ("city", "waterloo"),
+                (model_name, json_config, metric_group_name, min_metric_label),
+            ]
             == waterloo_minimum
         )
