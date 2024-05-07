@@ -397,7 +397,7 @@ def upload_object_detection_results(
 ) -> None:
     """
     Compute metrics and upload results of the model computed by
-    [`iter_object_detection_results`][kolena._experimental.object_detection.iter_object_detection_results]
+    [`compute_object_detection_results`][kolena._experimental.object_detection.compute_object_detection_results]
     for the dataset.
 
     Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
