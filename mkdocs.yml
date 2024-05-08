@@ -7,34 +7,14 @@ copyright: Copyright &copy; 2021-2024 Kolena
 nav:
   - Developer Guide:
     - Developer Guide: index.md
+    - Quickstart: dataset/quickstart.md
     - Installing <code>kolena</code>: installing-kolena.md
-    - Datasets:
-      - Datasets: dataset/index.md
-      - Quickstart: dataset/quickstart.md
+    - Core Concepts: dataset/core-concepts/index.md
+    - Advanced Usage:
+      - Advanced Usage: dataset/advanced-usage/index.md
       - Dataset Formatting: dataset/formatting-your-datasets.md
-      - Core Concepts:
-        - Core Concepts: dataset/core-concepts/index.md
-        - Dataset: dataset/core-concepts/dataset.md
-        - Quality Standard: dataset/core-concepts/quality-standard.md
-      - Advanced Usage:
-        - Advanced Usage: dataset/advanced-usage/index.md
-        - Extracting Metadata from Text Fields: dataset/advanced-usage/extract-text-metadata.md
-        - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
-    - Workflows:
-      - Workflows: workflow/index.md
-      - Quickstart: workflow/quickstart.md
-      - Core Concepts:
-        - Core Concepts: workflow/core-concepts/index.md
-        - Workflow: workflow/core-concepts/workflow.md
-        - Test Case & Test Suite: workflow/core-concepts/test-suite.md
-        - Model: workflow/core-concepts/model.md
-      - Building a Workflow: workflow/building-a-workflow.md
-      - Advanced Usage:
-        - Advanced Usage: workflow/advanced-usage/index.md
-        - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
-        - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
-        - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
-        - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
+      - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
+      - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
     - Connecting Cloud Storage:
       - Connecting Cloud Storage: connecting-cloud-storage/index.md
       - Amazon S3: connecting-cloud-storage/amazon-s3.md
@@ -42,6 +22,28 @@ nav:
       - Google Cloud Storage: connecting-cloud-storage/google-cloud-storage.md
       - Azure Blob Storage: connecting-cloud-storage/azure-blob-storage.md
       - HTTP Basic: connecting-cloud-storage/http-basic.md
+    - Archive:
+      - Kolena Workflows:
+        - Workflows: workflow/index.md
+        - Quickstart: workflow/quickstart.md
+        - Advanced Usage: workflow/advanced-usage/index.md
+        - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
+        - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
+        - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
+        - Core Concepts:
+          - Core Concepts: workflow/core-concepts/index.md
+          - Workflow: workflow/core-concepts/workflow.md
+          - Test Case & Test Suite: workflow/core-concepts/test-suite.md
+          - Model: workflow/core-concepts/model.md
+        - Building a Workflow: workflow/building-a-workflow.md
+        - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
+        - Building a Workflow: workflow/building-a-workflow.md
+        - Advanced Usage:
+          - Advanced Usage: workflow/advanced-usage/index.md
+          - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
+          - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
+          - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
+          - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
   - API Reference:
     - API Reference: reference/index.md
     - <code>kolena.annotation</code>: reference/annotation.md

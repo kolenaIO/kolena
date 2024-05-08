@@ -8,8 +8,7 @@ search:
 
 A **Quality Standard** tracks a standardized process for how a team evaluates a model's performance on a dataset.
 Users may define and manage quality standards for a dataset in the Kolena web application from a that dataset's
-`Quality Standards` tab. Once defined, a quality standard provides a well-defined framework for easily understanding and
-comparing future model results.
+`Quality Standards` tab. 
 
 A Quality Standard is composed of [Test Cases](#test-cases) and [Metrics](#metrics).
 
@@ -23,7 +22,7 @@ Kolena supports easy test case creation through dividing a dataset along categor
 For example, if you have a dataset with images of faces of individuals, you may wish to create a set of test cases that
 divides your dataset by `datapoint.race` (categorical) or `datapoint.age` (numeric).
 
-The datasets quickstart provides a more hands-on example of
+The quickstart guide provides a more hands-on example of
 [defining test cases](../quickstart.md/#define-test-cases).
 
 ## Metrics

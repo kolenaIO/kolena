@@ -7,8 +7,6 @@ search:
 # :kolena-dataset-20: Dataset
 
 A **dataset** is a structured assembly of datapoints, designed for model evaluation.
-Each datapoint in a dataset is a comprehensive unit that combines data
-traditionally segmented into test samples, ground truth, and metadata.
 This structure is immutable, meaning once a datapoint is added,
 it cannot be altered without creating a new version of the dataset.
 This immutability ensures the integrity and traceability of the data used in testing models.
@@ -16,12 +14,10 @@ This immutability ensures the integrity and traceability of the data used in tes
 ## Datapoints
 
 Datapoints are integral components within the dataset structure used for evaluating models.
-They are versatile and immutable objects that encompass the role traditionally played by
-test samples, ground truth, and metadata. Key characteristics of datapoints include:
+They are versatile and immutable objects. Key characteristics of datapoints include:
 
 - **Unified Object Structure**:
-  Datapoints replace the need for separate entities like test samples and ground truth.
-  They are singular, grab-bag objects that can embody various types of data,
+  Datapoints are singular, grab-bag objects that can embody various types of data,
   including images, as indicated by the presence of a data_type field.
 
 - **Immunity to Change**: Once a datapoint is added to a dataset, it cannot be altered.
@@ -37,11 +33,6 @@ test samples, ground truth, and metadata. Key characteristics of datapoints incl
 - **Extension of Data Classes**: Datapoints extend data classes, allowing for flexibility and customization.
   For instance, they can include annotation objects like [`BoundingBox`][kolena.annotation.BoundingBox],
   and these objects can be further extended as needed.
-
-In essence, datapoints in this context are versatile,
-immutable data units that are exclusively associated with a specific dataset,
-playing a crucial role in model evaluation by
-encapsulating various types of data and annotations within a unified object structure.
 
 ### How to generate datapoints?
 
