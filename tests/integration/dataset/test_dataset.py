@@ -37,7 +37,7 @@ TEST_DATASET_HISTORY_VERSIONS = 10
 
 
 def test__upload_dataset__empty() -> None:
-    name = with_test_prefix(f"{__file__}::test__uplaod_dataset__empty")
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__empty")
     upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
     assert download_dataset(name).empty
