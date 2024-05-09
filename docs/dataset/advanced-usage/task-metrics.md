@@ -60,7 +60,7 @@ Following commonly used object detection metrics are supported out-of-the-box:
 4. [F1 Score](../../metrics/f1-score.md)
 
 ??? "Required fields"
-    Kolena attempts to automatically detect fields for true positive, false positive and false negative counts. For more information, please visit [Formatting results for Object Detection](../formatting-your-datasets.md#formatting-results-for-object-detection)
+    Kolena attempts to automatically detect fields for true positive, false positive and false negative counts. For more information, please visit [Formatting results for Object Detection](./formatting-your-datasets.md#formatting-results-for-object-detection)
 
 
 <figure markdown>
@@ -82,6 +82,6 @@ For categorical evaluations (class lable, boolean, etc) rate and count aggregati
     ![Numeric aggregation options](../../assets/images/numeric-aggregation-optins.png)
 
     ![Numeric aggregation](../../assets/images/categorical-aggregation-options.png)
-    
+
 </dive>
 
