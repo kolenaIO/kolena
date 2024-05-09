@@ -33,7 +33,7 @@ Following commonly used Binary classification metrics are supported out-of-the-b
 Follow the steps below to setup Binary Classification metrics: 
 <figure markdown>
 ![Defining Metrics](../../assets/images/task-metrics-binary-classification.gif)
-<figcaption>Task Metrics: Regression</figcaption>
+<figcaption>Task Metrics: Binary classification</figcaption>
 </figure>
 
 ## Multiclass Classification
@@ -48,7 +48,7 @@ You are able apply averaging methods ([macro](../../metrics/averaging-methods.md
 
 <figure markdown>
 ![Defining Metrics](../../assets/images/task-metrics-multiclass-classification.gif)
-<figcaption>Task Metrics: Regression</figcaption>
+<figcaption>Task Metrics: Multiclass classification</figcaption>
 </figure>
 
 ## Object detection
@@ -64,6 +64,24 @@ Following commonly used object detection metrics are supported out-of-the-box:
 
 
 <figure markdown>
-![Defining Metrics](../../assets/images/task-metrics-object-detection.gif)
-<figcaption>Task Metrics: Regression</figcaption>
+![Object detection](../../assets/images/task-metrics-object-detection.gif)
+<figcaption>Task Metrics: Object detection</figcaption>
 </figure>
+
+## Custom Metrics
+Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that correspond with your desired metrics. For numeric evaluations you are able to select from count, mean, median, min, max, stddev and sum aggregations options. 
+For categorical evaluations (class lable, boolean, etc) rate and count aggregation options are available.
+
+<figure markdown>
+    ![Numeric aggregation options](../../assets/images/numeric-aggregation-optins.png)
+    ![Numeric aggregation](../../assets/images/categorical-aggregation-options.png)
+</figure>
+
+<div class="grid cards" markdown>
+    
+    ![Numeric aggregation options](../../assets/images/numeric-aggregation-optins.png)
+
+    ![Numeric aggregation](../../assets/images/categorical-aggregation-options.png)
+    
+</dive>
+
