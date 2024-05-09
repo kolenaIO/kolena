@@ -6,7 +6,7 @@ icon: kolena/studio-16
 
 ## What is a Dataset
 
-A [dataset](../dataset/core-concepts/dataset.md) is a structured assembly of datapoints, designed for model evaluation.
+A [dataset](../core-concepts/index.md#kolena-dataset-20-dataset) is a structured assembly of datapoints, designed for model evaluation.
 Each datapoint in a dataset is a comprehensive unit that combines data traditionally segmented into test samples,
 ground truth, and metadata.
 
@@ -37,14 +37,14 @@ for generating/selecting a unique identifier if your data does not have a natura
 
 Kolena will attempt to infer common `id_field`s (eg. `locator`, `text`) based on what is present in the dataset during import.
 This can be overridden by explicitly declaring id fields when importing via the Web App from the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
-page, or the SDK by using the [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
+page, or the SDK by using the [`upload_dataset`](../../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset)
 function.
 
 Kolena will look for the following fields when displaying datapoints:
 
 | Field Name | Description                                                                                                                              |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `locator`  | Url path to a file to be displayed, either a [cloud storage](../connecting-cloud-storage/index.md) url or a http url that serves a file. |
+| `locator`  | Url path to a file to be displayed, either a [cloud storage](../../connecting-cloud-storage/index.md) url or a http url that serves a file. |
 | `text`     | Raw text input for text based models.                                                                                                    |
 
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
@@ -82,17 +82,17 @@ In order to use the Gallery view you will need to have the `locator` or `text` f
 
 ### Kolena Assets
 
-You can connect files to datapoints in Kolena by the use of [`asset`](../reference/asset.md), which can be visualized
+You can connect files to datapoints in Kolena by the use of [`asset`](../../reference/asset.md), which can be visualized
 in the Studio when exploring datasets and results. Multiple assets can be attached to a single datapoint allowing you to
 represent complex scenarios on Kolena. Assets are files stored in a cloud bucket or served at a URL.
 
 | Asset Type                                                              | Description                                                    |
 |-------------------------------------------------------------------------|----------------------------------------------------------------|
-| [`ImageAsset`](../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
-| [`BinaryAsset`](../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
-| [`AudioAsset`](../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
-| [`VideoAsset`](../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
-| [`PointCloudAsset`](../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
+| [`ImageAsset`](../../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
+| [`BinaryAsset`](../../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
+| [`AudioAsset`](../../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
+| [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
+| [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
 
 The [:kolena-widget-16: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/automatic_speech_recognition)
 example showcases how `AudioAsset`s can be attached to datapoints.
@@ -121,13 +121,13 @@ Any name can be used for the `audio` column in this example.
 
 ### Kolena Annotations
 
-Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../reference/annotation.md).
+Kolena allows you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
 These annotations are visible on both the Gallery view for groups of datapoints and for individual datapoints.
 
 | Annotation Type                                                                      | Description                                                                               |
 |--------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|
-| [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox)            | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
-| [`SegmentationMask`](../reference/annotation.md#kolena.annotation.SegmentationMask)  | Used to overlay raster segmentation maps on top of images.                                |
+| [`BoundingBox`](../../reference/annotation.md#kolena.annotation.BoundingBox)            | Used to overlay bounding boxes (including confidence scores and labels) on top of images. |
+| [`SegmentationMask`](../../reference/annotation.md#kolena.annotation.SegmentationMask)  | Used to overlay raster segmentation maps on top of images.                                |
 
 ### Structured Data
 
@@ -140,8 +140,8 @@ Consider a `.csv` file containing ground truth data in the from of bounding boxe
 | s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
 
 The first bounding box for the image is `(270.77, 44.59), (621.61,  254.18)`. To represent this within Kolena use the
-[`LabeledBoundingBox`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) annotation. If you want to ignore
-labels the base [`BoundingBox`](../reference/annotation.md#kolena.annotation.BoundingBox) can be used.
+[`LabeledBoundingBox`](../../reference/annotation.md#kolena.annotation.LabeledBoundingBox) annotation. If you want to ignore
+labels the base [`BoundingBox`](../../reference/annotation.md#kolena.annotation.BoundingBox) can be used.
 
 This looks like:
 ```python
@@ -184,7 +184,7 @@ but is shown here as multiple lines for formatting.
 ```
 
 When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
-[`dataframe_to_csv()`](../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
+[`dataframe_to_csv()`](../../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena to save a `.csv` file
 instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
 `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
@@ -231,7 +231,7 @@ page.
 
 In order to improve the loading performance of your image data, you can upload compressed versions of the image
 with the same dimensions as thumbnails. This results in an improved Studio experience due to faster image loading
-when filtering, sorting or using [embedding](../dataset/advanced-usage/set-up-natural-language-search.md) sort.
+when filtering, sorting or using [embedding](../../dataset/advanced-usage/set-up-natural-language-search.md) sort.
 
 Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
 to a compressed version of the `locator` image.
@@ -247,7 +247,7 @@ If you wanted to add a thumbnail to the classification data shown above it would
 ### Formatting results for Object Detection
 
 For Object Detection problems, model results need to have the following columns
-for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
 | Column Name              | Description                                         |
 |--------------------------|-----------------------------------------------------|
@@ -266,10 +266,10 @@ example that shows how to take raw results and perform bounding box matching to 
 
 ### To use compound metrics on the fly
 
-The Kolena web application currently supports [`precision`](../metrics/precision.md),
-[`recall`](../metrics/recall.md), [`f1_score`](../metrics/f1-score.md),
-[`accuracy`](../metrics/accuracy.md), [`false_positive_rate`](../metrics/fpr.md),
-and [`true_negative_rate`](../metrics/recall.md).
+The Kolena web application currently supports [`precision`](../../metrics/precision.md),
+[`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md),
+[`accuracy`](../../metrics/accuracy.md), [`false_positive_rate`](../../metrics/fpr.md),
+and [`true_negative_rate`](../../metrics/recall.md).
 
 To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
 

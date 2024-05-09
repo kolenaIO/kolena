@@ -38,7 +38,7 @@ Datapoints are versatile and immutable objects with the following key characteri
 
 ??? "How to generate datapoints"
     You can structure your dataset as a CSV file. Each row in the file should represent a distinct datapoint.
-    For complete information on creating datasets, visit [formatting your datasets](../formatting-your-datasets.md).
+    For complete information on creating datasets, visit [formatting your datasets](../advanced-usage/formatting-your-datasets.md).
 
 ## :kolena-quality-standard-20: Quality Standard
 

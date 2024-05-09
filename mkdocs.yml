@@ -12,7 +12,7 @@ nav:
     - Core Concepts: dataset/core-concepts/index.md
     - Advanced Usage:
       - Advanced Usage: dataset/advanced-usage/index.md
-      - Dataset Formatting: dataset/formatting-your-datasets.md
+      - Dataset Formatting: dataset/advanced-usage/formatting-your-datasets.md
       - Task Metrics: dataset/advanced-usage/task-metrics.md
       - Rich Datatypes: dataset/advanced-usage/rich-datatypes.md
       - Extracting Metadata from Text Fields: automations/extract-text-metadata.md

@@ -9,7 +9,7 @@ hide:
 This section contains tutorial documentation for advanced featues.
 
 <div class="grid cards" markdown>
-- [:kolena-properties-16: How to format your datasets](./formatting-your-datasets.md)
+- [:kolena-properties-16: How to format your datasets](../advanced-usage/formatting-your-datasets.md)
 
     ---
 
