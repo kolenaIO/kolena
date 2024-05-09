@@ -44,8 +44,7 @@ the `kolena` Python SDK.
 
 ## Step 1: Upload Dataset
 
-Model evaluations on Kolena starts with datasets. Datasets are tables that contain the data you wish to use for
-creating test cases.
+Model evaluations on Kolena starts with datasets. Datasets are structured assembly of datapoints you wish to use for model testing and evaluation.
 
 === "Web App"
     To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
@@ -56,10 +55,9 @@ creating test cases.
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
         script in the code example for details on how the dataset was generated.
 
-    The keypoints in `300-W.csv` have been defined using `kolena.annotation.Keypoints` from
-    the `kolena` SDK.
-    See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
-    script for example usage.
+        The keypoints in `300-W.csv` have been defined using `kolena.annotation.Keypoints` from
+        the `kolena` SDK.
+        See the above script for example usage.
 
     You will now see a preview of how the information is going to be consumed by Kolena.
 
@@ -115,7 +113,7 @@ keypoint detection model and a random keypoint model.
         See the [`keypoint_detection/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
         script in the code example for details on how results were generated.
 
-    You will now see a preview of how Kolena will ingest the model results. Give your model a name, and click `Import` to
+    You will now see a preview of how Kolena will ingest the model results. Click `Import` to
     upload the model results.
 
     <figure markdown>
@@ -160,30 +158,29 @@ and `result.mse > mean` as the y-axis to plot these two fields against each othe
 ## Step 4: Define Quality Standards
 
 Quality Standards define the criteria by which models are evaluated on each dataset. A Quality Standard consists of
-Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators.
+Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators. Metrics can be configured in groups depending on your needs.
 
 ### Define Test Cases
 
-To configure test cases, navigate to the `Quality Standards` tab and click on `Divide Dataset By`. Select
-`datapoint.condition` to create test cases based on the condition field. Click the check mark to
-save your test cases to your Quality Standard.
+To configure test cases, navigate to the `Quality Standards` tab and click on `Create Test Cases`. Select
+`datapoint.condition` to create test cases based on the condition field. Select `Save Test Cases` button to save your test cases to your Quality Standard.
 
 You will now see that your dataset has been organized into test cases based on the category field.
 Any Metrics you define will be calculated on each test case.
 
 <figure markdown>
-![Creating Test Cases](../assets/images/quickstart-create-test-cases.gif)
+![Creating Test Cases](../assets/images/add-test-cases.gif)
 <figcaption>Creating Test Cases</figcaption>
 </figure>
 
 ### Define Metrics
 
-To configure Metrics, from the Quality Standards tab, click `Define Metrics` and select `result.mse > mean`.
+To configure Metrics, from the Quality Standards tab, click `Define Metrics`, select `Add Metric` button and select `result.mse > mean` option.
 Rename the metric to `Average MSE`, and select `Lower is better` as the highlight.
 Repeat these steps for `result.nmse > mean`.
 
 <figure markdown>
-![Defining Metrics](../assets/images/quickstart-define-metrics.gif)
+![Defining Metrics](../assets/images/quickstart-configure-metrics.gif)
 <figcaption>Defining Metrics</figcaption>
 </figure>
 

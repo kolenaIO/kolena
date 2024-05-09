@@ -14,6 +14,7 @@ nav:
       - Advanced Usage: dataset/advanced-usage/index.md
       - Dataset Formatting: dataset/formatting-your-datasets.md
       - Task Metrics: dataset/advanced-usage/task-metrics.md
+      - Rich Datatypes: dataset/advanced-usage/rich-datatypes.md
       - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
       - Setting Up Natural Language Search: dataset/advanced-usage/set-up-natural-language-search.md
     - Connecting Cloud Storage:
