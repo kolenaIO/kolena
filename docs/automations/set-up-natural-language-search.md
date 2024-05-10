@@ -1,5 +1,5 @@
 ---
-icon: kolena/search-around-16
+icon: kolena/search-around-20
 ---
 
 # :kolena-search-around-20: Embedding extraction for Natural Language search
