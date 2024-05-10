@@ -165,7 +165,7 @@ Test Cases, which organize your data into key scenarios, and Metrics, which defi
 To configure test cases, navigate to the `Quality Standards` tab and click on `Create Test Cases`. Select
 `datapoint.condition` to create test cases based on the condition field. Select `Save Test Cases` button to save your test cases to your Quality Standard.
 
-You will now see that your dataset has been organized into test cases based on the category field.
+You will now see that your dataset has been organized into test cases based on the `condition` field.
 Any Metrics you define will be calculated on each test case.
 
 <figure markdown>

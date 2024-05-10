@@ -72,7 +72,7 @@ common machine learning aggregations, such as [Precision](../../metrics/precisio
 `Higher is better`, or if `Lower is better`.
 
 The datasets quickstart provides a more hands-on example of
-[defining metrics](../quickstart.md/#define-metrics).
+[defining metrics](../quickstart.md/#define-metrics). For more details on out-of-the-box and custom metrics visit [Task Metrics](../advanced-usage/task-metrics.md)
 
 ### Model Comparison
 

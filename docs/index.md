@@ -44,7 +44,7 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 
 Kolena organizes your test data, stores and visualizes your model evaluations, and provides tooling to craft better
 tests. You interface with it through the web at [app.kolena.com](https://app.kolena.com) and programmatically via the
-[`kolena`](installing-kolena.md) Python client.
+[`kolena`](installing-kolena.md) SDK.
 
 ---
 
@@ -54,19 +54,19 @@ Learn how to use Kolena to test your models effectively:
 
 <div class="grid cards" markdown>
 
-- [:kolena-developer-16: Installing `kolena`](installing-kolena.md)
-
-    ---
-
-    Install and initialize the `kolena` Python package, the programmatic interface to Kolena.
-
 - [:kolena-flame-16: Quickstart](dataset/quickstart.md)
 
     ---
 
     Run through an example using Kolena to set up rigorous and repeatable model testing in minutes.
 
-- [:kolena-flag-16: Core Concepts](dataset/core-concepts/index.md)
+- [:kolena-developer-16: Installing `kolena`](installing-kolena.md)
+
+    ---
+
+    Install and initialize the `kolena` Python package, the programmatic interface to Kolena.
+
+- [:kolena-area-of-interest-16: Core Concepts](dataset/core-concepts/index.md)
 
     ---
 
