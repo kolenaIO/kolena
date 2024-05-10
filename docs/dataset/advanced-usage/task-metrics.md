@@ -60,7 +60,7 @@ Following commonly used object detection metrics are supported out-of-the-box:
 4. [F1 Score](../../metrics/f1-score.md)
 
 ??? "Required fields"
-    Kolena attempts to automatically detect fields for true positive, false positive and false negative counts. For more information, please visit [Formatting results for Object Detection](./formatting-your-datasets.md#formatting-results-for-object-detection)
+    Kolena attempts to automatically detect fields for true positive, false positive and false negative counts. For more information, please visit [Formatting results for Object Detection](../advanced-usage/formatting-your-datasets.md#formatting-results-for-object-detection)
 
 
 <figure markdown>
@@ -72,16 +72,5 @@ Following commonly used object detection metrics are supported out-of-the-box:
 Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that correspond with your desired metrics. For numeric evaluations you are able to select from count, mean, median, min, max, stddev and sum aggregations options. 
 For categorical evaluations (class lable, boolean, etc) rate and count aggregation options are available.
 
-<figure markdown>
-    ![Numeric aggregation options](../../assets/images/numeric-aggregation-optins.png)
-    ![Numeric aggregation](../../assets/images/categorical-aggregation-options.png)
-</figure>
-
-<div class="grid cards" markdown>
-    
-    ![Numeric aggregation options](../../assets/images/numeric-aggregation-optins.png)
-
-    ![Numeric aggregation](../../assets/images/categorical-aggregation-options.png)
-
-</dive>
+![Numeric aggregation options](../../assets/images/custom-metrics.png)
 
