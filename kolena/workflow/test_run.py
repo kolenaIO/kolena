@@ -43,7 +43,6 @@ from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import with_event
-from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import IncorrectUsageError
@@ -75,7 +74,7 @@ from kolena.workflow.evaluator_function import EvaluationResults
 from kolena.workflow.test_sample import _METADATA_KEY
 
 
-class TestRun(Frozen, WithTelemetry, metaclass=ABCMeta):
+class TestRun(Frozen, metaclass=ABCMeta):
     """
     A [`Model`][kolena.workflow.Model] tested on a [`TestSuite`][kolena.workflow.TestSuite] using a specific
     [`Evaluator`][kolena.workflow.Evaluator] implementation.

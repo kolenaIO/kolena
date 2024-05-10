@@ -36,9 +36,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_model_url
 from kolena._utils.frozen import Frozen
-from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import with_event
-from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
@@ -55,7 +53,7 @@ from kolena.workflow.workflow import Workflow
 TestSample = TypeVar("TestSample", bound=BaseTestSample)
 
 
-class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
+class Model(Frozen, metaclass=ABCMeta):
     """
     The descriptor of a model tested on Kolena. A model is a deterministic transformation from
     [`TestSample`][kolena.workflow.TestSample] inputs to [`Inference`][kolena.workflow.Inference] outputs.
@@ -88,7 +86,6 @@ class Model(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     _id: int
 
-    @telemetry
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "workflow"):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")

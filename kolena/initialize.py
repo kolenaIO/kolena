@@ -129,13 +129,11 @@ def initialize(
         )
     assert api_token is not None
     init_response = state.get_token(api_token, proxies=proxies)
-    derived_telemetry = init_response.tenant_telemetry
     _client_state.update(
         api_token=api_token,
         jwt_token=init_response.access_token,
         tenant=init_response.tenant,
         verbose=verbose,
-        telemetry=derived_telemetry,
         proxies=proxies,
     )
 

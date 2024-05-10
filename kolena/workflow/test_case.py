@@ -40,9 +40,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
-from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import with_event
-from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
@@ -84,7 +82,7 @@ def _to_editor_data_frame(
     return TestCaseEditorDataFrame(validate_df_schema(df, TestCaseEditorDataFrame.get_schema(), trusted=True))
 
 
-class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
+class TestCase(Frozen, metaclass=ABCMeta):
     """
     A test case holds a list of [test samples][kolena.workflow.TestSample] paired with
     [ground truths][kolena.workflow.GroundTruth] representing a testing dataset or a slice of a testing dataset.
@@ -112,7 +110,6 @@ class TestCase(Frozen, WithTelemetry, metaclass=ABCMeta):
 
     _id: int
 
-    @telemetry
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "workflow"):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")

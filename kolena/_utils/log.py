@@ -22,7 +22,6 @@ from typing import TypeVar
 import termcolor
 from tqdm.auto import tqdm
 
-from kolena._utils.instrumentation import log_telemetry
 from kolena._utils.state import _client_state
 
 
@@ -72,9 +71,6 @@ def error(message: str, exception: Optional[BaseException], **kwargs: Any) -> No
     _print_header(file=sys.stderr)
     _print(message, **kwargs, color="red", file=sys.stderr)
     _logger.error(message, exc_info=exception, **kwargs)
-
-    if exception and _client_state.telemetry:
-        log_telemetry(exception)
 
 
 T = TypeVar("T")
