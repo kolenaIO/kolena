@@ -12,7 +12,7 @@ Users may set up this functionality by enabling the automated embedding extracti
 
 ??? "Requirements" 
     - This feature is currenlty supported for Amazon S3 integrations.
-    - Kolena requires access to the content of your images. Read [Connecting Cloud Storage: Amazon S3](../../connecting-cloud-storage/) for more details.
+    - Kolena requires access to the content of your images. Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/) for more details.
     - Only account administrators are able to change this setting.
 
 Embedding extractions allow you to find datapoints using natural language or similarity between desired datapoints.
@@ -20,7 +20,7 @@ To enable automated embedding, navigate to "Organization Settings" available on 
 Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolena option. 
 
 <figure markdown>
-![Defining Metrics](../../assets/images/automated-embeddings-extraction.gif)
+![Defining Metrics](../assets/images/automated-embeddings-extraction.gif)
 <figcaption>Automated Embeddings Extraction</figcaption>
 </figure>
 
@@ -54,7 +54,7 @@ Uploading embeddings to Kolena can be done in four simple steps:
 The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
-We first [retrieve and set](../../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
+We first [retrieve and set](../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
 This is used by the uploader for authentication against your Kolena instance.
 
 ```shell

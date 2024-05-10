@@ -231,7 +231,7 @@ page.
 
 In order to improve the loading performance of your image data, you can upload compressed versions of the image
 with the same dimensions as thumbnails. This results in an improved Studio experience due to faster image loading
-when filtering, sorting or using [embedding](../../dataset/advanced-usage/set-up-natural-language-search.md) sort.
+when filtering, sorting or using [embedding](../../automations/set-up-natural-language-search.md) sort.
 
 Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
 to a compressed version of the `locator` image.

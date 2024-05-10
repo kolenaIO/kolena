@@ -9,23 +9,11 @@ hide:
 This section contains detailed API reference documentation for `kolena`.
 
 <div class="grid cards" markdown>
-- [`kolena.initialize`](./initialize.md)
+- [`kolena.dataset`](./dataset/index.md)
 
     ---
 
-    Initialize client sessions
-
-- [`kolena.errors`](./errors.md)
-
-    ---
-
-    Custom error definitions
-
-- [`kolena.io`](./io.md)
-
-    ---
-
-    Helper utilities for working with Kolena using common data types
+    Upload datasets and model results
 
 - [`kolena.annotation`](./annotation.md)
 
@@ -38,6 +26,30 @@ This section contains detailed API reference documentation for `kolena`.
     ---
 
     Connect asset files to datapoints and results
+
+- [`kolena.errors`](./errors.md)
+
+    ---
+
+    Custom error definitions
+
+- [`kolena.initialize`](./initialize.md)
+
+    ---
+
+    Initialize client sessions
+
+- [`kolena.io`](./io.md)
+
+    ---
+
+    Helper utilities for working with Kolena using common data types
+
+- [`kolena.metrics`](./metrics.md)
+
+    ---
+
+    Helper utilities for creating custom metrics
 
 </div>
 
