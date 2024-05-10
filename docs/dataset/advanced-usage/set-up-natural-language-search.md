@@ -1,8 +1,8 @@
 ---
-icon: kolena/comparison-16
+icon: kolena/search-around-16
 ---
 
-# :kolena-comparison-20: Embedding extraction for Natural Language search
+# :kolena-search-around-20: Embedding extraction for Natural Language search
 
 Kolena supports natural language and similar image search
 across image data registered to the platform.
