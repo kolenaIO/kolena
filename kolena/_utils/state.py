@@ -24,9 +24,8 @@ from typing import Optional
 
 import requests
 
-import kolena
 import kolena._api.v1.token as API
-from kolena._utils import krequests
+import kolena._utils
 from kolena._utils.serde import from_dict
 from kolena.errors import InvalidTokenError
 from kolena.errors import UnauthenticatedError
@@ -147,7 +146,7 @@ def get_token(
         proxies=proxies,
     )
     try:
-        krequests.raise_for_status(r)
+        kolena._utils.krequests.raise_for_status(r)
     except UnauthenticatedError as e:
         raise InvalidTokenError(e)
 
