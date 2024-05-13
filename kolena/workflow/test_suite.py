@@ -36,9 +36,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName
 from kolena._utils.endpoints import get_test_suite_url
 from kolena._utils.frozen import Frozen
-from kolena._utils.instrumentation import telemetry
 from kolena._utils.instrumentation import with_event
-from kolena._utils.instrumentation import WithTelemetry
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
@@ -52,7 +50,7 @@ from kolena.workflow.test_sample import _METADATA_KEY
 from kolena.workflow.workflow import Workflow
 
 
-class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
+class TestSuite(Frozen, metaclass=ABCMeta):
     """
     A test suite groups together one or more [test cases][kolena.workflow.TestCase]. Typically a test suite represents a
     benchmark test dataset, with test cases representing different meaningful subsets, or slices, or this benchmark.
@@ -91,7 +89,6 @@ class TestSuite(Frozen, WithTelemetry, metaclass=ABCMeta):
     _id: int
     _test_case_type: Type[TestCase]
 
-    @telemetry
     def __init_subclass__(cls) -> None:
         if not hasattr(cls, "workflow"):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")

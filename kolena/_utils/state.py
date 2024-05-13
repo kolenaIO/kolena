@@ -26,7 +26,6 @@ import requests
 
 import kolena
 import kolena._api.v1.token as API
-from kolena._utils import krequests
 from kolena._utils.serde import from_dict
 from kolena.errors import InvalidTokenError
 from kolena.errors import UnauthenticatedError
@@ -54,7 +53,6 @@ class _ClientState:
         jwt_token: Optional[str] = None,
         tenant: Optional[str] = None,
         verbose: bool = False,
-        telemetry: bool = False,
         proxies: Optional[Dict[str, str]] = None,
         additional_request_headers: Optional[Dict[str, Any]] = None,
     ):
@@ -63,7 +61,6 @@ class _ClientState:
         self.jwt_token: Optional[str] = None
         self.tenant: Optional[str] = None
         self.verbose: bool = False
-        self.telemetry: bool = False
         self.proxies: Dict[str, str] = {}
         self.additional_request_headers: Optional[Dict[str, Any]] = None
         self.update(
@@ -72,7 +69,6 @@ class _ClientState:
             jwt_token=jwt_token,
             tenant=tenant,
             verbose=verbose,
-            telemetry=telemetry,
             proxies=proxies,
             additional_request_headers=additional_request_headers,
         )
@@ -84,7 +80,6 @@ class _ClientState:
         jwt_token: Optional[str] = None,
         tenant: Optional[str] = None,
         verbose: bool = False,
-        telemetry: bool = False,
         proxies: Optional[Dict[str, str]] = None,
         additional_request_headers: Optional[Dict[str, Any]] = None,
     ) -> None:
@@ -93,7 +88,6 @@ class _ClientState:
         self.jwt_token = jwt_token or self.jwt_token
         self.tenant = tenant or self.tenant
         self.verbose = verbose
-        self.telemetry = telemetry
         self.proxies = proxies or self.proxies
         self.additional_request_headers = additional_request_headers or self.additional_request_headers
 
@@ -103,7 +97,6 @@ class _ClientState:
         self.jwt_token = None
         self.tenant = None
         self.verbose = False
-        self.telemetry = False
         self.additional_request_headers = None
         self.proxies = {}
 
@@ -153,7 +146,7 @@ def get_token(
         proxies=proxies,
     )
     try:
-        krequests.raise_for_status(r)
+        kolena._utils.krequests.raise_for_status(r)
     except UnauthenticatedError as e:
         raise InvalidTokenError(e)
 
