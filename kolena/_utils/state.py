@@ -24,8 +24,8 @@ from typing import Optional
 
 import requests
 
+import kolena
 import kolena._api.v1.token as API
-import kolena._utils
 from kolena._utils.serde import from_dict
 from kolena.errors import InvalidTokenError
 from kolena.errors import UnauthenticatedError
