@@ -50,10 +50,10 @@ def clean_client_state() -> Iterator[None]:
         ({"timeout": (1, 60)}, None, None),  # attempt to override default args
         ({}, {"http": "dummy-proxy"}, {}),
         ({}, {}, {"some-header-key": "some-header-val"}),
-        ({}, {}, {}),  # attempt to override default headers with client state
-        ({"headers": {}}, {}, {}),  # attempt to override default headers with kwargs
+        ({}, {}, {"User-Agent": "some-val"}),  # attempt to override default headers with client state
+        ({"headers": {"User-Agent": "some-val"}}, {}, {}),  # attempt to override default headers with kwargs
         ({"headers": {"Content-Type": "application/octet-stream"}}, {}, {}),  # should allow overriding Content-Type
-        ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {}),
+        ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {"User-Agent": "some-val"}),
     ],
 )
 def test__with_default_kwargs(
