@@ -1,7 +1,3 @@
----
-icon: kolena/classification-16
-status: new
----
 
 # :kolena-classification-20: Classification
 

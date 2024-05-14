@@ -1,6 +1,3 @@
----
-icon: kolena/flame-16
----
 
 # :kolena-flame-20: Quickstart
 

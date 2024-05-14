@@ -2,7 +2,7 @@
 icon: kolena/studio-16
 ---
 
-# :kolena-studio-20: Formatting your Datasets
+# :kolena-studio-20: Dataset Formatting
 
 ## What is a Dataset
 

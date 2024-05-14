@@ -1,7 +1,3 @@
----
-icon: octicons/container-16
----
-
 
 !!! note "Important Notice for Dataset Users"
     This page is no longer relevant for users who have adopted the new Datasets feature for creating tests.

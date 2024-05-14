@@ -1,5 +1,4 @@
 ---
-icon: kolena/area-of-interest-16
 hide:
   - toc
 ---

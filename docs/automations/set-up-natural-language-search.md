@@ -2,8 +2,7 @@
 icon: kolena/search-around-20
 ---
 
-# :kolena-search-around-20: Embedding extraction for Natural Language search
-
+# :kolena-search-around-20: Setting up Natural Language Search
 Kolena supports natural language and similar image search
 across image data registered to the platform.
 Users may set up this functionality by enabling the automated embedding extraction process or manually extracting and uploading corresponding search embeddings using a Kolena provided package.

@@ -1,5 +1,4 @@
 ---
-icon: kolena/workflow-16
 search:
   boost: 2
 ---

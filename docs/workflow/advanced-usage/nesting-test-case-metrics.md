@@ -1,6 +1,3 @@
----
-icon: kolena/diagram-tree-16
----
 
 # :kolena-diagram-tree-20: Nesting Test Case Metrics
 

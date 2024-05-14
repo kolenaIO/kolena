@@ -13,9 +13,7 @@ nav:
     - Advanced Usage:
       - Advanced Usage: dataset/advanced-usage/index.md
       - Dataset Formatting: dataset/advanced-usage/formatting-your-datasets.md
-      - Task Metrics: dataset/advanced-usage/task-metrics.md      
-    - Automations: 
-      - Automations: automations/index.md
+      - Task Metrics: dataset/advanced-usage/task-metrics.md
       - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
       - Setting Up Natural Language Search: automations/set-up-natural-language-search.md
     - Connecting Cloud Storage:
@@ -29,24 +27,17 @@ nav:
       - Kolena Workflows:
         - Workflows: workflow/index.md
         - Quickstart: workflow/quickstart.md
-        - Advanced Usage: workflow/advanced-usage/index.md
-        - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
-        - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
-        - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
+        - Building a Workflow: workflow/building-a-workflow.md
         - Core Concepts:
           - Core Concepts: workflow/core-concepts/index.md
           - Workflow: workflow/core-concepts/workflow.md
           - Test Case & Test Suite: workflow/core-concepts/test-suite.md
           - Model: workflow/core-concepts/model.md
-        - Building a Workflow: workflow/building-a-workflow.md
-        - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
-        - Building a Workflow: workflow/building-a-workflow.md
-        - Advanced Usage:
+        - Advanced Usage: 
           - Advanced Usage: workflow/advanced-usage/index.md
           - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
-          - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
-          - Setting Up Natural Language Search: workflow/advanced-usage/set-up-natural-language-search.md
+          - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md    
   - API Reference:
     - API Reference: reference/index.md
     - <code>kolena.dataset</code>: reference/dataset/index.md
@@ -56,29 +47,30 @@ nav:
     - <code>kolena.initialize</code>: reference/initialize.md
     - <code>kolena.io</code>: reference/io.md
     - <code>kolena.metrics</code>: reference/metrics.md
-    - Utilities:
-      - Annotations: reference/workflow/annotation.md
-      - Assets: reference/workflow/asset.md
-      - Plots: reference/workflow/plot.md
-      - <code>define_workflow</code>: reference/workflow/define-workflow.md
-      - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
-      - <code>visualization</code>: reference/workflow/visualization.md
-      - IO: reference/workflow/io.md
     - Archived:
-      - <code>kolena.workflow</code>: reference/workflow/index.md
-      - <code>TestSample</code>: reference/workflow/test-sample.md
-      - <code>GroundTruth</code>: reference/workflow/ground-truth.md
-      - <code>Inference</code>: reference/workflow/inference.md
-      - <code>Evaluator</code>: reference/workflow/evaluator.md
-      - <code>TestCase</code>: reference/workflow/test-case.md
-      - <code>TestSuite</code>: reference/workflow/test-suite.md
-      - <code>Model</code>: reference/workflow/model.md
-      - <code>test</code>: reference/workflow/test-run.md
-      - <code>kolena.io</code>: reference/io.md
-    - Pre-built Workflows:
-      - Pre-built Workflows: reference/pre-built/index.md
-      - Object Detection (2D): reference/pre-built/object-detection-2d.md
-      - Classification: reference/pre-built/classification.md
+      - Kolena Workflows:
+        - <code>kolena.workflow</code>: reference/workflow/index.md
+        - <code>TestSample</code>: reference/workflow/test-sample.md
+        - <code>GroundTruth</code>: reference/workflow/ground-truth.md
+        - <code>Inference</code>: reference/workflow/inference.md
+        - <code>Evaluator</code>: reference/workflow/evaluator.md
+        - <code>TestCase</code>: reference/workflow/test-case.md
+        - <code>TestSuite</code>: reference/workflow/test-suite.md
+        - <code>Model</code>: reference/workflow/model.md
+        - <code>test</code>: reference/workflow/test-run.md
+        - <code>kolena.io</code>: reference/io.md
+        - Utilities:
+          - Annotations: reference/workflow/annotation.md
+          - Assets: reference/workflow/asset.md
+          - Plots: reference/workflow/plot.md
+          - <code>define_workflow</code>: reference/workflow/define-workflow.md
+          - <code>ThresholdedMetrics</code>: reference/workflow/thresholded-metrics.md
+          - <code>visualization</code>: reference/workflow/visualization.md
+          - IO: reference/workflow/io.md
+        - Pre-built Workflows:
+          - Pre-built Workflows: reference/pre-built/index.md
+          - Object Detection (2D): reference/pre-built/object-detection-2d.md
+          - Classification: reference/pre-built/classification.md
   - Metrics Glossary:
     - Metrics Glossary: metrics/index.md
     - metrics/accuracy.md

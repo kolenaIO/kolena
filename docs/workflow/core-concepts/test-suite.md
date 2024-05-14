@@ -1,5 +1,4 @@
 ---
-icon: kolena/test-suite-16
 search:
   boost: 2
 ---

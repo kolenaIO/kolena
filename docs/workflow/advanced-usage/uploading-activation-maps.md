@@ -1,6 +1,3 @@
----
-icon: kolena/heatmap-16
----
 
 # :kolena-heatmap-20: Uploading Activation Maps
 
