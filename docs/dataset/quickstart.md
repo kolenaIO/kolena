@@ -68,7 +68,8 @@ Model evaluations on Kolena starts with datasets. Datasets are structured assemb
     you can add descriptions and tags to organize your datasets.
 
     <figure markdown>
-        ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow.gif)
+        ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow-dark.gif#only-dark)
+        ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow-light.gif#only-light)
         <figcaption>Example Dataset Upload</figcaption>
     </figure>
 
@@ -117,7 +118,8 @@ keypoint detection model and a random keypoint model.
     upload the model results.
 
     <figure markdown>
-        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow.gif)
+        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow.gif#only-dark)
+        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow-light.gif#only-light)
         <figcaption>Example Results Upload</figcaption>
     </figure>
 
@@ -142,7 +144,8 @@ Once you have uploaded your dataset and model results, you can visualize the dat
 You can quickly see the distribution of any datapoint or model results field in the `Distributions` tab.
 
 <figure markdown>
-![Distribution Plots](../assets/images/quickstart-distribution.jpg)
+![Distribution Plots](../assets/images/quickstart-distribution.jpg#only-dark)
+![Distribution Plots](../assets/images/quickstart-distribution-light.png#only-light)
 <figcaption>Distribution Plots</figcaption>
 </figure>
 
@@ -151,7 +154,8 @@ select the random model. In the plotting widget at the bottom, select `datapoint
 and `result.mse > mean` as the y-axis to plot these two fields against each other.
 
 <figure markdown>
-![Custom Plots](../assets/images/quickstart-otf-plotting.gif)
+![Custom Plots](../assets/images/quickstart-otf-plotting.gif#only-dark)
+![Custom Plots](../assets/images/quickstart-otf-plotting-light.gif#only-light)
 <figcaption>Custom Plots</figcaption>
 </figure>
 
@@ -169,7 +173,8 @@ You will now see that your dataset has been organized into test cases based on t
 Any Metrics you define will be calculated on each test case.
 
 <figure markdown>
-![Creating Test Cases](../assets/images/add-test-cases.gif)
+![Creating Test Cases](../assets/images/add-test-cases.gif#only-dark)
+![Creating Test Cases](../assets/images/add-test-cases-light.gif#only-light)
 <figcaption>Creating Test Cases</figcaption>
 </figure>
 
@@ -180,7 +185,8 @@ Rename the metric to `Average MSE`, and select `Lower is better` as the highligh
 Repeat these steps for `result.nmse > mean`.
 
 <figure markdown>
-![Defining Metrics](../assets/images/quickstart-configure-metrics.gif)
+![Defining Metrics](../assets/images/quickstart-configure-metrics.gif#only-dark)
+![Defining Metrics](../assets/images/quickstart-configure-metrics-light.gif#only-light)
 <figcaption>Defining Metrics</figcaption>
 </figure>
 
@@ -197,7 +203,8 @@ reference model. In this example, RetinaFace performs better than the random mod
 as well as over all test cases we defined earlier.
 
 <figure markdown>
-![Comparing Models](../assets/images/quickstart-compare-models.gif)
+![Comparing Models](../assets/images/quickstart-compare-models.gif#only-dark)
+![Comparing Models](../assets/images/quickstart-compare-models-light.gif#only-light)
 <figcaption>Comparing Models</figcaption>
 </figure>
 
