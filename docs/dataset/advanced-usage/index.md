@@ -24,10 +24,13 @@ This section contains tutorial documentation for advanced featues.
 
     ---
 
-    Extract up to 16 properties automatically from any of your text data to speed the data quality and model quality assessment efforts.
+    Extract up to 16 properties automatically from any of your text data to speed the data quality and
+    model quality assessment efforts.
 
 - [:kolena-search-around-16: Setting up Natural Language Search](../../automations/set-up-natural-language-search.md)
 
     ---
-    Automatically or manually extract embeddings from images to enable natural language and similar image search.
+    Automatically or manually extract embeddings from images to
+    enable natural language and similar image search.
+
 </div>

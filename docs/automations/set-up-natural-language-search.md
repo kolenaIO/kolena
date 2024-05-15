@@ -3,15 +3,18 @@ icon: kolena/search-around-20
 ---
 
 # :kolena-search-around-20: Setting up Natural Language Search
+
 Kolena supports natural language and similar image search
 across image data registered to the platform.
-Users may set up this functionality by enabling the automated embedding extraction process or manually extracting and uploading corresponding search embeddings using a Kolena provided package.
+Users may set up this functionality by enabling the automated embedding extraction process
+or manually extracting and uploading corresponding search embeddings using a Kolena provided package.
 
 ## Setting up Automated Embedding extraction
 
 ??? "Requirements"
     - This feature is currenlty supported for Amazon S3 integrations.
-    - Kolena requires access to the content of your images. Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/) for more details.
+    - Kolena requires access to the content of your images.
+    Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/) for more details.
     - Only account administrators are able to change this setting.
 
 Embedding extractions allow you to find datapoints using natural language or similarity between desired datapoints.
@@ -25,16 +28,18 @@ Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolen
 
 Once this setting is enabled, embeddings for new and edited datapoints in your datasets will be automatically extracted.
 
-
 ## Uploading embeddings manually
-If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic, you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena.
 
-In this document, we will go over main components of the [example](#example)
+If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic,
+ you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena.
+
+In this document, we will go over main components of the below
 and steps you need to take to tailor it for your application.
 
 !!! Example
     The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
-    [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for embeddings extraction and
+    [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for
+    embeddings extraction and
     upload. This builds off the data uploaded in the
     [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
     example dataset, and is best run after this data has been uploaded to your Kolena environment.
@@ -45,8 +50,6 @@ Uploading embeddings to Kolena can be done in four simple steps:
 - [**Step 2**](#step-2-load-dataset-and-model): loading dataset and model to run embedding extraction
 - [**Step 3**](#step-3-load-images-for-extraction): loading images for input to extraction library
 - [**Step 4**](#step-4-extract-and-upload-embeddings): extracting and uploading search embeddings
-
-
 
 ### Step 1: Install `kolena-embeddings` Package
 

@@ -13,7 +13,8 @@ This section contains tutorial documentation for Kolena automations.
 
     ---
 
-    Extract up to 16 properties automatically from any of your text data to speed the data quality and model quality assessment efforts.
+    Extract up to 16 properties automatically from any of your text data to speed the
+    data quality and model quality assessment efforts.
 
 - [:kolena-metrics-glossary-16: Automatic NL Search](./set-up-natural-language-search.md)
 

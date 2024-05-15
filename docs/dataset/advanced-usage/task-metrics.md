@@ -4,10 +4,15 @@ icon: kolena/metrics-glossary-16
 ---
 
 # :kolena-metrics-glossary-20: Task Metrics
+
 Kolena supports automatic calculation of a number of metrics commonly used in machine learning tasks.
 
 ## Regression
-For regression problems, Kolena web application currently supports [`mean_absolute_error`](../../metrics/mean-absolute-error.md), [`mean_squared_error`](../../metrics/mean-squared-error.md), [`root_mean_squared_error`](../../metrics/root-mean-squared-error.md), [`r^2`](../../metrics/coefficient-of-determination.md), `pearson_correlation` and `spearman_correlation`
+
+For regression problems, Kolena web application currently supports [`mean_absolute_error`](../../metrics/mean-absolute-error.md),
+[`mean_squared_error`](../../metrics/mean-squared-error.md),
+[`root_mean_squared_error`](../../metrics/root-mean-squared-error.md), [`r^2`](../../metrics/coefficient-of-determination.md),
+`pearson_correlation` and `spearman_correlation`
 
 Follow the steps below to setup Regression metrics:
 <figure markdown>
@@ -17,6 +22,7 @@ Follow the steps below to setup Regression metrics:
 </figure>
 
 ## Binary Classification
+
 For binary classification problems, Kolena web application currently supports [`accuracy`](../../metrics/accuracy.md),[`precision`](../../metrics/precision.md),
 [`recall`](../../metrics/recall.md) and [`f1_score`](../../metrics/f1-score.md).
 
@@ -28,10 +34,13 @@ Follow the steps below to setup Binary Classification metrics:
 </figure>
 
 ## Multiclass Classification
+
 For multiclass classification problems, Kolena web application currently supports [`accuracy`](../../metrics/accuracy.md),[`precision`](../../metrics/precision.md),
 [`recall`](../../metrics/recall.md) and [`f1_score`](../../metrics/f1-score.md).
 
-You are able to apply [`macro`](../../metrics/averaging-methods.md#macro-average), [`micro`](../../metrics/averaging-methods.md#micro-average) and [`weighted`](../../metrics/averaging-methods.md#weighted-average) averaging methods to above metrics.
+You are able to apply [`macro`](../../metrics/averaging-methods.md#macro-average),
+[`micro`](../../metrics/averaging-methods.md#micro-average) and
+[`weighted`](../../metrics/averaging-methods.md#weighted-average) averaging methods to above metrics.
 
 <figure markdown>
 ![Defining Metrics](../../assets/images/task-metrics-multiclass-classification.gif#only-dark)
@@ -40,12 +49,15 @@ You are able to apply [`macro`](../../metrics/averaging-methods.md#macro-average
 </figure>
 
 ## Object detection
-For object detection problems, Kolena web application currently supports [`average precision`](../../metrics/average-precision.md), [`precision`](../../metrics/precision.md),
+
+For object detection problems, Kolena web application currently
+supports [`average precision`](../../metrics/average-precision.md), [`precision`](../../metrics/precision.md),
 [`recall`](../../metrics/recall.md) and [`f1_score`](../../metrics/f1-score.md).
 
 ??? "Required fields"
-    Kolena attempts to automatically detect fields for true positive, false positive and false negative counts. For more information on how to prepare your object detection data, please visit [Formatting results for Object Detection](../advanced-usage/formatting-your-datasets.md#formatting-results-for-object-detection)
-
+    Kolena attempts to automatically detect fields for true
+    positive, false positive and false negative counts. For more information on how to prepare your object
+    detection data, please visit [Formatting results for Object Detection](../advanced-usage/formatting-your-datasets.md#formatting-results-for-object-detection)
 
 <figure markdown>
 ![Object detection](../../assets/images/task-metrics-object-detection.gif#only-dark)
@@ -54,7 +66,10 @@ For object detection problems, Kolena web application currently supports [`avera
 </figure>
 
 ## Custom Metrics
-Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that correspond with your desired metrics. For numeric evaluations you are able to select from `count`, `mean`, `median`, `min`, `max`, `stddev` and `sum` aggregations options.
+
+Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that
+correspond with your desired metrics. For numeric evaluations you are able to
+select from `count`, `mean`, `median`, `min`, `max`, `stddev` and `sum` aggregations options.
 For categorical evaluations (class lable, boolean, etc) `rate` and `count` aggregation options are available.
 
 The Kolena web application currently supports [`precision`](../../metrics/precision.md),
