@@ -33,11 +33,11 @@ nav:
           - Workflow: workflow/core-concepts/workflow.md
           - Test Case & Test Suite: workflow/core-concepts/test-suite.md
           - Model: workflow/core-concepts/model.md
-        - Advanced Usage: 
+        - Advanced Usage:
           - Advanced Usage: workflow/advanced-usage/index.md
           - Packaging for Automated Evaluation: workflow/advanced-usage/packaging-for-automated-evaluation.md
           - Nesting Test Case Metrics: workflow/advanced-usage/nesting-test-case-metrics.md
-          - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md    
+          - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
   - API Reference:
     - API Reference: reference/index.md
     - <code>kolena.dataset</code>: reference/dataset/index.md

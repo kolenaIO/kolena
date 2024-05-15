@@ -16,7 +16,7 @@ This immutability ensures the integrity and traceability of the data used in tes
 
 ### Datapoints
 
-Datapoints are versatile and immutable objects with the following key characteristics: 
+Datapoints are versatile and immutable objects with the following key characteristics:
 
 - **Unified Object Structure**:
   Datapoints are singular, grab-bag objects that can embody various types of data,
@@ -44,7 +44,7 @@ Datapoints are versatile and immutable objects with the following key characteri
 
 A **Quality Standard** tracks a standardized process for how a team evaluates a model's performance on a dataset.
 Users may define and manage quality standards for a dataset in the Kolena web application using the
-`Quality Standards` tab. 
+`Quality Standards` tab.
 
 A Quality Standard is composed of [Test Cases](#test-cases) and [Metrics](#metrics).
 

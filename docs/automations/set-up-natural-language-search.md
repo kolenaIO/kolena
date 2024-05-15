@@ -9,25 +9,25 @@ Users may set up this functionality by enabling the automated embedding extracti
 
 ## Setting up Automated Embedding extraction
 
-??? "Requirements" 
+??? "Requirements"
     - This feature is currenlty supported for Amazon S3 integrations.
     - Kolena requires access to the content of your images. Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/) for more details.
     - Only account administrators are able to change this setting.
 
 Embedding extractions allow you to find datapoints using natural language or similarity between desired datapoints.
-To enable automated embedding, navigate to "Organization Settings" available on your profile menue, top right of the screen. 
-Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolena option. 
+To enable automated embedding, navigate to "Organization Settings" available on your profile menue, top right of the screen.
+Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolena option.
 
 <figure markdown>
 ![Defining Metrics](../assets/images/automated-embeddings-extraction.gif)
 <figcaption>Automated Embeddings Extraction</figcaption>
 </figure>
 
-Once this setting is enabled, embeddings for new and edited datapoints in your datasets will be automatically extracted. 
+Once this setting is enabled, embeddings for new and edited datapoints in your datasets will be automatically extracted.
 
 
 ## Uploading embeddings manually
-If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic, you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena. 
+If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic, you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena.
 
 In this document, we will go over main components of the [example](#example)
 and steps you need to take to tailor it for your application.
