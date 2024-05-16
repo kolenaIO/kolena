@@ -11,8 +11,8 @@ example dataset to demonstrate test data curation and model evaluation in Kolena
 the `kolena` Python SDK.
 
 ??? note "Using the SDK"
-    If you would like to use the SDK for this quickstart follow these instructions to set up the
-    SDK and set up the code example locally.
+If you would like to use the SDK for this quickstart follow these instructions to set up the
+SDK and set up the code example locally.
 
     First, install the `kolena` python SDK:
 
@@ -44,12 +44,13 @@ the `kolena` Python SDK.
 
 ## Step 1: Upload Dataset
 
-Model evaluations on Kolena starts with datasets. Datasets are structured assembly of datapoints you wish to use for model testing and evaluation.
+Model evaluations on Kolena starts with datasets. Datasets are structured assembly of datapoints you wish to use for
+model testing and evaluation.
 
 === "Web App"
-    To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
-    click `Import Dataset` then `Select From Cloud Storage`.
-    Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
+To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
+click `Import Dataset` then `Select From Cloud Storage`.
+Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
@@ -162,12 +163,14 @@ and `result.mse > mean` as the y-axis to plot these two fields against each othe
 ## Step 4: Define Quality Standards
 
 Quality Standards define the criteria by which models are evaluated on each dataset. A Quality Standard consists of
-Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators. Metrics can be configured in groups depending on your needs.
+Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators. Metrics
+can be configured in groups depending on your needs.
 
 ### Define Test Cases
 
 To configure test cases, navigate to the `Quality Standards` tab and click on `Create Test Cases`. Select
-`datapoint.condition` to create test cases based on the condition field. Select `Save Test Cases` button to save your test cases to your Quality Standard.
+`datapoint.condition` to create test cases based on the condition field. Select `Save Test Cases` button to save your
+test cases to your Quality Standard.
 
 You will now see that your dataset has been organized into test cases based on the `condition` field.
 Any Metrics you define will be calculated on each test case.
@@ -180,7 +183,8 @@ Any Metrics you define will be calculated on each test case.
 
 ### Define Metrics
 
-To configure Metrics, from the Quality Standards tab, click `Define Metrics`, select `Add Metric` button and select `result.mse > mean` option.
+To configure Metrics, from the Quality Standards tab, click `Define Metrics`, select `Add Metric` button and
+select `result.mse > mean` option.
 Rename the metric to `Average MSE`, and select `Lower is better` as the highlight.
 Repeat these steps for `result.nmse > mean`.
 
