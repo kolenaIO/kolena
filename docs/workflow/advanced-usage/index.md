@@ -28,4 +28,5 @@ This section contains tutorial documentation for advanced features for Kolena Wo
 
     Upload and visualize your activation map for each [`TestSample`][kolena.workflow.TestSample] along with your model
     results on the [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.com/redirect/studio).
+
 </div>
