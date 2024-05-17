@@ -53,7 +53,6 @@ from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import IncorrectUsageError
-from kolena.errors import NotFoundError
 
 EvalConfig = Optional[Dict[str, Any]]
 """
@@ -163,8 +162,6 @@ def download_results(
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
     existing_dataset = _load_dataset_metadata(dataset)
-    if not existing_dataset:
-        raise NotFoundError(f"dataset {dataset} does not exist")
 
     id_fields = existing_dataset.id_fields
 
@@ -213,8 +210,6 @@ def _prepare_upload_results_request(
     thresholded_fields: Optional[List[str]] = None,
 ) -> Tuple[str, int, int]:
     existing_dataset = _load_dataset_metadata(dataset)
-    if not existing_dataset:
-        raise NotFoundError(f"dataset {dataset} does not exist")
 
     id_fields = existing_dataset.id_fields
 
