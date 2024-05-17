@@ -40,12 +40,12 @@ nav:
           - Uploading Activation Maps: workflow/advanced-usage/uploading-activation-maps.md
   - API Reference:
     - API Reference: reference/index.md
-    - <code>kolena.dataset</code>: reference/dataset/index.md
     - <code>kolena.annotation</code>: reference/annotation.md
     - <code>kolena.asset</code>: reference/asset.md
+    - <code>kolena.dataset</code>: reference/dataset/index.md
     - <code>kolena.errors</code>: reference/errors.md
-    - <code>kolena.initialize</code>: reference/initialize.md
     - <code>kolena.io</code>: reference/io.md
+    - <code>kolena.initialize</code>: reference/initialize.md
     - <code>kolena.metrics</code>: reference/metrics.md
     - Archived:
       - <code>kolena.workflow</code>:
