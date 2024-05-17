@@ -20,7 +20,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from kolena._experimental.quality_standard import download_quality_standard_result
+from kolena._experimental import download_quality_standard_result
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
 from kolena.dataset.evaluation import EvalConfig
