@@ -17,6 +17,7 @@ from typing import Any
 from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import NamedTuple
 from typing import Optional
 from typing import Tuple
 from typing import Union
@@ -63,6 +64,16 @@ DataFrame = Union[pd.DataFrame, Iterator[pd.DataFrame]]
 A type alias representing a DataFrame, which can be either a pandas DataFrame
 or an iterator of pandas DataFrames.
 """
+
+
+class EvalConfigResults(NamedTuple):
+    """
+    Named tuple where the first element (the `eval_config` field) is an evaluation configuration, and the second element
+    (the `results` field) is the corresponding DataFrame of results.
+    """
+
+    eval_config: EvalConfig
+    results: pd.DataFrame
 
 
 def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
@@ -134,7 +145,7 @@ def _send_upload_results_request(
 def download_results(
     dataset: str,
     model: str,
-) -> Tuple[pd.DataFrame, List[Tuple[EvalConfig, pd.DataFrame]]]:
+) -> Tuple[pd.DataFrame, List[EvalConfigResults]]:
     """
     Download results given dataset name and model name.
 
@@ -148,10 +159,15 @@ def download_results(
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
-    :return: Tuple of DataFrame of datapoints and list of tuples,
-             each containing an evaluation configuration and the corresponding DataFrame of results.
+    :return: Tuple of DataFrame of datapoints and list of [`EvalConfigResults`](kolena.dataset.EvalConfigResults).
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
+    existing_dataset = _load_dataset_metadata(dataset)
+    if not existing_dataset:
+        raise NotFoundError(f"dataset {dataset} does not exist")
+
+    id_fields = existing_dataset.id_fields
+
     df = _fetch_results(dataset, model)
 
     if df.empty:
@@ -164,13 +180,21 @@ def download_results(
     df_results_by_eval = []
     for eval_config in eval_configs:
         df_matched = df[df[COL_EVAL_CONFIG] == eval_config if eval_config is not None else df[COL_EVAL_CONFIG].isnull()]
-        df_result = _to_deserialized_dataframe(df_matched, column=COL_RESULT)
+        df_result = pd.concat(
+            [
+                _to_deserialized_dataframe(df_matched, column=COL_DATAPOINT)[id_fields],
+                _to_deserialized_dataframe(df_matched, column=COL_RESULT),
+            ],
+            axis=1,
+        )
         if has_thresholded:
             df_result = pd.concat(
                 [df_result, _to_deserialized_dataframe(df_matched, column=COL_THRESHOLDED_OBJECT)],
                 axis=1,
             )
-        df_results_by_eval.append((json.loads(eval_config) if eval_config is not None else None, df_result))
+        df_results_by_eval.append(
+            EvalConfigResults(json.loads(eval_config) if eval_config is not None else None, df_result),
+        )
     log.info(f"downloaded results for model '{model}' on dataset '{dataset}'")
     return df_datapoints, df_results_by_eval
 
@@ -251,7 +275,7 @@ def _upload_results(
 def upload_results(
     dataset: str,
     model: str,
-    results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
+    results: Union[DataFrame, List[EvalConfigResults]],
     thresholded_fields: Optional[List[str]] = None,
 ) -> None:
     """
@@ -259,8 +283,7 @@ def upload_results(
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
-    :param results: Either a DataFrame or a list of tuples, where each tuple consists of
-                    an eval configuration and a DataFrame.
+    :param results: Either a DataFrame or a list of [`EvalConfigResults`](kolena.dataset.EvalConfigResults).
     :param thresholded_fields: Columns in result DataFrame containing data associated with different thresholds.
 
     :return: None
