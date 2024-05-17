@@ -25,6 +25,7 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
 | [`Label`][kolena.annotation.Label] | Valid for all data |
 | [`TimeSegment`][kolena.annotation.TimeSegment] | Limited to `Audio` or `Video` data |
+| [`TextSegment`][kolena.annotation.TextSegment] | Limited to `Text` data |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.annotation.BoundingBox] objects) present in the datapoints are
@@ -393,6 +394,7 @@ class TextSegment(Annotation):
         TextSegment(text_field="text", start=0, end=5),
         TextSegment(text_field="summary", start=10, end=51),
     ]
+    ```
     """
 
     text_field: str
