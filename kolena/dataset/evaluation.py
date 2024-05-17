@@ -159,7 +159,7 @@ def download_results(
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
-    :return: Tuple of DataFrame of datapoints and list of [`EvalConfigResults`](kolena.dataset.EvalConfigResults).
+    :return: Tuple of DataFrame of datapoints and list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
     existing_dataset = _load_dataset_metadata(dataset)
@@ -283,7 +283,7 @@ def upload_results(
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
-    :param results: Either a DataFrame or a list of [`EvalConfigResults`](kolena.dataset.EvalConfigResults).
+    :param results: Either a DataFrame or a list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
     :param thresholded_fields: Columns in result DataFrame containing data associated with different thresholds.
 
     :return: None
