@@ -24,7 +24,7 @@ nav:
       - Azure Blob Storage: connecting-cloud-storage/azure-blob-storage.md
       - HTTP Basic: connecting-cloud-storage/http-basic.md
     - Archive:
-      - Kolena Workflows:
+      - Workflows:
         - Workflows: workflow/index.md
         - Quickstart: workflow/quickstart.md
         - Building a Workflow: workflow/building-a-workflow.md
@@ -48,7 +48,7 @@ nav:
     - <code>kolena.io</code>: reference/io.md
     - <code>kolena.metrics</code>: reference/metrics.md
     - Archived:
-      - Kolena Workflows:
+      - <code>kolena.workflow</code>:
         - <code>kolena.workflow</code>: reference/workflow/index.md
         - <code>TestSample</code>: reference/workflow/test-sample.md
         - <code>GroundTruth</code>: reference/workflow/ground-truth.md
@@ -58,7 +58,6 @@ nav:
         - <code>TestSuite</code>: reference/workflow/test-suite.md
         - <code>Model</code>: reference/workflow/model.md
         - <code>test</code>: reference/workflow/test-run.md
-        - <code>kolena.io</code>: reference/io.md
         - Utilities:
           - Annotations: reference/workflow/annotation.md
           - Assets: reference/workflow/asset.md

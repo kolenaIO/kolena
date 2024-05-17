@@ -1,10 +1,9 @@
 ---
-icon: kolena/cube-16
 hide:
   - toc
 ---
 
-# :kolena-cube-20: `kolena.workflow`
+# `kolena.workflow`
 
 <div class="grid cards" markdown>
 - :kolena-layers-16: Developer Guide: [Building a Workflow ↗](../../workflow/building-a-workflow.md)
