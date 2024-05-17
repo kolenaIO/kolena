@@ -14,9 +14,9 @@ testing. For a quick overview, refer to the [Quickstart Guide](../quickstart.md)
 
     ---
 
-    A Dataset represents a structured assembly of datapoints, essential for model evaluation. Each datapoint
-    within a dataset combines various data types, such as images or text, traditionally segmented into test samples and
-    metadata.
+    A dataset is a version-controlled collection of datapoints.
+    Datapoints represent customizable "units" of testing relevant to your problem,
+    such as images or text with associated ground truths.
 
 </div>
 

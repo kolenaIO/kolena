@@ -31,7 +31,7 @@ standardization and comparison of multiple models.
 
     ---
 
-    A Dataset represents a structured assembly of datapoints, essential for model evaluation.
+    A Dataset represents a version-controlled collection of datapoints, essential for model evaluation.
 
 - [:kolena-quality-standard-16: Quality Standard](./core-concepts/quality-standard.md)
 
