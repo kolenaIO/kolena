@@ -53,5 +53,5 @@ Ensure you have `gsutil` installed.
 Then provide CORS access to Kolena for your bucket by running the following command:
 
 ```
-gsutil cors set example_cors_file.json gs://<my-bucket>
+gsutil cors set cors.json gs://<my-bucket>
 ```
