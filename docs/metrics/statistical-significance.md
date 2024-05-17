@@ -4,7 +4,7 @@ Statistical significance refers to the degree of certainty that observed differe
 random chance. It is often used by researchers to draw meaningful conclusions and make informed decisions based on
 their analysis. Within the context of Kolena, it is used as a statistical representation of the amount of tolerance in
 the evaluation results based on the chosen confidence level and the size of a
-[test case](../dataset/core-concepts/quality-standard.md#test-cases). This significance is calculated by estimating the
+[test case](../dataset/core-concepts/index.md#test-cases). This significance is calculated by estimating the
 **margin of error** (MOE), which ranges from 0% to 100%. The larger the MOE, the less confidence one should have that a
 result would reflect the complete representation of the test case.
 

@@ -1,5 +1,4 @@
 ---
-icon: kolena/cube-16
 hide:
   - toc
 ---

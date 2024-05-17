@@ -11,8 +11,8 @@ example dataset to demonstrate test data curation and model evaluation in Kolena
 the `kolena` Python SDK.
 
 ??? note "Using the SDK"
-    If you would like to use the SDK for this quickstart follow these instructions to set up the
-    SDK and set up the code example locally.
+If you would like to use the SDK for this quickstart follow these instructions to set up the
+SDK and set up the code example locally.
 
     First, install the `kolena` python SDK:
 
@@ -44,22 +44,21 @@ the `kolena` Python SDK.
 
 ## Step 1: Upload Dataset
 
-Model evaluations on Kolena starts with datasets. Datasets are tables that contain the data you wish to use for
-creating test cases.
+Model evaluations on Kolena starts with datasets. Datasets are structured assembly of datapoints you wish to use for
+model testing and evaluation.
 
 === "Web App"
-    To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
-    click `Import Dataset` then `Select From Cloud Storage`.
-    Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
+To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
+click `Import Dataset` then `Select From Cloud Storage`.
+Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
         script in the code example for details on how the dataset was generated.
 
-    The keypoints in `300-W.csv` have been defined using `kolena.annotation.Keypoints` from
-    the `kolena` SDK.
-    See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
-    script for example usage.
+        The keypoints in `300-W.csv` have been defined using `kolena.annotation.Keypoints` from
+        the `kolena` SDK.
+        See the above script for example usage.
 
     You will now see a preview of how the information is going to be consumed by Kolena.
 
@@ -70,7 +69,8 @@ creating test cases.
     you can add descriptions and tags to organize your datasets.
 
     <figure markdown>
-        ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow.gif)
+        ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow-dark.gif#only-dark)
+        ![Example Dataset Upload](../assets/images/quickstart-upload-dataset-workflow-light.gif#only-light)
         <figcaption>Example Dataset Upload</figcaption>
     </figure>
 
@@ -115,11 +115,12 @@ keypoint detection model and a random keypoint model.
         See the [`keypoint_detection/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_results.py)
         script in the code example for details on how results were generated.
 
-    You will now see a preview of how Kolena will ingest the model results. Give your model a name, and click `Import` to
+    You will now see a preview of how Kolena will ingest the model results. Click `Import` to
     upload the model results.
 
     <figure markdown>
-        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow.gif)
+        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow.gif#only-dark)
+        ![Example Results Upload](../assets/images/quickstart-upload-results-workflow-light.gif#only-light)
         <figcaption>Example Results Upload</figcaption>
     </figure>
 
@@ -144,7 +145,8 @@ Once you have uploaded your dataset and model results, you can visualize the dat
 You can quickly see the distribution of any datapoint or model results field in the `Distributions` tab.
 
 <figure markdown>
-![Distribution Plots](../assets/images/quickstart-distribution.jpg)
+![Distribution Plots](../assets/images/quickstart-distribution.jpg#only-dark)
+![Distribution Plots](../assets/images/quickstart-distribution-light.png#only-light)
 <figcaption>Distribution Plots</figcaption>
 </figure>
 
@@ -153,37 +155,42 @@ select the random model. In the plotting widget at the bottom, select `datapoint
 and `result.mse > mean` as the y-axis to plot these two fields against each other.
 
 <figure markdown>
-![Custom Plots](../assets/images/quickstart-otf-plotting.gif)
+![Custom Plots](../assets/images/quickstart-otf-plotting.gif#only-dark)
+![Custom Plots](../assets/images/quickstart-otf-plotting-light.gif#only-light)
 <figcaption>Custom Plots</figcaption>
 </figure>
 
 ## Step 4: Define Quality Standards
 
 Quality Standards define the criteria by which models are evaluated on each dataset. A Quality Standard consists of
-Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators.
+Test Cases, which organize your data into key scenarios, and Metrics, which define key performance indicators. Metrics
+can be configured in groups depending on your needs.
 
 ### Define Test Cases
 
-To configure test cases, navigate to the `Quality Standards` tab and click on `Divide Dataset By`. Select
-`datapoint.condition` to create test cases based on the condition field. Click the check mark to
-save your test cases to your Quality Standard.
+To configure test cases, navigate to the `Quality Standards` tab and click on `Create Test Cases`. Select
+`datapoint.condition` to create test cases based on the condition field. Select `Save Test Cases` button to save your
+test cases to your Quality Standard.
 
-You will now see that your dataset has been organized into test cases based on the category field.
+You will now see that your dataset has been organized into test cases based on the `condition` field.
 Any Metrics you define will be calculated on each test case.
 
 <figure markdown>
-![Creating Test Cases](../assets/images/quickstart-create-test-cases.gif)
+![Creating Test Cases](../assets/images/add-test-cases.gif#only-dark)
+![Creating Test Cases](../assets/images/add-test-cases-light.gif#only-light)
 <figcaption>Creating Test Cases</figcaption>
 </figure>
 
 ### Define Metrics
 
-To configure Metrics, from the Quality Standards tab, click `Define Metrics` and select `result.mse > mean`.
+To configure Metrics, from the Quality Standards tab, click `Define Metrics`, select `Add Metric` button and
+select `result.mse > mean` option.
 Rename the metric to `Average MSE`, and select `Lower is better` as the highlight.
 Repeat these steps for `result.nmse > mean`.
 
 <figure markdown>
-![Defining Metrics](../assets/images/quickstart-define-metrics.gif)
+![Defining Metrics](../assets/images/quickstart-configure-metrics.gif#only-dark)
+![Defining Metrics](../assets/images/quickstart-configure-metrics-light.gif#only-light)
 <figcaption>Defining Metrics</figcaption>
 </figure>
 
@@ -200,7 +207,8 @@ reference model. In this example, RetinaFace performs better than the random mod
 as well as over all test cases we defined earlier.
 
 <figure markdown>
-![Comparing Models](../assets/images/quickstart-compare-models.gif)
+![Comparing Models](../assets/images/quickstart-compare-models.gif#only-dark)
+![Comparing Models](../assets/images/quickstart-compare-models-light.gif#only-light)
 <figcaption>Comparing Models</figcaption>
 </figure>
 

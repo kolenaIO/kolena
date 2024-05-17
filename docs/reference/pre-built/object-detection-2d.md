@@ -1,7 +1,3 @@
----
-icon: kolena/widget-16
-status: new
----
 
 # :kolena-widget-20: Object Detection (2D)
 
