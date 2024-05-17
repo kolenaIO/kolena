@@ -30,7 +30,7 @@ metric_group, metric)`.
 
 In order to automate deployment decisions with Kolena a team could:
 
-1. Define metric criteria a model must pass in order to be a deployment candidate.
+1. Define the metric requirements a model must meet in order to be considered for deployment.
 2. [Upload model results](../../reference/dataset/index.md##kolena.dataset.evaluation.upload_results) as part of a CI/CD
    pipeline.
 3. [Download the dataset's quality standard
