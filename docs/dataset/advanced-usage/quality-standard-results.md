@@ -5,13 +5,17 @@ icon: kolena/take-action-16
 
 # :kolena-take-action-20: Programatically Compare Models
 
+!!! example "Experimental Feature"
+
+    Experimental features are under active development and may occasionally undergo API-breaking changes.
+
 ## Download Quality Standard Result
 
 The **Quality Standard** should contain the key performance metrics a team uses to evaluate a model's performance on a
 dataset.
 
-The SDK provides [a
-function](../../reference/experimental/index.md#kolena._experimental.quality_standard.download_quality_standard_result)
+The SDK provides a
+function, [`download_quality_standard_result`](../../reference/experimental/index.md#kolena._experimental.quality_standard.download_quality_standard_result),
 to download a dataset's quality standard result. This enables users to automate processes surrounding a Quality
 Standard's result.
 
