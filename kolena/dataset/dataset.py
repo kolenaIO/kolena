@@ -57,6 +57,7 @@ from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
+from kolena.errors import NotFoundError
 from kolena.io import _dataframe_object_serde
 from kolena.io import _deserialize_dataobject
 
@@ -168,7 +169,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
 
-def _load_dataset_metadata(name: str) -> Optional[EntityData]:
+def _load_dataset_metadata(name: str) -> EntityData:
     """
     Load the metadata of a given dataset.
 
@@ -177,7 +178,7 @@ def _load_dataset_metadata(name: str) -> Optional[EntityData]:
     """
     response = krequests.put(Path.LOAD_DATASET, json=asdict(LoadDatasetByNameRequest(name=name)))
     if response.status_code == requests.codes.not_found:
-        return None
+        raise NotFoundError(f"dataset {name} does not exist")
 
     response.raise_for_status()
 
@@ -207,7 +208,11 @@ def _prepare_upload_dataset_request(
     id_fields: Optional[List[str]] = None,
 ) -> Tuple[List[str], str]:
     load_uuid = init_upload().uuid
-    existing_dataset = _load_dataset_metadata(name)
+
+    try:
+        existing_dataset = _load_dataset_metadata(name)
+    except NotFoundError:
+        existing_dataset = None
     if isinstance(df, pd.DataFrame):
         id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)

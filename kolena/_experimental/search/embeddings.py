@@ -41,7 +41,6 @@ from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import InputValidationError
-from kolena.errors import NotFoundError
 
 
 def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> None:
@@ -106,8 +105,6 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
 
     # prepare the id objects of the dataset
     existing_dataset = _load_dataset_metadata(dataset_name)
-    if not existing_dataset:
-        raise NotFoundError(f"dataset {dataset_name} does not exist")
     id_fields = existing_dataset.id_fields
     validate_dataframe_ids(df_embedding, id_fields)
     df_serialized_datapoint_id_object = _to_serialized_dataframe(
