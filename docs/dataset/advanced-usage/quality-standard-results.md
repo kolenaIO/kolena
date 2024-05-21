@@ -24,9 +24,7 @@ metric_group, metric)`.
 <figcaption>Quality Standard Result</figcaption>
 </figure>
 
-## Examples
-
-### Continuous Integration
+### Use Case: Continuous Integration
 
 In order to automate deployment decisions with Kolena a team could:
 
