@@ -54,11 +54,11 @@ def _normalize_dicts(dict_list: List[Dict[str, Any]], sep: str = ".", max_level:
     # Get all unique keys across all dictionaries
     all_keys = set().union(*flattened_dicts)
 
-    # Normalize all dictionaries to have all keys,
-    # filling missing ones with None and parsing existing ones
+    # Normalize all dictionaries to have all keys, filling missing ones with None
     for d in flattened_dicts:
         for key in all_keys:
-            d[key] = _try_parse(d.get(key, None))
+            if key not in d:
+                d[key] = None
 
     return flattened_dicts
 
