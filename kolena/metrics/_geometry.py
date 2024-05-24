@@ -350,5 +350,5 @@ def match_inferences_multiclass(
     return MulticlassInferenceMatches(
         matched=matched,
         unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
-        unmatched_inf=unmatched_inf,
+        unmatched_inf=[inf for _, inf in confused_matches.matched] + [inf for inf in confused_matches.unmatched_inf],
     )
