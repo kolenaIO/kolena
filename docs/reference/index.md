@@ -51,4 +51,10 @@ This section contains detailed API reference documentation for `kolena`.
 
     Helper utilities for creating custom metrics
 
+- [`kolena._experimental`](./experimental/index.md)
+
+    ---
+
+    Experimental features
+
 </div>

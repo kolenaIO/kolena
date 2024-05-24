@@ -11,7 +11,4 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from kolena._experimental.instance_segmentation.dataset import upload_instance_segmentation_results
-from kolena._experimental.object_detection.dataset import compute_object_detection_results
-from kolena._experimental.object_detection.dataset import upload_object_detection_results
 from kolena._experimental.quality_standard import download_quality_standard_result
