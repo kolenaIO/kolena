@@ -1,3 +1,7 @@
+---
+search:
+  boost: -0.5
+---
 
 # :kolena-workflow-16: Pre-built Workflows
 

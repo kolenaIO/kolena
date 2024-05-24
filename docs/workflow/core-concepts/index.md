@@ -1,6 +1,8 @@
 ---
 hide:
   - toc
+search:
+  boost: -0.5
 ---
 
 # :kolena-area-of-interest-20: Core Concepts

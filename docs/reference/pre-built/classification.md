@@ -1,3 +1,7 @@
+---
+search:
+  boost: -0.5
+---
 
 # :kolena-classification-20: Classification
 

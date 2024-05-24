@@ -1,6 +1,6 @@
 ---
 search:
-  boost: 2
+  boost: -0.5
 ---
 
 # :kolena-workflow-20: Workflow
