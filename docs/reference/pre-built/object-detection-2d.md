@@ -1,3 +1,7 @@
+---
+search:
+  boost: -0.5
+---
 
 # :kolena-widget-20: Object Detection (2D)
 

@@ -1,6 +1,6 @@
 ---
 search:
-  boost: 2
+  boost: -0.5
 ---
 
 # :kolena-cube-20: Building a Workflow

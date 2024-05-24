@@ -1,6 +1,8 @@
 ---
 hide:
   - toc
+search:
+  boost: -0.5
 ---
 
 # :kolena-cube-20: Workflows
