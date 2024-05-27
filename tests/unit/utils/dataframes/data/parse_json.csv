@@ -1,4 +1,0 @@
-A,B,C,D,E
-1,"[];print('hack4')",{'foo': 7},"{""foo"": 7}",None
-2,"[];print('hack5')",{'bar': 8},"{""bar"": 8}",None
-3,"[];print('hack6')",{'var': 9},"{""var"": 9}",None
