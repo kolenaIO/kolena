@@ -35,8 +35,8 @@ def upload_instance_segmentation_results(
     """
     Compute metrics and upload results of the model for the dataset.
 
-    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
-    :inference in the Dataframe `df` should be a list of scored [`Polygons`][kolena.annotation.Polygon].
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint and
+    an `inference` column that should be a list of scored [`Polygons`][kolena.annotation.Polygon].
 
     :param dataset_name: Dataset name.
     :param model_name: Model name.
