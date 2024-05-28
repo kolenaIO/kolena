@@ -353,8 +353,8 @@ def compute_object_detection_results(
     """
     Compute metrics of the model for the dataset.
 
-    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
-    :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint and
+    an `inference` column that should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
 
     :param dataset_name: Dataset name.
     :param df: Dataframe for model results.
@@ -400,8 +400,8 @@ def upload_object_detection_results(
     [`compute_object_detection_results`][kolena._experimental.object_detection.compute_object_detection_results]
     for the dataset.
 
-    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint. Column
-    :inference in the Dataframe `df` should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
+    Dataframe `df` should include a `locator` column that would match to that of corresponding datapoint and
+    an `inference` column that should be a list of scored [`BoundingBoxes`][kolena.annotation.BoundingBox].
 
     :param dataset_name: Dataset name.
     :param model_name: Model name.
