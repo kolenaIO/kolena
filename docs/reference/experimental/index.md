@@ -4,6 +4,10 @@
 ::: kolena._experimental.quality_standard
     options:
         show_root_heading: true
+::: kolena._experimental.search
+    options:
+        show_root_heading: true
+        members: ["upload_dataset_embeddings"]
 ::: kolena._experimental.object_detection
     options:
         members: ["compute_object_detection_results", "upload_object_detection_results"]
