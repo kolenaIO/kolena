@@ -65,35 +65,62 @@ def _normalize_dicts(dict_list: List[Dict[str, Any]], sep: str = ".", max_level:
 
 def _try_parse(value: Any) -> Any:
     """
-    Try parsing:
-        - empty string as None
-        - numbers
-        - a JSON string into a Python object.
-    Return parsed value if successful, otherwise the original value.
+    Try parsing the input value into a more appropriate Python data type.
+    This function handles the following conversions:
+
+    - Empty strings are converted to None.
+    - Strings that represent numbers are converted to numerical types (int or float).
+    - JSON strings are converted to corresponding Python objects (lists or dictionaries).
+    - Strings "true" and "false" are converted to their boolean equivalents.
+    - NumPy arrays are converted to Python lists.
+    - NaN values are converted to None.
+
+    If none of the above conversions are applicable, the original value is returned.
+
+    Parameters:
+    value (Any): The input value to be parsed.
+
+    Returns:
+    Any: The parsed value if a conversion was successful, otherwise the original value.
     """
-    # handle na
+
+    # Handle NaN values
     if isinstance(value, float) and math.isnan(value):
         return None
 
-    # normalize np.ndarray into python list to avoid downstream type error:
-    # Object of type ndarray is not JSON serializable
-    if isinstance(value, np.ndarray):
-        return value.tolist()
-
-    if not isinstance(value, str):
-        return value
-
+    # Convert empty strings to None
     if value == "":
         return None
 
-    try:
-        return pd.to_numeric(value)
-    except Exception:
-        ...
+    # Normalize NumPy arrays into Python lists to avoid downstream type errors
+    if isinstance(value, np.ndarray):
+        return value.tolist()
 
-    # only parse json array or object
-    if not (value.startswith("[") or value.startswith("{")):
+    # If the value is not a string, return it as is
+    if not isinstance(value, str):
         return value
+
+    # Convert strings "true" and "false" to boolean values
+    if value.lower() in ["true", "false"]:
+        return value.lower() == "true"
+
+    # Attempt to convert the string to a numeric type
+    try:
+        value_numeric = pd.to_numeric(value, errors="coerce")
+        if not np.isnan(value_numeric):
+            return value_numeric
+    except Exception:
+        pass
+
+    # Only attempt to parse JSON arrays or objects
+    if not (value.startswith("[") or value.startswith("{")):
+        if value == "" or value == "null":
+            return None
+        elif value.startswith(("'", '"')) and value.endswith(("'", '"')):
+            value = value[1:-1]
+        return value
+
+    # Attempt to parse the string as JSON
     try:
         return json.loads(value)
     except Exception:
