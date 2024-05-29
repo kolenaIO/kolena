@@ -102,6 +102,7 @@ def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_emb
     df_embedding = pd.concat([df_embedding, df_serialized_datapoint_id_object], axis=1)
 
     df_embedding["key"] = key
+    df_embedding = df_embedding[[COL_DATAPOINT_ID_OBJECT, "key", "embedding"]]
     df_validated = validate_df_schema(df_embedding, DatasetEmbeddingsDataFrameSchema)
 
     log.info(f"uploading embeddings for dataset '{dataset_name}' and key '{key}'")
