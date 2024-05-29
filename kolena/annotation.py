@@ -402,10 +402,10 @@ class TextSegment(Annotation):
     """Text field column name containing the text segments."""
 
     start: int
-    """Start index of the text segment."""
+    """Zero-indexed start index (inclusive) of the text segment."""
 
     end: int
-    """End index of the text segment."""
+    """Zero-indexed end index (exclusive) of the text segment."""
 
     def __post_init__(self) -> None:
         if self.start < 0:
