@@ -387,7 +387,8 @@ class ScoredLabeledTimeSegment(TimeSegment):
 @dataclass(frozen=True, config=ValidatorConfig)
 class TextSegment(Annotation):
     """
-    Segment of text in the associated text field
+    Represents a segment of text within a specified text field. The `start` index is inclusive and the `end` index is
+    exclusive, following the convention of Python string slicing.
 
     ```py
     text_segments: List[TextSegment] = [
@@ -401,10 +402,10 @@ class TextSegment(Annotation):
     """Text field column name containing the text segments."""
 
     start: int
-    """Start index of the text segment."""
+    """Zero-indexed start index (inclusive) of the text segment."""
 
     end: int
-    """End index of the text segment."""
+    """Zero-indexed end index (exclusive) of the text segment."""
 
     def __post_init__(self) -> None:
         if self.start < 0:
