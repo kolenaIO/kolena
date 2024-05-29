@@ -83,7 +83,7 @@ figcaption {
 
     --md-typeset-a-color:              hsla(219, 66%, 64%, 1); /* manually set link color to indigo */
 
-    --md-hue: 240;
+    --md-hue: 216;
 
     /* crank down the saturation of these default colors -- less purplish than simply overriding --md-hue */
     --md-default-fg-color:             hsla(var(--md-hue), 25%, 95%, 1);

@@ -1,5 +1,6 @@
 ---
 subtitle: Macro, Micro, Weighted
+description: when to use macro, micro, or weighted averages
 ---
 
 # Averaging Methods
