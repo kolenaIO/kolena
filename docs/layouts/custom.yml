@@ -1,6 +1,6 @@
 definitions:
   - &page_title_with_site_name "{{ page.title }} - {{ config.site_name }}"
-  - &page_description "{{ config.site_description }}"
+  - &page_description "{% if (page.meta is defined and page.meta.description is defined) %}{{ page.meta.description }}{% else %}{{ config.site_description }}{% endif %}"
   - &font_family "DM Sans"
   - &color "white"
 
