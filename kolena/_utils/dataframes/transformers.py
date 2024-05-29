@@ -89,7 +89,7 @@ def _try_parse(value: Any) -> Any:
         return None
 
     # Convert empty strings to None
-    if value == "":
+    if isinstance(value, str) and value == "":
         return None
 
     # Normalize NumPy arrays into Python lists to avoid downstream type errors

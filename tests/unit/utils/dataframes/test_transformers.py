@@ -15,9 +15,11 @@ import math
 from typing import Any
 from typing import Dict
 
+import numpy as np
 import pandas as pd
 import pytest
 
+from kolena._utils.dataframes.transformers import _try_parse
 from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.dataframes.transformers import json_normalize
 
@@ -87,3 +89,36 @@ def test__json_normalize(nested_data: Dict):
     assert df_post["id"][1] is None
     # ignore the order of columns by check_like
     pd.testing.assert_frame_equal(df_post, df_expected, check_like=True)
+
+
+def test__try_parse() -> None:
+    # Test empty string
+    assert _try_parse("") is None
+
+    # Test numeric string
+    assert _try_parse("42") == 42
+    assert _try_parse("3.14") == 3.14
+
+    # Test JSON string
+    assert _try_parse("[1, 2, 3]") == [1, 2, 3]
+    assert _try_parse('{"key": "value"}') == {"key": "value"}
+
+    # Test boolean string
+    assert _try_parse("true") is True
+    assert _try_parse("false") is False
+
+    # Test NumPy array
+    assert _try_parse(np.array([1, 2, 3])) == [1, 2, 3]
+
+    # Test NaN value
+    assert _try_parse(float("nan")) is None
+
+    # Test other string
+    assert _try_parse("hello") == "hello"
+
+    # Test string with quotes
+    assert _try_parse('"hello"') == "hello"
+    assert _try_parse("'world'") == "world"
+
+    # Test string "null"
+    assert _try_parse("null") is None
