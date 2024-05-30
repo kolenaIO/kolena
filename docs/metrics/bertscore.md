@@ -1,3 +1,7 @@
+---
+description: Learn about BERTScore, a text similarity metric using embeddings
+---
+
 # BERTScore
 
 BERTScore is a metric used in NLP workflows to measure textual similarity between candidate texts and reference texts.

@@ -1,3 +1,7 @@
+---
+description: Measuring the confidence of word generations from autoregressive language models
+---
+
 # Perplexity
 
 !!! info inline end "Requirements"

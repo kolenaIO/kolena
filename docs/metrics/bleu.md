@@ -1,3 +1,7 @@
+---
+description: Learn about BLEU, a text similarity metric
+---
+
 # BLEU
 
 !!! info inline end "BLEU vs. Precision"

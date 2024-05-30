@@ -1,3 +1,7 @@
+---
+description: Learn how true negative rate (specificity) is computed and used in ML
+---
+
 # Specificity (TNR)
 
 <div class="grid" markdown>

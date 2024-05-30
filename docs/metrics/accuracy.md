@@ -1,3 +1,7 @@
+---
+description: Learn about evaluating ML model performance with accuracy
+---
+
 # Accuracy
 
 Accuracy is one of the most well-known metrics in machine learning model evaluation because it is simple to understand

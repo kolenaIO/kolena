@@ -1,3 +1,7 @@
+---
+description: Learn about METEOR, a text similarity metric
+---
+
 # METEOR
 
 METEOR (**M**etric for **E**valuation of **T**ranslation with **E**xplicit **OR**dering) is a widely recognized and

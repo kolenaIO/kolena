@@ -1,3 +1,7 @@
+---
+description: Understanding the precision metric of a model in ML
+---
+
 # Precision
 
 <div class="grid" markdown>

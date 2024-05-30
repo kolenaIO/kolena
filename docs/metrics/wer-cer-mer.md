@@ -1,3 +1,7 @@
+---
+description: Discover how the difference in texts is quantifiable with WER, CER, and MER
+---
+
 # WER, CER, and MER
 
 Word Error Rate (WER), Character Error Rate (CER), and Match Error Rate (MER) are essential metrics used in the

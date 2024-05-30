@@ -1,3 +1,7 @@
+---
+description: Learn about Cohen's Kappa, a metric that measures agreement
+---
+
 # Cohen's Kappa
 
 Cohen's Kappa is a statistical metric that evaluates the reliability of an algorithm's predictions with similar goals

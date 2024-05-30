@@ -1,5 +1,6 @@
 ---
 subtitle: AUC ROC
+description: Learn about model performance with ROC curves with implementation details
 ---
 
 # ROC Curve

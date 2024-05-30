@@ -1,3 +1,7 @@
+---
+description: A metric that highlights contradictions in natural language
+---
+
 # Contradiction Score
 
 The [Cross-Encoder for Natural Language Inference](https://huggingface.co/cross-encoder/nli-deberta-v3-base) (NLI) is a

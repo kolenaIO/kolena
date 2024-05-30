@@ -1,3 +1,7 @@
+---
+description: Explore what the F1 score means for ML evaluation
+---
+
 # F<sub>1</sub>-score
 
 The **F<sub>1</sub>-score**, also known as **balanced F-score** or **F-measure**, is a metric that combines two

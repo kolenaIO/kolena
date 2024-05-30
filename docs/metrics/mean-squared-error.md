@@ -1,3 +1,7 @@
+---
+description: Understanding mean squared error (MSE) for ML
+---
+
 # Mean Squared Error (MSE)
 
 Mean Squared Error (MSE) is a widely used metric for evaluating the performance of regression models,

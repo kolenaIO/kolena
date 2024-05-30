@@ -1,3 +1,7 @@
+---
+description: Confusion matrices highlight model performance and behavior across multiple classes
+---
+
 # Confusion Matrix
 
 !!! info inline end "Guide: True Positive / False Positive / False Negative / True Negative"

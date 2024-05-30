@@ -1,3 +1,7 @@
+---
+description: Learn about model performance with precision-recall curves with implementation details
+---
+
 # Precision-Recall (PR) Curve
 
 !!! info inline end "Guides: Precision and Recall"

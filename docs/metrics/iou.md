@@ -1,7 +1,11 @@
+---
+description: Learn about intersection over union, and how to use IoU for ML evaluation
+---
+
 # Intersection over Union (IoU)
 
 Intersection over Union (IoU) measures the ratio of the intersection and the union between ground truth and inference,
-ranging from 0 to 1 where 1 indicates a perfect match.  The objective of this metric is to compare inferences to
+ranging from 0 to 1 where 1 indicates a perfect match. The objective of this metric is to compare inferences to
 ground truths by measuring similarity between them.
 
 As the name suggests, the IoU of two instances ($\text{A}$ and $\text{B}$) is defined as:
@@ -50,7 +54,7 @@ respectively. This is the most common coordinate system in computer vision.
 </div>
 
 In order to compute IoU for two 2D bounding boxes, the first step is identifying the area of the intersection box,
-$(\text{A} \cap \text{B})$.  This is the highlighted overlap region in the image above. The two coordinates of the
+$(\text{A} \cap \text{B})$. This is the highlighted overlap region in the image above. The two coordinates of the
 intersection box, top-left and bottom-right corners, can be defined as:
 
 $$

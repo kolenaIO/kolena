@@ -1,3 +1,7 @@
+---
+description: Choosing the best algorithm to match objects in computer vision tasks
+---
+
 # Geometry Matching
 
 Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a

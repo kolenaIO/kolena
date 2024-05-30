@@ -1,3 +1,7 @@
+---
+description: Learn about ROUGE, a text similarity metric
+---
+
 # ROUGE-N
 
 !!! info inline end "ROUGE vs. Recall"

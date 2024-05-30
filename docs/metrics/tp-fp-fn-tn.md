@@ -1,3 +1,7 @@
+---
+description: Understand the four core metrics used to evaluate machine learning models
+---
+
 # TP / FP / FN / TN
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)

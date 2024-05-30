@@ -1,3 +1,7 @@
+---
+description: A simple metric that measures hallucinations in generated text
+---
+
 # Hughes Hallucination Evaluation Model (HHEM) Score
 
 [Hughes Hallucination Evaluation Model (HHEM)](https://huggingface.co/vectara/hallucination_evaluation_model) is an
