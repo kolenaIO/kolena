@@ -689,6 +689,30 @@ def test__match_inferences(
         assert inf.iou == pytest.approx(expected_iou, abs=1e-5)
 
 
+def test__match_inferences__preserves_extra_props_tp() -> None:
+    ground_truths = [BoundingBox(top_left=(1, 1), bottom_right=(6, 6))]
+    inferences = [
+        # type: ignore[call-arg]
+        ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
+    ]
+    matches = match_inferences(ground_truths, inferences)
+    matched_inf = matches.matched[0][1]
+    assert hasattr(matched_inf, "flavor")
+    assert matched_inf.flavor == "cherry"
+
+
+def test__match_inferences__preserves_extra_props_fp() -> None:
+    ground_truths = []
+    inferences = [
+        # type: ignore[call-arg]
+        ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
+    ]
+    matches = match_inferences(ground_truths, inferences)
+    unmatched_inf = matches.unmatched_inf[0]
+    assert hasattr(unmatched_inf, "flavor")
+    assert unmatched_inf.flavor == "cherry"
+
+
 def test__match_inferences__invalid_mode() -> None:
     with pytest.raises(InputValidationError):
         match_inferences(
@@ -2563,3 +2587,27 @@ def test__match_inferences_multiclass__iou(
     for inf in matches.unmatched_inf:
         expected_iou = max(iou(inf, gt) for gt in ground_truths) if ground_truths else 0.0
         assert inf.iou == pytest.approx(expected_iou, abs=1e-5)
+
+
+def test__match_inferences_multiclass__preserves_extra_props_tp() -> None:
+    ground_truths = [LabeledBoundingBox(top_left=(1, 1), bottom_right=(6, 6), label="cow")]
+    inferences = [
+        # type: ignore[call-arg]
+        ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
+    ]
+    matches = match_inferences_multiclass(ground_truths, inferences)
+    matched_inf = matches.matched[0][1]
+    assert hasattr(matched_inf, "flavor")
+    assert matched_inf.flavor == "cherry"
+
+
+def test__match_inferences_multiclass__preserves_extra_props_fp() -> None:
+    ground_truths = [LabeledBoundingBox(top_left=(1, 1), bottom_right=(6, 6), label="cow")]
+    inferences = [
+        # type: ignore[call-arg]
+        ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
+    ]
+    matches = match_inferences_multiclass(ground_truths, inferences)
+    unmatched_inf = matches.unmatched_inf[0]
+    assert hasattr(unmatched_inf, "flavor")
+    assert unmatched_inf.flavor == "cherry"
