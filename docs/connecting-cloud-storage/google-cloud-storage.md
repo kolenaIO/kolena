@@ -13,6 +13,10 @@ Navigate to the "Integrations" tab on the
 [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page and click "Add Integration", then "Google Cloud Storage".
 
+!!! note "Connecting multiple projects"
+    Google cloud storage allows you to set up access to multiple projects and buckets within them using a single configuration.
+    Therefore, Kolena supports a single GCP configuration to manage all your integration needs.
+
 ### Step 1: Save Integration to Create a Service Account
 
 From the [Integrations tab](https://app.kolena.com/redirect/organization?tab=integrations), saving a Google Cloud Storage
