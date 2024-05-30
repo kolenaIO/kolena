@@ -1,5 +1,5 @@
 ---
-description: Understanding false positive rate to evaluate ML model performance
+description: Understanding false positive rate (FPR) to evaluate ML model performance
 ---
 
 
