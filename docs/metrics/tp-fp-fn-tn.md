@@ -1,5 +1,5 @@
 ---
-description: Understand the four core metrics used to evaluate machine learning models
+description: Learn about true positives, false positives, false negatives, and true negatives to evaluate ML model performance
 ---
 
 # TP / FP / FN / TN

@@ -1,5 +1,5 @@
 ---
-description: Learn about Cohen's Kappa, a metric that measures agreement
+description: How to measure ML model agreement using Cohen's Kappa
 ---
 
 # Cohen's Kappa

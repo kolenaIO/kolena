@@ -1,5 +1,5 @@
 ---
-description: Measuring the confidence of word generations from autoregressive language models
+description: How to calculate perplexity to evaluate the confidence of generated text
 ---
 
 # Perplexity

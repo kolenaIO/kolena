@@ -1,5 +1,5 @@
 ---
-description: Understanding the precision metric of a model in ML
+description: How to calculate and interpret precision to evaluate ML model performance
 ---
 
 # Precision

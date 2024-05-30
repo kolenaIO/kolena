@@ -1,5 +1,5 @@
 ---
-description: Learn how true negative rate (specificity) is computed and used in ML
+description: Understanding true negative rate (specificity) to evaluate ML model performance
 ---
 
 # Specificity (TNR)

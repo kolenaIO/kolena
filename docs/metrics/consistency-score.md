@@ -1,5 +1,5 @@
 ---
-description: Determine if LLMs are trustworthy by measuring their behavioral consistency
+description: Determine if LLMs are trustworthy by measuring behavioral consistency
 ---
 
 # Consistency Score

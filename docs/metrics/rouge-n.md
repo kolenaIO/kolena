@@ -1,5 +1,5 @@
 ---
-description: Learn about ROUGE, a text similarity metric
+description: Measuring textual similarity with N-gram overlap
 ---
 
 # ROUGE-N

@@ -1,5 +1,5 @@
 ---
-description: Measuring hallucinations in generated text
+description: How to detect hallucinations in generated text
 ---
 
 # Hughes Hallucination Evaluation Model (HHEM) Score

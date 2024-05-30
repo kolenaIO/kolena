@@ -1,5 +1,5 @@
 ---
-description: Confusion matrices highlight model performance and behavior across multiple classes
+description: How to create and interpret confusion matrices to evaluate ML model performance
 ---
 
 # Confusion Matrix

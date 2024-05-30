@@ -1,5 +1,5 @@
 ---
-description: Understanding mean squared error (MSE) for ML
+description: How to calculate and interperet MSE for regression ML tasks
 ---
 
 # Mean Squared Error (MSE)

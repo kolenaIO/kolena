@@ -1,5 +1,5 @@
 ---
-description: Discover how the difference in texts is quantifiable with WER, CER, and MER
+description: Measuring textual similarity with substitution, deletion, and insertion errors
 ---
 
 # WER, CER, and MER

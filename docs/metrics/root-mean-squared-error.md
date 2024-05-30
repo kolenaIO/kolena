@@ -1,5 +1,5 @@
 ---
-description: Understanding root mean squared error (RMSE) within ML
+description: How to calculate and interperet RMSE for regression ML tasks
 ---
 
 # Root Mean Squared Error (RMSE)

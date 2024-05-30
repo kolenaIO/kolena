@@ -1,5 +1,5 @@
 ---
-description: Choosing the best algorithm to match objects in computer vision tasks
+description: How to algorithmically match objects and bounding boxes in computer vision tasks
 ---
 
 # Geometry Matching

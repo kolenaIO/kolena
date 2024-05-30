@@ -1,5 +1,5 @@
 ---
-description: A guide on prompting LLMs to produce a metric for hallucinations
+description: Prompting LLMs to produce a metric for hallucinations
 ---
 
 # Prompt-based Hallucination Metric

@@ -1,6 +1,7 @@
 ---
-description: Learn how false positive rate is computed and used in ML
+description: Understanding false positive rate to evaluate ML model performance
 ---
+
 
 # False Positive Rate (FPR)
 

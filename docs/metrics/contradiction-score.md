@@ -1,5 +1,5 @@
 ---
-description: A metric that highlights contradictions in natural language
+description: How to calculate and interpret contradiction scores for NLP
 ---
 
 # Contradiction Score

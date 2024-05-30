@@ -1,5 +1,5 @@
 ---
-description: Learn about model performance with precision-recall curves with implementation details
+description: How to create and interpret precision-recall curves to evaluate ML model performance
 ---
 
 # Precision-Recall (PR) Curve

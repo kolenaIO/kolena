@@ -1,5 +1,5 @@
 ---
-description: Explore what the F1 score means for ML evaluation
+description: How to calculate and interpret precision to evaluate ML model performance
 ---
 
 # F<sub>1</sub>-score

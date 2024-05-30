@@ -1,5 +1,5 @@
 ---
-description: Understanding errors of speaker diarization models
+description: How to calculate and describe errors of speaker diarization models
 ---
 
 # Diarization Error Rate

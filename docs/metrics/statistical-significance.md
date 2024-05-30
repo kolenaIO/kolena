@@ -1,5 +1,5 @@
 ---
-description: Discover statistical significance to fully understand ML models
+description: How to use statistical significance to evaluate ML model performance
 ---
 
 # Statistical Significance

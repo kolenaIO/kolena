@@ -1,5 +1,5 @@
 ---
-description: Understanding mean absolute error (MAE) within ML
+description: How to calculate and interperet MAE for regression ML tasks
 ---
 
 # Mean Absolute Error (MAE)

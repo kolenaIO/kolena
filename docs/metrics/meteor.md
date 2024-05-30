@@ -1,5 +1,5 @@
 ---
-description: Learn about METEOR, a text similarity metric
+description: Measuring textual similarity with N-gram precision and recall
 ---
 
 # METEOR

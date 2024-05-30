@@ -1,5 +1,5 @@
 ---
-description: Understanding the recall metric of a model in ML
+description: How to calculate and interpret recall to evaluate ML model performance
 ---
 
 # Recall (TPR, Sensitivity)

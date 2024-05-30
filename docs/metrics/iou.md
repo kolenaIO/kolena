@@ -1,5 +1,5 @@
 ---
-description: Learn about intersection over union, and how to use IoU for ML evaluation
+description: How to calculate and interpret IoU to for computer vision tasks
 ---
 
 # Intersection over Union (IoU)
