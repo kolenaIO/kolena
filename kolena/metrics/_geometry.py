@@ -98,7 +98,8 @@ Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeled
 
 
 def _inf_with_iou(inf: Inf, iou_val: float) -> Inf:
-    return dataclasses.replace(inf, iou=iou_val)  # type: ignore[call-arg]
+    args_without_iou = {key: value for key, value in inf._to_dict().items() if key != "iou"}
+    return dataclasses.replace(inf, **args_without_iou, iou=iou_val)  # type: ignore[call-arg]
 
 
 @dataclass(frozen=True)
