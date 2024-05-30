@@ -2602,7 +2602,7 @@ def test__match_inferences_multiclass__preserves_extra_props_tp() -> None:
 
 
 def test__match_inferences_multiclass__preserves_extra_props_fp() -> None:
-    ground_truths = [LabeledBoundingBox(top_left=(1, 1), bottom_right=(6, 6), label="cow")]
+    ground_truths = [LabeledBoundingBox(top_left=(7, 7), bottom_right=(10, 10), label="cow")]
     inferences = [
         # type: ignore[call-arg]
         ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
