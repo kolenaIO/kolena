@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import dataclasses
 from collections import defaultdict
 from typing import Dict
 from typing import Generic
@@ -98,8 +97,9 @@ Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeled
 
 
 def _inf_with_iou(inf: Inf, iou_val: float) -> Inf:
-    args_without_iou = {key: value for key, value in inf._to_dict().items() if key != "iou"}
-    return dataclasses.replace(inf, **args_without_iou, iou=iou_val)  # type: ignore[call-arg]
+    args_without_iou = {key: value for key, value in inf._to_dict().items() if key not in ["iou", "data_type"]}
+    out: Inf = inf.__class__(**args_without_iou, iou=iou_val)  # type: ignore[call-arg,assignment]
+    return out
 
 
 @dataclass(frozen=True)
