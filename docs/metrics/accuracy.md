@@ -1,5 +1,5 @@
 ---
-description: Learn about evaluating ML model performance with accuracy
+description: How to calculate and interpret accuracy to evaluate ML model performance
 ---
 
 # Accuracy

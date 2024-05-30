@@ -1,5 +1,5 @@
 ---
-description: Learn about BERTScore, a text similarity metric using embeddings
+description: Embeddings-based textual similarity for NLP tasks
 ---
 
 # BERTScore

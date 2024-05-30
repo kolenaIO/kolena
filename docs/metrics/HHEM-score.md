@@ -1,5 +1,5 @@
 ---
-description: A simple metric that measures hallucinations in generated text
+description: Measuring hallucinations in generated text
 ---
 
 # Hughes Hallucination Evaluation Model (HHEM) Score

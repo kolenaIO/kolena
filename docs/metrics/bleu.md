@@ -1,5 +1,5 @@
 ---
-description: Learn about BLEU, a text similarity metric
+description: Measuring textual similarity with N-gram overlap
 ---
 
 # BLEU

@@ -1,5 +1,5 @@
 ---
-description: Learn how to calculate and interperet the coefficient of determination (R²) in ML
+description: How to calculate and interperet R² for regression ML tasks
 ---
 
 # Coefficient of Determination (R²)

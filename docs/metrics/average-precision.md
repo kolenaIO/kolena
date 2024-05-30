@@ -1,5 +1,5 @@
 ---
-description: Detailed guide on the average precision metric for ML tasks
+description: How to calculate and interpret average precision for ML tasks
 ---
 
 # Average Precision
