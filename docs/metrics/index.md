@@ -2,6 +2,7 @@
 icon: kolena/metrics-glossary-16
 hide:
   - toc
+description: A glossary for machine learning metrics
 ---
 
 # :kolena-metrics-glossary-20: Metrics Glossary

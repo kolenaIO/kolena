@@ -1,5 +1,6 @@
 ---
 subtitle: AUC ROC
+description: How to create and interpret ROC curves to evaluate ML model performance
 ---
 
 # ROC Curve

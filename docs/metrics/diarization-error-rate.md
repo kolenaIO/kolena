@@ -1,3 +1,7 @@
+---
+description: How to calculate and describe errors of speaker diarization models
+---
+
 # Diarization Error Rate
 
 Diarization Error Rate (DER) is an important metric used to evaluate speaker diarization systems. It quantifies the

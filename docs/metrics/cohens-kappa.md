@@ -1,3 +1,7 @@
+---
+description: How to measure ML model agreement using Cohen's Kappa
+---
+
 # Cohen's Kappa
 
 Cohen's Kappa is a statistical metric that evaluates the reliability of an algorithm's predictions with similar goals

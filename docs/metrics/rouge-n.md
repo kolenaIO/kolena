@@ -1,3 +1,7 @@
+---
+description: Measuring textual similarity with N-gram overlap
+---
+
 # ROUGE-N
 
 !!! info inline end "ROUGE vs. Recall"

@@ -1,3 +1,7 @@
+---
+description: How to calculate and interperet RMSE for regression ML tasks
+---
+
 # Root Mean Squared Error (RMSE)
 
 Root Mean Squared Error (RMSE) is a standard metric used to assess the performance of regression models, known for its
