@@ -97,8 +97,12 @@ Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeled
 
 
 def _inf_with_iou(inf: Inf, iou_val: float) -> Inf:
-    args_without_iou = {key: value for key, value in inf._to_dict().items() if key not in ["iou", "data_type"]}
-    out: Inf = inf.__class__(**args_without_iou, iou=iou_val)  # type: ignore[call-arg,assignment]
+    input_args = {
+        key: value
+        for key, value in inf._to_dict().items()
+        if key not in ["width", "height", "area", "aspect_ratio", "iou", "data_type"]
+    }
+    out: Inf = inf.__class__(**input_args, iou=iou_val)  # type: ignore[call-arg,assignment]
     return out
 
 
