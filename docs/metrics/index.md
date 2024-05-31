@@ -86,6 +86,13 @@ biases, and its intended uses.
     emphasizing larger errors more significantly than smaller ones. It is mainly different from
     [MAE](mean-absolute-error.md) in that larger errors are penalized more heavily.
 
+- [Pearson Correlation Coefficient](pearson-correlation.md)
+
+    ---
+
+    Pearson's correlation coefficient is a statistical measure that evaluates the strength and
+    direction of the linear relationship between two continuous variables. The values range from -1 to +1.
+
 - [Precision](precision.md)
 
     ---
@@ -124,6 +131,14 @@ biases, and its intended uses.
     RMSE measures the square root of the average squared difference between the predicted values and the
     actual values, emphasizing larger errors more significantly than smaller ones while maintaing the same
     unit as the predicted and actual values which is what differentiates it from [MSE](mean-squared-error.md).
+
+- [Spearman's Rank Correlation Coefficient](spearman-correlation.md)
+
+    ---
+
+    Spearman's rank correlation coefficient is a statistical measure that assesses the strength and
+    direction of the monotonic relationship between two variables. Unlike Pearson's correlation, Spearman's correlation
+    does not assume a linear relationship and can be used with ordinal data. The values range from -1 to +1.
 
 - [Specificity (TNR)](specificity.md)
 
