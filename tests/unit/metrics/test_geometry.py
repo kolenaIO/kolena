@@ -114,7 +114,7 @@ def test__iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, 
 def test__inf_with_iou() -> None:
     inf = ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6))
     inf_iou = _inf_with_iou(inf, 1)
-    assert inf_iou.inf == 1
+    assert inf_iou.iou == 1
 
 
 def test__inf_with_iou_preserves_extra_props() -> None:
