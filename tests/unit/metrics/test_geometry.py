@@ -29,6 +29,7 @@ from kolena.errors import InputValidationError
 from kolena.metrics import iou
 from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
+from kolena.metrics._geometry import _inf_with_iou
 from kolena.metrics._geometry import GT
 from kolena.metrics._geometry import Inf
 
@@ -108,6 +109,19 @@ def test__iou__bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -
 def test__iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, Polygon], expected_iou: float) -> None:
     iou_value = iou(points1, points2)
     assert iou_value == pytest.approx(expected_iou, abs=1e-5)
+
+
+def test__inf_with_iou() -> None:
+    inf = ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6))
+    inf_iou = _inf_with_iou(inf, 1)
+    assert inf_iou.iou == 1
+
+
+def test__inf_with_iou_preserves_extra_props() -> None:
+    # type: ignore[call-arg]
+    inf = ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry")
+    inf_iou = _inf_with_iou(inf, 1)
+    assert inf_iou.flavor == "cherry"
 
 
 @pytest.mark.parametrize(
