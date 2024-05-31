@@ -29,6 +29,7 @@ from kolena.errors import InputValidationError
 from kolena.metrics import iou
 from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
+from kolena.metrics._geometry import _inf_with_iou
 from kolena.metrics._geometry import GT
 from kolena.metrics._geometry import Inf
 
@@ -108,6 +109,19 @@ def test__iou__bbox(box1: BoundingBox, box2: BoundingBox, expected_iou: float) -
 def test__iou(points1: Union[BoundingBox, Polygon], points2: Union[BoundingBox, Polygon], expected_iou: float) -> None:
     iou_value = iou(points1, points2)
     assert iou_value == pytest.approx(expected_iou, abs=1e-5)
+
+
+def test__inf_with_iou() -> None:
+    inf = ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6))
+    inf_iou = _inf_with_iou(inf, 1)
+    assert inf_iou.inf == 1
+
+
+def test__inf_with_iou_preserves_extra_props() -> None:
+    # type: ignore[call-arg]
+    inf = ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry")
+    inf_iou = _inf_with_iou(inf, 1)
+    assert inf_iou.flavor == "cherry"
 
 
 @pytest.mark.parametrize(
@@ -687,30 +701,6 @@ def test__match_inferences(
     for inf in matches.unmatched_inf:
         expected_iou = max(iou(inf, gt) for gt in unignored_gt) if unignored_gt else 0.0
         assert inf.iou == pytest.approx(expected_iou, abs=1e-5)
-
-
-def test__match_inferences__preserves_extra_props_tp() -> None:
-    ground_truths = [BoundingBox(top_left=(1, 1), bottom_right=(6, 6))]
-    inferences = [
-        # type: ignore[call-arg]
-        ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
-    ]
-    matches = match_inferences(ground_truths, inferences)
-    matched_inf = matches.matched[0][1]
-    assert hasattr(matched_inf, "flavor")
-    assert matched_inf.flavor == "cherry"
-
-
-def test__match_inferences__preserves_extra_props_fp() -> None:
-    ground_truths = []
-    inferences = [
-        # type: ignore[call-arg]
-        ScoredLabeledBoundingBox(score=0.9, label="cow", top_left=(1, 1), bottom_right=(6, 6), flavor="cherry"),
-    ]
-    matches = match_inferences(ground_truths, inferences)
-    unmatched_inf = matches.unmatched_inf[0]
-    assert hasattr(unmatched_inf, "flavor")
-    assert unmatched_inf.flavor == "cherry"
 
 
 def test__match_inferences__invalid_mode() -> None:
@@ -2610,4 +2600,3 @@ def test__match_inferences_multiclass__preserves_extra_props_fp() -> None:
     matches = match_inferences_multiclass(ground_truths, inferences)
     unmatched_inf = matches.unmatched_inf[0]
     assert hasattr(unmatched_inf, "flavor")
-    assert unmatched_inf.flavor == "cherry"
