@@ -34,9 +34,9 @@ Temperature Correlation:
 
 | Ground Truth Temperature (&deg;C) | Predicted Temperature (&deg;C) | Ground Truth Temperature Rank | Predicted Temperature Rank | Differences $d_i$ |
 | --- | --- | --- | --- | --- |
-| 25  | 30  | 1  | 2  | -1  |
-| 35  | 28  | 3  | 1  | 2   |
-| 30  | 32  | 2  | 3  | -1  |
+| 25  | 30  | 1  | 3  | -2  |
+| 35  | 28  | 3  | 2  | 1   |
+| 30  | 27  | 2  | 1  | 1  |
 | 40  | 35  | 4  | 4  | 0   |
 
 </div>
@@ -44,7 +44,7 @@ Temperature Correlation:
 $$
 \begin{align}
 \rho &= 1 - \frac{6 \sum d_i^2}{N(N^2 - 1)} \\[1em]
-&= 1 - \frac{6 ((-1)^2 + 2^2 + (-1)^2 + 0^2)}{4 (4^2 - 1)} \\[1em]
+&= 1 - \frac{6 ((-2)^2 + 1^2 + 1^2 + 0^2)}{4 (4^2 - 1)} \\[1em]
 &= 0.4
 \end{align}
 $$
