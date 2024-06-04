@@ -1,5 +1,5 @@
 ---
-description: Learn about true positives, false positives, false negatives, and true negatives to evaluate ML model performance
+description: Building blocks of ML model evaluation
 ---
 
 # TP / FP / FN / TN
