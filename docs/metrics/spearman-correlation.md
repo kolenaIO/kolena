@@ -38,17 +38,17 @@ Temperature Correlation:
 
 | Ground Truth Temperature (&deg;C) | Predicted Temperature (&deg;C) | Ground Truth Temperature Rank | Predicted Temperature Rank | Differences $d_i$ |
 | --- | --- | --- | --- | --- |
-| 25  | 30  | 1  | 3  | -2  |
+| 25  | 27  | 1  | 1  | 0   |
 | 35  | 28  | 3  | 2  | 1   |
-| 30  | 27  | 2  | 1  | 1  |
+| 30  | 30  | 2  | 3  | -1  |
 
 </div>
 
 $$
 \begin{align}
 \rho &= 1 - \frac{6 \sum d_i^2}{N(N^2 - 1)} \\[1em]
-&= 1 - \frac{6 ((-2)^2 + 1^2 + 1^2)}{3 (3^2 - 1)} \\[1em]
-&= -0.5
+&= 1 - \frac{6 (0^2 + 1^2 + (-1)^2)}{3 (3^2 - 1)} \\[1em]
+&= 0.5
 \end{align}
 $$
 
