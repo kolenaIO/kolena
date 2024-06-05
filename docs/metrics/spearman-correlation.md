@@ -1,16 +1,20 @@
-# Spearman's Rank Correlation Coefficient
+---
+description: How to calculate the strength of monotonic correlation between 2 variables
+---
 
-Spearman's rank correlation coefficient is a statistical measure that assesses the strength and direction of the
-monotonic relationship between two variables. Unlike Pearson's correlation, Spearman's correlation does not assume a
-linear relationship and can be used with ordinal data. The values range from -1 to +1. A value close to +1 indicates a
+# Spearman's Rank Correlation
+
+Spearman's Rank Correlation is a statistical measure that assesses the strength and direction of the monotonic relationship
+between two variables. Unlike [Pearson Correlation](pearson-correlation.md), Spearman's Rank Correlation does not assume
+a linear relationship and can be used with ordinal data. The values range from -1 to +1. A value close to +1 indicates a
 strong positive monotonic correlation, where as one variable increases, the other also increases. A value close to -1
 signifies a strong negative monotonic correlation, meaning as one variable increases, the other decreases. A value of
 0 indicates no monotonic correlation between the variables.
 
 ## Implementation Details
 
-The Spearman's rank correlation coefficient is calculated by ranking the data points and then applying Pearson's
-correlation formula to the ranks. This can be mathematically represented as:
+The Spearman's Rank Correlation is calculated by ranking the data points and then applying
+[Pearson Correlation](pearson-correlation.md) formula to the ranks. This can be mathematically represented as:
 
 $$
 \rho = \frac{\text{cov}(R(x), R(y))}{\sigma_{R(x)} \sigma_{R(y)}}
@@ -37,15 +41,14 @@ Temperature Correlation:
 | 25  | 30  | 1  | 3  | -2  |
 | 35  | 28  | 3  | 2  | 1   |
 | 30  | 27  | 2  | 1  | 1  |
-| 40  | 35  | 4  | 4  | 0   |
 
 </div>
 
 $$
 \begin{align}
 \rho &= 1 - \frac{6 \sum d_i^2}{N(N^2 - 1)} \\[1em]
-&= 1 - \frac{6 ((-2)^2 + 1^2 + 1^2 + 0^2)}{4 (4^2 - 1)} \\[1em]
-&= 0.4
+&= 1 - \frac{6 ((-2)^2 + 1^2 + 1^2)}{3 (3^2 - 1)} \\[1em]
+&= -0.5
 \end{align}
 $$
 
