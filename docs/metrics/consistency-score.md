@@ -1,3 +1,7 @@
+---
+description: Determine if LLMs are trustworthy by measuring behavioral consistency
+---
+
 # Consistency Score
 
 The consistency score is a numeric result of a simple sampling-based technique which assumes that a Large Language Model

@@ -1,3 +1,7 @@
+---
+description: How to create and interpret precision-recall curves to evaluate ML model performance
+---
+
 # Precision-Recall (PR) Curve
 
 !!! info inline end "Guides: Precision and Recall"

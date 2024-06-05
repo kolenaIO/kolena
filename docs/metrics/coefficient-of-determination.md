@@ -1,3 +1,7 @@
+---
+description: How to calculate and interperet R² for regression ML tasks
+---
+
 # Coefficient of Determination (R²)
 
 The Coefficient of Determination, commonly denoted as R², is a statistical measure used to assess the goodness of fit

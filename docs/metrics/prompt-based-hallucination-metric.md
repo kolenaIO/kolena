@@ -1,3 +1,7 @@
+---
+description: Prompting LLMs to produce a metric for hallucinations
+---
+
 # Prompt-based Hallucination Metric
 
 The prompt-based hallucination metric uses a strong Large Language Model (LLM) judge, such as

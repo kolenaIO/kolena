@@ -1,3 +1,7 @@
+---
+description: How to calculate perplexity to evaluate the confidence of generated text
+---
+
 # Perplexity
 
 !!! info inline end "Requirements"
