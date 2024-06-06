@@ -244,7 +244,7 @@ def _compute_metrics(
             match_fn(  # type: ignore[arg-type]
                 ground_truths,
                 filter_inferences(inferences, min_confidence_score),
-                ignored_ground_truths=[gt for gt in ground_truths if hasattr(gt, "ignore") and gt.ignored],
+                ignored_ground_truths=[gt for gt in ground_truths if hasattr(gt, "ignore") and gt.ignore],
                 mode="pascal",
                 iou_threshold=iou_threshold,
             ),
