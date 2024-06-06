@@ -1,5 +1,5 @@
 ---
-description: How to calculate and interpret precision to evaluate ML model performance
+description: How to calculate and interpret F1-score to evaluate ML model performance
 ---
 
 # F<sub>1</sub>-score

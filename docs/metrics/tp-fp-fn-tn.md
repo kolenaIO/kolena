@@ -1,12 +1,13 @@
 ---
-description: Learn about true positives, false positives, false negatives, and true negatives to evaluate ML model performance
+description: Building blocks of ML model evaluation
 ---
 
 # TP / FP / FN / TN
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)
 ground truths and inferences are essential for summarizing model performance. These metrics are the building blocks of
-many other metrics, including [accuracy](./accuracy.md), [precision](./precision.md), and [recall](./recall.md).
+many other metrics, including [accuracy](./accuracy.md), [precision](./precision.md), [recall](./recall.md),
+[F<sub>1</sub>-score](./f1-score.md), [false positive rate (FPR)](./fpr.md), and [specificity (TNR)](./specificity.md).
 
 | Metric | | Description |
 | --- | --- | --- |
