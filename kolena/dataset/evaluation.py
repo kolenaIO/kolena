@@ -162,6 +162,7 @@ def download_results(
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
     existing_dataset = _load_dataset_metadata(dataset)
+    assert existing_dataset
 
     id_fields = existing_dataset.id_fields
 
@@ -210,6 +211,7 @@ def _prepare_upload_results_request(
     thresholded_fields: Optional[List[str]] = None,
 ) -> Tuple[str, int, int]:
     existing_dataset = _load_dataset_metadata(dataset)
+    assert existing_dataset
 
     id_fields = existing_dataset.id_fields
 

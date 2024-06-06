@@ -18,6 +18,7 @@ from kolena.dataset.dataset import _load_dataset_metadata
 
 def create_quality_standard(dataset_name: str, quality_standard: dict) -> None:
     dataset = _load_dataset_metadata(dataset_name)
+    assert dataset
 
     response = krequests.put(
         QualityStandardPath.QUALITY_STANDARD,
