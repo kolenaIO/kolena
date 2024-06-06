@@ -181,11 +181,16 @@ def _load_dataset_metadata(name: str, raise_error_if_not_found: bool = True) -> 
         Path.LOAD_DATASET,
         json=asdict(LoadDatasetByNameRequest(name=name, raise_error_if_not_found=raise_error_if_not_found)),
     )
-    if raise_error_if_not_found and (response.status_code == requests.codes.not_found or response.json() is None):
-        raise NotFoundError(f"dataset {name} does not exist")
+    if response.status_code == requests.codes.not_found or (
+        response.status_code == requests.codes.ok and response.json() is None
+    ):
+        if raise_error_if_not_found:
+            raise NotFoundError(f"dataset {name} does not exist")
+        else:
+            return None
     response.raise_for_status()
 
-    return from_dict(EntityData, response.json()) if response.json() else None
+    return from_dict(EntityData, response.json())
 
 
 def _resolve_id_fields(
