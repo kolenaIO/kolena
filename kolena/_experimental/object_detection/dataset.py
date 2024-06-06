@@ -19,6 +19,7 @@ from typing import Dict
 from typing import Iterator
 from typing import List
 from typing import Literal
+from typing import Optional
 from typing import Union
 
 import numpy as np
@@ -212,6 +213,7 @@ def _compute_metrics(
     *,
     ground_truth: str,
     inference: str,
+    ignore_gt_property: Optional[str] = None,
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     min_confidence_score: float = 0.5,
@@ -240,11 +242,20 @@ def _compute_metrics(
     for record in pred_df.itertuples():
         ground_truths = record[idx[ground_truth]]
         inferences = record[idx[inference]]
+        if ignore_gt_property is not None:
+            ignored_ground_truths = [
+                gt
+                for gt in ground_truths
+                if hasattr(gt, ignore_gt_property) and getattr(gt, ignore_gt_property) == True  # noqa: E712
+                # not checking equality with True allows ignore_gt_property to be a truthy non-boolean
+            ]
+        else:
+            ignored_ground_truths = None
         all_object_matches.append(
             match_fn(  # type: ignore[arg-type]
                 ground_truths,
                 filter_inferences(inferences, min_confidence_score),
-                ignored_ground_truths=[gt for gt in ground_truths if hasattr(gt, "ignore") and gt.ignore],
+                ignored_ground_truths=ignored_ground_truths,
                 mode="pascal",
                 iou_threshold=iou_threshold,
             ),
@@ -317,6 +328,7 @@ def _iter_object_detection_results(
     *,
     ground_truths_field: str = "ground_truths",
     raw_inferences_field: str = "raw_inferences",
+    ignore_gt_property: Optional[str] = None,
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
@@ -333,6 +345,7 @@ def _iter_object_detection_results(
         merged_df,
         ground_truth=ground_truths_field,
         inference=raw_inferences_field,
+        ignore_gt_property=ignore_gt_property,
         iou_threshold=iou_threshold,
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
@@ -346,6 +359,7 @@ def compute_object_detection_results(
     *,
     ground_truths_field: str = "ground_truths",
     raw_inferences_field: str = "raw_inferences",
+    ignore_gt_property: Optional[str] = None,
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
@@ -363,6 +377,8 @@ def compute_object_detection_results(
     defaulting to `"ground_truths"`.
     :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes,
     defaulting to `"raw_inferences"`.
+    :param ignore_gt_property: Field on the ground truth bounding boxes used to determine if the bounding box should be
+    ignored. Bounding boxes will be ignored if this field exists and is equal to `True`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
         as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score.
@@ -376,6 +392,7 @@ def compute_object_detection_results(
         df,
         ground_truths_field=ground_truths_field,
         raw_inferences_field=raw_inferences_field,
+        ignore_gt_property=ignore_gt_property,
         iou_threshold=iou_threshold,
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
@@ -391,6 +408,7 @@ def upload_object_detection_results(
     *,
     ground_truths_field: str = "ground_truths",
     raw_inferences_field: str = "raw_inferences",
+    ignore_gt_property: Optional[str] = None,
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
@@ -411,6 +429,8 @@ def upload_object_detection_results(
     defaulting to `"ground_truths"`.
     :param raw_inferences_field: Column in model result DataFrame with raw inference bounding boxes,
     defaulting to `"raw_inferences"`.
+    :param ignore_gt_property: Name of a property on the ground truth bounding boxes used to determine if the bounding
+    box should be ignored. Bounding boxes will be ignored if this property exists and is equal to `True`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
         as `0.5` or `0.75`, or `"F1-Optimal"` to find the threshold maximizing F1 score.
@@ -429,6 +449,7 @@ def upload_object_detection_results(
         df,
         ground_truths_field=ground_truths_field,
         raw_inferences_field=raw_inferences_field,
+        ignore_gt_property=ignore_gt_property,
         iou_threshold=iou_threshold,
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
