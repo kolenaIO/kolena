@@ -19,6 +19,8 @@ import pandas as pd
 import pytest
 
 import kolena.dataset
+import kolena.metrics._geometry
+from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
@@ -77,6 +79,43 @@ def test__check_multiclass() -> None:
 
 @pytest.mark.metrics
 @patch("kolena.dataset.upload_results")
+def test__upload_object_detection_ignore_field(mocked_upload_results: Mock) -> None:
+    locator = "s3://mybucket/image1.jpg"
+    ground_truths = [
+        BoundingBox(top_left=(0, 0), bottom_right=(1, 1), ignore=True),
+        BoundingBox(top_left=(2, 2), bottom_right=(3, 3), ignore=False),
+        BoundingBox(top_left=(4, 4), bottom_right=(5, 5)),
+    ]
+    with patch.object(kolena.metrics._geometry, "match_inferences") as patched_match_inferences:
+        with patch.object(
+            kolena.dataset,
+            "download_dataset",
+            return_value=pd.DataFrame([dict(locator=locator, bboxes=ground_truths)]),
+        ):
+            object_detection.dataset.upload_object_detection_results(
+                "my dataset",
+                "my model",
+                pd.DataFrame([dict(locator=locator, predictions=[])]),
+                ground_truths_field="bboxes",
+                raw_inferences_field="predictions",
+                ignore_gt_property="ignore",
+                iou_threshold=0.152,
+                threshold_strategy="F1-Optimal",
+                min_confidence_score=0.222,
+            )
+        patched_match_inferences.assert_called_once()
+        _, kwargs = patched_match_inferences.call_args
+        assert kwargs == dict(
+            ground_truths=ground_truths,
+            inferences=[],
+            ignored_ground_truths=[BoundingBox(top_left=(0, 0), bottom_right=(1, 1), ignore=True)],
+            mode="pascal",
+            iou_threshold=0.152,
+        )
+
+
+@pytest.mark.metrics
+@patch("kolena.dataset.upload_results")
 def test__upload_object_detection_results_configurations(mocked_upload_results: Mock) -> None:
     locator = "s3://mybucket/image1.jpg"
     with patch.object(object_detection.dataset, "_compute_metrics") as patched_metrics:
@@ -102,6 +141,7 @@ def test__upload_object_detection_results_configurations(mocked_upload_results: 
         batch_size=10000,
         ground_truth="bboxes",
         inference="predictions",
+        ignore_gt_property=None,
         iou_threshold=0.152,
         threshold_strategy="F1-Optimal",
         min_confidence_score=0.222,
