@@ -242,15 +242,14 @@ def _compute_metrics(
     for record in pred_df.itertuples():
         ground_truths = record[idx[ground_truth]]
         inferences = record[idx[inference]]
-        if ignore_gt_property is not None:
-            ignored_ground_truths = [
-                gt
-                for gt in ground_truths
-                if hasattr(gt, ignore_gt_property) and getattr(gt, ignore_gt_property) == True  # noqa: E712
-                # not checking equality with True allows ignore_gt_property to be a truthy non-boolean
-            ]
-        else:
-            ignored_ground_truths = None
+        ignored_ground_truths = [
+            gt
+            for gt in ground_truths
+            if ignore_gt_property is not None
+            and hasattr(gt, ignore_gt_property)
+            and isinstance(getattr(gt, ignore_gt_property), bool)
+            and getattr(gt, ignore_gt_property)
+        ]
         all_object_matches.append(
             match_fn(  # type: ignore[arg-type]
                 ground_truths,
