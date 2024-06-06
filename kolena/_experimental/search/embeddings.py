@@ -135,4 +135,5 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises InputValidationError: The provided input is not valid.
     """
     existing_dataset = _load_dataset_metadata(dataset_name)
+    assert existing_dataset
     _upload_dataset_embeddings(existing_dataset, key, df_embedding)
