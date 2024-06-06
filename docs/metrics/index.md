@@ -1,7 +1,5 @@
 ---
 icon: kolena/metrics-glossary-16
-hide:
-  - toc
 description: A glossary for machine learning metrics
 ---
 
@@ -12,6 +10,8 @@ This section contains guides for different metrics used to measure model perform
 Each ML use case requires different metrics. Using the right metrics is critical for understanding and meaningfully
 comparing model performance. In each metrics guide, you can learn about the metric with examples, its limitations and
 biases, and its intended uses.
+
+### General Metrics
 
 | Metric | Description |
 | --- | --- |
@@ -33,14 +33,14 @@ biases, and its intended uses.
 | [Specificity (TNR)](specificity.md) | Specificity, also known as true negative rate (TNR), measures the proportion of negative ground truths that a model correctly predicts, ranging from 0 to 1. It is useful when the objective is to measure the model's ability to correctly identify the negative class instances. |
 | [TP / FP / FN / TN](tp-fp-fn-tn.md) | The counts of TP, FP, FN and TN ground truths and inferences are essential for summarizing model performance. They are the building blocks of many other metrics, including [accuracy](accuracy.md), [precision](precision.md), and [recall](recall.md). |
 
-## Computer Vision
+### Computer Vision
 
 | Metric | Description |
 | --- | --- |
 | [Geometry Matching](geometry-matching.md) | Geometry matching is the process of matching inferences to ground truths for computer vision workflows with a localization component. It is a core building block for metrics such as [TP, FP, and FN](tp-fp-fn-tn.md), and any metrics built on top of these, like [precision](precision.md), [recall](recall.md), and [F<sub>1</sub>-score](f1-score.md). |
 | [Intersection over Union (IoU)](iou.md) | IoU measures overlap between two geometries, segmentation masks, sets of labels, or time-series snippets. Also known as Jaccard index in classification workflow. |
 
-## Large Language Models
+### Large Language Models
 
 | Metric | Description |
 | --- | --- |
@@ -49,7 +49,7 @@ biases, and its intended uses.
 | [HHEM Score](HHEM-score.md) | [Hughes Hallucination Evaluation Model (HHEM)](https://huggingface.co/vectara/hallucination_evaluation_model) is an open-source model that can be used to compute scores for hallucination detection. |
 | [Prompt-based Hallucination Metric](prompt-based-hallucination-metric.md) | Large Language Model (LLM) Prompt-based Metric involves using an LLM and various prompt engineering techniques to perform evaluations. These methods include chain-of-thought, self-consistency, and others to determine whether or not an inference text contains a hallucination. |
 
-## Natural Language Processing
+### Natural Language Processing
 
 | Metric | Description |
 | --- | --- |
@@ -61,7 +61,7 @@ biases, and its intended uses.
 | [ROUGE-N](rouge-n.md) | ROUGE-N, a metric within the broader ROUGE metric collection, is a vital metric in the field of NLP. It assesses the quality of a candidate text by measuring the overlap of n-grams between the candidate text and reference texts.  ROUGE-N can be thought of as an analog to [recall](recall.md) for text comparisons. |
 | [Word, Character, and Match Error Rate](wer-cer-mer.md) | Word Error Rate (WER), Character Error Rate (CER), and Match Error Rate (MER) are essential metrics used in the evaluation of speech recognition and natural language processing systems. From a high level, they each quantify the similarity between reference and candidate texts, with zero being a perfect score. |
 
-## Kolena Insights
+### Kolena Insights
 
 <div class="grid cards" markdown>
 
