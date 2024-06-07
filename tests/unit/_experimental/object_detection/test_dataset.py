@@ -22,6 +22,7 @@ import kolena.dataset
 import kolena.metrics._geometry
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
+from kolena.annotation import ScoredBoundingBox
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
@@ -95,7 +96,16 @@ def test__upload_object_detection_ignore_field(mocked_upload_results: Mock) -> N
             object_detection.dataset.upload_object_detection_results(
                 "my dataset",
                 "my model",
-                pd.DataFrame([dict(locator=locator, predictions=[])]),
+                pd.DataFrame(
+                    [
+                        dict(
+                            locator=locator,
+                            predictions=[
+                                ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
+                            ],
+                        ),
+                    ],
+                ),
                 ground_truths_field="bboxes",
                 raw_inferences_field="predictions",
                 ignore_gt_property="ignore",
@@ -107,7 +117,9 @@ def test__upload_object_detection_ignore_field(mocked_upload_results: Mock) -> N
         _, kwargs = patched_match_inferences.call_args
         assert kwargs == dict(
             ground_truths=ground_truths,
-            inferences=[],
+            inferences=[
+                ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
+            ],
             ignored_ground_truths=[BoundingBox(top_left=(0, 0), bottom_right=(1, 1), ignore=True)],
             mode="pascal",
             iou_threshold=0.152,
