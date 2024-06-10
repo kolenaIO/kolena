@@ -115,8 +115,14 @@ def test__upload_object_detection_ignore_field() -> None:
             threshold_strategy="F1-Optimal",
             min_confidence_score=0.222,
         )
-    assert len(df["TP"][0]) == 2
-    assert len(df["FN"][0]) == 2
+    assert [ScoredBoundingBox(**elem) for elem in df["TP"][0]] == [
+        ScoredBoundingBox(top_left=(2, 2), bottom_right=(3, 3), score=1, ignore_flag=False),
+        ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
+    ]
+    assert df["FN"][0] == [
+        BoundingBox(top_left=(3, 3), bottom_right=(4, 4), ignore_flag=False),
+        BoundingBox(top_left=(5, 5), bottom_right=(6, 6)),
+    ]
 
 
 @pytest.mark.metrics
