@@ -123,6 +123,7 @@ def test__upload_object_detection_ignore_field() -> None:
         BoundingBox(top_left=(3, 3), bottom_right=(4, 4), ignore_flag=False),
         BoundingBox(top_left=(5, 5), bottom_right=(6, 6)),
     ]
+    assert df["FP"][0] == []
 
 
 @pytest.mark.metrics
