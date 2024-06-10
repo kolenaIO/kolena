@@ -250,9 +250,10 @@ def _compute_metrics(
             and isinstance(getattr(gt, ignore_gt_property), bool)
             and getattr(gt, ignore_gt_property)
         ]
+        unignored_ground_truths = [gt for gt in ground_truths if gt not in ignored_ground_truths]
         all_object_matches.append(
             match_fn(  # type: ignore[arg-type]
-                ground_truths,
+                unignored_ground_truths,
                 filter_inferences(inferences, min_confidence_score),
                 ignored_ground_truths=ignored_ground_truths,
                 mode="pascal",

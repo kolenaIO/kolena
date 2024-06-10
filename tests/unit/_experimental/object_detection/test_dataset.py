@@ -79,51 +79,44 @@ def test__check_multiclass() -> None:
 
 
 @pytest.mark.metrics
-@patch("kolena.dataset.upload_results")
-def test__upload_object_detection_ignore_field(mocked_upload_results: Mock) -> None:
+def test__upload_object_detection_ignore_field() -> None:
     locator = "s3://mybucket/image1.jpg"
     ground_truths = [
-        BoundingBox(top_left=(0, 0), bottom_right=(1, 1), ignore=True),
-        BoundingBox(top_left=(2, 2), bottom_right=(3, 3), ignore=False),
+        BoundingBox(top_left=(0, 0), bottom_right=(1, 1), ignore_flag=True),
+        BoundingBox(top_left=(1, 1), bottom_right=(2, 2), ignore_flag=True),
+        BoundingBox(top_left=(2, 2), bottom_right=(3, 3), ignore_flag=False),
+        BoundingBox(top_left=(3, 3), bottom_right=(4, 4), ignore_flag=False),
         BoundingBox(top_left=(4, 4), bottom_right=(5, 5)),
+        BoundingBox(top_left=(5, 5), bottom_right=(6, 6)),
     ]
-    with patch.object(kolena.metrics._geometry, "match_inferences") as patched_match_inferences:
-        with patch.object(
-            kolena.dataset,
-            "download_dataset",
-            return_value=pd.DataFrame([dict(locator=locator, bboxes=ground_truths)]),
-        ):
-            object_detection.dataset.upload_object_detection_results(
-                "my dataset",
-                "my model",
-                pd.DataFrame(
-                    [
-                        dict(
-                            locator=locator,
-                            predictions=[
-                                ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
-                            ],
-                        ),
-                    ],
-                ),
-                ground_truths_field="bboxes",
-                raw_inferences_field="predictions",
-                ignore_gt_property="ignore",
-                iou_threshold=0.152,
-                threshold_strategy="F1-Optimal",
-                min_confidence_score=0.222,
-            )
-        patched_match_inferences.assert_called_once()
-        _, kwargs = patched_match_inferences.call_args
-        assert kwargs == dict(
-            ground_truths=ground_truths,
-            inferences=[
-                ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
-            ],
-            ignored_ground_truths=[BoundingBox(top_left=(0, 0), bottom_right=(1, 1), ignore=True)],
-            mode="pascal",
+    with patch.object(
+        kolena.dataset,
+        "download_dataset",
+        return_value=pd.DataFrame([dict(locator=locator, bboxes=ground_truths)]),
+    ):
+        df = object_detection.dataset.compute_object_detection_results(
+            "my dataset",
+            pd.DataFrame(
+                [
+                    dict(
+                        locator=locator,
+                        predictions=[
+                            ScoredBoundingBox(top_left=(0, 0), bottom_right=(1, 1), score=1),
+                            ScoredBoundingBox(top_left=(2, 2), bottom_right=(3, 3), score=1),
+                            ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
+                        ],
+                    ),
+                ],
+            ),
+            ground_truths_field="bboxes",
+            raw_inferences_field="predictions",
+            ignore_gt_property="ignore_flag",
             iou_threshold=0.152,
+            threshold_strategy="F1-Optimal",
+            min_confidence_score=0.222,
         )
+    assert len(df["TP"][0]) == 2
+    assert len(df["FN"][0]) == 2
 
 
 @pytest.mark.metrics
