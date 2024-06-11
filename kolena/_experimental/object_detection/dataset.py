@@ -225,6 +225,8 @@ def _compute_metrics(
     :param df: Dataframe for model results.
     :param ground_truth: Column name for ground truth object annotations
     :param inference: Column name for inference object annotations
+    :param ignore_gt_property: Field on the ground truth bounding boxes used to determine if the bounding box should be
+    ignored. Bounding boxes will be ignored if this field exists and is equal to `True`.
     :param iou_threshold: The [IoU ↗](../../metrics/iou.md) threshold, defaulting to `0.5`.
     :param threshold_strategy: The confidence threshold strategy. It can either be a fixed confidence threshold such
         as `0.5` or `0.75`, or the F1-optimal threshold.
