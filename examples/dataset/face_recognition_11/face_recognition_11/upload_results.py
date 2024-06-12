@@ -11,12 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import json
 from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-import s3fs
 from face_recognition_11.constants import BUCKET
 from face_recognition_11.constants import DATASET
 from face_recognition_11.constants import TASK
@@ -29,18 +27,22 @@ from kolena.dataset import upload_results
 def run(args: Namespace) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{args.model}_{args.detector}.csv")
     df_results = df_results.drop_duplicates(["locator_1", "locator_2"])
-    fs = s3fs.S3FileSystem()
-    with fs.open(f"{BUCKET}/{DATASET}/{TASK}/results/raw/{args.model}_{args.detector}.config.json", "rb") as f:
-        eval_config = json.load(f)
+    keep_columns = ["locator_1", "locator_2", "similarity"]
+    for target_fmr in [1e-1, 1e-2, 1e-3]:
+        similarity_threshold = compute_recognition_threshold(df_results, target_fmr)
+        metrics_column = f"FMR@{target_fmr}"
+        df_results[metrics_column] = df_results.apply(
+            lambda record: compute_pairwise_recognition_metrics(
+                record.is_match,
+                record.similarity,
+                similarity_threshold,
+            ),
+            axis=1,
+        )
+        keep_columns.append(metrics_column)
+    df_results = df_results[keep_columns]
 
-    similarity_threshold = compute_recognition_threshold(df_results, eval_config["false_match_rate"])
-    df_results["metrics"] = df_results.apply(
-        lambda record: compute_pairwise_recognition_metrics(record.is_match, record.similarity, similarity_threshold),
-        axis=1,
-    )
-    df_results = df_results[["locator_1", "locator_2", "similarity", "metrics"]]
-
-    upload_results(args.dataset, f"{args.model}_{args.detector}", [(eval_config, df_results)])
+    upload_results(args.dataset, f"{args.model}_{args.detector}", df_results)
 
 
 def main() -> None:
