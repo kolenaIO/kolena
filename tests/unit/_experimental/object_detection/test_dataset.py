@@ -23,6 +23,8 @@ import kolena.metrics._geometry
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredBoundingBox
+from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.metrics._geometry import InferenceMatches
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
@@ -76,6 +78,38 @@ def test__check_multiclass() -> None:
         )
         is False
     )
+
+
+@pytest.mark.metrics
+def test__single_class_datapoint_metrics_adds_thresholded_label_in_single_class_with_label_case() -> None:
+    matches = InferenceMatches(
+        matched=[
+            (
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat"),
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat", score=0.6),
+            ),
+        ],
+        unmatched_inf=[ScoredLabeledBoundingBox(top_left=(3, 3), bottom_right=(4, 4), label="cat", score=0.5)],
+        unmatched_gt=[LabeledBoundingBox(top_left=(5, 5), bottom_right=(6, 6), label="cat")],
+    )
+    metrics = object_detection.dataset.single_class_datapoint_metrics(matches, 0.5, [0.2, 0.8])
+    assert all(data.get("label", "") == "cat" for data in metrics["thresholded"])
+
+
+@pytest.mark.metrics
+def test__single_class_datapoint_metrics_omits_label_in_single_class_without_label_case() -> None:
+    matches = InferenceMatches(
+        matched=[
+            (
+                BoundingBox(top_left=(1, 1), bottom_right=(2, 2)),
+                ScoredBoundingBox(top_left=(1, 1), bottom_right=(2, 2), score=0.6),
+            ),
+        ],
+        unmatched_inf=[ScoredBoundingBox(top_left=(3, 3), bottom_right=(4, 4), score=0.5)],
+        unmatched_gt=[BoundingBox(top_left=(5, 5), bottom_right=(6, 6))],
+    )
+    metrics = object_detection.dataset.single_class_datapoint_metrics(matches, 0.5, [0.2, 0.8])
+    assert all("label" not in data for data in metrics["thresholded"])
 
 
 @pytest.mark.metrics

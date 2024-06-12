@@ -104,7 +104,18 @@ def single_class_datapoint_metrics(
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    thresholded = _compute_thresholded_metrics(object_matches, all_thresholds)
+    try:
+        label = list(
+            {inf.label for _, inf in object_matches.matched}
+            .union(
+                {inf.label for inf in object_matches.unmatched_inf},
+            )
+            .union({gt.label for gt in object_matches.unmatched_gt}),
+        )[0]
+    except AttributeError:
+        label = None
+
+    thresholded = _compute_thresholded_metrics(object_matches, all_thresholds, label)
     return dict(
         TP=tp,
         FP=fp,
