@@ -44,22 +44,22 @@ def run(args: Namespace) -> None:
     df_raw_data["image_asset"] = df_raw_data.apply(
         lambda x: ImageAsset(
             locator=x.locator,
-            width=x.width,
-            height=x.height,
-            normalization_factor=x.normalization_factor,
+            width=x.width,  # type: ignore[call-arg]
+            height=x.height,  # type: ignore[call-arg]
+            normalization_factor=x.normalization_factor,  # type: ignore[call-arg]
             bbox=BoundingBox(
                 top_left=(x.min_x, x.min_y),
                 bottom_right=(
                     x.max_x,
                     x.max_y,
                 ),
-            ),
+            ),  # type: ignore[call-arg]
             keypoints=Keypoints(
                 points=[
                     (x.left_eye_x, x.left_eye_y),
                     (x.right_eye_x, x.right_eye_y),
                 ],
-            ),
+            ),  # type: ignore[call-arg]
         ),
         axis=1,
     )
@@ -77,8 +77,8 @@ def run(args: Namespace) -> None:
     df_pairs = df_pairs.merge(df_raw_data, left_on="locator_2", right_on="locator")
     df_pairs["pairs"] = df_pairs.apply(
         lambda x: [
-            ImageAsset(**x.image_asset_x.__dict__, position="left"),
-            ImageAsset(**x.image_asset_y.__dict__, position="right"),
+            ImageAsset(**x.image_asset_x.__dict__, position="left"),  # type: ignore[call-arg]
+            ImageAsset(**x.image_asset_y.__dict__, position="right"),  # type: ignore[call-arg]
         ],
         axis=1,
     )
