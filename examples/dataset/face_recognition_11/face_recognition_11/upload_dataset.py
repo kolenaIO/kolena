@@ -21,7 +21,6 @@ from face_recognition_11.constants import DATASET_METADATA
 from face_recognition_11.constants import DATASET_PAIRS
 from face_recognition_11.constants import TASK
 
-import kolena
 from kolena.annotation import BoundingBox
 from kolena.annotation import Keypoints
 from kolena.asset import ImageAsset
@@ -29,8 +28,6 @@ from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
-    kolena.initialize(verbose=True)
-
     df_metadata = pd.read_csv(DATASET_METADATA)
     df_pairs = pd.read_csv(DATASET_PAIRS)
     df_detection = pd.read_csv(DATASET_DETECTION)
@@ -44,38 +41,51 @@ def run(args: Namespace) -> None:
             imposter_pairs[record.locator_1] = record.locator_2
 
     df_raw_data = df_detection.merge(df_metadata, on="locator", how="left")
-
-    datapoints = []
-    for record in df_raw_data.itertuples():
-        datapoints.append(
-            dict(
-                locator=record.locator,
-                pairs=[
-                    ImageAsset(locator=genuine_pairs[record.locator], is_match=True),  # type: ignore
-                    ImageAsset(locator=imposter_pairs[record.locator], is_match=False),  # type: ignore
-                ],
-                bbox=BoundingBox(
-                    top_left=(record.min_x, record.min_y),
-                    bottom_right=(record.max_x, record.max_y),
+    df_raw_data["image_asset"] = df_raw_data.apply(
+        lambda x: ImageAsset(
+            locator=x.locator,
+            width=x.width,
+            height=x.height,
+            normalization_factor=x.normalization_factor,
+            bbox=BoundingBox(
+                top_left=(x.min_x, x.min_y),
+                bottom_right=(
+                    x.max_x,
+                    x.max_y,
                 ),
-                keypoints=Keypoints(
-                    points=[
-                        (record.left_eye_x, record.left_eye_y),
-                        (record.right_eye_x, record.right_eye_y),
-                    ],
-                ),
-                normalization_factor=record.normalization_factor,
-                person=record.person,
-                age=record.age,
-                race=record.race,
-                gender=record.gender,
-                width=record.width,
-                height=record.height,
             ),
-        )
+            keypoints=Keypoints(
+                points=[
+                    (x.left_eye_x, x.left_eye_y),
+                    (x.right_eye_x, x.right_eye_y),
+                ],
+            ),
+        ),
+        axis=1,
+    )
+    df_raw_data["person"] = df_raw_data.apply(
+        lambda x: dict(
+            person=x.person,
+            age=x.age,
+            race=x.race,
+            gender=x.gender,
+        ),
+        axis=1,
+    )
+    df_raw_data = df_raw_data[["locator", "image_asset", "person"]]
+    df_pairs = df_pairs.merge(df_raw_data, left_on="locator_1", right_on="locator")
+    df_pairs = df_pairs.merge(df_raw_data, left_on="locator_2", right_on="locator")
+    df_pairs["pairs"] = df_pairs.apply(
+        lambda x: [
+            ImageAsset(**x.image_asset_x.__dict__, position="left"),
+            ImageAsset(**x.image_asset_y.__dict__, position="right"),
+        ],
+        axis=1,
+    )
+    df_pairs = df_pairs.rename(columns={"person_x": "left", "person_y": "right"})
+    df_pairs = df_pairs[["locator_1", "locator_2", "left", "right", "pairs", "is_match"]]
 
-    df_datapoints = pd.DataFrame(datapoints)
-    upload_dataset(args.dataset, df_datapoints)
+    upload_dataset(args.dataset, df_pairs, id_fields=["locator_1", "locator_2"])
 
 
 def main() -> None:

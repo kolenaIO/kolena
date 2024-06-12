@@ -108,7 +108,7 @@ def compute_recognition_threshold(df_pair_results: pd.DataFrame, fmr: float, eps
     return threshold
 
 
-def compute_pairwise_recognition_merics(is_match: bool, similarity: float, threshold: float) -> Dict[str, Any]:
+def compute_pairwise_recognition_metrics(is_match: bool, similarity: float, threshold: float) -> Dict[str, Any]:
     predicted_match = similarity > threshold
     return dict(
         is_failure=False,
@@ -116,6 +116,8 @@ def compute_pairwise_recognition_merics(is_match: bool, similarity: float, thres
         is_TNM=not is_match and not predicted_match,
         is_FNM=is_match and not predicted_match,
         is_FM=not is_match and predicted_match,
+        FMR=None if is_match else 1 if predicted_match else 0,
+        FNMR=None if not is_match else 0 if predicted_match else 1,
     )
 
 
