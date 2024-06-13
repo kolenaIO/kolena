@@ -148,10 +148,12 @@ def multiclass_datapoint_metrics(
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    labels = _get_labels_from_objects(
-        [inf for _, inf in object_matches.matched]
-        + [inf for inf in object_matches.unmatched_inf]
-        + [gt for gt, _ in object_matches.unmatched_gt],
+    labels = sorted(
+        _get_labels_from_objects(
+            [inf for _, inf in object_matches.matched]
+            + [inf for inf in object_matches.unmatched_inf]
+            + [gt for gt, _ in object_matches.unmatched_gt],
+        ),
     )
     inference_labels = _get_labels_from_objects(
         [inf for _, inf in object_matches.matched] + [inf for inf in object_matches.unmatched_inf],
