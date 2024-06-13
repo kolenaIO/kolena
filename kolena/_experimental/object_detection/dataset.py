@@ -105,11 +105,14 @@ def single_class_datapoint_metrics(
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     labels = list(
-        {_safe_get_label(inf) for _, inf in object_matches.matched if _safe_get_label(inf) is not None}
+        {_safe_get_label(inf) for _, inf in object_matches.matched}
         .union(
-            {_safe_get_label(inf) for inf in object_matches.unmatched_inf if _safe_get_label(inf) is not None},
+            {_safe_get_label(inf) for inf in object_matches.unmatched_inf},
         )
-        .union({_safe_get_label(gt) for gt in object_matches.unmatched_gt if _safe_get_label(gt) is not None}),
+        .union(
+            {_safe_get_label(gt) for gt in object_matches.unmatched_gt},
+        )
+        .difference({None}),
     )
     label = None if len(labels) == 0 else labels[0]
 
