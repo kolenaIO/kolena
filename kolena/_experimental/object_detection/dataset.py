@@ -16,6 +16,7 @@ from collections import defaultdict
 from typing import Any
 from typing import cast
 from typing import Dict
+from typing import Iterable
 from typing import Iterator
 from typing import List
 from typing import Literal
@@ -104,15 +105,10 @@ def single_class_datapoint_metrics(
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    labels = list(
-        {_safe_get_label(inf) for _, inf in object_matches.matched}
-        .union(
-            {_safe_get_label(inf) for inf in object_matches.unmatched_inf},
-        )
-        .union(
-            {_safe_get_label(gt) for gt in object_matches.unmatched_gt},
-        )
-        .difference({None}),
+    labels = _get_labels_from_objects(
+        [inf for _, inf in object_matches.matched]
+        + [inf for inf in object_matches.unmatched_inf]
+        + [gt for gt in object_matches.unmatched_gt],
     )
     label = None if len(labels) == 0 else labels[0]
 
@@ -152,22 +148,13 @@ def multiclass_datapoint_metrics(
         if inf is not None and inf.score >= thresholds[inf.label]
     ]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    labels = sorted(
-        {_safe_get_label(inf) for _, inf in object_matches.matched}
-        .union(
-            {_safe_get_label(inf) for inf in object_matches.unmatched_inf},
-        )
-        .union(
-            {_safe_get_label(gt) for gt, _ in object_matches.unmatched_gt},
-        )
-        .difference({None}),
+    labels = _get_labels_from_objects(
+        [inf for _, inf in object_matches.matched]
+        + [inf for inf in object_matches.unmatched_inf]
+        + [gt for gt, _ in object_matches.unmatched_gt],
     )
-    inference_labels = (
-        {inf.label for _, inf in object_matches.matched}
-        .union(
-            {_safe_get_label(inf) for inf in object_matches.unmatched_inf},
-        )
-        .difference({None})
+    inference_labels = _get_labels_from_objects(
+        [inf for _, inf in object_matches.matched] + [inf for inf in object_matches.unmatched_inf],
     )
     fields = [
         ScoredLabel(label=label, score=thresholds[label])
@@ -329,6 +316,12 @@ def _safe_get_label(obj: object) -> Optional[str]:
         return str(obj.label)
 
     return None
+
+
+def _get_labels_from_objects(objs: Iterable[object]) -> List[str]:
+    maybe_labels = {_safe_get_label(obj) for obj in objs}
+    labels = [label for label in maybe_labels if label is not None]
+    return labels
 
 
 def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
