@@ -104,16 +104,14 @@ def single_class_datapoint_metrics(
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    try:
-        label = list(
-            {inf.label for _, inf in object_matches.matched}
-            .union(
-                {inf.label for inf in object_matches.unmatched_inf},
-            )
-            .union({gt.label for gt in object_matches.unmatched_gt}),
-        )[0]
-    except AttributeError:
-        label = None
+    labels = list(
+        {_safe_get_label(inf) for _, inf in object_matches.matched if _safe_get_label(inf) is not None}
+        .union(
+            {_safe_get_label(inf) for inf in object_matches.unmatched_inf if _safe_get_label(inf) is not None},
+        )
+        .union({_safe_get_label(gt) for gt in object_matches.unmatched_gt if _safe_get_label(gt) is not None}),
+    )
+    label = None if len(labels) == 0 else labels[0]
 
     thresholded = _compute_thresholded_metrics(object_matches, all_thresholds, label)
     return dict(
@@ -316,14 +314,21 @@ def _compute_metrics(
         )
 
 
+def _safe_get_label(obj: object) -> Optional[str]:
+    if hasattr(obj, "label"):
+        return str(obj.label)
+
+    return None
+
+
 def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
-    try:
-        labels = {x.label for x in itertools.chain.from_iterable(_filter_null(ground_truth))}.union(
-            {x.label for x in itertools.chain.from_iterable(_filter_null(inference))},
-        )
-        return len(labels) >= 2
-    except AttributeError:
-        return False
+    labels = {_safe_get_label(gt) for gt in itertools.chain.from_iterable(_filter_null(ground_truth))}.union(
+        {_safe_get_label(inf) for inf in itertools.chain.from_iterable(_filter_null(inference))},
+    )
+    if None in labels:
+        return len(labels) >= 3
+
+    return len(labels) >= 2
 
 
 def _filter_null(series: pd.Series) -> pd.Series:
