@@ -150,14 +150,21 @@ def multiclass_datapoint_metrics(
     ]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     labels = sorted(
+        {_safe_get_label(inf) for _, inf in object_matches.matched}
+        .union(
+            {_safe_get_label(inf) for inf in object_matches.unmatched_inf},
+        )
+        .union(
+            {_safe_get_label(gt) for gt, _ in object_matches.unmatched_gt},
+        )
+        .difference({None}),
+    )
+    inference_labels = (
         {inf.label for _, inf in object_matches.matched}
         .union(
-            {inf.label for inf in object_matches.unmatched_inf},
+            {_safe_get_label(inf) for inf in object_matches.unmatched_inf},
         )
-        .union({gt.label for gt, _ in object_matches.unmatched_gt}),
-    )
-    inference_labels = {inf.label for _, inf in object_matches.matched}.union(
-        {inf.label for inf in object_matches.unmatched_inf},
+        .difference({None})
     )
     fields = [
         ScoredLabel(label=label, score=thresholds[label])
