@@ -36,6 +36,7 @@ from kolena.errors import IncorrectUsageError
 from kolena.metrics import InferenceMatches
 from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
+from kolena.metrics import MatchingFunction
 from kolena.metrics import MulticlassInferenceMatches
 
 
@@ -222,6 +223,7 @@ def _compute_metrics(
     ground_truth: str,
     inference: str,
     gt_ignore_property: Optional[str] = None,
+    matching_function: Optional[MatchingFunction] = None,
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     min_confidence_score: float = 0.5,
@@ -243,7 +245,7 @@ def _compute_metrics(
     :param batch_size: number of results to process per iteration.
     """
     is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
-    match_fn = match_inferences_multiclass if is_multiclass else match_inferences
+    match_fn = matching_function or (match_inferences_multiclass if is_multiclass else match_inferences)
 
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
@@ -266,7 +268,6 @@ def _compute_metrics(
                 unignored_ground_truths,
                 filter_inferences(inferences, min_confidence_score),
                 ignored_ground_truths=ignored_ground_truths,
-                mode="pascal",
                 iou_threshold=iou_threshold,
             ),
         )

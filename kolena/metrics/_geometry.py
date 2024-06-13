@@ -13,6 +13,7 @@
 # limitations under the License.
 import dataclasses
 from collections import defaultdict
+from typing import Callable
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -371,3 +372,9 @@ def match_inferences_multiclass(
         unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
         unmatched_inf=unmatched_inf,
     )
+
+
+MatchingFunction = Callable[
+    [List[GT], List[Inf], Optional[List[GT]], float, ...],
+    Union[InferenceMatches, MulticlassInferenceMatches],
+]

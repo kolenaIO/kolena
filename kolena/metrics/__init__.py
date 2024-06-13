@@ -21,6 +21,7 @@ from ._geometry import InferenceMatches
 from ._geometry import iou
 from ._geometry import match_inferences
 from ._geometry import match_inferences_multiclass
+from ._geometry import MatchingFunction
 from ._geometry import MulticlassInferenceMatches
 
 __all__ = [
@@ -35,4 +36,5 @@ __all__ = [
     "match_inferences",
     "match_inferences_multiclass",
     "MulticlassInferenceMatches",
+    "MatchingFunction",
 ]
