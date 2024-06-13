@@ -4,62 +4,28 @@ icon: kolena/studio-16
 
 # :kolena-studio-20: Data Formatting
 
-Data on Kolena is broken into two main types. **Datasets** and **model results**.
-In this document we will go over how to construct your data into a compatible format.
+Kolena has a set of powerful data visualization funcitonalities that enable teams to identify patterns and
+generate actionable insights fast.
 
-## Dataset
+<div class="grid cards" markdown>
+- [:kolena-properties-16: Fomatting data for Computer Vision](./dataset%20formatting/computer-vision.md)
 
-Dataset is a structured assembly of datapoints. A datapoint is a set of inputs that you would want to test on your models.
-Consider a single row within the [:kolena-widget-16: Classification (CIFAR-10) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/classification)
-dataset with the following columns:
+    ---
 
-| locator                    | ground_truth | image_brightness |   image_contrast |
-|---------------------------------------------------------------|--------------|----------|-----|
-| `s3://kolena-public-examples/cifar10/data/horse0000.png`        | horse        |     153.994     |    84.126  |
+    Setup Datasets and model results for best experience for 2D, 3D object setection, Semantic segmentation
+    and Video based ML problems.
 
-This datapoint points to an image `horse0000.png` which has the ground_truth classification of `horse`,
-and has brightness and contrast data.
+- [:kolena-metrics-glossary-16: Automatic NL Search](./dataset%20formatting/audio.md)
 
-### Datapoint components
+    ---
+    Instruction on how to setup datasets and model results for audio based data.
 
-**Unique Identifier**: each datapoint should have a hashable unique identifier.
-
-You are able to select one or more fields as your ID field during the import process via the
-Web App [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets) or the
-SDK by using the [`upload_dataset`](../../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset) function.
-
-**Meta data**: you can add additional informaiton about your
-datapoint simply by adding columns to the dataset with the metadaname and values in each row.
-
-**Referenced Files**: each datapoint can contain a primary reference to a file stored on your cloud storage.
-Kolena automatically renders referenced files with column name `locator`. Other column names result in references to appear
-as text. Below table outlines what extensions are supported for optimal visualization.
-
-| Data Type      | Supported file formats                                                                |
-|----------------|---------------------------------------------------------------------------------------|
-| Image          | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
-| Audio          | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
-| Video          | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
-| Document       | `txt` and `pdf` files.                                                                |
-| Point Cloud    | `pcd` files.                                                                          |
-
-**Assets**: allow you to connect multiple referenced files to each datapoint for visualization and analysis.
-Multiple assets can be attached to a single datapoint.
-
-| Asset Type                                                              | Description                                                    |
-|-------------------------------------------------------------------------|----------------------------------------------------------------|
-| [`ImageAsset`](../../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
-| [`BinaryAsset`](../../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
-| [`AudioAsset`](../../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
-| [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
-| [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
+</div>
 
 !!! example
     The [:kolena-widget-16: Automatic Speech Recognition ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/automatic_speech_recognition)
     example showcases how `AudioAsset`s can be attached to datapoints.
 
-**Annotations**: allow you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
-We currently support 10 different types of annotations each enabling a specific modality.
 
 ## remove the following
 Kolena will look for the following fields when displaying datapoints:
@@ -233,10 +199,6 @@ dataframe_to_csv(df_merged, "processed.csv")
 The file `processed.csv` can be uploaded through the [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets)
 page.
 
-### Configuring Thumbnails
-
-
-
 ## Formatting Results
 
 ### Formatting results for Object Detection
@@ -290,3 +252,16 @@ ideal for datasets with complex or nested data structures.
 
 When preparing your dataset or model results files for upload, ensure that they conform to one of these
 supported file formats to guarantee compatibility with Kolena's data processing capabilities.
+
+## Computer vision
+
+### 2D object detection
+
+### 3D object detection
+
+### Segmentation
+
+## Audio
+
+## NLP, LLM
+

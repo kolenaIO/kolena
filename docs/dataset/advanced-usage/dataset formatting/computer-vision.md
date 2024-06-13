@@ -1,0 +1,127 @@
+---
+icon: kolena/studio-16
+---
+# Fomatting data for Computer Vision
+
+In this document we will review best practices when setting up Kolena datasets for computer vision
+problems.
+
+## Basics
+
+### Using the `locator`
+
+Kolena uses references to files stored in your cloud storage to render them.
+Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/)
+for detials on how to configure this.
+
+Computer Vision data is best visualized in Studio using the Gallary mode.
+To enable the Gallary view store references to images in a column named `locator`. `locator` can be used as
+the unique identifier of the datapoint which is also refereced by your model results.
+
+Kolena supoprts `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported images.
+
+<figure markdown>
+![Gallary View](../../../assets/images/gallary-view-dark.png#only-dark)
+![Gallary View](../../../assets/images/gallary-view-light.png#only-light)
+<figcaption>Gallary View</figcaption>
+</figure>
+
+### Using fields
+
+You can add additional informaiton about your image
+adding columns to the `.CSV` file with the meta-data name and values in each row.
+Below is an example datapoint:
+
+| locator                                               | ground_truth | image_brightness | image_contrast |
+|-------------------------------------------------------|--------------|------------------|----------------|
+| `s3://kolena-public-examples/cifar10/data/horse0000.png` | horse        | 153.994          | 84.126         |
+
+!!! tip
+    **Using thumbnails**
+
+    In order to improve the loading performance of your image data, you can upload compressed versions of the image
+    with the same dimensions as thumbnails. This results in an improved Studio experience due to faster image loading
+    when filtering, sorting or using [embedding](../../../automations/set-up-natural-language-search.md) sort.
+
+    Thumbnails are configured by adding a field called `thumbnail_locator` to the data, where the value points
+    to a compressed version of the `locator` image.
+
+    If you wanted to add a thumbnail to the classification data shown above it would look like:
+
+    | locator| thumbnail_locator | ground_truth | image_brightness | image_contrast |
+    |-------||--------------|------------------|----------------|
+    | `s3://kolena-public-examples/cifar10/data/horse0000.png`| `s3://kolena-public-examples/cifar10/data/thumbnail/horse0000.png` | horse | 153.994 | 84.126 |
+
+## 2D Object Detection
+
+!!! example
+    You can follow this [example 2D object detection ↗](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
+
+[`annotations`](../../../reference/annotation.md) are used to visualize overlays on top of images.
+To render 2D Bounding boxes you can use
+[`LabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.LabeledBoundingBox) or
+[`BoundingBox`](../../../reference/annotation.md#kolena.annotation.BoundingBox) annotations.
+
+Consider a `.csv` file containing ground truth data in the from of bounding boxes for an Object Detection problem.
+
+| locator                                                                       | label      | min_x     | max_x  | min_y | max_y   |
+|-------------------------------------------------------------------------------|------------|-----------|--------|-------|---------|
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | motorcycle | 270.77    | 621.61 | 44.59 |  254.18  |
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | car        | 538.03    | 636.85 | 8.86  | 101.93  |
+| s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000369763.jpg | trunk      | 313.02    | 553.98 | 12.01 | 99.84   |
+
+This looks like:
+```python
+from kolena.annotation import LabeledBoundingBox
+bboxes = [
+    LabeledBoundingBox(top_left=(270.77, 44.59), bottom_right=(621.61, 254.18), label="motorcycle"),
+    LabeledBoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93), label="car"),
+    LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="trunk"),
+]
+```
+
+!!! tip
+    **Using bounding box categories**
+
+    If you wish to analyze your model results based on specific characteristics of your bounding boxes
+    you can provide values representing those characteristics using additional key value pairs.
+    For example if location of a bounding box is important you can construct your `LabeledBoundingBox` like this
+    ```python
+        LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="trunk", location="bottom-left")
+    ```
+
+!!! note
+    When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
+    [`dataframe_to_csv()`](../../../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena
+     to save a `.csv` file
+    instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
+    `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
+
+## 3D Object Detection
+
+[`annotations`](../../../reference/annotation.md) are used to visualize overlays on top of images.
+To render 3D Bounding boxes you can use
+[`BoundingBox3D`](../../../reference/annotation.md#kolena.annotation.BoundingBox3D) or
+[`LabeledBoundingBox3D`](../../../reference/annotation.md#kolena.annotation.LabeledBoundingBox3D)
+
+!!! tip
+    **Using bounding box categories**
+
+    If you wish to analyze your model results based on specific characteristics of your bounding boxes
+    you can provide values representing those characteristics using additional key value pairs.
+    For example if location of a bounding box is important you can construct your `LabeledBoundingBox3D` like this
+    ```python
+        LabeledBoundingBox3D(center=(313.02, 12.01, 15.5), dimensions=(553.98, 99.84,231.17), rotations=(12,16,25)
+        , label="trunk", location="bottom-left")
+    ```
+
+!!! note
+    When uploading `.csv` files for datasets that contain annotations, assets or nested values in a column use the
+    [`dataframe_to_csv()`](../../../reference/io.md#kolena.io.dataframe_to_csv) function provided by Kolena
+     to save a `.csv` file
+    instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
+    `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
+
+## Video
+
+some text.
