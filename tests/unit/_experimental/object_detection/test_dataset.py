@@ -25,6 +25,7 @@ from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
 from kolena.metrics._geometry import InferenceMatches
+from kolena.metrics._geometry import MulticlassInferenceMatches
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
@@ -149,6 +150,27 @@ def test__single_class_datapoint_metrics_omits_label_in_single_class_without_lab
     )
     metrics = object_detection.dataset.single_class_datapoint_metrics(matches, 0.5, [0.2, 0.8])
     assert all("label" not in data for data in metrics["thresholded"])
+
+
+@pytest.mark.metrics
+def test__multiclass_datapoint_metrics_contains_all_labels() -> None:
+    matches = MulticlassInferenceMatches(
+        matched=[
+            (
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat"),
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat", score=0.6),
+            ),
+            (
+                LabeledBoundingBox(top_left=(3, 3), bottom_right=(4, 4), label="dog"),
+                ScoredLabeledBoundingBox(top_left=(3, 3), bottom_right=(4, 4), label="dog", score=0.6),
+            ),
+        ],
+        unmatched_inf=[ScoredLabeledBoundingBox(top_left=(5, 5), bottom_right=(6, 6), label="cat", score=0.5)],
+        unmatched_gt=[(LabeledBoundingBox(top_left=(7, 7), bottom_right=(8, 8), label="dog"), None)],
+    )
+    metrics = object_detection.dataset.multiclass_datapoint_metrics(matches, {"cat": 0.5, "dog": 0.5}, [0.2, 0.8])
+    all_labels = {data.get("label", None) for data in metrics["thresholded"]}
+    assert all_labels == {"cat", "dog"}
 
 
 @pytest.mark.metrics
