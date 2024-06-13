@@ -111,7 +111,7 @@ object_detection = pytest.importorskip("kolena._experimental.object_detection", 
                 None,
             ],
             # expected
-            True,
+            False,
         ),
     ],
 )

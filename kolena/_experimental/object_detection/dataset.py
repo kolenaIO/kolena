@@ -333,7 +333,7 @@ def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
         {_safe_get_label(inf) for inf in itertools.chain.from_iterable(_filter_null(inference))},
     )
     if None in labels:
-        return len(labels) >= 3
+        return False
 
     return len(labels) >= 2
 
