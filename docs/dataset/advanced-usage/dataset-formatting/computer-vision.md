@@ -97,6 +97,27 @@ bboxes = [
     instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
     `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
+### Uploading Model Results
+
+Model results contian your model inferences as well as any custom metrics that you wish to monitor on Kolena.
+The data structure of model resutls is very similar to the structure of a dataset with minor differences.
+
+* Ensure your results are using the same unique ID feild (the `locator` for instance) you have selected for your dataset.
+* Use [`ScoredBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredBoundingBox) or
+[`ScoredLabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+to pass on your model inferences confidence score for each bounding box.
+* Use [`compute_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.compute_object_detection_results)
+to compute your metrics that are supported by Kolena's [Object Detection Task Metrcis](../../advanced-usage/task-metrics.md#object-detection).
+
+!!! note
+    Once you have constructed your `Dataframe` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
+    wrapper function to
+    simplify the upload process and enable the Object Detection Task metrics automatically.
+
+!!! example
+    Follow the [2D Object Detection result upload](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
+    examble for optimal setup.
+
 ## 3D Object Detection
 
 [`annotations`](../../../reference/annotation.md) are used to visualize overlays on top of images.
@@ -121,6 +142,27 @@ To render 3D Bounding boxes you can use
      to save a `.csv` file
     instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
     `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
+
+## Uploading Model Results
+
+Model results contian your model inferences as well as any custom metrics that you wish to monitor on Kolena.
+The data structure of model resutls is very similar to the structure of a dataset with minor differences.
+
+* Ensure your results are using the same unique ID feild (the `locator` for instance) you have selected for your dataset.
+* Use [`ScoredBoundingBox3D`](../../../reference/annotation.md#kolena.annotation.ScoredBoundingBox3D) or
+[`ScoredLabeledBoundingBox3D`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox3D)
+to pass on your model inferences confidence score for each bounding box.
+* Use [`compute_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.compute_object_detection_results)
+to compute your metrics that are supported by Kolena's [Object Detection Task Metrcis](../../advanced-usage/task-metrics.md#object-detection).
+
+!!! note
+    Once you have constructed your `Dataframe` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
+    wrapper function to
+    simplify the upload process and enable the Object Detection Task metrics automatically.
+
+!!! example
+    Follow the [3D Object Detection result upload](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_3d/object_detection_3d/upload_results.py)
+    on how to setup both 3D and 2D bounding boxes in your results for multi-modal 3D object detection data.
 
 ## Video
 

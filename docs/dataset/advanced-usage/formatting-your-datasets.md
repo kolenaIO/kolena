@@ -8,17 +8,22 @@ Kolena has a set of powerful data visualization funcitonalities that enable team
 generate actionable insights fast.
 
 <div class="grid cards" markdown>
-- [:kolena-properties-16: Fomatting data for Computer Vision](./dataset%20formatting/computer-vision.md)
+- [:kolena-properties-16: Fomatting data for Computer Vision](./dataset-formatting/computer-vision.md)
 
     ---
 
     Setup Datasets and model results for best experience for 2D, 3D object setection, Semantic segmentation
     and Video based ML problems.
 
-- [:kolena-metrics-glossary-16: Automatic NL Search](./dataset%20formatting/audio.md)
+- [:kolena-metrics-glossary-16: Fomratting data for Audio](./dataset-formatting/audio.md)
 
     ---
     Instruction on how to setup datasets and model results for audio based data.
+
+- [:kolena-metrics-glossary-16: Fomratting data for NLP and LLM](./dataset-formatting/natural-language.md)
+
+    ---
+    Instruction on how to setup datasets and model results for NLP and LLM problems.
 
 </div>
 
