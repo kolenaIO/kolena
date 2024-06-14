@@ -7,6 +7,14 @@ The evaluation stages are: face detection, keypoint extraction, and recognition.
 from the complete dataset with 13,233 images. In this example, we are using 9,164 images with one genuine pair and one
 imposter pair.
 
+In this example, we track two performance metrics at varying similarity score thresholds:
+
+- False Match Rate (FMR), the rate at which imposter pairs were mistakenly marked as matches
+- False Non-Match Rate (FNMR), the rate at which genuine pairs were mistakenly marked as non-matches
+
+We set a similarity score threshold at target FMRs of 0.1, 0.01, and 0.001, and assess the FNMRs for
+these corresponding thresholds.
+
 ## Setup
 
 This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
@@ -67,21 +75,26 @@ face recognition [1:1]:
 
 ### Metrics
 
-1. F1 Score [detection]
-2. mean(result.alignment_NRMSE) [alignment]
-3. mean(result.recognition_FNMR) [recognition]
+1. FMR=0.1
+   1. mean(result."FMR@0.1".FMR) [FMR]
+   2. mean(result."FMR@0.1".FNMR) [FNMR]
+2. FMR=0.01
+    1. mean(result."FMR@0.01".FMR) [FMR]
+    2. mean(result."FMR@0.01".FNMR) [FNMR]
+3. FMR=0.001
+    1. mean(result."FMR@0.001".FMR) [FMR]
+    2. mean(result."FMR@0.001".FNMR) [FNMR]
 
 ### Plots
 
-1. `datapoint.race` vs. `mean(result.alignment_NRMSE)`
-2. `datapoint.age` vs. `mean(result.recognition_FNMR)`
-3. `datapoint.race` vs. `mean(result.recognition_FNMR)`
-4. `datapoint.gender` vs. `mean(result.recognition_FNMR)`
-5. Distribution of `result.recognition_genuine_similarity`
-6. Distribution of `result.recognition_imposter_similarity`
+1. `datapoint.left.race` vs. `mean(result."FMR@0.001".FNMR)`
+2. `datapoint.left.gender` vs. `mean(result."FMR@0.001".FNMR)`
+3. `datapoint.left.age` vs. `mean(result."FMR@0.001".FNMR)`
+4. `datapoint."image_left".aspect_ratio` vs. `mean(result."FMR@0.001".FNMR)`
+5. `datapoint."image_right".aspect_ratio` vs. `mean(result."FMR@0.001".FNMR)`
 
 ### Test Cases
 
-1. `datapoint.bbox.aspect_ratio`
-2. `datapoint.gender`
-3. `datapoint.race`
+1. `datapoint.left.race`
+2. `datapoint.left.gender`
+3. `datapoint.left.age`
