@@ -12,7 +12,8 @@ nav:
     - Core Concepts: dataset/core-concepts/index.md
     - Advanced Usage:
       - Advanced Usage: dataset/advanced-usage/index.md
-      - Dataset Formatting: dataset/advanced-usage/formatting-your-datasets.md
+      - Formatting Data: dataset/advanced-usage/formatting-your-datasets.md
+        - Audio: dataset/advanved-usage/dataset-formatting/audio.md
       - Task Metrics: dataset/advanced-usage/task-metrics.md
       - Programatically Compare Models: dataset/advanced-usage/quality-standard-results.md
       - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
