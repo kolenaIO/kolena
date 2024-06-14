@@ -1,34 +1,46 @@
 ---
-icon: kolena/studio-16
+icon: kolena/media-16
 ---
-# Fomatting data for Computer Vision
+# :kolena-media-20: Formatting data for Computer Vision
 
 In this document we will review best practices when setting up Kolena datasets for computer vision
 problems.
 
 ## Basics
 
+### Supported File Data Formats
+
+The Kolena SDK supports upload of data in the Pandas [`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
+
+The Kolena web app supports the following file formats.
+
+| Format    | Description                                              |
+|-----------|----------------------------------------------------------|
+| `.csv`     | Comma-separated values file, ideal for tabular data.     |
+| `.parquet` | Apache Parquet format, efficient for columnar storage.   |
+| `.jsonl`   | JSON Lines format, suitable for handling nested data.    |
+
 ### Using the `locator`
 
 Kolena uses references to files stored in your cloud storage to render them.
 Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/)
-for detials on how to configure this.
+for details on how to configure this.
 
-Computer Vision data is best visualized in Studio using the Gallary mode.
-To enable the Gallary view store references to images in a column named `locator`. `locator` can be used as
-the unique identifier of the datapoint which is also refereced by your model results.
+Computer Vision data is best visualized in Studio using the Gallery mode.
+To enable the Gallery view store references to images in a column named `locator`. `locator` can be used as
+the unique identifier of the datapoint which is also referenced by your model results.
 
-Kolena supoprts `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported images.
+Kolena supports `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported images.
 
 <figure markdown>
-![Gallary View](../../../assets/images/gallary-view-dark.png#only-dark)
-![Gallary View](../../../assets/images/gallary-view-light.png#only-light)
-<figcaption>Gallary View</figcaption>
+![Gallery View](../../../assets/images/gallery-view-dark.png#only-dark)
+![Gallery View](../../../assets/images/gallery-view-light.png#only-light)
+<figcaption>Gallery View</figcaption>
 </figure>
 
 ### Using fields
 
-You can add additional informaiton about your image
+You can add additional information about your image by
 adding columns to the `.CSV` file with the meta-data name and values in each row.
 Below is an example datapoint:
 
@@ -108,15 +120,24 @@ The data structure of model resutls is very similar to the structure of a datase
 to pass on your model inferences confidence score for each bounding box.
 * Use [`compute_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.compute_object_detection_results)
 to compute your metrics that are supported by Kolena's [Object Detection Task Metrcis](../../advanced-usage/task-metrics.md#object-detection).
+* OR include the following columns in your results. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+
+    | Column Name              | Description                                         |
+    |--------------------------|-----------------------------------------------------|
+    | `matched_inference`      | Inferences that were matched to a ground truth.     |
+    | `unmatched_inference`    | Inferences that were not matched to a ground truth. |
+    | `unmatched_ground_truth` | Ground truths with no matching inference.           |
+
+* leverage task metrics, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
 
 !!! note
-    Once you have constructed your `Dataframe` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
+    Once you have constructed your `DataFrame` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
     wrapper function to
     simplify the upload process and enable the Object Detection Task metrics automatically.
 
 !!! example
     Follow the [2D Object Detection result upload](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
-    examble for optimal setup.
+    example for optimal setup.
 
 ## 3D Object Detection
 
@@ -143,12 +164,12 @@ To render 3D Bounding boxes you can use
     instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
     `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
-## Uploading Model Results
+### Uploading Model Results
 
-Model results contian your model inferences as well as any custom metrics that you wish to monitor on Kolena.
-The data structure of model resutls is very similar to the structure of a dataset with minor differences.
+Model results contain your model inferences as well as any custom metrics that you wish to monitor on Kolena.
+The data structure of model results is very similar to the structure of a dataset with minor differences.
 
-* Ensure your results are using the same unique ID feild (the `locator` for instance) you have selected for your dataset.
+* Ensure your results are using the same unique ID field (the `locator` for instance) you have selected for your dataset.
 * Use [`ScoredBoundingBox3D`](../../../reference/annotation.md#kolena.annotation.ScoredBoundingBox3D) or
 [`ScoredLabeledBoundingBox3D`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox3D)
 to pass on your model inferences confidence score for each bounding box.
@@ -156,7 +177,7 @@ to pass on your model inferences confidence score for each bounding box.
 to compute your metrics that are supported by Kolena's [Object Detection Task Metrcis](../../advanced-usage/task-metrics.md#object-detection).
 
 !!! note
-    Once you have constructed your `Dataframe` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
+    Once you have constructed your `DataFrame` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
     wrapper function to
     simplify the upload process and enable the Object Detection Task metrics automatically.
 
@@ -166,4 +187,7 @@ to compute your metrics that are supported by Kolena's [Object Detection Task Me
 
 ## Video
 
-some text.
+Videos are best represented in Kolena using the Gallery view. To setup the Gallery view, add links to your video files
+stored on the cloud under the `locator` column. Kolena automatically looks for that column name and renders your video files
+correctly.
+Kolena supports `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.

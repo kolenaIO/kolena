@@ -13,7 +13,7 @@ nav:
     - Advanced Usage:
       - Advanced Usage: dataset/advanced-usage/index.md
       - Formatting Data:
-        - Formatting Data: dataset/advanced-usage/formatting-your-datasets.md
+        - Formatting Data: dataset/advanced-usage/dataset-formatting/index.md
         - Audio: dataset/advanced-usage/dataset-formatting/audio.md
         - Computer Vision: dataset/advanced-usage/dataset-formatting/computer-vision.md
         - NLP/LLM: dataset/advanced-usage/dataset-formatting/natural-language.md
