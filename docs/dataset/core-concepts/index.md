@@ -86,7 +86,7 @@ We currently support 10 different types of annotations each enabling a specific 
 
 ??? "How to generate datapoints"
     You can structure your dataset as a CSV file. Each row in the file should represent a distinct datapoint.
-    For complete information on creating datasets, visit [formatting your datasets](../advanced-usage/formatting-your-datasets.md).
+    For complete information on creating datasets, visit [formatting your datasets](../advanced-usage/dataset-formatting/index.md).
 
 ## :kolena-quality-standard-20: Quality Standard
 

@@ -57,7 +57,7 @@ supports [`average precision`](../../metrics/average-precision.md), [`precision`
 ??? "Required fields"
     Kolena attempts to automatically detect fields for true
     positive, false positive and false negative counts. For more information on how to prepare your object
-    detection data, please visit [Formatting results for Object Detection](../advanced-usage/formatting-your-datasets.md#formatting-results-for-object-detection)
+    detection data, please visit [Formatting results for Object Detection](../advanced-usage/dataset-formatting/computer-vision.md#2d-object-detection)
 
 <figure markdown>
 ![Object detection](../../assets/images/task-metrics-object-detection.gif#only-dark)

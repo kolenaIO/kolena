@@ -8,19 +8,19 @@ Kolena has a set of powerful data visualization funcitonalities that enable team
 generate actionable insights fast.
 
 <div class="grid cards" markdown>
-- [:kolena-properties-16: Fomatting data for Computer Vision](./dataset-formatting/computer-vision.md)
+- [:kolena-properties-16: Fomatting data for Computer Vision](./computer-vision.md)
 
     ---
 
     Setup Datasets and model results for best experience for 2D, 3D object setection, Semantic segmentation
     and Video based ML problems.
 
-- [:kolena-metrics-glossary-16: Fomratting data for Audio](./dataset-formatting/audio.md)
+- [:kolena-metrics-glossary-16: Fomratting data for Audio](./audio.md)
 
     ---
     Instruction on how to setup datasets and model results for audio based data.
 
-- [:kolena-metrics-glossary-16: Fomratting data for NLP and LLM](./dataset-formatting/natural-language.md)
+- [:kolena-metrics-glossary-16: Fomratting data for NLP and LLM](./natural-language.md)
 
     ---
     Instruction on how to setup datasets and model results for NLP and LLM problems.
@@ -32,7 +32,7 @@ Kolena will look for the following fields when displaying datapoints:
 
 | Field Name | Description                                                                                                                              |
 |------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| `locator`  | Url path to a file to be displayed, either a [cloud storage](../../connecting-cloud-storage/index.md) url or a http url that serves a file. |
+| `locator`  | Url path to a file to be displayed, either a [cloud storage](../../../connecting-cloud-storage/index.md) url or a http url that serves a file. |
 | `text`     | Raw text input for text based models.                                                                                                    |
 
 A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
@@ -52,7 +52,7 @@ dataset.
 
 ### Kolena Assets
 
-You can connect files to datapoints in Kolena by the use of [`asset`](../../reference/asset.md), which can be visualized
+You can connect files to datapoints in Kolena by the use of [`asset`](../../../reference/asset.md), which can be visualized
 in the Studio when exploring datasets and results. Multiple assets can be attached to a single datapoint allowing you to
 represent complex scenarios on Kolena. Assets are files stored in a cloud bucket or served at a URL.
 
@@ -127,7 +127,7 @@ page.
 ### Formatting results for Object Detection
 
 For Object Detection problems, model results need to have the following columns
-for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+for the best experience. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
 | Column Name              | Description                                         |
 |--------------------------|-----------------------------------------------------|
@@ -146,10 +146,10 @@ example that shows how to take raw results and perform bounding box matching to 
 
 ### To use compound metrics on the fly
 
-The Kolena web application currently supports [`precision`](../../metrics/precision.md),
-[`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md),
-[`accuracy`](../../metrics/accuracy.md), [`false_positive_rate`](../../metrics/fpr.md),
-and [`true_negative_rate`](../../metrics/recall.md).
+The Kolena web application currently supports [`precision`](../../../metrics/precision.md),
+[`recall`](../../../metrics/recall.md), [`f1_score`](../../../metrics/f1-score.md),
+[`accuracy`](../../../metrics/accuracy.md), [`false_positive_rate`](../../../metrics/fpr.md),
+and [`true_negative_rate`](../../../metrics/recall.md).
 
 To leverage these, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
 
