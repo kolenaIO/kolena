@@ -1,7 +1,7 @@
 ---
 icon: kolena/paragraph-16
 ---
-# :kolena-paragraph-20: Formatting Data for NLP/LLM problems
+# :kolena-paragraph-20: NLP and LLM
 
 In this document we will review best practices when setting up Kolena datasets for NLP or LLM
 problems.

@@ -1,7 +1,7 @@
 ---
 icon: kolena/media-16
 ---
-# :kolena-media-20: Formatting data for Computer Vision
+# :kolena-media-20: Computer Vision
 
 In this document we will review best practices when setting up Kolena datasets for computer vision
 problems.

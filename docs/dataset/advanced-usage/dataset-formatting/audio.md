@@ -2,7 +2,7 @@
 icon: kolena/music-16
 ---
 
-# :kolena-music-20: Formatting data for Audio tasks
+# :kolena-music-20: Audio
 
 In this document we will review best practices when setting up Kolena datasets for Audio
 problems.
