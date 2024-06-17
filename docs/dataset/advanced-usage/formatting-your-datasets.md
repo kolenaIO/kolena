@@ -50,9 +50,13 @@ Kolena will look for the following fields when displaying datapoints:
 |------------|---------------------------------------------------------------------------------------------------------------------------------------------|
 | `locator`  | Url path to a file to be displayed, either a [cloud storage](../../connecting-cloud-storage/index.md) url or a http url that serves a file. |
 | `text`     | Raw text input for text based models.                                                                                                       |
+| `file_type`| Optional field indicating the type of file (e.g., `jpg`, `mp4`). Used to assist in the inference of the datatype.                           |
 
-A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
+The `locator` needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
+
+The optional `file_type` field can be used to explicitly provide the file type information
+when extensions cannot be included in the `locator`.
 
 #### Locator Support Matrix
 
