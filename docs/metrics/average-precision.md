@@ -1,3 +1,7 @@
+---
+description: How to calculate and interpret average precision for ML tasks
+---
+
 # Average Precision
 
 Average precision (AP) summarizes a [precision-recall (PR) curve](./pr-curve.md)

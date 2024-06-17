@@ -24,6 +24,7 @@ from kolena._api.v2.dataset import CommitData
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
+from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -36,8 +37,15 @@ TEST_DATASET_HISTORY_NAME = with_test_prefix(f"{__file__}::test__dataset_history
 TEST_DATASET_HISTORY_VERSIONS = 10
 
 
+def test__load_dataset_metadata_dataset__not_exist() -> None:
+    name = with_test_prefix(f"{__file__}::test__load_dataset_metadata_dataset__not_exist")
+    with pytest.raises(NotFoundError):
+        _load_dataset_metadata(name)
+    assert _load_dataset_metadata(name, raise_error_if_not_found=False) is None
+
+
 def test__upload_dataset__empty() -> None:
-    name = with_test_prefix(f"{__file__}::test__uplaod_dataset__empty")
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__empty")
     upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
     assert download_dataset(name).empty

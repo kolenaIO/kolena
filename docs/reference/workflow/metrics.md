@@ -1,5 +1,7 @@
 ---
 status: deprecated
+search:
+  boost: -0.5
 ---
 
 # `kolena.workflow.metrics`

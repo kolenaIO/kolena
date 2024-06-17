@@ -1,7 +1,6 @@
 ---
-icon: kolena/test-suite-16
 search:
-  boost: 2
+  boost: -0.5
 ---
 
 # :kolena-test-suite-20: Test Case & Test Suite

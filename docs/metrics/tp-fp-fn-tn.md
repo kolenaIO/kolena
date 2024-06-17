@@ -1,3 +1,7 @@
+---
+description: Learn about true positives, false positives, false negatives, and true negatives to evaluate ML model performance
+---
+
 # TP / FP / FN / TN
 
 The counts of **true positive** (TP), **false positive** (FP), **false negative** (FN), and **true negative** (TN)

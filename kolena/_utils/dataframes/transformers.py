@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import warnings
 from collections.abc import Callable
 from typing import Any
 from typing import Dict
@@ -25,7 +26,11 @@ def df_apply(df: pd.DataFrame, func: Callable, **kwargs: Any) -> pd.DataFrame:
     pandas.DataFrame.apply wrapper
     """
     default_kwargs = dict(convert_dtype=False)
-    return df.apply(func, **default_kwargs, **kwargs)
+    with warnings.catch_warnings():
+        # Silence the warning for now -- pandas devs have deprecated this without providing a good alternative:
+        # https://github.com/pandas-dev/pandas/pull/52257#issuecomment-1684888371
+        warnings.simplefilter(action="ignore", category=FutureWarning)
+        return df.apply(func, **default_kwargs, **kwargs)
 
 
 def _flatten_dict(d: Dict[str, Any], parent_key: str = "", sep: str = ".", max_level: int = 0) -> Dict[str, Any]:

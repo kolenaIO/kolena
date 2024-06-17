@@ -25,4 +25,3 @@ class ValidateResponse:
     tenant: str
     access_token: str
     token_type: str
-    tenant_telemetry: bool

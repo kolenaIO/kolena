@@ -1,3 +1,7 @@
+---
+description: How to calculate and interpret contradiction scores for NLP
+---
+
 # Contradiction Score
 
 The [Cross-Encoder for Natural Language Inference](https://huggingface.co/cross-encoder/nli-deberta-v3-base) (NLI) is a

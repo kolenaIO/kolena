@@ -83,7 +83,6 @@ def _with_default_kwargs(**kwargs: Any) -> Dict[str, Any]:
             "Content-Type": "application/json",
             "X-Request-ID": uuid.uuid4().hex,
             "User-Agent": user_agent(client_name, client_version),
-            "X-Kolena-Telemetry": str(client_state.telemetry),
         },
     )
     # allow requests to override Content-Type as needed by for example file uploads

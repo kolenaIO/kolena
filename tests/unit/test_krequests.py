@@ -29,7 +29,6 @@ DEFAULT_HEADERS = {
     "Content-Type": "application/json",
     "X-Request-ID": None,
     "User-Agent": None,
-    "X-Kolena-Telemetry": "False",
 }
 DEFAULT_KWARGS = {"auth": None, "timeout": (15.05, 3600), "proxies": {}}
 
@@ -51,10 +50,10 @@ def clean_client_state() -> Iterator[None]:
         ({"timeout": (1, 60)}, None, None),  # attempt to override default args
         ({}, {"http": "dummy-proxy"}, {}),
         ({}, {}, {"some-header-key": "some-header-val"}),
-        ({}, {}, {"X-Kolena-Telemetry": "off"}),  # attempt to override default headers with client state
-        ({"headers": {"X-Kolena-Telemetry": "off"}}, {}, {}),  # attempt to override default headers with kwargs
+        ({}, {}, {"User-Agent": "some-val"}),  # attempt to override default headers with client state
+        ({"headers": {"User-Agent": "some-val"}}, {}, {}),  # attempt to override default headers with kwargs
         ({"headers": {"Content-Type": "application/octet-stream"}}, {}, {}),  # should allow overriding Content-Type
-        ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {"X-Kolena-Telemetry": "off"}),
+        ({"url": "some-url", "data": {"key": "value"}}, {"http": "dummy-proxy"}, {"User-Agent": "some-val"}),
     ],
 )
 def test__with_default_kwargs(

@@ -25,6 +25,7 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
 | [`Label`][kolena.annotation.Label] | Valid for all data |
 | [`TimeSegment`][kolena.annotation.TimeSegment] | Limited to `Audio` or `Video` data |
+| [`TextSegment`][kolena.annotation.TextSegment] | Limited to `Text` data |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.annotation.BoundingBox] objects) present in the datapoints are
@@ -33,14 +34,13 @@ rendered on top of the image.
 import dataclasses
 from abc import ABCMeta
 from functools import reduce
-from typing import Any
 from typing import Dict
 from typing import List
 from typing import Tuple
 
 from pydantic.dataclasses import dataclass
 
-from kolena._utils.datatypes import _register_data_type
+from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.validators import ValidatorConfig
@@ -56,18 +56,16 @@ class _AnnotationType(DataType):
     BITMAP_MASK = "BITMAP_MASK"
     LABEL = "LABEL"
     TIME_SEGMENT = "TIME_SEGMENT"
+    TEXT_SEGMENT = "TEXT_SEGMENT"
 
     @staticmethod
-    def _data_category() -> str:
-        return "ANNOTATION"
+    def _data_category() -> DataCategory:
+        return DataCategory.ANNOTATION
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Annotation(TypedDataObject[_AnnotationType], metaclass=ABCMeta):
     """The base class for all annotation types."""
-
-    def __init_subclass__(cls, **kwargs: Any):
-        _register_data_type(cls)
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -95,8 +93,8 @@ class BoundingBox(Annotation):
         return _AnnotationType.BOUNDING_BOX
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "width", self.bottom_right[0] - self.top_left[0])
-        object.__setattr__(self, "height", self.bottom_right[1] - self.top_left[1])
+        object.__setattr__(self, "width", abs(self.bottom_right[0] - self.top_left[0]))
+        object.__setattr__(self, "height", abs(self.bottom_right[1] - self.top_left[1]))
         object.__setattr__(self, "area", self.width * self.height)
         object.__setattr__(self, "aspect_ratio", self.width / self.height if self.height != 0 else 0)
 
@@ -386,6 +384,69 @@ class ScoredLabeledTimeSegment(TimeSegment):
     """The score associated with this time segment."""
 
 
+@dataclass(frozen=True, config=ValidatorConfig)
+class TextSegment(Annotation):
+    """
+    Represents a segment of text within a specified text field. The `start` index is inclusive and the `end` index is
+    exclusive, following the convention of Python string slicing.
+
+    ```py
+    text_segments: List[TextSegment] = [
+        TextSegment(text_field="text", start=0, end=5),
+        TextSegment(text_field="summary", start=10, end=51),
+    ]
+    ```
+    """
+
+    text_field: str
+    """Text field column name containing the text segments."""
+
+    start: int
+    """Zero-indexed start index (inclusive) of the text segment."""
+
+    end: int
+    """Zero-indexed end index (exclusive) of the text segment."""
+
+    def __post_init__(self) -> None:
+        if self.start < 0:
+            raise ValueError(f"Start index must be non-negative ({self.start} provided)")
+        if self.end < 0:
+            raise ValueError(f"End index must be non-negative ({self.end} provided)")
+        if self.start >= self.end:
+            raise ValueError(f"Start index must be less than end index ({self.start} >= {self.end})")
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.TEXT_SEGMENT
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class LabeledTextSegment(TextSegment):
+    """Text segment with accompanying label, e.g. Location."""
+
+    label: str
+    """The label associated with this text segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredTextSegment(TextSegment):
+    """Text segment with additional float score, representing e.g. model prediction confidence."""
+
+    score: float
+    """The score associated with this text segment."""
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class ScoredLabeledTextSegment(TextSegment):
+    """Text segment with accompanying label and score."""
+
+    label: str
+    """The label associated with this text segment."""
+
+    score: float
+    """The score associated with this text segment."""
+
+
 _ANNOTATION_TYPES = [
     BoundingBox,
     LabeledBoundingBox,
@@ -411,4 +472,8 @@ _ANNOTATION_TYPES = [
     LabeledTimeSegment,
     ScoredTimeSegment,
     ScoredLabeledTimeSegment,
+    TextSegment,
+    LabeledTextSegment,
+    ScoredTextSegment,
+    ScoredLabeledTextSegment,
 ]

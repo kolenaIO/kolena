@@ -45,7 +45,6 @@ from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.dataframes.transformers import json_normalize
-from kolena._utils.datatypes import _deserialize_dataobject
 from kolena._utils.datatypes import _serialize_dataobject
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.endpoints import get_dataset_url
@@ -58,7 +57,9 @@ from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.errors import InputValidationError
+from kolena.errors import NotFoundError
 from kolena.io import _dataframe_object_serde
+from kolena.io import _deserialize_dataobject
 
 _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
@@ -168,17 +169,25 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
 
-def _load_dataset_metadata(name: str) -> Optional[EntityData]:
+def _load_dataset_metadata(name: str, raise_error_if_not_found: bool = True) -> Optional[EntityData]:
     """
     Load the metadata of a given dataset.
 
     :param name: The name of the dataset.
+    :param raise_error_if_not_found: Whether to raise NotFoundError if dataset does not exist.
     :return: The metadata of the dataset.
     """
-    response = krequests.put(Path.LOAD_DATASET, json=asdict(LoadDatasetByNameRequest(name=name)))
-    if response.status_code == requests.codes.not_found:
-        return None
-
+    response = krequests.put(
+        Path.LOAD_DATASET,
+        json=asdict(LoadDatasetByNameRequest(name=name, raise_error_if_not_found=raise_error_if_not_found)),
+    )
+    if response.status_code == requests.codes.not_found or (
+        response.status_code == requests.codes.ok and response.json() is None
+    ):
+        if raise_error_if_not_found:
+            raise NotFoundError(f"dataset {name} does not exist")
+        else:
+            return None
     response.raise_for_status()
 
     return from_dict(EntityData, response.json())
@@ -207,7 +216,8 @@ def _prepare_upload_dataset_request(
     id_fields: Optional[List[str]] = None,
 ) -> Tuple[List[str], str]:
     load_uuid = init_upload().uuid
-    existing_dataset = _load_dataset_metadata(name)
+
+    existing_dataset = _load_dataset_metadata(name, raise_error_if_not_found=False)
     if isinstance(df, pd.DataFrame):
         id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)

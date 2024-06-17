@@ -1,5 +1,6 @@
 ---
-icon: kolena/heatmap-16
+search:
+  boost: -0.5
 ---
 
 # :kolena-heatmap-20: Uploading Activation Maps

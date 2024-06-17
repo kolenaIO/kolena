@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import dataclasses
 from collections import defaultdict
 from typing import Dict
 from typing import Generic
@@ -96,6 +97,13 @@ GT = TypeVar("GT", bound=Union[BoundingBox, Polygon])
 Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon])
 
 
+def _inf_with_iou(inf: Inf, iou_val: float) -> Inf:
+    exclude = ["iou"] + [f.name for f in dataclasses.fields(inf) if not f.init]
+    obj = {k: v for k, v in vars(inf).items() if k not in exclude}
+    out: Inf = inf.__class__(**obj, iou=iou_val)  # type: ignore[call-arg,assignment]
+    return out
+
+
 @dataclass(frozen=True)
 class InferenceMatches(Generic[GT, Inf]):
     """
@@ -111,15 +119,18 @@ class InferenceMatches(Generic[GT, Inf]):
 
     matched: List[Tuple[GT, Inf]]
     """
-    Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
-    detections after applying some confidence threshold.
+    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
+    Considered as true positive detections after applying some confidence threshold.
     """
 
     unmatched_gt: List[GT]
     """Unmatched ground truth objects. Considered as false negatives."""
 
     unmatched_inf: List[Inf]
-    """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
+    """
+    Unmatched inference objects, along with the maximum IoU over all ground truths. Considered as false positives
+    after applying some confidence threshold.
+    """
 
 
 def _match_inferences_single_class_pascal_voc(
@@ -141,22 +152,26 @@ def _match_inferences_single_class_pascal_voc(
 
     # for each inference, find the ground truth with the highest IoU
     for inf in inferences:
-        best_gt = None
-        best_gt_iou = -1.0
+        match_gt = None
+        match_gt_iou = -1.0
+        best_gt_iou = 0.0
         for g, gt in enumerate(gt_objects):
             inf_gt_iou = iou(gt, inf)
+            # track the highest IoU, regardless of threshold
+            if gt not in (ignored_ground_truths or []):
+                best_gt_iou = max(best_gt_iou, inf_gt_iou)
             # track the highest IoU over the threshold
-            if inf_gt_iou >= iou_threshold and inf_gt_iou > best_gt_iou:
-                best_gt_iou = inf_gt_iou
-                best_gt = g
+            if inf_gt_iou >= iou_threshold and inf_gt_iou > match_gt_iou:
+                match_gt_iou = inf_gt_iou
+                match_gt = g
 
-        if best_gt is None or (best_gt in taken_gts and best_gt < len(ground_truths)):
+        if match_gt is None or (match_gt in taken_gts and match_gt < len(ground_truths)):
             # if there are no potential matches, or the best non-ignored gt is already taken, this inf has no match
-            unmatched_inf.append(inf)
-        elif best_gt < len(ground_truths):
+            unmatched_inf.append(_inf_with_iou(inf, best_gt_iou))
+        elif match_gt < len(ground_truths):
             # if the best non-ignored gt is able to be taken
-            matched.append((ground_truths[best_gt], inf))
-            taken_gts.add(best_gt)
+            matched.append((ground_truths[match_gt], _inf_with_iou(inf, match_gt_iou)))
+            taken_gts.add(match_gt)
 
     unmatched_gt = [gt for gt_idx, gt in enumerate(ground_truths) if gt_idx not in taken_gts]
     return InferenceMatches(matched=matched, unmatched_gt=unmatched_gt, unmatched_inf=unmatched_inf)
@@ -231,18 +246,22 @@ class MulticlassInferenceMatches(Generic[GT, Inf]):
 
     matched: List[Tuple[GT, Inf]]
     """
-    Pairs of matched ground truth and inference objects above the IoU threshold. Considered as true positive
-    detections after applying some confidence threshold.
+    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
+    Considered as true positive detections after applying some confidence threshold.
     """
 
     unmatched_gt: List[Tuple[GT, Optional[Inf]]]
     """
     Pairs of unmatched ground truth objects with its confused inference object (i.e. IoU above threshold with
-    mismatching `label`), if such an inference exists. Considered as false negatives and "confused" detections.
+    mismatching `label`) and calculated IoU, if such an inference exists. Considered as false negatives and
+    "confused" detections.
     """
 
     unmatched_inf: List[Inf]
-    """Unmatched inference objects. Considered as false positives after applying some confidence threshold."""
+    """
+    Unmatched inference objects, along with the maximum IoU over all ground truths.
+    Considered as false positives after applying some confidence threshold.
+    """
 
 
 def match_inferences_multiclass(

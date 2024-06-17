@@ -25,6 +25,7 @@ import pandas as pd
 from dacite import from_dict
 
 from kolena._api.v1.generic import Search as API
+from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
@@ -41,7 +42,6 @@ from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import InputValidationError
-from kolena.errors import NotFoundError
 
 
 def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> None:
@@ -78,19 +78,7 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
 
 
-def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
-    """
-    Upload a list of search embeddings for a dataset.
-
-    :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
-    :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
-        This is typically a locator.
-    :param df_embedding: Dataframe containing id fields for identifying datapoints in the dataset and the associated
-        embeddings as `numpy.typing.ArrayLike` of numeric values.
-    :raises NotFoundError: The given dataset does not exist.
-    :raises InputValidationError: The provided input is not valid.
-    """
-
+def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_embedding: pd.DataFrame) -> None:
     embedding_lengths: Set[int] = set()
 
     def encode_embedding(embedding: Any) -> str:
@@ -104,11 +92,8 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     if len(embedding_lengths) > 1:
         raise InputValidationError(f"embeddings are not of the same size, found {embedding_lengths}")
 
-    # prepare the id objects of the dataset
-    existing_dataset = _load_dataset_metadata(dataset_name)
-    if not existing_dataset:
-        raise NotFoundError(f"dataset {dataset_name} does not exist")
-    id_fields = existing_dataset.id_fields
+    id_fields = dataset_entity_data.id_fields
+    dataset_name = dataset_entity_data.name
     validate_dataframe_ids(df_embedding, id_fields)
     df_serialized_datapoint_id_object = _to_serialized_dataframe(
         df_embedding[sorted(id_fields)],
@@ -117,6 +102,7 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     df_embedding = pd.concat([df_embedding, df_serialized_datapoint_id_object], axis=1)
 
     df_embedding["key"] = key
+    df_embedding = df_embedding[[COL_DATAPOINT_ID_OBJECT, "key", "embedding"]]
     df_validated = validate_df_schema(df_embedding, DatasetEmbeddingsDataFrameSchema)
 
     log.info(f"uploading embeddings for dataset '{dataset_name}' and key '{key}'")
@@ -134,3 +120,20 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     krequests.raise_for_status(res)
     data = from_dict(data_class=UploadDatasetEmbeddingsResponse, data=res.json())
     log.success(f"uploaded embeddings for dataset '{dataset_name}' and key '{key}' on {data.n_datapoints} datapoints")
+
+
+def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
+    """
+    Upload a list of search embeddings for a dataset.
+
+    :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
+    :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
+        This is typically a locator.
+    :param df_embedding: Dataframe containing id fields for identifying datapoints in the dataset and the associated
+        embeddings as `numpy.typing.ArrayLike` of numeric values.
+    :raises NotFoundError: The given dataset does not exist.
+    :raises InputValidationError: The provided input is not valid.
+    """
+    existing_dataset = _load_dataset_metadata(dataset_name)
+    assert existing_dataset
+    _upload_dataset_embeddings(existing_dataset, key, df_embedding)

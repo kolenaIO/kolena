@@ -33,9 +33,13 @@ from kolena.annotation import Keypoints
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import LabeledPolygon
+from kolena.annotation import LabeledTextSegment
 from kolena.annotation import Polygon
 from kolena.annotation import Polyline
+from kolena.annotation import ScoredLabeledTextSegment
+from kolena.annotation import ScoredTextSegment
 from kolena.annotation import SegmentationMask
+from kolena.annotation import TextSegment
 
 
 def test__serde__simple() -> None:
@@ -44,7 +48,7 @@ def test__serde__simple() -> None:
     assert obj_dict == {
         "label": "test",
         "points": [[1, 1], [2, 2], [3, 3]],
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.POLYGON.value}",
     }
     assert LabeledPolygon._from_dict(obj_dict) == obj
 
@@ -59,7 +63,7 @@ def test__serde__derived() -> None:
         "height": 0,
         "area": 0,
         "aspect_ratio": 0,
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.BOUNDING_BOX.value}",
     }
     # deserialization from dict containing all fields, including derived
     assert BoundingBox._from_dict(obj_dict) == obj
@@ -87,7 +91,7 @@ def test__serde__derived__extended(dataclass_decorator: Callable[..., Any]) -> N
         "a": "a",
         "b": False,
         "c": 0,
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.BOUNDING_BOX.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.BOUNDING_BOX.value}",
     }
     assert ExtendedBoundingBox._from_dict(obj_dict) == obj
 
@@ -109,6 +113,10 @@ def test__serde__nested() -> None:
         m: Optional[LabeledBoundingBox3D]
         n: SegmentationMask
         o: BitmapMask
+        p: TextSegment
+        q: LabeledTextSegment
+        r: ScoredTextSegment
+        s: ScoredLabeledTextSegment
 
     obj = Tester(
         b=BoundingBox(top_left=(0, 0), bottom_right=(1, 1)),
@@ -125,13 +133,17 @@ def test__serde__nested() -> None:
         m=None,
         n=SegmentationMask(labels={1: "cat", 10: "dog"}, locator="s3://abc"),
         o=BitmapMask(locator="s3://def"),
+        p=TextSegment(text_field="text", start=0, end=10),
+        q=LabeledTextSegment(label="location", text_field="text", start=0, end=10),
+        r=ScoredTextSegment(score=0.91, text_field="text", start=0, end=10),
+        s=ScoredLabeledTextSegment(score=0.91, label="location", text_field="text", start=0, end=10),
     )
     obj_dict = obj._to_dict()
 
     assert obj_dict["e"] == {
         "points": [[0, 0], [1, 1], [2, 2], [0, 0]],
         "label": "e",
-        DATA_TYPE_FIELD: f"{_AnnotationType._data_category()}/{_AnnotationType.POLYGON.value}",
+        DATA_TYPE_FIELD: f"{_AnnotationType._data_category().value}/{_AnnotationType.POLYGON.value}",
     }
     assert Tester._from_dict(obj_dict) == obj
 
@@ -141,7 +153,11 @@ def test__serde__nested() -> None:
     [
         ((0, 0), (0, 0), dict(width=0, height=0, area=0, aspect_ratio=0)),
         ((10, 10), (10, 10), dict(width=0, height=0, area=0, aspect_ratio=0)),
+        # test different permutations to ensure that we're robust to coordinate swapping
         ((10, 10), (20, 30), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+        ((20, 30), (10, 10), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+        ((20, 10), (10, 30), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
+        ((10, 30), (20, 10), dict(width=10, height=20, area=200, aspect_ratio=0.5)),
     ],
 )
 def test__bounding_box__derived(

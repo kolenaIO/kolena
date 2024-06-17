@@ -1,5 +1,7 @@
 ---
 icon: kolena/comparison-16
+search:
+  boost: -0.5
 ---
 
 # :kolena-comparison-20: Natural Language Search Setup
