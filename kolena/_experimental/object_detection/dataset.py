@@ -21,6 +21,7 @@ from typing import Iterator
 from typing import List
 from typing import Literal
 from typing import Optional
+from typing import TypedDict
 from typing import Union
 
 import numpy as np
@@ -38,6 +39,12 @@ from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
 from kolena.metrics import MatchingFunction
 from kolena.metrics import MulticlassInferenceMatches
+
+
+class MatchingColumns(TypedDict):
+    matched_inf_col: str
+    unmatched_inf_col: str
+    unmatched_gt_col: str
 
 
 def _bbox_matches_and_count_for_one_label(
@@ -217,6 +224,85 @@ def _iter_multi_class_metrics(
         yield pd.concat([pd.DataFrame(metrics), pred_df[i : i + batch_size].reset_index(drop=True)], axis=1)
 
 
+def _compute_metrics_from_matches(
+    pred_df: pd.DataFrame,
+    *,
+    matching_cols: MatchingColumns,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
+    batch_size: int = 10_000,
+) -> Iterator[pd.DataFrame]:
+    is_multiclass = True
+    idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
+
+    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
+    all_thresholds: List[float] = []
+
+    for record in pred_df.itertuples():
+        if is_multiclass:
+            matches = MulticlassInferenceMatches(
+                matched=record[idx[matching_cols["matched_inf_col"]]],
+                unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
+                unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
+            )
+            scores = [
+                inf.score
+                for inf in (
+                    [inf for _, inf in matches.matched]
+                    + matches.unmatched_inf
+                    + [inf for _, inf in matches.unmatched_gt if inf is not None]
+                )
+            ]
+        else:
+            matches = InferenceMatches(
+                matched=record[idx[matching_cols["matched_inf_col"]]],
+                unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
+                unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
+            )
+            scores = [inf.score for inf in [inf for _, inf in matches.matched] + matches.unmatched_inf]
+        all_object_matches.append(matches)
+        all_thresholds.extend(scores)
+
+    if len(all_thresholds) >= 501:
+        all_thresholds = list(np.linspace(min(all_thresholds), max(all_thresholds), 501))
+    else:
+        all_thresholds = sorted(all_thresholds)
+
+    thresholds: Dict[str, float]
+    # pred_df.drop(columns=ground_truth, inplace=True)
+
+    if is_multiclass:
+        if isinstance(threshold_strategy, dict):
+            thresholds = threshold_strategy
+        elif isinstance(threshold_strategy, float):
+            thresholds = defaultdict(lambda: threshold_strategy)
+        else:
+            thresholds = compute_optimal_f1_threshold_multiclass(
+                cast(List[MulticlassInferenceMatches], all_object_matches),
+            )
+        yield from _iter_multi_class_metrics(
+            pred_df,
+            cast(List[MulticlassInferenceMatches], all_object_matches),
+            thresholds=thresholds,
+            all_thresholds=all_thresholds,
+            batch_size=batch_size,
+        )
+    else:
+        if isinstance(threshold_strategy, dict) and threshold_strategy:
+            threshold = next(iter(threshold_strategy.values()))
+        elif isinstance(threshold_strategy, float):
+            threshold = threshold_strategy
+        else:
+            threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_object_matches))
+
+        yield from _iter_single_class_metrics(
+            pred_df,
+            cast(List[InferenceMatches], all_object_matches),
+            threshold=threshold,
+            all_thresholds=all_thresholds,
+            batch_size=batch_size,
+        )
+
+
 def _compute_metrics(
     pred_df: pd.DataFrame,
     *,
@@ -246,7 +332,6 @@ def _compute_metrics(
     """
     is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
     match_fn = matching_function or (match_inferences_multiclass if is_multiclass else match_inferences)
-
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
@@ -263,6 +348,7 @@ def _compute_metrics(
             and getattr(gt, gt_ignore_property)
         ]
         unignored_ground_truths = [gt for gt in ground_truths if gt not in ignored_ground_truths]
+
         all_object_matches.append(
             match_fn(  # type: ignore[arg-type]
                 unignored_ground_truths,
