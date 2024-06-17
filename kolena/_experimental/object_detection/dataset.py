@@ -207,6 +207,31 @@ def _iter_single_class_metrics(
         ]
         yield pd.concat([pd.DataFrame(metrics), pred_df.reset_index(drop=True)], axis=1)
 
+    # for record in pred_df.itertuples():
+    #     if is_multiclass:
+    #         matches = MulticlassInferenceMatches(
+    #             matched=record[idx[matching_cols["matched_inf_col"]]],
+    #             unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
+    #             unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
+    #         )
+    #         scores = [
+    #             inf.score
+    #             for inf in (
+    #                 [inf for _, inf in matches.matched]
+    #                 + matches.unmatched_inf
+    #                 + [inf for _, inf in matches.unmatched_gt if inf is not None]
+    #             )
+    #         ]
+    #     else:
+    #         matches = InferenceMatches(
+    #             matched=record[idx[matching_cols["matched_inf_col"]]],
+    #             unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
+    #             unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
+    #         )
+    #         scores = [inf.score for inf in [inf for _, inf in matches.matched] + matches.unmatched_inf]
+    #     all_object_matches.append(matches)
+    #     all_thresholds.extend(scores)
+
 
 def _iter_multi_class_metrics(
     pred_df: pd.DataFrame,
@@ -227,43 +252,23 @@ def _iter_multi_class_metrics(
 def _compute_metrics_from_matches(
     pred_df: pd.DataFrame,
     *,
-    matching_cols: MatchingColumns,
+    matches_col: str,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     batch_size: int = 10_000,
 ) -> Iterator[pd.DataFrame]:
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
-    is_multiclass = _check_multiclass_from_matches(
-        pred_df[idx[matching_cols["matched_inf_col"]]],
-        pred_df[idx[matching_cols["unmatched_inf_col"]]],
-        pred_df[idx[matching_cols["unmatched_gt_col"]]],
-    )
-    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
-    all_thresholds: List[float] = []
+    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = [
+        m for m in itertools.chain.from_iterable(pred_df[idx[matches_col]])
+    ]
+    is_multiclass = all(isinstance(m, MulticlassInferenceMatches) for m in all_object_matches)
+    is_single_class = all(isinstance(m, InferenceMatches) for m in all_object_matches)
+    assert is_multiclass or is_single_class, "Matches must all be either MulticlassInferenceMatches or InferenceMatches"
 
-    for record in pred_df.itertuples():
-        if is_multiclass:
-            matches = MulticlassInferenceMatches(
-                matched=record[idx[matching_cols["matched_inf_col"]]],
-                unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
-                unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
-            )
-            scores = [
-                inf.score
-                for inf in (
-                    [inf for _, inf in matches.matched]
-                    + matches.unmatched_inf
-                    + [inf for _, inf in matches.unmatched_gt if inf is not None]
-                )
-            ]
-        else:
-            matches = InferenceMatches(
-                matched=record[idx[matching_cols["matched_inf_col"]]],
-                unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
-                unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
-            )
-            scores = [inf.score for inf in [inf for _, inf in matches.matched] + matches.unmatched_inf]
-        all_object_matches.append(matches)
-        all_thresholds.extend(scores)
+    all_thresholds: List[float] = [
+        inf.score
+        for matches in all_object_matches
+        for inf in [inf for _, inf in matches.matched] + matches.unmatched_inf
+    ]
 
     if len(all_thresholds) >= 501:
         all_thresholds = list(np.linspace(min(all_thresholds), max(all_thresholds), 501))
@@ -425,23 +430,8 @@ def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
     return len(labels) >= 2
 
 
-def _check_multiclass_from_matches(matched: pd.Series, unmatched_inf: pd.Series, unmatched_gt: pd.Series) -> bool:
-    try:
-        labels = {
-            {gt.label for gt, _ in itertools.chain.from_iterable(_filter_null(matched))}
-            .union(
-                {inf.label for _, inf in itertools.chain.from_iterable(_filter_null(matched))},
-            )
-            .union(
-                {inf.label for _, inf in itertools.chain.from_iterable(_filter_null(unmatched_inf))},
-            )
-            .union(
-                {gt.label for gt in itertools.chain.from_iterable(_filter_null(unmatched_gt))},
-            ),
-        }
-        return len(labels) >= 2
-    except AttributeError:
-        return False
+def _check_multiclass_from_matches(matches: pd.Series) -> bool:
+    return all(isinstance(m, MulticlassInferenceMatches) for m in itertools.chain.from_iterable(matches))
 
 
 def _filter_null(series: pd.Series) -> pd.Series:
