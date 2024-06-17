@@ -36,9 +36,9 @@ def run(args: Namespace) -> None:
     imposter_pairs = {}
     for record in df_pairs.itertuples():
         if record.is_match:
-            genuine_pairs[record.locator_1] = record.locator_2
+            genuine_pairs[record.locator_left] = record.locator_right
         else:
-            imposter_pairs[record.locator_1] = record.locator_2
+            imposter_pairs[record.locator_left] = record.locator_right
 
     df_raw_data = df_detection.merge(df_metadata, on="locator", how="left")
     df_raw_data["image_asset"] = df_raw_data.apply(
@@ -73,20 +73,22 @@ def run(args: Namespace) -> None:
         axis=1,
     )
     df_raw_data = df_raw_data[["locator", "image_asset", "person"]]
-    df_pairs = df_pairs.merge(df_raw_data, left_on="locator_1", right_on="locator")
-    df_pairs = df_pairs.merge(df_raw_data, left_on="locator_2", right_on="locator")
-    df_pairs["image.left"] = df_pairs["image_asset_x"].apply(
+    df_pairs = df_pairs.merge(df_raw_data, left_on="locator_left", right_on="locator")
+    df_pairs = df_pairs.merge(df_raw_data, left_on="locator_right", right_on="locator")
+    df_pairs["image_left"] = df_pairs["image_asset_x"].apply(
         lambda image: ImageAsset(**image.__dict__, position="left"),  # type: ignore[call-arg]
     )
-    df_pairs["image.right"] = df_pairs["image_asset_y"].apply(
+    df_pairs["image_right"] = df_pairs["image_asset_y"].apply(
         lambda image: ImageAsset(**image.__dict__, position="right"),  # type: ignore[call-arg]
     )
-    df_pairs["pairs"] = df_pairs.apply(lambda x: [x["image.left"], x["image.right"]], axis=1)
+    df_pairs["pairs"] = df_pairs.apply(lambda x: [x["image_left"], x["image_right"]], axis=1)
 
     df_pairs = df_pairs.rename(columns={"person_x": "left", "person_y": "right"})
-    df_pairs = df_pairs[["locator_1", "locator_2", "image.left", "image.right", "left", "right", "pairs", "is_match"]]
+    df_pairs = df_pairs[
+        ["locator_left", "locator_right", "image_left", "image_right", "left", "right", "pairs", "is_match"]
+    ]
 
-    upload_dataset(args.dataset, df_pairs, id_fields=["locator_1", "locator_2"])
+    upload_dataset(args.dataset, df_pairs, id_fields=["locator_left", "locator_right"])
 
 
 def main() -> None:

@@ -26,11 +26,11 @@ from kolena.dataset import upload_results
 
 def run(args: Namespace) -> None:
     df_results = pd.read_csv(f"s3://{BUCKET}/{DATASET}/{TASK}/results/raw/{args.model}_{args.detector}.csv")
-    df_results = df_results.drop_duplicates(["locator_1", "locator_2"])
-    keep_columns = ["locator_1", "locator_2", "similarity"]
+    df_results = df_results.drop_duplicates(["locator_left", "locator_right"])
+    keep_columns = ["locator_left", "locator_right", "similarity"]
     for target_fmr in [1e-1, 1e-2, 1e-3]:
         similarity_threshold = compute_recognition_threshold(df_results, target_fmr)
-        metrics_column = f"FMR@{target_fmr}"
+        metrics_column = f"FMR={target_fmr}"
         df_results[metrics_column] = df_results.apply(
             lambda record: compute_pairwise_recognition_metrics(
                 record.is_match,
