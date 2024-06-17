@@ -231,9 +231,12 @@ def _compute_metrics_from_matches(
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     batch_size: int = 10_000,
 ) -> Iterator[pd.DataFrame]:
-    is_multiclass = True
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
-
+    is_multiclass = _check_multiclass_from_matches(
+        pred_df[idx[matching_cols["matched_inf_col"]]],
+        pred_df[idx[matching_cols["unmatched_inf_col"]]],
+        pred_df[idx[matching_cols["unmatched_gt_col"]]],
+    )
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
     all_thresholds: List[float] = []
 
@@ -268,7 +271,6 @@ def _compute_metrics_from_matches(
         all_thresholds = sorted(all_thresholds)
 
     thresholds: Dict[str, float]
-    # pred_df.drop(columns=ground_truth, inplace=True)
 
     if is_multiclass:
         if isinstance(threshold_strategy, dict):
@@ -421,6 +423,25 @@ def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
         return False
 
     return len(labels) >= 2
+
+
+def _check_multiclass_from_matches(matched: pd.Series, unmatched_inf: pd.Series, unmatched_gt: pd.Series) -> bool:
+    try:
+        labels = {
+            {gt.label for gt, _ in itertools.chain.from_iterable(_filter_null(matched))}
+            .union(
+                {inf.label for _, inf in itertools.chain.from_iterable(_filter_null(matched))},
+            )
+            .union(
+                {inf.label for _, inf in itertools.chain.from_iterable(_filter_null(unmatched_inf))},
+            )
+            .union(
+                {gt.label for gt in itertools.chain.from_iterable(_filter_null(unmatched_gt))},
+            ),
+        }
+        return len(labels) >= 2
+    except AttributeError:
+        return False
 
 
 def _filter_null(series: pd.Series) -> pd.Series:
