@@ -63,7 +63,7 @@ from kolena.io import _deserialize_dataobject
 
 _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
-_FIELD_FILE_TYPE = "file_type"
+_FIELD_FILE_EXTENSION = "file_extension"
 _FIELD_TEXT = "text"
 
 
@@ -112,7 +112,7 @@ def _infer_datatype_value_from_url(url: str) -> str:
     return DatapointType.TABULAR.value
 
 
-def _infer_datatype_value_from_file_type(x: Any) -> str:
+def _infer_datatype_value_from_file_extension(x: Any) -> str:
     if not isinstance(x, str):
         return DatapointType.TABULAR.value
 
@@ -135,8 +135,8 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if _FIELD_LOCATOR in df.columns:
-        if _FIELD_FILE_TYPE in df.columns:
-            return df_apply(df[_FIELD_FILE_TYPE], _infer_datatype_value_from_file_type)
+        if _FIELD_FILE_EXTENSION in df.columns:
+            return df_apply(df[_FIELD_FILE_EXTENSION], _infer_datatype_value_from_file_extension)
         else:
             return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
     elif _FIELD_TEXT in df.columns:
