@@ -46,13 +46,17 @@ function.
 
 Kolena will look for the following fields when displaying datapoints:
 
-| Field Name | Description                                                                                                                                 |
-|------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| `locator`  | Url path to a file to be displayed, either a [cloud storage](../../connecting-cloud-storage/index.md) url or a http url that serves a file. |
-| `text`     | Raw text input for text based models.                                                                                                       |
+| Field Name      | Description                                                                                                                                 |
+|-----------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `locator`       | Url path to a file to be displayed, either a [cloud storage](../../connecting-cloud-storage/index.md) url or a http url that serves a file. |
+| `text`          | Raw text input for text based models.                                                                                                       |
+| `file_extension`| Optional field indicating the extension of file (e.g., `jpg`, `mp4`).                                                                       |
 
-A locator needs to have correct extensions for the corresponding file type. For example an image should be in a format
+The `locator` needs to have correct extensions for the corresponding file type. For example an image should be in a format
 such as `.jpg` or `.png`, whereas locators for audio data should be in forms like `.mp3` or `.wav`.
+
+The optional `file_extension` field can be used to explicitly provide the extension information
+when extensions cannot be included in the `locator`.
 
 #### Locator Support Matrix
 
