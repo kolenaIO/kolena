@@ -1,7 +1,7 @@
 ---
 icon: kolena/paragraph-16
 ---
-# :kolena-paragraph-20: NLP and LLM
+# :kolena-paragraph-20: Natural Language
 
 In this document we will review best practices when setting up Kolena datasets for NLP or LLM
 problems.
