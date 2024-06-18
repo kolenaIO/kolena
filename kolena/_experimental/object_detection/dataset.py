@@ -16,6 +16,7 @@ from collections import defaultdict
 from typing import Any
 from typing import cast
 from typing import Dict
+from typing import Iterable
 from typing import Iterator
 from typing import List
 from typing import Literal
@@ -104,7 +105,14 @@ def single_class_datapoint_metrics(
     fp = [inf for inf in object_matches.unmatched_inf if inf.score >= thresholds]
     fn = object_matches.unmatched_gt + [gt for gt, inf in object_matches.matched if inf.score < thresholds]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
-    thresholded = _compute_thresholded_metrics(object_matches, all_thresholds)
+    labels = _get_labels_from_objects(
+        [inf for _, inf in object_matches.matched]
+        + [inf for inf in object_matches.unmatched_inf]
+        + [gt for gt in object_matches.unmatched_gt],
+    )
+    label = None if len(labels) == 0 else labels[0]
+
+    thresholded = _compute_thresholded_metrics(object_matches, all_thresholds, label)
     return dict(
         TP=tp,
         FP=fp,
@@ -141,14 +149,14 @@ def multiclass_datapoint_metrics(
     ]
     scores = [inf["score"] for inf in tp] + [inf.score for inf in fp]
     labels = sorted(
-        {inf.label for _, inf in object_matches.matched}
-        .union(
-            {inf.label for inf in object_matches.unmatched_inf},
-        )
-        .union({gt.label for gt, _ in object_matches.unmatched_gt}),
+        _get_labels_from_objects(
+            [inf for _, inf in object_matches.matched]
+            + [inf for inf in object_matches.unmatched_inf]
+            + [gt for gt, _ in object_matches.unmatched_gt],
+        ),
     )
-    inference_labels = {inf.label for _, inf in object_matches.matched}.union(
-        {inf.label for inf in object_matches.unmatched_inf},
+    inference_labels = _get_labels_from_objects(
+        [inf for _, inf in object_matches.matched] + [inf for inf in object_matches.unmatched_inf],
     )
     fields = [
         ScoredLabel(label=label, score=thresholds[label])
@@ -305,14 +313,27 @@ def _compute_metrics(
         )
 
 
+def _safe_get_label(obj: object) -> Optional[str]:
+    if hasattr(obj, "label"):
+        return str(obj.label)
+
+    return None
+
+
+def _get_labels_from_objects(objs: Iterable[object]) -> List[str]:
+    maybe_labels = {_safe_get_label(obj) for obj in objs}
+    labels = [label for label in maybe_labels if label is not None]
+    return labels
+
+
 def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
-    try:
-        labels = {x.label for x in itertools.chain.from_iterable(_filter_null(ground_truth))}.union(
-            {x.label for x in itertools.chain.from_iterable(_filter_null(inference))},
-        )
-        return len(labels) >= 2
-    except AttributeError:
+    labels = {_safe_get_label(gt) for gt in itertools.chain.from_iterable(_filter_null(ground_truth))}.union(
+        {_safe_get_label(inf) for inf in itertools.chain.from_iterable(_filter_null(inference))},
+    )
+    if None in labels:
         return False
+
+    return len(labels) >= 2
 
 
 def _filter_null(series: pd.Series) -> pd.Series:
