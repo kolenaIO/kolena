@@ -28,9 +28,12 @@ from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
 from kolena.annotation import BoundingBox
+from kolena.annotation import BoundingBox3D
 from kolena.annotation import Polygon
 from kolena.annotation import ScoredBoundingBox
+from kolena.annotation import ScoredBoundingBox3D
 from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.annotation import ScoredLabeledBoundingBox3D
 from kolena.annotation import ScoredLabeledPolygon
 from kolena.annotation import ScoredPolygon
 from kolena.errors import InputValidationError
@@ -93,8 +96,27 @@ def iou(a: Union[BoundingBox, Polygon], b: Union[BoundingBox, Polygon]) -> float
     return polygon_a.intersection(polygon_b).area / union if union > 0 else 0
 
 
-GT = TypeVar("GT", bound=Union[BoundingBox, Polygon])
-Inf = TypeVar("Inf", bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon])
+GT_2D = TypeVar("GT_2D", bound=Union[BoundingBox, Polygon])
+Inf_2D = TypeVar(
+    "Inf_2D",
+    bound=Union[ScoredBoundingBox, ScoredPolygon, ScoredLabeledBoundingBox, ScoredLabeledPolygon],
+)
+
+GT_3D = TypeVar("GT_3D", bound=BoundingBox3D)
+Inf_3D = TypeVar("Inf_3D", bound=Union[ScoredBoundingBox3D, ScoredLabeledBoundingBox3D])
+
+GT = TypeVar("GT", bound=Union[BoundingBox, Polygon, BoundingBox3D])
+Inf = TypeVar(
+    "Inf",
+    bound=Union[
+        ScoredBoundingBox,
+        ScoredPolygon,
+        ScoredLabeledBoundingBox,
+        ScoredLabeledPolygon,
+        ScoredBoundingBox3D,
+        ScoredLabeledBoundingBox3D,
+    ],
+)
 
 
 def _inf_with_iou(inf: Inf, iou_val: float) -> Inf:
@@ -134,13 +156,13 @@ class InferenceMatches(Generic[GT, Inf]):
 
 
 def _match_inferences_single_class_pascal_voc(
-    ground_truths: List[GT],
-    inferences: List[Inf],
-    ignored_ground_truths: Optional[List[GT]] = None,
+    ground_truths: List[GT_2D],
+    inferences: List[Inf_2D],
+    ignored_ground_truths: Optional[List[GT_2D]] = None,
     iou_threshold: float = 0.5,
-) -> InferenceMatches[GT, Inf]:
-    matched: List[Tuple[GT, Inf]] = []
-    unmatched_inf: List[Inf] = []
+) -> InferenceMatches[GT_2D, Inf_2D]:
+    matched: List[Tuple[GT_2D, Inf_2D]] = []
+    unmatched_inf: List[Inf_2D] = []
     taken_gts: Set[int] = set()
 
     gt_objects = ground_truths
@@ -178,13 +200,13 @@ def _match_inferences_single_class_pascal_voc(
 
 
 def match_inferences(
-    ground_truths: List[GT],
-    inferences: List[Inf],
+    ground_truths: List[GT_2D],
+    inferences: List[Inf_2D],
     *,
-    ignored_ground_truths: Optional[List[GT]] = None,
+    ignored_ground_truths: Optional[List[GT_2D]] = None,
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
-) -> InferenceMatches[GT, Inf]:
+) -> InferenceMatches[GT_2D, Inf_2D]:
     """
     Matches model inferences with annotated ground truths using the provided configuration.
 
@@ -265,13 +287,13 @@ class MulticlassInferenceMatches(Generic[GT, Inf]):
 
 
 def match_inferences_multiclass(
-    ground_truths: List[GT],
-    inferences: List[Inf],
+    ground_truths: List[GT_2D],
+    inferences: List[Inf_2D],
     *,
-    ignored_ground_truths: Optional[List[GT]] = None,
+    ignored_ground_truths: Optional[List[GT_2D]] = None,
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
-) -> MulticlassInferenceMatches[GT, Inf]:
+) -> MulticlassInferenceMatches[GT_2D, Inf_2D]:
     """
     Matches model inferences with annotated ground truths using the provided configuration.
 
@@ -307,12 +329,12 @@ def match_inferences_multiclass(
         [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
         (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
     """
-    matched: List[Tuple[GT, Inf]] = []
-    unmatched_gt: List[GT] = []
-    unmatched_inf: List[Inf] = []
-    gts_by_class: Dict[str, List[GT]] = defaultdict(list)
-    infs_by_class: Dict[str, List[Inf]] = defaultdict(list)
-    ignored_gts_by_class: Dict[str, List[GT]] = defaultdict(list)
+    matched: List[Tuple[GT_2D, Inf_2D]] = []
+    unmatched_gt: List[GT_2D] = []
+    unmatched_inf: List[Inf_2D] = []
+    gts_by_class: Dict[str, List[GT_2D]] = defaultdict(list)
+    infs_by_class: Dict[str, List[Inf_2D]] = defaultdict(list)
+    ignored_gts_by_class: Dict[str, List[GT_2D]] = defaultdict(list)
     all_labels: Set[str] = set()
 
     if mode == "pascal":
