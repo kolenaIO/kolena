@@ -27,8 +27,8 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
 numpy = [
-    { version = ">=1.19", python = ">=3.8,<3.11" },
-    { version = ">=1.23", python = ">=3.11" },
+    { version = ">=1.19,<2", python = ">=3.8,<3.11" },
+    { version = ">=1.23,<2", python = ">=3.11" },
 ]
 pandas = [
     { version = ">=1.1,<1.6", python = ">=3.8,<3.11" },
