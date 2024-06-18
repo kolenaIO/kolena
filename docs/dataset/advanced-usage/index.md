@@ -6,10 +6,10 @@ hide:
 
 # :kolena-rocket-20: Advanced Usage
 
-This section contains tutorial documentation for advanced featues.
+This section contains tutorial documentation for advanced features.
 
 <div class="grid cards" markdown>
-- [:kolena-studio-16: Dataset Formatting](./formatting-your-datasets.md)
+- [:kolena-studio-16: Formatting Datasets](./dataset-formatting/index.md)
 
     ---
 

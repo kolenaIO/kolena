@@ -16,7 +16,8 @@ This immutability ensures the integrity and traceability of the data used in tes
 
 ### Datapoints
 
-Datapoints are versatile and immutable objects with the following key characteristics:
+Datapoints are versatile and immutable objects. A datapoint is a set of inputs that you would want to
+test on your models and has the following key characteristics:
 
 - **Unified Object Structure**:
   Datapoints are singular, grab-bag objects that can embody various types of data,
@@ -36,9 +37,56 @@ Datapoints are versatile and immutable objects with the following key characteri
   For instance, they can include annotation objects like [`BoundingBox`][kolena.annotation.BoundingBox],
   and these objects can be further extended as needed.
 
+Consider a single row within the [:kolena-widget-16: Classification (CIFAR-10) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/classification)
+dataset with the following columns:
+
+| locator                    | ground_truth | image_brightness |   image_contrast |
+|---------------------------------------------------------------|--------------|----------|-----|
+| `s3://kolena-public-examples/cifar10/data/horse0000.png`        | horse        |     153.994     |    84.126  |
+
+This datapoint points to an image `horse0000.png` which has the ground_truth classification of `horse`,
+and has brightness and contrast data.
+
+#### Datapoint Components
+
+**Unique Identifier**: each datapoint should have a hashable unique identifier.
+
+You are able to select one or more fields as your ID field during the import process via the
+Web App [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets) or the
+SDK by using the [`upload_dataset`](../../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset) function.
+
+**Meta data**: you can add additional informaiton about your
+datapoint simply by adding columns to the dataset with the metadaname and values in each row.
+
+**Referenced Files**: each datapoint can contain a primary reference to a file stored on your cloud storage.
+Kolena automatically renders referenced files with column name `locator`. Other column names result in references to appear
+as text. Below table outlines what extensions are supported for optimal visualization.
+
+| Data Type      | Supported file formats                                                                |
+|----------------|---------------------------------------------------------------------------------------|
+| Image          | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
+| Audio          | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
+| Video          | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
+| Document       | `txt` and `pdf` files.                                                                |
+| Point Cloud    | `pcd` files.                                                                          |
+
+**Assets**: allow you to connect multiple referenced files to each datapoint for visualization and analysis.
+Multiple assets can be attached to a single datapoint.
+
+| Asset Type                                                              | Description                                                    |
+|-------------------------------------------------------------------------|----------------------------------------------------------------|
+| [`ImageAsset`](../../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
+| [`BinaryAsset`](../../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
+| [`AudioAsset`](../../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
+| [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
+| [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
+
+**Annotations**: allow you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
+We currently support 10 different types of annotations each enabling a specific modality.
+
 ??? "How to generate datapoints"
     You can structure your dataset as a CSV file. Each row in the file should represent a distinct datapoint.
-    For complete information on creating datasets, visit [formatting your datasets](../advanced-usage/formatting-your-datasets.md).
+    For complete information on creating datasets, visit [formatting your datasets](../advanced-usage/dataset-formatting/index.md).
 
 ## :kolena-quality-standard-20: Quality Standard
 
