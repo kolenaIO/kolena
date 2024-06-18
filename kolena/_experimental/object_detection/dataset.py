@@ -37,7 +37,6 @@ from kolena.errors import IncorrectUsageError
 from kolena.metrics import InferenceMatches
 from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
-from kolena.metrics import MatchingFunction
 from kolena.metrics import MulticlassInferenceMatches
 
 
@@ -207,31 +206,6 @@ def _iter_single_class_metrics(
         ]
         yield pd.concat([pd.DataFrame(metrics), pred_df.reset_index(drop=True)], axis=1)
 
-    # for record in pred_df.itertuples():
-    #     if is_multiclass:
-    #         matches = MulticlassInferenceMatches(
-    #             matched=record[idx[matching_cols["matched_inf_col"]]],
-    #             unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
-    #             unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
-    #         )
-    #         scores = [
-    #             inf.score
-    #             for inf in (
-    #                 [inf for _, inf in matches.matched]
-    #                 + matches.unmatched_inf
-    #                 + [inf for _, inf in matches.unmatched_gt if inf is not None]
-    #             )
-    #         ]
-    #     else:
-    #         matches = InferenceMatches(
-    #             matched=record[idx[matching_cols["matched_inf_col"]]],
-    #             unmatched_inf=record[idx[matching_cols["unmatched_inf_col"]]],
-    #             unmatched_gt=record[idx[matching_cols["unmatched_gt_col"]]],
-    #         )
-    #         scores = [inf.score for inf in [inf for _, inf in matches.matched] + matches.unmatched_inf]
-    #     all_object_matches.append(matches)
-    #     all_thresholds.extend(scores)
-
 
 def _iter_multi_class_metrics(
     pred_df: pd.DataFrame,
@@ -316,7 +290,6 @@ def _compute_metrics(
     ground_truth: str,
     inference: str,
     gt_ignore_property: Optional[str] = None,
-    matching_function: Optional[MatchingFunction] = None,
     iou_threshold: float = 0.5,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     min_confidence_score: float = 0.5,
@@ -338,7 +311,7 @@ def _compute_metrics(
     :param batch_size: number of results to process per iteration.
     """
     is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
-    match_fn = matching_function or (match_inferences_multiclass if is_multiclass else match_inferences)
+    match_fn = match_inferences_multiclass if is_multiclass else match_inferences
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
@@ -428,10 +401,6 @@ def _check_multiclass(ground_truth: pd.Series, inference: pd.Series) -> bool:
         return False
 
     return len(labels) >= 2
-
-
-def _check_multiclass_from_matches(matches: pd.Series) -> bool:
-    return all(isinstance(m, MulticlassInferenceMatches) for m in itertools.chain.from_iterable(matches))
 
 
 def _filter_null(series: pd.Series) -> pd.Series:
