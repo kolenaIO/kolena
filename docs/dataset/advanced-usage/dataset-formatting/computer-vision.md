@@ -20,6 +20,14 @@ The Kolena web app supports the following file formats.
 | `.parquet` | Apache Parquet format, efficient for columnar storage.   |
 | `.jsonl`   | JSON Lines format, suitable for handling nested data.    |
 
+Supported file types are:
+
+| Type    | Format                                              |
+|-----------|----------------------------------------------------------|
+| Images     | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported images|
+| Video | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.   |
+| Point Cloud   | `.pcd`    |
+
 ### Using the `locator`
 
 Kolena uses references to files stored in your cloud storage to render them.
@@ -62,7 +70,7 @@ Below is an example datapoint:
 
     | locator| thumbnail_locator | ground_truth | image_brightness | image_contrast |
     |-------||--------------|------------------|----------------|
-    | `s3://kolena-public-examples/cifar10/data/horse0000.png`| `s3://kolena-public-examples/cifar10/data/thumbnail/horse0000.png` | horse | 153.994 | 84.126 |
+    | `s3://kolena-examples/data/h0.png`| `s3://kolena-examples/data/thumbnail/h0.png` | horse | 153.994 | 84.126 |
 
 ## 2D Object Detection
 
