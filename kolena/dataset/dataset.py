@@ -63,6 +63,7 @@ from kolena.io import _deserialize_dataobject
 
 _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
+_FIELD_FILE_EXTENSION = "file_extension"
 _FIELD_TEXT = "text"
 
 
@@ -99,11 +100,7 @@ def _normalize_url(x: str) -> str:
     return url._replace(query="", fragment="").geturl()
 
 
-def _infer_datatype_value(x: Any) -> str:
-    if not isinstance(x, str):
-        return DatapointType.TABULAR.value
-
-    url = _normalize_url(x or "")
+def _infer_datatype_value_from_url(url: str) -> str:
     mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)
@@ -115,6 +112,22 @@ def _infer_datatype_value(x: Any) -> str:
     return DatapointType.TABULAR.value
 
 
+def _infer_datatype_value_from_file_extension(x: Any) -> str:
+    if not isinstance(x, str):
+        return DatapointType.TABULAR.value
+
+    url = f"dummy.{x}"
+    return _infer_datatype_value_from_url(url)
+
+
+def _infer_datatype_value(x: Any) -> str:
+    if not isinstance(x, str):
+        return DatapointType.TABULAR.value
+
+    url = _normalize_url(x or "")
+    return _infer_datatype_value_from_url(url)
+
+
 def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
     df[DATA_TYPE_FIELD] = _infer_datatype(df)
@@ -122,7 +135,10 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if _FIELD_LOCATOR in df.columns:
-        return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
+        if _FIELD_FILE_EXTENSION in df.columns:
+            return df_apply(df[_FIELD_FILE_EXTENSION], _infer_datatype_value_from_file_extension)
+        else:
+            return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
     elif _FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 
@@ -169,17 +185,25 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
 
-def _load_dataset_metadata(name: str) -> EntityData:
+def _load_dataset_metadata(name: str, raise_error_if_not_found: bool = True) -> Optional[EntityData]:
     """
     Load the metadata of a given dataset.
 
     :param name: The name of the dataset.
+    :param raise_error_if_not_found: Whether to raise NotFoundError if dataset does not exist.
     :return: The metadata of the dataset.
     """
-    response = krequests.put(Path.LOAD_DATASET, json=asdict(LoadDatasetByNameRequest(name=name)))
-    if response.status_code == requests.codes.not_found:
-        raise NotFoundError(f"dataset {name} does not exist")
-
+    response = krequests.put(
+        Path.LOAD_DATASET,
+        json=asdict(LoadDatasetByNameRequest(name=name, raise_error_if_not_found=raise_error_if_not_found)),
+    )
+    if response.status_code == requests.codes.not_found or (
+        response.status_code == requests.codes.ok and response.json() is None
+    ):
+        if raise_error_if_not_found:
+            raise NotFoundError(f"dataset {name} does not exist")
+        else:
+            return None
     response.raise_for_status()
 
     return from_dict(EntityData, response.json())
@@ -209,10 +233,7 @@ def _prepare_upload_dataset_request(
 ) -> Tuple[List[str], str]:
     load_uuid = init_upload().uuid
 
-    try:
-        existing_dataset = _load_dataset_metadata(name)
-    except NotFoundError:
-        existing_dataset = None
+    existing_dataset = _load_dataset_metadata(name, raise_error_if_not_found=False)
     if isinstance(df, pd.DataFrame):
         id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)

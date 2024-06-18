@@ -1,3 +1,7 @@
+---
+description: How to create and interpret confusion matrices to evaluate ML model performance
+---
+
 # Confusion Matrix
 
 !!! info inline end "Guide: True Positive / False Positive / False Negative / True Negative"

@@ -63,6 +63,9 @@ class EventAPI:
         FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"
         UPLOAD_DATASET_MODEL_RESULT = "sdk-dataset-model-result-uploaded"
 
+        # quality-standard
+        FETCH_QUALITY_STANDARD_RESULT = "sdk-quality-standard-result-fetched"
+
     @dataclass(frozen=True)
     class RecordEventRequest:
         event_name: str

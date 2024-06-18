@@ -11,19 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from kolena._api.v2.quality_standard import Path as QualityStandardPath
-from kolena._utils import krequests_v2 as krequests
-from kolena.dataset.dataset import _load_dataset_metadata
+BUCKET = "kolena-public-examples"
+DATASET = "labeled-faces-in-the-wild"
+TASK = "face-recognition"
 
-
-def create_quality_standard(dataset_name: str, quality_standard: dict) -> None:
-    dataset = _load_dataset_metadata(dataset_name)
-    assert dataset
-
-    response = krequests.put(
-        QualityStandardPath.QUALITY_STANDARD,
-        params=dict(dataset_id=dataset.id),
-        json=quality_standard,
-        api_version="v2",
-    )
-    krequests.raise_for_status(response)
+DATASET_METADATA = f"s3://{BUCKET}/{DATASET}/{TASK}/raw/metadata.csv"
+DATASET_PAIRS = f"s3://{BUCKET}/{DATASET}/{TASK}/raw/pairs.csv"
+DATASET_DETECTION = f"s3://{BUCKET}/{DATASET}/{TASK}/raw/detection.csv"

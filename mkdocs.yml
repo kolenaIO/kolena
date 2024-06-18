@@ -88,11 +88,13 @@ nav:
     - metrics/fpr.md
     - metrics/mean-absolute-error.md
     - metrics/mean-squared-error.md
+    - metrics/pearson-correlation.md
     - metrics/precision.md
     - metrics/pr-curve.md
     - metrics/recall.md
     - metrics/roc-curve.md
     - metrics/root-mean-squared-error.md
+    - metrics/spearman-correlation.md
     - metrics/specificity.md
     - metrics/tp-fp-fn-tn.md
     - Computer Vision:

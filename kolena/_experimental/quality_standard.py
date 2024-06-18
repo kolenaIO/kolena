@@ -17,9 +17,11 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v2.quality_standard import Path
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
+from kolena._utils.instrumentation import with_event
 
 
 def _format_quality_standard_result_df(quality_standard_result: dict) -> pd.DataFrame:
@@ -46,6 +48,7 @@ def _format_quality_standard_result_df(quality_standard_result: dict) -> pd.Data
     return df.pivot(columns=["model", "eval_config", "metric_group", "metric"], values="value")
 
 
+@with_event(event_name=EventAPI.Event.FETCH_QUALITY_STANDARD_RESULT)
 def download_quality_standard_result(
     dataset: str,
     models: List[str],
