@@ -219,13 +219,13 @@ def _iter_multi_class_metrics(
 def _compute_metrics_from_matches(
     pred_df: pd.DataFrame,
     *,
-    matches_col: str,
+    matches_field: str,
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     batch_size: int = 10_000,
 ) -> Iterator[pd.DataFrame]:
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = [
-        m for m in itertools.chain.from_iterable(pred_df[idx[matches_col]])
+        m for m in itertools.chain.from_iterable(pred_df[idx[matches_field]])
     ]
     is_multiclass = all(isinstance(m, MulticlassInferenceMatches) for m in all_object_matches)
     is_single_class = all(isinstance(m, InferenceMatches) for m in all_object_matches)
@@ -405,6 +405,22 @@ def _validate_column_present(df: pd.DataFrame, col: str) -> None:
         raise IncorrectUsageError(f"Missing column '{col}'")
 
 
+def _iter_object_detection_results_from_matches(
+    df: pd.DataFrame,
+    *,
+    matches_field: str = "matches",
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    batch_size: int = 10_000,
+) -> Iterator[pd.DataFrame]:
+    _validate_column_present(df, matches_field)
+    return _compute_metrics_from_matches(
+        pred_df=df,
+        matches_field=matches_field,
+        threshold_strategy=threshold_strategy,
+        batch_size=batch_size,
+    )
+
+
 def _iter_object_detection_results(
     dataset_name: str,
     df: pd.DataFrame,
@@ -434,6 +450,22 @@ def _iter_object_detection_results(
         min_confidence_score=min_confidence_score,
         batch_size=batch_size,
     )
+
+
+def compute_object_detection_results_from_matches(
+    df: pd.DataFrame,
+    *,
+    matches_field: str = "matches",
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    batch_size: int = 10_000,
+) -> pd.DataFrame:
+    results_iter = _iter_object_detection_results_from_matches(
+        df,
+        matches_field=matches_field,
+        threshold_strategy=threshold_strategy,
+        batch_size=batch_size,
+    )
+    return pd.concat(list(results_iter))
 
 
 def compute_object_detection_results(
@@ -482,6 +514,31 @@ def compute_object_detection_results(
         batch_size=batch_size,
     )
     return pd.concat(list(results_iter))
+
+
+def upload_object_detection_results_from_matches(
+    dataset_name: str,
+    model_name: str,
+    df: pd.DataFrame,
+    *,
+    matches_field: str = "matches",
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    eval_config: Optional[Dict[str, Any]] = None,
+    batch_size: int = 10_000,
+) -> pd.DataFrame:
+    eval_config = eval_config or dict(threshold_strategy=threshold_strategy)
+    results = _iter_object_detection_results_from_matches(
+        df,
+        matches_field=matches_field,
+        threshold_strategy=threshold_strategy,
+        batch_size=batch_size,
+    )
+    dataset.upload_results(
+        dataset_name,
+        model_name,
+        [(eval_config, results)],
+        thresholded_fields=["thresholded"],
+    )
 
 
 def upload_object_detection_results(
