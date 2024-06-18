@@ -21,7 +21,6 @@ from typing import Iterator
 from typing import List
 from typing import Literal
 from typing import Optional
-from typing import TypedDict
 from typing import Union
 
 import numpy as np
@@ -38,12 +37,6 @@ from kolena.metrics import InferenceMatches
 from kolena.metrics import match_inferences
 from kolena.metrics import match_inferences_multiclass
 from kolena.metrics import MulticlassInferenceMatches
-
-
-class MatchingColumns(TypedDict):
-    matched_inf_col: str
-    unmatched_inf_col: str
-    unmatched_gt_col: str
 
 
 def _bbox_matches_and_count_for_one_label(
