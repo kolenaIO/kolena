@@ -46,6 +46,7 @@ class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
 @dataclass(frozen=True)
 class LoadDatasetByNameRequest:
     name: str
+    raise_error_if_not_found: bool = True
 
 
 @dataclass(frozen=True)

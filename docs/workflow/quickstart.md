@@ -1,5 +1,6 @@
 ---
-icon: kolena/flame-16
+search:
+  boost: -0.5
 ---
 
 # :kolena-flame-20: Quickstart

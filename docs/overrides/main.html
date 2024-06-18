@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block htmltitle %}
-<title>{{ page.title | striptags }} · {{ config.site_name }}</title>
+<title>{{ page.title | striptags }}{% if (page.meta is defined and page.meta.description is defined) %}: {{ page.meta.description }}{% endif %} · {{ config.site_name }}</title>
 {% endblock %}
 
 {% block extrahead %}
@@ -29,4 +29,8 @@
     window.DD_RUM.startSessionReplayRecording();
   })
 </script>
+{% endblock %}
+
+{% block announce %}
+Join us at the <a href="https://www.aiqualityconference.com/"><b>AI Quality Conference</b></a> on <b>June 25th</b> in <b>San Francisco</b> to connect + collaborate on evolving AI quality!
 {% endblock %}

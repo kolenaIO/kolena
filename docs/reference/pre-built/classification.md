@@ -1,6 +1,6 @@
 ---
-icon: kolena/classification-16
-status: new
+search:
+  boost: -0.5
 ---
 
 # :kolena-classification-20: Classification

@@ -1,7 +1,6 @@
 ---
-icon: kolena/model-16
 search:
-  boost: 2
+  boost: -0.5
 ---
 
 # :kolena-model-20: Model

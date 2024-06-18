@@ -44,7 +44,42 @@ model behaviors and take the mystery out of model development. Kolena helps you:
 
 Kolena organizes your test data, stores and visualizes your model evaluations, and provides tooling to craft better
 tests. You interface with it through the web at [app.kolena.com](https://app.kolena.com) and programmatically via the
-[`kolena`](installing-kolena.md) Python client.
+[`kolena`](installing-kolena.md) SDK.
+
+---
+
+# :kolena-layers-20: Developer Guide
+
+Learn how to use Kolena to test your models effectively:
+
+<div class="grid cards" markdown>
+
+- [:kolena-flame-16: Quickstart](dataset/quickstart.md)
+
+    ---
+
+    Run through an example using Kolena to set up rigorous and repeatable model testing in minutes.
+
+- [:kolena-developer-16: Installing `kolena`](installing-kolena.md)
+
+    ---
+
+    Install and initialize the `kolena` Python package, the programmatic interface to Kolena.
+
+- [:kolena-area-of-interest-16: Core Concepts](dataset/core-concepts/index.md)
+
+    ---
+
+    Core concepts for testing in Kolena.
+
+- [:kolena-manual-16: API Reference](reference/index.md)
+
+    ---
+
+    Developer-focused detailed API reference documentation for `kolena`.
+
+</div>
+---
 
 ## Why Kolena?
 
@@ -97,34 +132,3 @@ We built Kolena to solve these two problems.
 - No Subclass Left Behind: Fine-Grained Robustness in Coarse-Grained Classification Problems ([arXiv:2011.12945](https://arxiv.org/abs/2011.12945))
 
 ---
-
-# :kolena-layers-20: Developer Guide
-
-Learn how to use Kolena to test your models effectively:
-
-<div class="grid cards" markdown>
-- [:kolena-flame-16: Quickstart](dataset/quickstart.md)
-
-    ---
-
-    Run through an example using Kolena to set up rigorous and repeatable model testing in minutes.
-
-- [:kolena-developer-16: Installing `kolena`](installing-kolena.md)
-
-    ---
-
-    Install and initialize the `kolena` Python package, the programmatic interface to Kolena.
-
-- [:kolena-flag-16: Core Concepts](dataset/core-concepts/index.md)
-
-    ---
-
-    Core concepts for testing in Kolena.
-
-- [:kolena-manual-16: API Reference](reference/index.md)
-
-    ---
-
-    Developer-focused detailed API reference documentation for `kolena`.
-
-</div>

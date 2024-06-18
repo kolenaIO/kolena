@@ -1,3 +1,7 @@
+---
+description: Measuring textual similarity with N-gram overlap
+---
+
 # BLEU
 
 !!! info inline end "BLEU vs. Precision"

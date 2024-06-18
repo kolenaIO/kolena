@@ -25,6 +25,7 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
 | [`Label`][kolena.annotation.Label] | Valid for all data |
 | [`TimeSegment`][kolena.annotation.TimeSegment] | Limited to `Audio` or `Video` data |
+| [`TextSegment`][kolena.annotation.TextSegment] | Limited to `Text` data |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.annotation.BoundingBox] objects) present in the datapoints are
@@ -386,23 +387,25 @@ class ScoredLabeledTimeSegment(TimeSegment):
 @dataclass(frozen=True, config=ValidatorConfig)
 class TextSegment(Annotation):
     """
-    Segment of text in the associated text field
+    Represents a segment of text within a specified text field. The `start` index is inclusive and the `end` index is
+    exclusive, following the convention of Python string slicing.
 
     ```py
     text_segments: List[TextSegment] = [
         TextSegment(text_field="text", start=0, end=5),
         TextSegment(text_field="summary", start=10, end=51),
     ]
+    ```
     """
 
     text_field: str
     """Text field column name containing the text segments."""
 
     start: int
-    """Start index of the text segment."""
+    """Zero-indexed start index (inclusive) of the text segment."""
 
     end: int
-    """End index of the text segment."""
+    """Zero-indexed end index (exclusive) of the text segment."""
 
     def __post_init__(self) -> None:
         if self.start < 0:

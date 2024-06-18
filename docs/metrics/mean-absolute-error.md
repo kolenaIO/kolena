@@ -1,3 +1,7 @@
+---
+description: How to calculate and interperet MAE for regression ML tasks
+---
+
 # Mean Absolute Error (MAE)
 
 Mean Absolute Error (MAE) is a popular metric used in assessing regression model performance

@@ -163,7 +163,7 @@ def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, 
 
     _, results = download_results(name, name)
     assert len(results) == 1
-    assert results[0][0] == eval_config
+    assert results[0].eval_config == eval_config
 
     df_results = results[0][1]
     expected_columns = {
@@ -286,8 +286,8 @@ def test__upload_results__multiclass(annotation: str, gts: ObjectAnnotations, in
 
     _, results = download_results(name, name)
     assert len(results) == 2
-    assert results[0][0] == eval_config_one
-    assert results[1][0] == eval_config_two
+    assert results[0].eval_config == eval_config_one
+    assert results[1].eval_config == eval_config_two
 
     df_results_one = results[0][1]
     df_results_two = results[1][1]

@@ -1,6 +1,3 @@
----
-icon: kolena/dataset-16
----
 
 # :kolena-dataset-20: `kolena.dataset`
 

@@ -1,3 +1,7 @@
+---
+description: Measuring textual similarity with substitution, deletion, and insertion errors
+---
+
 # WER, CER, and MER
 
 Word Error Rate (WER), Character Error Rate (CER), and Match Error Rate (MER) are essential metrics used in the

@@ -1,3 +1,7 @@
+---
+description: Measuring textual similarity with N-gram precision and recall
+---
+
 # METEOR
 
 METEOR (**M**etric for **E**valuation of **T**ranslation with **E**xplicit **OR**dering) is a widely recognized and

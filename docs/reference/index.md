@@ -9,11 +9,23 @@ hide:
 This section contains detailed API reference documentation for `kolena`.
 
 <div class="grid cards" markdown>
-- [`kolena.initialize`](./initialize.md)
+- [`kolena.annotation`](./annotation.md)
 
     ---
 
-    Initialize client sessions
+    Annotations and overlays for visualization
+
+- [`kolena.asset`](asset.md)
+
+    ---
+
+    Connect asset files (e.g. images, documents, point clouds, videos) to datapoints and results
+
+- [`kolena.dataset`](./dataset/index.md)
+
+    ---
+
+    Upload datasets and model results
 
 - [`kolena.errors`](./errors.md)
 
@@ -27,26 +39,22 @@ This section contains detailed API reference documentation for `kolena`.
 
     Helper utilities for working with Kolena using common data types
 
-- [`kolena.annotation`](./annotation.md)
+- [`kolena.initialize`](./initialize.md)
 
     ---
 
-    Conect annotations and overlays to datapoints and results
+    Initialize client sessions
 
-- [`kolena.asset`](asset.md)
-
-    ---
-
-    Connect asset files to datapoints and results
-
-</div>
-
----
-
-<div class="grid cards" markdown>
-- [:kolena-dataset-16: `kolena.dataset`](./dataset/index.md)
+- [`kolena.metrics`](./metrics.md)
 
     ---
 
-    Building blocks to test any ML problem in Kolena
+    Helper utilities for creating custom metrics
+
+- [`kolena._experimental`](./experimental/index.md)
+
+    ---
+
+    Experimental features
+
 </div>

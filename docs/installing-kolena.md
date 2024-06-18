@@ -4,8 +4,7 @@ icon: kolena/developer-16
 
 # :kolena-developer-20: Installing `kolena`
 
-Testing on Kolena is conducted using the [`kolena`](https://github.com/kolenaIO/kolena) Python package. You use the
-client to create and run tests from your infrastructure that can be explored in our web platform.
+[`kolena SDK`](https://github.com/kolenaIO/kolena) is a powerful tool that enables process automation and data curation.
 
 `kolena` is released under the open-source [Apache-2.0](https://www.apache.org/licenses/LICENSE-2.0)
 license. The package is [hosted on PyPI](https://pypi.org/project/kolena/) and can be installed using your
@@ -13,7 +12,7 @@ preferred Python package manager.
 
 ## Installation
 
-The first step to start testing with Kolena is to install `kolena`. Client builds can be installed directly from
+SDK builds can be installed directly from
 [PyPI](https://pypi.org/project/kolena/) using any Python package manager such as [pip](https://pypi.org/project/pip/)
 or [Poetry](https://python-poetry.org/):
 
