@@ -1,4 +1,8 @@
-# How to Test Object Detection Models
+---
+icon: kolena/detection-20
+---
+
+# :kolena-detection-20: How to Test Object Detection Models
 
 This guide outlines how to format your object detection data on Kolena, and walks through the steps to easily
 test object detection models.
@@ -40,83 +44,77 @@ objects outlined by bounding boxes each labeled with a class, typically annotate
 inferences for an image are the labeled bounding boxes having confidence scores (the model's certainty of
 correctness), as if the model annotated the image.
 
-??? info "Evaluation Metrics for Object Detection Models: Precision, Recall, F1-Score, and AP"
+A [bounding box matcher](../metrics/geometry-matching.md) can align an image's ground truths and model inferences
+to produce [TP / FP / FN counts](../metrics/tp-fp-fn-tn.md). These counts are fundamental for computing more
+detailed metrics, which provide insight into the model's performance. Different evaluation configurations can be
+tuned to filter out model inferences before/after employing a matching algorithm such as filtering out inferences
+with a confidence score under 0.01 and/or ignoring matches where the [IoU](../metrics/iou.md) (the overlap
+between the ground truth and inference bounding box) under 0.5.
 
-    A [bounding box matcher](../metrics/geometry-matching.md) can align an image's ground truths and model inferences
-    to produce [TP / FP / FN counts](../metrics/tp-fp-fn-tn.md). These counts are fundamental for computing more
-    detailed metrics, which provide insight into the model's performance. Different evaluation configurations can be
-    tuned to filter out model inferences before/after employing a matching algorithm such as filtering out inferences
-    with a confidence score under 0.01 and/or ignoring matches where the [IoU](../metrics/iou.md) (the overlap
-    between the ground truth and inference bounding box) under 0.5.
+1. [**Precision**](../metrics/precision.md): Precision measures the ratio of correctly detected objects to
+    all objects detected by the model. High precision indicates a low rate of false positives.
 
-    1. [**Precision**](../metrics/precision.md): Precision measures the ratio of correctly detected objects to
-        all objects detected by the model. High precision indicates a low rate of false positives.
+    $$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}$$
 
-        $$\text{Precision} = \frac{\text{TP}}{\text{TP} + \text{FP}}$$
+2. [**Recall**](../metrics/recall.md): Recall measures the ratio of correctly detected objects to all actual objects
+    (the ground truths). High recall indicates that the model is good at detecting most of the objects labeled
+    by humans.
 
-    2. [**Recall**](../metrics/recall.md): Recall measures the ratio of correctly detected objects to all actual objects
-        (the ground truths). High recall indicates that the model is good at detecting most of the objects labeled
-        by humans.
+    $$\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
 
-        $$\text{Recall} = \frac{\text{TP}}{\text{TP} + \text{FN}}$$
+3. [**F1-Score**](../metrics/f1-score.md): F1-Score is the harmonic mean of precision and recall - a balance of both
+    metrics as one metric.
 
-    3. [**F1-Score**](../metrics/f1-score.md): F1-Score is the harmonic mean of precision and recall - a balance of both
-        metrics as one metric.
+    $$
+    \begin{align}
+    \text{F}_1 &= \frac {2} {\frac {1} {\text{Precision}} + \frac {1} {\text{Recall}}} \\[1em]
+    &= \frac {2 \times \text{Precision} \times \text{Recall}} {\text{Precision} + \text{Recall}}
+    \end{align}
+    $$
 
-        $$
-        \begin{align}
-        \text{F}_1 &= \frac {2} {\frac {1} {\text{Precision}} + \frac {1} {\text{Recall}}} \\[1em]
-        &= \frac {2 \times \text{Precision} \times \text{Recall}} {\text{Precision} + \text{Recall}}
-        \end{align}
-        $$
+4. [**Mean Average Precision (mAP)**](../metrics/averaging-methods.md): Mean average precision (mAP) is
+    obtained by first computing the [average precision (AP)](../metrics/average-precision.md) for each class
+    based on [Precision-Recall (PR) curves](../metrics/pr-curve.md) and then macro-averaging those scores
+    across all classes. mAP is a comprehensive indicator of a model's performance across multiple categories.
 
-    4. [**Mean Average Precision (mAP)**](../metrics/averaging-methods.md): Mean average precision (mAP) is
-        obtained by first computing the [average precision (AP)](../metrics/average-precision.md) for each class
-        based on [Precision-Recall (PR) curves](../metrics/pr-curve.md) and then macro-averaging those scores
-        across all classes. mAP is a comprehensive indicator of a model's performance across multiple categories.
+    $$
+    \begin{align}
+    \text{mAP} = \frac{1}{N} \sum_{\text{class}}^{\text{all classes}} \text{AP}_\text{class}
+    \end{align}
+    $$
 
-        $$
-        \begin{align}
-        \text{mAP} = \frac{1}{N} \sum_{\text{class}}^{\text{all classes}} \text{AP}_\text{class}
-        \end{align}
-        $$
-
-        Read the [averaging methods](../metrics/averaging-methods.md) guide if you are not familiar with "macro"
-        and "micro" terminology.
+    Read the [averaging methods](../metrics/averaging-methods.md) guide if you are not familiar with "macro"
+    and "micro" terminology.
 
 ### Object Detection Plots
 
-There are several common plots used to analyze the performance of object detection models.
-
-??? info "Evaluation Plots for Object Detection Models: PR-Curves and Confusion Matrices"
-
-    1. [**Precision Recall (PR) Curves**](../metrics/pr-curve.md): The PR curve plots precision and recall within a
-        unit square. The greater the area under the curve, the more performant your model is. Typically, there is
-        a tradeoff between precision and recall, which you can read in detail [here](../metrics/pr-curve.md).
-
-        <center>
-        ![pr.png](../assets/images/metrics-prcurve-light.png#only-light)
-        ![pr.png](../assets/images/metrics-prcurve-dark.png#only-dark)
-        </center>
-
-    2. [**Confusion Matrix**](../metrics/confusion-matrix.md): Particularly for multiclass object detection, a
-        confusion matrix displays the actual classes against the predicted classes in a table. This allows for a
-        clear understanding of the model's performance with respect to classifying classes.
-
-        <center>
-        ![pr.png](../assets/images/metrics-confusion-matrix-light.png#only-light)
-        ![pr.png](../assets/images/metrics-confusion-matrix-dark.png#only-dark)
-        </center>
-
-        From the plot above, we can see if the model is confused when detecting cats and dogs.
-
-    Note that any plot suitable for a classification task is also suitable for an object detection task, as object
-    detection is a combination of a classification and localization task. However, it is important to consider what
-    matters to your project and design custom plots to describe your model's performance in the best way possible.
-    For example: an F1-Score vs confidence threshold plot, a histogram of IoUs, or mAP vs different IoUs.
-
 Plots can become very powerful ways to gain insights into unexpected model behavior, and a formal way to showcase
-strong model quality.
+strong model quality. There are several common plots used to analyze the performance of object detection models.
+
+1. [**Precision Recall (PR) Curves**](../metrics/pr-curve.md): The PR curve plots precision and recall within a
+    unit square. The greater the area under the curve, the more performant your model is. Typically, there is
+    a tradeoff between precision and recall, which you can read in detail [here](../metrics/pr-curve.md).
+
+    <center>
+    ![pr.png](../assets/images/metrics-prcurve-light.png#only-light)
+    ![pr.png](../assets/images/metrics-prcurve-dark.png#only-dark)
+    </center>
+
+2. [**Confusion Matrix**](../metrics/confusion-matrix.md): Particularly for multiclass object detection, a
+    confusion matrix displays the actual classes against the predicted classes in a table. This allows for a
+    clear understanding of the model's performance with respect to classifying classes.
+
+    <center>
+    ![pr.png](../assets/images/metrics-confusion-matrix-light.png#only-light)
+    ![pr.png](../assets/images/metrics-confusion-matrix-dark.png#only-dark)
+    </center>
+
+    From the plot above, we can see if the model is confused when detecting cats and dogs.
+
+Note that any plot suitable for a classification task is also suitable for an object detection task, as object
+detection is a combination of a classification and localization task. However, it is important to consider what
+matters to your project and design custom plots to describe your model's performance in the best way possible.
+For example: an F1-Score vs confidence threshold plot, a histogram of IoUs, or mAP vs different IoUs.
 
 ??? info "Advanced Plot Insights"
 
@@ -142,53 +140,57 @@ and following the SDK instructions will demonstrate a multiclass object detectio
 
 Kolena makes object detection model evaluation very easy in just three simple steps:
 
-### Step 1: Upload an Object Detection Dataset
+### Step 1: Format your Object Detection Dataset
 
-Model evaluations on Kolena starts with datasets. Datasets are tables that contain the data you wish to use for
-creating test cases. Upload your dataset of datapoints (e.g. locators to
-images) with ground truth [annotations](../dataset/formatting-your-datasets.md#kolena-annotations) (e.g. labeled
-bounding boxes) by importing the dataset file directly within the web app or
-using the SDK.
+When preparing to upload your object detection dataset, ensure that it conforms to one of the
+[supported file formats](/dataset/advanced-usage/formatting-your-datasets.md#supported-file-data-formats) to
+guarantee compatibility with Kolena's data processing capabilities (`.csv`, `.parquet`, or `.jsonl`).
+We will walk you through an example using CSVs below:
 
-??? info "Generating Datasets"
-    The bounding box annotations in the dataset have been defined using
-    [`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) from
-    the `kolena` SDK.
+The bounding box annotations in the dataset have been defined using
+[`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) from
+the `kolena` SDK.
 
-    Suppose we have a dataset with multiple images, and one of the images exists at
-    `s3://my-images/intersection_1.png`. In that image, we have two ground truth bounding boxes expressed as a
-    [`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox):
-    ```python
-    from kolena.annotation import LabeledBoundingBox
-    bboxes = [
-        LabeledBoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93), label="car"),
-        LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="truck"),
-    ]
-    ```
-    Or equivalently, as a JSON string on one line (shown with multiple lines for formatting):
-    ```
-    "[{""top_left"": [538.03, 8.86], ""bottom_right"": [636.85, 101.93],
-    ""label"": ""car"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
-    {""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84],
-    ""label"": ""truck"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
-    ```
-    The expected CSV format for this dataset should look like the CSV below:
-    ```
-    locator,image_id,ground_truths,extra_information_as_metadata
-    s3://my-images/intersection_1.png,1,"[{""top_left"": [538.03, 8.86], ... }, {""top_left"": ...}]",cloudy
-    s3://my-images/intersection_2.png,2,"[{""top_left"": [1380.35, 4.84], ... }]",rainy
-    ...
-    ```
-    At minimum, an object detection CSV should include a `locator` column as the ID field, and a `ground_truths`
-    column for the dataset's annotations. Additional metadata such as `image_id` or attributes about the weather
-    are useful but optional.
+Suppose we have a dataset with multiple images, and one of the images exists at
+`s3://my-images/intersection_1.png`. In that image, we have two ground truth bounding boxes expressed as a
+[`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox):
+```python
+from kolena.annotation import LabeledBoundingBox
+bboxes = [
+    LabeledBoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93), label="car"),
+    LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="truck"),
+]
+```
+Or equivalently, as a JSON string on one line (shown with multiple lines for formatting):
+```
+"[{""top_left"": [538.03, 8.86], ""bottom_right"": [636.85, 101.93],
+""label"": ""car"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
+{""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84],
+""label"": ""truck"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
+```
+The expected CSV format for this dataset should look like the CSV below:
+```
+locator,image_id,ground_truths,extra_information_as_metadata
+s3://my-images/intersection_1.png,1,"[{""top_left"": [538.03, 8.86], ... }, {""top_left"": ...}]",cloudy
+s3://my-images/intersection_2.png,2,"[{""top_left"": [1380.35, 4.84], ... }]",rainy
+...
+```
+At minimum, an object detection CSV should include a `locator` column as the ID field, and a `ground_truths`
+column for the dataset's annotations. Additional metadata such as `image_id` or attributes about the weather
+are useful but optional.
 
-    This CSV can be directly uploaded to Kolena's platform. To upload a dataset with the SDK, see details for
-    [structured data usage](../dataset/formatting-your-datasets.md/#structured-data).
+This CSV can be directly uploaded to Kolena's platform. To upload a dataset with the SDK, see details for
+[structured data usage](../dataset/advanced-usage/formatting-your-datasets.md#structured-data).
 
-    See the [`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
-    script in the code example for details on how a multiclass object detection dataset was generated and
-    an example for preparing a dataset file.
+See the [`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
+script in the code example for details on how a multiclass object detection dataset was generated and
+an example for preparing a dataset file.
+
+### Step 2: Upload your Object Detection Dataset
+
+Model evaluations on Kolena starts with datasets. Upload your dataset of datapoints (e.g. locators to
+images) with ground truth [annotations](../dataset/advanced-usage/formatting-your-datasets.md#kolena-annotations)
+(e.g. labeled bounding boxes) by importing the dataset file directly within the web app or using the SDK.
 
 === "Web App"
     To upload a dataset, having a properly formatted dataset file is a prerequisite.
@@ -220,7 +222,8 @@ using the SDK.
     and register a small transportation-based dataset in Kolena using the `register_dataset` function.
 
     First, let's first configure our environment by populating the `KOLENA_TOKEN`
-    environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page to
+    environment variable. Visit the
+    [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page to
     generate an API token and copy and paste the code snippet into your environment:
 
     ```shell
@@ -236,10 +239,9 @@ using the SDK.
     After this script has completed, a new dataset named `coco-2014-val` will be created,
     and see in [:kolena-dataset-20: Datasets](https://app.kolena.com/redirect/datasets).
 
-### Step 2: Upload Object Detection Model Results
+### Step 3: Upload Object Detection Model Results
 
-Model results are supplied as tables containing the ID field chosen when uploading the dataset. For
-this example, we will upload object detection model results
+For this example, we will upload object detection model results
 of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX) for the single class object detection task in the web app,
 and upload the results of [Faster R-CNN](https://github.com/facebookresearch/Detectron) for the
 multiclass object detection task through the SDK.
@@ -267,7 +269,7 @@ multiclass object detection task through the SDK.
     datapoint in the dataset.
 
     See the [`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
-    script in the code example for details on how results were generated.
+    script in the code example for details on how results were generated, which uses [`upload_object_detection_results`](../reference/pre-built/object-detection-2d/#kolena._experimental.object_detection.upload_object_detection_results)
 
 === "Web App"
 
@@ -318,10 +320,10 @@ multiclass object detection task through the SDK.
 
     Results for two models named `yolo_x` and `faster_rcnn` will appear after the upload is complete.
 
-### Step 3: Define Object Detection Quality Standards
+### Step 4: Define Object Detection Quality Standards
 
 Once your dataset and model results are uploaded, comparing models across different scenarios and metrics becomes
-very easy. Simply set up your [Quality Standards](../dataset/core-concepts/quality-standard.md) by
+very easy. Simply set up your [Quality Standards](../dataset/core-concepts/index.md#quality-standard) by
 [defining test cases](../dataset/quickstart.md#define-test-cases) and
 [defining performance metrics](../dataset/quickstart.md#define-metrics).
 
@@ -340,7 +342,8 @@ as lists of bounding boxes, Kolena makes it very easy to incorporate relevant ob
 <figure markdown>
   ![OD_metrics.png](../assets/images/task-od-qs-light.png#only-light)
   ![OD_metrics.png](../assets/images/task-od-qs-dark.png#only-dark)
-  <figcaption markdown>Configurable metrics for custom [Quality Standards](../dataset/core-concepts/quality-standard.md)
+  <figcaption markdown>Configurable metrics for custom
+  [Quality Standards](../dataset/core-concepts/index.md#quality-standard)
   </figcaption>
 </figure>
 </div>
@@ -356,7 +359,7 @@ as lists of bounding boxes, Kolena makes it very easy to incorporate relevant ob
 
     In the debugger, you are able to see plots by class or by test case as shown above. For more details on
     automatic metrics and plots, please refer to documentation for
-    [formatting results](../dataset/formatting-your-datasets.md/#formatting-results-for-object-detection).
+    [formatting results](../dataset/advanced-usage/formatting-your-datasets.md#formatting-results-for-object-detection).
 </div>
 </div>
 
