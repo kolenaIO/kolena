@@ -10,7 +10,8 @@ problems.
 
 ### Supported File Data Formats
 
-The Kolena SDK supports upload of data in the Pandas [`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
+The Kolena SDK supports uploading of data in the Pandas
+[`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
 
 The Kolena web app supports the following file formats.
 
@@ -31,7 +32,7 @@ Supported file types are:
 ### Using the `locator`
 
 Kolena uses references to files stored in your cloud storage to render them.
-Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/)
+Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/index.md)
 for details on how to configure this.
 
 Computer Vision data is best visualized in Studio using the Gallery mode.
@@ -82,7 +83,7 @@ To render 2D Bounding boxes you can use
 [`LabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.LabeledBoundingBox) or
 [`BoundingBox`](../../../reference/annotation.md#kolena.annotation.BoundingBox) annotations.
 
-Consider a `.csv` file containing ground truth data in the from of bounding boxes for an Object Detection problem.
+Consider a `.csv` file containing ground truth data in the form of bounding boxes for an Object Detection problem.
 
 | locator                                                                       | label      | min_x     | max_x  | min_y | max_y   |
 |-------------------------------------------------------------------------------|------------|-----------|--------|-------|---------|
@@ -119,10 +120,10 @@ bboxes = [
 
 ### Uploading Model Results
 
-Model results contian your model inferences as well as any custom metrics that you wish to monitor on Kolena.
-The data structure of model resutls is very similar to the structure of a dataset with minor differences.
+Model results contain your model inferences as well as any custom metrics that you wish to monitor on Kolena.
+The data structure of model results is very similar to the structure of a dataset with minor differences.
 
-* Ensure your results are using the same unique ID feild (the `locator` for instance) you have selected for your dataset.
+* Ensure your results are using the same unique ID field (the `locator` for instance) you have selected for your dataset.
 * Use [`ScoredBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredBoundingBox) or
 [`ScoredLabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 to pass on your model inferences confidence score for each bounding box.
@@ -136,7 +137,7 @@ to compute your metrics that are supported by Kolena's [Object Detection Task Me
     | `unmatched_inference`    | Inferences that were not matched to a ground truth. |
     | `unmatched_ground_truth` | Ground truths with no matching inference.           |
 
-* leverage task metrics, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
+* Leverage task metrics, add the following columns to your CSV: `count_TP`, `count_FP`, `count_FN`, `count_TN`.
 
 !!! note
     Once you have constructed your `DataFrame` use the [`upload_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
@@ -159,7 +160,7 @@ To render 3D Bounding boxes you can use
 
     If you wish to analyze your model results based on specific characteristics of your bounding boxes
     you can provide values representing those characteristics using additional key value pairs.
-    For example if location of a bounding box is important you can construct your `LabeledBoundingBox3D` like this
+    For example, if location of a bounding box is important you can construct your `LabeledBoundingBox3D` like this
     ```python
         LabeledBoundingBox3D(center=(313.02, 12.01, 15.5), dimensions=(553.98, 99.84,231.17), rotations=(12,16,25)
         , label="trunk", location="bottom-left")

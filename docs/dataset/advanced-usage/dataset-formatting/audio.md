@@ -11,7 +11,8 @@ problems.
 
 ### Supported File Data Formats
 
-The Kolena SDK supports upload of data in the Pandas [`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
+The Kolena SDK supports uploading of data in the Pandas
+[`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
 
 The Kolena web app supports the following file formats.
 
@@ -24,10 +25,10 @@ The Kolena web app supports the following file formats.
 ### Using the `locator`
 
 Kolena uses references to files stored in your cloud storage to render them.
-Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/)
+Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/index.md)
 for details on how to configure this.
 
-Audio samples can be visualized on Kolena one of two ways.
+Audio samples can be visualized on Kolena in one of two ways.
 
 **Gallery mode**: visualizes each audio as a tile.
 To enable the Gallery view store references to audio files in a column named `locator`. `locator` can be used as
