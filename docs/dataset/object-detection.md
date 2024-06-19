@@ -138,59 +138,32 @@ and model evaluation in Kolena for object detection, using both the web app and 
 In the examples below, using the web app will walk you through a single class object detection task,
 and following the SDK instructions will demonstrate a multiclass object detection task, just for some variety.
 
-Kolena makes object detection model evaluation very easy in just three simple steps:
+Kolena makes object detection model evaluation very easy in just five simple steps:
 
 ### Step 1: Format your Object Detection Dataset
 
 When preparing to upload your object detection dataset, ensure that it conforms to one of the
-[supported file formats](/dataset/advanced-usage/formatting-your-datasets.md#supported-file-data-formats) to
-guarantee compatibility with Kolena's data processing capabilities (`.csv`, `.parquet`, or `.jsonl`).
-We will walk you through an example using CSVs below:
+[supported file formats](../dataset/advanced-usage/dataset-formatting/computer-vision.md#supported-file-data-formats)
+to guarantee compatibility with Kolena's data processing capabilities (`.csv`, `.parquet`, or `.jsonl`).
 
-The bounding box annotations in the dataset have been defined using
+At minimum, a CSV containing an object detection dataset should include a
+[`locator`](../dataset/advanced-usage/dataset-formatting/computer-vision.md#using-the-locator) column as the ID field,
+and a `ground_truths` column for the dataset's annotations. Additional metadata fields may be useful but optional.
+
+The ground truths are bounding box annotations, defined using
 [`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) from
-the `kolena` SDK.
+the `kolena` SDK. For additional details, see the relevant documentation on
+[formatting object detection datasets](../dataset/advanced-usage/dataset-formatting/computer-vision.md#2d-object-detection).
 
-Suppose we have a dataset with multiple images, and one of the images exists at
-`s3://my-images/intersection_1.png`. In that image, we have two ground truth bounding boxes expressed as a
-[`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox):
-```python
-from kolena.annotation import LabeledBoundingBox
-bboxes = [
-    LabeledBoundingBox(top_left=(538.03, 8.86), bottom_right=(636.85, 101.93), label="car"),
-    LabeledBoundingBox(top_left=(313.02, 12.01), bottom_right=(553.98, 99.84), label="truck"),
-]
-```
-Or equivalently, as a JSON string on one line (shown with multiple lines for formatting):
-```
-"[{""top_left"": [538.03, 8.86], ""bottom_right"": [636.85, 101.93],
-""label"": ""car"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""},
-{""top_left"": [313.02, 12.01], ""bottom_right"": [553.98, 99.84],
-""label"": ""truck"", ""data_type"": ""ANNOTATION/BOUNDING_BOX""}]"
-```
-The expected CSV format for this dataset should look like the CSV below:
-```
-locator,image_id,ground_truths,extra_information_as_metadata
-s3://my-images/intersection_1.png,1,"[{""top_left"": [538.03, 8.86], ... }, {""top_left"": ...}]",cloudy
-s3://my-images/intersection_2.png,2,"[{""top_left"": [1380.35, 4.84], ... }]",rainy
-...
-```
-At minimum, an object detection CSV should include a `locator` column as the ID field, and a `ground_truths`
-column for the dataset's annotations. Additional metadata such as `image_id` or attributes about the weather
-are useful but optional.
-
-This CSV can be directly uploaded to Kolena's platform. To upload a dataset with the SDK, see details for
-[structured data usage](../dataset/advanced-usage/formatting-your-datasets.md#structured-data).
-
-See the [`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
-script in the code example for details on how a multiclass object detection dataset was generated and
-an example for preparing a dataset file.
+See the
+[`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
+example script for details on how a multiclass object detection dataset can be generated and formatted into a dataset.
 
 ### Step 2: Upload your Object Detection Dataset
 
-Model evaluations on Kolena starts with datasets. Upload your dataset of datapoints (e.g. locators to
-images) with ground truth [annotations](../dataset/advanced-usage/formatting-your-datasets.md#kolena-annotations)
-(e.g. labeled bounding boxes) by importing the dataset file directly within the web app or using the SDK.
+Model evaluation on Kolena starts with datasets. Upload your dataset of datapoints (e.g. locators to
+images) with ground truth annotations (e.g. labeled bounding boxes) by importing the dataset file directly
+within the web app or using the SDK.
 
 === "Web App"
     To upload a dataset, having a properly formatted dataset file is a prerequisite.
@@ -217,9 +190,11 @@ images) with ground truth [annotations](../dataset/advanced-usage/formatting-you
 
 === "SDK"
 
-    The example code contains a script [`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
+    The example code contains a script
+    [`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
     which will process the CSV file `s3://kolena-public-examples/coco-2014-val/transportation/raw/coco-2014-val.csv`
-    and register a small transportation-based dataset in Kolena using the `register_dataset` function.
+    and register a small transportation-based dataset in Kolena using the
+    [`upload_dataset`](../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset) function.
 
     First, let's first configure our environment by populating the `KOLENA_TOKEN`
     environment variable. Visit the
@@ -236,8 +211,35 @@ images) with ground truth [annotations](../dataset/advanced-usage/formatting-you
     poetry run python3 object_detection_2d/upload_dataset.py
     ```
 
-    After this script has completed, a new dataset named `coco-2014-val` will be created,
-    and see in [:kolena-dataset-20: Datasets](https://app.kolena.com/redirect/datasets).
+    After this script has completed, a new dataset named `coco-2014-val` will be created
+    and seen in [:kolena-dataset-20: Datasets](https://app.kolena.com/redirect/datasets).
+
+### Step 3: Format your Object Detection Model Results
+
+An object detection model will predict the bounding boxes of objects within each image, so there is a list of
+inferences per image:
+[`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox).
+Note that a [`ScoredLabeledBoundingBox`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
+has an extra `score` attribute for the confidence of the model:
+```
+{""top_left"": ... ""label"": ""car"", ""score"": 0.94, ""data_type"":""ANNOTATION/BOUNDING_BOX""}
+```
+
+The expected CSV format for model results should look like the CSV below:
+```
+locator,count_TP,count_FP,count_FN,TP,FP,FN,custom_information
+s3://my-images/intersection_1.png,2,0,0,"[{""top_left"": [538.5, 9.0], ... }, {""top_left"": ... }]","[]","[]",0.88
+s3://my-images/intersection_2.png,0,0,1,"[]","[]","[{""top_left"": ... }]",0.5
+...
+```
+
+By using a [`locator`](../dataset/advanced-usage/dataset-formatting/computer-vision.md#using-the-locator)
+as a unique reference to an image in the dataset, Kolena can join the model results in the CSV to the correct
+datapoint.
+
+See the
+[`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
+example script for details on how results were generated.
 
 ### Step 3: Upload Object Detection Model Results
 
@@ -245,31 +247,6 @@ For this example, we will upload object detection model results
 of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX) for the single class object detection task in the web app,
 and upload the results of [Faster R-CNN](https://github.com/facebookresearch/Detectron) for the
 multiclass object detection task through the SDK.
-
-??? info "Generating Model Results"
-
-    An object detection model will predict the bounding boxes of objects within each image, so there is a list of
-    inferences per image:
-    [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox).
-    Note that a [`ScoredLabeledBoundingBox`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
-    has an extra `score` attribute for the confidence of the model:
-    ```
-    {""top_left"": ... ""label"": ""car"", ""score"": 0.94, ""data_type"":""ANNOTATION/BOUNDING_BOX""}
-    ```
-
-    The expected CSV format for model results should look like the CSV below:
-    ```
-    locator,count_TP,count_FP,count_FN,TP,FP,FN,custom_information
-    s3://my-images/intersection_1.png,2,0,0,"[{""top_left"": [538.5, 9.0], ... }, {""top_left"": ... }]","[]","[]",0.88
-    s3://my-images/intersection_2.png,0,0,1,"[]","[]","[{""top_left"": ... }]",0.5
-    ...
-    ```
-
-    By using `locator` as the unique identifier for images, Kolena can join the model results in the CSV to the correct
-    datapoint in the dataset.
-
-    See the [`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
-    script in the code example for details on how results were generated, which uses [`upload_object_detection_results`](../reference/pre-built/object-detection-2d/#kolena._experimental.object_detection.upload_object_detection_results)
 
 === "Web App"
 
@@ -309,9 +286,15 @@ multiclass object detection task through the SDK.
 
 === "SDK"
 
-    The example code contains a script [`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
+    The example code contains a script
+    [`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
     which will process raw model results from `s3://kolena-public-examples/coco-2014-val/transportation/results/raw/`
-    and upload model results using the `upload_object_detection_results` function.
+    and upload model results using the
+    [`upload_object_detection_results`](../reference/pre-built/object-detection-2d.md#kolena._experimental.object_detection.upload_object_detection_results)
+    function to simplify the process in uploading model results.
+
+    For details, see the relevant documentation for
+    [uploading object detection model results](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 
     ```shell
     poetry run python3 object_detection_2d/upload_results.py yolo_x
@@ -359,7 +342,7 @@ as lists of bounding boxes, Kolena makes it very easy to incorporate relevant ob
 
     In the debugger, you are able to see plots by class or by test case as shown above. For more details on
     automatic metrics and plots, please refer to documentation for
-    [formatting results](../dataset/advanced-usage/formatting-your-datasets.md#formatting-results-for-object-detection).
+    [formatting results](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 </div>
 </div>
 
