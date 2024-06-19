@@ -180,7 +180,7 @@ def test__upload_results__single_class(annotation: str, gts: ObjectAnnotations, 
     _assert_result_bbox_contains_fields(df_results, ["TP", "FN"], ["foo"])
 
     thresholded_object = df_results["thresholded"].iloc[0][0]
-    assert "label" not in thresholded_object
+    assert ("label" in thresholded_object) == (annotation in ["labeled_bboxes", "labeled_polygons"])
     assert "threshold" in thresholded_object
 
 

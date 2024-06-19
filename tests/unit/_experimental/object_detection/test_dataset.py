@@ -23,59 +23,154 @@ import kolena.metrics._geometry
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredBoundingBox
+from kolena.annotation import ScoredLabeledBoundingBox
+from kolena.metrics._geometry import InferenceMatches
+from kolena.metrics._geometry import MulticlassInferenceMatches
 
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
 
 @pytest.mark.metrics
-def test__check_multiclass() -> None:
-    assert (
-        object_detection.dataset._check_multiclass(
-            pd.Series(
-                [
-                    [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
-                    [LabeledBoundingBox(label="dog", top_left=[10, 10], bottom_right=[15, 15])],
-                    [],
-                    math.nan,
-                    None,
-                ],
-            ),
-            pd.Series(
-                [
-                    [LabeledBoundingBox(label="cat", top_left=[3, 3], bottom_right=[9, 9])],
-                    [LabeledBoundingBox(label="dog", top_left=[11, 10], bottom_right=[15, 15])],
-                    [],
-                    math.nan,
-                    None,
-                ],
-            ),
-        )
-        is True
-    )
+@pytest.mark.parametrize(
+    "ground_truths,inferences,expected",
+    [
+        (
+            # ground truths
+            [
+                [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
+                [LabeledBoundingBox(label="dog", top_left=[10, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # inferences
+            [
+                [LabeledBoundingBox(label="cat", top_left=[3, 3], bottom_right=[9, 9])],
+                [LabeledBoundingBox(label="dog", top_left=[11, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # expected
+            True,
+        ),
+        (
+            # ground truths
+            [
+                [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
+                [LabeledBoundingBox(label="dog", top_left=[10, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # inferences
+            [
+                [LabeledBoundingBox(label="dog", top_left=[3, 3], bottom_right=[9, 9])],
+                [LabeledBoundingBox(label="dog", top_left=[11, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # expected
+            False,
+        ),
+        (
+            # ground truths
+            [
+                [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
+                [BoundingBox(top_left=[10, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # inferences
+            [
+                [LabeledBoundingBox(label="dog", top_left=[3, 3], bottom_right=[9, 9])],
+                [BoundingBox(top_left=[11, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # expected
+            False,
+        ),
+        (
+            # ground truths
+            [
+                [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
+                [BoundingBox(top_left=[10, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # inferences
+            [
+                [LabeledBoundingBox(label="cat", top_left=[3, 3], bottom_right=[9, 9])],
+                [BoundingBox(top_left=[11, 10], bottom_right=[15, 15])],
+                [],
+                math.nan,
+                None,
+            ],
+            # expected
+            False,
+        ),
+    ],
+)
+def test__check_multiclass(ground_truths: list, inferences: list, expected: bool) -> None:
+    assert object_detection.dataset._check_multiclass(pd.Series(ground_truths), pd.Series(inferences)) == expected
 
-    assert (
-        object_detection.dataset._check_multiclass(
-            pd.Series(
-                [
-                    [LabeledBoundingBox(label="dog", top_left=[1, 1], bottom_right=[5, 5])],
-                    [LabeledBoundingBox(label="dog", top_left=[10, 10], bottom_right=[15, 15])],
-                    [],
-                    math.nan,
-                    None,
-                ],
+
+@pytest.mark.metrics
+def test__single_class_datapoint_metrics_adds_thresholded_label_in_single_class_with_label_case() -> None:
+    matches = InferenceMatches(
+        matched=[
+            (
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat"),
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat", score=0.6),
             ),
-            pd.Series(
-                [
-                    [LabeledBoundingBox(label="dog", top_left=[3, 3], bottom_right=[9, 9])],
-                    [LabeledBoundingBox(label="dog", top_left=[11, 10], bottom_right=[15, 15])],
-                    [],
-                    math.nan,
-                    None,
-                ],
-            ),
-        )
-        is False
+        ],
+        unmatched_inf=[ScoredLabeledBoundingBox(top_left=(3, 3), bottom_right=(4, 4), label="cat", score=0.5)],
+        unmatched_gt=[LabeledBoundingBox(top_left=(5, 5), bottom_right=(6, 6), label="cat")],
     )
+    metrics = object_detection.dataset.single_class_datapoint_metrics(matches, 0.5, [0.2, 0.8])
+    assert all(data.get("label", None) == "cat" for data in metrics["thresholded"])
+
+
+@pytest.mark.metrics
+def test__single_class_datapoint_metrics_omits_label_in_single_class_without_label_case() -> None:
+    matches = InferenceMatches(
+        matched=[
+            (
+                BoundingBox(top_left=(1, 1), bottom_right=(2, 2)),
+                ScoredBoundingBox(top_left=(1, 1), bottom_right=(2, 2), score=0.6),
+            ),
+        ],
+        unmatched_inf=[ScoredBoundingBox(top_left=(3, 3), bottom_right=(4, 4), score=0.5)],
+        unmatched_gt=[BoundingBox(top_left=(5, 5), bottom_right=(6, 6))],
+    )
+    metrics = object_detection.dataset.single_class_datapoint_metrics(matches, 0.5, [0.2, 0.8])
+    assert all("label" not in data for data in metrics["thresholded"])
+
+
+@pytest.mark.metrics
+def test__multiclass_datapoint_metrics_contains_all_labels() -> None:
+    matches = MulticlassInferenceMatches(
+        matched=[
+            (
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat"),
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cat", score=0.6),
+            ),
+            (
+                LabeledBoundingBox(top_left=(3, 3), bottom_right=(4, 4), label="dog"),
+                ScoredLabeledBoundingBox(top_left=(3, 3), bottom_right=(4, 4), label="dog", score=0.6),
+            ),
+        ],
+        unmatched_inf=[ScoredLabeledBoundingBox(top_left=(5, 5), bottom_right=(6, 6), label="cat", score=0.5)],
+        unmatched_gt=[(LabeledBoundingBox(top_left=(7, 7), bottom_right=(8, 8), label="dog"), None)],
+    )
+    metrics = object_detection.dataset.multiclass_datapoint_metrics(matches, {"cat": 0.5, "dog": 0.5}, [0.2, 0.8])
+    all_labels = {data.get("label", None) for data in metrics["thresholded"]}
+    assert all_labels == {"cat", "dog"}
 
 
 @pytest.mark.metrics

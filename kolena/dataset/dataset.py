@@ -63,6 +63,7 @@ from kolena.io import _deserialize_dataobject
 
 _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
+_FIELD_FILE_EXTENSION = "file_extension"
 _FIELD_TEXT = "text"
 
 
@@ -99,11 +100,7 @@ def _normalize_url(x: str) -> str:
     return url._replace(query="", fragment="").geturl()
 
 
-def _infer_datatype_value(x: Any) -> str:
-    if not isinstance(x, str):
-        return DatapointType.TABULAR.value
-
-    url = _normalize_url(x or "")
+def _infer_datatype_value_from_url(url: str) -> str:
     mtype, _ = mimetypes.guess_type(url)
     if mtype:
         datatype = _get_datapoint_type(mtype)
@@ -115,6 +112,22 @@ def _infer_datatype_value(x: Any) -> str:
     return DatapointType.TABULAR.value
 
 
+def _infer_datatype_value_from_file_extension(x: Any) -> str:
+    if not isinstance(x, str):
+        return DatapointType.TABULAR.value
+
+    url = f"dummy.{x}"
+    return _infer_datatype_value_from_url(url)
+
+
+def _infer_datatype_value(x: Any) -> str:
+    if not isinstance(x, str):
+        return DatapointType.TABULAR.value
+
+    url = _normalize_url(x or "")
+    return _infer_datatype_value_from_url(url)
+
+
 def _add_datatype(df: pd.DataFrame) -> None:
     """Adds `data_type` column(s) to input DataFrame."""
     df[DATA_TYPE_FIELD] = _infer_datatype(df)
@@ -122,7 +135,10 @@ def _add_datatype(df: pd.DataFrame) -> None:
 
 def _infer_datatype(df: pd.DataFrame) -> Union[pd.DataFrame, str]:
     if _FIELD_LOCATOR in df.columns:
-        return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
+        if _FIELD_FILE_EXTENSION in df.columns:
+            return df_apply(df[_FIELD_FILE_EXTENSION], _infer_datatype_value_from_file_extension)
+        else:
+            return df_apply(df[_FIELD_LOCATOR], _infer_datatype_value)
     elif _FIELD_TEXT in df.columns:
         return DatapointType.TEXT.value
 

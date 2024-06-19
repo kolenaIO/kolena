@@ -27,6 +27,7 @@ from kolena.dataset._common import COL_RESULT
 from kolena.dataset.dataset import _add_datatype
 from kolena.dataset.dataset import _infer_datatype
 from kolena.dataset.dataset import _infer_datatype_value
+from kolena.dataset.dataset import _infer_datatype_value_from_file_extension
 from kolena.dataset.dataset import _infer_id_fields
 from kolena.dataset.dataset import _resolve_id_fields
 from kolena.dataset.dataset import _to_deserialized_dataframe
@@ -59,6 +60,27 @@ def test__infer_datatype_value(uri: Any, expected: str) -> None:
     assert _infer_datatype_value(uri) == expected
 
 
+@pytest.mark.parametrize(
+    "file_extension,expected",
+    [
+        (".png", DatapointType.IMAGE),
+        ("png", DatapointType.IMAGE),
+        ("PNG", DatapointType.IMAGE),
+        ("Png", DatapointType.IMAGE),
+        (".pcd", DatapointType.POINT_CLOUD),
+        (".mp4", DatapointType.VIDEO),
+        (".csv", DatapointType.DOCUMENT),
+        (".pdf", DatapointType.DOCUMENT),
+        (".mp3", DatapointType.AUDIO),
+        ("tabular", DatapointType.TABULAR),
+        (None, DatapointType.TABULAR),
+        (123, DatapointType.TABULAR),
+    ],
+)
+def test__infer_datatype_value_from_file_extension(file_extension: Any, expected: str) -> None:
+    assert _infer_datatype_value_from_file_extension(file_extension) == expected
+
+
 def test__add_datatype() -> None:
     df = pd.DataFrame(
         dict(
@@ -89,6 +111,16 @@ def test__infer_datatype() -> None:
         ),
     ).equals(
         pd.Series([DatapointType.DOCUMENT, DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.POINT_CLOUD]),
+    )
+    assert _infer_datatype(
+        pd.DataFrame(
+            dict(
+                locator=["s3://test.pdf", "https://test.png", "/home/test.mp4", "/tmp/test.pcd"],
+                file_extension=["jpeg", "mp4", "pdf", "test"],
+            ),
+        ),
+    ).equals(
+        pd.Series([DatapointType.IMAGE, DatapointType.VIDEO, DatapointType.DOCUMENT, DatapointType.TABULAR]),
     )
     assert _infer_datatype(
         pd.DataFrame(
