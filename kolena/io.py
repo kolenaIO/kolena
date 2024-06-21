@@ -25,6 +25,7 @@ from typing import Union
 
 import pandas as pd
 
+from kolena._utils.dataframes.transformers import _try_parse
 from kolena._utils.dataframes.transformers import df_apply
 from kolena._utils.datatypes import _get_data_type
 from kolena._utils.datatypes import DATA_TYPE_FIELD
@@ -59,13 +60,7 @@ def _serialize_dataobject_str(x: Any) -> Any:
 
 
 def _deserialize_dataobject_str(x: Any) -> Any:
-    y = x
-    if isinstance(x, str):
-        try:
-            y = json.loads(x)
-        except (json.JSONDecodeError, TypeError):
-            ...
-
+    y = _try_parse(x)
     return _deserialize_dataobject(y)
 
 
