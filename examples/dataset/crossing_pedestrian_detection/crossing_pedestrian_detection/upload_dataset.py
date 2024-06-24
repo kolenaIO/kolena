@@ -16,8 +16,11 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from pathlib import Path
 
+import boto3
+import botocore
 import pandas as pd
 import s3fs
+from botocore.client import Config
 from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
@@ -27,6 +30,8 @@ from smart_open import open as smart_open
 from tqdm import tqdm
 
 from kolena.dataset import upload_dataset
+
+TRANSPORT_PARAMS = {"client": boto3.client("s3", config=Config(signature_version=botocore.UNSIGNED))}
 
 
 def video_locator(video_path: str) -> str:
@@ -40,8 +45,10 @@ def thumbnail_locator(filename: str) -> str:
 def process_data() -> pd.DataFrame:
     s3 = s3fs.S3FileSystem(anon=True)
     video_files = s3.glob(f"{BUCKET}/{DATASET}/data/videos/*.mp4")
+    # access S3 anonymously
+    # adapted from https://github.com/piskvorky/smart_open/blob/develop/howto.md#how-to-access-s3-anonymously
     raw_data_pkl = f"s3://{BUCKET}/{DATASET}/raw/jaad_database.pkl"
-    with smart_open(raw_data_pkl, "rb") as gt_file:
+    with smart_open(raw_data_pkl, "rb", transport_params=TRANSPORT_PARAMS) as gt_file:
         gt_annotations = pickle.load(gt_file)
 
     datapoints = []
