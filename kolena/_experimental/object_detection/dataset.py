@@ -223,10 +223,8 @@ def _compute_metrics_from_matches(
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     batch_size: int = 10_000,
 ) -> Iterator[pd.DataFrame]:
-    idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
-    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = [
-        m for m in itertools.chain.from_iterable(pred_df[idx[matches_field]])
-    ]
+    # idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
+    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = list(pred_df[matches_field])
     is_multiclass = all(isinstance(m, MulticlassInferenceMatches) for m in all_object_matches)
     is_single_class = all(isinstance(m, InferenceMatches) for m in all_object_matches)
     assert is_multiclass or is_single_class, "Matches must all be either MulticlassInferenceMatches or InferenceMatches"
