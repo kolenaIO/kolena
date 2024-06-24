@@ -253,3 +253,28 @@ def test__upload_object_detection_results_configurations(mocked_upload_results: 
         threshold_strategy="F1-Optimal",
         min_confidence_score=0.222,
     )
+
+
+@pytest.mark.metrics
+@patch("kolena.dataset.upload_results")
+def test__compute_object_detection_with_matches(mocked_upload_results: Mock) -> None:
+    locator = "s3://mybucket/image1.jpg"
+    matches = InferenceMatches(
+        matched=[
+            (
+                BoundingBox(top_left=(0, 0), bottom_right=(1, 1)),
+                ScoredBoundingBox(top_left=(0, 0), bottom_right=(1, 1), score=1),
+            ),
+        ],
+        unmatched_inf=[ScoredBoundingBox(top_left=(2, 2), bottom_right=(3, 3), score=0.8)],
+        unmatched_gt=[BoundingBox(top_left=(4, 4), bottom_right=(5, 5))],
+    )
+    with patch.object(object_detection.dataset, "_compute_metrics"):
+        df = object_detection.dataset.compute_object_detection_results_from_matches(
+            df=pd.DataFrame([dict(locator=locator, matches=matches)]),
+            matches_field="matches",
+            threshold_strategy=0.5,
+        )
+    assert [ScoredBoundingBox(**elem) for elem in df["TP"][0]] == [inf for _, inf in matches.matched]
+    assert df["FN"][0] == [gt for gt in matches.unmatched_gt]
+    assert df["FP"][0] == matches.unmatched_inf

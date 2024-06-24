@@ -216,6 +216,65 @@ def _iter_multi_class_metrics(
         yield pd.concat([pd.DataFrame(metrics), pred_df[i : i + batch_size].reset_index(drop=True)], axis=1)
 
 
+def _compute_metrics_from_matches(
+    pred_df: pd.DataFrame,
+    *,
+    matches_field: str,
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
+    batch_size: int = 10_000,
+) -> Iterator[pd.DataFrame]:
+    # idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
+    all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = list(pred_df[matches_field])
+    is_multiclass = all(isinstance(m, MulticlassInferenceMatches) for m in all_object_matches)
+    is_single_class = all(isinstance(m, InferenceMatches) for m in all_object_matches)
+    assert is_multiclass or is_single_class, "Matches must all be either MulticlassInferenceMatches or InferenceMatches"
+
+    all_thresholds: List[float] = [
+        inf.score
+        for matches in all_object_matches
+        for inf in [inf for _, inf in matches.matched] + matches.unmatched_inf
+    ]
+
+    if len(all_thresholds) >= 501:
+        all_thresholds = list(np.linspace(min(all_thresholds), max(all_thresholds), 501))
+    else:
+        all_thresholds = sorted(all_thresholds)
+
+    thresholds: Dict[str, float]
+
+    if is_multiclass:
+        if isinstance(threshold_strategy, dict):
+            thresholds = threshold_strategy
+        elif isinstance(threshold_strategy, float):
+            thresholds = defaultdict(lambda: threshold_strategy)
+        else:
+            thresholds = compute_optimal_f1_threshold_multiclass(
+                cast(List[MulticlassInferenceMatches], all_object_matches),
+            )
+        yield from _iter_multi_class_metrics(
+            pred_df,
+            cast(List[MulticlassInferenceMatches], all_object_matches),
+            thresholds=thresholds,
+            all_thresholds=all_thresholds,
+            batch_size=batch_size,
+        )
+    else:
+        if isinstance(threshold_strategy, dict) and threshold_strategy:
+            threshold = next(iter(threshold_strategy.values()))
+        elif isinstance(threshold_strategy, float):
+            threshold = threshold_strategy
+        else:
+            threshold = compute_optimal_f1_threshold(cast(List[InferenceMatches], all_object_matches))
+
+        yield from _iter_single_class_metrics(
+            pred_df,
+            cast(List[InferenceMatches], all_object_matches),
+            threshold=threshold,
+            all_thresholds=all_thresholds,
+            batch_size=batch_size,
+        )
+
+
 def _compute_metrics(
     pred_df: pd.DataFrame,
     *,
@@ -244,7 +303,6 @@ def _compute_metrics(
     """
     is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
     match_fn = match_inferences_multiclass if is_multiclass else match_inferences
-
     idx = {name: i for i, name in enumerate(list(pred_df), start=1)}
 
     all_object_matches: Union[List[MulticlassInferenceMatches], List[InferenceMatches]] = []
@@ -261,12 +319,12 @@ def _compute_metrics(
             and getattr(gt, gt_ignore_property)
         ]
         unignored_ground_truths = [gt for gt in ground_truths if gt not in ignored_ground_truths]
+
         all_object_matches.append(
             match_fn(  # type: ignore[arg-type]
                 unignored_ground_truths,
                 filter_inferences(inferences, min_confidence_score),
                 ignored_ground_truths=ignored_ground_truths,
-                mode="pascal",
                 iou_threshold=iou_threshold,
             ),
         )
@@ -345,6 +403,22 @@ def _validate_column_present(df: pd.DataFrame, col: str) -> None:
         raise IncorrectUsageError(f"Missing column '{col}'")
 
 
+def _iter_object_detection_results_from_matches(
+    df: pd.DataFrame,
+    *,
+    matches_field: str = "matches",
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    batch_size: int = 10_000,
+) -> Iterator[pd.DataFrame]:
+    _validate_column_present(df, matches_field)
+    return _compute_metrics_from_matches(
+        pred_df=df,
+        matches_field=matches_field,
+        threshold_strategy=threshold_strategy,
+        batch_size=batch_size,
+    )
+
+
 def _iter_object_detection_results(
     dataset_name: str,
     df: pd.DataFrame,
@@ -374,6 +448,22 @@ def _iter_object_detection_results(
         min_confidence_score=min_confidence_score,
         batch_size=batch_size,
     )
+
+
+def compute_object_detection_results_from_matches(
+    df: pd.DataFrame,
+    *,
+    matches_field: str = "matches",
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    batch_size: int = 10_000,
+) -> pd.DataFrame:
+    results_iter = _iter_object_detection_results_from_matches(
+        df,
+        matches_field=matches_field,
+        threshold_strategy=threshold_strategy,
+        batch_size=batch_size,
+    )
+    return pd.concat(list(results_iter))
 
 
 def compute_object_detection_results(
@@ -422,6 +512,31 @@ def compute_object_detection_results(
         batch_size=batch_size,
     )
     return pd.concat(list(results_iter))
+
+
+def upload_object_detection_results_from_matches(
+    dataset_name: str,
+    model_name: str,
+    df: pd.DataFrame,
+    *,
+    matches_field: str = "matches",
+    threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
+    eval_config: Optional[Dict[str, Any]] = None,
+    batch_size: int = 10_000,
+) -> pd.DataFrame:
+    eval_config = eval_config or dict(threshold_strategy=threshold_strategy)
+    results = _iter_object_detection_results_from_matches(
+        df,
+        matches_field=matches_field,
+        threshold_strategy=threshold_strategy,
+        batch_size=batch_size,
+    )
+    dataset.upload_results(
+        dataset_name,
+        model_name,
+        [(eval_config, results)],
+        thresholded_fields=["thresholded"],
+    )
 
 
 def upload_object_detection_results(
