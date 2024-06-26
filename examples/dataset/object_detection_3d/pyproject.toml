@@ -7,7 +7,7 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
-kolena = "^1.9.0"
+kolena = "^1.23.0"
 pydantic = ">=2,<3"
 openmim = "^0.3.9"
 mmcv-lite = ">=2.0.0rc4"
