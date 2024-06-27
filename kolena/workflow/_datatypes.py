@@ -30,7 +30,7 @@ _SCALAR_TYPES = [str, bool, int, float]
 JSONObject = object
 
 
-class TestSampleDataFrameSchema(pa.SchemaModel):
+class TestSampleDataFrameSchema(pa.DataFrameModel):
     """General-purpose frame used for test samples in isolation or paired with ground truths and/or inferences."""
 
     test_sample: Series[JSONObject] = pa.Field(coerce=True)
@@ -67,7 +67,7 @@ class TestSampleDataFrame(LoadableDataFrame[TestSampleDataFrameSchema]):
         return df_out
 
 
-class TestSuiteTestSamplesDataFrameSchema(pa.SchemaModel):
+class TestSuiteTestSamplesDataFrameSchema(pa.DataFrameModel):
     """Data frame used for loading test samples grouped by test case."""
 
     test_case_id: Optional[Series[pa.typing.Int64]] = pa.Field(coerce=True)
@@ -98,7 +98,7 @@ class TestSuiteTestSamplesDataFrame(LoadableDataFrame[TestSuiteTestSamplesDataFr
         return df_out
 
 
-class TestCaseEditorDataFrameSchema(pa.SchemaModel):
+class TestCaseEditorDataFrameSchema(pa.DataFrameModel):
     test_case_name: Series[pa.typing.String] = pa.Field(nullable=True)
     test_sample_type: Series[pa.typing.String] = pa.Field(coerce=True)
     test_sample: Series[JSONObject] = pa.Field(coerce=True)  # TODO: validators?
@@ -126,7 +126,7 @@ class TestCaseEditorDataFrame(LoadableDataFrame[TestCaseEditorDataFrameSchema]):
         return cast(TestCaseEditorDataFrame, df_validated)
 
 
-class MetricsDataFrameSchema(pa.SchemaModel):
+class MetricsDataFrameSchema(pa.DataFrameModel):
     test_sample: Optional[Series[JSONObject]] = pa.Field(coerce=True)
     test_case_id: Optional[Series[pa.typing.Int64]] = pa.Field(coerce=True)
     configuration_display_name: Optional[Series[pa.typing.String]] = pa.Field(coerce=True, nullable=True)
