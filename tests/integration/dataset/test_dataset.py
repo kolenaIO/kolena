@@ -22,6 +22,7 @@ import pytest
 
 from kolena._api.v2.dataset import CommitData
 from kolena.dataset import download_dataset
+from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
@@ -49,6 +50,12 @@ def test__upload_dataset__empty() -> None:
     upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
     assert download_dataset(name).empty
+
+
+def test__list_datasets() -> None:
+    name = with_test_prefix(f"{__file__}::test__list_datasets")
+    upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
+    assert name in list_datasets()
 
 
 def test__upload_dataset() -> None:
