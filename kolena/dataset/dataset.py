@@ -33,6 +33,7 @@ from kolena._api.v2.dataset import CommitData
 from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.dataset import ListCommitHistoryRequest
 from kolena._api.v2.dataset import ListCommitHistoryResponse
+from kolena._api.v2.dataset import ListDatasetsResponse
 from kolena._api.v2.dataset import LoadDatapointsRequest
 from kolena._api.v2.dataset import LoadDatasetByNameRequest
 from kolena._api.v2.dataset import Path
@@ -299,6 +300,15 @@ def upload_dataset(
         that `id_fields` must be hashable.
     """
     _upload_dataset(name, df, id_fields=id_fields)
+
+
+@with_event(event_name=EventAPI.Event.LIST_DATASETS)
+def list_datasets() -> List[str]:
+    """
+    List the names of all uploaded datasets
+    return: A list of the names of all uploaded datasets
+    """
+    return from_dict(ListDatasetsResponse, krequests.get(endpoint_path=Path.LIST_DATASETS).json()).datasets
 
 
 def _iter_dataset_raw(

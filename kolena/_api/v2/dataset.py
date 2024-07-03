@@ -27,6 +27,7 @@ class Path(str, Enum):
     LOAD_DATAPOINTS = "/dataset/load-datapoints"
     LOAD_DATASET = "/dataset/load-by-name"
     LIST_COMMITS = "/dataset/list-commits"
+    LIST_DATASETS = "/dataset/list-datasets"
 
 
 @dataclass(frozen=True)
@@ -72,6 +73,11 @@ class CommitData:
     user: str
     n_removed: int
     n_added: int
+
+
+@dataclass(frozen=True)
+class ListDatasetsResponse:
+    datasets: List[str]
 
 
 @dataclass(frozen=True)
