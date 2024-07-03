@@ -113,6 +113,9 @@ def test__try_parse() -> None:
     # Test NaN value
     assert _try_parse(float("nan")) is None
 
+    # Test string "NaN"
+    assert _try_parse("NaN") is None
+
     # Test other string
     assert _try_parse("hello") == "hello"
 

@@ -88,6 +88,10 @@ def _try_parse(value: Any) -> Any:
     if isinstance(value, float) and math.isnan(value):
         return None
 
+    # Match behaviour: json.loads("NaN") == float('nan')
+    if isinstance(value, str) and value == "NaN":
+        return None
+
     # Convert empty strings to None
     if isinstance(value, str) and value == "":
         return None
