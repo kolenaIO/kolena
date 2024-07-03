@@ -38,22 +38,18 @@ denoted as `resultA.difficulty_score`.
 To describe the computation of difficulty scores at a high level:
 
 $$
-\begin{align}
 \text{resultA.difficulty_score} = \sum_{i=1}^{QS} w_i \cdot \text{norm}(q_i)
-\end{align}
 $$
 
 $$
-\begin{align}
-\text{datapoint.difficulty_score} = \frac{1}{M} \sum_{}^{M} \text{each models' difficulty score}
-\end{align}
+\text{datapoint.difficulty_score} = \frac{1}{M} \sum_{m}^{M} \text{difficulty score of model m}
 $$
 
 where:
 
 - \( QS \) is the set of quality standards (`LIB` + `HIB`)
 - \( w_i \) represents the weight for each quality standard \( i \)
-- \( q_i \) represents the value of the quality standard \( i \)
+- \( q_i \) represents the value of the quality standard \( i \), inverted if necessary
 - \( \text{norm}(q_i) \) indicates the normalized value of the quality standard \( q_i \)
 - \( M \) is the set of chosen models, such as models `A`, `B`, and `C`
 
