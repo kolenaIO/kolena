@@ -286,7 +286,7 @@ biases, and its intended uses.
 
     ---
 
-    Difficulty scores indicate which datapoints models commonly struggle on based on custom Quality Standards.
+    Difficulty scores indicate which datapoints models commonly struggle with based on custom Quality Standards.
     The greater the difficulty score, the harder it is for models to be certain and performant.
 
 - [Statistical Significance](statistical-significance.md)

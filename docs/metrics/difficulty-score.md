@@ -4,7 +4,8 @@ description: How to find common model regressions and failures
 
 # Difficulty Score
 
-Difficulty scores are automatically computed within Kolena to surface datapoints that commonly contribute to poor
+Difficulty scores are automatically computed within [Kolena](https://www.kolena.com/) to surface
+[datapoints](../dataset/core-concepts/index.md#datapoints) that commonly contribute to poor
 model performance. Difficulty scores consider a user's custom
 [Quality Standard](../dataset/core-concepts/index.md#quality-standard) configuration to make
 an informed assessment of which datapoints lead to the greatest recurring problems across all models using multiple
@@ -14,26 +15,55 @@ and a higher difficulty score indicates that models consistently face problems o
 (e.g. longer inference time, lower BLEU scores, and/or lower recall).
 
 When one model is selected in Studio, the difficulty score of a datapoint is the difficulty score derived
-from that model's results. When more than one model is considered, the overall difficulty score of a datapoint is
-the average value from each difficulty score from each model's results.
+from that model's results. When more than one model is considered, the overall difficulty score of a datapoint
+(`datapoint.difficulty_score`) is the average value from each difficulty score from each model's results.
 
 ??? "Using Difficulty Scores for Regression Testing"
-    With two models called `old` and `new` are selected in Studio so users see two model-level difficulty scores,
-    and one overall difficulty score for any datapoint. With a filter for
-    `new.difficulty_score > old.difficulty_score`, we find all the datapoints that performed worse in the
-    `new` model, which highlights the regressions.
+    When two models called `A` (the old model) and `B` (the new model) are selected in Studio, users can
+    see two model-level difficulty scores, and one overall difficulty score for any datapoint. With a filter for
+    `resultB.difficulty_score > resultA.difficulty_score`, we find all the datapoints that performed worse for the
+    newer model, which highlights the regressions.
 
     With a filter for `datapoint.difficulty_score > 0.9`, we see all the datapoints that significantly struggle
     across both the `old` and `new` models, which are common failures that persist over different model iterations.
 
 ## Implementation Details
 
-Suppose we have defined quality standards composed of various metrics and performance indicators. Some of these will
-be metrics like `ROUGE` or `accuracy` where higher values are better (`HIB`, higher is better), but it is
-desirable for `word_error_rate` or `cost` to be minimized (`LIB`, lower is better).
+Suppose we have defined quality standards composed of various metrics and performance indicators.
+Some of these will be metrics like `ROUGE` or `accuracy` where higher values are better
+(`HIB`, higher is better), but it is desirable for `word_error_rate` or `cost` to be minimized
+(`LIB`, lower is better). Using the results of some model `A`, we can compute model-level difficulty scores for `A`,
+denoted as `resultA.difficulty_score`.
 
-Below is an example of how difficulty scores are computed for a single model using
-`LIB(cost)`, `HIB(recall)`, and `HIB(accuracy)`:
+To describe the computation of difficulty scores at a high level:
+
+$$
+\begin{align}
+\text{resultA.difficulty_score} = \sum_{i=1}^{QS} w_i \cdot \text{norm}(q_i)
+\end{align}
+$$
+
+$$
+\begin{align}
+\text{datapoint.difficulty_score} = \frac{1}{M} \sum_{}^{M} \text{each models' difficulty score}
+\end{align}
+$$
+
+where:
+
+- \( QS \) is the set of quality standards (`LIB` + `HIB`)
+- \( w_i \) represents the weight for each quality standard \( i \)
+- \( q_i \) represents the value of the quality standard \( i \)
+- \( \text{norm}(q_i) \) indicates the normalized value of the quality standard \( q_i \)
+- \( M \) is the set of chosen models, such as models `A`, `B`, and `C`
+
+!!! info "Important Note"
+
+    Note that `datapoint.difficulty_score` is the average of all relevant
+    model-level `resultX.difficulty_score` values.
+
+Below is a detailed example of how `resultA.difficulty_score` is computed
+using `LIB(cost)`, `HIB(recall)`, and `HIB(accuracy)`:
 
 ```py
 import pandas as pd
@@ -189,14 +219,16 @@ column in step 4 of the example above which is parallel to `cost` or `recall`.
 | `1` | `1.0`| `0.2` | ... | ... |
 | `2` | `0.5`| `0.9` | ... | ... |
 
-Then, it can be involved in the computation of the overall `difficulty_score` for the datapoint.
+Then, it can be involved in the computation of the overall `datapoint.difficulty_score`.
 
 #### Multiclass Classification
 
-The `delta` column for a datapoint of a multiclass classification task is simply the number of times a model
-makes a mistake in classifying the datapoint. Like the binary classification and regression task, the
+The `delta` column for a datapoint of a multiclass classification task is the count of misclassifications for the
+datapoint. For example, with three models the best case is a count of zero mistakes and the worst case
+sums to three mistakes.
+Like the binary classification and regression task, the
 `difficulty_contribution` column normalizes `delta` to be used in computing the overall
-datapoint `difficulty_score`.
+`datapoint.difficulty_score`.
 
 #### Object Detection
 
@@ -204,7 +236,7 @@ The `delta` column for an object detection task is the F1 score computed using t
 [TP / FP / FN counts](./tp-fp-fn-tn.md). If recall is more important, this can become the default signal
 instead of F1 scores at the datapoint level.
 Like the other tasks, the `difficulty_contribution` column
-normalizes `delta` to be used in computing the overall datapoint `difficulty_score`.
+normalizes `delta` to be used in computing the overall `datapoint.difficulty_score`.
 
 ## Limitations and Biases
 
