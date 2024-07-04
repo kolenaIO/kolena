@@ -7,8 +7,10 @@ license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
-kolena = "^1.9.0"
+kolena = "^1.23.0"
 s3fs = "^2022.7.1"
+# TODO: remove explicit transient dependency
+pandera = ">=0.9,<0.20.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^2.17"

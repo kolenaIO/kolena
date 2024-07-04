@@ -17,6 +17,7 @@ from kolena.dataset.dataset import download_dataset
 from kolena.dataset.evaluation import upload_results
 from kolena.dataset.evaluation import download_results
 from kolena.dataset.evaluation import EvalConfigResults
+from kolena.dataset.dataset import list_datasets
 
 __all__ = [
     "upload_dataset",
@@ -24,4 +25,5 @@ __all__ = [
     "upload_results",
     "download_results",
     "EvalConfigResults",
+    "list_datasets",
 ]

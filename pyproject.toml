@@ -51,6 +51,7 @@ click = ">=8"
 scikit-learn = { version = ">=1.2,<2", optional = true }
 scipy = [  # transient dependency of scikit-learn, pin required to unbreak installs on specific Python versions
     { version = ">=1,<1.11", python = ">=3.8,<3.9", optional = true },
+    { version = ">=1,<1.14", python = ">=3.9,<3.10", optional = true },
     { version = ">=1.12,<2", python = ">=3.12", optional = true }
 ]
 lzstring = "^1.0.4"
