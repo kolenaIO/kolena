@@ -14,16 +14,24 @@ indicates that models produce the ideal datapoint-level metrics (e.g. lower infe
 and a higher difficulty score indicates that models consistently face problems or "difficulty"
 (e.g. longer inference time, lower [BLEU scores](./bleu.md), and/or lower [recall](./recall.md)).
 
+!!! note
+    For Kolena to calculate the `datapoint.difficulty_score` you must have:
+
+    * at least one [Model Result](../dataset/quickstart.md#step-2-upload-model-results) uploaded
+    * at least one metric defined in your [Quality Standard](../dataset/core-concepts/index.md#quality-standard)
+    * set the direction of the [metric](../dataset/core-concepts/index.md#define-metrics)
+    (`Lower is better` or `Higher is better`)
+
 When one model is selected in [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.com/redirect/studio), the
 difficulty score of a datapoint is the difficulty score derived from that model's results. When more than one model is
 considered, the overall difficulty score of a datapoint (`datapoint.difficulty_score`) is the average value from
 each difficulty score from each model's results.
 
 ??? "Using Difficulty Scores for Regression Testing"
-    When two models called `A` (the old model) and `B` (the new model) are selected in Studio, users can
+    When two models called `A` and `B` are selected in Studio, users can
     see two model-level difficulty scores, and one overall difficulty score for any datapoint. With a filter for
-    `resultB.difficulty_score > resultA.difficulty_score`, we find all the datapoints that performed worse for the
-    newer model, which highlights the regressions.
+    `resultB.difficulty_score > resultA.difficulty_score`, we find all the datapoints that performed worse
+    for model `B`, which highlights the regressions.
 
     With a filter for `datapoint.difficulty_score > 0.9`, we see all the datapoints that significantly struggle
     across both models, which are common failures that persist over different model iterations.
