@@ -22,7 +22,7 @@ to get started with Automatic Metadata Extraction for Text.
     Identify and select the text fields from your dataset that you want to analyze.
     Also select the properties of the fields you wish to extract.
 
-    In the examble below we extract properties from the `best_answer` and `question` fields. For the `best_answer` field,
+    In the example below we extract properties from the `best_answer` and `question` fields. For the `best_answer` field,
     we display `word_count` and `topic_tag`, whereas for the `question` field we display `word_count`, `readability` and
     `question_type`.
 

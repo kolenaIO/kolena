@@ -19,7 +19,7 @@ function, [`download_quality_standard_result`](../../reference/experimental/inde
 to download a dataset's quality standard result. This enables users to automate processes surrounding a Quality
 Standard's result.
 
-The return value is a multi-index DataFrame with indices `(stratificaiton, test_case)` and columns `(model, eval_config,
+The return value is a multi-index DataFrame with indices `(stratification, test_case)` and columns `(model, eval_config,
 metric_group, metric)`.
 
 <figure markdown>

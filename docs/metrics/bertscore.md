@@ -89,7 +89,7 @@ BERT-precision and BERT-recall.
 
 In a more advanced implementation of BERTScore, extra steps are taken to finetune the metric. These include:
 
-1. Applying an "importance factor" to rare words so that the score weighs keywords moreso than words like "it", "as",
+1. Applying an "importance factor" to rare words so that the score weighs keywords more so than words like "it", "as",
 and "the".
 2. Rescaling the score such that it lies between 0 and 1 in practical use cases. Although the score already lies between
 0 and 1 in theory, it has been observed to lie between a more limited range in practice.

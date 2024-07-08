@@ -17,7 +17,7 @@ To simplest way to quantify the error in a candidate diarization is to measure t
 detections, and speaker confusions. These three elementary errors form the building blocks of diarization error rate.
 
 ??? example "False Alarm"
-    False alarm is duration of non-speech classified as speech — analagous to false positive diarizations. Using the
+    False alarm is duration of non-speech classified as speech — analogous to false positive diarization. Using the
     following hypothetical ground truth and inference diarization segments, let's calculate our false alarm duration.
 
     ```python
@@ -43,8 +43,8 @@ detections, and speaker confusions. These three elementary errors form the build
     doesn't exist in the ground truth diarization. Thus, our false alarm is equal to $3 + 1 = 4$ seconds.
 
 ??? example "Missed Detection"
-    Missed detection is the duration of speech classified as non-speech — analagous to a false negative in our
-    diarizations. Using the previous example, let's calculate our missed detection duration.
+    Missed detection is the duration of speech classified as non-speech — analogous to a false negative in our
+    diarization. Using the previous example, let's calculate our missed detection duration.
 
     ![Visualization](../assets/images/metrics-der-example1.png)
 
@@ -121,7 +121,7 @@ inference[Segment(23, 25)] = 'B'
 
     Our diarization error rate is 0.4.
 
-## Limitiations and Biases
+## Limitations and Biases
 
 Though DER provides a strong insight into the accuracy of speaker labels and predicted segments, it fails to
 pinpoint the specific components of a speaker diarization system that may cause it to perform poorly. As such,
