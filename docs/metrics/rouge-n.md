@@ -26,9 +26,11 @@ reference texts.
 Mathematically, we define ROUGE-N as follows:
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \text{ROUGE-N} = \frac{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Match}(\text{n-gram})}{\sum_{S \in \text{Reference Texts}} \sum_{\text{n-gram} \in S} \text{Count}(\text{n-gram})}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 where $\text{Match(n-gram)}$ is the maximum number of n-grams co-occuring in a candidate text and set of reference
@@ -108,11 +110,13 @@ Assume we have the same following candidate and reference texts:
     Splitting our candidate and reference texts into bigrams, we get the following:
 
     <!-- markdownlint-disable MD013 -->
+
     | | |
     | --- | --- |
     | <nobr>**Reference #1**</nobr> | [`A fast`, `fast brown`, `brown dog`, `dog jumps`, `jumps over`, `over a`, `a sleeping`, `sleeping fox`] |
     | <nobr>**Reference #2**</nobr> | [`A quick`, `quick brown`, `brown dog`, `dog jumps`, `jumps over`, `over the`, `the fox`] |
     | **Candidate** | [`The quick`, `quick brown`, `brown fox`, `fox jumps`, `jumps over`, `over the`, `the lazy`, `lazy dog`] |
+
     <!-- markdownlint-enable MD013 -->
 
 ??? example "Step 2: Calculate ROUGE"

@@ -10,11 +10,13 @@ When computing [test case metrics][kolena.workflow.MetricsTestCase] in an
 metrics within a given test case.
 
 <!-- markdownlint-disable MD013 -->
+
 <figure markdown>
   ![Class-level metrics](../../assets/images/nesting-test-case-metrics-light.jpg#only-light)
   ![Class-level metrics](../../assets/images/nesting-test-case-metrics-dark.jpg#only-dark)
   <figcaption markdown>Class-level metrics for the `airplane`, `bear`, `bench`, etc. classes reported for the test case `complete :: coco-2014-val [Object Detection]`</figcaption>
 </figure>
+
 <!-- markdownlint-enable MD013 -->
 
 Here are a few examples of scenarios where this pattern might be warranted:
