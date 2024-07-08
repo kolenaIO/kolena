@@ -180,7 +180,7 @@ quality standard.
 
 ### Difficulty Scores for Task Metrics
 
-Difficulty scores for [task metrics](../dataset/advanced-usage/task-metrics/) are aggregate metrics that do not offer
+Difficulty scores for [task metrics](../dataset/advanced-usage/task-metrics.md) are aggregate metrics that do not offer
 datapoint-level details of performance. However, the information provided to an aggregate metric is sufficient in
 establishing difficulty scores at the datapoint level, similar to datapoint-level `inference_time` or `cost`.
 
