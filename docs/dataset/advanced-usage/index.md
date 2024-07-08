@@ -20,6 +20,11 @@ This section contains tutorial documentation for advanced features.
     ---
     Setup task specific or custom metrics to evaluate model performance across different test cases with ease.
 
+- [:kolena-diagram-tree-16: Thresholded Results](./thresholded-results.md)
+
+    ---
+    Setup metrics and plots that depends on thresholded results.
+
 - [:kolena-properties-16: Extracting Metadata from Text Fields](../../automations/extract-text-metadata.md)
 
     ---
