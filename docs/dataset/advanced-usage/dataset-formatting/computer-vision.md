@@ -130,7 +130,6 @@ to pass on your model inferences confidence score for each bounding box.
 * Use [`compute_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.compute_object_detection_results)
 to compute your metrics that are supported by Kolena's [Object Detection Task Metrics](../../advanced-usage/task-metrics.md#object-detection).
 
-
 * OR include the following columns in your results. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
     | Column Name              | Description                                         |
