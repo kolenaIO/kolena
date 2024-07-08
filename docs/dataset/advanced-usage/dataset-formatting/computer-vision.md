@@ -123,11 +123,14 @@ Model results contian your model inferences as well as any custom metrics that y
 The data structure of model resutls is very similar to the structure of a dataset with minor differences.
 
 * Ensure your results are using the same unique ID field (the `locator` for instance) you have selected for your dataset.
+
 * Use [`ScoredBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredBoundingBox) or
 [`ScoredLabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 to pass on your model inferences confidence score for each bounding box.
 * Use [`compute_object_detection_results`](../../../reference/experimental/index.md#kolena._experimental.object_detection.compute_object_detection_results)
 to compute your metrics that are supported by Kolena's [Object Detection Task Metrics](../../advanced-usage/task-metrics.md#object-detection).
+
+
 * OR include the following columns in your results. The values for each of the columns is a [`List[ScoredLabeledBoundingBox]`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
 
     | Column Name              | Description                                         |

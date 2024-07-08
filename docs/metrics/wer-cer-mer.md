@@ -112,6 +112,7 @@ Let's calculate the word error rate between the following reference and candidat
     With each errors counted, we can calculate our WER. Using the formula,
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     \begin{align*}
     \text{WER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Words in Reference}} \\
@@ -120,6 +121,7 @@ Let's calculate the word error rate between the following reference and candidat
                &= 0.375
     \end{align*}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
 
@@ -171,6 +173,7 @@ Let's calculate the character error rate using the same reference and candidate 
     With each errors counted, we can calculate our CER. Using the formula,
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     \begin{align*}
     \text{CER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Characters in Reference}} \\
@@ -179,6 +182,7 @@ Let's calculate the character error rate using the same reference and candidate 
                &= 0.318
     \end{align*}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
 
@@ -199,9 +203,11 @@ While WER and CER focus on errors, Match Error Rate takes a slightly different a
 on correct matches. Similar to WER, it is calculated using word-level [substitutions, deletions, and insertions](#substitutions-deletions-and-insertions).
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \text{MER} = \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 ### Example
@@ -233,6 +239,7 @@ Let's calculate the match error rate using the same reference and candidate text
     With each errors counted, we can calculate our MER. Using the formula,
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     \begin{align*}
     \text{MER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}} \\
@@ -241,6 +248,7 @@ Let's calculate the match error rate using the same reference and candidate text
                &= 0.353
     \end{align*}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
 

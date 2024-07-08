@@ -39,17 +39,21 @@ to candidate texts that are very short in length, but mostly contain n-grams in 
 The BLEU score is mathematically defined as:
 
 <!-- markdownlint-disable MD013 -->
+
 $$\begin{align*} \text{BLEU} &= \text{Brevity Penalty} \times \text{n-gram Overlap} \\
 &= \min\left(1, \, \exp\left(1 - \frac{\text{reference length}}{\text{output length}}\right)\right) \times \prod_{i=1}^{4}\text{i-gram Precision}^{\frac{1}{4}}
 \end{align*}$$
+
 <!-- markdownlint-enable MD013 -->
 
 where the i-gram precision is calculated as:
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 p_i = \frac{\text{Clipped} \text{ count of matching i-grams in candidate text}^1}{\text{Total number of i-grams in candidate text}}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 <div class="footnote-content">
@@ -94,32 +98,38 @@ understanding. While a high BLEU score is promising, it doesn't guarantee flawle
     **Generated Sentence**:
 
     <!-- markdownlint-disable MD013 -->
+
     | n | n-grams |
     | ---   | ---                        |
     | 1 | [`Fall`, `leaves`, `rustled`, `softly`, `beneath`, `our`, `weary`, `feet`]|
     | 2 | [`Fall leaves`, `leaves rustled`, `rustled softly`, `softly beneath`, `beneath our`, `our weary`, `weary feet`]|
     | 3 | [`Fall leaves rustled`, `leaves rustled softly`, `rustled softly beneath`, `softly beneath our`, `beneath our weary`, `our weary feet`] |
     | 4 | [`Fall leaves rustled softly`, `leaves rustled softly beneath`, `rustled softly beneath our`, `softly beneath our weary`, `beneath our weary feet`]  |
+
     <!-- markdownlint-enable MD013 -->
 
     **Reference Sentence**:
 
     <!-- markdownlint-disable MD013 -->
+
     | n | n-grams |
     | --- | --- |
     | 1 | [`Crisp`, `autumn`, `leaves`, `rustled`, `softly`, `beneath`, `our`, `weary`, `feet`]|
     | 2 | [`Crisp autumn`, `autumn leaves`, `leaves rustled`, `rustled softly`, `softly beneath`, `beneath our`, `our weary`, `weary feet`]|
     | 3 | [`Crisp autumn leaves`, `autumn leaves rustled`, `leaves rustled softly`, `rustled softly beneath`, `softly beneath our`, `beneath our weary`, `our weary feet`]|
     | 4 | [`Crisp autumn leaves rustled`, `autumn leaves rustled softly`, `leaves rustled softly beneath`, `rustled softly beneath our`, `softly beneath our weary`, `beneath our weary feet`]|
+
     <!-- markdownlint-enable MD013 -->
 
 ??? example "Step 2: Calculate n-gram Overlap"
     Next, let's calculate the clipped precision scores for each of the n-grams. Recall that the precision formula is:
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     p_i = \frac{\text{Clipped} \text{ count of matching i-grams in machine-generated text}^1}{\text{Total number of i-grams in machine-generated text}}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
     <center>

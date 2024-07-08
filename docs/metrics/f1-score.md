@@ -1,5 +1,5 @@
 ---
-description: How to calculate and interpret precision to evaluate ML model performance
+description: How to calculate and interpret f1 score to evaluate ML model performance
 ---
 
 # F<sub>1</sub>-score
@@ -165,9 +165,11 @@ The **F$_\beta$-score** is a generic form of the F<sub>1</sub>-score with a weig
 recall is considered $\beta$ times more important than precision:
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \text{F}_{\beta} = \frac {(1 + \beta^2) \times \text{precision} \times \text{recall}} {(\beta^2 \times \text{precision}) + \text{recall}}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 The three most common values for the beta parameter are as follows:

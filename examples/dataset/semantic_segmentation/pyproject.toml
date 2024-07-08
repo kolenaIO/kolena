@@ -8,7 +8,7 @@ license = "Apache-2.0"
 [tool.poetry.dependencies]
 python = ">=3.8,<3.12"
 opencv-python-headless = ">=4.6.0.66,<4.7"
-kolena = "^1.9.0"
+kolena = "^1.23.0"
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
 pandera = ">=0.9.0,<0.16"

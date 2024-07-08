@@ -25,7 +25,7 @@ from pandera.typing import Series
 from kolena.errors import InputValidationError
 
 
-T = TypeVar("T", bound=pa.SchemaModel)
+T = TypeVar("T", bound=pa.DataFrameModel)
 
 
 def validate_df_schema(df: pd.DataFrame, schema: Type[T], trusted: bool = False) -> pd.DataFrame:

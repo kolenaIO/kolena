@@ -43,7 +43,7 @@ from kolena._utils.validators import ValidatorConfig
 
 
 TDataFrame = TypeVar("TDataFrame", bound="LoadableDataFrame")
-TSchema = TypeVar("TSchema", bound=pa.SchemaModel)
+TSchema = TypeVar("TSchema", bound=pa.DataFrameModel)
 
 
 class LoadableDataFrame(ABC, pa.typing.DataFrame[TSchema], Generic[TSchema]):

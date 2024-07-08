@@ -114,6 +114,7 @@ nav:
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
     - Kolena Insights:
+      - metrics/difficulty-score.md
       - metrics/statistical-significance.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md

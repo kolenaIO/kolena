@@ -19,7 +19,7 @@ from pandera.typing import Series
 from kolena._utils.dataframes.validators import _validate_locator  # noqa: F401
 
 
-class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
+class LocatorEmbeddingsDataFrameSchema(pa.DataFrameModel):
     key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
     """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
 
@@ -32,7 +32,7 @@ class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
     """
 
 
-class DatasetEmbeddingsDataFrameSchema(pa.SchemaModel):
+class DatasetEmbeddingsDataFrameSchema(pa.DataFrameModel):
     key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
     """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
 
