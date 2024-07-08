@@ -138,7 +138,7 @@ While perplexity is a valuable metric for comparing and fine-tuning language mod
 should always be used in conjunction with other evaluation metrics and methods.
 
 1. Perplexity is sensitive to the size and diversity of datasets. Since each dataset has its own distribution of
-words and semantic nuances, a model that achieves low perplexity on one dataset may underperformed on another. Thus,
+words and semantic nuances, a model that achieves low perplexity on one dataset may underperform on another. Thus,
 it is important to gauge perplexity on a diverse dataset with different types of texts.
 2. Perplexity is hard to absolutely interpret. Unlike metrics such as [BLEU](bleu.md) or [BERTScore](bertscore.md),
 Perplexity only provides a measure of "confidence" rather than a measure of semantic or textual similarity. While
