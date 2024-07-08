@@ -3,7 +3,7 @@ icon: kolena/take-action-16
 
 ---
 
-# :kolena-take-action-20: Programatically Compare Models
+# :kolena-take-action-20: Programmatically Compare Models
 
 !!! example "Experimental Feature"
 
