@@ -60,12 +60,13 @@ You can upload multiple thresholded object fields if needed.
 
 ## Setting Up Thresholded Object-Powered Metrics
 
-You can add thresholded metrics via the "Thresholded Object" button on the Configure Metric Group page.
+You can add thresholded metrics via the `Thresholded Object` button on the Configure Metric Group page.
 This option is available only after uploading the thresholded object.
 
-[screenshot of the button]
+`Thresholded Object` button
 
-[screenshot of the detailed configuration page]
+![Metric Button](../../assets/images/thresholded-results/metric-button-dark.png#only-dark)
+![Metric Button](../../assets/images/thresholded-results/metric-button-light.png#only-light)
 
 Supported metrics include:
 
@@ -74,22 +75,33 @@ Supported metrics include:
 - [F1 Score](../../metrics/f1-score.md)
 - [Average Precision](../../metrics/average-precision.md)
 
-[screenshot of qs page with configured metrics]
+Detailed configurations
+
+![Metric Config](../../assets/images/thresholded-results/metric-config-dark.png#only-dark)
+![Metric Config](../../assets/images/thresholded-results/metric-config-light.png#only-light)
+
+Metrics in the quality standard page
+
+![Metric in the quality standard page](../../assets/images/thresholded-results/metric-qs-dark.png#only-dark)
+![Metric in the quality standard page](../../assets/images/thresholded-results/metric-qs-light.png#only-light)
 
 ## Setting Up Thresholded Object-Powered Plots
 
 ### Task Plots
 
-#### Precision vs. Recall Plot
+#### Precision Recall Plot
 
-[screenshot of plot with configuration]
+![Precision vs. Recall Plot](../../assets/images/thresholded-results/plot-pr-dark.png#only-dark)
+![Precision vs. Recall Plot](../../assets/images/thresholded-results/plot-pr-light.png#only-light)
 
-#### F1 Score vs. Threshold
+#### F1 Score vs. Threshold Plot
 
-[screenshot of plot with configuration]
+![F1 Score vs. Threshold Plot](../../assets/images/thresholded-results/plot-f1-dark.png#only-dark)
+![F1 Score vs. Threshold Plot](../../assets/images/thresholded-results/plot-f1-light.png#only-light)
 
 ### Advanced Plots
 
 #### Aggregation at Different Thresholds
 
-[screenshot of plot with configuration]
+![Aggregation at Different Thresholds](../../assets/images/thresholded-results/plot-double-agg-dark.png#only-dark)
+![Aggregation at Different Thresholds](../../assets/images/thresholded-results/plot-double-agg-light.png#only-light)
