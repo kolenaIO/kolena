@@ -3,9 +3,8 @@
 This example integration uses the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/)
 dataset and Face Recognition (FR) workflow to
 demonstrate how to test and evaluate end-to-end FR (1:1) model pipelines on Kolena.
-The evaluation stages are: face detection, keypoint extraction, and recognition. There are 5,749 unique identifications
-from the complete dataset with 13,233 images. In this example, we are using 9,164 images with one genuine pair and one
-imposter pair.
+There are 5,749 unique identifications from the complete dataset with 13,233 images, but for
+illustrative purposes, we are using 9,164 images with one genuine pair and one imposter pair.
 
 In this example, we track two performance metrics at varying similarity score thresholds:
 
