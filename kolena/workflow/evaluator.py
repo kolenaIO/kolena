@@ -19,10 +19,10 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 
-from pydantic import validate_call
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as API
+from kolena._utils import validate_call
 from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import get_args
 from kolena._utils.datatypes import get_origin

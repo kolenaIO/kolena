@@ -24,13 +24,12 @@ from typing import Set
 from typing import Tuple
 from typing import Type
 
-from pydantic import validate_call
-
 from kolena._api.v1.core import TestSuite as CoreAPI
 from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import TestSuite as API
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils import validate_call
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.consts import BatchSize
 from kolena._utils.consts import FieldName

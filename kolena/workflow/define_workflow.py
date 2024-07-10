@@ -15,8 +15,7 @@ from typing import cast
 from typing import Tuple
 from typing import Type
 
-from pydantic import validate_call
-
+from kolena._utils import validate_call
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference

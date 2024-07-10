@@ -14,10 +14,10 @@
 from typing import List
 from typing import Tuple
 
-from pydantic import validate_call
 from shapely.geometry import Polygon
 from shapely.validation import make_valid
 
+from kolena._utils import validate_call
 from kolena._utils.validators import ValidatorConfig
 
 

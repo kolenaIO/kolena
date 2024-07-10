@@ -28,12 +28,12 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
-from pydantic import validate_call
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils import validate_call
 from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame

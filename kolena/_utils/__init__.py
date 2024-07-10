@@ -11,3 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+try:
+    from pydantic import validate_call
+except ImportError:
+    from pydantic import validate_arguments as validate_call  # type: ignore[no-redef]
+
+__all__ = ["validate_call"]
