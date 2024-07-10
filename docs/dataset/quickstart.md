@@ -11,8 +11,8 @@ example dataset to demonstrate test data curation and model evaluation in Kolena
 the `kolena` Python SDK.
 
 ??? note "Using the SDK"
-If you would like to use the SDK for this quickstart follow these instructions to set up the
-SDK and set up the code example locally.
+    If you would like to use the SDK for this quickstart follow these instructions to set up the
+    SDK and set up the code example locally.
 
     First, install the `kolena` python SDK:
 
@@ -49,9 +49,9 @@ Model evaluations on Kolena starts with datasets. Datasets are structured assemb
 model testing and evaluation.
 
 === "Web App"
-To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
-click `Import Dataset` then `Select From Cloud Storage`.
-Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
+    To get started, navigate to [kolena.com](https://app.kolena.com/redirect/datasets) and
+    click `Import Dataset` then `Select From Cloud Storage`.
+    Using the explorer, navigate to `s3://kolena-public-examples/300-W/` and select `300-W.csv`.
 
     ??? note "Generating Datasets"
         See the [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
