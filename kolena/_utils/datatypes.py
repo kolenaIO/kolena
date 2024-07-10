@@ -35,12 +35,19 @@ import numpy as np
 import pandas as pd
 import pandera as pa
 from pydantic.dataclasses import dataclass
-from pydantic.dataclasses import is_pydantic_dataclass
+
+try:
+    from pydantic.dataclasses import is_pydantic_dataclass
+except ImportError:
+    from pydantic.dataclasses import is_builtin_dataclass
+
+    def is_pydantic_dataclass(cls: type[Any]) -> bool:
+        return not is_builtin_dataclass(cls)
+
 
 from kolena._utils import log
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.validators import ValidatorConfig
-
 
 TDataFrame = TypeVar("TDataFrame", bound="LoadableDataFrame")
 TSchema = TypeVar("TSchema", bound=pa.DataFrameModel)
