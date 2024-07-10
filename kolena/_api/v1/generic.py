@@ -17,6 +17,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
+import pydantic
+from packaging.version import Version
 from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.batched_load import BatchedLoad
@@ -182,3 +184,11 @@ class Search:
     @dataclass(frozen=True)
     class UploadEmbeddingsResponse:
         n_samples: int
+
+
+if Version(pydantic.VERSION) < Version("2"):
+    TestRun.CreateOrRetrieveRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+    TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+    TestRun.UploadTestSampleThresholdedMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+    Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()  # type: ignore
+    Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()  # type: ignore
