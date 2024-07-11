@@ -31,6 +31,10 @@ class PedestrianBoundingBox(LabeledBoundingBox):
     frame_id: int
     ped_id: str
     occlusion: str
+    risk: Optional[str] = None
+
+    def set_risk(self, risk: str) -> None:
+        object.__setattr__(self, "risk", risk)
 
 
 @dataclass(frozen=True)
@@ -45,10 +49,8 @@ class ScoredPedestrianBoundingBox(ScoredLabeledBoundingBox):
 
 @dataclass(frozen=True)
 class ProccessedGroundTruth:
-    high_risk_bboxes: List[PedestrianBoundingBox]
-    low_risk_bboxes: List[PedestrianBoundingBox]
-    high_risk_pids: List[str]
-    low_risk_pids: List[str]
+    bboxes: List[PedestrianBoundingBox]
+    pids: List[str]
 
 
 def compute_collision_risk(ground_truth_boxes: List[PedestrianBoundingBox]) -> float:
@@ -63,25 +65,21 @@ def compute_collision_risk(ground_truth_boxes: List[PedestrianBoundingBox]) -> f
 
 def process_gt_bboxes(ped_annotations: Dict[str, Dict[str, Any]]) -> ProccessedGroundTruth:
     bboxes_per_ped = process_ped_annotations(ped_annotations)
-    high_risk_bboxes = []
-    low_risk_bboxes = []
-    high_risk_pids = []
-    low_risk_pids = []
+    bboxes = []
+    pids = []
 
     for ped_id in bboxes_per_ped:
         risk_score = compute_collision_risk(bboxes_per_ped[ped_id])
-        if risk_score > HIGH_RISK_THRESHOLD:
-            high_risk_bboxes.extend(bboxes_per_ped[ped_id])
-            high_risk_pids.append(ped_id)
-        else:
-            low_risk_bboxes.extend(bboxes_per_ped[ped_id])
-            low_risk_pids.append(ped_id)
+        ped_bboxes = bboxes_per_ped[ped_id]
+        risk_level = "high" if risk_score > HIGH_RISK_THRESHOLD else "low"
+        for bbox in ped_bboxes:
+            bbox.set_risk(risk_level)
+        bboxes.extend(bboxes_per_ped[ped_id])
+        pids.append(ped_id)
 
     return ProccessedGroundTruth(
-        high_risk_bboxes=high_risk_bboxes,
-        low_risk_bboxes=low_risk_bboxes,
-        high_risk_pids=high_risk_pids,
-        low_risk_pids=low_risk_pids,
+        bboxes=bboxes,
+        pids=pids,
     )
 
 
