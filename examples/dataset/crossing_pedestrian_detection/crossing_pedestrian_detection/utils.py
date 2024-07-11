@@ -15,11 +15,9 @@ from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
-from typing import Tuple
 
 from pydantic.dataclasses import dataclass
 
-from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
 
@@ -100,26 +98,3 @@ def process_ped_annotations(ped_annotations: Dict[str, Dict[str, Any]]) -> Dict[
                 bboxes.append(bbox)
         bboxes_per_ped[ped_id] = bboxes
     return bboxes_per_ped
-
-
-@dataclass(frozen=True)
-class FrameMatch:
-    frame_id: int
-    unmatched_gt: Any
-    unmatched_inf: Any
-    matched: Any
-    gt_label: Optional[str]
-    inf_label: Optional[str]
-    gt: Optional[BoundingBox]
-    matched_pedestrian: Optional[ScoredLabeledBoundingBox] = None
-
-
-@dataclass(frozen=True)
-class BoundingBoxMatch:
-    matched: Optional[
-        Tuple[LabeledBoundingBox, ScoredLabeledBoundingBox]
-    ] = None  # i.e. true positives, if confidence > threshold
-    matched_iou: float = 0.0  # iou for each set of matches
-
-    def is_matched(self) -> bool:
-        return self.matched is not None
