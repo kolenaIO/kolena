@@ -177,6 +177,25 @@ def _match_inferences_single_class_pascal_voc(
     return InferenceMatches(matched=matched, unmatched_gt=unmatched_gt, unmatched_inf=unmatched_inf)
 
 
+def _match_inferences(
+    ground_truths: List[GT],
+    inferences: List[Inf],
+    *,
+    ignored_ground_truths: Optional[List[GT]] = None,
+    mode: Literal["pascal"] = "pascal",
+    iou_threshold: float = 0.5,
+) -> InferenceMatches[GT, Inf]:
+    if mode == "pascal":
+        return _match_inferences_single_class_pascal_voc(
+            ground_truths,
+            inferences,
+            ignored_ground_truths=ignored_ground_truths,
+            iou_threshold=iou_threshold,
+        )
+
+    raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
+
+
 def match_inferences(
     ground_truths: List[GT],
     inferences: List[Inf],
@@ -184,6 +203,7 @@ def match_inferences(
     ignored_ground_truths: Optional[List[GT]] = None,
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
+    required_match_fields: Optional[List[str]] = None,
 ) -> InferenceMatches[GT, Inf]:
     """
     Matches model inferences with annotated ground truths using the provided configuration.
@@ -214,19 +234,62 @@ def match_inferences(
     :param mode: The matching methodology to use. See available modes above.
     :param iou_threshold: The IoU (intersection over union, see [`iou`][kolena.metrics.iou]) threshold for
         valid matches.
+    :param Optional[List[str]] required_match_fields: Optionally specify a list of fields that must match between
+        the inference and ground truth for them to be considered a match.
     :return: [`InferenceMatches`][kolena.metrics.InferenceMatches] containing the matches (true positives),
         unmatched ground truths (false negatives) and unmatched inferences (false positives).
     """
 
-    if mode == "pascal":
-        return _match_inferences_single_class_pascal_voc(
+    if required_match_fields is None or len(required_match_fields) == 0:
+        return _match_inferences(
             ground_truths,
             inferences,
             ignored_ground_truths=ignored_ground_truths,
+            mode=mode,
             iou_threshold=iou_threshold,
         )
 
-    raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
+    keyed_inferences = defaultdict(list)
+    for inf in inferences:
+        key = tuple(getattr(inf, field, None) for field in required_match_fields)
+        keyed_inferences[key].append(inf)
+
+    keyed_ground_truths = defaultdict(list)
+    for gt in ground_truths:
+        key = tuple(getattr(gt, field, None) for field in required_match_fields)
+        keyed_ground_truths[key].append(gt)
+
+    keyed_ignore_ground_truths = defaultdict(list)
+    if ignored_ground_truths:
+        for gt in ignored_ground_truths:
+            key = tuple(getattr(gt, field, None) for field in required_match_fields)
+            keyed_ignore_ground_truths[key].append(gt)
+
+    keys = {*keyed_inferences.keys(), *keyed_ground_truths.keys(), *keyed_ignore_ground_truths.keys()}
+
+    inf_matches = [
+        _match_inferences(
+            keyed_ground_truths[key],
+            keyed_inferences[key],
+            ignored_ground_truths=keyed_ignore_ground_truths[key],
+            mode=mode,
+            iou_threshold=iou_threshold,
+        )
+        for key in keys
+    ]
+    flattened_matched = []
+    flattened_unmatched_gt = []
+    flattened_unmatched_inf = []
+    for inf_match in inf_matches:
+        flattened_matched.extend(inf_match.matched)
+        flattened_unmatched_gt.extend(inf_match.unmatched_gt)
+        flattened_unmatched_inf.extend(inf_match.unmatched_inf)
+
+    return InferenceMatches(
+        matched=flattened_matched,
+        unmatched_gt=flattened_unmatched_gt,
+        unmatched_inf=flattened_unmatched_inf,
+    )
 
 
 @dataclass(frozen=True)
@@ -264,7 +327,7 @@ class MulticlassInferenceMatches(Generic[GT, Inf]):
     """
 
 
-def match_inferences_multiclass(
+def _match_inferences_multiclass(
     ground_truths: List[GT],
     inferences: List[Inf],
     *,
@@ -272,41 +335,6 @@ def match_inferences_multiclass(
     mode: Literal["pascal"] = "pascal",
     iou_threshold: float = 0.5,
 ) -> MulticlassInferenceMatches[GT, Inf]:
-    """
-    Matches model inferences with annotated ground truths using the provided configuration.
-
-    This matcher considers `label` values matching per class. After matching inferences and ground truths with
-    equivalent `label` values, unmatched inferences and unmatched ground truths are matched once more to identify
-    confused matches, where localization succeeded (i.e. IoU above `iou_threshold`) but classification failed (i.e.
-    mismatching `label` values).
-
-    Available modes:
-
-    - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IoU is
-      its match. Multiple inferences are able to match with the same ignored ground truth. See the
-      [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
-
-    <div class="grid cards" markdown>
-    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../metrics/geometry-matching.md)
-    </div>
-
-    :param List[LabeledGeometry] ground_truths: A list of
-        [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
-        [`LabeledPolygon`][kolena.annotation.LabeledPolygon] ground truths.
-    :param List[ScoredLabeledGeometry] inferences: A list of
-        [`ScoredLabeledBoundingBox`][kolena.annotation.ScoredLabeledBoundingBox] or
-        [`ScoredLabeledPolygon`][kolena.annotation.ScoredLabeledPolygon] inferences.
-    :param Optional[List[LabeledGeometry]] ignored_ground_truths: Optionally specify a list of
-        [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
-        [`LabeledPolygon`][kolena.annotation.LabeledPolygon] ground truths to ignore. These ignored ground
-        truths and any inferences matched with them are omitted from the returned
-        [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches].
-    :param mode: The matching methodology to use. See available modes above.
-    :param iou_threshold: The IoU threshold cutoff for valid matches.
-    :return:
-        [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
-        (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
-    """
     matched: List[Tuple[GT, Inf]] = []
     unmatched_gt: List[GT] = []
     unmatched_inf: List[Inf] = []
@@ -370,4 +398,103 @@ def match_inferences_multiclass(
         matched=matched,
         unmatched_gt=confused + [(gt, None) for gt in unmatched_gt],
         unmatched_inf=unmatched_inf,
+    )
+
+
+def match_inferences_multiclass(
+    ground_truths: List[GT],
+    inferences: List[Inf],
+    *,
+    ignored_ground_truths: Optional[List[GT]] = None,
+    mode: Literal["pascal"] = "pascal",
+    iou_threshold: float = 0.5,
+    required_match_fields: Optional[List[str]] = None,
+) -> MulticlassInferenceMatches[GT, Inf]:
+    """
+    Matches model inferences with annotated ground truths using the provided configuration.
+
+    This matcher considers `label` values matching per class. After matching inferences and ground truths with
+    equivalent `label` values, unmatched inferences and unmatched ground truths are matched once more to identify
+    confused matches, where localization succeeded (i.e. IoU above `iou_threshold`) but classification failed (i.e.
+    mismatching `label` values).
+
+    Available modes:
+
+    - `pascal` (PASCAL VOC): For every inference by order of highest confidence, the ground truth of highest IoU is
+      its match. Multiple inferences are able to match with the same ignored ground truth. See the
+      [PASCAL VOC paper](https://homepages.inf.ed.ac.uk/ckiw/postscript/ijcv_voc09.pdf) for more information.
+
+    <div class="grid cards" markdown>
+    - :kolena-metrics-glossary-16: Metrics Glossary: [Geometry Matching ↗](../metrics/geometry-matching.md)
+    </div>
+
+    :param List[LabeledGeometry] ground_truths: A list of
+        [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
+        [`LabeledPolygon`][kolena.annotation.LabeledPolygon] ground truths.
+    :param List[ScoredLabeledGeometry] inferences: A list of
+        [`ScoredLabeledBoundingBox`][kolena.annotation.ScoredLabeledBoundingBox] or
+        [`ScoredLabeledPolygon`][kolena.annotation.ScoredLabeledPolygon] inferences.
+    :param Optional[List[LabeledGeometry]] ignored_ground_truths: Optionally specify a list of
+        [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
+        [`LabeledPolygon`][kolena.annotation.LabeledPolygon] ground truths to ignore. These ignored ground
+        truths and any inferences matched with them are omitted from the returned
+        [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches].
+    :param mode: The matching methodology to use. See available modes above.
+    :param iou_threshold: The IoU threshold cutoff for valid matches.
+    :param Optional[List[str]] required_match_fields: Optionally specify a list of fields that must match between
+        the inference and ground truth for them to be considered a match.
+    :return:
+        [`MulticlassInferenceMatches`][kolena.metrics.MulticlassInferenceMatches] containing the matches
+        (true positives), unmatched ground truths (false negatives), and unmatched inferences (false positives).
+    """
+
+    if not required_match_fields:
+        return _match_inferences_multiclass(
+            ground_truths=ground_truths,
+            inferences=inferences,
+            ignored_ground_truths=ignored_ground_truths,
+            mode=mode,
+            iou_threshold=iou_threshold,
+        )
+
+    keyed_inferences = defaultdict(list)
+    for inf in inferences:
+        key = tuple(getattr(inf, field, None) for field in required_match_fields)
+        keyed_inferences[key].append(inf)
+
+    keyed_ground_truths = defaultdict(list)
+    for gt in ground_truths:
+        key = tuple(getattr(gt, field, None) for field in required_match_fields)
+        keyed_ground_truths[key].append(gt)
+
+    keyed_ignore_ground_truths = defaultdict(list)
+    if ignored_ground_truths:
+        for gt in ignored_ground_truths:
+            key = tuple(getattr(gt, field, None) for field in required_match_fields)
+            keyed_ignore_ground_truths[key].append(gt)
+
+    keys = {*keyed_inferences.keys(), *keyed_ground_truths.keys(), *keyed_ignore_ground_truths.keys()}
+
+    inf_matches = [
+        _match_inferences_multiclass(
+            keyed_ground_truths[key],
+            keyed_inferences[key],
+            ignored_ground_truths=keyed_ignore_ground_truths[key],
+            mode=mode,
+            iou_threshold=iou_threshold,
+        )
+        for key in keys
+    ]
+    flattened_matched = []
+    flattened_unmatched_gt = []
+    flattened_unmatched_inf = []
+    for inf_match in inf_matches:
+        flattened_matched.extend(inf_match.matched)
+        flattened_unmatched_gt.extend(inf_match.unmatched_gt)
+        flattened_unmatched_inf.extend(inf_match.unmatched_inf)
+
+    return MulticlassInferenceMatches(
+        matched=flattened_matched,
+        unmatched_gt=flattened_unmatched_gt,
+        unmatched_inf=flattened_unmatched_inf,
     )
