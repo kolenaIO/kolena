@@ -13,6 +13,7 @@
 # limitations under the License.
 import dataclasses
 from collections import defaultdict
+from typing import Callable
 from typing import Dict
 from typing import Generic
 from typing import List
@@ -133,6 +134,41 @@ class InferenceMatches(Generic[GT, Inf]):
     """
 
 
+@dataclass(frozen=True)
+class MulticlassInferenceMatches(Generic[GT, Inf]):
+    """
+    The result of [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass], providing lists
+    of matches between ground truth and inference objects, unmatched ground truths, and unmatched inferences.
+
+    Unmatched ground truths may be matched with an inference of a different class when no inference of its own class is
+    suitable, i.e. a "confused" match. `MultiClassInferenceMatches` can be used to calculate metrics such as precision
+    and recall per class, after applying some confidence threshold on the returned inference objects.
+
+    Objects are of type [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
+    [`LabeledPolygon`][kolena.annotation.LabeledPolygon], depending on the type of inputs provided to
+    [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
+    """
+
+    matched: List[Tuple[GT, Inf]]
+    """
+    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
+    Considered as true positive detections after applying some confidence threshold.
+    """
+
+    unmatched_gt: List[Tuple[GT, Optional[Inf]]]
+    """
+    Pairs of unmatched ground truth objects with its confused inference object (i.e. IoU above threshold with
+    mismatching `label`) and calculated IoU, if such an inference exists. Considered as false negatives and
+    "confused" detections.
+    """
+
+    unmatched_inf: List[Inf]
+    """
+    Unmatched inference objects, along with the maximum IoU over all ground truths.
+    Considered as false positives after applying some confidence threshold.
+    """
+
+
 def _match_inferences_single_class_pascal_voc(
     ground_truths: List[GT],
     inferences: List[Inf],
@@ -196,6 +232,48 @@ def _match_inferences(
     raise InputValidationError(f"Mode: '{mode}' is not a valid mode.")
 
 
+def _get_keyed_items(
+    items: List,
+    required_match_fields: List[str],
+) -> Dict[Tuple, List]:
+    keyed_items = defaultdict(list)
+    for item in items:
+        key = tuple(getattr(item, field, None) for field in required_match_fields)
+        keyed_items[key].append(item)
+    return keyed_items
+
+
+def _process_matches(
+    keyed_ground_truths: Dict[Tuple, List[GT]],
+    keyed_inferences: Dict[Tuple, List[Inf]],
+    keyed_ignore_ground_truths: Dict[Tuple, List[GT]],
+    match_fn: Callable[..., Union[InferenceMatches, MulticlassInferenceMatches]],
+    mode: str,
+    iou_threshold: float,
+) -> Tuple[List[Tuple[GT, Inf]], List, List[Inf]]:
+    keys = {*keyed_inferences.keys(), *keyed_ground_truths.keys(), *keyed_ignore_ground_truths.keys()}
+    inf_matches = [
+        match_fn(
+            keyed_ground_truths[key],
+            keyed_inferences[key],
+            ignored_ground_truths=keyed_ignore_ground_truths[key],
+            mode=mode,
+            iou_threshold=iou_threshold,
+        )
+        for key in keys
+    ]
+    flattened_matched: List[Tuple[GT, Inf]] = []
+    # typing intentionally vague because InferenceMatches and MulticlassInferenceMatches disagree here
+    flattened_unmatched_gt: List = []
+    flattened_unmatched_inf: List[Inf] = []
+    for inf_match in inf_matches:
+        flattened_matched.extend(inf_match.matched)
+        flattened_unmatched_gt.extend(inf_match.unmatched_gt)
+        flattened_unmatched_inf.extend(inf_match.unmatched_inf)
+
+    return flattened_matched, flattened_unmatched_gt, flattened_unmatched_inf
+
+
 def match_inferences(
     ground_truths: List[GT],
     inferences: List[Inf],
@@ -249,82 +327,25 @@ def match_inferences(
             iou_threshold=iou_threshold,
         )
 
-    keyed_inferences = defaultdict(list)
-    for inf in inferences:
-        key = tuple(getattr(inf, field, None) for field in required_match_fields)
-        keyed_inferences[key].append(inf)
-
-    keyed_ground_truths = defaultdict(list)
-    for gt in ground_truths:
-        key = tuple(getattr(gt, field, None) for field in required_match_fields)
-        keyed_ground_truths[key].append(gt)
-
-    keyed_ignore_ground_truths = defaultdict(list)
-    if ignored_ground_truths:
-        for gt in ignored_ground_truths:
-            key = tuple(getattr(gt, field, None) for field in required_match_fields)
-            keyed_ignore_ground_truths[key].append(gt)
-
-    keys = {*keyed_inferences.keys(), *keyed_ground_truths.keys(), *keyed_ignore_ground_truths.keys()}
-
-    inf_matches = [
-        _match_inferences(
-            keyed_ground_truths[key],
-            keyed_inferences[key],
-            ignored_ground_truths=keyed_ignore_ground_truths[key],
-            mode=mode,
-            iou_threshold=iou_threshold,
-        )
-        for key in keys
-    ]
-    flattened_matched = []
-    flattened_unmatched_gt = []
-    flattened_unmatched_inf = []
-    for inf_match in inf_matches:
-        flattened_matched.extend(inf_match.matched)
-        flattened_unmatched_gt.extend(inf_match.unmatched_gt)
-        flattened_unmatched_inf.extend(inf_match.unmatched_inf)
-
-    return InferenceMatches(
-        matched=flattened_matched,
-        unmatched_gt=flattened_unmatched_gt,
-        unmatched_inf=flattened_unmatched_inf,
+    keyed_inferences = _get_keyed_items(inferences, required_match_fields)
+    keyed_ground_truths = _get_keyed_items(ground_truths, required_match_fields)
+    keyed_ignore_ground_truths = (
+        _get_keyed_items(ignored_ground_truths, required_match_fields) if ignored_ground_truths else defaultdict(list)
     )
 
-
-@dataclass(frozen=True)
-class MulticlassInferenceMatches(Generic[GT, Inf]):
-    """
-    The result of [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass], providing lists
-    of matches between ground truth and inference objects, unmatched ground truths, and unmatched inferences.
-
-    Unmatched ground truths may be matched with an inference of a different class when no inference of its own class is
-    suitable, i.e. a "confused" match. `MultiClassInferenceMatches` can be used to calculate metrics such as precision
-    and recall per class, after applying some confidence threshold on the returned inference objects.
-
-    Objects are of type [`LabeledBoundingBox`][kolena.annotation.LabeledBoundingBox] or
-    [`LabeledPolygon`][kolena.annotation.LabeledPolygon], depending on the type of inputs provided to
-    [`match_inferences_multiclass`][kolena.metrics.match_inferences_multiclass].
-    """
-
-    matched: List[Tuple[GT, Inf]]
-    """
-    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
-    Considered as true positive detections after applying some confidence threshold.
-    """
-
-    unmatched_gt: List[Tuple[GT, Optional[Inf]]]
-    """
-    Pairs of unmatched ground truth objects with its confused inference object (i.e. IoU above threshold with
-    mismatching `label`) and calculated IoU, if such an inference exists. Considered as false negatives and
-    "confused" detections.
-    """
-
-    unmatched_inf: List[Inf]
-    """
-    Unmatched inference objects, along with the maximum IoU over all ground truths.
-    Considered as false positives after applying some confidence threshold.
-    """
+    matched, unmatched_gt, unmatched_inf = _process_matches(
+        keyed_ground_truths,
+        keyed_inferences,
+        keyed_ignore_ground_truths,
+        _match_inferences,
+        mode,
+        iou_threshold,
+    )
+    return InferenceMatches(
+        matched=matched,
+        unmatched_gt=unmatched_gt,
+        unmatched_inf=unmatched_inf,
+    )
 
 
 def _match_inferences_multiclass(
@@ -457,44 +478,23 @@ def match_inferences_multiclass(
             iou_threshold=iou_threshold,
         )
 
-    keyed_inferences = defaultdict(list)
-    for inf in inferences:
-        key = tuple(getattr(inf, field, None) for field in required_match_fields)
-        keyed_inferences[key].append(inf)
+    keyed_inferences = _get_keyed_items(inferences, required_match_fields)
+    keyed_ground_truths = _get_keyed_items(ground_truths, required_match_fields)
+    keyed_ignore_ground_truths = (
+        _get_keyed_items(ignored_ground_truths, required_match_fields) if ignored_ground_truths else defaultdict(list)
+    )
 
-    keyed_ground_truths = defaultdict(list)
-    for gt in ground_truths:
-        key = tuple(getattr(gt, field, None) for field in required_match_fields)
-        keyed_ground_truths[key].append(gt)
-
-    keyed_ignore_ground_truths = defaultdict(list)
-    if ignored_ground_truths:
-        for gt in ignored_ground_truths:
-            key = tuple(getattr(gt, field, None) for field in required_match_fields)
-            keyed_ignore_ground_truths[key].append(gt)
-
-    keys = {*keyed_inferences.keys(), *keyed_ground_truths.keys(), *keyed_ignore_ground_truths.keys()}
-
-    inf_matches = [
-        _match_inferences_multiclass(
-            keyed_ground_truths[key],
-            keyed_inferences[key],
-            ignored_ground_truths=keyed_ignore_ground_truths[key],
-            mode=mode,
-            iou_threshold=iou_threshold,
-        )
-        for key in keys
-    ]
-    flattened_matched = []
-    flattened_unmatched_gt = []
-    flattened_unmatched_inf = []
-    for inf_match in inf_matches:
-        flattened_matched.extend(inf_match.matched)
-        flattened_unmatched_gt.extend(inf_match.unmatched_gt)
-        flattened_unmatched_inf.extend(inf_match.unmatched_inf)
+    matched, unmatched_gt, unmatched_inf = _process_matches(
+        keyed_ground_truths,
+        keyed_inferences,
+        keyed_ignore_ground_truths,
+        _match_inferences_multiclass,
+        mode,
+        iou_threshold,
+    )
 
     return MulticlassInferenceMatches(
-        matched=flattened_matched,
-        unmatched_gt=flattened_unmatched_gt,
-        unmatched_inf=flattened_unmatched_inf,
+        matched=matched,
+        unmatched_gt=unmatched_gt,
+        unmatched_inf=unmatched_inf,
     )
