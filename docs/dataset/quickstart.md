@@ -79,7 +79,7 @@ model testing and evaluation.
 
     The example code contains a script [`keypoint_detection/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/keypoint_detection/keypoint_detection/upload_dataset.py)
     which will process the CSV file `s3://kolena-public-examples/300-W/raw/300-W.csv`
-    and register it as a dataset in Kolena using the `register_dataset` function.
+    and upload it to Kolena using the `upload_dataset` function.
 
     First, let's first configure our environment by populating the `KOLENA_TOKEN`
     environment variable. Visit the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page to
