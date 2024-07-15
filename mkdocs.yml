@@ -20,6 +20,7 @@ nav:
       - Task Metrics: dataset/advanced-usage/task-metrics.md
       - Programatically Compare Models: dataset/advanced-usage/quality-standard-results.md
       - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
+      - Extracting Metadata from Image Fields: automations/extract-image-metadata.md
       - Setting Up Natural Language Search: automations/set-up-natural-language-search.md
     - Connecting Cloud Storage:
       - Connecting Cloud Storage: connecting-cloud-storage/index.md
