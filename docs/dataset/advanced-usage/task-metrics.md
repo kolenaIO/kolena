@@ -70,7 +70,7 @@ supports [`average precision`](../../metrics/average-precision.md), [`precision`
 Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that
 correspond with your desired metrics. For numeric evaluations you are able to
 select from `count`, `mean`, `median`, `min`, `max`, `stddev` and `sum` aggregations options.
-For categorical evaluations (class lable, boolean, etc) `rate` and `count` aggregation options are available.
+For categorical evaluations (class label, boolean, etc) `rate` and `count` aggregation options are available.
 
 The Kolena web application currently supports [`precision`](../../metrics/precision.md),
 [`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md),

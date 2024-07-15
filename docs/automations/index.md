@@ -6,7 +6,7 @@ hide:
 
 # :kolena-rocket-20: Advanced Usage
 
-This section contains tutorial documentation for Kolena automations.
+This section contains tutorial documentation for Kolena automation.
 
 <div class="grid cards" markdown>
 - [:kolena-properties-16: Automatically Extract Text Properties](./extract-text-metadata.md)

@@ -33,4 +33,9 @@ This section contains tutorial documentation for advanced features.
     Automatically or manually extract embeddings from images to
     enable natural language and similar image search.
 
+- [:kolena-take-action-16: Programmatically Compare results](./quality-standard-results.md)
+
+    ---
+    Run model comparisons programmatically and add model improvements as requirements into your CI pipelines.
+
 </div>
