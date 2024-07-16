@@ -1,5 +1,5 @@
 ---
-icon: simple/microsoftazure
+icon: material/microsoft-azure
 ---
 
 # Connecting Cloud Storage: <nobr>:material-microsoft-azure: Azure Blob Storage</nobr>
