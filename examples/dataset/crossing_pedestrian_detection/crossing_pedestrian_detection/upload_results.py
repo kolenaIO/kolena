@@ -126,6 +126,10 @@ def run(args: Namespace) -> None:
     split_model = args.model.split("_")
     inference_data = process_inf_data(split_model[0], split_model[1])
     df_inf = pd.DataFrame(list(inference_data.items()), columns=["locator", "raw_inferences"])
+
+    if args.sample_count > 0:
+        df_inf = df_inf[: args.sample_count]
+
     upload_object_detection_results(
         args.dataset,
         args.model,
@@ -143,6 +147,12 @@ def main() -> None:
         type=str,
         default=DEFAULT_DATASET_NAME,
         help="Optionally specify a custom dataset name to test.",
+    )
+    ap.add_argument(
+        "--sample-count",
+        type=int,
+        default=0,
+        help="Number of samples to use. All samples are used by default.",
     )
     run(ap.parse_args())
 

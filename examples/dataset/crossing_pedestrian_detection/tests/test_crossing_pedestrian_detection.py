@@ -39,5 +39,6 @@ def test__crossing_pedestrian_detection_upload_results__smoke(dataset_name: str)
     args = Namespace(
         model="c3d_sort",
         dataset=dataset_name,
+        sample_count=50,
     )
     upload_results_run(args)
