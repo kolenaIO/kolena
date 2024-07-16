@@ -44,6 +44,17 @@ get started with Automatic Metadata Extraction for Images.
     <figcaption>Example of editing the list of extracted metadata</figcaption>
     </figure>
 
+!!! example
+    Once the properties are extracted they will be presented on the dataset as image metadata. You can interact with
+    these metadata similar to how interact with uploaded metadata. This means you are able to filter, sort, create test cases
+    and create plots in the debugger tab with them.
+    <figure markdown>
+    ![Hydrated Question](../../assets/images/hydrated-image-example-light.png#only-light)
+    ![Hydrated Question](../../assets/images/hydrated-image-example-dark.png#only-dark)
+    <figcaption>Example of Hydrated Text - Note that the
+        purple metadata indicate that they are auto-extracted </figcaption>
+    </figure>
+
 ## Available Image Metadata Properties
 
 The following properties are available for automatic image metadata extraction:
