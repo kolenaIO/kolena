@@ -35,6 +35,7 @@ class RegisterRequest:
     id_fields: List[str]
     uuid: str
     sources: Optional[List[Dict[str, str]]]
+    append_only: bool = False
 
 
 @dataclass(frozen=True)
