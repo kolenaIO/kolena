@@ -38,4 +38,9 @@ This section contains tutorial documentation for advanced features.
     ---
     Run model comparisons programmatically and add model improvements as requirements into your CI pipelines.
 
+- [:kolena-media-16: Extracting Metadata from Images](./image-metadata-extraction.md)
+
+    ---
+    Extract metadata from image files automatically to enhance testing.
+
 </div>
