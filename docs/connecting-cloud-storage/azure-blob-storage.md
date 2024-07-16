@@ -2,7 +2,7 @@
 icon: simple/microsoftazure
 ---
 
-# Connecting Cloud Storage: <nobr>:simple-microsoftazure: Azure Blob Storage</nobr>
+# Connecting Cloud Storage: <nobr>:material-microsoft-azure: Azure Blob Storage</nobr>
 
 Kolena connects with [Azure Blob Storage](https://azure.microsoft.com/en-ca/products/storage/blobs)
 to load files (e.g. images, videos, documents) directly into your browser for visualization.

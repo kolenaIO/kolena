@@ -31,7 +31,7 @@ Integrations can be managed by organization administrators by navigating to the 
 
     Integrate with Google Cloud Storage.
 
-- [:simple-microsoftazure: Azure Blob Storage](./azure-blob-storage.md)
+- [:material-microsoft-azure: Azure Blob Storage](./azure-blob-storage.md)
 
     ---
 
