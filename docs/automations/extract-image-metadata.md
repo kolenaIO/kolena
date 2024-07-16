@@ -13,8 +13,8 @@ to get started with Automatic Metadata Extraction for Images.
     Scroll down to the "Details" page of your dataset.
 
     <figure markdown>
-    ![Navigating to Configuration](../assets/images/navigate-to-text-extraction-config-dark.gif#only-dark)
-    ![Navigating to Configuration](../assets/images/navigate-to-text-extraction-config-light.gif#only-light)
+    ![Navigating to Configuration](../assets/images/navigate-to-image-extraction-config-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/navigate-to-image-extraction-config-light.gif#only-light)
     <figcaption>Navigating to Metadata Configuration</figcaption>
     </figure>
 
@@ -22,35 +22,33 @@ to get started with Automatic Metadata Extraction for Images.
     Identify and select the image field(s) from your dataset that you want to analyze.
     Also select the properties of the field(s) you wish to extract.
 
-    In the examble below we extract properties from the `best_answer` and `question` fields. For the `best_answer` field,
-    we display `word_count` and `topic_tag`, whereas for the `question` field we display `word_count`, `readability` and
-    `question_type`.
+    In the examble below we extract properties from the `locator` field.
 
     <figure markdown>
-    ![Select Properties of Text Fields](../assets/images/select-text-extraction-properties-dark.gif#only-dark)
-    ![Select Properties of Text Fields](../assets/images/select-text-extraction-properties-light.gif#only-light)
+    ![Select Properties of Image Fields](../assets/images/select-image-extraction-properties-dark.gif#only-dark)
+    ![Select Properties of Image Fields](../assets/images/select-image-extraction-properties-light.gif#only-light)
     <figcaption>Select Specific Properties of Interest For Relevant Fields</figcaption>
     </figure>
 
 ??? "3. Edit Metadata Configuration"
     To make additional metadata visible (or to hide existing metadata), the configuration can be edited.
 
-    This will add/remove metadata properties. The example below shows how to add the `character_count` property
-    to the `best_answer`. The properties shown in purple
+    This will add/remove metadata properties. The example below shows how to add the `size` property
+    to the image in the `locator` field. The properties shown in purple
     are the automatically extracted properties.
 
     <figure markdown>
-    ![Edit Which Properties Are Visible](../assets/images/edit-text-extraction-properties-dark.gif#only-dark)
-    ![Edit Which Properties Are Visible](../assets/images/edit-text-extraction-properties-light.gif#only-light)
-    <figcaption>Example of adding `character_count` to the list of extracted properties</figcaption>
+    ![Edit Which Properties Are Visible](../assets/images/edit-image-extraction-properties-dark.gif#only-dark)
+    ![Edit Which Properties Are Visible](../assets/images/edit-image-extraction-properties-light.gif#only-light)
+    <figcaption>Example of adding `size` to the list of extracted properties</figcaption>
     </figure>
 
 !!! example
 
     <figure markdown>
-    ![Hydrated Question](../assets/images/hydrated-text-example-light.png#only-light)
-    ![Hydrated Question](../assets/images/hydrated-text-example-dark.png#only-dark)
-    <figcaption>Example of Hydrated Text - Note that the
+    ![Hydrated Question](../assets/images/hydrated-image-example-light.png#only-light)
+    ![Hydrated Question](../assets/images/hydrated-image-example-dark.png#only-dark)
+    <figcaption>Example of a Hydrated Image - Note that the
         purple metadata indicate that they are auto-extracted </figcaption>
     </figure>
 
@@ -67,7 +65,7 @@ The following properties are available for automatic image metadata extraction:
 | [Pixel Entropy](#pixel-entropy) | Entropy of color distribution |
 | [Sharpness](#sharpness) | Edge density from Canny edge detection |
 | [Size](#size) | Product of image height and width |
-| [Symmetry](#symmetry) | Level of horizontal symmetry in image |
+| [Symmetry](#symmetry) | Level of vertical symmetry in image |
 | [Width](#width) | Width of image in pixels |
 
 ## Feature Descriptions
@@ -83,7 +81,11 @@ $$
 
 !!! example
 
-    "What phenomenon was conclusively proven by J. B. Rhine?" has  **55** characters (including spaces).
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-aspect-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/extraction-aspect-light.gif#only-light)
+    <figcaption>The above example illustrates variation in aspect ratio</figcaption>
+    </figure>
 
 ### Brightness
 
@@ -91,58 +93,73 @@ $$
 It can be useful in scenarios where the brightness impact the analysis or model performance.
 
 $$
-\text{Brightness} = \frac{\sum \text{Pixel Intensities}}{\text{Number of Pixels} \times \text{Max Pixel Intensity}}
+\text{Brightness} = \frac{\sum \text{Pixel Intensities}}{\text{Number of Pixels} \times \text{255}}
 $$
 
 !!! example
 
-    "Lindenstrauss" is considered a difficult word.
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-brightness-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/extraction-brightness-light.gif#only-light)
+    <figcaption>The above example illustrates variation in brightness</figcaption>
+    </figure>
 
 ### Contrast
 
 **Contrast** measures the standard deviation of pixel intensities in an image, indicating the degree of variation
-between light and dark areas. The value is normalized by a maximum contrast value.
+between light and dark areas. The standard-deviation is normalized and bounded by a constant 200.
+This value ranges from 0 - 1
+with larger values denoting higher contrast in an image. This can be useful in scenarios where the contrast
+impacts the analysis or model performance.
 
 $$
-\text{Contrast} = \min\left(1, \frac{\sigma_{\text{Pixel Intensities}}}{\text{Max Contrast}}\right)
+\text{Contrast} = \min\left(1, \frac{\sigma_{\text{Pixel Intensities}}}{\text{200}}\right)
 $$
 
 !!! example
 
-    "Lindenstrauss" is considered a difficult word.
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-contrast-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/extraction-contrast-light.gif#only-light)
+    <figcaption>The above example illustrates variation in contrast</figcaption>
+    </figure>
 
 ### Height
 
 **Height** measures the height of the image in pixels. This is a straightforward dimension indicating the number
-of pixel rows in the image.
+of pixel rows in the image. This enables analysing any behaviours that vary with changing height.
 
 $$
 \text{Height} = \text{Number of Pixel Rows}
 $$
 
-!!! example
-
-    "Lindenstrauss" is considered a difficult word.
-
 ### Pixel Entropy
 
 **Pixel entropy** measures the entropy of the color distribution in an image, providing a measure of the image's
-complexity or randomness. Higher entropy indicates more complexity.
+complexity or randomness. Higher entropy indicates more complexity. This can allow understanding of model behaviour at
+varying levels of complexity.
 
 $$
-\text{Pixel Entropy} = -\sum_{i=1}^{N} p_i \log(p_i)
+\text{Pixel Entropy} = H\left(\frac{c_i}{\sum_{i=1}^{N} c_i}\right)
+$$
+
+$$
+\text{where } c_i \text{ is the count of unique pixel } i, \text{ and } H \text{ denotes the Shannon entropy.}
 $$
 
 !!! example
 
-    "Lindenstrauss" is considered a difficult word.
-
-where \( p_i \) is the probability of each unique pixel value.
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-entropy-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/extraction-entropy-light.gif#only-light)
+    <figcaption>The above example illustrates variation in entropy</figcaption>
+    </figure>
 
 ### Sharpness
 
 **Sharpness** measures the edge density in an image using the Canny edge detection algorithm. This can indicate how clear
-or blurred an image is. The value is the proportion of edge pixels to total pixels.
+or blurred an image is. The value is the proportion of edge pixels to total pixels. This can be useful in identifying
+any discrepancies in model performance as it pertains to the burriness or sharpness of an image.
 
 $$
 \text{Sharpness} = \frac{\text{Number of Edge Pixels}}{\text{Total Number of Pixels}}
@@ -150,7 +167,11 @@ $$
 
 !!! example
 
-    "Lindenstrauss" is considered a difficult word.
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-sharpness-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/extraction-sharpness-light.gif#only-light)
+    <figcaption>Illustration of the difference between images with low sharpness and high sharpness</figcaption>
+    </figure>
 
 ### Size
 
@@ -160,32 +181,35 @@ $$
 \text{Size} = \text{Height} \times \text{Width}
 $$
 
-!!! example
+!!! figure
 
-    "Lindenstrauss" is considered a difficult word.
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-area.png)
+    </figure>
 
 ### Symmetry
 
 **Symmetry** measures the level of horizontal symmetry in an image by comparing the left and right halves.
-The value ranges from 0 to 1, with 1 indicating perfect symmetry.
+The value ranges from 0 to 1, with 1 indicating perfect symmetry. This can highlight any behavioural differences
+in data that is more symmetrical in nature.
 
 $$
-\text{Symmetry} = 1 - \frac{\text{MSE(Left Half, Mirrored Right Half)}}{\text{Max Symmetry}}
+\text{Symmetry} = 1 - \frac{\text{MSE(Left Half, Mirrored Right Half)}}{\text{15000}}
 $$
 
 !!! example
 
-    "Lindenstrauss" is considered a difficult word.
+    <figure markdown>
+    ![Navigating to Configuration](../assets/images/extraction-symmetry-dark.gif#only-dark)
+    ![Navigating to Configuration](../assets/images/extraction-symmetry-light.gif#only-light)
+    <figcaption>The above example illustrates variation in symmetry</figcaption>
+    </figure>
 
 ### Width
 
 **Width** measures the width of the image in pixels. This is a straightforward dimension indicating the number of
-pixel columns in the image.
+pixel columns in the image. This enables inspecting any behaviours that vary with changing width.
 
 $$
 \text{Width} = \text{Number of Pixel Columns}
 $$
-
-!!! example
-
-    "Lindenstrauss" is considered a difficult word.
