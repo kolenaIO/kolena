@@ -18,8 +18,9 @@ nav:
         - Natural Language: dataset/advanced-usage/dataset-formatting/natural-language.md
         - Audio: dataset/advanced-usage/dataset-formatting/audio.md
       - Task Metrics: dataset/advanced-usage/task-metrics.md
-      - Programatically Compare Models: dataset/advanced-usage/quality-standard-results.md
-      - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
+      - Programmatically Compare Models: dataset/advanced-usage/quality-standard-results.md
+      - Automatically Extract Text Properties: automations/extract-text-metadata.md
+      - Automatically Extract Image Properties: automations/extract-image-metadata.md
       - Setting Up Natural Language Search: automations/set-up-natural-language-search.md
     - Connecting Cloud Storage:
       - Connecting Cloud Storage: connecting-cloud-storage/index.md
