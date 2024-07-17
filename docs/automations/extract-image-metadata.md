@@ -181,12 +181,6 @@ $$
 \text{Size} = \text{Height} \times \text{Width}
 $$
 
-!!! figure
-
-    <figure markdown>
-    ![Navigating to Configuration](../assets/images/extraction-area.png)
-    </figure>
-
 ### Symmetry
 
 **Symmetry** measures the level of horizontal symmetry in an image by comparing the left and right halves.

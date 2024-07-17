@@ -20,6 +20,13 @@ This section contains tutorial documentation for advanced features.
     ---
     Setup task specific or custom metrics to evaluate model performance across different test cases with ease.
 
+- [:kolena-properties-16: Automatically Extract Image Properties](../../automations/extract-image-metadata.md)
+
+    ---
+
+    Extract up to 9 properties automatically from any of your text data to speed the
+    data quality and model quality assessment efforts.
+
 - [:kolena-properties-16: Extracting Metadata from Text Fields](../../automations/extract-text-metadata.md)
 
     ---
