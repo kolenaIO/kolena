@@ -17,6 +17,7 @@ import inspect
 import threading
 import time
 import uuid
+from collections import defaultdict
 from datetime import datetime
 from typing import Any
 from typing import Callable
@@ -70,6 +71,7 @@ class _Trace:
         *,
         dataset_name: Optional[str] = None,
         model_name: Optional[str] = None,
+        model_name_field: Optional[str] = None,
         sync_interval=THIRTY_SECONDS,
         id_fields: Optional[List[str]] = None,
         record_timestamp: bool = True,
@@ -80,11 +82,18 @@ class _Trace:
         if not dataset_name:
             dataset_name = func.__name__
         self.dataset_name = dataset_name
-        if not model_name:
-            model_name = f"{func.__name__}_model"
-        self.model_name = model_name
+        if model_name:
+            self.model_name = model_name
+        else:
+            self.model_name = f"{self.dataset_name}_model"
+        if model_name_field:
+            if model_name_field not in self.signature.parameters:
+                raise ValueError(f"Model Name Field {model_name_field} not found in function signature")
+            self.model_name_field = model_name_field
         try:
             self.existing_dataset = _load_dataset_metadata(self.dataset_name)
+            if sorted(id_fields) != sorted(self.existing_dataset.id_fields):
+                raise ValueError(f"Id Fields {id_fields} do not match existing dataset id fields")
             self.id_fields = self.existing_dataset.id_fields
         except NotFoundError:
             self.existing_dataset = None
@@ -95,7 +104,7 @@ class _Trace:
             if field not in self.signature.parameters and field != KOLENA_DEFAULT_ID:
                 raise ValueError(f"Id Field {field} not found in function signature")
         self.datapoints = []
-        self.results = []
+        self.results = defaultdict(list)
         self.last_update = time.time()
         self.task_ongoing = None
         self.sync_interval = sync_interval
@@ -132,7 +141,10 @@ class _Trace:
             result[KOLENA_TIME_ELAPSED_KEY] = (end_time - start_time).total_seconds()
         self._add_id_fields(datapoint, result)
         self.datapoints.append(datapoint)
-        self.results.append(result)
+        model_name = self.model_name
+        if self.model_name_field and arguments.get(self.model_name_field) is not None:
+            model_name = arguments.get(self.model_name_field)
+        self.results[model_name].append(result)
         if time.time() - self.last_update > self.sync_interval and (
             self.task_ongoing is None or not self.task_ongoing.is_alive()
         ):
@@ -143,12 +155,15 @@ class _Trace:
     def _push_data(self):
         try:
             dataset_df = pd.DataFrame(self.datapoints)
-            result_df = pd.DataFrame(self.results)
+
             _upload_dataset(self.dataset_name, dataset_df, id_fields=self.id_fields, append_only=True)
-            upload_results(self.dataset_name, self.model_name, result_df)
+            for model_name, results in self.results.items():
+                result_df = pd.DataFrame(results)
+                upload_results(self.dataset_name, model_name, result_df)
+                self.results = self.results[result_df.shape[0] :]
             self.last_update = time.time()
             self.datapoints = self.datapoints[dataset_df.shape[0] :]
-            self.results = self.results[result_df.shape[0] :]
+
         except Exception as e:
             print(f"Failed to sync data: {e}")
 
@@ -164,6 +179,7 @@ def KolenaTrace(
     *,
     dataset_name: Optional[str] = None,
     model_name: Optional[str] = None,
+    model_name_field: Optional[str] = None,
     sync_interval=THIRTY_SECONDS,
     id_fields: Optional[list[str]] = None,
     record_timestamp: bool = True,
@@ -183,6 +199,8 @@ def KolenaTrace(
     :param dataset_name: The name of the dataset to be created, if not provided the function name will be used
     :param model_name: The name of the model to be created, if not provided the function name suffixed with _model
     will be used
+    :param model_name_field: The field in the input that should be used as model name,
+    if this would override the model name
     :param sync_interval: The interval at which the data should be synced to the server, default is 30 seconds
     :param id_fields: The fields in the input that should be used as id fields,
     if not provided a default id field will be used
@@ -195,6 +213,7 @@ def KolenaTrace(
             func,
             dataset_name=dataset_name,
             model_name=model_name,
+            model_name_field=model_name_field,
             sync_interval=sync_interval,
             id_fields=id_fields,
             record_timestamp=record_timestamp,
@@ -206,6 +225,7 @@ def KolenaTrace(
                 func,
                 dataset_name=dataset_name,
                 model_name=model_name,
+                model_name_field=model_name_field,
                 sync_interval=sync_interval,
                 id_fields=id_fields,
                 record_timestamp=record_timestamp,
