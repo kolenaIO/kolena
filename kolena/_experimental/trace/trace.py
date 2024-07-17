@@ -12,22 +12,55 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import atexit
+import dataclasses
 import inspect
 import threading
 import time
 import uuid
 from datetime import datetime
+from typing import Any
 from typing import Callable
+from typing import Dict
+from typing import List
 from typing import Optional
+from typing import Set
+from typing import Tuple
 
+import numpy as np
 import pandas as pd
 
+import kolena
+from kolena._utils.datatypes import DataObject
 from kolena.dataset import upload_results
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _upload_dataset
 from kolena.errors import NotFoundError
 
-ONE_MINUTE = 10
+THIRTY_SECONDS = 30
+KOLENA_DEFAULT_ID = "_kolena_id"
+KOLENA_TIMESTAMP_KEY = "_kolena_timestamp"
+KOLENA_TIME_ELAPSED_KEY = "_kolena_time_elapsed"
+
+
+def _serialize_item(value: Any):
+    if isinstance(value, (bool, str, int, float)) or value is None:
+        return value
+    elif isinstance(value, np.generic):  # numpy scalars are common enough to be worth specific handling
+        for base_type, numpy_type in [(bool, np.bool_), (int, np.integer), (float, np.inexact)]:
+            if isinstance(value, numpy_type):  # cast if there is a match, otherwise fallthrough
+                return base_type(value)
+    elif isinstance(value, Dict):
+        return {key: _serialize_item(subvalue) for key, subvalue in value.items()}
+    elif isinstance(value, DataObject):
+        return value._to_dict()
+    elif dataclasses.is_dataclass(value):
+        return _serialize_item(dataclasses.asdict(value))
+    elif hasattr(value, "__dict__"):
+        return _serialize_item(value.__dict__)
+    elif isinstance(value, (List, Set, Tuple, pd.Series, np.ndarray)):
+        return [_serialize_item(item) for item in value]
+    else:
+        return str(value)
 
 
 class _Trace:
@@ -37,9 +70,11 @@ class _Trace:
         *,
         dataset_name: Optional[str] = None,
         model_name: Optional[str] = None,
-        sync_interval=ONE_MINUTE,
-        id_fields: Optional[list[str]] = None,
+        sync_interval=THIRTY_SECONDS,
+        id_fields: Optional[List[str]] = None,
+        record_timestamp: bool = True,
     ):
+        kolena.initialize()
         self.func = func
         self.signature = inspect.signature(func)
         if not dataset_name:
@@ -54,41 +89,56 @@ class _Trace:
         except NotFoundError:
             self.existing_dataset = None
             if not id_fields:
-                id_fields = ["_kolena_id"]
+                id_fields = [KOLENA_DEFAULT_ID]
             self.id_fields = id_fields
         for field in self.id_fields:
-            if field not in self.signature.parameters and field != "_kolena_id":
+            if field not in self.signature.parameters and field != KOLENA_DEFAULT_ID:
                 raise ValueError(f"Id Field {field} not found in function signature")
         self.datapoints = []
         self.results = []
         self.last_update = time.time()
         self.task_ongoing = None
         self.sync_interval = sync_interval
+        self.record_timestamp = record_timestamp
         atexit.register(self._clean_up)
 
+    def _add_id_fields(self, datapoint: Dict, result: Dict) -> None:
+        for field in self.id_fields:
+            if field == KOLENA_DEFAULT_ID:
+                call_id = uuid.uuid4().hex
+                datapoint[KOLENA_DEFAULT_ID] = call_id
+                result[KOLENA_DEFAULT_ID] = call_id
+            else:
+                field_value = datapoint.get(field)
+                if field_value is None:
+                    raise ValueError(f"Id Field {field} cannot be None in datapoint input")
+                result[field] = field_value
+
     def __call__(self, *args, **kwargs):
-        arguments = self.signature.bind(*args, **kwargs).arguments
-        start_time = datetime.now().isoformat()
-        result = self.func(**arguments)
-        end_time = datetime.now().isoformat()
-        call_id = uuid.uuid4().hex
-        arguments["_kolena_timestamp"] = start_time
-        arguments["_kolena_id"] = call_id
-        result_with_kolena_fields = {
-            "_kolena_id": call_id,
-            "result": result.__dict__ if hasattr(result, "__dict__") else str(result),
-            "_kolena_timestamp": end_time,
-        }
-        self.datapoints.append(
-            {key: value.__dict__ if hasattr(value, "__dict__") else str(value) for key, value in arguments.items()},
-        )
-        self.results.append(result_with_kolena_fields)
+        bounded_arguments = self.signature.bind(*args, **kwargs)
+        bounded_arguments.apply_defaults()
+        arguments = bounded_arguments.arguments
+
+        start_time = datetime.now()
+        output = self.func(**arguments)
+        end_time = datetime.now()
+        datapoint = _serialize_item(arguments)
+        result = _serialize_item(output)
+        if not isinstance(result, dict):
+            result = {"result": result}
+        if self.record_timestamp:
+            datapoint[KOLENA_TIMESTAMP_KEY] = start_time.isoformat()
+            result[KOLENA_TIMESTAMP_KEY] = end_time.isoformat()
+            result[KOLENA_TIME_ELAPSED_KEY] = (end_time - start_time).total_seconds()
+        self._add_id_fields(datapoint, result)
+        self.datapoints.append(datapoint)
+        self.results.append(result)
         if time.time() - self.last_update > self.sync_interval and (
             self.task_ongoing is None or not self.task_ongoing.is_alive()
         ):
             self.task_ongoing = threading.Thread(target=self._push_data)
             self.task_ongoing.start()
-        return result
+        return output
 
     def _push_data(self):
         try:
@@ -114,9 +164,32 @@ def KolenaTrace(
     *,
     dataset_name: Optional[str] = None,
     model_name: Optional[str] = None,
-    sync_interval=ONE_MINUTE,
+    sync_interval=THIRTY_SECONDS,
     id_fields: Optional[list[str]] = None,
+    record_timestamp: bool = True,
 ):
+    """
+    Use this decorator to trace the function with Kolena, the input and output of this function will be
+    sent as datapoints and results respectively
+    For example:
+    @KolenaTrace(dataset_name="test_trace", id_fields=["request_id"], record_timestamp=False)
+    def predict(data, request_id):
+
+    OR
+    @KolenaTrace
+    def predict(data, request_id):
+
+    :param func: The function to be traced, this is auto populated when used as a decorator
+    :param dataset_name: The name of the dataset to be created, if not provided the function name will be used
+    :param model_name: The name of the model to be created, if not provided the function name suffixed with _model
+    will be used
+    :param sync_interval: The interval at which the data should be synced to the server, default is 30 seconds
+    :param id_fields: The fields in the input that should be used as id fields,
+    if not provided a default id field will be used
+    :param record_timestamp: If True, the timestamp of the input, output, and time elapsed will be recorded,
+    default is True
+
+    """
     if func:
         return _Trace(
             func,
@@ -124,6 +197,7 @@ def KolenaTrace(
             model_name=model_name,
             sync_interval=sync_interval,
             id_fields=id_fields,
+            record_timestamp=record_timestamp,
         )
     else:
 
@@ -134,6 +208,7 @@ def KolenaTrace(
                 model_name=model_name,
                 sync_interval=sync_interval,
                 id_fields=id_fields,
+                record_timestamp=record_timestamp,
             )
 
         return wrapper
