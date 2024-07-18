@@ -240,6 +240,7 @@ def test__upload_object_detection_results_configurations(mocked_upload_results: 
                 iou_threshold=0.152,
                 threshold_strategy="F1-Optimal",
                 min_confidence_score=0.222,
+                required_match_fields=["frame_id"],
             )
 
     patched_metrics.assert_called_once()
@@ -252,4 +253,5 @@ def test__upload_object_detection_results_configurations(mocked_upload_results: 
         iou_threshold=0.152,
         threshold_strategy="F1-Optimal",
         min_confidence_score=0.222,
+        required_match_fields=["frame_id"],
     )

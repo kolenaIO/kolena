@@ -52,7 +52,7 @@ evaluating threshold; otherwise, it's positive.
 
 As the threshold increases, there are fewer false positives and more false negatives, most likely yielding high
 precision and low recall. Conversely, decreasing the threshold may improve recall at the cost of precision. Let's
-compute the precision and recall values at each threhold.
+compute the precision and recall values at each threshold.
 
 <center>
 

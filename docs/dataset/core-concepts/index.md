@@ -55,8 +55,8 @@ You are able to select one or more fields as your ID field during the import pro
 Web App [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets) or the
 SDK by using the [`upload_dataset`](../../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset) function.
 
-**Meta data**: you can add additional informaiton about your
-datapoint simply by adding columns to the dataset with the metadaname and values in each row.
+**Meta data**: you can add additional information about your
+datapoint simply by adding columns to the dataset with the meta data name and values in each row.
 
 **Referenced Files**: each datapoint can contain a primary reference to a file stored on your cloud storage.
 Kolena automatically renders referenced files with column name `locator`. Other column names result in references to appear
