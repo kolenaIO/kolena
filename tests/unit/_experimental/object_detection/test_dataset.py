@@ -30,10 +30,6 @@ from kolena.metrics._geometry import MulticlassInferenceMatches
 object_detection = pytest.importorskip("kolena._experimental.object_detection", reason="requires kolena[metrics] extra")
 
 
-def convert_tuples_to_lists(d: dict) -> dict:
-    return {k: list(v) if isinstance(v, tuple) else v for k, v in d.items()}
-
-
 @pytest.mark.metrics
 @pytest.mark.parametrize(
     "ground_truths,inferences,expected",
