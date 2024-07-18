@@ -17,8 +17,7 @@ from typing import Literal
 from typing import Optional
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluatorConfiguration
 from kolena.workflow import GroundTruth as BaseGroundTruth

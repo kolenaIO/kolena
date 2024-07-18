@@ -19,13 +19,12 @@ from typing import Optional
 from typing import Tuple
 from typing import Type
 
-from pydantic import validate_call
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import get_args
 from kolena._utils.datatypes import get_origin
+from kolena._utils.pydantic_v1 import validate_arguments
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
@@ -165,7 +164,7 @@ class Evaluator(metaclass=ABCMeta):
     configurations: List[EvaluatorConfiguration]
     """The configurations with which to perform evaluation, provided on instantiation."""
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def __init__(self, configurations: Optional[List[EvaluatorConfiguration]] = None):
         if configurations is not None and len(configurations) == 0:
             raise ValueError("empty configuration list provided, at least one configuration required or 'None'")
@@ -221,7 +220,7 @@ class Evaluator(metaclass=ABCMeta):
         """
         raise NotImplementedError
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def compute_test_case_plots(
         self,
         test_case: TestCase,
@@ -242,7 +241,7 @@ class Evaluator(metaclass=ABCMeta):
         """
         return None  # not required
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def compute_test_suite_metrics(
         self,
         test_suite: TestSuite,
@@ -304,7 +303,7 @@ def _maybe_display_name(configuration: Optional[EvaluatorConfiguration]) -> Opti
     return configuration.display_name()
 
 
-@validate_call(config=ValidatorConfig)
+@validate_arguments(config=ValidatorConfig)
 def _configuration_description(configuration: Optional[EvaluatorConfiguration]) -> str:
     display_name = _maybe_display_name(configuration)
     return f"(configuration: {display_name})" if display_name is not None else ""

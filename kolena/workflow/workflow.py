@@ -17,11 +17,11 @@ from typing import Type
 from urllib.parse import quote
 
 import dacite
-from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import Workflow as API
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.state import kolena_initialized
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference

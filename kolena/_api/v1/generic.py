@@ -17,9 +17,8 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class Model:

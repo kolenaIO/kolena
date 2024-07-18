@@ -16,11 +16,12 @@ from typing import Dict
 from typing import Optional
 from typing import Union
 
-from pydantic.dataclasses import dataclass
 from pydantic.types import StrictBool
 from pydantic.types import StrictFloat
 from pydantic.types import StrictInt
 from pydantic.types import StrictStr
+
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class EventAPI:

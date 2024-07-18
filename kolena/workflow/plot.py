@@ -32,12 +32,12 @@ from typing import Sequence
 from typing import Union
 
 import numpy as np
-from pydantic.dataclasses import dataclass
 
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataObject
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 
 NumberSeries = Sequence[Union[float, int]]

@@ -15,10 +15,9 @@ import dataclasses
 from typing import List
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-
 from kolena._experimental.object_detection.workflow import TestSample as BaseTestSample
 from kolena._experimental.object_detection.workflow import ThresholdConfiguration
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.workflow import define_workflow
 from kolena.workflow import GroundTruth as BaseGroundTruth
 from kolena.workflow import Inference as BaseInference

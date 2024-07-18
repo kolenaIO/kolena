@@ -14,10 +14,10 @@
 from typing import List
 from typing import Tuple
 
-from pydantic import validate_call
 from shapely.geometry import Polygon
 from shapely.validation import make_valid
 
+from kolena._utils.pydantic_v1 import validate_arguments
 from kolena._utils.validators import ValidatorConfig
 
 
@@ -25,7 +25,7 @@ def make_valid_polygon(points: List[Tuple[float, float]]) -> None:
     return make_valid(Polygon(points))
 
 
-@validate_call(config=ValidatorConfig)
+@validate_arguments(config=ValidatorConfig)
 def validate_polygon(points: List[Tuple[float, float]]) -> None:
     try:
         make_valid_polygon(points)

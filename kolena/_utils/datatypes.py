@@ -34,11 +34,11 @@ from typing import Union
 import numpy as np
 import pandas as pd
 import pandera as pa
-from pydantic.dataclasses import dataclass
-from pydantic.dataclasses import is_pydantic_dataclass
 
 from kolena._utils import log
 from kolena._utils.dataframes.validators import validate_df_schema
+from kolena._utils.pydantic_v1 import Extra
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 
 
@@ -72,8 +72,7 @@ def _double_under(input: str) -> bool:
 def _allow_extra(cls: Type[T]) -> bool:
     # `pydantic.dataclasses.is_built_in_dataclass` would have false-positive when a stdlib-dataclass decorated
     # class extends a pydantic dataclass
-    pydantic_config: dict = getattr(cls, "__pydantic_config__", {})
-    return is_pydantic_dataclass(cls) and pydantic_config.get("extra", "ignore") == "allow"
+    return "__pydantic_model__" in vars(cls) and cls.__pydantic_model__.Config.extra == Extra.allow  # type: ignore
 
 
 # used to track data_type string -> TypedDataObject
