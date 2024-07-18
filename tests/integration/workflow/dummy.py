@@ -14,8 +14,7 @@
 from dataclasses import field
 from typing import Dict
 
-from pydantic import Extra
-
+from kolena._utils.pydantic_v1 import Extra
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.workflow import define_workflow
 from kolena.workflow import GroundTruth

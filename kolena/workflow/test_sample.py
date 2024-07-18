@@ -51,14 +51,13 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
-from pydantic import StrictBool
-from pydantic import StrictFloat
-from pydantic import StrictInt
-from pydantic import StrictStr
-
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
+from kolena._utils.pydantic_v1 import StrictBool
+from kolena._utils.pydantic_v1 import StrictFloat
+from kolena._utils.pydantic_v1 import StrictInt
+from kolena._utils.pydantic_v1 import StrictStr
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow._validators import get_data_object_field_types
