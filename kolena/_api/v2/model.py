@@ -41,6 +41,7 @@ class IdRequest:
 class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
     model: str
     dataset: str
+    commit: Optional[str] = None
 
 
 @dataclass(frozen=True)
