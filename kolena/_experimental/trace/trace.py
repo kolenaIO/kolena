@@ -174,13 +174,13 @@ class _Trace:
             self._push_data()
 
 
-def KolenaTrace(
+def kolena_trace(
     func: Optional[Callable] = None,
     *,
     dataset_name: Optional[str] = None,
     model_name: Optional[str] = None,
     model_name_field: Optional[str] = None,
-    sync_interval=THIRTY_SECONDS,
+    sync_interval: int = THIRTY_SECONDS,
     id_fields: Optional[list[str]] = None,
     record_timestamp: bool = True,
 ):
@@ -188,13 +188,18 @@ def KolenaTrace(
     Use this decorator to trace the function with Kolena, the input and output of this function will be
     sent as datapoints and results respectively
     For example:
-    @KolenaTrace(dataset_name="test_trace", id_fields=["request_id"], record_timestamp=False)
+    ```python3
+    @kolena_trace(dataset_name="test_trace", id_fields=["request_id"], record_timestamp=False)
     def predict(data, request_id):
-
+        pass
+    ```
     OR
-    @KolenaTrace
-    def predict(data, request_id):
 
+    ```python3
+    @kolena_trace
+    def predict(data, request_id):
+        pass
+    ```
     :param func: The function to be traced, this is auto populated when used as a decorator
     :param dataset_name: The name of the dataset to be created, if not provided the function name will be used
     :param model_name: The name of the model to be created, if not provided the function name suffixed with _model

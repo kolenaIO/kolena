@@ -18,10 +18,10 @@ import uuid
 import pandas as pd
 from pandas._testing import assert_frame_equal
 
+from kolena._experimental.trace import kolena_trace
 from kolena._experimental.trace.trace import KOLENA_DEFAULT_ID
 from kolena._experimental.trace.trace import KOLENA_TIME_ELAPSED_KEY
 from kolena._experimental.trace.trace import KOLENA_TIMESTAMP_KEY
-from kolena._experimental.trace.trace import KolenaTrace
 from kolena.dataset import download_dataset
 from kolena.dataset import download_results
 
@@ -33,7 +33,7 @@ def test__kolena_trace_provided_id() -> None:
     expected_datapoints = []
     expected_results = []
 
-    @KolenaTrace(
+    @kolena_trace(
         dataset_name=dataset_name,
         model_name=model_name,
         id_fields=["a", "b"],
@@ -77,7 +77,7 @@ def test__kolena_trace_with_time_and_default_id() -> None:
     expected_datapoints = []
     expected_results = []
 
-    @KolenaTrace(dataset_name=dataset_name, model_name_field="model", sync_interval=10)
+    @kolena_trace(dataset_name=dataset_name, model_name_field="model", sync_interval=10)
     def predict(model, a, b, e=2, params=None):
         time.sleep(random.random())
         return {"sum": a + b + e + random.random(), "str": str(f"received _result {a + b + e}")}
