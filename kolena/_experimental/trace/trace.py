@@ -13,6 +13,7 @@
 # limitations under the License.
 import atexit
 import dataclasses
+import functools
 import inspect
 import threading
 import time
@@ -109,6 +110,7 @@ class _Trace:
         self.task_ongoing = None
         self.sync_interval = sync_interval
         self.record_timestamp = record_timestamp
+        functools.update_wrapper(self, func)
         atexit.register(self._clean_up)
 
     def _add_id_fields(self, datapoint: Dict, result: Dict) -> None:
