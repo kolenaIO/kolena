@@ -46,7 +46,7 @@ def test__kolena_trace_provided_id() -> None:
 
     for i in range(20):
         if i == 19:
-            time.sleep(30)  # Making sure the last iteration will trigger an sync
+            time.sleep(30)  # Making sure the last iteration will trigger a sync
         result = predict(i, b=i + 1, params={"a": i, "b": i + 1, "c": i + 2})
         result["a"] = i
         result["b"] = i + 1
@@ -83,8 +83,6 @@ def test__kolena_trace_with_time_and_default_id() -> None:
         return {"sum": a + b + e + random.random(), "str": str(f"received _result {a + b + e}")}
 
     for i in range(20):
-        if i == 19:
-            time.sleep(30)  # Making sure the last iteration will trigger an sync
         result = predict(model_name, i, b=i + 1, params={"a": i, "b": i + 1, "c": i + 2})
         expected_results.append(result)
         expected_datapoints.append(
@@ -97,7 +95,7 @@ def test__kolena_trace_with_time_and_default_id() -> None:
             },
         )
 
-    time.sleep(30)  # wait for the datasync to finish
+    predict._clean_up()
 
     uploaded_datapoints = download_dataset(dataset_name).sort_values(by=["a"], ignore_index=True).reset_index()
     uploaded_results = (
