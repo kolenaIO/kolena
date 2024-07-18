@@ -134,7 +134,7 @@ class VideoAsset(BaseVideoAsset):
     end: Optional[float] = None
     """Optionally specify end time of video snippet, in seconds."""
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         if self.start is not None and self.end is not None and self.start > self.end:
             raise ValueError(f"Specified start time '{self.start}' is after specified end time '{self.end}'")
         if self.start is not None and self.end is not None and (self.start < 0 or self.end < 0):

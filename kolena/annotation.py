@@ -91,7 +91,7 @@ class BoundingBox(Annotation):
     def _data_type() -> _AnnotationType:
         return _AnnotationType.BOUNDING_BOX
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         object.__setattr__(self, "width", abs(self.bottom_right[0] - self.top_left[0]))
         object.__setattr__(self, "height", abs(self.bottom_right[1] - self.top_left[1]))
         object.__setattr__(self, "area", self.width * self.height)
@@ -145,7 +145,7 @@ class Polygon(Annotation):
     def _data_type() -> _AnnotationType:
         return _AnnotationType.POLYGON
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         if len(self.points) < 3:
             raise ValueError(f"{type(self).__name__} must have at least three points ({len(self.points)} provided)")
 
@@ -231,7 +231,7 @@ class BoundingBox3D(Annotation):
     def _data_type() -> _AnnotationType:
         return _AnnotationType.BOUNDING_BOX_3D
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         object.__setattr__(self, "volume", reduce(lambda a, b: a * b, self.dimensions))
 
 
@@ -406,7 +406,7 @@ class TextSegment(Annotation):
     end: int
     """Zero-indexed end index (exclusive) of the text segment."""
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         if self.start < 0:
             raise ValueError(f"Start index must be non-negative ({self.start} provided)")
         if self.end < 0:

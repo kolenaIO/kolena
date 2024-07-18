@@ -48,7 +48,7 @@ class GroundTruth(BaseGroundTruth):
 
     n_polygons: int = dataclasses.field(default_factory=lambda: 0)
 
-    def __post_init__(self):
+    def __post_init_post_parse__(self):
         object.__setattr__(self, "n_polygons", len(self.polygons))
 
 

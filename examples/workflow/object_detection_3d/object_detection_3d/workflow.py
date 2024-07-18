@@ -36,7 +36,7 @@ class TestSample(Image):
     image_projection: List[float]  # row-major (4x4)
     right: Optional[ImageAsset] = None
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         if len(self.velodyne_to_camera_transformation) != 16:
             raise ValueError(
                 f"{type(self).__name__} must have valid 16 floats \

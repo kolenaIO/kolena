@@ -101,7 +101,7 @@ class ThresholdedMetrics(TypedDataObject[_MetricsType], metaclass=PreventThresho
         """
         return _MetricsType.THRESHOLDED
 
-    def __post_init__(self) -> None:
+    def __post_init_post_parse__(self) -> None:
         for field in fields(self):
             field_value = getattr(self, field.name)
             if isinstance(field_value, dict):
