@@ -75,9 +75,9 @@ class EvalConfigResults(NamedTuple):
     results: pd.DataFrame
 
 
-def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
+def _iter_result_raw(dataset: str, model: str, batch_size: int, commit: Optional[str] = None) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
-    init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size)
+    init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size, commit=commit)
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
         endpoint_path=Path.LOAD_RESULTS.value,
@@ -86,8 +86,8 @@ def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.D
     )
 
 
-def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
-    df_result_batch = list(_iter_result_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS))
+def _fetch_results(dataset: str, model: str, commit: Optional[str] = None) -> pd.DataFrame:
+    df_result_batch = list(_iter_result_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS, commit=commit))
     return (
         pd.concat(df_result_batch)
         if df_result_batch
@@ -144,6 +144,7 @@ def _send_upload_results_request(
 def download_results(
     dataset: str,
     model: str,
+    commit: Optional[str] = None,
 ) -> Tuple[pd.DataFrame, List[EvalConfigResults]]:
     """
     Download results given dataset name and model name.
@@ -158,6 +159,7 @@ def download_results(
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
+    :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
     :return: Tuple of DataFrame of datapoints and list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
@@ -166,7 +168,7 @@ def download_results(
 
     id_fields = existing_dataset.id_fields
 
-    df = _fetch_results(dataset, model)
+    df = _fetch_results(dataset, model, commit)
 
     if df.empty:
         df_datapoints = pd.DataFrame()
