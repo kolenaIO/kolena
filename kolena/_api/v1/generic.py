@@ -181,3 +181,10 @@ class Search:
     @dataclass(frozen=True)
     class UploadEmbeddingsResponse:
         n_samples: int
+
+
+TestRun.CreateOrRetrieveRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+TestRun.UploadTestSampleMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+TestRun.UploadTestSampleThresholdedMetricsRequest.__pydantic_model__.update_forward_refs()  # type: ignore
+Workflow.EvaluatorResponse.__pydantic_model__.update_forward_refs()  # type: ignore
+Workflow.ListEvaluatorsResponse.__pydantic_model__.update_forward_refs()  # type: ignore
