@@ -18,6 +18,7 @@ nav:
         - Natural Language: dataset/advanced-usage/dataset-formatting/natural-language.md
         - Audio: dataset/advanced-usage/dataset-formatting/audio.md
       - Task Metrics: dataset/advanced-usage/task-metrics.md
+      - Thresholded Results: dataset/advanced-usage/thresholded-results.md
       - Programmatically Compare Models: dataset/advanced-usage/quality-standard-results.md
       - Automatically Extract Text Properties: automations/extract-text-metadata.md
       - Automatically Extract Image Properties: automations/extract-image-metadata.md

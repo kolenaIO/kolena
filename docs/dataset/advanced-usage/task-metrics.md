@@ -65,6 +65,20 @@ supports [`average precision`](../../metrics/average-precision.md), [`precision`
 <figcaption>Task Metrics: Object detection</figcaption>
 </figure>
 
+## Thresholded Object Metrics
+
+Kolena provides the flexibility to calculate and use metrics that are threshold dependent. For more information about
+how to setup thresholded results checkout the [Thresholded Results](../advanced-usage/thresholded-results.md) page.
+
+Once your can uploaded thresholded results, the option to setup thresholded metrics will be available.
+
+<figure markdown>
+![Thresholded Metrics](../../assets/images/thresholded-metrics-dark.gif#only-dark)
+![Thresholded Metrics](../../assets/images/thresholded-metrics-light.gif#only-light)
+
+<figcaption>Task Metrics: Object detection</figcaption>
+</figure>
+
 ## Custom Metrics
 
 Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that
