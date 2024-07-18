@@ -105,7 +105,7 @@ class Workflow:
     inference_type: Type[Inference]
     """The custom [`Inference`][kolena.workflow.Inference] type for the workflow."""
 
-    def __post_init_post_parse__(self) -> None:
+    def __post_init__(self) -> None:
         object.__setattr__(self, "name", self.name.strip())
         if self.name == "":
             raise ValueError("invalid zero-length name provided")
