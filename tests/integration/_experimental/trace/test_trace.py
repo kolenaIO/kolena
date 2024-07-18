@@ -77,19 +77,25 @@ def test__kolena_trace_with_time_and_default_id() -> None:
     expected_datapoints = []
     expected_results = []
 
-    @KolenaTrace(dataset_name=dataset_name, model_name=model_name, sync_interval=10)
-    def predict(a, b, e=2, params=None):
+    @KolenaTrace(dataset_name=dataset_name, model_name_field="model", sync_interval=10)
+    def predict(model, a, b, e=2, params=None):
         time.sleep(random.random())
         return {"sum": a + b + e + random.random(), "str": str(f"received _result {a + b + e}")}
 
     for i in range(20):
         if i == 19:
             time.sleep(30)  # Making sure the last iteration will trigger an sync
-        result = predict(i, b=i + 1, params={"a": i, "b": i + 1, "c": i + 2})
-        result["a"] = i
-        result["b"] = i + 1
+        result = predict(model_name, i, b=i + 1, params={"a": i, "b": i + 1, "c": i + 2})
         expected_results.append(result)
-        expected_datapoints.append({"a": i, "b": i + 1, "e": 2, "params": {"a": i, "b": i + 1, "c": i + 2}})
+        expected_datapoints.append(
+            {
+                "model": model_name,
+                "a": i,
+                "b": i + 1,
+                "e": 2,
+                "params": {"a": i, "b": i + 1, "c": i + 2},
+            },
+        )
 
     time.sleep(30)  # wait for the datasync to finish
 
@@ -107,8 +113,8 @@ def test__kolena_trace_with_time_and_default_id() -> None:
     assert KOLENA_TIMESTAMP_KEY in uploaded_results.columns
     assert KOLENA_TIME_ELAPSED_KEY in uploaded_results.columns
     assert_frame_equal(
-        uploaded_datapoints[["a", "b", "e", "params"]],
-        expected_datapoints_df[["a", "b", "e", "params"]],
+        uploaded_datapoints[["model", "a", "b", "e", "params"]],
+        expected_datapoints_df[["model", "a", "b", "e", "params"]],
         check_dtype=False,
     )
     assert_frame_equal(uploaded_results[["sum", "str"]], expected_results_df[["sum", "str"]], check_dtype=False)
