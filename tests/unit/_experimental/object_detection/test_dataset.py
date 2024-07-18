@@ -214,7 +214,6 @@ def test__upload_object_detection_ignore_field() -> None:
             threshold_strategy="F1-Optimal",
             min_confidence_score=0.222,
         )
-    df.to_csv("test.csv", index=False)
     assert df["TP"][0] == [
         {
             "top_left": [2.0, 2.0],
