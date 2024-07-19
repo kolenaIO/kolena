@@ -77,7 +77,7 @@ class _Trace:
         id_fields: Optional[List[str]] = None,
         record_timestamp: bool = True,
     ):
-        kolena.initialize(verbose=True)
+        kolena.initialize(verbose=False)
         self.func = func
         self.signature = inspect.signature(func)
         if not dataset_name:
