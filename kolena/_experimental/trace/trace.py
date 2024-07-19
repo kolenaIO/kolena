@@ -92,7 +92,7 @@ class _Trace:
         self.model_name_field = model_name_field
         try:
             self.existing_dataset = _load_dataset_metadata(self.dataset_name)
-            if sorted(id_fields) != sorted(self.existing_dataset.id_fields):
+            if self.existing_dataset and sorted(id_fields) != sorted(self.existing_dataset.id_fields):
                 raise ValueError(f"Id Fields {id_fields} do not match existing dataset id fields")
             self.id_fields = self.existing_dataset.id_fields
         except NotFoundError:
@@ -186,7 +186,7 @@ def kolena_trace(
     model_name: Optional[str] = None,
     model_name_field: Optional[str] = None,
     sync_interval: int = THIRTY_SECONDS,
-    id_fields: Optional[list[str]] = None,
+    id_fields: Optional[List[str]] = None,
     record_timestamp: bool = True,
 ):
     """

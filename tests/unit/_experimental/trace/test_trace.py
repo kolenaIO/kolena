@@ -15,15 +15,16 @@ import uuid
 from unittest.mock import Mock
 from unittest.mock import patch
 
+from kolena._api.v2.dataset import EntityData
+from kolena._experimental.trace import kolena_trace
 from kolena._experimental.trace.trace import _Trace
-from kolena._experimental.trace.trace import kolena_trace
 
 
 @patch.object(_Trace, "_push_data")
 def test__kolena_trace(mock_push_data: Mock) -> None:
     mock_push_data.return_value = None
-    dataset_name = "test_kolena_trace_provided_id" + uuid.uuid4().hex
-    model_name = "test_kolena_trace_provided_id_model" + uuid.uuid4().hex
+    dataset_name = "test_kolena_trace" + uuid.uuid4().hex
+    model_name = "test_kolena_trace_model" + uuid.uuid4().hex
 
     @kolena_trace(dataset_name=dataset_name, id_fields=["request_id"], record_timestamp=False)
     def predict(data, request_id):
@@ -85,3 +86,57 @@ def test__kolena_trace(mock_push_data: Mock) -> None:
     assert predict.model_name == model_name
     assert predict.model_name_field == "model_name"
     assert predict.id_fields == ["_kolena_id"]
+
+
+@patch.object(_Trace, "_push_data")
+def test__kolena_trace_failure(mock_push_data: Mock) -> None:
+    mock_push_data.return_value = None
+    dataset_name = "test_kolena_trace_failure" + uuid.uuid4().hex
+
+    try:
+
+        @kolena_trace(model_name_field="model_name")
+        def predict(data, request_id):
+            return data + request_id
+
+        predict(1, 2)
+    except ValueError as e:
+        assert str(e) == "Model Name Field model_name not found in function signature"
+
+    try:
+
+        @kolena_trace(dataset_name=dataset_name, id_fields=["request_id"])
+        def predict(data):  # type: ignore
+            return data
+
+        predict(1)
+    except ValueError as e:
+        assert str(e) == "Id Field request_id not found in function signature"
+
+    try:
+
+        @kolena_trace(dataset_name=dataset_name, id_fields=["request_id"])
+        def predict(data, request_id):  # type: ignore
+            return data
+
+        predict(1, None)
+    except ValueError as e:
+        assert str(e) == "Id Field request_id cannot be None in datapoint input"
+
+    with patch("kolena._experimental.trace.trace._load_dataset_metadata") as mock_load_dataset_metadata:
+        mock_load_dataset_metadata.return_value = EntityData(
+            id=1,
+            name=dataset_name,
+            description="test",
+            id_fields=["A"],
+        )
+
+        try:
+
+            @kolena_trace(dataset_name=dataset_name, id_fields=["request_id"])
+            def predict(data, request_id):
+                return data
+
+        except Exception as e:
+            assert str(e) == "Id Fields ['request_id'] do not match existing dataset id fields"
+        mock_load_dataset_metadata.assert_called_with(dataset_name)
