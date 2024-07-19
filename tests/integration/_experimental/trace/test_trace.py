@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
+import threading
 import time
 import uuid
 
@@ -135,3 +136,55 @@ def test__kolena_trace_with_time_and_multiple_models() -> None:
     )
     assert_frame_equal(uploaded_results_1[["sum", "str"]], expected_results_df_1[["sum", "str"]], check_dtype=False)
     assert_frame_equal(uploaded_results_2[["sum", "str"]], expected_results_df_2[["sum", "str"]], check_dtype=False)
+
+
+def test__kolena_trace_multithreading() -> None:
+    run_id = uuid.uuid4().hex
+    dataset_name = "test__kolena_trace_multithreading" + run_id
+
+    @kolena_trace(dataset_name=dataset_name, id_fields=["request_id"], model_name_field="model_name", sync_interval=5)
+    def predict(data, request_id, model_name):
+        time.sleep(random.random())
+        return {"sum": sum(data), "mean": sum(data) / len(data), "data": data}
+
+    # Worker function to call the predict function multiple times
+    req_id = 0
+    lock = threading.Lock()
+
+    def get_request_id():
+        with lock:
+            nonlocal req_id
+            cid = req_id
+            req_id += 1
+            return cid
+
+    def worker(thread_id, num_calls):
+        for i in range(num_calls):
+            req_id = get_request_id()
+            predict([i, i + 1], req_id, f"{dataset_name}_model_{thread_id}")
+
+    threads = []
+    for i in range(3):
+        thread = threading.Thread(target=worker, args=(i, 20))
+        threads.append(thread)
+        thread.start()
+
+    # Wait for all threads to complete
+    for thread in threads:
+        thread.join()
+
+    predict._clean_up()
+
+    uploaded_datapoints = download_dataset(dataset_name)
+    assert len(uploaded_datapoints) == 60
+    result1 = download_results(dataset_name, f"{dataset_name}_model_0")[1][0].results
+    result2 = download_results(dataset_name, f"{dataset_name}_model_1")[1][0].results
+    result3 = download_results(dataset_name, f"{dataset_name}_model_2")[1][0].results
+    result1 = result1[result1["sum"].notna()]
+    result2 = result2[result2["sum"].notna()]
+    result3 = result3[result3["sum"].notna()]
+    assert len(result1) == 20
+    assert len(result2) == 20
+    assert len(result3) == 20
+    request_ids = list(result1["request_id"]) + list(result2["request_id"]) + list(result3["request_id"])
+    assert sorted(list(uploaded_datapoints["request_id"])) == sorted(request_ids)
