@@ -77,20 +77,19 @@ class _Trace:
         id_fields: Optional[List[str]] = None,
         record_timestamp: bool = True,
     ):
-        kolena.initialize(verbose=False)
+        kolena.initialize(verbose=True)
         self.func = func
         self.signature = inspect.signature(func)
         if not dataset_name:
             dataset_name = func.__name__
         self.dataset_name = dataset_name
-        if model_name:
-            self.model_name = model_name
-        else:
-            self.model_name = f"{self.dataset_name}_model"
+        if not model_name:
+            model_name = f"{self.dataset_name}_model"
+        self.model_name = model_name
         if model_name_field:
             if model_name_field not in self.signature.parameters:
                 raise ValueError(f"Model Name Field {model_name_field} not found in function signature")
-            self.model_name_field = model_name_field
+        self.model_name_field = model_name_field
         try:
             self.existing_dataset = _load_dataset_metadata(self.dataset_name)
             if sorted(id_fields) != sorted(self.existing_dataset.id_fields):
@@ -112,6 +111,7 @@ class _Trace:
         self.record_timestamp = record_timestamp
         functools.update_wrapper(self, func)
         atexit.register(self._clean_up)
+        self.lock = threading.Lock()
 
     def _add_id_fields(self, datapoint: Dict, result: Dict) -> None:
         for field in self.id_fields:
@@ -142,11 +142,12 @@ class _Trace:
             result[KOLENA_TIMESTAMP_KEY] = end_time.isoformat()
             result[KOLENA_TIME_ELAPSED_KEY] = (end_time - start_time).total_seconds()
         self._add_id_fields(datapoint, result)
-        self.datapoints.append(datapoint)
         model_name = self.model_name
         if self.model_name_field and arguments.get(self.model_name_field) is not None:
             model_name = arguments.get(self.model_name_field)
-        self.results[model_name].append(result)
+        with self.lock:
+            self.datapoints.append(datapoint)
+            self.results[model_name].append(result)
         if time.time() - self.last_update > self.sync_interval and (
             self.task_ongoing is None or not self.task_ongoing.is_alive()
         ):
@@ -157,14 +158,16 @@ class _Trace:
     def _push_data(self):
         try:
             dataset_df = pd.DataFrame(self.datapoints)
-
-            _upload_dataset(self.dataset_name, dataset_df, id_fields=self.id_fields, append_only=True)
+            unique_dataset_df = dataset_df.drop_duplicates(subset=self.id_fields)
+            _upload_dataset(self.dataset_name, unique_dataset_df, id_fields=self.id_fields, append_only=True)
             for model_name, results in self.results.items():
-                result_df = pd.DataFrame(results)
-                upload_results(self.dataset_name, model_name, result_df)
-                self.results = self.results[result_df.shape[0] :]
+                result_df = pd.DataFrame(results[: unique_dataset_df.shape[0]])
+                upload_results(self.dataset_name, model_name, result_df.drop_duplicates(subset=self.id_fields))
+                with self.lock:
+                    self.results[model_name] = self.results[model_name][result_df.shape[0] :]
             self.last_update = time.time()
-            self.datapoints = self.datapoints[dataset_df.shape[0] :]
+            with self.lock:
+                self.datapoints = self.datapoints[dataset_df.shape[0] :]
 
         except Exception as e:
             print(f"Failed to sync data: {e}")
@@ -172,7 +175,7 @@ class _Trace:
     def _clean_up(self):
         if self.task_ongoing and self.task_ongoing.is_alive():
             self.task_ongoing.join()
-        if self.datapoints:
+        if self.datapoints or any(self.results.values()):
             self._push_data()
 
 
