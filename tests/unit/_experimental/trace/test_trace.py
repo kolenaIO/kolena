@@ -21,8 +21,10 @@ from kolena._experimental.trace.trace import _Trace
 
 
 @patch.object(_Trace, "_push_data")
-def test__kolena_trace(mock_push_data: Mock) -> None:
+@patch("kolena._experimental.trace.trace._load_dataset_metadata")
+def test__kolena_trace(mock_load_dataset: Mock, mock_push_data: Mock) -> None:
     mock_push_data.return_value = None
+    mock_load_dataset.return_value = None
     dataset_name = "test_kolena_trace" + uuid.uuid4().hex
     model_name = "test_kolena_trace_model" + uuid.uuid4().hex
 

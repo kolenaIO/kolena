@@ -92,9 +92,10 @@ class _Trace:
         self.model_name_field = model_name_field
         try:
             self.existing_dataset = _load_dataset_metadata(self.dataset_name)
-            if self.existing_dataset and sorted(id_fields) != sorted(self.existing_dataset.id_fields):
+            if not self.existing_dataset:
+                raise NotFoundError("dataset metadata not found")
+            if id_fields and sorted(id_fields) != sorted(self.existing_dataset.id_fields):
                 raise ValueError(f"Id Fields {id_fields} do not match existing dataset id fields")
-            self.id_fields = self.existing_dataset.id_fields
         except NotFoundError:
             self.existing_dataset = None
             if not id_fields:
