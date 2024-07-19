@@ -24,10 +24,10 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from pydantic.dataclasses import dataclass
 from shapely.geometry import Polygon as ShapelyPolygon
 from shapely.validation import make_valid
 
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.annotation import BoundingBox
 from kolena.annotation import Polygon
 from kolena.annotation import ScoredBoundingBox

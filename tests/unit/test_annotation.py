@@ -20,9 +20,9 @@ from typing import List
 from typing import Optional
 from typing import Tuple
 
-import pydantic
 import pytest
 
+import kolena._utils.pydantic_v1 as pydantic
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena._utils.datatypes import DataObject
 from kolena.annotation import _AnnotationType

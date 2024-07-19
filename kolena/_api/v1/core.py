@@ -18,9 +18,8 @@ from typing import List
 from typing import Optional
 from typing import Set
 
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class Model:
@@ -196,3 +195,10 @@ class TestRun:
     @dataclass(frozen=True)
     class MarkCrashedRequest:
         test_run_id: int
+
+
+Model.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore
+TestCase.SingleProcessResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+TestCase.BulkProcessRequest.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+TestCase.BulkProcessResponse.__pydantic_model__.update_forward_refs()  # type: ignore[attr-defined]
+TestSuite.LoadAllResponse.__pydantic_model__.update_forward_refs()  # type: ignore

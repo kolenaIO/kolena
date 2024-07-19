@@ -20,8 +20,8 @@ from typing import Optional
 from typing import Tuple
 
 import pytest
-from pydantic.dataclasses import dataclass
 
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.workflow import Curve
 from kolena.workflow import CurvePlot
 from kolena.workflow import Evaluator
