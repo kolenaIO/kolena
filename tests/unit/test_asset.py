@@ -15,9 +15,9 @@ import dataclasses
 from typing import Callable
 from typing import Type
 
-import pydantic
 import pytest
 
+import kolena._utils.pydantic_v1 as pydantic
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.asset import _AssetType
 from kolena.asset import Asset

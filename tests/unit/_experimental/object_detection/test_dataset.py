@@ -210,9 +210,30 @@ def test__upload_object_detection_ignore_field() -> None:
             threshold_strategy="F1-Optimal",
             min_confidence_score=0.222,
         )
-    assert [ScoredBoundingBox(**elem) for elem in df["TP"][0]] == [
-        ScoredBoundingBox(top_left=(2, 2), bottom_right=(3, 3), score=1, ignore_flag=False),
-        ScoredBoundingBox(top_left=(4, 4), bottom_right=(5, 5), score=1),
+    assert df["TP"][0] == [
+        {
+            "top_left": [2.0, 2.0],
+            "bottom_right": [3.0, 3.0],
+            "width": 1.0,
+            "height": 1.0,
+            "area": 1.0,
+            "aspect_ratio": 1.0,
+            "ignore_flag": False,
+            "data_type": "ANNOTATION/BOUNDING_BOX",
+            "score": 1.0,
+            "iou": 1.0,
+        },
+        {
+            "top_left": [4.0, 4.0],
+            "bottom_right": [5.0, 5.0],
+            "width": 1.0,
+            "height": 1.0,
+            "area": 1.0,
+            "aspect_ratio": 1.0,
+            "data_type": "ANNOTATION/BOUNDING_BOX",
+            "score": 1.0,
+            "iou": 1.0,
+        },
     ]
     assert df["FN"][0] == [
         BoundingBox(top_left=(3, 3), bottom_right=(4, 4), ignore_flag=False),

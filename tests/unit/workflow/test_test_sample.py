@@ -25,9 +25,9 @@ from typing import Union
 
 import dacite
 import numpy as np
-import pydantic
 import pytest
 
+import kolena._utils.pydantic_v1 as pydantic
 from kolena._utils.datatypes import DataObject
 from kolena._utils.serde import as_deserialized_json
 from kolena._utils.serde import as_serialized_json
