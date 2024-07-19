@@ -159,18 +159,20 @@ class _Trace:
 
     def _push_data(self):
         try:
-            dataset_df = pd.DataFrame(self.datapoints)
+            with self.lock:
+                datapoint_count = len(self.datapoints)
+                results_counts = {model_name: len(results) for model_name, results in self.results.items()}
+            dataset_df = pd.DataFrame(self.datapoints[:datapoint_count])
             unique_dataset_df = dataset_df.drop_duplicates(subset=self.id_fields)
             _upload_dataset(self.dataset_name, unique_dataset_df, id_fields=self.id_fields, append_only=True)
+            with self.lock:
+                self.datapoints = self.datapoints[dataset_df.shape[0] :]
             for model_name, results in self.results.items():
-                result_df = pd.DataFrame(results[: unique_dataset_df.shape[0]])
+                result_df = pd.DataFrame(results[: results_counts[model_name]])
                 upload_results(self.dataset_name, model_name, result_df.drop_duplicates(subset=self.id_fields))
                 with self.lock:
                     self.results[model_name] = self.results[model_name][result_df.shape[0] :]
             self.last_update = time.time()
-            with self.lock:
-                self.datapoints = self.datapoints[dataset_df.shape[0] :]
-
         except Exception as e:
             print(f"Failed to sync data: {e}")
 
