@@ -12,13 +12,13 @@ or manually extracting and uploading corresponding search embeddings using a Kol
 ## Setting up Automated Embedding extraction
 
 ??? "Requirements"
-    - This feature is currenlty supported for Amazon S3 integrations.
+    - This feature is currently supported for Amazon S3 integrations.
     - Kolena requires access to the content of your images.
     Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/) for more details.
     - Only account administrators are able to change this setting.
 
 Embedding extractions allow you to find datapoints using natural language or similarity between desired datapoints.
-To enable automated embedding, navigate to "Organization Settings" available on your profile menue, top right of the screen.
+To enable automated embedding, navigate to "Organization Settings" available on your profile menu, top right of the screen.
 Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolena option.
 
 <figure markdown>

@@ -38,11 +38,10 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from pydantic.dataclasses import dataclass
-
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 
 

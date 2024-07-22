@@ -19,9 +19,9 @@ from typing import Optional
 from typing import Type
 from typing import Union
 
-import pydantic
 import pytest
 
+import kolena._utils.pydantic_v1 as pydantic
 from kolena._experimental.workflow.thresholded import ThresholdedMetrics
 from kolena._utils.datatypes import DataObject
 from kolena.workflow.annotation import BoundingBox

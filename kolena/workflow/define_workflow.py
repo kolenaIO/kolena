@@ -15,8 +15,7 @@ from typing import cast
 from typing import Tuple
 from typing import Type
 
-from pydantic import validate_call
-
+from kolena._utils.pydantic_v1 import validate_arguments
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import GroundTruth
 from kolena.workflow import Inference
@@ -27,7 +26,7 @@ from kolena.workflow import TestSuite
 from kolena.workflow import Workflow
 
 
-@validate_call(config=ValidatorConfig)
+@validate_arguments(config=ValidatorConfig)
 def define_workflow(
     name: str,
     test_sample_type: Type[TestSample],

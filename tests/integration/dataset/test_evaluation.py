@@ -21,6 +21,7 @@ from kolena.dataset import download_dataset
 from kolena.dataset import download_results
 from kolena.dataset import EvalConfigResults
 from kolena.dataset import upload_dataset
+from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.evaluation import _upload_results
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
@@ -577,3 +578,42 @@ def test__download_results__preserve_none() -> None:
     assert fetched_df_dp["a"][0] is None
     assert np.isinf(fetched_df_dp["a"][1])
     assert np.isnan(fetched_df_dp["a"][2])
+
+
+def test__download_results__by_dataset_commit() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__by_dataset_commit")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__by_dataset_commit")
+
+    df_dp = get_df_dp(20)
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
+
+    df_result = get_df_result(20)
+
+    response = _upload_results(
+        dataset_name,
+        model_name,
+        df_result,
+    )
+    assert response.n_inserted == 20
+    assert response.n_updated == 0
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    eval_cfg, fetched_df_result = df_results_by_eval[0]
+    assert not fetched_df_dp.empty
+    assert not fetched_df_result.empty
+    assert len(df_results_by_eval) == 1
+    assert_frame_equal(fetched_df_dp, fetched_df_result, ID_FIELDS)
+
+    # remove half of the datapoints
+    df_dp_new = get_df_dp(10)
+    upload_dataset(dataset_name, df_dp_new[dp_columns], id_fields=ID_FIELDS)
+    num_of_commits, commits = _fetch_dataset_history(dataset_name)
+    assert num_of_commits == 2
+
+    _, df_results_by_eval_initial_commit = download_results(dataset_name, model_name, commits[0].commit)
+    _, df_results_by_eval_second_commit = download_results(dataset_name, model_name, commits[1].commit)
+    _, df_results_by_eval_latest_commit = download_results(dataset_name, model_name)
+    assert_frame_equal(df_results_by_eval_second_commit[0].results, df_results_by_eval_latest_commit[0].results)
+    assert_frame_equal(df_results_by_eval_initial_commit[0].results, fetched_df_result)
+    assert len(df_results_by_eval_latest_commit[0].results) == 10
