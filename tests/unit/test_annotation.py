@@ -30,12 +30,14 @@ from kolena.annotation import BitmapMask
 from kolena.annotation import BoundingBox
 from kolena.annotation import BoundingBox3D
 from kolena.annotation import Keypoints
+from kolena.annotation import Keypoints3D
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import LabeledBoundingBox3D
 from kolena.annotation import LabeledPolygon
 from kolena.annotation import LabeledTextSegment
 from kolena.annotation import Polygon
 from kolena.annotation import Polyline
+from kolena.annotation import Polyline3D
 from kolena.annotation import ScoredLabeledTextSegment
 from kolena.annotation import ScoredTextSegment
 from kolena.annotation import SegmentationMask
@@ -117,6 +119,8 @@ def test__serde__nested() -> None:
         q: LabeledTextSegment
         r: ScoredTextSegment
         s: ScoredLabeledTextSegment
+        t: Keypoints3D
+        u: Polyline3D
 
     obj = Tester(
         b=BoundingBox(top_left=(0, 0), bottom_right=(1, 1)),
@@ -137,6 +141,8 @@ def test__serde__nested() -> None:
         q=LabeledTextSegment(label="location", text_field="text", start=0, end=10),
         r=ScoredTextSegment(score=0.91, text_field="text", start=0, end=10),
         s=ScoredLabeledTextSegment(score=0.91, label="location", text_field="text", start=0, end=10),
+        t=Keypoints3D(points=[(10, 10, 10), (11, 11, 11), (12, 12, 12)]),
+        u=Polyline3D(points=[(10, 10, 10), (11, 11, 11), (12, 12, 12)]),
     )
     obj_dict = obj._to_dict()
 

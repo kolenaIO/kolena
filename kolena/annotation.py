@@ -49,7 +49,9 @@ class _AnnotationType(DataType):
     BOUNDING_BOX = "BOUNDING_BOX"
     POLYGON = "POLYGON"
     POLYLINE = "POLYLINE"
+    POLYLINE_3D = "POLYLINE_3D"
     KEYPOINTS = "KEYPOINTS"
+    KEYPOINTS_3D = "KEYPOINTS_3D"
     BOUNDING_BOX_3D = "BOUNDING_BOX_3D"
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
@@ -194,6 +196,18 @@ class Keypoints(Annotation):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
+class Keypoints3D(Annotation):
+    """Array of any number of keypoints specified in a right-handed coordinate system."""
+
+    points: List[Tuple[float, float, float]]
+    """The sequence of discrete `(x, y, z)` coordinates comprising this keypoints annotation."""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.KEYPOINTS_3D
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
 class Polyline(Annotation):
     """Polyline with any number of vertices specified in pixel coordinates."""
 
@@ -203,6 +217,18 @@ class Polyline(Annotation):
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.POLYLINE
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class Polyline3D(Annotation):
+    """A three-dimensional Polyline with any number of vertices specified a right-handed coordinate system."""
+
+    points: List[Tuple[float, float, float]]
+    """The sequence of connected `(x, y, z)` coordinates comprising this polyline."""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.POLYLINE_3D
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -475,4 +501,6 @@ _ANNOTATION_TYPES = [
     LabeledTextSegment,
     ScoredTextSegment,
     ScoredLabeledTextSegment,
+    Keypoints3D,
+    Polyline3D,
 ]
