@@ -16,3 +16,7 @@
     options:
         members: ["upload_instance_segmentation_results"]
         show_root_heading: true
+::: kolena._experimental.trace
+    options:
+        members: ["kolena_trace"]
+        show_root_heading: true

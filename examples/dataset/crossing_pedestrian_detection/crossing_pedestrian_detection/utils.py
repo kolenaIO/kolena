@@ -16,7 +16,7 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from pydantic.dataclasses import dataclass
+from pydantic.v1.dataclasses import dataclass
 
 from kolena.annotation import LabeledBoundingBox
 from kolena.annotation import ScoredLabeledBoundingBox
