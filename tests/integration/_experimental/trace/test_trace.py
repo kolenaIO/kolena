@@ -48,8 +48,6 @@ def test__kolena_trace_default_id() -> None:
         if i == 19:
             time.sleep(30)  # Making sure the last iteration will trigger a sync
         result = predict(i, b=i + 1, params={"a": i, "b": i + 1})
-        result["a"] = i
-        result["b"] = i + 1
         expected_results.append(result)
         expected_datapoints.append({"a": i, "b": i + 1, "e": 2, "params": {"a": i, "b": i + 1}})
 
