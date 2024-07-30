@@ -423,10 +423,10 @@ class TextSegment(Annotation):
     summary = "A summary of current documentation."
 
     text_segments: List[TextSegment] = [
-    # Highlights "Hello" in "Hello, world"
-    TextSegment(text_field="text", start=0, end=5),
-    # Highlights "summary of" in "A summary of current documentation."
-    TextSegment(text_field="summary", start=2, end=12),
+        # Highlights "Hello" in "Hello, world"
+        TextSegment(text_field="text", start=0, end=5),
+        # Highlights "summary of" in "A summary of current documentation."
+        TextSegment(text_field="summary", start=2, end=12),
     ]
     ```
     """
