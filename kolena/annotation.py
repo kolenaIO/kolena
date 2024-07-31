@@ -412,13 +412,21 @@ class ScoredLabeledTimeSegment(TimeSegment):
 @dataclass(frozen=True, config=ValidatorConfig)
 class TextSegment(Annotation):
     """
-    Represents a segment of text within a specified text field. The `start` index is inclusive and the `end` index is
+    Represents a segment of text within a specified text field to highlight.
+    The `start` index is inclusive and the `end` index is
     exclusive, following the convention of Python string slicing.
+    The following example adds highlights to two text fields
+    named `text` and `summary`.
 
     ```py
+    text = "Hello, world"
+    summary = "A summary of current documentation."
+
     text_segments: List[TextSegment] = [
+        # Highlights "Hello" in "Hello, world"
         TextSegment(text_field="text", start=0, end=5),
-        TextSegment(text_field="summary", start=10, end=51),
+        # Highlights "summary of" in "A summary of current documentation."
+        TextSegment(text_field="summary", start=2, end=12),
     ]
     ```
     """
