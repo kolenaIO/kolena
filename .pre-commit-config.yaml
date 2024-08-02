@@ -45,21 +45,21 @@ repos:
           - flake8-quotes==3.3.1
           - flake8-picky-parentheses==0.4.0
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.11.1
     hooks:
       - id: mypy
         name: mypy-default
         # TODO: not exclude tests, _experimental
         exclude: (?x)^(examples/.*|tests/.*|kolena/_experimental/.*)$
-        additional_dependencies: [ types-all, pydantic ]
+        additional_dependencies: [ types-requests, pydantic ]
       - id: mypy
         name: mypy-examples-dataset
         files: ^examples/dataset/
-        additional_dependencies: [ types-all, pydantic ]
+        additional_dependencies: [ types-requests, pydantic ]
       - id: mypy
         name: mypy-examples-workflow
         files: ^examples/workflow/
-        additional_dependencies: [ types-all, pydantic ]
+        additional_dependencies: [ types-requests, pydantic ]
   - repo: meta
     hooks:
       - id: check-hooks-apply
