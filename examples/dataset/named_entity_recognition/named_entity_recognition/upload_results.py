@@ -56,7 +56,8 @@ def run(args: Namespace) -> None:
                 phi=entities,
             ),
         )
-        ground_truths = record.phi
+        # Coerce into LabeledTextSegment for comparison in `evaluate`
+        ground_truths = [LabeledTextSegment(**segment.__dict__) for segment in record.phi]
         tags = TagMap()._tag_map.keys()
         tp, fp, fn, metrics = evaluate(ground_truths, entities, tags)
         results.append(
