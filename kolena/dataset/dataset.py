@@ -317,12 +317,14 @@ def _iter_dataset_raw(
     name: str,
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
+    include_extracted_properties: bool = False,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
     init_request = LoadDatapointsRequest(
         name=name,
         commit=commit,
         batch_size=batch_size,
+        include_extracted_properties=include_extracted_properties,
     )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
@@ -336,24 +338,32 @@ def _iter_dataset(
     name: str,
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
+    include_extracted_properties: bool = False,
 ) -> Iterator[pd.DataFrame]:
     """
     Get an iterator over datapoints in the dataset.
     """
-    for df_batch in _iter_dataset_raw(name, commit, batch_size):
+    for df_batch in _iter_dataset_raw(name, commit, batch_size, include_extracted_properties):
         yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
-def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame:
+def download_dataset(
+    name: str,
+    *,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
+) -> pd.DataFrame:
     """
     Download an entire dataset given its name.
 
     :param name: The name of the dataset.
     :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
+    :param include_extracted_properties: If True, include kolena extracted properties from automated extractions
+     in the dataset as separate columns
     :return: A DataFrame containing the specified dataset.
     """
-    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
+    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value, include_extracted_properties))
     log.info(f"downloaded dataset '{name}'")
     df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
     return df_dataset

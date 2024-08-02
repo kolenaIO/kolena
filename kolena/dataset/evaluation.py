@@ -75,9 +75,21 @@ class EvalConfigResults(NamedTuple):
     results: pd.DataFrame
 
 
-def _iter_result_raw(dataset: str, model: str, batch_size: int, commit: Optional[str] = None) -> Iterator[pd.DataFrame]:
+def _iter_result_raw(
+    dataset: str,
+    model: str,
+    batch_size: int,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
+) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
-    init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size, commit=commit)
+    init_request = LoadResultsRequest(
+        dataset=dataset,
+        model=model,
+        batch_size=batch_size,
+        commit=commit,
+        include_extracted_properties=include_extracted_properties,
+    )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
         endpoint_path=Path.LOAD_RESULTS.value,
@@ -86,8 +98,21 @@ def _iter_result_raw(dataset: str, model: str, batch_size: int, commit: Optional
     )
 
 
-def _fetch_results(dataset: str, model: str, commit: Optional[str] = None) -> pd.DataFrame:
-    df_result_batch = list(_iter_result_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS, commit=commit))
+def _fetch_results(
+    dataset: str,
+    model: str,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
+) -> pd.DataFrame:
+    df_result_batch = list(
+        _iter_result_raw(
+            dataset,
+            model,
+            batch_size=BatchSize.LOAD_RECORDS,
+            commit=commit,
+            include_extracted_properties=include_extracted_properties,
+        ),
+    )
     return (
         pd.concat(df_result_batch)
         if df_result_batch
@@ -145,6 +170,7 @@ def download_results(
     dataset: str,
     model: str,
     commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
 ) -> Tuple[pd.DataFrame, List[EvalConfigResults]]:
     """
     Download results given dataset name and model name.
@@ -160,6 +186,8 @@ def download_results(
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
+    :param include_extracted_properties: If True, include kolena extracted properties from automated extractions
+    in the datapoints and results as separate columns
     :return: Tuple of DataFrame of datapoints and list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
@@ -168,7 +196,7 @@ def download_results(
 
     id_fields = existing_dataset.id_fields
 
-    df = _fetch_results(dataset, model, commit)
+    df = _fetch_results(dataset, model, commit, include_extracted_properties)
 
     if df.empty:
         df_datapoints = pd.DataFrame()
