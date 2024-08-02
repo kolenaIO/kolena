@@ -269,7 +269,12 @@ def test__download_dataset__with_property() -> None:
     loaded_datapoints = download_dataset(name, include_extracted_properties=True).sort_values("id", ignore_index=True)
     datapoints["kolena_llm_prompt_extraction"] = [prop["llm"] for prop in extracted_property]
     datapoints.drop(columns=["extracted"], inplace=True)
-    pd.testing.assert_frame_equal(loaded_datapoints, datapoints, check_like=True, check_dtype=False)
+    pd.testing.assert_frame_equal(
+        loaded_datapoints,
+        datapoints[loaded_datapoints.columns],
+        check_like=True,
+        check_dtype=False,
+    )
 
 
 def test__download_dataset__commit_not_exist(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:

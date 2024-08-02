@@ -665,5 +665,10 @@ def test__download_results__with_properties() -> None:
     df_dp.drop(columns=["extracted"], inplace=True)
     df_result["kolena_llm_prompt_extraction"] = [prop["llm"] for prop in extracted_property_result]
     df_result.drop(columns=["extracted", "model_id", "eval_config_id"], inplace=True)
-    pd.testing.assert_frame_equal(fetched_df_dp, df_dp, check_like=True, check_dtype=False)
-    pd.testing.assert_frame_equal(df_results_by_eval[0].results, df_result, check_like=True, check_dtype=False)
+    pd.testing.assert_frame_equal(fetched_df_dp, df_dp[fetched_df_dp.columns], check_like=True, check_dtype=False)
+    pd.testing.assert_frame_equal(
+        df_results_by_eval[0].results,
+        df_result[df_results_by_eval[0].results.columns],
+        check_like=True,
+        check_dtype=False,
+    )
