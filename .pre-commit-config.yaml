@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.6.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -10,17 +10,17 @@ repos:
       - id: check-toml
       - id: debug-statements
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.0.0
+    rev: v3.16.0
     hooks:
       - id: pyupgrade
         args: [ --py36-plus ]
   - repo: https://github.com/asottile/reorder_python_imports
-    rev: v2.5.0
+    rev: v3.13.0
     hooks:
       - id: reorder-python-imports
         args: [ --py3-plus ]
   - repo: https://github.com/asottile/add-trailing-comma
-    rev: v2.2.0
+    rev: v3.1.0
     hooks:
       - id: add-trailing-comma
         args: [ --py36-plus ]
@@ -45,27 +45,27 @@ repos:
           - flake8-quotes==3.3.1
           - flake8-picky-parentheses==0.4.0
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
+    rev: v1.11.1
     hooks:
       - id: mypy
         name: mypy-default
         # TODO: not exclude tests, _experimental
         exclude: (?x)^(examples/.*|tests/.*|kolena/_experimental/.*)$
-        additional_dependencies: [ types-all, pydantic ]
+        additional_dependencies: [ types-requests, pydantic ]
       - id: mypy
         name: mypy-examples-dataset
         files: ^examples/dataset/
-        additional_dependencies: [ types-all, pydantic ]
+        additional_dependencies: [ types-requests, pydantic ]
       - id: mypy
         name: mypy-examples-workflow
         files: ^examples/workflow/
-        additional_dependencies: [ types-all, pydantic ]
+        additional_dependencies: [ types-requests, pydantic ]
   - repo: meta
     hooks:
       - id: check-hooks-apply
       - id: check-useless-excludes
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.40.0
+    rev: v0.41.0
     hooks:
       - id: markdownlint
         args: [ "--fix" ]
