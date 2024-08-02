@@ -54,7 +54,7 @@ def load_transportation_data() -> Dict[str, List[LabeledBoundingBox]]:
     label_map: Dict[int, str] = {int(category["id"]): category["name"] for category in coco_data["categories"]}
 
     # cache bounding boxes per image
-    image_to_boxes: Dict[str, List[LabeledBoundingBox]] = defaultdict(lambda: [])
+    image_to_boxes: Dict[str, List[LabeledBoundingBox]] = defaultdict(list)
     for annotation in coco_data["annotations"]:
         image_id = annotation["image_id"]
         label = label_map[annotation["category_id"]]
