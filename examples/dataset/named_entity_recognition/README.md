@@ -59,16 +59,18 @@ keypoint detection:
 
 ### Metrics
 
+These metrics can be added via the "Object Detection" type Task Metric.
+
 1. Precision (Macro)
 2. Recall (Macro)
-2. F1 Score (Macro)
+3. F1 Score (Macro)
 
 ### Plots
 
 These plots depend on fields hydrated by performing automated text extractions on the `datapoint.text` field.
 
 1. `datapoint.text.word_count` vs. `mean(result.counts.LOC_ERROR)`
-1. `datapoint.text.word_count` vs. `mean(result.counts.CLS_ERROR)`
+2. `datapoint.text.word_count` vs. `mean(result.counts.CLS_ERROR)`
 
 ### Test Cases
 
