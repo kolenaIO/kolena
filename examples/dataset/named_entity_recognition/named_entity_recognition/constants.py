@@ -12,3 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 DATASET = "n2c2-2014"
+MODELS = ["roberta", "bert"]
+MODEL_INFO = {
+    "roberta": {"name": "obi/deid_roberta_i2b2"},
+    "bert": {"name": "obi/deid_bert_i2b2", "max_length": 512},
+}

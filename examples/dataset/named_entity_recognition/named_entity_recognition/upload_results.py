@@ -16,9 +16,12 @@ from argparse import Namespace
 
 import pandas as pd
 from named_entity_recognition.constants import DATASET
+from named_entity_recognition.constants import MODEL_INFO
+from named_entity_recognition.constants import MODELS
 from named_entity_recognition.metrics import evaluate
 from named_entity_recognition.tag_map import TagMap
 from tqdm import tqdm
+from transformers import AutoTokenizer
 from transformers import pipeline
 
 from kolena.annotation import LabeledTextSegment
@@ -27,11 +30,17 @@ from kolena.dataset import upload_results
 
 
 def run(args: Namespace) -> None:
-    model_name = "obi/deid_roberta_i2b2"
-
     df_dataset = download_dataset(args.dataset)
+    model_info = MODEL_INFO[args.model]
+    model_name = model_info["name"]
+    max_length = model_info.get("max_length", None)
 
-    pipe = pipeline("token-classification", model=model_name, aggregation_strategy="max")
+    tokenizer = (
+        AutoTokenizer.from_pretrained("bert-base-cased", do_lower_case=False, max_length=max_length)
+        if max_length
+        else None
+    )
+    pipe = pipeline("token-classification", model=model_name, aggregation_strategy="max", tokenizer=tokenizer)
 
     predictions = []
     results = []
@@ -75,6 +84,12 @@ def run(args: Namespace) -> None:
 
 def main() -> None:
     ap = ArgumentParser()
+    ap.add_argument(
+        "model",
+        type=str,
+        choices=MODELS,
+        help="Name of the model to test.",
+    )
     ap.add_argument(
         "--dataset",
         type=str,

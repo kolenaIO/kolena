@@ -28,7 +28,8 @@ This project defines two scripts that perform the following operations:
 1. [`upload_dataset.py`](named_entity_recognition/upload_dataset.py) uploads the n2c2-2014 dataset.
 
 2. [`upload_results.py`](named_entity_recognition/upload_results.py) tests a named entity recognition model on
-  the n2c2-2014 dataset, using [a RoBERTa model fine-tuned for deidentification of medical notes](https://huggingface.co/obi/deid_roberta_i2b2).
+  the n2c2-2014 dataset, using either a [RoBERTa model](https://huggingface.co/obi/deid_roberta_i2b2) or
+  a [BERT model](https://huggingface.co/obi/deid_bert_i2b2) fine-tuned for deidentification of medical notes.
 
 Command line arguments are defined within each script to specify the dataset name to create or model to upload results
 for. Run a script using the `--help` flag for more information:
@@ -42,7 +43,10 @@ optional arguments:
   --dataset DATASET  Optionally specify a custom dataset name to upload.
 
 $ poetry run python3 named_entity_recognition/upload_results.py --help
-usage: upload_results.py [-h] [--dataset DATASET]
+usage: upload_results.py [-h] [--dataset DATASET] {bert,roberta}
+
+positional arguments:
+  {bert,roberta}  Name of the model to test.
 
 optional arguments:
   -h, --help           show this help message and exit
