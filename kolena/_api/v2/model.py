@@ -41,6 +41,7 @@ class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
     model: str
     dataset: str
     commit: Optional[str] = None
+    include_extracted_properties: bool = False
 
 
 @dataclass(frozen=True)

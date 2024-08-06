@@ -31,6 +31,7 @@ from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
 from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
+from tests.integration.helper import upload_extracted_properties
 from tests.integration.helper import with_test_prefix
 
 
@@ -241,6 +242,39 @@ def test__download_dataset__versions(with_dataset_commits: Tuple[int, List[Commi
             ignore_index=True,
         )
         assert_frame_equal(loaded_datapoints, expected_datapoints)
+
+
+def test__download_dataset__with_property() -> None:
+    name = with_test_prefix(f"{__file__}::test__download_dataset__with_property")
+    datapoints = pd.DataFrame(
+        [
+            dict(
+                locator=fake_locator(i, name),
+                text=f"dummy text {i}",
+                id=i,
+            )
+            for i in range(20)
+        ],
+    )
+    extracted_property = [{"llm": {"summary": f"dummy text {i}"}} for i in range(20)]
+    upload_dataset(name, datapoints, id_fields=["locator"])
+    dataset_id = _load_dataset_metadata(name).id
+    datapoints["extracted"] = extracted_property
+    upload_extracted_properties(
+        dataset_id,
+        datapoints,
+        id_fields=["locator"],
+    )
+
+    loaded_datapoints = download_dataset(name, include_extracted_properties=True).sort_values("id", ignore_index=True)
+    datapoints["kolena_llm_prompt_extraction"] = [prop["llm"] for prop in extracted_property]
+    datapoints.drop(columns=["extracted"], inplace=True)
+    pd.testing.assert_frame_equal(
+        loaded_datapoints,
+        datapoints[loaded_datapoints.columns],
+        check_like=True,
+        check_dtype=False,
+    )
 
 
 def test__download_dataset__commit_not_exist(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:
