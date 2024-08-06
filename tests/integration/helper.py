@@ -20,7 +20,7 @@ from typing import Optional
 
 import pandas as pd
 
-from kolena._utils import krequests
+from kolena._utils import krequests_v2 as krequests
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
@@ -76,6 +76,5 @@ def upload_extracted_properties(
                 property_source=property_source,
             ),
         ),
-        api_version="v2",
     )
     return response
