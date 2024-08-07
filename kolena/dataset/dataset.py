@@ -258,8 +258,16 @@ def _send_upload_dataset_request(
     load_uuid: str,
     sources: Optional[List[Dict[str, str]]],
     append_only: bool = False,
+    commit_tags: Optional[List[str]] = None,
 ) -> EntityData:
-    request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid, sources=sources, append_only=append_only)
+    request = RegisterRequest(
+        name=name,
+        id_fields=id_fields,
+        uuid=load_uuid,
+        sources=sources,
+        append_only=append_only,
+        tags=commit_tags,
+    )
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
     data = from_dict(EntityData, response.json())
@@ -273,10 +281,18 @@ def _upload_dataset(
     id_fields: Optional[List[str]] = None,
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
     append_only: bool = False,
+    commit_tags: Optional[List[str]] = None,
 ) -> None:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
-    data = _send_upload_dataset_request(name, prepared_id_fields, load_uuid, sources=sources, append_only=append_only)
+    data = _send_upload_dataset_request(
+        name,
+        prepared_id_fields,
+        load_uuid,
+        sources=sources,
+        append_only=append_only,
+        commit_tags=commit_tags,
+    )
     log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
 
