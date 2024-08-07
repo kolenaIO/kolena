@@ -36,6 +36,7 @@ class RegisterRequest:
     uuid: str
     sources: Optional[List[Dict[str, str]]]
     append_only: bool = False
+    tags: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
