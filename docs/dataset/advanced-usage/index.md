@@ -50,4 +50,9 @@ This section contains tutorial documentation for advanced features.
     ---
     Run model comparisons programmatically and add model improvements as requirements into your CI pipelines.
 
+- [:kolena-diarization-workflow-16: LLM Powered Data Processing](./llm-prompt-extraction.md)
+
+    ---
+    Leverage the power of LLMs to extract custom properties from your data or setup evaluation on your model results
+
 </div>
