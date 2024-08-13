@@ -324,7 +324,7 @@ def upload_dataset(
 def list_datasets() -> List[str]:
     """
     List the names of all uploaded datasets
-    return: A list of the names of all uploaded datasets
+    :return: A list of the names of all uploaded datasets
     """
     return from_dict(ListDatasetsResponse, krequests.get(endpoint_path=Path.LIST_DATASETS).json()).datasets
 
