@@ -62,11 +62,18 @@ def test__download_quality_standard_result(
 ) -> None:
     dataset_name = with_test_prefix("test__download_quality_standard_result__dataset")
     model_name = with_test_prefix("test__download_quality_standard_result__model")
+    model_name2 = with_test_prefix("test__download_quality_standard_result__model_2")
     eval_configs = [eval_config for eval_config, _ in results]
     upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
     _upload_results(
         dataset_name,
         model_name,
+        results,
+    )
+
+    _upload_results(
+        dataset_name,
+        model_name2,
         results,
     )
 
@@ -103,6 +110,11 @@ def test__download_quality_standard_result(
     assert_frame_equal(
         quality_standard_df,
         download_quality_standard_result(dataset_name, [model_name], [metric_group_name]),
+    )
+    assert_frame_equal(
+        download_quality_standard_result(dataset_name, [model_name, model_name2]),
+        download_quality_standard_result(dataset_name, [model_name, model_name2], intersect_results=False),
+        check_like=True,
     )
 
     df_columns: pd.MultiIndex = quality_standard_df.columns
