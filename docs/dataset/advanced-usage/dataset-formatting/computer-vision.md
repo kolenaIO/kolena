@@ -201,3 +201,57 @@ Videos are best represented in Kolena using the Gallery view. To setup the Galle
 stored on the cloud under the `locator` column. Kolena automatically looks for that column name and renders your video files
 correctly.
 Kolena supports `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.
+
+!!! Note
+    Bounding box visualization only works for videos with `5`, `15`, `29.97` and `59.94` frame rates.
+    Please let us know if you are working with a frame rate outside of the ones mentioned.
+
+### Setting up bounding box annotations on videos
+
+To overlay bounding boxes on videos, you will need to define a new class based on
+[`LabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.LabeledBoundingBox) or
+[`BoundingBox`](../../../reference/annotation.md#kolena.annotation.BoundingBox) annotations where a
+`frame_id` property is added. You are able to add additional properties if you wish which can be used
+for filtering and visualizations.
+
+``` python
+# video bounding box for pedestrians with pedestrian id,
+# risk of collision and label indicating if bounding box
+# is occluded.
+class PedestrianBoundingBox(LabeledBoundingBox):
+    frame_id: int
+    ped_id: str
+    occlusion: str
+    risk: Optional[str] = None
+
+    def set_risk(self, risk: str) -> None:
+        object.__setattr__(self, "risk", risk)
+```
+!!! Note
+    Kolena depends on the `frame_id` for rendering and it needs to be a zero-indexed integer.
+
+To overlay bounding boxes with inferences (used when uploading model results) you will need a new class based on
+[`ScoredBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredBoundingBox) or
+[`ScoredLabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox).
+The requirements for rendering on a video is similar to the previous example:
+
+``` python
+# video bounding box with inference (represented by score),
+# frame_id, pedestrian id, occlusion category,
+# time_to_event (in this case potential collusion of
+# a pedestrian and vehicle), failed_to_infer for capturing
+# no inference cases
+
+@dataclass(frozen=True)
+class ScoredPedestrianBoundingBox(ScoredLabeledBoundingBox):
+    frame_id: int
+    ped_id: str
+    occlusion: str
+    time_to_event: Optional[float]
+    failed_to_infer: bool
+
+```
+
+!!! example
+    Follow the [Crossing Pedestrian Detection](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/crossing_pedestrian_detection)
+    example on how to setup video based dataset and model results.
