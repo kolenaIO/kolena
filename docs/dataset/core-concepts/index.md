@@ -140,3 +140,35 @@ visualizing results and relations in plots.
 
 For step-by-step instructions, take a look at the quickstart for
 [results exploration](../quickstart.md/#step-3-explore-data-and-results).
+
+## Model Leaderboard
+
+Model Leaderboard allows you to identify the best performing models at a glance. The leaderboard organizes all
+uploaded model results in order of their rank.
+
+!!! requirements
+    A functional Model Leaderboard depends on well defined **metrics** and uploaded **model results**.
+    To enable this feature, make sure that you have at least
+    one metric defined in your Quality Standards and ensure that the direction of that metric is set (Higher is better or
+    Lower is better).
+
+    Metrics without direction are not used in the ranking algorithm.
+
+**Rank**: ranking leverages standardized scoring (z-score) to compare metrics
+from different distributions. Kolena uses the range of each metric to
+estimate its standard deviation which is used in calculating the z-score.
+
+**Metric Selection**: Kolena's model leaderboard allows you see the model rank based on specific
+metric groups. For instance you can group cost related metrics (such as `inference cost` or
+`inference time`) under a metric group and chose to include or exclude those metrics in your
+model ranking
+
+<figure markdown>
+![Select Metric Groups](../../assets/images/metric-groups-leaderboard-light.gif#only-light)
+![Select Metric Groups](../../assets/images/metric-groups-leaderboard-dark.gif#only-dark)
+<figcaption>Select Metric Groups to see relative ranks</figcaption>
+</figure>
+
+!!! tip
+    Using the `Compare Top 3 Models` you can dive deeper into model performance and evaluate them top 3 models
+    based on your defined quality standards. You can also select specific models to review in detail from the leaderboard.
