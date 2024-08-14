@@ -24,6 +24,7 @@ nav:
       - Automatically Extract Image Properties: automations/extract-image-metadata.md
       - Setting Up Natural Language Search: automations/set-up-natural-language-search.md
       - LLM Powered Data Processing: dataset/advanced-usage/llm-prompt-extraction.md
+      - Custom Queries: dataset/advanced-usage/custom-queries.md
     - Connecting Cloud Storage:
       - Connecting Cloud Storage: connecting-cloud-storage/index.md
       - Amazon S3: connecting-cloud-storage/amazon-s3.md
