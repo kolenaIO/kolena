@@ -173,14 +173,14 @@ def test__download_quality_standard_result__union(
     dataset_name = with_test_prefix("test__download_quality_standard_result__union")
     model_name = with_test_prefix("test__download_quality_standard_result__union_model")
     model_name2 = with_test_prefix("test__download_quality_standard_result__union_model_2")
-    eval_config, model1_results = results[0]
+    eval_config, model_1_results = results[0]
     upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
     _upload_results(
         dataset_name,
         model_name,
-        model1_results,
+        model_1_results,
     )
-    model_2_results = model1_results[2:]
+    model_2_results = model_1_results[2:]
     _upload_results(
         dataset_name,
         model_name2,
