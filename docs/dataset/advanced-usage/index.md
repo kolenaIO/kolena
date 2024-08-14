@@ -53,6 +53,11 @@ This section contains tutorial documentation for advanced features.
 - [:kolena-diarization-workflow-16: LLM Powered Data Processing](./llm-prompt-extraction.md)
 
     ---
-    Leverage the power of LLMs to extract custom properties from your data or setup evaluation on your model results
+    Leverage the power of LLMs to extract custom properties from your data or setup evaluation on your model results.
+
+- [:kolena-developer-16: Custom Queries](./custom-queries.md)
+
+    ---
+    Utilize custom queries for advanced filtering and sorting.
 
 </div>
