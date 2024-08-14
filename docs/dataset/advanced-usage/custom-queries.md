@@ -2,93 +2,62 @@
 icon: kolena/developer-16
 ---
 
-## Query Operators
+# :kolena-developer-20: Custom Queries
 
-| **Category**          | **Operators**     | **Example**          |
-|-----------------------|-------------------|----------------------|
-| **Logical Operators** | `and`             | `@datapoint.a > 2 and @datapoint.b < 3`    |
-|                       | `or`              | `@datapoint.a <= 4 or @datapoint.b >= 5`     |
-| **Relational Operators** | `==`            | `@datapoint.a == 10`  |
-|                       | `!=`              | `@datapoint.a != 5`   |
-|                       | `>`               | `@datapoint.a > 20`   |
-|                       | `>=`              | `@datapoint.a >= 15`  |
-|                       | `<`               | `@datapoint.a < 30`   |
-|                       | `<=`              | `@datapoint.a <= 25`  |
-| **Arithmetic Operators** | `+`            | `@datapoint.a + 5`    |
-|                       | `-`               | `@datapoint.a - 3`    |
-|                       | `*`               | `@datapoint.a * 2`    |
-|                       | `/`               | `@datapoint.a / 4`    |
-| **Power Operator**    | `^`               | `@datapoint.a ^ 2`    |
+Custom queries allow you to filter and sort your data flexibly and find datapoints of interest faster.
+The custom query function can be accessed from the filter and sort components.
 
-## Query Functions
+<figure markdown>
+![Access Custom Queries](../../assets/images/custom-queries-dark.gif#only-dark)
+![Access Custom Queries](../../assets/images/custom-queries-light.gif#only-light)
+<figcaption>Access Custom Queries</figcaption>
+</figure>
 
-| **Function** | **Description**                  | **Example**                          |
-|--------------|----------------------------------|--------------------------------------|
-| `abs`        | Returns the absolute value       | `abs(@datapoint.a - 10)`            |
-| `sqrt`       | Returns the square root value    | `sqrt(@datapoint.a)`                |
+You can access datapoint fields by typing `@datapoint.` or result fields via `@result.`.
 
-## Detailed Description
+## Custom Query Details
 
-### Logical Operators
+This table summarized the custom query capabilities.
 
-Logical operators are used to combine multiple conditions. The supported logical operators are:
+| **Category**          | **Operators**     | **Example**          |  **Description**                  |
+|-----------------------|-------------------|----------------------|----------------------------------|
+| **Logical Operators** | `and`             | `@datapoint.a > 2 and @datapoint.b < 3`    | Logical AND|
+|                       | `or`              | `@datapoint.a <= 4 or @datapoint.b >= 5`     | Logical OR|
+| **Relational Operators** | `==`            | `@datapoint.a == 10`  |Equal to|
+|                       | `!=`              | `@datapoint.a != 5`   |Not equal to|
+|                       | `>`               | `@datapoint.a > 20`   |Greater than|
+|                       | `>=`              | `@datapoint.a >= 15`  |Greater than or equal to|
+|                       | `<`               | `@datapoint.a < 30`   |Less than|
+|                       | `<=`              | `@datapoint.a <= 25`  |Less than or equal to|
+| **Arithmetic Operators** | `+`            | `@datapoint.a + 5`    |Addition|
+|                       | `-`               | `@datapoint.a - 3`    |Subtraction|
+|                       | `*`               | `@datapoint.a * 2`    |Multiplication|
+|                       | `/`               | `@datapoint.a / 4`    |Division|
+| **Power Operator**    | `^`               | `@datapoint.a ^ 2`    |Power|
+| **Function**          | `abs`             | `abs(@datapoint.a - 10)`| Returns the absolute value |
+|                       | `sqrt`            | `sqrt(@datapoint.a)`    | Returns the square root value|
 
-- `and`: Logical AND
-- `or`: Logical OR
+!!! Example
+    **Combining Logical and Relational Operators**
 
-### Relational Operators
+    ```dsl
+    @datapoint.a > 10 and @datapoint.b < 20
+    ```
+    ```dsl
+    abs(@resultA.recall - @resultB.recall) >= 0.2
+    ```
 
-Relational operators are used to compare two values. The supported relational operators are:
+    **Using Arithmetic and Power Operators**
 
-- `==`: Equal to
-- `!=`: Not equal to
-- `>`: Greater than
-- `>=`: Greater than or equal to
-- `<`: Less than
-- `<=`: Less than or equal to
+    ```dsl
+    @datapoint.a * @datapoint.b + @datapoint.c ^ 2
+    ```
 
-### Arithmetic Operators
+    **Using Functions in Expressions**
 
-Arithmetic operators are used to perform basic mathematical operations. The supported arithmetic operators are:
-
-- `+`: Addition
-- `-`: Subtraction
-- `*`: Multiplication
-- `/`: Division
-
-### Power Operator
-
-The power operator is used to raise a number to the power of another number.
-
-- `^`: Power
-
-### Functions
-
-Functions are pre-defined operations that can be performed on data points. The supported functions are:
-
-- `abs(expression)`: Returns the absolute value of the expression.
-- `sqrt(expression)`: Returns the square root of the expression.
-
-### Examples
-
-#### Combining Logical and Relational Operators
-
-```dsl
-@datapoint.a > 10 and @datapoint.b < 20
-
-abs(@resultA.recall - @resultB.recall) >= 0.2
-```
-
-#### Using Arithmetic and Power Operators
-
-```dsl
-@datapoint.a * @datapoint.b + @datapoint.c ^ 2
-```
-
-#### Using Functions in Expressions
-
-```dsl
-abs(@datapoint.a - 10)
-
-sqrt(@datapoint.b + @datapoint.c)
-```
+    ```dsl
+    abs(@datapoint.a - 10)
+    ```
+    ```dsl
+    sqrt(@datapoint.b + @datapoint.c)
+    ```
