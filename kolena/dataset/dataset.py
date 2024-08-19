@@ -57,6 +57,7 @@ from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
+from kolena.dataset._common import validate_dataframe_not_empty
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.io import _dataframe_object_serde
@@ -236,6 +237,7 @@ def _prepare_upload_dataset_request(
 
     existing_dataset = _load_dataset_metadata(name, raise_error_if_not_found=False)
     if isinstance(df, pd.DataFrame):
+        validate_dataframe_not_empty(df)
         id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)
         _upload_dataset_chunk(df, load_uuid, id_fields)
@@ -243,11 +245,14 @@ def _prepare_upload_dataset_request(
         validated = False
         for chunk in df:
             if not validated:
+                validate_dataframe_not_empty(chunk)
                 id_fields = _resolve_id_fields(chunk, id_fields, existing_dataset)
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
             assert id_fields is not None
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
+        if not validated:
+            raise InputValidationError("dataframe is empty")
     assert id_fields is not None
     return id_fields, load_uuid
 

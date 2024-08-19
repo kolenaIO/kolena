@@ -26,6 +26,7 @@ from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
+from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
@@ -48,14 +49,19 @@ def test__load_dataset_metadata_dataset__not_exist() -> None:
 
 def test__upload_dataset__empty() -> None:
     name = with_test_prefix(f"{__file__}::test__upload_dataset__empty")
-    upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
+    with pytest.raises(InputValidationError):
+        upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
-    assert download_dataset(name).empty
+
+def test__upload_dataset__empty_iterator() -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__empty_iterator")
+    with pytest.raises(InputValidationError):
+        upload_dataset(name, batch_iterator(pd.DataFrame(columns=["locator"])), id_fields=["locator"])
 
 
 def test__list_datasets() -> None:
     name = with_test_prefix(f"{__file__}::test__list_datasets")
-    upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
+    upload_dataset(name, pd.DataFrame([dict(locator="0.jpg")], columns=["locator"]), id_fields=["locator"])
     assert name in list_datasets()
 
 
