@@ -71,7 +71,7 @@ def validate_dataframe_not_empty(df: pd.DataFrame) -> None:
 
 
 def validate_name_not_empty(name: str) -> None:
-    if not name.replace(" ", ""):
+    if not name.strip():
         raise InputValidationError("name is empty")
 
 
