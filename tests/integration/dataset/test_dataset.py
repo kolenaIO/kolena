@@ -59,6 +59,12 @@ def test__upload_dataset__empty_iterator() -> None:
         upload_dataset(name, batch_iterator(pd.DataFrame(columns=["locator"])), id_fields=["locator"])
 
 
+def test__upload_dataset__empty_name() -> None:
+    name = " "
+    with pytest.raises(InputValidationError):
+        upload_dataset(name, pd.DataFrame([dict(locator="0.jpg")], columns=["locator"]), id_fields=["locator"])
+
+
 def test__list_datasets() -> None:
     name = with_test_prefix(f"{__file__}::test__list_datasets")
     upload_dataset(name, pd.DataFrame([dict(locator="0.jpg")], columns=["locator"]), id_fields=["locator"])

@@ -58,6 +58,7 @@ from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset._common import validate_dataframe_not_empty
+from kolena.dataset._common import validate_name_not_empty
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.io import _dataframe_object_serde
@@ -233,6 +234,7 @@ def _prepare_upload_dataset_request(
     *,
     id_fields: Optional[List[str]] = None,
 ) -> Tuple[List[str], str]:
+    validate_name_not_empty(name)
     load_uuid = init_upload().uuid
 
     existing_dataset = _load_dataset_metadata(name, raise_error_if_not_found=False)
