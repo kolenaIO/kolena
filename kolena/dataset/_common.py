@@ -65,6 +65,16 @@ def _validate_dataframe_ids_uniqueness(df: pd.DataFrame, id_fields: List[str]) -
         raise InputValidationError("id fields must be hashable") from e
 
 
+def validate_dataframe_not_empty(df: pd.DataFrame) -> None:
+    if df.empty:
+        raise InputValidationError("dataframe is empty")
+
+
+def validate_name_not_empty(name: str) -> None:
+    if not name.strip():
+        raise InputValidationError("name is empty")
+
+
 def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
     for id_field in id_fields:
         if id_field not in df.columns:
