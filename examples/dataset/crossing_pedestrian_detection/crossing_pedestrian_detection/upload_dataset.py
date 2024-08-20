@@ -22,6 +22,7 @@ from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import ID_FIELDS
+from crossing_pedestrian_detection.constants import VIDEO_FRAME_RATE
 from crossing_pedestrian_detection.utils import process_gt_bboxes
 from smart_open import open as smart_open
 from tqdm import tqdm
@@ -53,6 +54,7 @@ def process_data() -> pd.DataFrame:
             datapoints.append(
                 {
                     "locator": video_locator(video_file),
+                    "frame_rate": VIDEO_FRAME_RATE,
                     "video_id": int(filename.split("_")[-1]),
                     "filename": filename,
                     "thumbnail_locator": thumbnail_locator(filename),
