@@ -23,7 +23,7 @@ The following asset types are available:
 - [`PointCloudAsset`][kolena.asset.PointCloudAsset]
 - [`VideoAsset`][kolena.asset.VideoAsset]
 - [`AudioAsset`][kolena.asset.AudioAsset]
-- [`Mesh3dAsset`][kolena.asset.Mesh3dAsset]
+- [`MeshAsset`][kolena.asset.MeshAsset]
 
 """
 from abc import ABCMeta
@@ -43,7 +43,7 @@ class _AssetType(DataType):
     POINT_CLOUD = "POINT_CLOUD"
     VIDEO = "VIDEO"
     AUDIO = "AUDIO"
-    MESH_3D = "MESH_3D"
+    MESH = "MESH"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -165,7 +165,7 @@ class AudioAsset(Asset):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class Mesh3dAsset(Asset):
+class MeshAsset(Asset):
     """
     A 3d mesh file in a cloud bucket or served at a URL.
 
@@ -177,7 +177,7 @@ class Mesh3dAsset(Asset):
 
     @staticmethod
     def _data_type() -> _AssetType:
-        return _AssetType.MESH_3D
+        return _AssetType.MESH
 
 
 _ASSET_TYPES = [
@@ -188,5 +188,5 @@ _ASSET_TYPES = [
     BaseVideoAsset,
     VideoAsset,
     AudioAsset,
-    Mesh3dAsset,
+    MeshAsset,
 ]
