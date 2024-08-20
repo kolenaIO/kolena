@@ -109,6 +109,7 @@ def test__json_normalize(nested_data: Dict):
         ("'world'", "world"),  # Test string with quotes
         ("null", None),  # Test string "null"
         ("3e2", "3e2"),  # Test scientific notation
+        ("3E2", "3E2"),  # Test scientific notation
         ("4E2573", "4E2573"),  # Test scientific notation
     ],
 )
