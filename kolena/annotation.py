@@ -20,7 +20,9 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`BoundingBox3D`][kolena.annotation.BoundingBox3D] | Limited to `PointCloud` data |
 | [`Polygon`][kolena.annotation.Polygon] | Limited to `Image` or `Video` data |
 | [`Polyline`][kolena.annotation.Polyline] | Limited to `Image` or `Video` data |
+| [`Polyline3D`][kolena.annotation.Polyline3D] | Limited to `PointCloud` data |
 | [`Keypoints`][kolena.annotation.Keypoints] | Limited to `Image` or `Video` data |
+| [`Keypoints3D`][kolena.annotation.Keypoints3D] | Limited to `PointCloud` data |
 | [`SegmentationMask`][kolena.annotation.SegmentationMask] | Limited to `Image` or `Video` data |
 | [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
 | [`Label`][kolena.annotation.Label] | Valid for all data |
@@ -185,7 +187,14 @@ class ScoredLabeledPolygon(Polygon):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Keypoints(Annotation):
-    """Array of any number of keypoints specified in pixel coordinates."""
+    """
+    Array of any number of keypoints specified in pixel coordinates.
+
+    Optionally include a `skeleton` field to indicating connections between `points` indices.
+
+    `Keypoints(points=[(0,0),(0,1),(1,1)], skeleton=[(0,1),(0,2)])` will represent three points
+    with a connection between the `(0,0)` and `(0,1)` point, and between the `(0,0)` and `(1,1)` point.
+    """
 
     points: List[Tuple[float, float]]
     """The sequence of discrete `(x, y)` pixel coordinates comprising this keypoints annotation."""
@@ -197,7 +206,14 @@ class Keypoints(Annotation):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Keypoints3D(Annotation):
-    """Array of any number of keypoints specified in a right-handed coordinate system."""
+    """
+    Array of any number of keypoints specified in a right-handed coordinate system.
+
+    Optionally include a `skeleton` field to indicating connections between `points` indices.
+
+    `Keypoints(points=[(0,0,0),(1,0,0),(0,1,0),(0,0,1)], skeleton=[(1,2),(0,3)])` will represent four points
+    with a connection between the `(1,0,0)` and `(0,1,0)` point, and between the `(0,0,0)` and `(0,0,1)` point.
+    """
 
     points: List[Tuple[float, float, float]]
     """The sequence of discrete `(x, y, z)` coordinates comprising this keypoints annotation."""
