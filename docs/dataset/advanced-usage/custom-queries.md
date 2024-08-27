@@ -35,9 +35,9 @@ This table summarized the custom query capabilities.
 |                          | `/`           | `@datapoint.a / 4`                       | Division                                                          |
 | **Power Operator**       | `^`           | `@datapoint.a ^ 2`                       | Power                                                             |
 | **Functions**            | `abs`         | `abs(@datapoint.a - 10)`                 | Returns the absolute value                                        |
-|                          | `sqrt`        | `sqrt(@datapoint.a)`                     | Returns the square root value                                     |
 |                          | `floor`       | `floor(@datapoint.a)`                    | Returns the value rounded to the nearest equal or smaller integer |
 |                          | `round`       | `round(@datapoint.a)`                    | Returns the rounded value                                         |
+|                          | `sqrt`        | `sqrt(@datapoint.a)`                     | Returns the square root value                                     |
 
 !!! Example
     **Combining Logical and Relational Operators**
