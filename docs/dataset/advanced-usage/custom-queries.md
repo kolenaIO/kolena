@@ -19,23 +19,25 @@ You can access datapoint fields by typing `@datapoint.` or result fields via `@r
 
 This table summarized the custom query capabilities.
 
-| **Category**          | **Operators**     | **Example**          |  **Description**                  |
-|-----------------------|-------------------|----------------------|----------------------------------|
-| **Logical Operators** | `and`             | `@datapoint.a > 2 and @datapoint.b < 3`    | Logical AND|
-|                       | `or`              | `@datapoint.a <= 4 or @datapoint.b >= 5`     | Logical OR|
-| **Relational Operators** | `==`            | `@datapoint.a == 10`  |Equal to|
-|                       | `!=`              | `@datapoint.a != 5`   |Not equal to|
-|                       | `>`               | `@datapoint.a > 20`   |Greater than|
-|                       | `>=`              | `@datapoint.a >= 15`  |Greater than or equal to|
-|                       | `<`               | `@datapoint.a < 30`   |Less than|
-|                       | `<=`              | `@datapoint.a <= 25`  |Less than or equal to|
-| **Arithmetic Operators** | `+`            | `@datapoint.a + 5`    |Addition|
-|                       | `-`               | `@datapoint.a - 3`    |Subtraction|
-|                       | `*`               | `@datapoint.a * 2`    |Multiplication|
-|                       | `/`               | `@datapoint.a / 4`    |Division|
-| **Power Operator**    | `^`               | `@datapoint.a ^ 2`    |Power|
-| **Function**          | `abs`             | `abs(@datapoint.a - 10)`| Returns the absolute value |
-|                       | `sqrt`            | `sqrt(@datapoint.a)`    | Returns the square root value|
+| **Category**             | **Operators** | **Example**                              | **Description**                                                   |
+|--------------------------|---------------|------------------------------------------|-------------------------------------------------------------------|
+| **Logical Operators**    | `and`         | `@datapoint.a > 2 and @datapoint.b < 3`  | Logical AND                                                       |
+|                          | `or`          | `@datapoint.a <= 4 or @datapoint.b >= 5` | Logical OR                                                        |
+| **Relational Operators** | `==`          | `@datapoint.a == 10`                     | Equal to                                                          |
+|                          | `!=`          | `@datapoint.a != 5`                      | Not equal to                                                      |
+|                          | `>`           | `@datapoint.a > 20`                      | Greater than                                                      |
+|                          | `>=`          | `@datapoint.a >= 15`                     | Greater than or equal to                                          |
+|                          | `<`           | `@datapoint.a < 30`                      | Less than                                                         |
+|                          | `<=`          | `@datapoint.a <= 25`                     | Less than or equal to                                             |
+| **Arithmetic Operators** | `+`           | `@datapoint.a + 5`                       | Addition                                                          |
+|                          | `-`           | `@datapoint.a - 3`                       | Subtraction                                                       |
+|                          | `*`           | `@datapoint.a * 2`                       | Multiplication                                                    |
+|                          | `/`           | `@datapoint.a / 4`                       | Division                                                          |
+| **Power Operator**       | `^`           | `@datapoint.a ^ 2`                       | Power                                                             |
+| **Functions**            | `abs`         | `abs(@datapoint.a - 10)`                 | Returns the absolute value                                        |
+|                          | `sqrt`        | `sqrt(@datapoint.a)`                     | Returns the square root value                                     |
+|                          | `floor`       | `floor(@datapoint.a)`                    | Returns the value rounded to the nearest equal or smaller integer |
+|                          | `round`       | `round(@datapoint.a)`                    | Returns the rounded value                                         |
 
 !!! Example
     **Combining Logical and Relational Operators**
