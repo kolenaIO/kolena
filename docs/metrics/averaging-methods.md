@@ -107,9 +107,9 @@ class’s support relative to the sum of all support values:
 
 $$
 \begin{align}
-\text{F}_{1 \, \text{weighted}} &= \left( \text{F}_{1 \, \texttt{Airplane}} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
-+ \left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
-+ \left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
+\text{F}_{1 \, \text{weighted}} &= \left( \text{F}_{1 \, \texttt{Airplane}} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right) +
+\left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right) +
+\left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
 &= \left( 0.67 \times \tfrac{3}{10} \right) + \left( 0.4 \times \tfrac{1}{10} \right) + \left( 0.67 \times \tfrac{6}{10} \right) \\[1em]
 &= 0.64
 \end{align}
