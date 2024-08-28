@@ -115,7 +115,6 @@ $$
 \end{align}
 $$
 
-
 <!-- markdownlint-enable MD013 -->
 
 ## Which Method Should I Use?
