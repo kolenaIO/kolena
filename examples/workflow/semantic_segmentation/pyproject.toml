@@ -11,7 +11,7 @@ opencv-python-headless = ">=4.6.0.66,<4.7"
 kolena = ">=0.94.0,<1"
 s3fs = "^2023.5.0"
 fsspec = "^2023.5.0"
-pandera = ">=0.9.0,<0.16"
+
 boto3 = "^1.25"
 scikit-learn = "^1.1.2"
 scikit-image = "^0.19.3"
