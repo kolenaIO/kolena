@@ -335,7 +335,7 @@ jobs:
       - checkout:
           path: ~/project
       - run: |
-          poetry config installer.max-workers 4
+          poetry config installer.max-workers 10
           poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
@@ -366,7 +366,7 @@ jobs:
       - checkout:
           path: ~/project
       - run: |
-          poetry config installer.max-workers 4
+          poetry config installer.max-workers 10
           poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
