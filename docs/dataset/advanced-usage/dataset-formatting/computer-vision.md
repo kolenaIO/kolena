@@ -200,7 +200,7 @@ to compute your metrics that are supported by Kolena's [Object Detection Task Me
 Videos are best represented in Kolena using the Gallery view. To setup the Gallery view, add links to your video files
 stored on the cloud under the `locator` column. Kolena automatically looks for that column name and renders your video files
 correctly.
-Kolena supports `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.
+Kolena supports `mov`, `mp4`, `mpeg` and other web browser supported video types.
 
 !!! Note
     Bounding box visualization only works for videos with `5`, `15`, `29.97` and `59.94` frame rates.
