@@ -163,8 +163,8 @@ from different distributions. Kolena uses the range of each metric to
 estimate its standard deviation which is used in calculating the z-score.
 
 **Filter Untested Datapoint**: this option allows you to rank your models only on
-datapoints that they were all tested on. Use this feature if its important to you to rank
-your models based on the datapoints they were tested on.
+datapoints that they were all tested on. Use this feature if its important to you to
+standardize the comparison set of datapoints.
 
 **Metric Selection**: Kolena's model leaderboard allows you see the model rank based on specific
 metric groups. For instance you can group cost related metrics (such as `inference cost` or
