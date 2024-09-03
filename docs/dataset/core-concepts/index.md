@@ -130,6 +130,10 @@ which provides a quick and standardized high level overview of which models perf
 For step-by-step instructions, take a look at the quickstart for
 [model comparison](../quickstart.md/#step-5-compare-models).
 
+!!! tip
+    Use the `Filter Untested Datapoints` option to narrow down your metrics to only include datapoints that all selected
+    models have tested on. This allows an apple to apple comparison of metrics.
+
 ### Debugging
 
 The `Debugger` tab of a dataset allows users to experiment with test cases and metrics without saving them off to the
@@ -157,6 +161,10 @@ uploaded model results in order of their rank.
 **Rank**: ranking leverages standardized scoring (z-score) to compare metrics
 from different distributions. Kolena uses the range of each metric to
 estimate its standard deviation which is used in calculating the z-score.
+
+**Filter Untested Datapoint**: this option allows you to rank your models only on
+datapoints that they were all tested on. Use this feature if its important to you to rank
+your models based on the datapoints they were tested on.
 
 **Metric Selection**: Kolena's model leaderboard allows you see the model rank based on specific
 metric groups. For instance you can group cost related metrics (such as `inference cost` or
