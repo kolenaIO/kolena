@@ -310,6 +310,7 @@ def upload_dataset(
     *,
     id_fields: Optional[List[str]] = None,
     commit_tags: Optional[List[str]] = None,
+    append_only: bool = False,
 ) -> None:
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
@@ -325,6 +326,9 @@ def upload_dataset(
         within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
         that `id_fields` must be hashable.
     :param commit_tags: Optionally specify a list of tags to associate with the dataset commit.
+    :param append_only: If True, the existing datapoint in the dataset will not be modified,
+    and only new datapoints from the input dataframe will be added. If false, all datapoint in the dataset will
+    be replaced by the ones in the input dataframe
     """
     _upload_dataset(name, df, id_fields=id_fields, commit_tags=commit_tags)
 
