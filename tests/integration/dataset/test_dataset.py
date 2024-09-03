@@ -166,6 +166,49 @@ def test__upload_dataset_chunks() -> None:
     assert_frame_equal(loaded_datapoints, expected)
 
 
+def test__upload_dataset__append() -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__append")
+    datapoints = [
+        dict(
+            locator=fake_locator(i, name),
+            width=i + 500,
+            height=i + 400,
+            city=random.choice(["new york", "waterloo"]),
+            bboxes=[
+                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
+                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
+            ],
+        )
+        for i in range(20)
+    ]
+    expected_datapoints = [
+        dict(
+            locator=dp["locator"],
+            width=dp["width"],
+            height=dp["height"],
+            city=dp["city"],
+            bboxes=[
+                BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
+                for bbox in dp["bboxes"]
+            ],
+        )
+        for dp in datapoints
+    ]
+    columns = ["locator", "width", "height", "city", "bboxes"]
+
+    upload_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"], append_only=True)
+
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    expected = pd.DataFrame(expected_datapoints[:10], columns=columns)
+    assert_frame_equal(loaded_datapoints, expected)
+
+    # append to dataset
+    upload_dataset(name, pd.DataFrame(datapoints[10:], columns=columns), id_fields=["locator"], append_only=True)
+
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    assert_frame_equal(loaded_datapoints, pd.DataFrame(expected_datapoints, columns=columns))
+
+
 def test__download_dataset__not_exist() -> None:
     name = with_test_prefix(f"{__file__}::test__download_dataset__not_exist")
     with pytest.raises(NotFoundError):
