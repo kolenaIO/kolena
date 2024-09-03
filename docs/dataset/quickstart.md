@@ -209,7 +209,7 @@ as well as over all test cases we defined earlier.
 
 !!! tip
     Use the `Filter Untested Datapoints` option to narrow down your metrics to only include datapoints that all selected
-    models have tested on. This allows an apple to apple comparison of metrics.
+    models have tested on. This allows for an apple to apple comparison of metrics.
 
 <figure markdown>
 ![Comparing Models](../assets/images/quickstart-compare-models.gif#only-dark)
