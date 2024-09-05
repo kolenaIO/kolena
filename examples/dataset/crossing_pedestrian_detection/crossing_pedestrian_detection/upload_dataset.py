@@ -62,7 +62,6 @@ def process_data() -> pd.DataFrame:
                 {
                     "locator": video_locator(video_file),
                     "frame_rate": VIDEO_FRAME_RATE,
-                    "video_id": int(filename.split("_")[-1]),
                     "filename": filename,
                     "thumbnail_locator": thumbnail_locator(filename),
                     "num_frames": gt_annotations[filename]["num_frames"],
