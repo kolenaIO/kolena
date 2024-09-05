@@ -131,7 +131,8 @@ For step-by-step instructions, take a look at the quickstart for
 [model comparison](../quickstart.md/#step-5-compare-models).
 
 !!! tip
-    Use the `Filter Untested Datapoints` option to narrow down your metrics to only include datapoints that all selected
+    Use the `Filter Untested Datapoints (or Filter to Intersection)` option to narrow down your metrics
+    to only include datapoints that all selected
     models have tested on. This allows for an apple to apple comparison of metrics.
 
 ### Debugging
