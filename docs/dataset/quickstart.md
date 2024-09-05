@@ -207,6 +207,11 @@ Metrics in this view will also be highlighted according to how much they improve
 reference model. In this example, RetinaFace performs better than the random model over the entire dataset
 as well as over all test cases we defined earlier.
 
+!!! tip
+    Use the `Filter Untested Datapoints (or Filter to Intersection)` option to narrow down your metrics to
+    only include datapoints that all selected
+    models have tested on. This allows for an apple to apple comparison of metrics.
+
 <figure markdown>
 ![Comparing Models](../assets/images/quickstart-compare-models.gif#only-dark)
 ![Comparing Models](../assets/images/quickstart-compare-models-light.gif#only-light)
