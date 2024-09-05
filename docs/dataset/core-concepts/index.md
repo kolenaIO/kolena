@@ -163,7 +163,7 @@ uploaded model results in order of their rank.
 from different distributions. Kolena uses the range of each metric to
 estimate its standard deviation which is used in calculating the z-score.
 
-**Filter Untested Datapoint**: this option allows you to rank your models only on
+**Filter Untested Datapoint (or Filter to Intersection)**: this option allows you to rank your models only on
 datapoints that they were all tested on. Use this feature if its important to you to
 standardize the comparison set of datapoints.
 
