@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import List
+from typing import Optional
 
 import pandas as pd
 import pytest
 
-from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_columns
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset._common import validate_id_fields
 from kolena.errors import DuplicateDatapointIdError
@@ -101,23 +102,38 @@ def test__validate_dataframe_ids__duplicate_id() -> None:
 
 
 @pytest.mark.parametrize(
-    "df, id_fields",
+    "df, id_fields, thresholded_fields",
     [
-        (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a"]),
-        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text"]),
+        (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a"], None),
+        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text"], None),
+        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text"], []),
+        (
+            pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1], "threshold": [0.1, 0.2, 0.3]}),
+            ["a.text"],
+            ["threshold"],
+        ),
     ],
 )
-def test__validate_dataframe_have_other_columns_besides_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
-    validate_dataframe_have_other_columns_besides_ids(df, id_fields)
+def test__validate_dataframe_columns_besides_ids(
+    df: pd.DataFrame,
+    id_fields: List[str],
+    thresholded_fields: Optional[List[str]],
+) -> None:
+    validate_dataframe_columns(df, id_fields, thresholded_fields)
 
 
 @pytest.mark.parametrize(
-    "df, id_fields",
+    "df, id_fields, thresholded_fields",
     [
-        (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"]),
-        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"]),
+        (pd.DataFrame(dict(a=[1, 2, 3], b=[1, 2, 1])), ["a", "b"], None),
+        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text", "b.text"], None),
+        (pd.DataFrame({"a.text": [1, 2, 3], "b.text": [1, 2, 1]}), ["a.text"], ["b.text"]),
     ],
 )
-def test__validate_dataframe_have_other_columns_besides_ids__error(df: pd.DataFrame, id_fields: List[str]) -> None:
+def test__validate_dataframe_columns__error(
+    df: pd.DataFrame,
+    id_fields: List[str],
+    thresholded_fields: Optional[List[str]],
+) -> None:
     with pytest.raises(InputValidationError):
-        validate_dataframe_have_other_columns_besides_ids(df, id_fields)
+        validate_dataframe_columns(df, id_fields, thresholded_fields)

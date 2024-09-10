@@ -47,7 +47,7 @@ from kolena.dataset._common import COL_RESULT
 from kolena.dataset._common import COL_THRESHOLDED_OBJECT
 from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
-from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_columns
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
@@ -256,7 +256,7 @@ def _prepare_upload_results_request(
         if isinstance(df_result_input, pd.DataFrame):
             total_rows += df_result_input.shape[0]
             validate_dataframe_ids(df_result_input, id_fields)
-            validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
+            validate_dataframe_columns(df_result_input, id_fields, thresholded_fields)
             df_results = _process_result(config, df_result_input, id_fields, thresholded_fields)
             upload_data_frame(df=df_results, load_uuid=load_uuid)
 
@@ -265,7 +265,7 @@ def _prepare_upload_results_request(
             for df_result in df_result_input:
                 if not id_column_validated:
                     validate_dataframe_ids(df_result, id_fields)
-                    validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
+                    validate_dataframe_columns(df_result, id_fields, thresholded_fields)
                     id_column_validated = True
                 total_rows += df_result.shape[0]
                 df_results = _process_result(config, df_result, id_fields, thresholded_fields)
