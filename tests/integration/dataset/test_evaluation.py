@@ -492,8 +492,8 @@ def test__upload_results__thresholded() -> None:
 
 
 def test__upload_results__only_id_and_thresholded_columns() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__only_id_and_thresholded_columns")
-    model_name = with_test_prefix(f"{__file__}::test__only_id_and_thresholded_columns")
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__only_id_and_thresholded_columns")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__only_id_and_thresholded_columns")
     df_dp = get_df_dp()
     dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
     upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
