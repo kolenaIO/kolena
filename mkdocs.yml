@@ -82,25 +82,26 @@ nav:
           - Classification: reference/pre-built/classification.md
   - Metrics Glossary:
     - Metrics Glossary: metrics/index.md
-    - metrics/accuracy.md
-    - metrics/average-precision.md
-    - metrics/averaging-methods.md
-    - metrics/coefficient-of-determination.md
-    - metrics/cohens-kappa.md
-    - metrics/confusion-matrix.md
-    - metrics/f1-score.md
-    - metrics/fpr.md
-    - metrics/mean-absolute-error.md
-    - metrics/mean-squared-error.md
-    - metrics/pearson-correlation.md
-    - metrics/precision.md
-    - metrics/pr-curve.md
-    - metrics/recall.md
-    - metrics/roc-curve.md
-    - metrics/root-mean-squared-error.md
-    - metrics/spearman-correlation.md
-    - metrics/specificity.md
-    - metrics/tp-fp-fn-tn.md
+    - General:
+      - metrics/accuracy.md
+      - metrics/average-precision.md
+      - metrics/averaging-methods.md
+      - metrics/coefficient-of-determination.md
+      - metrics/cohens-kappa.md
+      - metrics/confusion-matrix.md
+      - metrics/f1-score.md
+      - metrics/fpr.md
+      - metrics/mean-absolute-error.md
+      - metrics/mean-squared-error.md
+      - metrics/pearson-correlation.md
+      - metrics/precision.md
+      - metrics/pr-curve.md
+      - metrics/recall.md
+      - metrics/roc-curve.md
+      - metrics/root-mean-squared-error.md
+      - metrics/spearman-correlation.md
+      - metrics/specificity.md
+      - metrics/tp-fp-fn-tn.md
     - Computer Vision:
       - metrics/geometry-matching.md
       - metrics/iou.md
