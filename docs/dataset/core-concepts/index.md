@@ -73,13 +73,14 @@ as text. Below table outlines what extensions are supported for optimal visualiz
 **Assets**: allow you to connect multiple referenced files to each datapoint for visualization and analysis.
 Multiple assets can be attached to a single datapoint.
 
-| Asset Type                                                              | Description                                                    |
-|-------------------------------------------------------------------------|----------------------------------------------------------------|
+| Asset Type                                                                 | Description                                                    |
+|----------------------------------------------------------------------------|----------------------------------------------------------------|
 | [`ImageAsset`](../../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
 | [`BinaryAsset`](../../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
 | [`AudioAsset`](../../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
 | [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
 | [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
+| [`MeshAsset`](../../reference/asset.md#kolena.asset.MeshAsset)             | Useful for attaching and visualizing 3D meshes.                |
 
 **Annotations**: allow you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
 We currently support 10 different types of annotations each enabling a specific modality.

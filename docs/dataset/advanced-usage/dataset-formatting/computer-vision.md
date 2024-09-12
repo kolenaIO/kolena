@@ -52,8 +52,8 @@ You can add additional information about your image by
 adding columns to the `.CSV` file with the meta-data name and values in each row.
 Below is an example datapoint:
 
-| locator                                               | ground_truth | image_brightness | image_contrast |
-|-------------------------------------------------------|--------------|------------------|----------------|
+| locator                                                  | ground_truth | image_brightness | image_contrast |
+|----------------------------------------------------------|--------------|------------------|----------------|
 | `s3://kolena-public-examples/cifar10/data/horse0000.png` | horse        | 153.994          | 84.126         |
 
 !!! tip
@@ -72,7 +72,41 @@ Below is an example datapoint:
     |-------||--------------|------------------|----------------|
     | `s3://kolena-examples/data/h0.png`| `s3://kolena-examples/data/thumbnail/h0.png` | horse | 153.994 | 84.126 |
 
-## 2D Object Detection
+### Including Assets and Annotations
+
+Kolena supports the inclusion of overlay [annotations](../../reference/annotation.md) and
+[asset](../../reference/asset.md) files as fields in a dataset.
+
+We recommend using the [annotation](../../reference/annotation.md) and [asset](../../reference/asset.md) dataclasses
+for ease of annotation and asset manipulation:
+
+```
+# Creates a single-row DataFrame with an image datapoint, a `bbox` annotation field, and a `mesh` asset file.
+
+import pandas as pd
+from kolena.annotation import BoundingBox
+from kolena.asset import MeshAsset
+
+locator = "s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000000294.jpg"
+bbox = BoundingBox(top_left=(27.7, 69.83), bottom_right=(392.61, 427))
+mesh = MeshAsset(locator="s3://kolena-public-examples/a-large-dataset-of-object-scans/data/mesh/00004.ply")
+df = pd.DataFrame([dict(locator=locator, bbox=bbox, mesh=mesh)])
+
+# DataFrame can now be directly uploaded as a dataset
+from kolena.dataset import upload_dataset
+upload_dataset("my-dataset", df, id_fields=["locator"])
+
+# Or serialized to CSV and uploaded through the web UI.
+# If serializing to CSV please use the provided `kolena.io.dataframe_to_csv` method. The Pandas provided `to_csv` method
+# does not adhere to the JSON spec, and may serialize malformed objects.
+from kolena.io import dataframe_to_csv
+
+dataframe_to_csv(df, "my-dataset.csv", index=False)
+```
+
+## Specific Workflows
+
+### 2D Object Detection
 
 !!! example
     You can follow this [example 2D object detection ↗](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
@@ -117,7 +151,7 @@ bboxes = [
     instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
     `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
-### Uploading Model Results
+#### Uploading Model Results
 
 Model results contian your model inferences as well as any custom metrics that you wish to monitor on Kolena.
 The data structure of model resutls is very similar to the structure of a dataset with minor differences.
@@ -149,7 +183,7 @@ to compute your metrics that are supported by Kolena's [Object Detection Task Me
     Follow the [2D Object Detection result upload](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
     example for optimal setup.
 
-## 3D Object Detection
+### 3D Object Detection
 
 [`annotations`](../../../reference/annotation.md) are used to visualize overlays on top of images.
 To render 3D Bounding boxes you can use
@@ -174,7 +208,7 @@ To render 3D Bounding boxes you can use
     instead of [`pandas.to_csv()`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html).
     `pandas.to_csv` does not serialize Kolena annotation objects in a way that is compatible with the platform.
 
-### Uploading Model Results
+#### Uploading Model Results
 
 Model results contain your model inferences as well as any custom metrics that you wish to monitor on Kolena.
 The data structure of model results is very similar to the structure of a dataset with minor differences.
@@ -195,7 +229,7 @@ to compute your metrics that are supported by Kolena's [Object Detection Task Me
     Follow the [3D Object Detection result upload](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_3d/object_detection_3d/upload_results.py)
     on how to setup both 3D and 2D bounding boxes in your results for multi-modal 3D object detection data.
 
-## Video
+### Video
 
 Videos are best represented in Kolena using the Gallery view. To setup the Gallery view, add links to your video files
 stored on the cloud under the `locator` column. Kolena automatically looks for that column name and renders your video files
@@ -206,7 +240,7 @@ Kolena supports `mov`, `mp4`, `mpeg` and other web browser supported video types
     Bounding box visualization only works for videos with `5`, `15`, `29.97` and `59.94` frame rates.
     Please let us know if you are working with a frame rate outside of the ones mentioned.
 
-### Setting up bounding box annotations on videos
+#### Setting up bounding box annotations on videos
 
 To overlay bounding boxes on videos, you will need to define a new class based on
 [`LabeledBoundingBox`](../../../reference/annotation.md#kolena.annotation.LabeledBoundingBox) or
