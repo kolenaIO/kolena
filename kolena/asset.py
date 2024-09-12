@@ -96,6 +96,14 @@ class PointCloudAsset(Asset):
     """
     A three-dimensional point cloud located in a cloud bucket. Points are assumed to be specified in a right-handed,
     Z-up coordinate system with the origin around the sensor that captured the point cloud.
+
+    PointCloudAsset supports the following extensions: `.pcd`, `.npy`, and `.npz`.
+
+    If using an `.npy` or `.npz` file format, PointCloudAsset expects a (N, 3) or (N, 4) shaped numpy array, with each
+    row as a array of `(x, y, z, [intensity])` values.
+
+    If using an `.npz` file, include an `npz_key` when initializing to specify the path field to load as an array:
+    `PointCloudAsset(locator="s3://my-bucket/path/to/my-point-cloud.npz", npz_key="points")`
     """
 
     locator: str
