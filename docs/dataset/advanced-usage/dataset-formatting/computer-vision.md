@@ -74,10 +74,9 @@ Below is an example datapoint:
 
 ### Including Assets and Annotations
 
-Kolena supports the inclusion of overlay [annotations](../../reference/annotation.md) and
-[asset](../../reference/asset.md) files as fields in a dataset.
+Kolena supports the inclusion of overlay annotations andasset files as fields in a dataset.
 
-We recommend using the [annotation](../../reference/annotation.md) and [asset](../../reference/asset.md) dataclasses
+We recommend using the [annotation](../../../reference/annotation.md) and [asset](../../../reference/asset.md) dataclasses
 for ease of annotation and asset manipulation:
 
 ```
