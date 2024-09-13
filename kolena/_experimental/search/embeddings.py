@@ -25,7 +25,6 @@ import pandas as pd
 from dacite import from_dict
 
 from kolena._api.v1.generic import Search as API
-from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
@@ -78,7 +77,14 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
 
 
-def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_embedding: pd.DataFrame) -> None:
+def _upload_dataset_embeddings(
+    dataset_name: str,
+    key: str,
+    df_embedding: pd.DataFrame,
+    run_embedding_reduction_pipeline: bool = True,
+) -> None:
+    dataset_entity_data = _load_dataset_metadata(dataset_name)
+    assert dataset_entity_data
     embedding_lengths: Set[int] = set()
 
     def encode_embedding(embedding: Any) -> str:
@@ -111,6 +117,7 @@ def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_emb
     request = UploadDatasetEmbeddingsRequest(
         uuid=init_response.uuid,
         name=dataset_name,
+        run_embedding_reduction=run_embedding_reduction_pipeline,
     )
     res = krequests.post(
         endpoint_path=PATH_V2.EMBEDDINGS.value,
@@ -134,6 +141,4 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises NotFoundError: The given dataset does not exist.
     :raises InputValidationError: The provided input is not valid.
     """
-    existing_dataset = _load_dataset_metadata(dataset_name)
-    assert existing_dataset
-    _upload_dataset_embeddings(existing_dataset, key, df_embedding)
+    _upload_dataset_embeddings(dataset_name, key, df_embedding)

@@ -24,6 +24,7 @@ class Path(str, Enum):
 @dataclass(frozen=True)
 class UploadDatasetEmbeddingsRequest(BatchedLoad.WithLoadUUID):
     name: str
+    run_embedding_reduction: bool = True
 
 
 @dataclass(frozen=True)
