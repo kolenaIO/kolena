@@ -2,32 +2,41 @@
 
 ## Development environment setup
 
+`kolena` uses [uv](https://github.com/astral-sh/uv) to manage dependencies. To set up this repository for development,
+run:
+
+```shell
+uv venv && source .venv/bin/activate
+uv pip install --all-extras -r pyproject.toml
+uv tool run pre-commit install
+```
+
 ### Install pre-commit checks
 
 Pre-commit is used for static analysis and to ensure code style consistency. Please install it so warnings and
 errors can be caught before committing code.
 
 ```
-poetry run pre-commit install
+uv tool run pre-commit install
 ```
 
 ## Documentation
 
 The documentation for `kolena`, hosted at [docs.kolena.com](https://docs.kolena.com/), is built out of this repo using
 [MkDocs](https://www.mkdocs.org/).
-Building the documentation locally requires installing the Poetry dependencies for `kolena` as well as additional
+Building the documentation locally requires installing the dependencies for `kolena` as well as additional
 [OS-level dependencies for mkdocs-material](https://squidfunk.github.io/mkdocs-material/plugins/requirements/image-processing/#cairo-graphics).
 
 To run the documentation server locally, run:
 
 ```
-poetry run mkdocs serve -a localhost:8999
+uv run mkdocs serve -a localhost:8999
 ```
 
 To build static documentation:
 
 ```
-poetry run mkdocs build
+uv run mkdocs build
 ```
 
 Note that any OSError unable to find "cairo-2, "cairo", or "libcairo-2" can be solved with
