@@ -25,7 +25,9 @@ classifiers = [# classifiers for license, versions set automatically during Poet
 packages = [
     { include = "kolena" }
 ]
-requires-python = ">=3.8,<3.13"
+requires-python = ">=3.9,<3.13"
+# TODO BEFORE MERGE include 3.8 as a valid python version
+# requires-python = ">=3.8,<3.13"
 
 dependencies = [
     "numpy >=1.19,<2; python_version < '3.11'",
@@ -56,20 +58,6 @@ metrics = [
     "scipy >=1,<1.14; python_version >= '3.9' and python_version < '3.12'",
     "scipy >=1.12,<2; python_version >= '3.12'",
 ]
-# mkdocstrings = { version = ">0.20,<1", extras = ["python"] }
-# black = { version = "^22.1.0", allow-prereleases = true }
-dev = [
-    "pre-commit>=2.17,<3",
-    "pytest>=7,<8",
-    "pytest-cov>=4.0.0,<5",
-    "pytest-depends>=1.0.1,<2",
-    "mkdocs>=1.4.3,<2",
-    "cairosvg>=2.7.0,<3",
-    # insiders fork installed out-of-band in docs/setup_insiders.sh
-    "mkdocs-material>=9.2,<10",
-    "mkdocs-git-committers-plugin-2>=1,<2",
-    "mkdocs-git-revision-date-localized-plugin>=1,<2",
-]
 
 [tool.poetry.scripts]
 kolena = 'kolena._utils.cli:run'
@@ -87,4 +75,20 @@ python_classes = []
 python_functions = ["test__*"]
 markers = [
     "metrics: tests that require the metrics extra dependency such as sklearn",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "black>=22.1.0,<23",
+    "pre-commit>=2.17,<3",
+    "pytest>=7,<8",
+    "pytest-cov>=4.0.0,<5",
+    "pytest-depends>=1.0.1,<2",
+    "mkdocs>=1.4.3,<2",
+    "cairosvg>=2.7.0,<3",
+    # insiders fork installed out-of-band in docs/setup_insiders.sh
+    "mkdocs-material>=9.2,<10",
+    "mkdocstrings[python]>=0.20,<1",
+    "mkdocs-git-committers-plugin-2>=1,<2",
+    "mkdocs-git-revision-date-localized-plugin>=1,<2",
 ]
