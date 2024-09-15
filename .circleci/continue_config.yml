@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@3.2.4
-
 parameters:
   workflow:
     type: boolean
@@ -50,26 +47,12 @@ jobs:
       python-version: << parameters.python-version >>
     steps:
       - checkout
-      - run:
+      - run: &install_uv
           name: Install uv
           command: pip install uv
-      - run:
+      - run: &setup_env
           name: Setup environment
           command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
-      - when:
-          condition:
-            equal: [ "none", << parameters.extras >> ]
-          steps:
-            - run:
-                name: Install Dependencies
-                command: uv pip install -r pyproject.toml --verbose
-      - when:
-          condition:
-            equal: [ "metrics", << parameters.extras >> ]
-          steps:
-            - run:
-                name: Install Dependencies
-                command: uv pip install --all-extras -r pyproject.toml --verbose
 
   docs:
     parameters:
@@ -84,12 +67,8 @@ jobs:
       python-version: << parameters.python-version >>
     steps:
       - checkout
-      - run:
-          name: Install uv
-          command: pip install uv
-      - run:
-          name: Setup environment
-          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
+      - run: *install_uv
+      - run: *setup_env
       - restore_cache:
           name: Restore MkDocs cache
           key: mkdocs-cache
@@ -129,12 +108,22 @@ jobs:
       python-version: << parameters.python-version >>
     steps:
       - checkout
-      - run:
-          name: Install uv
-          command: pip install uv
-      - run:
-          name: Setup environment
-          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
+      - run: *install_uv
+      - run: *setup_env
+      - when: &install_without_extras
+          condition:
+            equal: [ "none", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Install Dependencies
+                command: uv pip install -r pyproject.toml --verbose
+      - when: &install_with_extras
+          condition:
+            equal: [ "metrics", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Install Dependencies
+                command: uv pip install --all-extras -r pyproject.toml --verbose
       - run: uv run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
@@ -159,19 +148,6 @@ jobs:
             - run:
                 name: Run metrics unit tests
                 command: uv run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
-      - when:
-          # Generate coverage only from one Python version
-          condition:
-            matches:
-              pattern: "^3\\.9.*$"
-              value: << parameters.python-version >>
-          steps:
-            - run:
-                name: Coverage
-                command: uv run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-                flags: integration
 
   integration-test:
     parameters:
@@ -203,12 +179,10 @@ jobs:
                 name: skip job
                 command: circleci-agent step halt
       - checkout
-      - run:
-          name: Install uv
-          command: pip install uv
-      - run:
-          name: Setup environment
-          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
+      - run: *install_uv
+      - run: *setup_env
+      - when: *install_without_extras
+      - when: *install_with_extras
       - run:
           name: Set KOLENA_TOKEN with round robin
           command: |
@@ -277,12 +251,10 @@ jobs:
                 name: skip job
                 command: circleci-agent step halt
       - checkout
-      - run:
-          name: Install uv
-          command: pip install uv
-      - run:
-          name: Setup environment
-          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
+      - run: *install_uv
+      - run: *setup_env
+      - when: *install_without_extras
+      - when: *install_with_extras
       - run:
           name: Set KOLENA_TOKEN with round robin
           command: |
@@ -314,12 +286,8 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - run:
-          name: Install uv
-          command: pip install uv
-      - run:
-          name: Setup environment
-          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
+      - run: *install_uv
+      - run: *setup_env
       - run: uv pip install -r pyproject.toml --verbose
       - run:
           name: Run pre-commit checks
@@ -349,12 +317,8 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - run:
-          name: Install uv
-          command: pip install uv
-      - run:
-          name: Setup environment
-          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
+      - run: *install_uv
+      - run: *setup_env
       - run: uv pip install -r pyproject.toml --verbose
       - run:
           name: Run pre-commit checks
