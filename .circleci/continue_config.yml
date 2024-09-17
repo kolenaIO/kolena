@@ -317,19 +317,19 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - run: *install_uv
-      - run: *setup_env
-      - run: uv pip install -r pyproject.toml --verbose
+      - run: |
+          poetry config installer.max-workers 10
+          poetry install -vv --no-ansi
       - run:
           name: Run pre-commit checks
-          command: uvx pre-commit run -a
+          command: poetry run pre-commit run -a
       - run:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
             token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
             echo "Using $token"
             export KOLENA_TOKEN=${!token}
-            uv run pytest --cache-clear -vv tests
+            poetry run pytest --cache-clear -vv tests
 
   example-evaluator:
     docker:
