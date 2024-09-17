@@ -10,14 +10,12 @@ requires-python = ">=3.9,<3.12"
 
 dependencies = [
     "kolena>=1.23.0,<2",
-    "s3fs>=2023.5.0,<2024",
+    "s3fs>=2023.5.0",
     "sentence-transformers>=2.2.2,<3",
     "openai>=1.6.0,<2",
     "protobuf>=4.25.1,<5",
     "numpy>=1.19,<2",
-    "torch @ https://download.pytorch.org/whl/cpu/torch-2.1.2-cp39-none-macosx_11_0_arm64.whl; sys_platform == 'darwin' and platform_machine == 'arm64'",
-    "torch @ https://download.pytorch.org/whl/cpu/torch-2.1.2-cp39-none-macosx_10_9_x86_64.whl; sys_platform == 'darwin' and platform_machine == 'x86_64'",
-    "torch == 2.1.2 @ https://download.pytorch.org/whl/cpu/; sys_platform != 'darwin'",
+    "torch==2.1.2",
 ]
 
 [tool.uv]
@@ -30,6 +28,3 @@ dev-dependencies = [
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.metadata]
-allow-direct-references = true # to allow the syntax 'pkg @ url' in dependencies

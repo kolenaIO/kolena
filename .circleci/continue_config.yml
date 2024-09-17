@@ -117,6 +117,8 @@ jobs:
             - run:
                 name: Install Dependencies
                 command: uv pip install -r pyproject.toml --verbose
+                env:
+                  UV_EXTRA_INDEX_URL: "https://download.pytorch.org/whl/cpu/"
       - when: &install_with_extras
           condition:
             equal: [ "metrics", << parameters.extras >> ]
@@ -124,6 +126,8 @@ jobs:
             - run:
                 name: Install Dependencies
                 command: uv pip install --all-extras -r pyproject.toml --verbose
+                env:
+                  UV_EXTRA_INDEX_URL: "https://download.pytorch.org/whl/cpu/"
       - run: uv run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
