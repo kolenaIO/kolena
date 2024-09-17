@@ -8,7 +8,7 @@ license = "Apache-2.0"
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
 kolena = ">=1.23.0"
-s3fs = "^2023.5.0"
+s3fs = "^2024.9.0"
 numpy = "^1"
 
 [tool.poetry.group.dev.dependencies]
