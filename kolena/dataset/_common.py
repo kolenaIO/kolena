@@ -26,7 +26,6 @@ COL_DATAPOINT_ID_OBJECT = "datapoint_id_object"
 COL_EVAL_CONFIG = "eval_config"
 COL_RESULT = "result"
 COL_THRESHOLDED_OBJECT = "thresholded_object"
-COL_MODEL = "model"
 _MAX_DUPLICATE_ID_REPORT = 10
 
 DEFAULT_SOURCES = [dict(type="sdk")]
