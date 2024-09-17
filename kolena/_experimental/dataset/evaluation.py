@@ -42,7 +42,7 @@ def _get_models_by_tag(tag: str) -> list[str]:
     )
     response.raise_for_status()
 
-    load_by_tag_response = from_dict(LoadByTagResponse, response)
+    load_by_tag_response = from_dict(LoadByTagResponse, response.json())
     return [model.name for model in load_by_tag_response.models]
 
 
