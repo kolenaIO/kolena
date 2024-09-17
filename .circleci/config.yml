@@ -29,6 +29,7 @@ jobs:
             tests/integration/[^/]*.py all true
             .circleci/.* all true
             examples/.*.py example true
+            examples/.*/pyproject.toml example true
       - run:
           name: Print parameters
           command: cat /tmp/pipeline-parameters.json
