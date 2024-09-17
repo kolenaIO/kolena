@@ -25,7 +25,7 @@ Supported file types are:
 | Type | Format |
 | --- | --- |
 | Images | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported images |
-| Video | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types |
+| Video | `mov`, `mp4`, `mpeg` and other web browser supported video types |
 | Point Cloud | `.pcd` |
 
 ### Using the `locator`
