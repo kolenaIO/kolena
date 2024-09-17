@@ -447,6 +447,16 @@ workflows:
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-experimental-dataset-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: _experimental/dataset
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test-dataset:
           name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
