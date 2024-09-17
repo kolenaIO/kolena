@@ -76,4 +76,4 @@ class LoadByTagRequest:
 
 @dataclass(frozen=True)
 class LoadByTagResponse:
-    models: list[EntityData]
+    models: List[EntityData]
