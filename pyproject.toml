@@ -51,9 +51,6 @@ metrics = [
     "scipy >=1,<2",
 ]
 
-[tool.poetry.scripts]
-kolena = 'kolena._utils.cli:run'
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
