@@ -89,7 +89,7 @@ dev-dependencies = [
     # insiders fork installed out-of-band in docs/setup_insiders.sh
     "mkdocs-material>=9.2,<10",
     "mkdocstrings>=0.25,<1",
-    "mkdocstrings-python>=0.5,<1",
+    "mkdocstrings-python>=1.11.1,<2",
     "mkdocs-git-committers-plugin-2>=1,<2",
     "mkdocs-git-revision-date-localized-plugin>=1,<2",
 ]
