@@ -127,3 +127,5 @@ def test__download_results_by_tag__multiple_model_with_same_tag() -> None:
         download_results_by_tag(dataset_name, model_tag)
     exc_info_value = str(exc_info.value)
     assert "multiple models with tag" in exc_info_value
+    assert model_name_1 in exc_info_value
+    assert model_name_2 in exc_info_value
