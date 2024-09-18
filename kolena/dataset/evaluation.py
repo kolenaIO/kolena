@@ -247,7 +247,7 @@ def _prepare_upload_results_request(
     dataset: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     thresholded_fields: Optional[List[str]] = None,
-    tags: list[str] = [],
+    tags: List[str] = [],
 ) -> Tuple[str, int, int]:
     _validate_tags(tags)
     existing_dataset = _load_dataset_metadata(dataset)
@@ -290,7 +290,7 @@ def _upload_results(
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
     thresholded_fields: Optional[List[str]] = None,
-    tags: list[str] = [],
+    tags: List[str] = [],
 ) -> UploadResultsResponse:
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields, tags)
 
@@ -315,7 +315,7 @@ def upload_results(
     model: str,
     results: Union[DataFrame, List[EvalConfigResults]],
     thresholded_fields: Optional[List[str]] = None,
-    tags: list[str] = [],
+    tags: List[str] = [],
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.

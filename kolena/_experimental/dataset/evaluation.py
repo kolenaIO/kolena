@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dataclasses import asdict
+from typing import List
 from typing import Optional
 
 import pandas as pd
@@ -29,7 +30,7 @@ from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
 
-def _get_models_by_tag(tag: str) -> list[str]:
+def _get_models_by_tag(tag: str) -> List[str]:
     """
     Get model names by a given tag.
 
