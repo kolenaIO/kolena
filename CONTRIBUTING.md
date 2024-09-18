@@ -54,7 +54,9 @@ To build the documentation with "insider" features, run the [`setup_insiders.sh`
 ```
 
 Note that this script requires an SSH key in your environment with access to the [kolenaIO](https://github.com/kolenaIO)
-organization.
+organization. Additionally, this script modifies the `pyproject.toml` to reference the "insider" versions of the mkdocs
+projects. Please take care to avoid merging these updates, as it will prevent contributors without insiders access from
+running `kolena`.
 
 After running `setup_insiders.sh`, add `--config-file mkdocs.insiders.yml` to the `serve` and `build` invocations above
 to build documentation with all "insider" features enabled.
