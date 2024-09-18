@@ -20,9 +20,9 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`BoundingBox3D`][kolena.annotation.BoundingBox3D] | Limited to `PointCloud` data |
 | [`Polygon`][kolena.annotation.Polygon] | Limited to `Image` or `Video` data |
 | [`Polyline`][kolena.annotation.Polyline] | Limited to `Image` or `Video` data |
-| [`Polyline3D`][kolena.annotation.Polyline3D] | Limited to `PointCloud` data |
+| [`Polyline3D`][kolena.annotation.Polyline3D] | Can be visualized on `PointCloud` data or in standalone 3D space |
 | [`Keypoints`][kolena.annotation.Keypoints] | Limited to `Image` or `Video` data |
-| [`Keypoints3D`][kolena.annotation.Keypoints3D] | Limited to `PointCloud` data |
+| [`Keypoints3D`][kolena.annotation.Keypoints3D] | Can be visualized on `PointCloud` data, or in standalone 3D space |
 | [`SegmentationMask`][kolena.annotation.SegmentationMask] | Limited to `Image` or `Video` data |
 | [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
 | [`Label`][kolena.annotation.Label] | Valid for all data |
