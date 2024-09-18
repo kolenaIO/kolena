@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
+
 import pytest
 
 from kolena.dataset.evaluation import _validate_tags
@@ -21,7 +23,7 @@ from kolena.errors import IncorrectUsageError
     "tags, has_error",
     [([], False), (["tag-a", "tag-b"], False), (["tag-a", " "], True), ([""], True)],
 )
-def test__validate_tags(tags: list[str], has_error: bool) -> None:
+def test__validate_tags(tags: List[str], has_error: bool) -> None:
     if has_error:
         with pytest.raises(IncorrectUsageError):
             _validate_tags(tags)
