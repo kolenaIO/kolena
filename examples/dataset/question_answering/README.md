@@ -10,6 +10,8 @@ This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python depe
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
+# Include if using torch on cpu
+export UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu/"
 uv sync
 ```
 
