@@ -53,6 +53,9 @@ metrics = [
     "scipy >=1,<2",
 ]
 
+[project.scripts]
+kolena = 'kolena._utils.cli:run'
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
