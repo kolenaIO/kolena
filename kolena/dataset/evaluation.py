@@ -237,7 +237,7 @@ def _validate_configs(configs: List[EvalConfig]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
-def _validate_tags(tags: list[str]) -> None:
+def _validate_tags(tags: List[str]) -> None:
     for tag in tags:
         if not tag.strip():
             raise IncorrectUsageError("at least one of the tags is empty")
