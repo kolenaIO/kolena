@@ -14,6 +14,7 @@
 from dataclasses import asdict
 from typing import List
 from typing import Optional
+from typing import Tuple
 
 import pandas as pd
 
@@ -53,9 +54,9 @@ def download_results_by_tag(
     model_tag: str,
     commit: Optional[str] = None,
     include_extracted_properties: bool = False,
-) -> tuple[pd.DataFrame, list[EvalConfigResults]]:
+) -> Tuple[pd.DataFrame, List[EvalConfigResults]]:
     """
-    Download results given dataset name and model tag.
+    Download results given dataset name and model tag. Currently restricted to if the model tag is unique to the model.
 
     Concat dataset with results:
 
