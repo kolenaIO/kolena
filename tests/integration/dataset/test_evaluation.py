@@ -25,6 +25,7 @@ from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.evaluation import _upload_results
 from kolena.errors import IncorrectUsageError
+from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from tests.integration.dataset.test_dataset import batch_iterator
 from tests.integration.helper import assert_frame_equal
@@ -488,6 +489,31 @@ def test__upload_results__thresholded() -> None:
     expected_df_result = df_result.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     assert_frame_equal(fetched_df_dp, expected_df_dp, dp_columns)
     assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
+
+
+def test__upload_results__only_id_and_thresholded_columns() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__only_id_and_thresholded_columns")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__only_id_and_thresholded_columns")
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
+
+    records = [
+        dict(
+            user_dp_id=i,
+            bev=[dict(threshold=(j + 1) * 0.1, label="cat", foo=i + j) for j in range(3)],
+        )
+        for i in range(20)
+    ]
+    df_result = pd.DataFrame(records)
+
+    with pytest.raises(InputValidationError):
+        _upload_results(
+            dataset_name,
+            model_name,
+            df_result,
+            thresholded_fields=["bev"],
+        )
 
 
 def test__download_results__dataset_does_not_exist() -> None:

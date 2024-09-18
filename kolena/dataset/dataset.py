@@ -309,6 +309,8 @@ def upload_dataset(
     df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
     *,
     id_fields: Optional[List[str]] = None,
+    commit_tags: Optional[List[str]] = None,
+    append_only: bool = False,
 ) -> None:
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
@@ -323,8 +325,12 @@ def upload_dataset(
     :param id_fields: Optionally specify a list of ID fields that will be used to link model results with the datapoints
         within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
         that `id_fields` must be hashable.
+    :param commit_tags: Optionally specify a list of tags to associate with the dataset commit.
+    :param append_only: If True, the existing datapoint in the dataset will not be modified,
+    and only new datapoints from the input dataframe will be added. If False, all datapoints in the dataset will
+    be replaced by the ones in the input dataframe
     """
-    _upload_dataset(name, df, id_fields=id_fields)
+    _upload_dataset(name, df, id_fields=id_fields, commit_tags=commit_tags, append_only=append_only)
 
 
 @with_event(event_name=EventAPI.Event.LIST_DATASETS)

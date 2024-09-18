@@ -47,7 +47,7 @@ from kolena.dataset._common import COL_RESULT
 from kolena.dataset._common import COL_THRESHOLDED_OBJECT
 from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
-from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_columns
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
@@ -153,12 +153,14 @@ def _send_upload_results_request(
     load_uuid: str,
     dataset_id: int,
     sources: Optional[List[Dict[str, str]]],
+    tags: List[str] = [],
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
         dataset_id=dataset_id,
         sources=sources,
+        tags=tags,
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
@@ -235,11 +237,19 @@ def _validate_configs(configs: List[EvalConfig]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
+def _validate_tags(tags: List[str]) -> None:
+    for tag in tags:
+        if not tag.strip():
+            raise IncorrectUsageError("at least one of the tags is empty")
+
+
 def _prepare_upload_results_request(
     dataset: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     thresholded_fields: Optional[List[str]] = None,
+    tags: List[str] = [],
 ) -> Tuple[str, int, int]:
+    _validate_tags(tags)
     existing_dataset = _load_dataset_metadata(dataset)
     assert existing_dataset
 
@@ -256,7 +266,7 @@ def _prepare_upload_results_request(
         if isinstance(df_result_input, pd.DataFrame):
             total_rows += df_result_input.shape[0]
             validate_dataframe_ids(df_result_input, id_fields)
-            validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
+            validate_dataframe_columns(df_result_input, id_fields, thresholded_fields)
             df_results = _process_result(config, df_result_input, id_fields, thresholded_fields)
             upload_data_frame(df=df_results, load_uuid=load_uuid)
 
@@ -265,7 +275,7 @@ def _prepare_upload_results_request(
             for df_result in df_result_input:
                 if not id_column_validated:
                     validate_dataframe_ids(df_result, id_fields)
-                    validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
+                    validate_dataframe_columns(df_result, id_fields, thresholded_fields)
                     id_column_validated = True
                 total_rows += df_result.shape[0]
                 df_results = _process_result(config, df_result, id_fields, thresholded_fields)
@@ -280,10 +290,11 @@ def _upload_results(
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
     thresholded_fields: Optional[List[str]] = None,
+    tags: List[str] = [],
 ) -> UploadResultsResponse:
-    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields)
+    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields, tags)
 
-    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
+    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources, tags=tags)
     if isinstance(response.eval_config_id, list):
         models = [serialize_models_url(response.model_id, eval_config_id) for eval_config_id in response.eval_config_id]
     else:
@@ -304,6 +315,7 @@ def upload_results(
     model: str,
     results: Union[DataFrame, List[EvalConfigResults]],
     thresholded_fields: Optional[List[str]] = None,
+    tags: List[str] = [],
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.
@@ -311,8 +323,10 @@ def upload_results(
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
-    :param thresholded_fields: Columns in result DataFrame containing data associated with different thresholds.
+    :param thresholded_fields: Optional columns in result DataFrame containing data associated with different
+     thresholds.
+    :param tags: Optional list of tags to be associated with the model.
 
     :return: None
     """
-    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields)
+    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags)

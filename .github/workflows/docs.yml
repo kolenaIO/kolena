@@ -38,17 +38,16 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Install Poetry
-        run: pip install poetry==1.5.1
+      - uses: astral-sh/setup-uv@v2
+
+      - name: Setup environment
+        run: uv venv && source .venv/bin/activate
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
 
-      - name: Update package version to PEP 440-compliant production release tag
-        run: poetry version $(git describe --tags --abbrev=0)
-
-      - name: Install Poetry dependencies
-        run: poetry install
+      - name: Install dependencies
+        run: uv pip install --all-extras -r pyproject.toml
 
       - name: Install docs 'insiders' dependencies
         run: ./docs/setup_insiders.sh
@@ -56,7 +55,7 @@ jobs:
       - name: Publish 'kolena' documentation to trunk (S3)
         if: inputs.environment != 'production'
         run: |
-          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+          uv run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://trunk-docs.kolena.io" --delete
           aws cloudfront create-invalidation --no-cli-pager --distribution-id ${{ secrets.TRUNK_DOC_DISTRIBUTION_ID }} --paths "/*"
           aws s3 sync ./site "s3://trunk-docs.kolena.com" --delete
@@ -65,7 +64,7 @@ jobs:
       - name: Publish 'kolena' documentation to production (S3)
         if: inputs.environment == 'production'
         run: |
-          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+          uv run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://docs.kolena.io" --delete
           aws cloudfront create-invalidation --no-cli-pager --distribution-id ${{ secrets.DOC_DISTRIBUTION_ID }} --paths "/*"
           aws s3 sync ./site "s3://docs.kolena.com" --delete

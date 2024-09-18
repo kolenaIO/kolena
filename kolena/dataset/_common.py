@@ -84,6 +84,11 @@ def validate_dataframe_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
     _validate_dataframe_ids_uniqueness(df, id_fields)
 
 
-def validate_dataframe_have_other_columns_besides_ids(df: pd.DataFrame, id_fields: List[str]) -> None:
-    if set(df.columns) == set(id_fields):
-        raise InputValidationError("dataframe only contains id fields")
+def validate_dataframe_columns(
+    df: pd.DataFrame,
+    id_fields: List[str],
+    thresholded_fields: Optional[List[str]] = None,
+) -> None:
+    minimal_fields = set(id_fields).union(thresholded_fields) if thresholded_fields else set(id_fields)
+    if set(df.columns) == minimal_fields:
+        raise InputValidationError("dataframe only contains id fields and thresholded fields")

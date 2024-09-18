@@ -53,7 +53,7 @@ Uploading embeddings to Kolena can be done in four simple steps:
 
 ### Step 1: Install `kolena-embeddings` Package
 
-The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
+The package can be installed via `pip` or `uv` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
 We first [retrieve and set](../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
@@ -70,16 +70,11 @@ export KOLENA_TOKEN="********"
     pip install --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
-=== "`poetry`"
+=== "`uv`"
 
-    Configure an additional poetry source:
+    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
     ```shell
-    poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
-    ```
-
-    Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
-    ```shell
-    poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
+    uv add --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 This package provides the `kembed.util.extract_embeddings` method that generates
