@@ -22,6 +22,7 @@ from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import ID_FIELDS
+from crossing_pedestrian_detection.constants import TRANSPORT_PARAMS
 from crossing_pedestrian_detection.constants import VIDEO_FRAME_RATE
 from crossing_pedestrian_detection.utils import process_gt_bboxes
 from smart_open import open as smart_open
@@ -41,8 +42,10 @@ def thumbnail_locator(filename: str) -> str:
 def process_data() -> pd.DataFrame:
     s3 = s3fs.S3FileSystem(anon=True)
     video_files = s3.glob(f"{BUCKET}/{DATASET}/data/videos/*.mp4")
+    # access S3 anonymously
+    # adapted from https://github.com/piskvorky/smart_open/blob/develop/howto.md#how-to-access-s3-anonymously
     raw_data_pkl = f"s3://{BUCKET}/{DATASET}/raw/jaad_database.pkl"
-    with smart_open(raw_data_pkl, "rb") as gt_file:
+    with smart_open(raw_data_pkl, "rb", transport_params=TRANSPORT_PARAMS) as gt_file:
         gt_annotations = pickle.load(gt_file)
 
     datapoints = []
@@ -55,7 +58,6 @@ def process_data() -> pd.DataFrame:
                 {
                     "locator": video_locator(video_file),
                     "frame_rate": VIDEO_FRAME_RATE,
-                    "video_id": int(filename.split("_")[-1]),
                     "filename": filename,
                     "thumbnail_locator": thumbnail_locator(filename),
                     "num_frames": gt_annotations[filename]["num_frames"],

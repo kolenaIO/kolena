@@ -24,11 +24,13 @@ from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import MODELS
+from crossing_pedestrian_detection.constants import TRANSPORT_PARAMS
 from crossing_pedestrian_detection.utils import process_ped_annotations
 from crossing_pedestrian_detection.utils import ScoredPedestrianBoundingBox
 from smart_open import open as smart_open
 
 from kolena._experimental.object_detection import upload_object_detection_results
+
 
 THRESHOLD = 0.5
 
@@ -77,11 +79,13 @@ def postprocess_inferences(inferences: List[ScoredPedestrianBoundingBox]) -> Lis
 
 def process_inf_data(action_model_name: str, detection_model_name: str) -> Dict[str, List[ScoredPedestrianBoundingBox]]:
     model_pkl_name = f"s3://{BUCKET}/{DATASET}/raw/jaad_{action_model_name}_{detection_model_name}_database.pkl"
-    with smart_open(model_pkl_name, "rb") as inf_file:
+    # access S3 anonymously
+    # adapted from https://github.com/piskvorky/smart_open/blob/develop/howto.md#how-to-access-s3-anonymously
+    with smart_open(model_pkl_name, "rb", transport_params=TRANSPORT_PARAMS) as inf_file:
         inf_annotations = pickle.load(inf_file)
 
     results_pkl = f"s3://{BUCKET}/{DATASET}/results/raw/{action_model_name}_{detection_model_name}.pkl"
-    with smart_open(results_pkl, "rb") as results_file:
+    with smart_open(results_pkl, "rb", transport_params=TRANSPORT_PARAMS) as results_file:
         results = pickle.load(results_file)
         predictions: Dict[str, Dict[int, Dict[str, float]]] = defaultdict(lambda: defaultdict(dict))
         for pid, tte, y, img in zip(results["pid"], results["tte"], results["y"], results["image"]):
