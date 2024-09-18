@@ -31,7 +31,7 @@ Let's take a look at each step with example code snippets.
 
 ### Step 1: Install `kolena_embeddings` Package
 
-The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
+The package can be installed via `pip` or `uv` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
 === "`pip`"
@@ -40,22 +40,10 @@ on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/develop
     pip install --extra-index-url="https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
-=== "`poetry`"
-
-    Configure an additional poetry source:
-    ```shell
-    poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
-    ```
-
-    Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
-    ```shell
-    poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
-    ```
-
-    Run the following command:
+=== "`uv`"
 
     ```shell
-    poetry add --source kolena-embeddings kolena-embeddings
+    uv add --extra-index-url="https://MY_KOLENA_TOKEN@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 This package provides the `kembed.util.extract_and_upload_embeddings` method:

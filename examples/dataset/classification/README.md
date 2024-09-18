@@ -10,11 +10,11 @@ The models used in this example are
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -38,14 +38,14 @@ Command line arguments are defined within each script to specify the dataset nam
 for. Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 classification/binary/upload_dataset.py --help
+$ uv run classification/binary/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
   -h, --help         show this help message and exit
   --dataset DATASET  Optionally specify a custom dataset name to upload.
 
-$ poetry run python3 classification/binary/upload_results.py --help
+$ uv run classification/binary/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {resnet50v2,inceptionv3}
 
 positional arguments:
@@ -71,14 +71,14 @@ Command line arguments are defined within each script to specify the dataset nam
 for. Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 classification/multiclass/upload_dataset.py --help
+$ uv run classification/multiclass/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
   -h, --help         show this help message and exit
   --dataset DATASET  Optionally specify a custom dataset name to upload.
 
-$ poetry run python3 classification/multiclass/upload_results.py --help
+$ uv run classification/multiclass/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {resnet50v2,inceptionv3}
 
 positional arguments:

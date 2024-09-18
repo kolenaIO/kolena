@@ -7,11 +7,11 @@ problems on Kolena.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -33,7 +33,7 @@ Command line arguments are defined within each script to specify the dataset nam
 for. Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 text_summarization/upload_dataset.py --help
+$ uv run text_summarization/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset-csv DATASET_CSV] [--dataset-name DATASET_NAME]
 
 optional arguments:
@@ -43,7 +43,7 @@ optional arguments:
   --dataset DATASET
                         Optionally specify a name of the dataset to upload.
 
-$ poetry run python3 text_summarization/upload_results.py --help
+$ uv run text_summarization/upload_results.py --help
 usage: upload_results.py [-h] [--models {ada,babbage,curie,davinci,turbo} [{ada,babbage,curie,davinci,turbo} ...]]
                          [--dataset DATASET]
 

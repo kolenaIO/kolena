@@ -22,10 +22,10 @@ the `kolena` Python SDK.
         pip install kolena
         ```
 
-    === "`poetry`"
+    === "`uv`"
 
         ```shell
-        poetry add kolena
+        uv add kolena
         ```
 
     Then, clone the example code:
@@ -40,7 +40,8 @@ the `kolena` Python SDK.
 
     ```shell
     cd kolena/examples/dataset/keypoint_detection
-    poetry update && poetry install
+    uv venv && source .venv/bin/activate
+    uv pip install --all-extras -r pyproject.toml
     ```
 
 ## Step 1: Upload Dataset
@@ -92,7 +93,7 @@ model testing and evaluation.
     We can now register a new dataset using the provided script:
 
     ```shell
-    poetry run python3 keypoint_detection/upload_dataset.py
+    uv run python3 keypoint_detection/upload_dataset.py
     ```
 
     After this script has completed, a new dataset named `300-W` will be created, which you can
@@ -133,8 +134,8 @@ keypoint detection model and a random keypoint model.
     which will compute metrics on a CSV of model results and upload them to Kolena.
 
     ```shell
-    poetry run python3 keypoint_detection/upload_results.py RetinaFace
-    poetry run python3 keypoint_detection/upload_results.py random
+    uv run python3 keypoint_detection/upload_results.py RetinaFace
+    uv run python3 keypoint_detection/upload_results.py random
     ```
 
     Results for two models named `RetinaFace` and `random` should now appear <somewhere>

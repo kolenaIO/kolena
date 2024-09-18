@@ -8,11 +8,11 @@ images with the [Attribution License](http://creativecommons.org/licenses/by/2.0
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -47,7 +47,7 @@ upload.
 Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 semantic_segmentation/upload_results.py --help
+$ uv run semantic_segmentation/upload_results.py --help
 usage: upload_results.py [-h] --write-bucket WRITE_BUCKET [--dataset DATASET]
                          [{pspnet_r101,pspnet_r50}]
 

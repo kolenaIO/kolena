@@ -26,11 +26,11 @@ and [`static_deepsort`](https://arxiv.org/abs/1703.07402).
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -46,7 +46,7 @@ This project defines two scripts that perform the following operations:
    the [JAAD]((https://data.nvision2.eecs.yorku.ca/JAAD_dataset/) ) dataset.
 
 ```shell
-$ poetry run python3 crossing_pedestrian_detection/upload_dataset.py --help
+$ uv run crossing_pedestrian_detection/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
@@ -58,7 +58,7 @@ optional arguments:
    models: `c3d_sort`, `c3d_deepsort`, `static_sort` and `static_deepsort`
 
 ```shell
-$ poetry run python3 crossing_pedestrian_detection/upload_results.py --help
+$ uv run crossing_pedestrian_detection/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {c3d_sort,c3d_deepsort,static_sort,static_deepsort}
 
 positional arguments:
