@@ -164,3 +164,115 @@ def test__download_quality_standard_result(
             ]
             == waterloo_minimum
         )
+
+
+def test__download_quality_standard_result__union(
+    datapoints: pd.DataFrame,
+    results: List[Tuple[EvalConfig, pd.DataFrame]],
+) -> None:
+    dataset_name = with_test_prefix("test__download_quality_standard_result__union")
+    model_name = with_test_prefix("test__download_quality_standard_result__union_model")
+    model_name2 = with_test_prefix("test__download_quality_standard_result__union_model_2")
+    eval_config, model_1_results = results[0]
+    upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
+    _upload_results(
+        dataset_name,
+        model_name,
+        model_1_results,
+    )
+    model_2_results = model_1_results[2:]
+    _upload_results(
+        dataset_name,
+        model_name2,
+        model_2_results,
+    )
+
+    test_case_name = "city"
+    metric_group_name = "test group"
+    min_metric_label = "Min Score"
+    quality_standard = dict(
+        name=with_test_prefix("test__download_quality_standard_result__union"),
+        stratifications=[
+            dict(
+                name=test_case_name,
+                stratify_fields=[dict(source="datapoint", field="city", values=["new york", "waterloo"])],
+                test_cases=[
+                    dict(name="new york", stratification=[dict(value="new york")]),
+                    dict(name="waterloo", stratification=[dict(value="waterloo")]),
+                ],
+            ),
+        ],
+        metric_groups=[
+            dict(
+                name=metric_group_name,
+                metrics=[
+                    dict(label="Min Score", source="result", aggregator="min", params=dict(key="score")),
+                ],
+            ),
+        ],
+        version="1.0",
+    )
+    create_quality_standard(dataset_name, quality_standard)
+
+    quality_standard_df_intersection = download_quality_standard_result(dataset_name, [model_name, model_name2])
+    assert_frame_equal(
+        quality_standard_df_intersection,
+        download_quality_standard_result(dataset_name, [model_name, model_name2], [metric_group_name]),
+    )
+    quality_standard_df_union = download_quality_standard_result(
+        dataset_name,
+        [model_name, model_name2],
+        intersect_results=False,
+    )
+
+    json_config = json.dumps(eval_config)
+
+    newyork_minimum = 0.2
+    waterloo_minimum = 0.3
+    dataset_minimum = min(newyork_minimum, waterloo_minimum)
+    assert (
+        quality_standard_df_intersection.loc[
+            ("Dataset", np.nan),
+            (model_name, json_config, metric_group_name, min_metric_label),
+        ]
+        == dataset_minimum
+    )
+    assert (
+        quality_standard_df_intersection.loc[
+            ("city", "new york"),
+            (model_name, json_config, metric_group_name, min_metric_label),
+        ]
+        == newyork_minimum
+    )
+    assert (
+        quality_standard_df_intersection.loc[
+            ("city", "waterloo"),
+            (model_name, json_config, metric_group_name, min_metric_label),
+        ]
+        == waterloo_minimum
+    )
+
+    newyork_minimum = 0.0
+    waterloo_minimum = 0.1
+    dataset_minimum = min(newyork_minimum, waterloo_minimum)
+    assert (
+        quality_standard_df_union.loc[
+            ("Dataset", np.nan),
+            (model_name, json_config, metric_group_name, min_metric_label),
+        ]
+        == dataset_minimum
+    )
+    assert (
+        quality_standard_df_union.loc[
+            ("city", "new york"),
+            (model_name, json_config, metric_group_name, min_metric_label),
+        ]
+        == newyork_minimum
+    )
+    assert (
+        quality_standard_df_union.loc[
+            ("city", "waterloo"),
+            (model_name, json_config, metric_group_name, min_metric_label),
+        ]
+        == waterloo_minimum
+    )

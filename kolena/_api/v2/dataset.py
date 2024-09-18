@@ -16,10 +16,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from pydantic import conint
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1 import conint
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class Path(str, Enum):
@@ -36,12 +35,15 @@ class RegisterRequest:
     id_fields: List[str]
     uuid: str
     sources: Optional[List[Dict[str, str]]]
+    append_only: bool = False
+    tags: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
 class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
     name: str
     commit: Optional[str] = None
+    include_extracted_properties: bool = False
 
 
 @dataclass(frozen=True)

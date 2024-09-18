@@ -16,11 +16,11 @@ from typing import Dict
 from typing import Optional
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-from pydantic.types import StrictBool
-from pydantic.types import StrictFloat
-from pydantic.types import StrictInt
-from pydantic.types import StrictStr
+from kolena._utils.pydantic_v1 import StrictBool
+from kolena._utils.pydantic_v1 import StrictFloat
+from kolena._utils.pydantic_v1 import StrictInt
+from kolena._utils.pydantic_v1 import StrictStr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class EventAPI:
@@ -63,6 +63,7 @@ class EventAPI:
         # dataset evaluation
         FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"
         UPLOAD_DATASET_MODEL_RESULT = "sdk-dataset-model-result-uploaded"
+        FETCH_DATASET_MODEL_RESULT_BY_TAG = "sdk-dataset-model-result-fetched-by-tag"
 
         # quality-standard
         FETCH_QUALITY_STANDARD_RESULT = "sdk-quality-standard-result-fetched"

@@ -21,12 +21,16 @@ from kolena.dataset import download_dataset
 from kolena.dataset import download_results
 from kolena.dataset import EvalConfigResults
 from kolena.dataset import upload_dataset
+from kolena.dataset.dataset import _fetch_dataset_history
+from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.evaluation import _upload_results
 from kolena.errors import IncorrectUsageError
+from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from tests.integration.dataset.test_dataset import batch_iterator
 from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
+from tests.integration.helper import upload_extracted_properties
 from tests.integration.helper import with_test_prefix
 
 JOIN_COLUMN = "user_dp_id"
@@ -487,6 +491,31 @@ def test__upload_results__thresholded() -> None:
     assert_frame_equal(fetched_df_result, expected_df_result, result_columns)
 
 
+def test__upload_results__only_id_and_thresholded_columns() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__only_id_and_thresholded_columns")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__only_id_and_thresholded_columns")
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
+
+    records = [
+        dict(
+            user_dp_id=i,
+            bev=[dict(threshold=(j + 1) * 0.1, label="cat", foo=i + j) for j in range(3)],
+        )
+        for i in range(20)
+    ]
+    df_result = pd.DataFrame(records)
+
+    with pytest.raises(InputValidationError):
+        _upload_results(
+            dataset_name,
+            model_name,
+            df_result,
+            thresholded_fields=["bev"],
+        )
+
+
 def test__download_results__dataset_does_not_exist() -> None:
     dataset_name = with_test_prefix(f"{__file__}::test__download_results__dataset_does_not_exist")
     model_name = with_test_prefix(f"{__file__}::test__download_results__dataset_does_not_exist")
@@ -577,3 +606,95 @@ def test__download_results__preserve_none() -> None:
     assert fetched_df_dp["a"][0] is None
     assert np.isinf(fetched_df_dp["a"][1])
     assert np.isnan(fetched_df_dp["a"][2])
+
+
+def test__download_results__by_dataset_commit() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__by_dataset_commit")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__by_dataset_commit")
+
+    df_dp = get_df_dp(20)
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
+
+    df_result = get_df_result(20)
+
+    response = _upload_results(
+        dataset_name,
+        model_name,
+        df_result,
+    )
+    assert response.n_inserted == 20
+    assert response.n_updated == 0
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
+    eval_cfg, fetched_df_result = df_results_by_eval[0]
+    assert not fetched_df_dp.empty
+    assert not fetched_df_result.empty
+    assert len(df_results_by_eval) == 1
+    assert_frame_equal(fetched_df_dp, fetched_df_result, ID_FIELDS)
+
+    # remove half of the datapoints
+    df_dp_new = get_df_dp(10)
+    upload_dataset(dataset_name, df_dp_new[dp_columns], id_fields=ID_FIELDS)
+    num_of_commits, commits = _fetch_dataset_history(dataset_name)
+    assert num_of_commits == 2
+
+    _, df_results_by_eval_initial_commit = download_results(dataset_name, model_name, commits[0].commit)
+    _, df_results_by_eval_second_commit = download_results(dataset_name, model_name, commits[1].commit)
+    _, df_results_by_eval_latest_commit = download_results(dataset_name, model_name)
+    assert_frame_equal(df_results_by_eval_second_commit[0].results, df_results_by_eval_latest_commit[0].results)
+    assert_frame_equal(df_results_by_eval_initial_commit[0].results, fetched_df_result)
+    assert len(df_results_by_eval_latest_commit[0].results) == 10
+
+
+def test__download_results__with_properties() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__download_results__with_properties")
+    model_name = with_test_prefix(f"{__file__}::test__download_results__with_properties")
+
+    df_dp = get_df_dp(20)
+    extracted_property = [{"llm": {"summary": f"dummy text {i}"}} for i in range(20)]
+
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[dp_columns], id_fields=ID_FIELDS)
+    df_dp["extracted"] = extracted_property
+    dataset_id = _load_dataset_metadata(dataset_name).id
+    upload_extracted_properties(
+        dataset_id,
+        df_dp,
+        id_fields=["user_dp_id"],
+    )
+
+    df_result = get_df_result(20)
+    extracted_property_result = [{"llm": {"score": i}} for i in range(20)]
+
+    response = _upload_results(
+        dataset_name,
+        model_name,
+        df_result,
+    )
+
+    assert response.n_inserted == 20
+    assert response.n_updated == 0
+
+    df_result["extracted"] = extracted_property_result
+    df_result["model_id"] = response.model_id
+    df_result["eval_config_id"] = response.eval_config_id
+    upload_extracted_properties(
+        dataset_id,
+        df_result,
+        id_fields=["user_dp_id"],
+        property_source="result",
+    )
+
+    fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name, include_extracted_properties=True)
+    df_dp["kolena_llm_prompt_extraction"] = [prop["llm"] for prop in extracted_property]
+    df_dp.drop(columns=["extracted"], inplace=True)
+    df_result["kolena_llm_prompt_extraction"] = [prop["llm"] for prop in extracted_property_result]
+    df_result.drop(columns=["extracted", "model_id", "eval_config_id"], inplace=True)
+    pd.testing.assert_frame_equal(fetched_df_dp, df_dp[fetched_df_dp.columns], check_like=True, check_dtype=False)
+    pd.testing.assert_frame_equal(
+        df_results_by_eval[0].results,
+        df_result[df_results_by_eval[0].results.columns],
+        check_like=True,
+        check_dtype=False,
+    )

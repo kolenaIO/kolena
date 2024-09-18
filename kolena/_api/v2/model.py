@@ -11,20 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from dataclasses import field
 from enum import Enum
 from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class Path(str, Enum):
     UPLOAD_RESULTS = "/model/upload-results"
     LOAD_RESULTS = "/model/load-results"
+    LOAD_BY_TAG = "/model/load-by-tag"
 
 
 @dataclass(frozen=True)
@@ -41,6 +42,8 @@ class IdRequest:
 class LoadResultsRequest(BatchedLoad.BaseInitDownloadRequest):
     model: str
     dataset: str
+    commit: Optional[str] = None
+    include_extracted_properties: bool = False
 
 
 @dataclass(frozen=True)
@@ -49,6 +52,7 @@ class UploadResultsRequest:
     uuid: str
     dataset_id: int
     sources: Optional[List[Dict[str, str]]]
+    tags: List[str] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
@@ -63,3 +67,13 @@ class UploadResultsResponse:
 class EntityData:
     id: int
     name: str
+
+
+@dataclass(frozen=True)
+class LoadByTagRequest:
+    tag: str
+
+
+@dataclass(frozen=True)
+class LoadByTagResponse:
+    models: List[EntityData]

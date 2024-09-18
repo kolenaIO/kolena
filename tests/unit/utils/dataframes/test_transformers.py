@@ -91,37 +91,27 @@ def test__json_normalize(nested_data: Dict):
     pd.testing.assert_frame_equal(df_post, df_expected, check_like=True)
 
 
-def test__try_parse() -> None:
-    # Test empty string
-    assert _try_parse("") is None
-
-    # Test numeric string
-    assert _try_parse("42") == 42
-    assert _try_parse("3.14") == 3.14
-
-    # Test JSON string
-    assert _try_parse("[1, 2, 3]") == [1, 2, 3]
-    assert _try_parse('{"key": "value"}') == {"key": "value"}
-
-    # Test boolean string
-    assert _try_parse("true") is True
-    assert _try_parse("false") is False
-
-    # Test NumPy array
-    assert _try_parse(np.array([1, 2, 3])) == [1, 2, 3]
-
-    # Test NaN value
-    assert _try_parse(float("nan")) is None
-
-    # Test string "NaN"
-    assert _try_parse("NaN") is None
-
-    # Test other string
-    assert _try_parse("hello") == "hello"
-
-    # Test string with quotes
-    assert _try_parse('"hello"') == "hello"
-    assert _try_parse("'world'") == "world"
-
-    # Test string "null"
-    assert _try_parse("null") is None
+@pytest.mark.parametrize(
+    "input_value, expected",
+    [
+        ("", None),  # Test empty string
+        ("42", 42),  # Test numeric string
+        ("3.14", 3.14),  # Test numeric string
+        ("[1, 2, 3]", [1, 2, 3]),  # Test JSON string
+        ('{"key": "value"}', {"key": "value"}),  # Test JSON string
+        ("true", True),  # Test boolean string
+        ("false", False),  # Test boolean string
+        (np.array([1, 2, 3]), [1, 2, 3]),  # Test NumPy array
+        (float("nan"), None),  # Test NaN value
+        ("NaN", None),  # Test string "NaN"
+        ("hello", "hello"),  # Test other string
+        ('"hello"', "hello"),  # Test string with quotes
+        ("'world'", "world"),  # Test string with quotes
+        ("null", None),  # Test string "null"
+        ("3e2", "3e2"),  # Test scientific notation
+        ("3E2", "3E2"),  # Test scientific notation
+        ("4E2573", "4E2573"),  # Test scientific notation
+    ],
+)
+def test__try_parse(input_value: Any, expected: Any) -> None:
+    assert _try_parse(input_value) == expected

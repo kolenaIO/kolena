@@ -34,9 +34,8 @@ A [`TestCase`][kolena.workflow.TestCase] holds a list of test samples (model inp
 """
 from typing import Type
 
-from pydantic.dataclasses import dataclass
-
 from kolena._utils.datatypes import DataObject
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import Composite
 from kolena.workflow import TestSample

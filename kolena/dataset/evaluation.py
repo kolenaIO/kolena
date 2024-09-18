@@ -47,7 +47,7 @@ from kolena.dataset._common import COL_RESULT
 from kolena.dataset._common import COL_THRESHOLDED_OBJECT
 from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
-from kolena.dataset._common import validate_dataframe_have_other_columns_besides_ids
+from kolena.dataset._common import validate_dataframe_columns
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
@@ -75,9 +75,21 @@ class EvalConfigResults(NamedTuple):
     results: pd.DataFrame
 
 
-def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.DataFrame]:
+def _iter_result_raw(
+    dataset: str,
+    model: str,
+    batch_size: int,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
+) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
-    init_request = LoadResultsRequest(dataset=dataset, model=model, batch_size=batch_size)
+    init_request = LoadResultsRequest(
+        dataset=dataset,
+        model=model,
+        batch_size=batch_size,
+        commit=commit,
+        include_extracted_properties=include_extracted_properties,
+    )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
         endpoint_path=Path.LOAD_RESULTS.value,
@@ -86,8 +98,21 @@ def _iter_result_raw(dataset: str, model: str, batch_size: int) -> Iterator[pd.D
     )
 
 
-def _fetch_results(dataset: str, model: str) -> pd.DataFrame:
-    df_result_batch = list(_iter_result_raw(dataset, model, batch_size=BatchSize.LOAD_RECORDS))
+def _fetch_results(
+    dataset: str,
+    model: str,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
+) -> pd.DataFrame:
+    df_result_batch = list(
+        _iter_result_raw(
+            dataset,
+            model,
+            batch_size=BatchSize.LOAD_RECORDS,
+            commit=commit,
+            include_extracted_properties=include_extracted_properties,
+        ),
+    )
     return (
         pd.concat(df_result_batch)
         if df_result_batch
@@ -128,12 +153,14 @@ def _send_upload_results_request(
     load_uuid: str,
     dataset_id: int,
     sources: Optional[List[Dict[str, str]]],
+    tags: List[str] = [],
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
         uuid=load_uuid,
         dataset_id=dataset_id,
         sources=sources,
+        tags=tags,
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
@@ -144,6 +171,8 @@ def _send_upload_results_request(
 def download_results(
     dataset: str,
     model: str,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
 ) -> Tuple[pd.DataFrame, List[EvalConfigResults]]:
     """
     Download results given dataset name and model name.
@@ -158,6 +187,9 @@ def download_results(
 
     :param dataset: The name of the dataset.
     :param model: The name of the model.
+    :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
+    :param include_extracted_properties: If True, include kolena extracted properties from automated extractions
+    in the datapoints and results as separate columns
     :return: Tuple of DataFrame of datapoints and list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
     """
     log.info(f"downloading results for model '{model}' on dataset '{dataset}'")
@@ -166,7 +198,7 @@ def download_results(
 
     id_fields = existing_dataset.id_fields
 
-    df = _fetch_results(dataset, model)
+    df = _fetch_results(dataset, model, commit, include_extracted_properties)
 
     if df.empty:
         df_datapoints = pd.DataFrame()
@@ -205,11 +237,19 @@ def _validate_configs(configs: List[EvalConfig]) -> None:
                 raise IncorrectUsageError("duplicate eval configs are invalid")
 
 
+def _validate_tags(tags: List[str]) -> None:
+    for tag in tags:
+        if not tag.strip():
+            raise IncorrectUsageError("at least one of the tags is empty")
+
+
 def _prepare_upload_results_request(
     dataset: str,
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     thresholded_fields: Optional[List[str]] = None,
+    tags: List[str] = [],
 ) -> Tuple[str, int, int]:
+    _validate_tags(tags)
     existing_dataset = _load_dataset_metadata(dataset)
     assert existing_dataset
 
@@ -226,7 +266,7 @@ def _prepare_upload_results_request(
         if isinstance(df_result_input, pd.DataFrame):
             total_rows += df_result_input.shape[0]
             validate_dataframe_ids(df_result_input, id_fields)
-            validate_dataframe_have_other_columns_besides_ids(df_result_input, id_fields)
+            validate_dataframe_columns(df_result_input, id_fields, thresholded_fields)
             df_results = _process_result(config, df_result_input, id_fields, thresholded_fields)
             upload_data_frame(df=df_results, load_uuid=load_uuid)
 
@@ -235,7 +275,7 @@ def _prepare_upload_results_request(
             for df_result in df_result_input:
                 if not id_column_validated:
                     validate_dataframe_ids(df_result, id_fields)
-                    validate_dataframe_have_other_columns_besides_ids(df_result, id_fields)
+                    validate_dataframe_columns(df_result, id_fields, thresholded_fields)
                     id_column_validated = True
                 total_rows += df_result.shape[0]
                 df_results = _process_result(config, df_result, id_fields, thresholded_fields)
@@ -250,10 +290,11 @@ def _upload_results(
     results: Union[DataFrame, List[Tuple[EvalConfig, DataFrame]]],
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
     thresholded_fields: Optional[List[str]] = None,
+    tags: List[str] = [],
 ) -> UploadResultsResponse:
-    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields)
+    load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields, tags)
 
-    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources)
+    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources, tags=tags)
     if isinstance(response.eval_config_id, list):
         models = [serialize_models_url(response.model_id, eval_config_id) for eval_config_id in response.eval_config_id]
     else:
@@ -274,6 +315,7 @@ def upload_results(
     model: str,
     results: Union[DataFrame, List[EvalConfigResults]],
     thresholded_fields: Optional[List[str]] = None,
+    tags: List[str] = [],
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.
@@ -281,8 +323,10 @@ def upload_results(
     :param dataset: The name of the dataset.
     :param model: The name of the model.
     :param results: Either a DataFrame or a list of [`EvalConfigResults`][kolena.dataset.EvalConfigResults].
-    :param thresholded_fields: Columns in result DataFrame containing data associated with different thresholds.
+    :param thresholded_fields: Optional columns in result DataFrame containing data associated with different
+     thresholds.
+    :param tags: Optional list of tags to be associated with the model.
 
     :return: None
     """
-    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields)
+    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags)

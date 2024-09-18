@@ -48,11 +48,29 @@ def _format_quality_standard_result_df(quality_standard_result: dict) -> pd.Data
     return df.pivot(columns=["model", "eval_config", "metric_group", "metric"], values="value")
 
 
+def _download_quality_standard_result(
+    dataset: str,
+    models: List[str],
+    metric_groups: Union[List[str], None] = None,
+    intersect_results: bool = True,
+) -> pd.DataFrame:
+    response = krequests.get(
+        Path.RESULT,
+        params=dict(dataset_name=dataset, models=models, metric_groups=metric_groups),
+        api_version="v2",
+    )
+    krequests.raise_for_status(response)
+    return _format_quality_standard_result_df(
+        response.json(),
+    )
+
+
 @with_event(event_name=EventAPI.Event.FETCH_QUALITY_STANDARD_RESULT)
 def download_quality_standard_result(
     dataset: str,
     models: List[str],
     metric_groups: Union[List[str], None] = None,
+    intersect_results: bool = True,
 ) -> pd.DataFrame:
     """
     Download quality standard result given a dataset and list of models.
@@ -60,15 +78,16 @@ def download_quality_standard_result(
     :param dataset: The name of the dataset.
     :param models: The names of the models.
     :param metric_groups: The names of the metric groups to include in the result.
+    :param intersect_results: If True, only include datapoint that are common to all models in the metrics calculation.
     Note all metric groups are included when this value is `None`.
     :return: A Dataframe containing the quality standard result.
     """
     model_log = ", ".join([f"'{model}'" for model in models])
     log.info(f"downloading quality standard results for model(s) {model_log} on dataset '{dataset}'")
-    response = krequests.get(
-        Path.RESULT,
-        params=dict(dataset_name=dataset, models=models, metric_groups=metric_groups),
-        api_version="v2",
-    )
-    krequests.raise_for_status(response)
-    return _format_quality_standard_result_df(response.json())
+    if intersect_results:
+        return _download_quality_standard_result(dataset, models, metric_groups, intersect_results)
+    else:
+        result_dfs = []
+        for model in models:
+            result_dfs.append(_download_quality_standard_result(dataset, [model], metric_groups, intersect_results))
+        return pd.concat(result_dfs, axis=1)

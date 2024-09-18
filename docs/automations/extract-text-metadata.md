@@ -2,12 +2,11 @@
 icon: kolena/properties-16
 ---
 
-# :kolena-properties-20: Extracting Metadata from Text Fields
+# :kolena-properties-20: Automatically Extract Text Properties
 
-This guide outlines how to configure the extraction of metadata from text fields on Kolena. Follow the steps below
-to get started with Automatic Metadata Extraction for Text.
+This guide outlines how to configure the extraction of properties from text fields on Kolena.
 
-## Configuring Metadata Extraction
+## Configuring Text Property Extraction
 
 ??? "1. Navigate to Dataset Details"
     Scroll down to the "Details" page of your dataset.
@@ -15,14 +14,14 @@ to get started with Automatic Metadata Extraction for Text.
     <figure markdown>
     ![Navigating to Configuration](../assets/images/navigate-to-text-extraction-config-dark.gif#only-dark)
     ![Navigating to Configuration](../assets/images/navigate-to-text-extraction-config-light.gif#only-light)
-    <figcaption>Navigating to Metadata Configuration</figcaption>
+    <figcaption>Navigating to Properties Configuration</figcaption>
     </figure>
 
 ??? "2. Select Text Fields and Properties"
     Identify and select the text fields from your dataset that you want to analyze.
     Also select the properties of the fields you wish to extract.
 
-    In the examble below we extract properties from the `best_answer` and `question` fields. For the `best_answer` field,
+    In the example below we extract properties from the `best_answer` and `question` fields. For the `best_answer` field,
     we display `word_count` and `topic_tag`, whereas for the `question` field we display `word_count`, `readability` and
     `question_type`.
 
@@ -32,10 +31,10 @@ to get started with Automatic Metadata Extraction for Text.
     <figcaption>Select Specific Properties of Interest For Relevant Fields</figcaption>
     </figure>
 
-??? "3. Edit Metadata Configuration"
-    To make additional metadata visible (or to hide existing metadata), the configuration can be edited.
+??? "3. Edit Property Configuration"
+    To make additional properties visible (or to hide existing properties), the configuration can be edited.
 
-    This will add/remove metadata properties. The example below shows how to add the `character_count` property
+    This will add/remove properties. The example below shows how to add the `character_count` property
     to the `best_answer`. The properties shown in purple
     are the automatically extracted properties.
 
@@ -51,12 +50,12 @@ to get started with Automatic Metadata Extraction for Text.
     ![Hydrated Question](../assets/images/hydrated-text-example-light.png#only-light)
     ![Hydrated Question](../assets/images/hydrated-text-example-dark.png#only-dark)
     <figcaption>Example of Hydrated Text - Note that the
-        purple metadata indicate that they are auto-extracted </figcaption>
+        purple properties indicate that they are auto-extracted </figcaption>
     </figure>
 
-## Available Text Metadata Properties
+## Available Text Properties
 
-The following properties are available for automatic text metadata extraction:
+The following properties are available for automatic text property extraction:
 
 | Feature Name                  | Brief Description                              |
 |-------------------------------|------------------------------------------------|

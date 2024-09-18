@@ -13,6 +13,7 @@
 # limitations under the License.
 import json
 import math
+import re
 import warnings
 from collections.abc import Callable
 from typing import Any
@@ -107,6 +108,11 @@ def _try_parse(value: Any) -> Any:
     # Convert strings "true" and "false" to boolean values
     if value.lower() in ["true", "false"]:
         return value.lower() == "true"
+
+    # some string id could look like a scientific notation with e
+    scientific_notation_pattern = re.compile(r"[+-]?\d+(\.\d+)?[eE][+-]?\d+")
+    if scientific_notation_pattern.match(value):
+        return value
 
     # Attempt to convert the string to a numeric type
     try:

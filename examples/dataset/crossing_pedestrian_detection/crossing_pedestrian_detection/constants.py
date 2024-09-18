@@ -22,3 +22,4 @@ MODELS = [
     "static_deepsort",
 ]
 DEFAULT_DATASET_NAME = "JAAD [crossing-pedestrian-detection]"
+VIDEO_FRAME_RATE = 29.97

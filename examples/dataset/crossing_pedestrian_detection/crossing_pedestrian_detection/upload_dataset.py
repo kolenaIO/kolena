@@ -25,6 +25,7 @@ from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import ID_FIELDS
+from crossing_pedestrian_detection.constants import VIDEO_FRAME_RATE
 from crossing_pedestrian_detection.utils import process_gt_bboxes
 from smart_open import open as smart_open
 from tqdm import tqdm
@@ -56,10 +57,11 @@ def process_data() -> pd.DataFrame:
         filename = Path(video_file).stem
         processed_gts = process_gt_bboxes(gt_annotations[filename]["ped_annotations"])
 
-        if len(processed_gts.high_risk_bboxes) > 0:
+        if len(processed_gts.bboxes) > 0:
             datapoints.append(
                 {
                     "locator": video_locator(video_file),
+                    "frame_rate": VIDEO_FRAME_RATE,
                     "video_id": int(filename.split("_")[-1]),
                     "filename": filename,
                     "thumbnail_locator": thumbnail_locator(filename),
@@ -69,10 +71,8 @@ def process_data() -> pd.DataFrame:
                     "time_of_day": gt_annotations[filename]["time_of_day"],
                     "weather": gt_annotations[filename]["weather"],
                     "location": gt_annotations[filename]["location"],
-                    "high_risk": processed_gts.high_risk_bboxes,
-                    "low_risk": processed_gts.low_risk_bboxes,
-                    "high_risk_pids": processed_gts.high_risk_pids,
-                    "low_risk_pids": processed_gts.low_risk_pids,
+                    "ground_truths": processed_gts.bboxes,
+                    "pedestrian_ids": processed_gts.pids,
                     "n_pedestrians": len(list(gt_annotations[filename]["ped_annotations"].keys())),
                 },
             )

@@ -6,11 +6,11 @@ license are included.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 Optionally download the COCO images from our s3 bucket to a directory if you want to run inference in real time
@@ -34,7 +34,7 @@ This project defines two scripts that perform the following operations:
 dataset.
 
 ```shell
-$ poetry run python3 image_retrieval_by_text/upload_dataset.py --help
+$ uv run image_retrieval_by_text/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
@@ -49,7 +49,7 @@ The `upload_results.py` script defines command line arguments to select which mo
 `--help` flag for more information:
 
 ```shell
-$ poetry run python3 image_retrieval_by_text/upload_results.py --help
+$ uv run image_retrieval_by_text/upload_results.py --help
 usage: upload_results.py [-h] [--model {kakaobrain/align-base,google/siglip-base-patch16-224,BAAI/AltCLIP,openai/clip-vit-base-patch32}]
                          [--dataset DATASET] [--run-inference RUN_INFERENCE] [--local-image-dir LOCAL_IMAGE_DIR]
 

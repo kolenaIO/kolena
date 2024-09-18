@@ -20,7 +20,9 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`BoundingBox3D`][kolena.annotation.BoundingBox3D] | Limited to `PointCloud` data |
 | [`Polygon`][kolena.annotation.Polygon] | Limited to `Image` or `Video` data |
 | [`Polyline`][kolena.annotation.Polyline] | Limited to `Image` or `Video` data |
+| [`Polyline3D`][kolena.annotation.Polyline3D] | Can be visualized on `PointCloud` data or in standalone 3D space |
 | [`Keypoints`][kolena.annotation.Keypoints] | Limited to `Image` or `Video` data |
+| [`Keypoints3D`][kolena.annotation.Keypoints3D] | Can be visualized on `PointCloud` data, or in standalone 3D space |
 | [`SegmentationMask`][kolena.annotation.SegmentationMask] | Limited to `Image` or `Video` data |
 | [`BitmapMask`][kolena.annotation.BitmapMask] | Limited to `Image` or `Video` data |
 | [`Label`][kolena.annotation.Label] | Valid for all data |
@@ -38,11 +40,10 @@ from typing import Dict
 from typing import List
 from typing import Tuple
 
-from pydantic.dataclasses import dataclass
-
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 
 
@@ -50,7 +51,9 @@ class _AnnotationType(DataType):
     BOUNDING_BOX = "BOUNDING_BOX"
     POLYGON = "POLYGON"
     POLYLINE = "POLYLINE"
+    POLYLINE_3D = "POLYLINE_3D"
     KEYPOINTS = "KEYPOINTS"
+    KEYPOINTS_3D = "KEYPOINTS_3D"
     BOUNDING_BOX_3D = "BOUNDING_BOX_3D"
     SEGMENTATION_MASK = "SEGMENTATION_MASK"
     BITMAP_MASK = "BITMAP_MASK"
@@ -184,7 +187,14 @@ class ScoredLabeledPolygon(Polygon):
 
 @dataclass(frozen=True, config=ValidatorConfig)
 class Keypoints(Annotation):
-    """Array of any number of keypoints specified in pixel coordinates."""
+    """
+    Array of any number of keypoints specified in pixel coordinates.
+
+    Optionally include a `skeleton` field to indicating connections between `points` indices.
+
+    `Keypoints(points=[(0,0),(0,1),(1,1)], skeleton=[(0,1),(0,2)])` will represent three points
+    with a connection between the `(0,0)` and `(0,1)` point, and between the `(0,0)` and `(1,1)` point.
+    """
 
     points: List[Tuple[float, float]]
     """The sequence of discrete `(x, y)` pixel coordinates comprising this keypoints annotation."""
@@ -192,6 +202,25 @@ class Keypoints(Annotation):
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.KEYPOINTS
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class Keypoints3D(Annotation):
+    """
+    Array of any number of keypoints specified in a right-handed coordinate system.
+
+    Optionally include a `skeleton` field to indicating connections between `points` indices.
+
+    `Keypoints(points=[(0,0,0),(1,0,0),(0,1,0),(0,0,1)], skeleton=[(1,2),(0,3)])` will represent four points
+    with a connection between the `(1,0,0)` and `(0,1,0)` point, and between the `(0,0,0)` and `(0,0,1)` point.
+    """
+
+    points: List[Tuple[float, float, float]]
+    """The sequence of discrete `(x, y, z)` coordinates comprising this keypoints annotation."""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.KEYPOINTS_3D
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -204,6 +233,18 @@ class Polyline(Annotation):
     @staticmethod
     def _data_type() -> _AnnotationType:
         return _AnnotationType.POLYLINE
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class Polyline3D(Annotation):
+    """A three-dimensional Polyline with any number of vertices specified a right-handed coordinate system."""
+
+    points: List[Tuple[float, float, float]]
+    """The sequence of connected `(x, y, z)` coordinates comprising this polyline."""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.POLYLINE_3D
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -387,13 +428,21 @@ class ScoredLabeledTimeSegment(TimeSegment):
 @dataclass(frozen=True, config=ValidatorConfig)
 class TextSegment(Annotation):
     """
-    Represents a segment of text within a specified text field. The `start` index is inclusive and the `end` index is
+    Represents a segment of text within a specified text field to highlight.
+    The `start` index is inclusive and the `end` index is
     exclusive, following the convention of Python string slicing.
+    The following example adds highlights to two text fields
+    named `text` and `summary`.
 
     ```py
+    text = "Hello, world"
+    summary = "A summary of current documentation."
+
     text_segments: List[TextSegment] = [
+        # Highlights "Hello" in "Hello, world"
         TextSegment(text_field="text", start=0, end=5),
-        TextSegment(text_field="summary", start=10, end=51),
+        # Highlights "summary of" in "A summary of current documentation."
+        TextSegment(text_field="summary", start=2, end=12),
     ]
     ```
     """
@@ -476,4 +525,6 @@ _ANNOTATION_TYPES = [
     LabeledTextSegment,
     ScoredTextSegment,
     ScoredLabeledTextSegment,
+    Keypoints3D,
+    Polyline3D,
 ]

@@ -134,7 +134,7 @@ limitations.
 1. METEOR does not consider synonyms. Unlike embeddings-based metrics like [BERTScore](bertscore.md), it does not have
 a mechanism to quantify the similarity of words within the candidate and reference sentences. Thus, having two sentences
 like "She looked extremely happy at the surprise party." and "She appeared exceptionally joyful during the unexpected
-celebration." would yield a subobtimal score despite being very similar in meaning. That being said, METEOR has shown to
+celebration." would yield a suboptimal score despite being very similar in meaning. That being said, METEOR has shown to
 have a higher correlation with human judgement than both BLEU and ROUGE, making it *generally* better than the two.
 
 2. METEOR can fail on context. If we have two sentences "I am a big fan of Taylor Swift" (Reference) and "Fan of Taylor

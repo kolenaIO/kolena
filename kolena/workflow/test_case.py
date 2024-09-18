@@ -24,8 +24,6 @@ from typing import Optional
 from typing import Tuple
 
 import pandas as pd
-from pydantic import validate_call
-from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.core import BulkProcessStatus
 from kolena._api.v1.core import TestCase as CoreAPI
@@ -41,6 +39,8 @@ from kolena._utils.consts import FieldName
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import with_event
+from kolena._utils.pydantic_v1 import validate_arguments
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import validate_name
 from kolena._utils.validators import ValidatorConfig
@@ -115,7 +115,7 @@ class TestCase(Frozen, metaclass=ABCMeta):
             raise NotImplementedError(f"{cls.__name__} must implement class attribute 'workflow'")
         super().__init_subclass__()
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def __init__(
         self,
         name: str,
@@ -278,19 +278,19 @@ class TestCase(Frozen, metaclass=ABCMeta):
         _description: str
         _initial_description: str
 
-        @validate_call(config=ValidatorConfig)
+        @validate_arguments(config=ValidatorConfig)
         def __init__(self, description: str, reset: bool) -> None:
             self._edits = []
             self._reset = reset
             self._description = description
             self._initial_description = description
 
-        @validate_call(config=ValidatorConfig)
+        @validate_arguments(config=ValidatorConfig)
         def description(self, description: str) -> None:
             """Update the description of the test case."""
             self._description = description
 
-        @validate_call(config=ValidatorConfig)
+        @validate_arguments(config=ValidatorConfig)
         def add(self, test_sample: TestSample, ground_truth: GroundTruth) -> None:
             """
             Add a test sample to the test case. When the test sample already exists in the test case, its ground truth
@@ -301,7 +301,7 @@ class TestCase(Frozen, metaclass=ABCMeta):
             """
             self._edits.append(self._Edit(test_sample, ground_truth=ground_truth))
 
-        @validate_call(config=ValidatorConfig)
+        @validate_arguments(config=ValidatorConfig)
         def remove(self, test_sample: TestSample) -> None:
             """
             Remove a test sample from the test case. Does nothing if the test sample is not in the test case.
