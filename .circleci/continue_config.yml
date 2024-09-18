@@ -447,6 +447,16 @@ workflows:
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-experimental-dataset-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: _experimental/dataset
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test-dataset:
           name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
@@ -484,7 +494,7 @@ workflows:
           matrix:
             parameters:
               subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, object_detection_2d, semantic_textual_similarity, person_detection, crossing_pedestrian_detection, named_entity_recognition ]
-              resource-class: [ small ]
+              resource-class: [ medium ]    # TODO: revert after KOL-7307 is resolved [KOL-7444]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
           matrix:
