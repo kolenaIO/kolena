@@ -11,12 +11,21 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
-from typing import Dict
+from typing import List
 
-DATASET = "n2c2-2014"
-MODELS = ["roberta", "bert"]
-MODEL_INFO: Dict[str, Dict[str, Any]] = {
-    "roberta": {"name": "obi/deid_roberta_i2b2"},
-    "bert": {"name": "obi/deid_bert_i2b2", "max_length": 512},
-}
+import pytest
+
+from kolena.dataset.evaluation import _validate_tags
+from kolena.errors import IncorrectUsageError
+
+
+@pytest.mark.parametrize(
+    "tags, has_error",
+    [([], False), (["tag-a", "tag-b"], False), (["tag-a", " "], True), ([""], True)],
+)
+def test__validate_tags(tags: List[str], has_error: bool) -> None:
+    if has_error:
+        with pytest.raises(IncorrectUsageError):
+            _validate_tags(tags)
+    else:
+        _validate_tags(tags)

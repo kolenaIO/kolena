@@ -20,3 +20,7 @@
     options:
         members: ["kolena_trace"]
         show_root_heading: true
+::: kolena._experimental.dataset
+    options:
+        members: ["download_results_by_tag"]
+        show_root_heading: true

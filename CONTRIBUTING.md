@@ -2,32 +2,41 @@
 
 ## Development environment setup
 
+`kolena` uses [uv](https://github.com/astral-sh/uv) to manage dependencies. To set up this repository for development,
+run:
+
+```shell
+uv venv && source .venv/bin/activate
+uv pip install --all-extras -r pyproject.toml
+uv tool run pre-commit install
+```
+
 ### Install pre-commit checks
 
 Pre-commit is used for static analysis and to ensure code style consistency. Please install it so warnings and
 errors can be caught before committing code.
 
 ```
-poetry run pre-commit install
+uv tool run pre-commit install
 ```
 
 ## Documentation
 
 The documentation for `kolena`, hosted at [docs.kolena.com](https://docs.kolena.com/), is built out of this repo using
 [MkDocs](https://www.mkdocs.org/).
-Building the documentation locally requires installing the Poetry dependencies for `kolena` as well as additional
+Building the documentation locally requires installing the dependencies for `kolena` as well as additional
 [OS-level dependencies for mkdocs-material](https://squidfunk.github.io/mkdocs-material/plugins/requirements/image-processing/#cairo-graphics).
 
 To run the documentation server locally, run:
 
 ```
-poetry run mkdocs serve -a localhost:8999
+uv run mkdocs serve -a localhost:8999
 ```
 
 To build static documentation:
 
 ```
-poetry run mkdocs build
+uv run mkdocs build
 ```
 
 Note that any OSError unable to find "cairo-2, "cairo", or "libcairo-2" can be solved with
@@ -45,7 +54,9 @@ To build the documentation with "insider" features, run the [`setup_insiders.sh`
 ```
 
 Note that this script requires an SSH key in your environment with access to the [kolenaIO](https://github.com/kolenaIO)
-organization.
+organization. Additionally, this script modifies the `pyproject.toml` to reference the "insider" versions of the mkdocs
+projects. Please take care to avoid merging these updates, as it will prevent contributors without insiders access from
+running `kolena`.
 
 After running `setup_insiders.sh`, add `--config-file mkdocs.insiders.yml` to the `serve` and `build` invocations above
 to build documentation with all "insider" features enabled.

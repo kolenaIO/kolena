@@ -1,22 +1,26 @@
-[tool.poetry]
+[project]
 name = "keypoint_detection"
 version = "0.1.0"
 description = "Example Kolena integration for keypoint detection"
-authors = ["Kolena Engineering <eng@kolena.com>"]
-license = "Apache-2.0"
+authors = [
+    { name = "Kolena Engineering", email = "eng@kolena.com" }
+]
+requires-python = ">=3.9,<3.12"
 
-[tool.poetry.dependencies]
-python = ">=3.9,<3.12"
-kolena = "^1.23.0"
-s3fs = "^2023.5.0"
-fsspec = "^2023.5.0"
-numpy = "^1.19"
+dependencies = [
+    "kolena>=1.23.0,<2",
+    "s3fs>=2023.5.0,<2024",
+    "fsspec>=2023.5.0,<2024",
+    "numpy>=1.19,<2",
+]
 
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^2.17"
-pytest = "^7"
-pytest-depends = "^1.0.1"
+[tool.uv]
+dev-dependencies = [
+    "pre-commit>=2.17,<3",
+    "pytest>=7,<8",
+    "pytest-depends>=1.0.1,<2",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

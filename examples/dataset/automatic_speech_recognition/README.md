@@ -7,11 +7,11 @@ to demonstrate how to test speech recognition problems on Kolena.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ This project defines two scripts that perform the following operations:
     Run this command to upload the dataset:
 
     ```shell
-    poetry run python3 automatic_speech_recognition/upload_dataset.py
+    uv run automatic_speech_recognition/upload_dataset.py
     ```
 
 2. [`upload_results.py`](automatic_speech_recognition/upload_results.py) tests an ASR model, e.g. `whisper-default`.
@@ -38,14 +38,14 @@ This project defines two scripts that perform the following operations:
     Run this command to evaluate the default model on the `LibriSpeech` dataset:
 
     ```shell
-    poetry run python3 automatic_speech_recognition/upload_results.py
+    uv run automatic_speech_recognition/upload_results.py
     ```
 
 Command line arguments are defined within each script to specify what model to use.
 Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 automatic_speech_recognition/upload_results.py --help
+$ uv run automatic_speech_recognition/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] [{whisper-translate,whisper-default,wav2vec2}]
 
 positional arguments:

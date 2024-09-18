@@ -6,11 +6,11 @@ object detection problems on Kolena. Only images with the
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -26,7 +26,7 @@ This project defines two scripts that perform the following operations:
 dataset - only transportation relevant object annotations are used in this example.
 
 ```shell
-$ poetry run python3 object_detection_2d/upload_dataset.py --help
+$ uv run object_detection_2d/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
@@ -41,7 +41,7 @@ The `upload_results.py` script defines command line arguments to select which mo
 `--help` flag for more information:
 
 ```shell
-$ poetry run python3 object_detection_2d/upload_results.py --help
+$ uv run object_detection_2d/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {yolo_r,yolo_x,mask_rcnn,faster_rcnn,yolo_v4s,yolo_v3}
 
 positional arguments:

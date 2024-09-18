@@ -11,12 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
-from typing import Dict
+from kolena._experimental.dataset.evaluation import download_results_by_tag
 
-DATASET = "n2c2-2014"
-MODELS = ["roberta", "bert"]
-MODEL_INFO: Dict[str, Dict[str, Any]] = {
-    "roberta": {"name": "obi/deid_roberta_i2b2"},
-    "bert": {"name": "obi/deid_bert_i2b2", "max_length": 512},
-}
+__all__ = [
+    "download_results_by_tag",
+]

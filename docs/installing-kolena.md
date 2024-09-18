@@ -14,7 +14,7 @@ preferred Python package manager.
 
 SDK builds can be installed directly from
 [PyPI](https://pypi.org/project/kolena/) using any Python package manager such as [pip](https://pypi.org/project/pip/)
-or [Poetry](https://python-poetry.org/):
+or [uv](https://docs.astral.sh/uv/):
 
 === "`pip`"
 
@@ -22,10 +22,10 @@ or [Poetry](https://python-poetry.org/):
     pip install kolena
     ```
 
-=== "`poetry`"
+=== "`uv`"
 
     ```shell
-    poetry add kolena
+    uv add kolena
     ```
 
 #### Extra Dependency Groups
@@ -39,10 +39,10 @@ Certain metrics computation functionality depends on additional packages like
     pip install 'kolena[metrics]'
     ```
 
-=== "`poetry`"
+=== "`uv`"
 
     ```shell
-    poetry add 'kolena[metrics]'
+    uv add 'kolena[metrics]'
     ```
 
 ## Initialization

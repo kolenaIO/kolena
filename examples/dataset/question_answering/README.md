@@ -6,11 +6,13 @@ to demonstrate the question answering workflow in Kolena.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+# Include if using torch on cpu
+export UV_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu/"
+uv sync
 ```
 
 ## Usage
@@ -42,7 +44,7 @@ Command line arguments are defined within each script to specify the dataset nam
 for. Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 question_answering/upload_dataset.py --help
+$ uv run question_answering/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--datasets {TruthfulQA,HaluEval-QA} [{TruthfulQA,HaluEval-QA} ...]]
 
 optional arguments:
@@ -50,7 +52,7 @@ optional arguments:
   --datasets {TruthfulQA,HaluEval-QA} [{TruthfulQA,HaluEval-QA} ...]
                         Name(s) of the dataset(s) to register.
 
-$ poetry run python3 question_answering/prepare_results.py --help
+$ uv run question_answering/prepare_results.py --help
 usage: upload_dataset.py [-h] [--datasets {TruthfulQA,HaluEval-QA} [{TruthfulQA,HaluEval-QA} ...]]
 
 optional arguments:
@@ -58,7 +60,7 @@ optional arguments:
   --datasets {TruthfulQA,HaluEval-QA} [{TruthfulQA,HaluEval-QA} ...]
                         Name(s) of the dataset(s) to register.
 
-$ poetry run python3 question_answering/upload_results.py --help
+$ uv run question_answering/upload_results.py --help
 usage: upload_results.py [-h] [--datasets {TruthfulQA,HaluEval-QA} [{TruthfulQA,HaluEval-QA} ...]]
                          [--models {gpt-3.5-turbo,gpt-4-1106-preview} [{gpt-3.5-turbo,gpt-4-1106-preview} ...]]
 

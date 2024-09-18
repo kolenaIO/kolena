@@ -180,7 +180,7 @@ ORGANIZATION=<organization>
 TARGET_IMAGE_TAG="$DOCKER_REGISTRY/$ORGANIZATION/$IMAGE_TAG"
 
 # create repository if not exist
-poetry run kolena repository create --name "$ORGANIZATION/$IMAGE_NAME"
+uv run kolena repository create --name "$ORGANIZATION/$IMAGE_NAME"
 
 echo $KOLENA_TOKEN | docker login -u "$ORGANIZATION" --password-stdin $DOCKER_REGISTRY
 
@@ -191,7 +191,7 @@ docker push $TARGET_IMAGE_TAG
 
 echo "registering image $TARGET_IMAGE_TAG for evaluator $EVALUATOR_NAME of workflow $WORKFLOW..."
 
-poetry run kolena evaluator register \
+uv run kolena evaluator register \
   --workflow "$WORKFLOW" \
   --evaluator-name "$EVALUATOR_NAME" \
   --image $TARGET_IMAGE_TAG
@@ -273,7 +273,7 @@ If you're building Docker images for a new workflow, use the `kolena` command-li
 repository must be prefixed with your organization's name.
 
 ```shell
-poetry run kolena repository create -n my-organization/new-evaluator
+uv run kolena repository create -n my-organization/new-evaluator
 ```
 
 After the repository is created, we can use the Docker CLI to publish a newly built Docker image to `docker.kolena.io`:
@@ -290,7 +290,7 @@ and pass it as the environment variable `KOLENA_EVALUATOR_SECRET` at runtime.
 Update the evaluator register command in `docker/publish.sh` to pass in sensitive data for the evaluator:
 
 ```shell
-poetry run kolena evaluator register --workflow "$WORKFLOW" \
+uv run kolena evaluator register --workflow "$WORKFLOW" \
   --evaluator-name "$EVALUATOR_NAME" \
   --image $TARGET_IMAGE_TAG \
   --secret '<your secret>'
@@ -302,7 +302,7 @@ If your evaluator requires access to AWS APIs, specify the full AWS role ARN it 
 command.
 
 ```shell
-poetry run kolena evaluator register --workflow "$WORKFLOW" \
+uv run kolena evaluator register --workflow "$WORKFLOW" \
   --evaluator-name "$EVALUATOR_NAME" \
   --image $TARGET_IMAGE_TAG \
   --aws-assume-role <target_role_arn>

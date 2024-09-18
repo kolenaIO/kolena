@@ -11,12 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Any
-from typing import Dict
-
-DATASET = "n2c2-2014"
-MODELS = ["roberta", "bert"]
-MODEL_INFO: Dict[str, Dict[str, Any]] = {
-    "roberta": {"name": "obi/deid_roberta_i2b2"},
-    "bert": {"name": "obi/deid_bert_i2b2", "max_length": 512},
-}

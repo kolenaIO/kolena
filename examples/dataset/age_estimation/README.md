@@ -5,11 +5,11 @@ open-source age estimation models to demonstrate how to test regression problems
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ This project defines two scripts that perform the following operations:
 1. [`upload_dataset.py`](age_estimation/upload_dataset.py) creates the Labeled Faces in the Wild dataset on Kolena
 
 ```shell
-$ poetry run python3 age_estimation/upload_dataset.py --help
+$ uv run age_estimation/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 options:
@@ -38,7 +38,7 @@ The `upload_results.py` script defines command line arguments to select which mo
 `--help` flag for more information:
 
 ```shell
-$ poetry run python3 age_estimation/upload_results.py --help
+$ uv run age_estimation/upload_results.py --help
 usage: upload_results.py [-h] [--model {ssrnet,deepface}] [--dataset DATASET]
 
 options:
