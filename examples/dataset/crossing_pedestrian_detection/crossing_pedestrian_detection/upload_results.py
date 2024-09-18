@@ -19,21 +19,18 @@ from pathlib import Path
 from typing import Dict
 from typing import List
 
-import boto3
-import botocore
 import pandas as pd
-from botocore.client import Config
 from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import MODELS
+from crossing_pedestrian_detection.constants import TRANSPORT_PARAMS
 from crossing_pedestrian_detection.utils import process_ped_annotations
 from crossing_pedestrian_detection.utils import ScoredPedestrianBoundingBox
 from smart_open import open as smart_open
 
 from kolena._experimental.object_detection import upload_object_detection_results
 
-TRANSPORT_PARAMS = {"client": boto3.client("s3", config=Config(signature_version=botocore.UNSIGNED))}
 
 THRESHOLD = 0.5
 

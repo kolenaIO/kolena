@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import boto3
+import botocore
+from botocore.client import Config
+
 
 BUCKET = "kolena-public-examples"
 DATASET = "JAAD"
@@ -23,3 +27,4 @@ MODELS = [
 ]
 DEFAULT_DATASET_NAME = "JAAD [crossing-pedestrian-detection]"
 VIDEO_FRAME_RATE = 29.97
+TRANSPORT_PARAMS = {"client": boto3.client("s3", config=Config(signature_version=botocore.UNSIGNED))}

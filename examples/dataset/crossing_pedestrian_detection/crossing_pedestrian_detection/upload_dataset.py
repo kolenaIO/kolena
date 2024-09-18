@@ -16,23 +16,19 @@ from argparse import ArgumentParser
 from argparse import Namespace
 from pathlib import Path
 
-import boto3
-import botocore
 import pandas as pd
 import s3fs
-from botocore.client import Config
 from crossing_pedestrian_detection.constants import BUCKET
 from crossing_pedestrian_detection.constants import DATASET
 from crossing_pedestrian_detection.constants import DEFAULT_DATASET_NAME
 from crossing_pedestrian_detection.constants import ID_FIELDS
+from crossing_pedestrian_detection.constants import TRANSPORT_PARAMS
 from crossing_pedestrian_detection.constants import VIDEO_FRAME_RATE
 from crossing_pedestrian_detection.utils import process_gt_bboxes
 from smart_open import open as smart_open
 from tqdm import tqdm
 
 from kolena.dataset import upload_dataset
-
-TRANSPORT_PARAMS = {"client": boto3.client("s3", config=Config(signature_version=botocore.UNSIGNED))}
 
 
 def video_locator(video_path: str) -> str:
