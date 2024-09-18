@@ -35,11 +35,11 @@ F1-optimal configurations for difficulty: `easy`,`moderate`, and `hard`.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 This example integration will use pre-trained models provided by
@@ -60,7 +60,7 @@ This project defines two scripts that perform the following operations:
    the [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset.
 
 ```shell
-$ poetry run python3 object_detection_3d/upload_dataset.py --help
+$ uv run object_detection_3d/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
@@ -75,7 +75,7 @@ The `upload_results.py` script defines command line arguments to select which mo
 `--help` flag for more information:
 
 ```shell
-$ poetry run python3 object_detection_3d/upload_results.py --help
+$ uv run object_detection_3d/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET]
                          {parta2_hv_secfpn_8xb2-cyclic-80e_kitti-3d-3class,pointpillars_hv_secfpn_8xb6-160e_kitti-3d-3class}
 
