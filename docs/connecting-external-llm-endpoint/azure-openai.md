@@ -20,12 +20,12 @@ please make sure your deployment can handle this load.
 We will generate an App registration for Kolena in Azure and then assign roles to this registration:
 
 1. From the [Azure portal](https://portal.azure.com/#home), search for "App registrations" and navigate to this page
-1. Click "New Registration"
+2. Click "New Registration"
     1. Under "Supported account types", select "Accounts in any organizational directory"
-    1. Click "Register" to save the App registration
-1. Click on the App registration you have created
-1. Note the "Tenant ID" and "Application (client) ID"
-1. Click "Certificates & secrets", then "New client secret"
+    2. Click "Register" to save the App registration
+3. Click on the App registration you have created
+4. Note the "Tenant ID" and "Application (client) ID"
+5. Click "Certificates & secrets", then "New client secret"
     1. Click "Add" to save this secret and note the key value
 
 ### Step 2: Assign Roles to App Registration
@@ -38,10 +38,10 @@ We will assign a role to the App registration created above:
     1. Click "Add", then "Add role assignment"
     2. Search for and select [Cognitive Services OpenAI User](https://learn.microsoft.com/en-us/azure/ai-services/openai/how-to/role-based-access-control#cognitive-services-openai-user),
        this will allow Kolena to make requests to your OpenAI deployment
-3. Click on the "Members" tab, then click "Select members"
+4. Click on the "Members" tab, then click "Select members"
     1. Search for the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)
     2. Click "Select"
-1. Click "Review + assign" to save
+5. Click "Review + assign" to save
 
 ### Step 3: Save Integration in Kolena
 
