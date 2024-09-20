@@ -32,6 +32,9 @@ nav:
       - Google Cloud Storage: connecting-cloud-storage/google-cloud-storage.md
       - Azure Blob Storage: connecting-cloud-storage/azure-blob-storage.md
       - HTTP Basic: connecting-cloud-storage/http-basic.md
+    - Connecting External LLM Endpoint:
+        - Connecting External LLM Endpoint: connecting-external-llm-endpoint/index.md
+        - Connecting Azure OpenAI deployment: connecting-external-llm-endpoint/azure-openai.md
     - Archive:
       - Workflows:
         - Workflows: workflow/index.md
