@@ -243,8 +243,9 @@ correctly.
 Kolena supports `mov`, `mp4`, `mpeg` and other web browser supported video types.
 
 !!! Note
-    Bounding box visualization only works for videos with `5`, `15`, `29.97` and `59.94` frame rates.
-    Please let us know if you are working with a frame rate outside of the ones mentioned.
+    [Annotation](../../../reference/annotation.md) visualization over videos only works on videos with constant frame rates.
+    For the best experience, include a `frame_rate` field on your video datapoints in frames per second as a `float`
+    or `int` number.
 
 #### Setting up bounding box annotations on videos
 
