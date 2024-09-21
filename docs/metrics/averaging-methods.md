@@ -15,6 +15,10 @@ most notably:
 - [**Micro**](#micro-average): global average of per-sample TP, FP, FN scores
 - [**Weighted**](#weighted-average): mean of all per-class scores, weighted by sample sizes for each class
 
+!!!example
+    You can access an example use of Macro Aggregation Methods on the [KITTI Vision Benchmark Suite](https://shorturl.at/B1aRL)
+    on Kolena's public dataset.
+
 ## Example: Multiclass Classification
 
 Let’s consider the following multiclass classification metrics, computed across a total of 10 samples:

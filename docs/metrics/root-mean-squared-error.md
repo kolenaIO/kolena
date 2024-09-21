@@ -14,6 +14,10 @@ interpreting the magnitude of prediction errors and penalizing larger discrepanc
 Like [MSE](./mean-squared-error.md) and [MAE](./mean-absolute-error.md) a large value is indicative of
 poor performance.
 
+!!!example
+    You can access an example use of Root Mean Squared Error on the [STS Benchmark](https://shorturl.at/Y6nS9)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 RMSE is calculated by first computing the mean of the squared differences between the predicted values and the actual

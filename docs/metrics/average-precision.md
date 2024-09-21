@@ -25,6 +25,10 @@ metric used across popular object detection benchmarks such as [PASCAL VOC 2012]
 [COCO](https://cocodataset.org/#detection-2015), and
 [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html).
 
+!!!example
+    You can access an example use of Average Precision in the [KITTI Vision Benchmark Suite](https://shorturl.at/B1aRL)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 The general definition of AP is finding the approximation of the area under the [PR curve](./pr-curve.md). The actual

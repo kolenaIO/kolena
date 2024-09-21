@@ -12,6 +12,10 @@ MAE represents the mean of the absolute differences between predicted and actual
 treating each discrepancy equally. A large value is indicative of poor performance, and communicates
 how much on average a prediction will deviate from the actual value in the units of the ground truth.
 
+!!!example
+    You can access an example use of Mean Absolute Error on the [STS Benchmark](https://shorturl.at/Y6nS9)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 MAE is calculated by taking the average of the absolute differences between the predicted values and the actual values.

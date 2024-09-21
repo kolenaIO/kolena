@@ -17,6 +17,10 @@ and should be used with caution.
 - :kolena-manual-16: API Reference: [`accuracy` ↗][kolena.metrics.accuracy]
 </div>
 
+!!!example
+    You can access an example use of accuracy in the [MMLU dataset](https://shorturl.at/YHCKZ)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 Accuracy is generally used to evaluate classification models. Aside from classification, accuracy is also often

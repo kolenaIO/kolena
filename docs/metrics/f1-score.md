@@ -26,6 +26,10 @@ object detection, semantic segmentation, and information retrieval.
 - :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.metrics.f1_score]
 </div>
 
+!!!example
+    You can access an example use of F1 Score on the [Object Detection (COCO 2014)](https://shorturl.at/xmVS6)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 Using [TP / FP / FN / TN](./tp-fp-fn-tn.md), we can define [precision](./precision.md) and [recall](./recall.md).
