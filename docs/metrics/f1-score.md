@@ -27,7 +27,7 @@ object detection, semantic segmentation, and information retrieval.
 </div>
 
 !!!example
-    You can access an example use of F1 Score on the [Object Detection (COCO 2014)](https://shorturl.at/xmVS6)
+    You can access an example use of F1 Score on the [Object Detection (COCO 2014)](https://app.kolena.io/try/dataset/standards?datasetId=14&models=N4IglgJiBcBMCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYAWAX3qA&models=N4IglgJiBcBMAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZ4BfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
     on Kolena's public dataset.
 
 ## Implementation Details

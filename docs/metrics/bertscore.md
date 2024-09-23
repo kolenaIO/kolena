@@ -10,6 +10,10 @@ embeddings to capture the semantic and contextual information of words and phras
 texts. This approach makes BERTScore more effective at assessing the quality of candidate text because it considers not
 only exact word matches but also the overall meaning, fluency, and order of the output.
 
+!!!example
+    You can access an example use of Bert Score on the [CNN-DailyMail](https://app.kolena.io/try/dataset/standards?datasetId=39&models=N4IglgJiBcCcA0IDGB7AdgMzAcwK4CcBDAFzHRlEhgEYBfWoA&models=N4IglgJiBcAcA0IDGB7AdgMzAcwK4CcBDAFzHRlEhgEYBfWoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63Jn1ECGPFgF1mQA)
+    on Kolena's public dataset.
+
 ??? question "Recall: BERT & Textual Embeddings"
     BERT (**B**idirectional **E**ncoder **R**epresentations from **T**ransformers) is a popular language model used to
     generate embeddings from words and phrases. Textual embeddings are learned dense token representations that capture

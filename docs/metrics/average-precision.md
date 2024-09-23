@@ -26,7 +26,7 @@ metric used across popular object detection benchmarks such as [PASCAL VOC 2012]
 [Open Images V7](https://storage.googleapis.com/openimages/web/evaluation.html).
 
 !!!example
-    You can access an example use of Average Precision in the [KITTI Vision Benchmark Suite](https://shorturl.at/B1aRL)
+    You can access an example use of Average Precision in the [KITTI Vision Benchmark Suite](https://app.kolena.io/try/dataset/standards?datasetId=44&models=N4IglgJiBcAcCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcAcAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
     on Kolena's public dataset.
 
 ## Implementation Details

@@ -16,7 +16,7 @@ most notably:
 - [**Weighted**](#weighted-average): mean of all per-class scores, weighted by sample sizes for each class
 
 !!!example
-    You can access an example use of Macro Aggregation Methods on the [KITTI Vision Benchmark Suite](https://shorturl.at/B1aRL)
+    You can access an example use of Macro Aggregation Methods on the [KITTI Vision Benchmark Suite](https://app.kolena.io/try/dataset/standards?datasetId=44&models=N4IglgJiBcAcCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcAcAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
     on Kolena's public dataset.
 
 ## Example: Multiclass Classification

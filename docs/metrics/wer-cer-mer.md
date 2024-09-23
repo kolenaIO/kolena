@@ -10,6 +10,10 @@ the similarity between reference and candidate texts, with zero being a perfect 
 error rate can be infinitely high, match error rate is always between 0 and 1. Each of these metrics
 have their nuances that reveal different errors within texts.
 
+!!!example
+    You can access an example use of WER, CER and MER on the [LibriSpeech](https://app.kolena.io/try/dataset/standards?datasetId=22&models=N4IglgJiBcBsAcAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcBsDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcBssBoQGMD2A7AZmA5gVwCcBDAFzAxlEhgEYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXgF1mQA)
+    on Kolena's public dataset.
+
 ## Substitutions, Deletions, and Insertions
 
 The building blocks of each metric include substitution, deletion, and insertion errors. These errors reveal different

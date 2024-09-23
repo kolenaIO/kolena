@@ -15,7 +15,7 @@ Like [MSE](./mean-squared-error.md) and [MAE](./mean-absolute-error.md) a large 
 poor performance.
 
 !!!example
-    You can access an example use of Root Mean Squared Error on the [STS Benchmark](https://shorturl.at/Y6nS9)
+    You can access an example use of Root Mean Squared Error on the [STS Benchmark](https://app.kolena.io/try/dataset/standards?datasetId=12&models=N4IglgJiBcCMDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&models=N4IglgJiBcCMBsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
     on Kolena's public dataset.
 
 ## Implementation Details

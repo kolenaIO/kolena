@@ -18,7 +18,7 @@ and should be used with caution.
 </div>
 
 !!!example
-    You can access an example use of accuracy in the [MMLU dataset](https://shorturl.at/YHCKZ)
+    You can access an example use of accuracy in the [MMLU dataset](https://app.kolena.io/try/dataset/standards?datasetId=32&models=N4IglgJiBcDsDMAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAFgF9Gg&models=N4IglgJiBcBsCcAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAFgF9Gg&models=N4IglgJiBcDsBMAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAFgF9Gg&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXgF1mQA)
     on Kolena's public dataset.
 
 ## Implementation Details
