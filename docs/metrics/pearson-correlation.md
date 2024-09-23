@@ -11,8 +11,8 @@ to -1 signifies a strong negative linear correlation, meaning as one variable in
 proportionally. A value of 0 indicates no linear correlation between the variables.
 
 !!!example
-    You can access an example use of Pearson Correlation on the [STS Benchmark](https://app.kolena.io/try/dataset/standards?datasetId=12&models=N4IglgJiBcCMDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&models=N4IglgJiBcCMBsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
-    on Kolena's public dataset.
+    To see an example of the Pearson Correlation, checkout the
+    [STS Benchmark on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=12&models=N4IglgJiBcCMDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&models=N4IglgJiBcCMBsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
 
 ## Implementation Details
 
