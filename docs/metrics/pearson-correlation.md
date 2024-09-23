@@ -10,6 +10,10 @@ positive linear correlation, where as one variable increases, the other also inc
 to -1 signifies a strong negative linear correlation, meaning as one variable increases, the other decreases
 proportionally. A value of 0 indicates no linear correlation between the variables.
 
+!!!example
+    You can access an example use of Pearson Correlation on the [STS Benchmark](https://shorturl.at/Y6nS9)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 The correlation coefficient is calculated by dividing the covariance of $x$ and $y$ by their individual standard
