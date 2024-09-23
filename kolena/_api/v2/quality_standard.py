@@ -17,3 +17,4 @@ from enum import Enum
 class Path(str, Enum):
     QUALITY_STANDARD = "quality-standard"
     RESULT = "quality-standard/result"
+    COPY_QUALITY_STANDARD_FROM_DATASET = "quality-standard/copy-from-dataset"

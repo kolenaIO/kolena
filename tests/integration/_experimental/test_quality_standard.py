@@ -20,10 +20,12 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
+from kolena._experimental import copy_quality_standards_from_dataset
 from kolena._experimental import download_quality_standard_result
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
 from kolena.dataset.evaluation import EvalConfig
+from kolena.errors import IncorrectUsageError
 from tests.integration._experimental.helper import create_quality_standard
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
@@ -276,3 +278,74 @@ def test__download_quality_standard_result__union(
         ]
         == waterloo_minimum
     )
+
+
+def test__copy_quality_standards_from_dataset__dataset_same_as_source() -> None:
+    dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__dataset_same_as_source")
+    source_dataset_name = dataset_name
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        copy_quality_standards_from_dataset(dataset_name, source_dataset_name)
+    exc_info_value = str(exc_info.value)
+    assert "source dataset and target dataset are the same" in exc_info_value
+
+
+def test__copy_quality_standards_from_dataset(datapoints: pd.DataFrame) -> None:
+    source_dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__source_dataset")
+    dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__dataset")
+
+    upload_dataset(source_dataset_name, datapoints, id_fields=ID_FIELDS)
+    upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
+
+    quality_standards = dict(
+        name=with_test_prefix("test__copy_quality_standards_from_dataset__qs"),
+        stratifications=[
+            dict(
+                name=with_test_prefix("test__copy_quality_standards_from_dataset__test-case"),
+                stratify_fields=[dict(source="datapoint", field="city", values=["new york", "waterloo"])],
+                test_cases=[
+                    dict(name="new york", stratification=[dict(value="new york")]),
+                    dict(name="waterloo", stratification=[dict(value="waterloo")]),
+                ],
+            ),
+        ],
+        metric_groups=[
+            dict(
+                name=with_test_prefix("test__copy_quality_standards_from_dataset__metric_group"),
+                metrics=[
+                    dict(label="Max Score", source="result", aggregator="max", params=dict(key="score")),
+                    dict(label="Min Score", source="result", aggregator="min", params=dict(key="score")),
+                ],
+            ),
+        ],
+        version="1.0",
+    )
+    create_quality_standard(source_dataset_name, quality_standards)
+
+    # by default, should copy both metric groups and test cases
+    metric_groups, test_cases = copy_quality_standards_from_dataset(dataset_name, source_dataset_name)
+    assert metric_groups == quality_standards.get("metric_groups")
+    assert test_cases == quality_standards.get("stratifications")
+
+    # exclude metric groups
+    metric_groups, test_cases = copy_quality_standards_from_dataset(
+        dataset_name,
+        source_dataset_name,
+        include_metric_groups=False,
+    )
+    assert metric_groups == []
+    assert test_cases == quality_standards.get("stratifications")
+
+    # exclude test cases
+    metric_groups, test_cases = copy_quality_standards_from_dataset(
+        dataset_name,
+        source_dataset_name,
+        include_test_cases=False,
+    )
+    assert metric_groups == quality_standards.get("metric_groups")
+    assert test_cases == []
+
+    # cannot exclude both test cases and metric groups
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        copy_quality_standards_from_dataset(dataset_name, source_dataset_name)
+    exc_info_value = str(exc_info.value)
+    assert "should include at least one of metric groups or test cases" in exc_info_value
