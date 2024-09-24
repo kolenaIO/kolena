@@ -11,6 +11,10 @@ strong positive monotonic correlation, where as one variable increases, the othe
 signifies a strong negative monotonic correlation, meaning as one variable increases, the other decreases. A value of
 0 indicates no monotonic correlation between the variables.
 
+!!!example
+    To see an example of the Spearman's Correlation, checkout the
+    [STS Benchmark on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=12&models=N4IglgJiBcCMDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&models=N4IglgJiBcCMBsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
+
 ## Implementation Details
 
 The Spearman's Rank Correlation is calculated by ranking the data points and then applying

@@ -26,6 +26,10 @@ object detection, semantic segmentation, and information retrieval.
 - :kolena-manual-16: API Reference: [`f1_score` ↗][kolena.metrics.f1_score]
 </div>
 
+!!!example
+    To see an example of of the F1 Score, checkout the
+    [Object Detection (COCO 2014) on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=14&models=N4IglgJiBcBMCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYAWAX3qA&models=N4IglgJiBcBMAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZ4BfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
+
 ## Implementation Details
 
 Using [TP / FP / FN / TN](./tp-fp-fn-tn.md), we can define [precision](./precision.md) and [recall](./recall.md).

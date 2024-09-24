@@ -14,6 +14,10 @@ indicates that models produce the ideal datapoint-level metrics (e.g. lower infe
 and a higher difficulty score indicates that models consistently face problems or "difficulty"
 (e.g. longer inference time, lower [BLEU scores](./bleu.md), and/or lower [recall](./recall.md)).
 
+!!!example
+    To see an example of the Difficulty Score in action, checkout the
+    [Object Detection (COCO 2014) on app.kolena.com/try.](https://app.kolena.io/try/dataset/studio?datasetId=14&models=N4IglgJiBcBMCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYAWAX3qA&models=N4IglgJiBcBMAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZ4BfOoA&modelResultNullFilters=N4IglgJiBcBMCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYAWAX2TAGcB9DfAG05i2M%2BYBTekA&modelResultNullFilters=N4IglgJiBcBMAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZ4BfZMAZwH0N8AbDmLYjpgKZ0gA&sortByType=datapoint&sortBy=_kolena.extracted.difficulty_score&filters=datapoint._kolena.extracted.difficulty_score%3AN4IgdgrgtgRgpgJwPoIIZgOZxALlFASzFwAYA6ATgBoQpUAPXARgF8aB7ABwBcD2wAzrlAI4WekjrcAxgAtcAM1QAbAXBqjxSBctQYhOECBpEAbojWKValiyA%3Anr)
+
 !!! note
     For Kolena to calculate the `datapoint.difficulty_score` you must have:
 
