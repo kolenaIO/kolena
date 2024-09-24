@@ -22,11 +22,11 @@ from typing import Union
 import pandas as pd
 
 from kolena._api.v1.event import EventAPI
+from kolena._api.v2.quality_standard import CopyQualityStandardRequest
 from kolena._api.v2.quality_standard import Path
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
 from kolena._utils.instrumentation import with_event
-from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.errors import IncorrectUsageError
 
@@ -100,14 +100,6 @@ def download_quality_standard_result(
         return pd.concat(result_dfs, axis=1)
 
 
-@dataclass(frozen=True)
-class CopyQualityStandardRequest:
-    dataset_id: int
-    source_dataset_id: int
-    include_metric_groups: bool = True
-    include_test_cases: bool = True
-
-
 @with_event(event_name=EventAPI.Event.COPY_QUALITY_STANDARD_FROM_DATASET)
 def copy_quality_standards_from_dataset(
     dataset: str,
@@ -116,7 +108,7 @@ def copy_quality_standards_from_dataset(
     include_test_cases: bool = True,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
     """
-    Create quality standards on a dataset by copying from a source dataset. Note that this operation will overwrite the
+    Create a quality standard on a dataset by copying from a source dataset. Note that this operation will overwrite the
     existing quality standards on the dataset if they exist.
 
     :param dataset: The name of the dataset.
@@ -129,12 +121,14 @@ def copy_quality_standards_from_dataset(
         raise IncorrectUsageError("source dataset and target dataset are the same")
 
     if not include_test_cases and not include_metric_groups:
-        raise IncorrectUsageError("should include at least one of metric groups or test cases")
+        raise IncorrectUsageError("should include at least one of metric group or test case")
 
     dataset_metadata = _load_dataset_metadata(dataset)
-    assert dataset_metadata
+    if not dataset_metadata:
+        raise IncorrectUsageError(f"The dataset with name '{dataset}' not found")
     source_dataset_metadata = _load_dataset_metadata(source_dataset)
-    assert source_dataset_metadata
+    if not source_dataset_metadata:
+        raise IncorrectUsageError(f"The source dataset with name '{source_dataset}' not found")
 
     request = CopyQualityStandardRequest(
         dataset_metadata.id,
@@ -144,7 +138,7 @@ def copy_quality_standards_from_dataset(
     )
 
     response = krequests.put(
-        Path.COPY_QUALITY_STANDARD_FROM_DATASET,
+        Path.COPY_FROM_DATASET,
         json=asdict(request),
         api_version="v2",
     )

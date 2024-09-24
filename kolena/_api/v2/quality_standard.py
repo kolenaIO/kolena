@@ -13,8 +13,18 @@
 # limitations under the License.
 from enum import Enum
 
+from kolena._utils.pydantic_v1.dataclasses import dataclass
+
 
 class Path(str, Enum):
     QUALITY_STANDARD = "quality-standard"
     RESULT = "quality-standard/result"
-    COPY_QUALITY_STANDARD_FROM_DATASET = "quality-standard/copy-from-dataset"
+    COPY_FROM_DATASET = "quality-standard/copy-from-dataset"
+
+
+@dataclass(frozen=True)
+class CopyQualityStandardRequest:
+    dataset_id: int
+    source_dataset_id: int
+    include_metric_groups: bool = True
+    include_test_cases: bool = True
