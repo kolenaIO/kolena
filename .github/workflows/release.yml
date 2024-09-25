@@ -49,7 +49,7 @@ jobs:
         run: sed -i "s/0.999.0/$(git describe --tags --abbrev=0)/g" pyproject.toml
 
       - name: Build 'kolena' Python package
-        run: uv build --format=sdist
+        run: uv build --sdist
 
       - name: Publish 'kolena' documentation to production (S3)
         run: |
@@ -94,7 +94,7 @@ jobs:
           sed -i '0,/kolena/{s/kolena/kolena-client/}' pyproject.toml kolena/__init__.py
 
           uv pip install --all-extras -r pyproject.toml
-          uv build --format=sdist
+          uv build --sdist
 
       - name: "[backcompat] Install twine for package distribution on CodeArtifact"
         run: pip install twine
