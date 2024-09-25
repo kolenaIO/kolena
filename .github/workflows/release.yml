@@ -33,6 +33,9 @@ jobs:
 
       - uses: astral-sh/setup-uv@v2
 
+      - name: Setup environment
+        run: uv venv && source .venv/bin/activate
+
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
 
