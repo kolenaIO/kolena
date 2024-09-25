@@ -67,6 +67,7 @@ class EventAPI:
 
         # quality-standard
         FETCH_QUALITY_STANDARD_RESULT = "sdk-quality-standard-result-fetched"
+        COPY_QUALITY_STANDARD_FROM_DATASET = "sdk-quality-standard-copied-from-dataset"
 
     @dataclass(frozen=True)
     class RecordEventRequest:

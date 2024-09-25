@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+from typing import Any
+from typing import Dict
 from typing import List
 from typing import Tuple
 
@@ -20,10 +22,12 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
+from kolena._experimental import copy_quality_standards_from_dataset
 from kolena._experimental import download_quality_standard_result
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
 from kolena.dataset.evaluation import EvalConfig
+from kolena.errors import IncorrectUsageError
 from tests.integration._experimental.helper import create_quality_standard
 from tests.integration.helper import fake_locator
 from tests.integration.helper import with_test_prefix
@@ -276,3 +280,97 @@ def test__download_quality_standard_result__union(
         ]
         == waterloo_minimum
     )
+
+
+def test__copy_quality_standards_from_dataset__dataset_same_as_source() -> None:
+    dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__dataset_same_as_source")
+    source_dataset_name = dataset_name
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        copy_quality_standards_from_dataset(dataset_name, source_dataset_name)
+    exc_info_value = str(exc_info.value)
+    assert "source dataset and target dataset are the same" in exc_info_value
+
+
+def _assert_metric_groups_equal(metric_groups_1: List[Dict[str, Any]], metric_groups_2: List[Dict[str, Any]]) -> None:
+    assert len(metric_groups_1) == len(metric_groups_2)
+    for metric_group_1, metric_group_2 in zip(metric_groups_1, metric_groups_2):
+        assert metric_group_1["name"] == metric_group_2["name"]
+        assert len(metric_group_1["metrics"]) == len(metric_group_2["metrics"])
+        for metric_1, metric_2 in zip(metric_group_1["metrics"], metric_group_2["metrics"]):
+            assert metric_1["label"] == metric_2["label"]
+
+
+def _assert_test_cases_equal(test_cases_list_1: List[Dict[str, Any]], test_cases_list_2: List[Dict[str, Any]]) -> None:
+    assert len(test_cases_list_1) == len(test_cases_list_2)
+    for test_cases_1, test_cases_2 in zip(test_cases_list_1, test_cases_list_2):
+        assert test_cases_1["name"] == test_cases_2["name"]
+        assert len(test_cases_1["test_cases"]) == len(test_cases_2["test_cases"])
+        for metric_1, metric_2 in zip(test_cases_1["test_cases"], test_cases_2["test_cases"]):
+            assert metric_1["name"] == metric_2["name"]
+
+
+def test__copy_quality_standards_from_dataset(datapoints: pd.DataFrame) -> None:
+    source_dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__source_dataset")
+    dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__dataset")
+
+    upload_dataset(source_dataset_name, datapoints, id_fields=ID_FIELDS)
+    upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
+
+    quality_standards = dict(
+        name=with_test_prefix("test__copy_quality_standards_from_dataset__qs"),
+        stratifications=[
+            dict(
+                name=with_test_prefix("test__copy_quality_standards_from_dataset__test-case"),
+                stratify_fields=[dict(source="datapoint", field="city", values=["new york", "waterloo"])],
+                test_cases=[
+                    dict(name="new york", stratification=[dict(value="new york")]),
+                    dict(name="waterloo", stratification=[dict(value="waterloo")]),
+                ],
+            ),
+        ],
+        metric_groups=[
+            dict(
+                name=with_test_prefix("test__copy_quality_standards_from_dataset__metric_group"),
+                metrics=[
+                    dict(label="Max Score", source="result", aggregator="max", params=dict(key="score")),
+                    dict(label="Min Score", source="result", aggregator="min", params=dict(key="score")),
+                ],
+            ),
+        ],
+        version="1.0",
+    )
+    create_quality_standard(source_dataset_name, quality_standards)
+
+    # by default, should copy both metric groups and test cases
+    metric_groups, test_cases = copy_quality_standards_from_dataset(dataset_name, source_dataset_name)
+    _assert_metric_groups_equal(quality_standards["metric_groups"], metric_groups)
+    _assert_test_cases_equal(quality_standards["stratifications"], test_cases)
+
+    # exclude metric groups
+    metric_groups, test_cases = copy_quality_standards_from_dataset(
+        dataset_name,
+        source_dataset_name,
+        include_metric_groups=False,
+    )
+    assert metric_groups == []
+    _assert_test_cases_equal(quality_standards["stratifications"], test_cases)
+
+    # exclude test cases
+    metric_groups, test_cases = copy_quality_standards_from_dataset(
+        dataset_name,
+        source_dataset_name,
+        include_test_cases=False,
+    )
+    _assert_metric_groups_equal(quality_standards["metric_groups"], metric_groups)
+    assert test_cases == []
+
+    # cannot exclude both test cases and metric groups
+    with pytest.raises(IncorrectUsageError) as exc_info:
+        copy_quality_standards_from_dataset(
+            dataset_name,
+            source_dataset_name,
+            include_metric_groups=False,
+            include_test_cases=False,
+        )
+    exc_info_value = str(exc_info.value)
+    assert "should include at least one of metric groups or test cases" in exc_info_value
