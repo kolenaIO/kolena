@@ -69,6 +69,9 @@ class EventAPI:
         FETCH_QUALITY_STANDARD_RESULT = "sdk-quality-standard-result-fetched"
         COPY_QUALITY_STANDARD_FROM_DATASET = "sdk-quality-standard-copied-from-dataset"
 
+        # dataset search
+        UPLOAD_DATASET_EMBEDDINGS = "sdk-dataset-embeddings-uploaded"
+
     @dataclass(frozen=True)
     class RecordEventRequest:
         event_name: str
