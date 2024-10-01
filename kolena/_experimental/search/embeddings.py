@@ -24,6 +24,7 @@ import numpy as np
 import pandas as pd
 from dacite import from_dict
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import Search as API
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
@@ -35,6 +36,7 @@ from kolena._utils import log
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.dataframes.validators import validate_df_schema
+from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import validate_dataframe_ids
@@ -129,6 +131,7 @@ def _upload_dataset_embeddings(
     log.success(f"uploaded embeddings for dataset '{dataset_name}' and key '{key}' on {data.n_datapoints} datapoints")
 
 
+@with_event(event_name=EventAPI.Event.UPLOAD_DATASET_EMBEDDINGS)
 def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
     """
     Upload a list of search embeddings for a dataset.
