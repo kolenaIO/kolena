@@ -2,7 +2,7 @@
 icon: kolena/developer-16
 ---
 
-# :kolena-developer-20: Custom Queries
+# :kolena-developer-20: Custom Queries and Fields
 
 Custom queries allow you to filter and sort your data flexibly and find datapoints of interest faster.
 The custom query function can be accessed from the filter and sort components.
@@ -13,11 +13,19 @@ The custom query function can be accessed from the filter and sort components.
 <figcaption>Access Custom Queries</figcaption>
 </figure>
 
+Custom fields allow you configure new fields based on existing fields using common operations.
+
+<figure markdown>
+![Access Custom Fields](../../assets/images/custom-fields-dark.gif#only-dark)
+![Access Custom Fields](../../assets/images/custom-fields-light.gif#only-light)
+<figcaption>Access Custom Fields</figcaption>
+</figure>
+
 You can access datapoint fields by typing `@datapoint.` or result fields via `@result.`.
 
-## Custom Query Details
+## Details
 
-This table summarized the custom query capabilities.
+This table summarized the the available operations.
 
 | **Category**             | **Operators** | **Example**                              | **Description**                                                   |
 |--------------------------|---------------|------------------------------------------|-------------------------------------------------------------------|
@@ -38,6 +46,8 @@ This table summarized the custom query capabilities.
 |                          | `floor`       | `floor(@datapoint.a)`                    | Returns the value rounded to the nearest equal or smaller integer |
 |                          | `round`       | `round(@datapoint.a)`                    | Returns the rounded value                                         |
 |                          | `sqrt`        | `sqrt(@datapoint.a)`                     | Returns the square root value                                     |
+| **Array Functions**      | `array_size`  | `array_size(@datapoint.a[])`             | Returns the number of objects in the array                        |
+|                          | `filter`      | `filter(@datapoint.a, val -> val.area >= 400)`| Returns an array with objects that have an area of more than 400|
 
 !!! Example
     **Combining Logical and Relational Operators**
@@ -62,4 +72,11 @@ This table summarized the custom query capabilities.
     ```
     ```dsl
     sqrt(@datapoint.b + @datapoint.c)
+    ```
+
+    **Using array filters and size**
+
+    This function returns the number of objects that have an area of more than 400
+    ```dsl
+    array_size(filter(@datapoint.b[], val -> val.area >= 400))
     ```
