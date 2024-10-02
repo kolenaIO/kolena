@@ -28,6 +28,7 @@ Annotations are visualized in Kolena as overlays on top of datapoints.
 | [`Label`][kolena.annotation.Label] | Valid for all data |
 | [`TimeSegment`][kolena.annotation.TimeSegment] | Limited to `Audio` or `Video` data |
 | [`TextSegment`][kolena.annotation.TextSegment] | Limited to `Text` data |
+| [`CustomAnnotation`][kolena.annotation.CustomAnnotation] | Experimental feature for custom annotations |
 
 For example, when viewing images in the Studio, any annotations (such as lists of
 [`BoundingBox`][kolena.annotation.BoundingBox] objects) present in the datapoints are
@@ -60,6 +61,7 @@ class _AnnotationType(DataType):
     LABEL = "LABEL"
     TIME_SEGMENT = "TIME_SEGMENT"
     TEXT_SEGMENT = "TEXT_SEGMENT"
+    CUSTOM = "CUSTOM"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -496,6 +498,25 @@ class ScoredLabeledTextSegment(TextSegment):
     """The score associated with this text segment."""
 
 
+@dataclass(frozen=True, config=ValidatorConfig)
+class CustomAnnotation(Annotation):
+    """
+    !!! note "Experimental"
+
+        This class is considered **experimental**. Please reach out to the Kolena team for support if you need custom
+        annotations.
+
+    Custom annotations.
+    """
+
+    kind: str
+    """The type of this custom annotation."""
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.CUSTOM
+
+
 _ANNOTATION_TYPES = [
     BoundingBox,
     LabeledBoundingBox,
@@ -527,4 +548,5 @@ _ANNOTATION_TYPES = [
     ScoredLabeledTextSegment,
     Keypoints3D,
     Polyline3D,
+    CustomAnnotation,
 ]
