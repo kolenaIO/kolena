@@ -33,8 +33,11 @@ class LocatorEmbeddingsDataFrameSchema(pa.DataFrameModel):
 
 
 class DatasetEmbeddingsDataFrameSchema(pa.DataFrameModel):
-    key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
-    """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
+    key: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    Unique key corresponding  to the embedding vectors. This can be, for example, the name of the embedding model along
+    with the column with which the embedding was extracted, such as "resnet50-image_locator".
+    """
 
     datapoint_id_object: Series[pa.typing.String] = pa.Field(coerce=True)
     """
