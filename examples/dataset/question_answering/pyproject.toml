@@ -15,7 +15,7 @@ dependencies = [
     "openai>=1.6.0,<2",
     "protobuf>=4.25.1,<5",
     "numpy>=1.19,<2",
-    "torch==2.1.2",
+    "torch==2.2.0",
 ]
 
 [tool.uv]
