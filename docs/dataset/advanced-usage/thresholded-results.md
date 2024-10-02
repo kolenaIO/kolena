@@ -7,8 +7,8 @@ icon: kolena/diagram-tree-16
 
 ## When to Use Thresholded Results
 
-Thresholded results give you the flexibility to enable threshold dependent metrics and plots. Below are a few
-common use cases.
+Thresholded results give you the flexibility to enable threshold dependent metrics and plots.
+Below are the supported use cases:
 
 - When you want to calculate and compare metrics at different thresholds on Kolena. A common task for
 semantic segmentation or object detection tasks.
@@ -21,7 +21,9 @@ A thresholded result consist of a list of dictionaries. Each dictionary contains
 
 - A required numeric field named `threshold` (number).
 - An optional string field `label` (string).
-- Any other metrics for the label at that specific threshold (number).
+- A true positive field
+- A true negative field
+- A false positive field
 
 For instance, in a semantic segmentation problem:
 
