@@ -108,6 +108,22 @@ def test__upload_dataset_embeddings(embedding: np.ndarray, dataset_name: str) ->
         ),
         run_embedding_reduction_pipeline=False,
     )
+    _upload_dataset_embeddings(
+        dataset_name,
+        key="my_model-left_image",
+        df_embedding=pd.DataFrame(
+            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 2] * N_DATAPOINTS},
+        ),
+        run_embedding_reduction_pipeline=False,
+    )
+    _upload_dataset_embeddings(
+        dataset_name,
+        key="my_model-right_image",
+        df_embedding=pd.DataFrame(
+            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 3] * N_DATAPOINTS},
+        ),
+        run_embedding_reduction_pipeline=False,
+    )
 
 
 def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:

@@ -137,8 +137,8 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     Upload a list of search embeddings for a dataset.
 
     :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
-    :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
-        This is typically a locator.
+    :param key: String value uniquely corresponding to the embedding vectors. For example, this can be the name of the
+        embedding model along with the column with which the embedding was extracted, such as `resnet50-image_locator`.
     :param df_embedding: Dataframe containing id fields for identifying datapoints in the dataset and the associated
         embeddings as `numpy.typing.ArrayLike` of numeric values.
     :raises NotFoundError: The given dataset does not exist.
