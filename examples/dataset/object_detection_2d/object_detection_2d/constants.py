@@ -23,3 +23,14 @@ MODELS = [
     "faster_rcnn",
     "mask_rcnn",
 ]
+LABEL_TO_COLOR = {
+    "bicycle": "#f2f542",
+    "bus": "#f542bc",
+    "car": "#4260f5",
+    "truck": "#8b97a6",
+    "train": "#f0f1f2",
+    "fire hydrant": "#c542f5",
+    "motorcycle": "#66f542",
+    "stop sign": "#f54242",
+    "traffic light": "#f5aa42",
+}

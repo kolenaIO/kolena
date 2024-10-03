@@ -22,6 +22,7 @@ import pandas as pd
 from object_detection_2d.constants import BUCKET
 from object_detection_2d.constants import DATASET
 from object_detection_2d.constants import ID_FIELDS
+from object_detection_2d.constants import LABEL_TO_COLOR
 from object_detection_2d.constants import TASK
 
 from kolena.annotation import LabeledBoundingBox
@@ -38,6 +39,7 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
             *coords,
             record.label,
             supercategory=record.supercategory,  # type: ignore[call-arg]
+            color=LABEL_TO_COLOR[record.label],  # type: ignore[call-arg]
         )
         image_to_boxes[record.locator].append(bounding_box)
         metadata = {
