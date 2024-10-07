@@ -22,8 +22,8 @@ A thresholded result consist of a list of dictionaries. Each dictionary contains
 - A required numeric field named `threshold` (number).
 - An optional string field `label` (string).
 - A true positive field
-- A true negative field
 - A false positive field
+- A false negative field
 
 For instance, in a semantic segmentation problem:
 
