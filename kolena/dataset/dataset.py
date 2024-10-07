@@ -326,9 +326,10 @@ def upload_dataset(
         within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
         that `id_fields` must be hashable.
     :param commit_tags: Optionally specify a list of tags to associate with the dataset commit.
-    :param append_only: If True, the existing datapoint in the dataset will not be modified,
-    and only new datapoints from the input dataframe will be added. If False, all datapoints in the dataset will
-    be replaced by the ones in the input dataframe
+    :param append_only: If `False`, all datapoints in the dataset will be replaced by the ones in the input dataframe,
+        and existing datapoints absent from the input dataframe will be removed from the dataset. If `True`, new
+        datapoints from the input dataframe will be added, and existing datapoints will be modified if present in the
+        input dataframe, but no datapoints will be deleted from the datasets. This behaves like an `UPSERT` operation.
     """
     _upload_dataset(name, df, id_fields=id_fields, commit_tags=commit_tags, append_only=append_only)
 
