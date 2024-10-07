@@ -204,7 +204,37 @@ def test__upload_dataset__append() -> None:
 
     # append to dataset
     upload_dataset(name, pd.DataFrame(datapoints[10:], columns=columns), id_fields=["locator"], append_only=True)
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    assert_frame_equal(loaded_datapoints, pd.DataFrame(expected_datapoints, columns=columns))
 
+    # upsert the dataset: modify 2 existing datapoints and add 5 new ones
+    datapoints_to_upsert = [
+        dict(
+            locator=fake_locator(i, name),
+            width=i + 500,
+            height=i + 400,
+            city="toronto",
+            bboxes=[
+                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
+                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
+            ],
+        )
+        for i in range(18, 25)
+    ]
+    upload_dataset(name, pd.DataFrame(datapoints_to_upsert, columns=columns), id_fields=["locator"], append_only=True)
+    expected_datapoints = expected_datapoints[:-2] + [
+        dict(
+            locator=dp["locator"],
+            width=dp["width"],
+            height=dp["height"],
+            city=dp["city"],
+            bboxes=[
+                BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
+                for bbox in dp["bboxes"]
+            ],
+        )
+        for dp in datapoints_to_upsert
+    ]
     loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
     assert_frame_equal(loaded_datapoints, pd.DataFrame(expected_datapoints, columns=columns))
 
