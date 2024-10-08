@@ -41,7 +41,7 @@ The following properties are available for automatic bounding box property extra
 | [Relative Distance To Image Centre](#relative-distance-to-image-centre)           | The Euclidean distance between the bounding box's center and the center of the image                 | Bounding Box Property |
 | [Object Count](#object-count)                                                     | Count the number of bounding boxes in the group                                                      | Bounding Box Group Property |
 | [Object Type Count](#object-type-count)                                           | Count the types of objects in the group according to label field                                     | Bounding Box Group Property |
-| [Combined Area Ratio](#combined-area-ratio)                                       | Sum of the bounding box size in the group                                                            | Bounding Box Group Property |
+| [Combined Area Ratio](#combined-area-ratio)                                       | Sum of the bounding box size ratio in the group (sum (bounding box area/Image area))                                                           | Bounding Box Group Property |
 | [Bbox Intersection](#bbox-intersection)                                            | Sum of the IOU of all bounding box pairs in the group                                                | Bounding Box Group Property |
 | [Entropy Of Distribution](#entropy-of-distribution)                               | Entropy of the distribution of bounding boxes within a 3 by 3 grid                                   | Bounding Box Group Property |
 | [Mean Aspect Ratio](#mean-aspect-ratio)                                           | The mean of the aspect ratios of a group of bounding boxes                                           | Bounding Box Group Property |
@@ -79,33 +79,67 @@ $$
 of the image it is referencing. It can be used to monitor model performance based on how far the object is from
 the center of the image.
 
-(TODO:CHANGE THIS)
-$$
-\text{Relative Area} = \frac{\text{Bounding Box Area}}{\text{Image Area}}
-$$
-
 ### Object Count
+
+**Object count** is a simple count of bounding boxes in a group of bounding boxes. You can use this value
+to monitor how your model performance changes when there are a few or many objects to detect in an image.
 
 ### Object Type Count
 
+**Object type count** counts the number of labels in a list of bounding boxes. You can use this count to
+see bow your models perform when classifying a few or many different objects in a scene.
+
 ### Combined Area Ratio
+
+**Combined area ratio** is the sum of area bounding box area ratios (sum(bounding box area/image area)).
 
 ### Bbox Intersection
 
+**Bbox Intersection** is the sum of Intersection over union ratios of pairs of bounding boxes in a group bounding boxes.
+This property is a good indication of potential duplicate detections or density of overlapping bounding boxes in an image.
+
 ### Mean Aspect Ratio
+
+**Mean Aspect Ratio** is the average of aspect ratios of bounding boxes in a list of bounding boxes. You can use this property
+if your model performance may depend on shape of the objects in the image.
 
 ### Entropy Of Distribution
 
+**Entropy Of Distribution** is a a probability distribution over the possible locations where bounding
+boxes are predicted to be located.
+High entropy: Indicates high uncertainty in the bounding box predictions, meaning the model is less confident
+about where the bounding boxes should fall.
+Low entropy: Indicates that the bounding box predictions are more focused in certain cells, representing higher
+confidence and lower uncertainty.
+
 ### Mean Distance Between Bboxes
+
+**Mean Distance Between Bboxes** is the mean of the Euclidean distance between each pair of bounding box in the group.
+You can use this property to develope a sense for density of bounding boxes and how that relates to model performance.
 
 ### Mean Relative Area
 
+**Mean Relative Area** is the average of relative area described above.
+
 ### Mean Relative Distance To Image Centre
+
+**Mean Relative Distance To Image Centre** is the average of Euclidean distance between the center of each bounding
+box and the center of the image.
 
 ### Std Aspect Ratio
 
+**Std Aspect Ratio** is the standard deviation of aspect ratio in a list of bounding boxes.
+
 ### Std Distance Between Bboxes
+
+**Std Distance Between Bboxes** is the standard deviation of distance of each pair of bounding boxes in a list
+of bounding boxes.
 
 ### Std Relative Area
 
+**Std Relative Area** is the standard deviation of relative area of a bounding box over the image in a list of bounding boxes.
+
 ### Std Relative Distance To Image Centre
+
+**Std Relative Distance To Image Centre** is the standard deviation of Euclidean distance between the center of
+a bounding box to the center of the image in a list of bounding boxes.
