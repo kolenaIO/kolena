@@ -11,8 +11,13 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from datetime import datetime
 from enum import Enum
 
+from pydantic.v1 import conint
+
+from kolena._api.v2._metric import MetricGroup
+from kolena._api.v2._stratification import Stratification
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
@@ -28,3 +33,24 @@ class CopyQualityStandardRequest:
     source_dataset_id: int
     include_metric_groups: bool = True
     include_test_cases: bool = True
+
+
+@dataclass(frozen=True)
+class QualityStandard:
+    name: str
+    stratifications: list[Stratification]
+    metric_groups: list[MetricGroup]
+
+    @classmethod
+    def metric_group_name_unique(cls, metric_groups: list[MetricGroup]) -> list[MetricGroup]:
+        if len(metric_groups) > len({metric_group.name for metric_group in metric_groups}):
+            raise ValueError("Metric group names must be unique.")
+        return metric_groups
+
+
+@dataclass(frozen=True)
+class QualityStandardResponse:
+    quality_standard_id: conint(gt=0)
+    quality_standard: QualityStandard
+    updated: datetime
+    updated_by: str
