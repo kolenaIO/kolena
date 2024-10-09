@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Dict
 from typing import Literal
 
 from pydantic import constr
@@ -23,7 +24,7 @@ class ResultContext:
     eval_config_id: int
 
 
-Contexts = dict[str, ResultContext]
+Contexts = Dict[str, ResultContext]
 
 
 @dataclass(frozen=True)
