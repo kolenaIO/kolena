@@ -24,7 +24,6 @@ from pandas.testing import assert_frame_equal
 
 from kolena._experimental import copy_quality_standards_from_dataset
 from kolena._experimental import download_quality_standard_result
-from kolena._experimental.quality_standard import PerformanceDelta
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
 from kolena.dataset.evaluation import EvalConfig
@@ -301,7 +300,7 @@ def test__download_quality_standard_result_with_performance_delta(
     metric_group_name = "test group"
     max_metric_label = "Max Score"
     min_metric_label = "Min Score"
-    metrics_value_label = "metrics_value"
+    metric_value_label = "metric_value"
     performance_delta_label = "performance_delta"
     quality_standard = dict(
         name=with_test_prefix("test__download_quality_standard_result__quality_standard"),
@@ -353,7 +352,7 @@ def test__download_quality_standard_result_with_performance_delta(
     assert all(df_columns.levels[1] == [json.dumps(eval_config) for eval_config in eval_configs])
     assert all(df_columns.levels[2] == [metric_group_name])
     assert all(df_columns.levels[3] == [max_metric_label, min_metric_label])
-    assert all(df_columns.levels[4] == [metrics_value_label, performance_delta_label])
+    assert all(df_columns.levels[4] == [metric_value_label, performance_delta_label])
 
     df_index: pd.MultiIndex = quality_standard_df.index
     assert df_index.names == ["stratification", "test_case"]
@@ -375,7 +374,7 @@ def test__download_quality_standard_result_with_performance_delta(
                     json_config,
                     metric_group_name,
                     max_metric_label,
-                    metrics_value_label,
+                    metric_value_label,
                 ),
             ]
             == dataset_maximum
@@ -383,14 +382,14 @@ def test__download_quality_standard_result_with_performance_delta(
         assert (
             quality_standard_df.loc[
                 ("city", "new york"),
-                (model_name, json_config, metric_group_name, max_metric_label, metrics_value_label),
+                (model_name, json_config, metric_group_name, max_metric_label, metric_value_label),
             ]
             == newyork_maximum
         )
         assert (
             quality_standard_df.loc[
                 ("city", "waterloo"),
-                (model_name, json_config, metric_group_name, max_metric_label, metrics_value_label),
+                (model_name, json_config, metric_group_name, max_metric_label, metric_value_label),
             ]
             == waterloo_maximum
         )
@@ -406,11 +405,7 @@ def test__download_quality_standard_result_with_performance_delta(
             )
         ],
     )
-    assert performance_delta_min_metric == [
-        PerformanceDelta.SIMILAR,
-        PerformanceDelta.SIMILAR,
-        PerformanceDelta.REGRESSED,
-    ]
+    assert performance_delta_min_metric == ["similar", "similar", "regressed"]
     performance_delta_max_metric = list(
         quality_standard_df[
             (
@@ -422,11 +417,7 @@ def test__download_quality_standard_result_with_performance_delta(
             )
         ],
     )
-    assert performance_delta_max_metric == [
-        PerformanceDelta.IMPROVED,
-        PerformanceDelta.IMPROVED,
-        PerformanceDelta.IMPROVED,
-    ]
+    assert performance_delta_max_metric == ["improved", "improved", "improved"]
     assert (
         list(
             quality_standard_df[
@@ -450,11 +441,7 @@ def test__download_quality_standard_result_with_performance_delta(
                 )
             ],
         )
-        == [
-            PerformanceDelta.SIMILAR,
-            PerformanceDelta.SIMILAR,
-            PerformanceDelta.SIMILAR,
-        ]
+        == ["similar", "similar", "similar"]
     )
 
 

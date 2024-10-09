@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import enum
 import json
 from collections import defaultdict
 from dataclasses import asdict
@@ -55,11 +54,7 @@ from kolena.dataset.evaluation import _get_model_id
 from kolena.errors import IncorrectUsageError
 
 
-class PerformanceDelta(str, enum.Enum):
-    IMPROVED = "improved"
-    REGRESSED = "regressed"
-    SIMILAR = "similar"
-    UNKNOWN = "unknown"
+PerformanceDelta = Literal["improved", "regressed", "similar", "unknown"]
 
 
 def _format_quality_standard_result_df(quality_standard_result: dict) -> pd.DataFrame:
@@ -104,9 +99,9 @@ def _download_quality_standard_result(
 
 def _download_test_case_result(
     dataset_id: int,
-    model_and_eval_config_pairs: list[ModelWithEvalConfig],
+    model_and_eval_config_pairs: List[ModelWithEvalConfig],
     datapoint_filters: Optional[Dict[str, GeneralFieldFilter]],
-    stratify_fields: list[StratifyFieldSpec],
+    stratify_fields: List[StratifyFieldSpec],
 ) -> TestingResponse:
     filters = {}
     if datapoint_filters:
@@ -200,15 +195,15 @@ def _get_performance_delta_metrics(
     qs_result: pd.DataFrame,
     moe: Dict[Tuple[str, Any], float],
     reference_model: Optional[str] = None,
-    reference_eval_config: Union[dict[str, Any], Literal["null"], None] = None,
+    reference_eval_config: Union[Dict[str, Any], Literal["null"], None] = None,
 ) -> pd.DataFrame:
     for model, eval_config, _, _ in qs_result.columns:
         if not reference_model:
             reference_model = model
         if reference_model == model and not reference_eval_config:
             reference_eval_config = eval_config
-    performance_delta = pd.DataFrame(PerformanceDelta.UNKNOWN, index=qs_result.index, columns=qs_result.columns)
-    metric_dict: dict[str, dict[str, Metric]] = defaultdict(dict)
+    performance_delta = pd.DataFrame("unknown", index=qs_result.index, columns=qs_result.columns)
+    metric_dict: Dict[str, Dict[str, Metric]] = defaultdict(dict)
     for mg in qs.quality_standard.metric_groups:
         for metric in mg.metrics:
             metric_dict[mg.name][metric.label] = metric
@@ -244,17 +239,17 @@ def _get_performance_delta_metrics(
                 performance_delta.loc[
                     (strat, test_case),
                     (model, eval_config, metric_group, metric_name),
-                ] = PerformanceDelta.IMPROVED
+                ] = "improved"
             elif delta_percentage < -1 * moe[(strat, test_case)]:  # noqa: PAR001
                 performance_delta.loc[
                     (strat, test_case),
                     (model, eval_config, metric_group, metric_name),
-                ] = PerformanceDelta.REGRESSED
+                ] = "regressed"
             else:
                 performance_delta.loc[
                     (strat, test_case),
                     (model, eval_config, metric_group, metric_name),
-                ] = PerformanceDelta.SIMILAR
+                ] = "similar"
     return performance_delta
 
 
@@ -263,7 +258,7 @@ def _calculate_performance_delta(
     qs_result: pd.DataFrame,
     confidence_level: float,
     reference_model: Optional[str] = None,
-    reference_eval_config: Union[dict[str, Any], Literal["null"], None] = None,
+    reference_eval_config: Union[Dict[str, Any], Literal["null"], None] = None,
 ) -> pd.DataFrame:
     dataset_entity = _load_dataset_metadata(dataset)
     if not dataset_entity:
@@ -275,7 +270,7 @@ def _calculate_performance_delta(
     qs_result = pd.concat(
         [qs_result, performance_delta],
         axis=1,
-        keys=["metrics_value", "performance_delta"],
+        keys=["metric_value", "performance_delta"],
         names=["type"],
     )
     qs_result = qs_result.reorder_levels(["model", "eval_config", "metric_group", "metric", "type"], axis=1)
@@ -290,7 +285,7 @@ def download_quality_standard_result(
     intersect_results: bool = True,
     confidence_level: Optional[float] = None,
     reference_model: Optional[str] = None,
-    reference_eval_config: Optional[Union[dict[str, Any], Literal["null"]]] = None,
+    reference_eval_config: Optional[Union[Dict[str, Any], Literal["null"]]] = None,
 ) -> pd.DataFrame:
     """
     Download quality standard result given a dataset and list of models.
@@ -301,13 +296,14 @@ def download_quality_standard_result(
     :param intersect_results: If True, only include datapoint that are common to all models in the metrics calculation.
     Note all metric groups are included when this value is `None`.
     :param confidence_level: The confidence score used to calculate the Margin of Error, representing the probability of
-     capturing the true population parameter within the calculated MOE. If this is specified performance delta will
-     be shown, we recommend setting between 0.9 - 0.99
+     capturing the true population parameter within the calculated MOE, we recommend setting between 0.9 - 0.99.
+     If this is specified performance delta column will be shown, metric valued will be classified as
+      improved, regressed, similar or unknown according to the MOE.
     :param reference_model: The name of the model to use as a reference for the Margin of Error calculation,
-    :param reference_eval_config: The evaluation configuration to use in conjunction with the reference model
+    :param reference_eval_config: The evaluation configuration to use in conjunction with the reference model,
+     if unspecified the first model in the models list will be used
      as a reference for the Margin of Error, for None eval config, pass in 'null' instead of None. If this is None,
      the first eval config will be used.
-    if unspecified the first model in the models list will be used
     :return: A Dataframe containing the quality standard result.
     """
     if reference_model and reference_model not in models:
