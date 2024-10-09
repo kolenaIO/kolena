@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Dict
 from typing import List
 from typing import Union
 
@@ -41,7 +42,7 @@ class QuantileNumericalValue:
 @dataclass(frozen=True)
 class TestCase:
     name: str
-    stratification: list[Union[QuantileNumericalValue, CategoricalValue, RangeValue]]
+    stratification: List[Union[QuantileNumericalValue, CategoricalValue, RangeValue]]
     # QuantileNumericalValue must come before CategoricalValue in Union;
     #   otherwise, from_dict will cast dicts like {value:[undefined], index:[some_value]}
     #   as CategoricalValue since [undefined] is treated as None
@@ -52,7 +53,7 @@ class Stratification:
     name: str
     stratify_fields: List[StratifyFieldSpec]
     test_cases: List[TestCase]
-    filters: Union[dict[str, GeneralFieldFilter], None] = None
+    filters: Union[Dict[str, GeneralFieldFilter], None] = None
 
     @field_validator("test_cases")
     @classmethod

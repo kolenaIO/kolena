@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from dataclasses import field
-from typing import Literal  # type: ignore
+from typing import Dict
+from typing import List
+from typing import Literal
 from typing import Union
 
 from pydantic import StrictBool
@@ -36,7 +38,7 @@ class NumericBucket:
 
 @dataclass(frozen=True)
 class CategoricalStats:
-    histogram: list[CategoricalBucket]
+    histogram: List[CategoricalBucket]
     data_type: Literal["categorical"] = "categorical"
 
 
@@ -49,7 +51,7 @@ class NumericStats:
     max: float
     stddev: float
     sum: float
-    histogram: list[NumericBucket]
+    histogram: List[NumericBucket]
     data_type: Literal["numeric"] = "numeric"
 
 
@@ -61,7 +63,7 @@ class ArraySizeStats:
     max: int
     stddev: float
     sum: int
-    histogram: list[CategoricalBucket]
+    histogram: List[CategoricalBucket]
 
 
 @dataclass(frozen=True)
@@ -78,12 +80,12 @@ class FieldStats:
 
 @dataclass(frozen=True)
 class SingleStatsResponse:
-    datapoint: list[FieldStats] = field(default_factory=list)
+    datapoint: List[FieldStats] = field(default_factory=list)
     # key by model id first, then eval_config_id
-    result: dict[str, dict[str, list[FieldStats]]] = field(default_factory=dict)
-    llm: list[FieldStats] = field(default_factory=list)
+    result: Dict[str, Dict[str, List[FieldStats]]] = field(default_factory=dict)
+    llm: List[FieldStats] = field(default_factory=list)
 
 
 @dataclass(frozen=True)
 class FieldStatsResponse:
-    stats: list[SingleStatsResponse]
+    stats: List[SingleStatsResponse]

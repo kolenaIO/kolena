@@ -179,7 +179,7 @@ def _validate_non_internal_list_field(field: str) -> None:
         raise IncorrectUsageError("unsupported field")
 
 
-def _validate_buckets(buckets: Union[list[float], TypedBucketSplit, None]) -> None:
+def _validate_buckets(buckets: Union[List[float], TypedBucketSplit, None]) -> None:
     if isinstance(buckets, list):
         # allow [x, x] for single-value-single-bucket "stratification"
         if len(buckets) == 2 and math.isclose(buckets[0], buckets[1]):

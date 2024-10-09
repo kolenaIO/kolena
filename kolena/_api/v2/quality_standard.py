@@ -13,6 +13,7 @@
 # limitations under the License.
 from datetime import datetime
 from enum import Enum
+from typing import List
 
 from pydantic.v1 import conint
 
@@ -38,11 +39,11 @@ class CopyQualityStandardRequest:
 @dataclass(frozen=True)
 class QualityStandard:
     name: str
-    stratifications: list[Stratification]
-    metric_groups: list[MetricGroup]
+    stratifications: List[Stratification]
+    metric_groups: List[MetricGroup]
 
     @classmethod
-    def metric_group_name_unique(cls, metric_groups: list[MetricGroup]) -> list[MetricGroup]:
+    def metric_group_name_unique(cls, metric_groups: List[MetricGroup]) -> List[MetricGroup]:
         if len(metric_groups) > len({metric_group.name for metric_group in metric_groups}):
             raise ValueError("Metric group names must be unique.")
         return metric_groups

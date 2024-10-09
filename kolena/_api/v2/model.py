@@ -91,13 +91,13 @@ class LoadByDatasetRequest:
 @dataclass(frozen=True)
 class LoadEvalConfigRequest:
     id: Optional[int] = None
-    data: Optional[dict[str, Any]] = None
+    data: Optional[Dict[str, Any]] = None
 
 
 @dataclass(frozen=True)
 class EvalConfigEntityData:
     id: int
-    data: Optional[dict[str, Any]]
+    data: Optional[Dict[str, Any]]
 
 
 @dataclass(frozen=True)

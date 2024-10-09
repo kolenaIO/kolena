@@ -69,7 +69,7 @@ class HumanEvaluationFilter:
 
 @dataclass(frozen=True)
 class DifficultyScoreFilter:
-    metric_groups: list[MetricGroup]
+    metric_groups: List[MetricGroup]
 
     def __hash__(self) -> int:
         return hash(
@@ -124,7 +124,7 @@ class Filters:
     human_evaluations: conlist(HumanEvaluationFilter, max_length=1) = field(default_factory=list)
     difficulty_scores: Optional[DifficultyScoreFilter] = None
     dsl: Optional[Dsl] = None
-    derived_fields: Optional[list[DerivedField]] = None
+    derived_fields: Optional[List[DerivedField]] = None
 
     def __hash__(self) -> int:
         return hash(
