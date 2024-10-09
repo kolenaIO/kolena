@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-from typing import Annotated
 from typing import Literal
 from typing import Optional
 from typing import Union
@@ -19,6 +18,7 @@ from typing import Union
 from pydantic import Field
 from pydantic import field_validator
 from pydantic.dataclasses import dataclass
+from typing_extensions import Annotated
 
 MetricFormat = Literal["default", "integer", "decimal", "percentage", "scientific", "dollars", "euros"]
 
