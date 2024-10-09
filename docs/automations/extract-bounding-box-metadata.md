@@ -105,12 +105,8 @@ if your model performance may depend on shape of the objects in the image.
 
 ### Entropy Of Distribution
 
-**Entropy Of Distribution** is a a probability distribution over the possible locations where bounding
-boxes are predicted to be located.
-High entropy: Indicates high uncertainty in the bounding box predictions, meaning the model is less confident
-about where the bounding boxes should fall.
-Low entropy: Indicates that the bounding box predictions are more focused in certain cells, representing higher
-confidence and lower uncertainty.
+**Entropy Of Distribution** is a measure of how spread apart bounding boxes in a given group are. It is
+a good measure to see if model performs differently based on how the bounding boxes are spread in a scene.
 
 ### Mean Distance Between Bboxes
 
