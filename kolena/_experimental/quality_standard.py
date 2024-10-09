@@ -308,7 +308,7 @@ def download_quality_standard_result(
     :return: A Dataframe containing the quality standard result.
     """
     if reference_model and reference_model not in models:
-        raise IncorrectUsageError("reference model not in models")
+        raise IncorrectUsageError(f"The specified reference model '{reference_model}' was not one of the provided models")
     model_log = ", ".join([f"'{model}'" for model in models])
     log.info(f"downloading quality standard results for model(s) {model_log} on dataset '{dataset}'")
     if intersect_results:
