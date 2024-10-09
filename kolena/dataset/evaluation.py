@@ -351,7 +351,7 @@ def upload_results(
     _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags)
 
 
-@with_event(EventAPI.Event.FETCH_DATASET_MODELS_BY_DATASET)
+@with_event(EventAPI.Event.GET_MODELS_BY_DATASET)
 def get_models(
     dataset: str,
 ) -> List[ModelEntity]:
