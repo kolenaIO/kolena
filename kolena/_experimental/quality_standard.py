@@ -299,7 +299,8 @@ def download_quality_standard_result(
      capturing the true population parameter within the calculated MOE, we recommend setting between 0.9 - 0.99.
      If this is specified performance delta column will be shown, metric valued will be classified as
       improved, regressed, similar or unknown according to the MOE.
-    :param reference_model: The name of the model to use as a reference for the Margin of Error calculation,
+    :param reference_model: The name of the model to use as a reference for the Margin of Error calculation.
+        This should be one of the models provided in `models`. If unspecified, the first model of `models` will be used as reference.
     :param reference_eval_config: The evaluation configuration to use in conjunction with the reference model,
      if unspecified the first model in the models list will be used
      as a reference for the Margin of Error, for None eval config, pass in 'null' instead of None. If this is None,
