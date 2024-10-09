@@ -287,7 +287,7 @@ def test__download_quality_standard_result_with_performance_delta(
     results: List[Tuple[EvalConfig, pd.DataFrame]],
 ) -> None:
     dataset_name = with_test_prefix("test__download_quality_standard_result_with_performance_delta")
-    model_name = with_test_prefix("test__test__download_quality_standard_result_with_performance_delta_model")
+    model_name = with_test_prefix("test__download_quality_standard_result_with_performance_delta_model")
     eval_configs = [eval_config for eval_config, _ in results]
     upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
     _upload_results(
