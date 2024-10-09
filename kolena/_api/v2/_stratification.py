@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
 from typing import Union
 
 from pydantic import field_validator
@@ -49,13 +50,13 @@ class TestCase:
 @dataclass(frozen=True)
 class Stratification:
     name: str
-    stratify_fields: list[StratifyFieldSpec]
-    test_cases: list[TestCase]
+    stratify_fields: List[StratifyFieldSpec]
+    test_cases: List[TestCase]
     filters: Union[dict[str, GeneralFieldFilter], None] = None
 
     @field_validator("test_cases")
     @classmethod
-    def test_case_name_unique(cls, test_cases: list[TestCase]) -> list[TestCase]:
+    def test_case_name_unique(cls, test_cases: List[TestCase]) -> List[TestCase]:
         if len(test_cases) > len({test_case.name for test_case in test_cases}):
             raise ValueError("Test case name must be unique.")
         return test_cases

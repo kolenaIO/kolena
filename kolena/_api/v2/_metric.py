@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import List
 from typing import Literal
 from typing import Optional
 from typing import Union
@@ -276,11 +277,11 @@ Metric = Union[
 @dataclass(frozen=True)
 class MetricGroup:
     name: str
-    metrics: list[Metric]
+    metrics: List[Metric]
 
     @field_validator("metrics")
     @classmethod
-    def metric_label_unique(cls, metrics: list[Metric]) -> list[Metric]:
+    def metric_label_unique(cls, metrics: List[Metric]) -> List[Metric]:
         if len(metrics) > len({metric.label for metric in metrics}):
             raise ValueError("Metric labels must be unique.")
         return metrics
@@ -298,4 +299,4 @@ class MetricGroup:
 class DatasetMetricGroups:
     dataset_id: int
     dataset_name: str
-    metric_groups: list[MetricGroup]
+    metric_groups: List[MetricGroup]
