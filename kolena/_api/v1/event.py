@@ -64,6 +64,7 @@ class EventAPI:
         FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"
         UPLOAD_DATASET_MODEL_RESULT = "sdk-dataset-model-result-uploaded"
         FETCH_DATASET_MODEL_RESULT_BY_TAG = "sdk-dataset-model-result-fetched-by-tag"
+        FETCH_DATASET_MODELS_BY_DATASET = "sdk-dataset-models-fetched-by-dataset"
 
         # quality-standard
         FETCH_QUALITY_STANDARD_RESULT = "sdk-quality-standard-result-fetched"

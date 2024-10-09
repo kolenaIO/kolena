@@ -17,6 +17,7 @@ from kolena._experimental.dataset.evaluation import download_results_by_tag
 from kolena.dataset import EvalConfigResults
 from kolena.dataset import upload_dataset
 from kolena.dataset.evaluation import _upload_results
+from kolena.dataset.evaluation import get_models
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 from tests.integration.dataset.test_evaluation import check_eval_config_result_tuples
@@ -63,6 +64,11 @@ def test__download_results_by_tag() -> None:
     assert response.n_updated == 0
     assert response.model_id is not None
     assert response.eval_config_id is not None
+
+    models = get_models(dataset_name)
+    assert len(models) == 1
+    assert models[0].name == model_name
+    assert sorted(models[0].tags) == sorted(model_tags)
 
     for tag in model_tags:
         fetched_df_dp, df_results_by_eval = download_results_by_tag(dataset_name, tag)
@@ -123,9 +129,19 @@ def test__download_results_by_tag__multiple_model_with_same_tag() -> None:
     assert response.eval_config_id is not None
     assert response.model_id != model_id_1
 
+    # cannot download model results by tag if the tag is associated with multiple models
     with pytest.raises(IncorrectUsageError) as exc_info:
         download_results_by_tag(dataset_name, model_tag)
     exc_info_value = str(exc_info.value)
     assert "multiple models with tag" in exc_info_value
     assert model_name_1 in exc_info_value
     assert model_name_2 in exc_info_value
+
+    # can get all models on the dataset as well as their tags
+    models = get_models(dataset_name)
+    assert len(models) == 2
+    models.sort(key=lambda model: model.name)
+    assert models[0].name == model_name_1
+    assert sorted(models[0].tags) == [model_tag]
+    assert models[1].name == model_name_2
+    assert sorted(models[1].tags) == [model_tag]

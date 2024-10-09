@@ -18,6 +18,8 @@ from kolena.dataset.evaluation import upload_results
 from kolena.dataset.evaluation import download_results
 from kolena.dataset.evaluation import EvalConfigResults
 from kolena.dataset.dataset import list_datasets
+from kolena.dataset.evaluation import ModelEntity
+from kolena.dataset.evaluation import get_models
 
 __all__ = [
     "upload_dataset",
@@ -26,4 +28,6 @@ __all__ = [
     "download_results",
     "EvalConfigResults",
     "list_datasets",
+    "ModelEntity",
+    "get_models",
 ]
