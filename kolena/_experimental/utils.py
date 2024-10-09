@@ -13,6 +13,7 @@
 # limitations under the License.
 import math
 from sys import float_info
+from typing import Optional
 
 """
  The following Python functions for calculating normal and
@@ -157,11 +158,11 @@ def margin_of_error(n_samples: int, confidence_level: float = 0.95, positive_sam
     return margin_error * 100  # percentage
 
 
-def round_up_to_nearest_power_of_10(value):
+def round_up_to_nearest_power_of_10(value: float) -> int:
     return 10 ** math.ceil(math.log10(value))
 
 
-def get_delta_percentage(value_a, value_b, max_value=None) -> float:
+def get_delta_percentage(value_a: float, value_b: float, max_value: Optional[int] = None) -> float:
     upper_limit = None
 
     if max_value is not None:

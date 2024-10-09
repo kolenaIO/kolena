@@ -30,6 +30,7 @@ from kolena._api.v1.event import EventAPI
 from kolena._api.v2._api import GeneralFieldFilter
 from kolena._api.v2._filter import Filters
 from kolena._api.v2._filter import ModelFilter
+from kolena._api.v2._metric import Metric
 from kolena._api.v2._testing import Path as TestingPath
 from kolena._api.v2._testing import StratificationType
 from kolena._api.v2._testing import StratifyFieldSpec
@@ -103,7 +104,7 @@ def _download_quality_standard_result(
 
 def _download_test_case_result(
     dataset_id: int,
-    model_and_eval_config_pairs: Optional[list[ModelWithEvalConfig]],
+    model_and_eval_config_pairs: list[ModelWithEvalConfig],
     datapoint_filters: Optional[Dict[str, GeneralFieldFilter]],
     stratify_fields: list[StratifyFieldSpec],
 ) -> TestingResponse:
@@ -179,6 +180,8 @@ def _calculate_moe_map(
         )
         for i in range(len(test_cases.test_cases)):
             case = test_cases.test_cases[i]
+            if not case.stratification or not case.stratification[0]:
+                continue
             value = case.stratification[0].value
             field = case.stratification[0].field
             if field.startswith("_kolena.extracted"):
@@ -197,7 +200,7 @@ def _get_performance_delta_metrics(
     qs_result: pd.DataFrame,
     moe: Dict[Tuple[str, Any], float],
     reference_model: Optional[str] = None,
-    reference_eval_config: Optional[dict[str, Any]] = None,
+    reference_eval_config: Union[dict[str, Any], Literal["null"], None] = None,
 ) -> pd.DataFrame:
     for model, eval_config, _, _ in qs_result.columns:
         if not reference_model:
@@ -205,19 +208,27 @@ def _get_performance_delta_metrics(
         if reference_model == model and not reference_eval_config:
             reference_eval_config = eval_config
     performance_delta = pd.DataFrame(PerformanceDelta.UNKNOWN, index=qs_result.index, columns=qs_result.columns)
-    metric_dict = defaultdict(dict)
+    metric_dict: dict[str, dict[str, Metric]] = defaultdict(dict)
     for mg in qs.quality_standard.metric_groups:
         for metric in mg.metrics:
             metric_dict[mg.name][metric.label] = metric
 
-    for model, eval_config, metric_group, metric in qs_result.columns:
-        highlight = metric_dict[metric_group][metric].highlight
+    for model, eval_config, metric_group, metric_name in qs_result.columns:
+        highlight = metric_dict[metric_group][metric_name].highlight
         if not highlight or highlight.higherIsBetter is None:
             continue
 
         for strat, test_case in qs_result.index:
-            ref_val = qs_result.loc[(strat, test_case), (reference_model, reference_eval_config, metric_group, metric)]
-            target_val = qs_result.loc[(strat, test_case), (model, eval_config, metric_group, metric)]
+            ref_val = qs_result.loc[
+                (strat, test_case),
+                (
+                    reference_model,
+                    reference_eval_config,
+                    metric_group,
+                    metric_name,
+                ),
+            ]
+            target_val = qs_result.loc[(strat, test_case), (model, eval_config, metric_group, metric_name)]
             if (
                 ref_val is None
                 or target_val is None
@@ -232,17 +243,17 @@ def _get_performance_delta_metrics(
             if delta_percentage > moe[(strat, test_case)]:
                 performance_delta.loc[
                     (strat, test_case),
-                    (model, eval_config, metric_group, metric),
+                    (model, eval_config, metric_group, metric_name),
                 ] = PerformanceDelta.IMPROVED
             elif delta_percentage < -1 * moe[(strat, test_case)]:  # noqa: PAR001
                 performance_delta.loc[
                     (strat, test_case),
-                    (model, eval_config, metric_group, metric),
+                    (model, eval_config, metric_group, metric_name),
                 ] = PerformanceDelta.REGRESSED
             else:
                 performance_delta.loc[
                     (strat, test_case),
-                    (model, eval_config, metric_group, metric),
+                    (model, eval_config, metric_group, metric_name),
                 ] = PerformanceDelta.SIMILAR
     return performance_delta
 
@@ -252,9 +263,11 @@ def _calculate_performance_delta(
     qs_result: pd.DataFrame,
     confidence_level: float,
     reference_model: Optional[str] = None,
-    reference_eval_config: Optional[dict[str, Any]] = None,
+    reference_eval_config: Union[dict[str, Any], Literal["null"], None] = None,
 ) -> pd.DataFrame:
     dataset_entity = _load_dataset_metadata(dataset)
+    if not dataset_entity:
+        raise IncorrectUsageError(f"The dataset with name '{dataset}' not found")
     qs = _download_quality_standard(dataset_entity.id)
     moe = _calculate_moe_map(qs_result, dataset_entity, confidence_level, qs)
     performance_delta = _get_performance_delta_metrics(qs, qs_result, moe, reference_model, reference_eval_config)
