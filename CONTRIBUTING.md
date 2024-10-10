@@ -20,6 +20,34 @@ errors can be caught before committing code.
 uv tool run pre-commit install
 ```
 
+### Install insiders requirements
+
+To build the documentation with "insider" features, run the [`setup_insiders.sh`](docs/setup_insiders.sh) script:
+
+```
+./docs/setup_insiders.sh
+```
+
+Note that this script requires an SSH key in your environment with access to the [kolenaIO](https://github.com/kolenaIO)
+organization. Additionally, this script modifies the `pyproject.toml` to reference the "insider" versions of the mkdocs
+projects. Please take care to avoid merging these updates, as it will prevent contributors without insiders access from
+running `kolena`.
+
+After running `setup_insiders.sh`, add `--config-file mkdocs.insiders.yml` to the `serve` and `build` invocations below
+to build documentation with all "insider" features enabled.
+
+### Images to load
+
+Images used in documentation are stored in [`docs/assets/images`](docs/assets/images) and tracked with
+[Git LFS](https://git-lfs.com/). All images in this directory are automatically tracked as LFS assets. Ensure that you
+have LFS installed in your environment and run the following command:
+
+```shell
+git lfs install
+```
+
+Once lfs is installed, you will need to reclone the kolena repo because git lfs is needed to load images.
+
 ## Documentation
 
 The documentation for `kolena`, hosted at [docs.kolena.com](https://docs.kolena.com/), is built out of this repo using
@@ -46,30 +74,6 @@ Kolena sponsors the [mkdocs-material](https://squidfunk.github.io/mkdocs-materia
 [mkdocstrings](https://mkdocstrings.github.io/) projects and uses "insiders" features from these projects. In order to
 preserve the capability to build documentation without access to these private "insider" repos, the docs dependencies
 declared in [`pyproject.toml`](pyproject.toml) reference the publicly available package sources.
-
-To build the documentation with "insider" features, run the [`setup_insiders.sh`](docs/setup_insiders.sh) script:
-
-```
-./docs/setup_insiders.sh
-```
-
-Note that this script requires an SSH key in your environment with access to the [kolenaIO](https://github.com/kolenaIO)
-organization. Additionally, this script modifies the `pyproject.toml` to reference the "insider" versions of the mkdocs
-projects. Please take care to avoid merging these updates, as it will prevent contributors without insiders access from
-running `kolena`.
-
-After running `setup_insiders.sh`, add `--config-file mkdocs.insiders.yml` to the `serve` and `build` invocations above
-to build documentation with all "insider" features enabled.
-
-### Images
-
-Images used in documentation are stored in [`docs/assets/images`](docs/assets/images) and tracked with
-[Git LFS](https://git-lfs.com/). All images in this directory are automatically tracked as LFS assets. Ensure that you
-have LFS installed in your environment and run the following command:
-
-```shell
-git lfs install
-```
 
 ### Links
 
