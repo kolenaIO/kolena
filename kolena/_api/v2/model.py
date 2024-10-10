@@ -26,6 +26,7 @@ class Path(str, Enum):
     UPLOAD_RESULTS = "/model/upload-results"
     LOAD_RESULTS = "/model/load-results"
     LOAD_BY_TAG = "/model/load-by-tag"
+    LOAD_BY_DATASET = "/model/load-by-dataset"
 
 
 @dataclass(frozen=True)
@@ -77,3 +78,8 @@ class LoadByTagRequest:
 @dataclass(frozen=True)
 class LoadByTagResponse:
     models: List[EntityData]
+
+
+@dataclass(frozen=True)
+class LoadByDatasetRequest:
+    dataset_id: int

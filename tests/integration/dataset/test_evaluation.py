@@ -24,6 +24,7 @@ from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.evaluation import _upload_results
+from kolena.dataset.evaluation import get_models
 from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
@@ -80,6 +81,11 @@ def test__upload_results() -> None:
     assert response.n_updated == 0
     assert response.model_id is not None
     assert response.eval_config_id is not None
+
+    models = get_models(dataset_name)
+    assert len(models) == 1
+    assert models[0].name == model_name
+    assert not models[0].tags
 
     fetched_df_dp, df_results_by_eval = download_results(dataset_name, model_name)
     check_eval_config_result_tuples(df_results_by_eval)
@@ -200,6 +206,11 @@ def test__upload_results__multiple_eval_configs() -> None:
     expected_df_result_2 = df_result_2.drop(columns=[JOIN_COLUMN])[3:10].reset_index(drop=True)
     assert_frame_equal(fetched_df_result_1, expected_df_result_1, result_columns_1)
     assert_frame_equal(fetched_df_result_2, expected_df_result_2, result_columns_2)
+
+    models = get_models(dataset_name)
+    assert len(models) == 1
+    assert models[0].name == model_name
+    assert not models[0].tags
 
 
 def test__upload_results__multiple_eval_configs__iterator_input() -> None:
@@ -514,6 +525,14 @@ def test__upload_results__only_id_and_thresholded_columns() -> None:
             df_result,
             thresholded_fields=["bev"],
         )
+
+
+def test__get_models__dataset_does_not_exist() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__get_models__dataset_does_not_exist")
+    with pytest.raises(NotFoundError) as exc_info:
+        get_models(dataset_name)
+    exc_info_value = str(exc_info.value)
+    assert "does not exist" in exc_info_value
 
 
 def test__download_results__dataset_does_not_exist() -> None:

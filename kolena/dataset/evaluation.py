@@ -25,6 +25,7 @@ from typing import Union
 import pandas as pd
 
 from kolena._api.v1.event import EventAPI
+from kolena._api.v2.model import LoadByDatasetRequest
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
@@ -38,6 +39,7 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.endpoints import get_platform_url
 from kolena._utils.endpoints import serialize_models_url
 from kolena._utils.instrumentation import with_event
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT
@@ -73,6 +75,23 @@ class EvalConfigResults(NamedTuple):
 
     eval_config: EvalConfig
     results: pd.DataFrame
+
+
+@dataclass(frozen=True)
+class ModelEntity:
+    """
+    The descriptor of a model tested on Kolena.
+    """
+
+    name: str
+    """Unique name of the model."""
+    tags: List[str]
+    """Tags associated with the model."""
+
+
+@dataclass(frozen=True)
+class LoadByDatasetResponse:
+    models: List[ModelEntity]
 
 
 def _iter_result_raw(
@@ -330,3 +349,23 @@ def upload_results(
     :return: None
     """
     _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags)
+
+
+@with_event(EventAPI.Event.GET_MODELS_BY_DATASET)
+def get_models(
+    dataset: str,
+) -> List[ModelEntity]:
+    """
+    Get all models with results on a given dataset.
+
+    :param dataset: The name of the dataset.
+
+    :return: A list of models tested on the given dataset.
+    """
+    existing_dataset = _load_dataset_metadata(dataset)
+    assert existing_dataset, f"dataset {dataset} not found"
+
+    request = LoadByDatasetRequest(dataset_id=existing_dataset.id)
+    response = krequests.put(Path.LOAD_BY_DATASET, json=asdict(request))
+    krequests.raise_for_status(response)
+    return from_dict(LoadByDatasetResponse, response.json()).models
