@@ -195,13 +195,17 @@ def _get_performance_delta_metrics(
     qs_result: pd.DataFrame,
     moe: Dict[Tuple[str, Any], float],
     reference_model: Optional[str] = None,
-    reference_eval_config: Union[Dict[str, Any], Literal["null"], None] = None,
+    reference_eval_config: Union[Dict[str, Any], str, None] = "first",
 ) -> pd.DataFrame:
+    if not reference_eval_config:
+        reference_eval_config = "null"
     for model, eval_config, _, _ in qs_result.columns:
         if not reference_model:
             reference_model = model
-        if reference_model == model and not reference_eval_config:
+        if reference_model == model and reference_eval_config == "first":
             reference_eval_config = eval_config
+    if isinstance(reference_eval_config, dict):
+        reference_eval_config = json.dumps(reference_eval_config)
     performance_delta = pd.DataFrame("unknown", index=qs_result.index, columns=qs_result.columns)
     metric_dict: Dict[str, Dict[str, Metric]] = defaultdict(dict)
     for mg in qs.quality_standard.metric_groups:
@@ -232,7 +236,14 @@ def _get_performance_delta_metrics(
                 or (strat, test_case) not in moe
             ):
                 continue
-            delta_percentage = get_delta_percentage(target_val, ref_val)
+            range_max = np.nanmax(
+                qs_result.loc[strat][(reference_model, reference_eval_config, metric_group, metric_name)],
+            )
+            delta_percentage = get_delta_percentage(
+                target_val,
+                ref_val,
+                range_max if range_max and not np.isnan(range_max) else max(target_val, ref_val),
+            )
             if not highlight.higherIsBetter:
                 delta_percentage = -delta_percentage
             if delta_percentage > moe[(strat, test_case)]:
@@ -258,7 +269,7 @@ def _calculate_performance_delta(
     qs_result: pd.DataFrame,
     confidence_level: float,
     reference_model: Optional[str] = None,
-    reference_eval_config: Union[Dict[str, Any], Literal["null"], None] = None,
+    reference_eval_config: Union[Dict[str, Any], Literal["first"], None] = "first",
 ) -> pd.DataFrame:
     dataset_entity = _load_dataset_metadata(dataset)
     if not dataset_entity:
@@ -285,7 +296,7 @@ def download_quality_standard_result(
     intersect_results: bool = True,
     confidence_level: Optional[float] = None,
     reference_model: Optional[str] = None,
-    reference_eval_config: Optional[Union[Dict[str, Any], Literal["null"]]] = None,
+    reference_eval_config: Optional[Union[Dict[str, Any], Literal["first"]]] = "first",
 ) -> pd.DataFrame:
     """
     Download quality standard result given a dataset and list of models.
@@ -300,15 +311,15 @@ def download_quality_standard_result(
      If this is specified performance delta column will be shown, metric valued will be classified as
       improved, regressed, similar or unknown according to the MOE.
     :param reference_model: The name of the model to use as a reference for the Margin of Error calculation.
-        This should be one of the models provided in `models`. If unspecified, the first model of `models` will be used as reference.
+        This should be one of the models provided in `models`. If unspecified, the first model of `models` will be used.
     :param reference_eval_config: The evaluation configuration to use in conjunction with the reference model,
-     if unspecified the first model in the models list will be used
-     as a reference for the Margin of Error, for None eval config, pass in 'null' instead of None. If this is None,
-     the first eval config will be used.
+     if unspecified the first evaluation configuration of the reference model will be used
     :return: A Dataframe containing the quality standard result.
     """
     if reference_model and reference_model not in models:
-        raise IncorrectUsageError(f"The specified reference model '{reference_model}' was not one of the provided models")
+        raise IncorrectUsageError(
+            f"The specified reference model '{reference_model}' was not one of the provided models",
+        )
     model_log = ", ".join([f"'{model}'" for model in models])
     log.info(f"downloading quality standard results for model(s) {model_log} on dataset '{dataset}'")
     if intersect_results:

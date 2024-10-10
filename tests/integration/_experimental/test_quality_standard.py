@@ -343,7 +343,7 @@ def test__download_quality_standard_result_with_performance_delta(
         dataset_name,
         [model_name],
         confidence_level=0.95,
-        reference_eval_config="null",
+        reference_eval_config=eval_configs[0],
     )
 
     df_columns: pd.MultiIndex = quality_standard_df.columns

@@ -165,7 +165,7 @@ def round_up_to_nearest_power_of_10(value: float) -> int:
 def get_delta_percentage(value_a: float, value_b: float, max_value: Optional[int] = None) -> float:
     upper_limit = None
 
-    if max_value is not None:
+    if max_value is not None and max_value > 0:
         upper_limit = round_up_to_nearest_power_of_10(max_value)
         if upper_limit >= 1000:
             upper_limit = max_value
