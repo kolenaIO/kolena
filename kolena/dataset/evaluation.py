@@ -27,9 +27,9 @@ import pandas as pd
 from kolena._api.v1.event import EventAPI
 from kolena._api.v2.model import EntityData
 from kolena._api.v2.model import EvalConfigEntityData
+from kolena._api.v2.model import LoadByDatasetRequest
 from kolena._api.v2.model import LoadByNameRequest
 from kolena._api.v2.model import LoadEvalConfigRequest
-from kolena._api.v2.model import LoadByDatasetRequest
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
