@@ -81,7 +81,7 @@ the center of the image.
 
 ### Object Count
 
-**Object count** is a simple count of bounding boxes in a group of bounding boxes. You can use this value
+**Object Count** is a simple count of bounding boxes in a group of bounding boxes. You can use this value
 to monitor how your model performance changes when there are a few or many objects to detect in an image.
 
 ### Object Type Count
