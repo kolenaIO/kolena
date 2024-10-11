@@ -73,9 +73,9 @@ $$
 \text{Relative Area} = \frac{\text{Bounding Box Area}}{\text{Image Area}}
 $$
 
-### Relative Distance To Image Centre
+### Relative Distance To Image Center
 
-**Relative Distance To Image Centre** measures the distance between the center of the bounding box and center
+**Relative Distance To Image Center** measures the distance between the center of the bounding box and center
 of the image it is referencing. It can be used to monitor model performance based on how far the object is from
 the center of the image.
 
