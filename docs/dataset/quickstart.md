@@ -103,7 +103,7 @@ model testing and evaluation.
 
 Model results are supplied as tables containing the ID field chosen when uploading the dataset. For
 this example, we will upload the results for the open-source
-[RetinaFace](https://github.com/serengil/retinaface) (`RetinaFace` option)
+[retinaface](https://github.com/serengil/retinaface) (`retinaface` option)
 keypoint detection model and a random keypoint model.
 
 === "Web App"
@@ -134,11 +134,11 @@ keypoint detection model and a random keypoint model.
     which will compute metrics on a CSV of model results and upload them to Kolena.
 
     ```shell
-    uv run python3 keypoint_detection/upload_results.py RetinaFace
+    uv run python3 keypoint_detection/upload_results.py retinaface
     uv run python3 keypoint_detection/upload_results.py random
     ```
 
-    Results for two models named `RetinaFace` and `random` should now appear <somewhere>
+    Results for two models named `retinaface` and `random` should now appear <somewhere>
 
 ## Step 3: Explore Data and Results
 
@@ -200,12 +200,12 @@ Repeat these steps for `result.nmse > mean`.
 
 Once you have configured a Quality Standard, the Metrics you define will be calculated across all Test Cases.
 To compare the results across models, navigate to the `Quality Standards` tab and add `random` model to the
-table using the `Add Models` button in the top right. Then, add the `RetinaFace` model to compare its performance
+table using the `Add Models` button in the top right. Then, add the `retinaface` model to compare its performance
 to the `random` model.
 
 You will now see all metrics in the Quality Standard computed on every test case in the Quality Standard.
 Metrics in this view will also be highlighted according to how much they improve/worsen compared to the
-reference model. In this example, RetinaFace performs better than the random model over the entire dataset
+reference model. In this example, retinaface performs better than the random model over the entire dataset
 as well as over all test cases we defined earlier.
 
 !!! tip
@@ -223,7 +223,7 @@ as well as over all test cases we defined earlier.
 
 In this quickstart, we used an example integration from [kolenaIO/kolena](https://github.com/kolenaIO/kolena) to
 integrate data from the [300 Faces In the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/) dataset,
-created test cases, and tested the open-source [RetinaFace](https://github.com/serengil/retinaface)
+created test cases, and tested the open-source [retinaface](https://github.com/serengil/retinaface)
 keypoint detection model.
 
 This example shows us how to quickly and easily integrate test data and evaluate model performance in Kolena,
