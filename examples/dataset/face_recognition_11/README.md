@@ -3,9 +3,8 @@
 This example integration uses the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/)
 dataset and Face Recognition (FR) workflow to
 demonstrate how to test and evaluate end-to-end FR (1:1) model pipelines on Kolena.
-The evaluation stages are: face detection, keypoint extraction, and recognition. There are 5,749 unique identifications
-from the complete dataset with 13,233 images. In this example, we are using 9,164 images with one genuine pair and one
-imposter pair.
+There are 5,749 unique identifications from the complete dataset with 13,233 images, but for
+illustrative purposes, we are using 9,164 images with one genuine pair and one imposter pair.
 
 In this example, we track two performance metrics at varying similarity score thresholds:
 
@@ -17,11 +16,11 @@ these corresponding thresholds.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -46,14 +45,14 @@ Command line arguments are defined within each script to specify the dataset nam
 for. Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 face_recognition_11/upload_dataset.py --help
+$ uv run face_recognition_11/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
   -h, --help         show this help message and exit
   --dataset DATASET  Optionally specify a custom dataset name to upload.
 
-$ poetry run python3 face_recognition_11/upload_results.py --help
+$ uv run face_recognition_11/upload_results.py --help
 usage: upload_results.py [-h] [--model {vgg-face,facenet512}] [--detector {mtcnn,dlib}] [--dataset DATASET]
 
 optional arguments:

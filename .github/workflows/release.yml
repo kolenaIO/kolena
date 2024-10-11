@@ -31,28 +31,30 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Install Poetry
-        run: pip install poetry==1.5.1
+      - uses: astral-sh/setup-uv@v2
+
+      - name: Setup environment
+        run: uv venv && source .venv/bin/activate
 
       - name: Fetch tags to enable autoversioning
         run: git fetch --prune --unshallow --tags
 
-      - name: Update package version to PEP 440-compliant production release tag
-        run: poetry version $(git describe --tags --abbrev=0)
-
       - name: Install dependencies
-        run: poetry install
+        run: uv pip install --all-extras -r pyproject.toml
 
       - name: Run pre-commit checks
-        run: poetry run pre-commit run -a
+        run: uvx pre-commit run -a
+
+      - name: Update package version to PEP 440-compliant release tag
+        run: sed -i "s/0.999.0/$(git describe --tags --abbrev=0)/g" pyproject.toml
 
       - name: Build 'kolena' Python package
-        run: poetry build --format=sdist
+        run: uvx hatch build -t sdist
 
       - name: Publish 'kolena' documentation to production (S3)
         run: |
           ./docs/setup_insiders.sh
-          poetry run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
+          uv run mkdocs build --verbose --strict --config-file mkdocs.insiders.yml
           aws s3 sync ./site "s3://docs.kolena.io" --delete
           aws cloudfront create-invalidation --no-cli-pager --distribution-id ${{ secrets.DOC_DISTRIBUTION_ID }} --paths "/*"
           aws s3 sync ./site "s3://docs.kolena.com" --delete
@@ -91,8 +93,8 @@ jobs:
           # update first instance of 'kolena' to 'kolena-client' in pyproject.toml, kolena/__init__.py (package name)
           sed -i '0,/kolena/{s/kolena/kolena-client/}' pyproject.toml kolena/__init__.py
 
-          poetry install
-          poetry build --format=sdist
+          uv pip install --all-extras -r pyproject.toml
+          uvx hatch build -t sdist
 
       - name: "[backcompat] Install twine for package distribution on CodeArtifact"
         run: pip install twine

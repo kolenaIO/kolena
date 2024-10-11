@@ -18,10 +18,14 @@ nav:
         - Natural Language: dataset/advanced-usage/dataset-formatting/natural-language.md
         - Audio: dataset/advanced-usage/dataset-formatting/audio.md
       - Task Metrics: dataset/advanced-usage/task-metrics.md
-      - Programatically Compare Models: dataset/advanced-usage/quality-standard-results.md
-      - Extracting Metadata from Text Fields: automations/extract-text-metadata.md
+      - Thresholded Results: dataset/advanced-usage/thresholded-results.md
+      - Programmatically Compare Models: dataset/advanced-usage/quality-standard-results.md
+      - Automatically Extract Text Properties: automations/extract-text-metadata.md
+      - Automatically Extract Image Properties: automations/extract-image-metadata.md
       - Setting Up Natural Language Search: automations/set-up-natural-language-search.md
       - Object Detection with Kolena: dataset/object-detection.md
+      - LLM Powered Data Processing: dataset/advanced-usage/llm-prompt-extraction.md
+      - Custom Queries and Fields: dataset/advanced-usage/custom-queries.md
     - Connecting Cloud Storage:
       - Connecting Cloud Storage: connecting-cloud-storage/index.md
       - Amazon S3: connecting-cloud-storage/amazon-s3.md
@@ -29,6 +33,9 @@ nav:
       - Google Cloud Storage: connecting-cloud-storage/google-cloud-storage.md
       - Azure Blob Storage: connecting-cloud-storage/azure-blob-storage.md
       - HTTP Basic: connecting-cloud-storage/http-basic.md
+    - Connecting External LLM Endpoint:
+        - Connecting External LLM Endpoint: connecting-external-llm-endpoint/index.md
+        - Connecting Azure OpenAI deployment: connecting-external-llm-endpoint/azure-openai.md
     - Archive:
       - Workflows:
         - Workflows: workflow/index.md
@@ -79,25 +86,26 @@ nav:
           - Classification: reference/pre-built/classification.md
   - Metrics Glossary:
     - Metrics Glossary: metrics/index.md
-    - metrics/accuracy.md
-    - metrics/average-precision.md
-    - metrics/averaging-methods.md
-    - metrics/coefficient-of-determination.md
-    - metrics/cohens-kappa.md
-    - metrics/confusion-matrix.md
-    - metrics/f1-score.md
-    - metrics/fpr.md
-    - metrics/mean-absolute-error.md
-    - metrics/mean-squared-error.md
-    - metrics/pearson-correlation.md
-    - metrics/precision.md
-    - metrics/pr-curve.md
-    - metrics/recall.md
-    - metrics/roc-curve.md
-    - metrics/root-mean-squared-error.md
-    - metrics/spearman-correlation.md
-    - metrics/specificity.md
-    - metrics/tp-fp-fn-tn.md
+    - General:
+      - metrics/accuracy.md
+      - metrics/average-precision.md
+      - metrics/averaging-methods.md
+      - metrics/coefficient-of-determination.md
+      - metrics/cohens-kappa.md
+      - metrics/confusion-matrix.md
+      - metrics/f1-score.md
+      - metrics/fpr.md
+      - metrics/mean-absolute-error.md
+      - metrics/mean-squared-error.md
+      - metrics/pearson-correlation.md
+      - metrics/precision.md
+      - metrics/pr-curve.md
+      - metrics/recall.md
+      - metrics/roc-curve.md
+      - metrics/root-mean-squared-error.md
+      - metrics/spearman-correlation.md
+      - metrics/specificity.md
+      - metrics/tp-fp-fn-tn.md
     - Computer Vision:
       - metrics/geometry-matching.md
       - metrics/iou.md
@@ -115,6 +123,7 @@ nav:
       - metrics/rouge-n.md
       - metrics/wer-cer-mer.md
     - Kolena Insights:
+      - metrics/difficulty-score.md
       - metrics/statistical-significance.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md

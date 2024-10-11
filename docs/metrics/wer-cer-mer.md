@@ -10,6 +10,10 @@ the similarity between reference and candidate texts, with zero being a perfect 
 error rate can be infinitely high, match error rate is always between 0 and 1. Each of these metrics
 have their nuances that reveal different errors within texts.
 
+!!!example
+    To see and example of WER, CER and MER, checkout the
+    [LibriSpeech on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=22&models=N4IglgJiBcBsAcAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcBsDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcBssBoQGMD2A7AZmA5gVwCcBDAFzAxlEhgEYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXgF1mQA)
+
 ## Substitutions, Deletions, and Insertions
 
 The building blocks of each metric include substitution, deletion, and insertion errors. These errors reveal different
@@ -112,6 +116,7 @@ Let's calculate the word error rate between the following reference and candidat
     With each errors counted, we can calculate our WER. Using the formula,
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     \begin{align*}
     \text{WER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Words in Reference}} \\
@@ -120,6 +125,7 @@ Let's calculate the word error rate between the following reference and candidat
                &= 0.375
     \end{align*}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
 
@@ -171,6 +177,7 @@ Let's calculate the character error rate using the same reference and candidate 
     With each errors counted, we can calculate our CER. Using the formula,
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     \begin{align*}
     \text{CER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{# of Characters in Reference}} \\
@@ -179,6 +186,7 @@ Let's calculate the character error rate using the same reference and candidate 
                &= 0.318
     \end{align*}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
 
@@ -199,9 +207,11 @@ While WER and CER focus on errors, Match Error Rate takes a slightly different a
 on correct matches. Similar to WER, it is calculated using word-level [substitutions, deletions, and insertions](#substitutions-deletions-and-insertions).
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \text{MER} = \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 ### Example
@@ -233,6 +243,7 @@ Let's calculate the match error rate using the same reference and candidate text
     With each errors counted, we can calculate our MER. Using the formula,
 
     <!-- markdownlint-disable MD013 -->
+
     $$
     \begin{align*}
     \text{MER} &= \frac{\text{Substitutions} + \text{Deletions} + \text{Insertions}}{\text{Substitutions} + \text{Deletions} + \text{Insertions} + \text{# of Correct Matches}} \\
@@ -241,6 +252,7 @@ Let's calculate the match error rate using the same reference and candidate text
                &= 0.353
     \end{align*}
     $$
+
     <!-- markdownlint-enable MD013 -->
 
 

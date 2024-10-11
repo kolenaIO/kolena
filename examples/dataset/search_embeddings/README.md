@@ -9,12 +9,12 @@ this data has already been uploaded to your Kolena platform.
 
 1. Ensure that data for the [`semantic_segmentation`](../semantic_segmentation) dataset has been seeded through calling
 the [`upload_dataset.py`](../semantic_segmentation/semantic_segmentation/upload_dataset.py) script.
-2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.com/dataset/advanced-usage/set-up-natural-language-search/#poetry)
-3. This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. Install project
+2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.com/dataset/advanced-usage/set-up-natural-language-search/#uv)
+3. This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. Install project
 dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 4. [Recommended] Download test images to a local path for faster embedding extraction:
@@ -35,7 +35,7 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 embeddings or uses pre-extracted embeddings, and uploads them to the Kolena platform.
 
 ```shell
-$ poetry run python3 search_embeddings/upload_embeddings.py --help
+$ uv run search_embeddings/upload_embeddings.py --help
 usage: upload_embeddings.py [-h] [--run-extraction {True,False}] [--dataset-name DATASET_NAME] [--local-path LOCAL_PATH]
 
 options:

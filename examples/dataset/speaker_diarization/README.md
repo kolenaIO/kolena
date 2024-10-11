@@ -6,11 +6,11 @@ on Kolena.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -30,7 +30,7 @@ This project defines two scripts that perform the following operations:
    Run this command to create the default dataset:
 
     ```shell
-    poetry run python3 speaker_diarization/upload_dataset.py
+    uv run speaker_diarization/upload_dataset.py
     ```
 
 2. [`upload_results.py`](speaker_diarization/upload_results.py) uploads the results of model
@@ -39,14 +39,14 @@ This project defines two scripts that perform the following operations:
    Run this command to upload results of model `gcp-stt-video` for the above dataset:
 
     ```shell
-    poetry run python3 speaker_diarization/upload_results.py
+    uv run speaker_diarization/upload_results.py
     ```
 
 Command line arguments are defined within each script to specify the dataset name to create or
 upload results for. Run a script using the `--help` flag for more information:
 
 ```shell
-$ poetry run python3 speaker_diarization/upload_dataset.py --help
+$ uv run speaker_diarization/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET] [--sample-count SAMPLE_COUNT]
 
 optional arguments:
@@ -55,7 +55,7 @@ optional arguments:
   --sample-count SAMPLE_COUNT
                         Number of samples to use. All samples are used by default.
 
-$ poetry run python3 speaker_diarization/upload_results.py --help
+$ uv run speaker_diarization/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] [--align-speakers] [--sample-count SAMPLE_COUNT]
 
 optional arguments:

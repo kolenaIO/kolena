@@ -19,7 +19,7 @@ from pandera.typing import Series
 from kolena._utils.dataframes.validators import _validate_locator  # noqa: F401
 
 
-class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
+class LocatorEmbeddingsDataFrameSchema(pa.DataFrameModel):
     key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
     """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
 
@@ -32,9 +32,12 @@ class LocatorEmbeddingsDataFrameSchema(pa.SchemaModel):
     """
 
 
-class DatasetEmbeddingsDataFrameSchema(pa.SchemaModel):
-    key: Series[pa.typing.String] = pa.Field(coerce=True, _validate_locator=())
-    """Unique key corresponding to model used for embeddings extraction. This is typically a locator."""
+class DatasetEmbeddingsDataFrameSchema(pa.DataFrameModel):
+    key: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    Unique key corresponding  to the embedding vectors. This can be, for example, the name of the embedding model along
+    with the column with which the embedding was extracted, such as "resnet50-image_locator".
+    """
 
     datapoint_id_object: Series[pa.typing.String] = pa.Field(coerce=True)
     """

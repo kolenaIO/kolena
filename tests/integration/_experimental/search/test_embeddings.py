@@ -17,8 +17,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from kolena._experimental.search import upload_dataset_embeddings
 from kolena._experimental.search import upload_embeddings
+from kolena._experimental.search.embeddings import _upload_dataset_embeddings
 from kolena.dataset import upload_dataset
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
@@ -100,17 +100,34 @@ def dataset_name() -> str:
     ],
 )
 def test__upload_dataset_embeddings(embedding: np.ndarray, dataset_name: str) -> None:
-    upload_dataset_embeddings(
+    _upload_dataset_embeddings(
         dataset_name,
         key="s3://model-bucket/embeddings-model.pt",
         df_embedding=pd.DataFrame(
             {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding] * N_DATAPOINTS},
         ),
+        run_embedding_reduction_pipeline=False,
+    )
+    _upload_dataset_embeddings(
+        dataset_name,
+        key="my_model-left_image",
+        df_embedding=pd.DataFrame(
+            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 2] * N_DATAPOINTS},
+        ),
+        run_embedding_reduction_pipeline=False,
+    )
+    _upload_dataset_embeddings(
+        dataset_name,
+        key="my_model-right_image",
+        df_embedding=pd.DataFrame(
+            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 3] * N_DATAPOINTS},
+        ),
+        run_embedding_reduction_pipeline=False,
     )
 
 
 def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:
-    upload_dataset_embeddings(
+    _upload_dataset_embeddings(
         dataset_name,
         key="s3://model-bucket/embeddings-model.pt",
         df_embedding=pd.DataFrame(
@@ -119,28 +136,31 @@ def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:
                 "embedding": [np.array([1, 2, 3, 4], dtype=np.int32)] * (N_DATAPOINTS // 2),
             },
         ),
+        run_embedding_reduction_pipeline=False,
     )
 
 
 def test__upload_dataset_embeddings__dataset_does_not_exist() -> None:
     with pytest.raises(NotFoundError):
-        upload_dataset_embeddings(
+        _upload_dataset_embeddings(
             dataset_name=f"{__file__}::test__embedding_dataset_does_not_exist {uuid.uuid4()}",
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"locator": [], "embedding": []},
             ),
+            run_embedding_reduction_pipeline=False,
         )
 
 
 def test__upload_dataset_embeddings__id_fields_mismatch(dataset_name: str) -> None:
     with pytest.raises(InputValidationError):
-        upload_dataset_embeddings(
+        _upload_dataset_embeddings(
             dataset_name,
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"value": [], "embedding": []},
             ),
+            run_embedding_reduction_pipeline=False,
         )
 
 
@@ -154,22 +174,24 @@ def test__upload_dataset_embeddings__id_fields_mismatch(dataset_name: str) -> No
 )
 def test__upload_dataset_embeddings__bad_embedding(embedding: np.ndarray, dataset_name: str) -> None:
     with pytest.raises(InputValidationError):
-        upload_dataset_embeddings(
+        _upload_dataset_embeddings(
             dataset_name,
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding] * N_DATAPOINTS},
             ),
+            run_embedding_reduction_pipeline=False,
         )
 
 
 def test__upload_dataset_embeddings__embedding_different_sizes(dataset_name: str) -> None:
     embedding = [np.array([1] * i, dtype=np.float64) for i in range(N_DATAPOINTS)]
     with pytest.raises(InputValidationError):
-        upload_dataset_embeddings(
+        _upload_dataset_embeddings(
             dataset_name,
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": embedding},
             ),
+            run_embedding_reduction_pipeline=False,
         )

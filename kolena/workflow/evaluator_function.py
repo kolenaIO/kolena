@@ -28,11 +28,10 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.generic import TestRun as API
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.state import is_client_uninitialized
 from kolena._utils.validators import ValidatorConfig
 from kolena.workflow import EvaluatorConfiguration

@@ -282,6 +282,13 @@ biases, and its intended uses.
 
 <div class="grid cards" markdown>
 
+- [Difficulty Score](difficulty-score.md)
+
+    ---
+
+    Difficulty scores indicate which datapoints models commonly struggle with based on custom Quality Standards.
+    The greater the difficulty score, the harder it is for models to be certain and performant.
+
 - [Statistical Significance](statistical-significance.md)
 
     ---

@@ -16,10 +16,9 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from pydantic import conint
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1 import conint
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class Path(str, Enum):
@@ -27,6 +26,7 @@ class Path(str, Enum):
     LOAD_DATAPOINTS = "/dataset/load-datapoints"
     LOAD_DATASET = "/dataset/load-by-name"
     LIST_COMMITS = "/dataset/list-commits"
+    LIST_DATASETS = "/dataset/list-datasets"
 
 
 @dataclass(frozen=True)
@@ -35,12 +35,15 @@ class RegisterRequest:
     id_fields: List[str]
     uuid: str
     sources: Optional[List[Dict[str, str]]]
+    append_only: bool = False
+    tags: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
 class LoadDatapointsRequest(BatchedLoad.BaseInitDownloadRequest):
     name: str
     commit: Optional[str] = None
+    include_extracted_properties: bool = False
 
 
 @dataclass(frozen=True)
@@ -72,6 +75,11 @@ class CommitData:
     user: str
     n_removed: int
     n_added: int
+
+
+@dataclass(frozen=True)
+class ListDatasetsResponse:
+    datasets: List[str]
 
 
 @dataclass(frozen=True)

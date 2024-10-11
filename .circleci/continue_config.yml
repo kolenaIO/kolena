@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@3.2.4
-
 parameters:
   workflow:
     type: boolean
@@ -35,8 +32,6 @@ executors:
     docker:
       - image: cimg/python:<< parameters.python-version >>
     resource_class: << parameters.resource-class >>
-    environment:
-      POETRY_CACHE_DIR: /home/circleci/project/.poetry
 
 jobs:
   ci-base:
@@ -52,31 +47,12 @@ jobs:
       python-version: << parameters.python-version >>
     steps:
       - checkout
-      - restore_cache:
-          key: &poetry-cache poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
-      - when:
-          condition:
-            equal: [ "none", << parameters.extras >> ]
-          steps:
-            - run:
-                name: Install Dependencies
-                command: |
-                  poetry config installer.max-workers 10
-                  poetry install -vv --no-ansi
-      - when:
-          condition:
-            equal: [ "metrics", << parameters.extras >> ]
-          steps:
-            - run:
-                name: Install Dependencies
-                command: |
-                  poetry config installer.max-workers 10
-                  poetry install -vv --all-extras --no-ansi
-      - save_cache:
-          key: *poetry-cache
-          paths:
-            - /home/circleci/project/.poetry/virtualenvs
-            - poetry.lock
+      - run: &install_uv
+          name: Install uv
+          command: pip install uv
+      - run: &setup_env
+          name: Setup environment
+          command: uv venv --python << parameters.python-version >> && source .venv/bin/activate
 
   docs:
     parameters:
@@ -91,9 +67,8 @@ jobs:
       python-version: << parameters.python-version >>
     steps:
       - checkout
-      - restore_cache:
-          name: Restore Poetry cache
-          key: poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run: *install_uv
+      - run: *setup_env
       - restore_cache:
           name: Restore MkDocs cache
           key: mkdocs-cache
@@ -107,14 +82,14 @@ jobs:
           command: git lfs pull
       - run:
           name: Build documentation without 'insiders' packages
-          command: poetry run mkdocs build
+          command: uv run mkdocs build
       - add_ssh_keys: # add github.com SSH key fingerprint to access private repo forks
           fingerprints: [ "15:8b:d4:ac:1f:cd:2f:d3:92:a7:4c:aa:46:81:0b:7d" ]
       - run:
           name: Build documentation with 'insiders' packages
           command: |
             ./docs/setup_insiders.sh
-            poetry run mkdocs build --config-file mkdocs.insiders.yml
+            uv run mkdocs build --config-file mkdocs.insiders.yml
       - save_cache:
           key: mkdocs-cache
           paths:
@@ -133,9 +108,27 @@ jobs:
       python-version: << parameters.python-version >>
     steps:
       - checkout
-      - restore_cache:
-          key: poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
-      - run: poetry run python3 -c 'import kolena'
+      - run: *install_uv
+      - run: *setup_env
+      - when: &install_without_extras
+          condition:
+            equal: [ "none", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Install Dependencies
+                command: uv pip install -r pyproject.toml --verbose
+                env:
+                  UV_EXTRA_INDEX_URL: "https://download.pytorch.org/whl/cpu/"
+      - when: &install_with_extras
+          condition:
+            equal: [ "metrics", << parameters.extras >> ]
+          steps:
+            - run:
+                name: Install Dependencies
+                command: uv pip install --all-extras -r pyproject.toml --verbose
+                env:
+                  UV_EXTRA_INDEX_URL: "https://download.pytorch.org/whl/cpu/"
+      - run: uv run python3 -c 'import kolena'
       # TODO: fix underlying mypy issues with Python>3.9 rather than skipping
       - when:
           condition:
@@ -144,34 +137,21 @@ jobs:
                 pattern: "^3\\.(10|11|12).*$"
                 value: << parameters.python-version >>
           steps:
-            - run: poetry run pre-commit run -a
+            - run: uvx pre-commit run -a
       - when:
           condition:
             equal: [ "none", << parameters.extras >> ]
           steps:
             - run:
                 name: Run unit tests
-                command: poetry run pytest --cache-clear -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
+                command: uv run pytest --cache-clear -m 'not metrics' -vv --cov=kolena --cov-branch tests/unit
       - when:
           condition:
             equal: [ "metrics", << parameters.extras >> ]
           steps:
             - run:
                 name: Run metrics unit tests
-                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
-      - when:
-          # Generate coverage only from one Python version
-          condition:
-            matches:
-              pattern: "^3\\.9.*$"
-              value: << parameters.python-version >>
-          steps:
-            - run:
-                name: Coverage
-                command: poetry run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-                flags: integration
+                command: uv run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/unit
 
   integration-test:
     parameters:
@@ -203,8 +183,10 @@ jobs:
                 name: skip job
                 command: circleci-agent step halt
       - checkout
-      - restore_cache:
-          key: poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run: *install_uv
+      - run: *setup_env
+      - when: *install_without_extras
+      - when: *install_with_extras
       - run:
           name: Set KOLENA_TOKEN with round robin
           command: |
@@ -229,7 +211,7 @@ jobs:
                     TESTFILES=$(find tests/integration/$TEST_GROUP -name "test_*.py" |
                       circleci tests split --split-by=timings --timings-type=filename)
                   fi
-                  poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
+                  uv run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
                     -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
       - when:
           condition:
@@ -237,21 +219,7 @@ jobs:
           steps:
             - run:
                 name: Run experimental metrics integration tests
-                command: poetry run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
-      - when:
-          # Generate coverage only from one python version
-          condition:
-            matches:
-              pattern: "^3\\.9.*$"
-              value: << parameters.python-version >>
-          steps:
-            - run:
-                name: Coverage
-                command: poetry run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-            - store_test_results:
-                path: test-results
+                command: uv run pytest --cache-clear -m 'metrics' -vv --cov=kolena --cov-branch tests/integration/
 
   integration-test-dataset:
     parameters:
@@ -287,8 +255,10 @@ jobs:
                 name: skip job
                 command: circleci-agent step halt
       - checkout
-      - restore_cache:
-          key: poetry-cache-<< parameters.python-version >>-<< parameters.extras >>-{{ checksum "pyproject.toml" }}
+      - run: *install_uv
+      - run: *setup_env
+      - when: *install_without_extras
+      - when: *install_with_extras
       - run:
           name: Set KOLENA_TOKEN with round robin
           command: |
@@ -300,22 +270,8 @@ jobs:
           command: |
             TESTFILES=$(circleci tests glob tests/integration/dataset/**/test_*.py |
                 circleci tests split --split-by=timings --timings-type=filename)
-            poetry run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
+            uv run pytest --cache-clear -vv --durations=10 --cov=kolena --cov-branch --ignore=examples \
               -o junit_family=legacy --junitxml=test-results/result.xml $TESTFILES
-      - when:
-          # Generate coverage only from one python version
-          condition:
-            matches:
-              pattern: "^3\\.9.*$"
-              value: << parameters.python-version >>
-          steps:
-            - run:
-                name: Coverage
-                command: poetry run coverage xml --data-file .coverage
-            - codecov/upload:
-                file: coverage.xml
-            - store_test_results:
-                path: test-results
 
   example-test-dataset:
     parameters:
@@ -334,19 +290,19 @@ jobs:
     steps:
       - checkout:
           path: ~/project
-      - run: |
-          poetry config installer.max-workers 10
-          poetry install -vv --no-ansi
+      - run: *install_uv
+      - run: *setup_env
+      - run: uv pip install -r pyproject.toml --verbose
       - run:
           name: Run pre-commit checks
-          command: poetry run pre-commit run -a
+          command: uvx pre-commit run -a
       - run:
           name: Run << parameters.subproject >> (Python << parameters.python-version >>) integration tests
           command: |
             token=KOLENA_TOKEN_$((CIRCLE_BUILD_NUM % << pipeline.parameters.token_count >>))
             echo "Using $token"
             export KOLENA_TOKEN=${!token}
-            poetry run pytest -vv tests
+            uv run pytest -vv tests
 
   example-test-workflow:
     parameters:
@@ -447,6 +403,16 @@ workflows:
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
+      - integration-test:
+          name: integration-test-experimental-dataset-<< matrix.python-version >>-<< matrix.extras >>
+          matrix:
+            parameters:
+              python-version: [ "3.9.18" ]
+              extras: [ "none" ]
+          pytest-group: _experimental/dataset
+          enabled: true
+          requires:
+            - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test-dataset:
           name: integration-test-dataset-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
@@ -483,7 +449,7 @@ workflows:
             - aws
           matrix:
             parameters:
-              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, object_detection_2d, semantic_textual_similarity, person_detection, crossing_pedestrian_detection ]
+              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, object_detection_2d, semantic_textual_similarity, person_detection, crossing_pedestrian_detection, named_entity_recognition ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:

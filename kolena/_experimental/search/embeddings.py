@@ -24,8 +24,8 @@ import numpy as np
 import pandas as pd
 from dacite import from_dict
 
+from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import Search as API
-from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
@@ -36,6 +36,7 @@ from kolena._utils import log
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.dataframes.validators import validate_df_schema
+from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import validate_dataframe_ids
@@ -78,7 +79,14 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
 
 
-def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_embedding: pd.DataFrame) -> None:
+def _upload_dataset_embeddings(
+    dataset_name: str,
+    key: str,
+    df_embedding: pd.DataFrame,
+    run_embedding_reduction_pipeline: bool = True,
+) -> None:
+    dataset_entity_data = _load_dataset_metadata(dataset_name)
+    assert dataset_entity_data
     embedding_lengths: Set[int] = set()
 
     def encode_embedding(embedding: Any) -> str:
@@ -111,6 +119,7 @@ def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_emb
     request = UploadDatasetEmbeddingsRequest(
         uuid=init_response.uuid,
         name=dataset_name,
+        run_embedding_reduction=run_embedding_reduction_pipeline,
     )
     res = krequests.post(
         endpoint_path=PATH_V2.EMBEDDINGS.value,
@@ -122,18 +131,17 @@ def _upload_dataset_embeddings(dataset_entity_data: EntityData, key: str, df_emb
     log.success(f"uploaded embeddings for dataset '{dataset_name}' and key '{key}' on {data.n_datapoints} datapoints")
 
 
+@with_event(event_name=EventAPI.Event.UPLOAD_DATASET_EMBEDDINGS)
 def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
     """
     Upload a list of search embeddings for a dataset.
 
     :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
-    :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
-        This is typically a locator.
+    :param key: String value uniquely corresponding to the embedding vectors. For example, this can be the name of the
+        embedding model along with the column with which the embedding was extracted, such as `resnet50-image_locator`.
     :param df_embedding: Dataframe containing id fields for identifying datapoints in the dataset and the associated
         embeddings as `numpy.typing.ArrayLike` of numeric values.
     :raises NotFoundError: The given dataset does not exist.
     :raises InputValidationError: The provided input is not valid.
     """
-    existing_dataset = _load_dataset_metadata(dataset_name)
-    assert existing_dataset
-    _upload_dataset_embeddings(existing_dataset, key, df_embedding)
+    _upload_dataset_embeddings(dataset_name, key, df_embedding)

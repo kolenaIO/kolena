@@ -2577,3 +2577,166 @@ def test__match_inferences_multiclass__iou(
     for inf in matches.unmatched_inf:
         expected_iou = max(iou(inf, gt) for gt in ground_truths) if ground_truths else 0.0
         assert inf.iou == pytest.approx(expected_iou, abs=1e-5)
+
+
+@pytest.mark.parametrize(
+    "test_name, match_fields, ground_truths, inferences, expected_matched,"
+    "expected_unmatched_gt, expected_unmatched_inf",
+    [
+        (
+            # test_name
+            "Match based on frame_id",
+            # match_fields
+            ["frame_id"],
+            # ground_truth
+            [
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="dog", frame_id=0),
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=0),
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=1),
+            ],
+            # inference
+            [
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="dog", frame_id=1, score=0.9),
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=0, score=0.9),
+            ],
+            # expected_matched
+            [
+                (
+                    LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=0),
+                    ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=0, score=0.9),
+                ),
+            ],
+            # expected_unmatched_gt
+            [
+                (LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="dog", frame_id=0), None),
+                (
+                    LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=1),
+                    ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="dog", frame_id=1, score=0.9),
+                ),
+            ],
+            # expected_unmatched_inf
+            [
+                ScoredLabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="dog", frame_id=1, score=0.9),
+            ],
+        ),
+        (
+            # test_name
+            "Match based on (frame_id, alphabet_id)",
+            # match_fields
+            ["frame_id", "alphabet_id"],
+            # ground_truth
+            [
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=0, alphabet_id="beta"),
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=1, alphabet_id="alpha"),
+                LabeledBoundingBox(top_left=(1, 1), bottom_right=(2, 2), label="cow", frame_id=1, alphabet_id="beta"),
+            ],
+            # inference
+            [
+                ScoredLabeledBoundingBox(
+                    top_left=(1, 1),
+                    bottom_right=(2, 2),
+                    label="cow",
+                    frame_id=0,
+                    alphabet_id="alpha",
+                    score=0.9,
+                ),
+                ScoredLabeledBoundingBox(
+                    top_left=(1, 1),
+                    bottom_right=(2, 2),
+                    label="cow",
+                    frame_id=1,
+                    alphabet_id="alpha",
+                    score=0.9,
+                ),
+            ],
+            # expected_matched
+            [
+                (
+                    LabeledBoundingBox(
+                        top_left=(1, 1),
+                        bottom_right=(2, 2),
+                        label="cow",
+                        frame_id=1,
+                        alphabet_id="alpha",
+                    ),
+                    ScoredLabeledBoundingBox(
+                        top_left=(1, 1),
+                        bottom_right=(2, 2),
+                        label="cow",
+                        frame_id=1,
+                        alphabet_id="alpha",
+                        score=0.9,
+                    ),
+                ),
+            ],
+            # expected_unmatched_gt
+            [
+                (
+                    LabeledBoundingBox(
+                        top_left=(1, 1),
+                        bottom_right=(2, 2),
+                        label="cow",
+                        frame_id=0,
+                        alphabet_id="beta",
+                    ),
+                    None,
+                ),
+                (
+                    LabeledBoundingBox(
+                        top_left=(1, 1),
+                        bottom_right=(2, 2),
+                        label="cow",
+                        frame_id=1,
+                        alphabet_id="beta",
+                    ),
+                    None,
+                ),
+            ],
+            # expected_unmatched_inf
+            [
+                ScoredLabeledBoundingBox(
+                    top_left=(1, 1),
+                    bottom_right=(2, 2),
+                    label="cow",
+                    frame_id=0,
+                    alphabet_id="beta",
+                    score=0.9,
+                ),
+            ],
+        ),
+    ],
+)
+def test__match_inferences_multiclass__with_required_match_field(
+    test_name: str,
+    match_fields: List[str],
+    ground_truths: List[Union[LabeledBoundingBox, LabeledPolygon]],
+    inferences: List[Union[ScoredLabeledBoundingBox, ScoredLabeledPolygon]],
+    expected_matched: List[Tuple[GT, Inf]],
+    expected_unmatched_gt: List[GT],
+    expected_unmatched_inf: List[Inf],
+) -> None:
+    matches = match_inferences_multiclass(
+        ground_truths,
+        inferences,
+        mode="pascal",
+        iou_threshold=0.999,
+        required_match_fields=match_fields,
+    )
+
+    assert expected_matched == matches.matched
+    for gt, inf in matches.matched:
+        assert inf.iou == pytest.approx(iou(gt, inf), abs=1e-5)
+
+    assert expected_unmatched_gt == matches.unmatched_gt
+    for gt, inf in matches.unmatched_gt:
+        assert inf is None or iou(gt, inf) == pytest.approx(inf.iou, abs=1e-5)
+
+    assert expected_unmatched_inf == matches.unmatched_inf
+    for inf in matches.unmatched_inf:
+        candidate_gts = [
+            gt
+            for gt in ground_truths
+            if all([getattr(gt, field) == getattr(inf, field) for field in match_fields]) and gt.label == inf.label
+        ]
+        expected_iou = max(iou(inf, gt) for gt in candidate_gts) if candidate_gts else 0.0
+        assert inf.iou == pytest.approx(expected_iou, abs=1e-5)

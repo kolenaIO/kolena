@@ -55,8 +55,8 @@ You are able to select one or more fields as your ID field during the import pro
 Web App [:kolena-dataset-16: Datasets](https://app.kolena.com/redirect/datasets) or the
 SDK by using the [`upload_dataset`](../../reference/dataset/index.md#kolena.dataset.dataset.upload_dataset) function.
 
-**Meta data**: you can add additional informaiton about your
-datapoint simply by adding columns to the dataset with the metadaname and values in each row.
+**Meta data**: you can add additional information about your
+datapoint simply by adding columns to the dataset with the meta data name and values in each row.
 
 **Referenced Files**: each datapoint can contain a primary reference to a file stored on your cloud storage.
 Kolena automatically renders referenced files with column name `locator`. Other column names result in references to appear
@@ -66,20 +66,21 @@ as text. Below table outlines what extensions are supported for optimal visualiz
 |----------------|---------------------------------------------------------------------------------------|
 | Image          | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
 | Audio          | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
-| Video          | `mov`, `mp4`, `mpeg`, `avi` and other web browser supported video types.              |
+| Video          | `mov`, `mp4`, `mpeg` and other web browser supported video types.                     |
 | Document       | `txt` and `pdf` files.                                                                |
 | Point Cloud    | `pcd` files.                                                                          |
 
 **Assets**: allow you to connect multiple referenced files to each datapoint for visualization and analysis.
 Multiple assets can be attached to a single datapoint.
 
-| Asset Type                                                              | Description                                                    |
-|-------------------------------------------------------------------------|----------------------------------------------------------------|
-| [`ImageAsset`](../../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     |
-| [`BinaryAsset`](../../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. |
-| [`AudioAsset`](../../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    |
-| [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     |
-| [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      |
+| Asset Type                                                                 | Description                                                    | Supported Extensions          |
+|----------------------------------------------------------------------------|----------------------------------------------------------------|-------------------------------|
+| [`ImageAsset`](../../reference/asset.md#kolena.asset.ImageAsset)           | Useful if your data is modeled as multiple related images.     | Same as above reference files |
+| [`BinaryAsset`](../../reference/asset.md#kolena.asset.BinaryAsset)         | Useful if you want to attach any segmentation or bitmap masks. | Any, including `.bin` files   |
+| [`AudioAsset`](../../reference/asset.md#kolena.asset.AudioAsset)           | Useful if you want to attach an audio file.                    | Same as above reference files |
+| [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     | Same as above reference files |
+| [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      | `.pcd`, `.npy`, `.npz`        |
+| [`MeshAsset`](../../reference/asset.md#kolena.asset.MeshAsset)             | Useful for attaching and visualizing 3D mesh files.            | `.ply`                        |
 
 **Annotations**: allow you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
 We currently support 10 different types of annotations each enabling a specific modality.
@@ -130,6 +131,11 @@ which provides a quick and standardized high level overview of which models perf
 For step-by-step instructions, take a look at the quickstart for
 [model comparison](../quickstart.md/#step-5-compare-models).
 
+!!! tip
+    Use the `Filter Untested Datapoints (or Filter to Intersection)` option to narrow down your metrics
+    to only include datapoints that all selected
+    models have tested on. This allows for an apple to apple comparison of metrics.
+
 ### Debugging
 
 The `Debugger` tab of a dataset allows users to experiment with test cases and metrics without saving them off to the
@@ -140,3 +146,39 @@ visualizing results and relations in plots.
 
 For step-by-step instructions, take a look at the quickstart for
 [results exploration](../quickstart.md/#step-3-explore-data-and-results).
+
+## Model Leaderboard
+
+Model Leaderboard allows you to identify the best performing models at a glance. The leaderboard organizes all
+uploaded model results in order of their rank.
+
+!!! requirements
+    A functional Model Leaderboard depends on well defined **metrics** and uploaded **model results**.
+    To enable this feature, make sure that you have at least
+    one metric defined in your Quality Standards and ensure that the direction of that metric is set (Higher is better or
+    Lower is better).
+
+    Metrics without direction are not used in the ranking algorithm.
+
+**Rank**: ranking leverages standardized scoring (z-score) to compare metrics
+from different distributions. Kolena uses the range of each metric to
+estimate its standard deviation which is used in calculating the z-score.
+
+**Filter Untested Datapoint (or Filter to Intersection)**: this option allows you to rank your models only on
+datapoints that they were all tested on. Use this feature if its important to you to
+standardize the comparison set of datapoints.
+
+**Metric Selection**: Kolena's model leaderboard allows you see the model rank based on specific
+metric groups. For instance you can group cost related metrics (such as `inference cost` or
+`inference time`) under a metric group and chose to include or exclude those metrics in your
+model ranking
+
+<figure markdown>
+![Select Metric Groups](../../assets/images/metric-groups-leaderboard-light.gif#only-light)
+![Select Metric Groups](../../assets/images/metric-groups-leaderboard-dark.gif#only-dark)
+<figcaption>Select Metric Groups to see relative ranks</figcaption>
+</figure>
+
+!!! tip
+    Using the `Compare Top 3 Models` you can dive deeper into model performance and evaluate them top 3 models
+    based on your defined quality standards. You can also select specific models to review in detail from the leaderboard.

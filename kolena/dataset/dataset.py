@@ -33,6 +33,7 @@ from kolena._api.v2.dataset import CommitData
 from kolena._api.v2.dataset import EntityData
 from kolena._api.v2.dataset import ListCommitHistoryRequest
 from kolena._api.v2.dataset import ListCommitHistoryResponse
+from kolena._api.v2.dataset import ListDatasetsResponse
 from kolena._api.v2.dataset import LoadDatapointsRequest
 from kolena._api.v2.dataset import LoadDatasetByNameRequest
 from kolena._api.v2.dataset import Path
@@ -56,6 +57,8 @@ from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import DEFAULT_SOURCES
 from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
+from kolena.dataset._common import validate_dataframe_not_empty
+from kolena.dataset._common import validate_name_not_empty
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.io import _dataframe_object_serde
@@ -231,10 +234,12 @@ def _prepare_upload_dataset_request(
     *,
     id_fields: Optional[List[str]] = None,
 ) -> Tuple[List[str], str]:
+    validate_name_not_empty(name)
     load_uuid = init_upload().uuid
 
     existing_dataset = _load_dataset_metadata(name, raise_error_if_not_found=False)
     if isinstance(df, pd.DataFrame):
+        validate_dataframe_not_empty(df)
         id_fields = _resolve_id_fields(df, id_fields, existing_dataset)
         validate_dataframe_ids(df, id_fields)
         _upload_dataset_chunk(df, load_uuid, id_fields)
@@ -242,11 +247,14 @@ def _prepare_upload_dataset_request(
         validated = False
         for chunk in df:
             if not validated:
+                validate_dataframe_not_empty(chunk)
                 id_fields = _resolve_id_fields(chunk, id_fields, existing_dataset)
                 validate_dataframe_ids(chunk, id_fields)
                 validated = True
             assert id_fields is not None
             _upload_dataset_chunk(chunk, load_uuid, id_fields)
+        if not validated:
+            raise InputValidationError("dataframe is empty")
     assert id_fields is not None
     return id_fields, load_uuid
 
@@ -256,8 +264,17 @@ def _send_upload_dataset_request(
     id_fields: List[str],
     load_uuid: str,
     sources: Optional[List[Dict[str, str]]],
+    append_only: bool = False,
+    commit_tags: Optional[List[str]] = None,
 ) -> EntityData:
-    request = RegisterRequest(name=name, id_fields=id_fields, uuid=load_uuid, sources=sources)
+    request = RegisterRequest(
+        name=name,
+        id_fields=id_fields,
+        uuid=load_uuid,
+        sources=sources,
+        append_only=append_only,
+        tags=commit_tags,
+    )
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
     data = from_dict(EntityData, response.json())
@@ -270,10 +287,19 @@ def _upload_dataset(
     *,
     id_fields: Optional[List[str]] = None,
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
+    append_only: bool = False,
+    commit_tags: Optional[List[str]] = None,
 ) -> None:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
-    data = _send_upload_dataset_request(name, prepared_id_fields, load_uuid, sources=sources)
+    data = _send_upload_dataset_request(
+        name,
+        prepared_id_fields,
+        load_uuid,
+        sources=sources,
+        append_only=append_only,
+        commit_tags=commit_tags,
+    )
     log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
 
@@ -283,6 +309,8 @@ def upload_dataset(
     df: Union[pd.DataFrame, Iterator[pd.DataFrame]],
     *,
     id_fields: Optional[List[str]] = None,
+    commit_tags: Optional[List[str]] = None,
+    append_only: bool = False,
 ) -> None:
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
@@ -297,20 +325,36 @@ def upload_dataset(
     :param id_fields: Optionally specify a list of ID fields that will be used to link model results with the datapoints
         within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
         that `id_fields` must be hashable.
+    :param commit_tags: Optionally specify a list of tags to associate with the dataset commit.
+    :param append_only: If `False`, all datapoints in the dataset will be replaced by the ones in the input dataframe,
+        and existing datapoints absent from the input dataframe will be removed from the dataset. If `True`, new
+        datapoints from the input dataframe will be added, and existing datapoints will be modified if present in the
+        input dataframe, but no datapoints will be deleted from the datasets. This behaves like an `UPSERT` operation.
     """
-    _upload_dataset(name, df, id_fields=id_fields)
+    _upload_dataset(name, df, id_fields=id_fields, commit_tags=commit_tags, append_only=append_only)
+
+
+@with_event(event_name=EventAPI.Event.LIST_DATASETS)
+def list_datasets() -> List[str]:
+    """
+    List the names of all uploaded datasets
+    :return: A list of the names of all uploaded datasets
+    """
+    return from_dict(ListDatasetsResponse, krequests.get(endpoint_path=Path.LIST_DATASETS).json()).datasets
 
 
 def _iter_dataset_raw(
     name: str,
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
+    include_extracted_properties: bool = False,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
     init_request = LoadDatapointsRequest(
         name=name,
         commit=commit,
         batch_size=batch_size,
+        include_extracted_properties=include_extracted_properties,
     )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
@@ -324,24 +368,32 @@ def _iter_dataset(
     name: str,
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
+    include_extracted_properties: bool = False,
 ) -> Iterator[pd.DataFrame]:
     """
     Get an iterator over datapoints in the dataset.
     """
-    for df_batch in _iter_dataset_raw(name, commit, batch_size):
+    for df_batch in _iter_dataset_raw(name, commit, batch_size, include_extracted_properties):
         yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
-def download_dataset(name: str, *, commit: Optional[str] = None) -> pd.DataFrame:
+def download_dataset(
+    name: str,
+    *,
+    commit: Optional[str] = None,
+    include_extracted_properties: bool = False,
+) -> pd.DataFrame:
     """
     Download an entire dataset given its name.
 
     :param name: The name of the dataset.
     :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
+    :param include_extracted_properties: If True, include kolena extracted properties from automated extractions
+     in the dataset as separate columns
     :return: A DataFrame containing the specified dataset.
     """
-    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value))
+    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value, include_extracted_properties))
     log.info(f"downloaded dataset '{name}'")
     df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
     return df_dataset

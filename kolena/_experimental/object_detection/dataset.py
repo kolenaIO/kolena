@@ -226,6 +226,7 @@ def _compute_metrics(
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = 0.5,
     min_confidence_score: float = 0.5,
     batch_size: int = 10_000,
+    required_match_fields: Optional[List[str]] = None,
 ) -> Iterator[pd.DataFrame]:
     """
     Compute metrics for object detection.
@@ -241,6 +242,8 @@ def _compute_metrics(
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
     :param batch_size: number of results to process per iteration.
+    :param Optional[List[str]] required_match_fields: Optionally specify a list of fields that must match between
+        the inference and ground truth for them to be considered a match.
     """
     is_multiclass = _check_multiclass(pred_df[ground_truth], pred_df[inference])
     match_fn = match_inferences_multiclass if is_multiclass else match_inferences
@@ -268,6 +271,7 @@ def _compute_metrics(
                 ignored_ground_truths=ignored_ground_truths,
                 mode="pascal",
                 iou_threshold=iou_threshold,
+                required_match_fields=required_match_fields,
             ),
         )
         all_thresholds.extend(inf.score for inf in inferences)
@@ -356,6 +360,7 @@ def _iter_object_detection_results(
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
     batch_size: int = 10_000,
+    required_match_fields: Optional[List[str]] = None,
 ) -> Iterator[pd.DataFrame]:
     _validate_column_present(df, raw_inferences_field)
 
@@ -373,6 +378,7 @@ def _iter_object_detection_results(
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
         batch_size=batch_size,
+        required_match_fields=required_match_fields,
     )
 
 
@@ -436,6 +442,7 @@ def upload_object_detection_results(
     threshold_strategy: Union[Literal["F1-Optimal"], float, Dict[str, float]] = "F1-Optimal",
     min_confidence_score: float = 0.01,
     batch_size: int = 10_000,
+    required_match_fields: Optional[List[str]] = None,
 ) -> None:
     """
     Compute metrics and upload results of the model computed by
@@ -460,6 +467,8 @@ def upload_object_detection_results(
     :param min_confidence_score: The minimum confidence score to consider for the evaluation. This is usually set to
         reduce noise by excluding inferences with low confidence score.
     :param batch_size: number of results to process per iteration.
+    :param Optional[List[str]] required_match_fields: Optionally specify a list of fields that must match between
+        the inference and ground truth for them to be considered a match.
     :return:
     """
     eval_config = dict(
@@ -477,6 +486,7 @@ def upload_object_detection_results(
         threshold_strategy=threshold_strategy,
         min_confidence_score=min_confidence_score,
         batch_size=batch_size,
+        required_match_fields=required_match_fields,
     )
     dataset.upload_results(
         dataset_name,

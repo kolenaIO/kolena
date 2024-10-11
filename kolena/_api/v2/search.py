@@ -13,9 +13,8 @@
 # limitations under the License.
 from enum import Enum
 
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 class Path(str, Enum):
@@ -25,6 +24,7 @@ class Path(str, Enum):
 @dataclass(frozen=True)
 class UploadDatasetEmbeddingsRequest(BatchedLoad.WithLoadUUID):
     name: str
+    run_embedding_reduction: bool
 
 
 @dataclass(frozen=True)

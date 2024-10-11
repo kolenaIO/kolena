@@ -17,6 +17,11 @@ thresholds, showing a trade-off of how precision and recall values change when a
 - :kolena-manual-16: API Reference: [`CurvePlot` ↗][kolena.workflow.plot.CurvePlot]
 </div>
 
+!!!example
+    To see an example of the PR curve, checkout the
+    [Object Detection (COCO 2014) on app.kolena.com/try](https://app.kolena.io/try/dataset/debugger?datasetId=14&aggregations=N4IgNghgRgpmIC4QAUBOMDGBLAzlg9gHYgA0IO%2BArqhjIiOjpWAC6kgQDmn6nEL%2BVIlBceMPgKFIADumx4i7CADcYqLlkKcAsjBYALfABN6AWywZU%2BEAF8y0iOtM5hIAGaEAYljgmkngDl2N2lvX3pPZHYWUJ8wPxAAFSiyHAxBGDD4%2BjSM9khYMCyEgrhbMjdBU356aTVaQhYuOjJ9LE59MHb9NgRQNo61AEkcACE9FjVEFlRKGDsQHippAIhTOiRdGYsAAgBxK0ppWyA&aggregations=N4IgNghgRgpmIC4QCUYGMJngGhAZwHsBXAJzRkRBJjyLABcRcIBzF6liegkxUV9jE7deSahixMQEAG4wSrAJYA7FgFkY9ABYEAJpQC2itCQIgAvrgAOEBQbx8QAM2UAxRXH1JXAOSlOrd09KVwAFKXpAjzAvEAAVcNw8NB4YIJjKZNSpSFgwdNjcuAtcJx4DLkoreXJlelYKXC1FFi0wFq1GBFBm1vkASTwAIU16eUR6EiIYSxB2YisfCAMKJA1J4wACAHFTIisLIA&aggregations=N4IgNghgRgpmIC4QDECMACAygYwPYCcYQAaEAZ1wFd9silCzKwAXEkCAcw8I4mYMShO3GL375EIAGaoA%2BmTyE2EAG4x8nAJYA7DgFkYzABa4AJpIC2m7PlwgAvqQAOEDRbKDp25JrjmkyABybFJOPn6SyAAKbMxhvmD%2BIAAqMaQKBDDhiZIZSqSQsGDZSYVwDqRSBBZ8kk7qtNrMnESkRpocRmAdRqwIoO2d6gCSZABChszqiMz4lDCOINxUToEQFnQgBrPW6ADitpRODkA&aggregations=N4IgNghgRgpmIC4QFkYQHYAIByMAumAwgPYBOpMAxnujAM50gA0IdxArqZTIiBXezB5mICAHMxFMRDxleAWzToRABwikI8xglABrGAE9eAfV3EwMdBAB0AExikAlgDcYt67TzHKZCtVoMIAC%2BLABmZPIyiOiCYCwAFo5i8WBJ8cI6IInJDgCSdABC%2BHgOiHik7DAhIJIcKtiaPEio5Y6UmADipHXBQA&models=N4IglgJiBcBMCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYAWAX3qA&modelResultNullFilters=N4IglgJiBcBMCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYAWAX2TAGcB9DfAG05i2M%2BYBTekA)
+    on Kolena's public dataset.
+
 ## Implementation Details
 
 The curve’s points (precisions and recalls) are calculated with a varying threshold, and made into points (precision
@@ -52,7 +57,7 @@ evaluating threshold; otherwise, it's positive.
 
 As the threshold increases, there are fewer false positives and more false negatives, most likely yielding high
 precision and low recall. Conversely, decreasing the threshold may improve recall at the cost of precision. Let's
-compute the precision and recall values at each threhold.
+compute the precision and recall values at each threshold.
 
 <center>
 

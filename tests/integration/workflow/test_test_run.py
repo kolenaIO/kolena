@@ -22,10 +22,10 @@ from unittest.mock import patch
 
 import numpy as np
 import pytest
-from pydantic.dataclasses import dataclass
 
 from kolena._api.v1.generic import TestRun as TestRunAPI
 from kolena._utils import krequests
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.errors import RemoteError
 from kolena.workflow import define_workflow
 from kolena.workflow import EvaluationResults

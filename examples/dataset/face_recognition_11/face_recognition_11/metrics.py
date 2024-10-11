@@ -35,10 +35,11 @@ def compute_pairwise_recognition_metrics(is_match: bool, similarity: float, thre
     predicted_match = similarity > threshold
     return dict(
         threshold=threshold,
+        is_predicted_match=predicted_match,
         is_TM=is_match and predicted_match,
         is_TNM=not is_match and not predicted_match,
-        is_FNM=is_match and not predicted_match,
         is_FM=not is_match and predicted_match,
+        is_FNM=is_match and not predicted_match,
         FMR=None if is_match else 1 if predicted_match else 0,
         FNMR=None if not is_match else 0 if predicted_match else 1,
     )

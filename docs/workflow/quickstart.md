@@ -26,10 +26,10 @@ Install the `kolena` Python package to programmatically interact with Kolena:
     pip install kolena
     ```
 
-=== "`poetry`"
+=== "`uv`"
 
     ```shell
-    poetry add kolena
+    uv add kolena
     ```
 
 ## Clone the Examples

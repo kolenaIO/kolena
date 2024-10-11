@@ -12,13 +12,13 @@ or manually extracting and uploading corresponding search embeddings using a Kol
 ## Setting up Automated Embedding extraction
 
 ??? "Requirements"
-    - This feature is currenlty supported for Amazon S3 integrations.
+    - This feature is currently supported for Amazon S3 integrations.
     - Kolena requires access to the content of your images.
     Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/amazon-s3.md) for more details.
     - Only account administrators are able to change this setting.
 
 Embedding extractions allow you to find datapoints using natural language or similarity between desired datapoints.
-To enable automated embedding, navigate to "Organization Settings" available on your profile menue, top right of the screen.
+To enable automated embedding, navigate to "Organization Settings" available on your profile menu, top right of the screen.
 Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolena option.
 
 <figure markdown>
@@ -53,7 +53,7 @@ Uploading embeddings to Kolena can be done in four simple steps:
 
 ### Step 1: Install `kolena-embeddings` Package
 
-The package can be installed via `pip` or `poetry` and requires use of your kolena token which can be created
+The package can be installed via `pip` or `uv` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
 We first [retrieve and set](../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
@@ -70,16 +70,11 @@ export KOLENA_TOKEN="********"
     pip install --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
-=== "`poetry`"
+=== "`uv`"
 
-    Configure an additional poetry source:
+    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
     ```shell
-    poetry source add --priority=supplemental kolena-embeddings "https://gateway.kolena.cloud/repositories"
-    ```
-
-    Then run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
-    ```shell
-    poetry config http-basic.kolena-embeddings <KOLENA_TOKEN> ""
+    uv add --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 This package provides the `kembed.util.extract_embeddings` method that generates

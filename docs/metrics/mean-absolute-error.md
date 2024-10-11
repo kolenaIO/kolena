@@ -1,5 +1,5 @@
 ---
-description: How to calculate and interperet MAE for regression ML tasks
+description: How to calculate and interperet MAE (mean absolute error) for regression ML tasks
 ---
 
 # Mean Absolute Error (MAE)
@@ -11,6 +11,10 @@ without considering their direction.
 MAE represents the mean of the absolute differences between predicted and actual values across a dataset,
 treating each discrepancy equally. A large value is indicative of poor performance, and communicates
 how much on average a prediction will deviate from the actual value in the units of the ground truth.
+
+!!!example
+    To see and example of Mean Absolute Error, checkout the
+    [STS Benchmark on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=12&models=N4IglgJiBcCMDsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&models=N4IglgJiBcCMBsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIZYBfOoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
 
 ## Implementation Details
 

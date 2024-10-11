@@ -13,7 +13,7 @@
 # limitations under the License.
 from enum import Enum
 
-from pydantic.dataclasses import dataclass
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 @dataclass(frozen=True)

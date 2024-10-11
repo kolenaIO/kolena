@@ -27,3 +27,5 @@ on the COCO dataset.
 </div>
 
 ::: kolena._experimental.object_detection
+    options:
+        members: ["TestSample", "GroundTruth", "Inference", "ThresholdConfiguration", "ObjectDetectionEvaluator"]

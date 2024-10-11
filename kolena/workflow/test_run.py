@@ -28,7 +28,6 @@ from typing import Tuple
 from typing import Union
 
 import pandas as pd
-from pydantic import validate_call
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import TestRun as API
@@ -43,6 +42,7 @@ from kolena._utils.endpoints import get_results_url
 from kolena._utils.frozen import Frozen
 from kolena._utils.instrumentation import report_crash
 from kolena._utils.instrumentation import with_event
+from kolena._utils.pydantic_v1 import validate_arguments
 from kolena._utils.serde import from_dict
 from kolena._utils.validators import ValidatorConfig
 from kolena.errors import IncorrectUsageError
@@ -96,7 +96,7 @@ class TestRun(Frozen, metaclass=ABCMeta):
     evaluator: Optional[Union[Evaluator, BasicEvaluatorFunction]]
     configurations: Optional[List[EvaluatorConfiguration]]
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def __init__(
         self,
         model: Model,
@@ -225,7 +225,7 @@ class TestRun(Frozen, metaclass=ABCMeta):
                 yield test_sample, ground_truth, inference
         log.info(f"loaded inferences from model '{self.model.name}' on test suite '{self.test_suite.name}'")
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def upload_inferences(self, inferences: List[Tuple[TestSample, Inference]]) -> None:
         """
         Upload inferences from a model.
@@ -441,7 +441,7 @@ class TestRun(Frozen, metaclass=ABCMeta):
 
         return standard_metrics, thresholded_metrics
 
-    @validate_call(config=ValidatorConfig)
+    @validate_arguments(config=ValidatorConfig)
     def _upload_test_sample_metrics(
         self,
         test_case: Optional[TestCase],
@@ -549,7 +549,7 @@ class TestRun(Frozen, metaclass=ABCMeta):
         krequests.raise_for_status(res)
 
 
-@validate_call(config=ValidatorConfig)
+@validate_arguments(config=ValidatorConfig)
 def test(
     model: Model,
     test_suite: TestSuite,

@@ -10,6 +10,10 @@ embeddings to capture the semantic and contextual information of words and phras
 texts. This approach makes BERTScore more effective at assessing the quality of candidate text because it considers not
 only exact word matches but also the overall meaning, fluency, and order of the output.
 
+!!!example
+    To see and an example of Bert Score, checkout the
+    [CNN-DailyMail on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=39&models=N4IglgJiBcCcA0IDGB7AdgMzAcwK4CcBDAFzHRlEhgEYBfWoA&models=N4IglgJiBcAcA0IDGB7AdgMzAcwK4CcBDAFzHRlEhgEYBfWoA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63Jn1ECGPFgF1mQA)
+
 ??? question "Recall: BERT & Textual Embeddings"
     BERT (**B**idirectional **E**ncoder **R**epresentations from **T**ransformers) is a popular language model used to
     generate embeddings from words and phrases. Textual embeddings are learned dense token representations that capture
@@ -34,12 +38,14 @@ $\hat{x} = \langle\hat{x}_1, \hat{x}_2, ..., \hat{x}_m\rangle$, we first use BER
 embeddings for both reference and candidate sentences.
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \begin{align}
     & BERT(\langle x_1, x_2, ..., x_n \rangle) = \langle \mathbf{x_1}, \mathbf{x_2}, ..., \mathbf{x_n} \rangle \\
     & BERT(\langle \hat{x}_1, \hat{x}_2, ..., \hat{x}_m \rangle) = \langle \mathbf{\hat{x}_1}, \mathbf{\hat{x}_2}, ..., \mathbf{\hat{x}_m} \rangle
 \end{align}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 <center><p style="font-size:small;">Note that we will use <b>bold</b> text to indicate vectors, like a word embedding</p></center>
@@ -56,9 +62,11 @@ pre-normalized. With these definitions, we can now calculate the BERT-precision,
 #### BERT-Precision
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 P_\text{BERT} = \frac{1}{|\hat{x}|} \sum_{\mathbf{\hat{x}_j} \in \hat{x}} \underbrace{\max_{\mathbf{x_i} \in x}\overbrace{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}^\text{cosine similarity}}_\text{greedy matching}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 Though the formula may seem intimidating, BERT-precision is conceptually similar to the
@@ -70,9 +78,11 @@ thus, why we use greedy matching.
 #### BERT-Recall
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 R_\text{BERT} = \frac{1}{|x|} \sum_{\mathbf{x_i} \in x} \underbrace{\max_{\mathbf{\hat{x}_j} \in \hat{x}}\overbrace{\mathbf{x_i}^\top \mathbf{\hat{x}_j}}^\text{cosine similarity}}_\text{greedy matching}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 Once again, the BERT-recall is conceptually similar to the [recall formula](recall.md). Note that we flip $\hat{x}$ with
@@ -89,7 +99,7 @@ BERT-precision and BERT-recall.
 
 In a more advanced implementation of BERTScore, extra steps are taken to finetune the metric. These include:
 
-1. Applying an "importance factor" to rare words so that the score weighs keywords moreso than words like "it", "as",
+1. Applying an "importance factor" to rare words so that the score weighs keywords more so than words like "it", "as",
 and "the".
 2. Rescaling the score such that it lies between 0 and 1 in practical use cases. Although the score already lies between
 0 and 1 in theory, it has been observed to lie between a more limited range in practice.
@@ -126,6 +136,7 @@ To showcase the value of BERTScore, let's consider the following candidate and r
 ??? example "Semantically Similar Texts"
 
     <!-- markdownlint-disable MD013 -->
+
     | Candidate Text | Reference Text |
     | --- | --- |
     | The sun set behind the mountains, casting a warm, orange glow across the horizon. | As the mountains obscured the sun, a warm, orange glow painted the horizon. |
@@ -133,6 +144,7 @@ To showcase the value of BERTScore, let's consider the following candidate and r
     | The adventurous explorer trekked through the dense jungle, searching for hidden treasures. | In search of hidden treasures, the intrepid explorer ventured through the dense jungle. |
     | Laughter echoed through the park as children played on the swings and slides. | Children's laughter filled the park as they enjoyed the swings and slides. |
     | The old bookstore was filled with the scent of well-worn pages, a haven for book lovers. | A haven for book lovers, the old bookstore exuded the fragrance of well-read pages. |
+
     <!-- markdownlint-enable MD013 -->
 
     Using the following code and the [`bert-score`](https://pypi.org/project/bert-score/) package:

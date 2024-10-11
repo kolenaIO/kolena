@@ -1,25 +1,32 @@
-[tool.poetry]
+[project]
 name = "object_detection_3d"
 version = "0.1.0"
 description = "Example Kolena integration for KITTI 3D object detection"
-authors = ["Kolena Engineering <eng@kolena.com>"]
+authors = [
+    { name = "Kolena Engineering", email = "eng@kolena.com" }
+]
 license = "Apache-2.0"
+requires-python = ">=3.8,<3.12"
 
-[tool.poetry.dependencies]
-python = ">=3.8,<3.12"
-kolena = "^1.9.0"
-pydantic = ">=2,<3"
-openmim = "^0.3.9"
-mmcv-lite = ">=2.0.0rc4"
-mmdet = ">=3.0.0"
-mmdet3d = ">=1.1.0"
-s3fs = "^2024.2.0"
+dependencies = [
+    "kolena>=1.23.0,<2",
+    "s3fs>=2024.2.0,<2025",
+    "fsspec>=2023.5.0,<2024",
+    "numpy>=1.19,<2",
+    "pydantic>=2,<3",
+    "openmim>=0.3.9,<1",
+    "mmcv-lite>=2.0.0rc4,<3",
+    "mmdet>=3.0.0,<4",
+    "mmdet3d>=1.1.0,<2",
+]
 
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^2.17"
-pytest = "^7"
-
+[tool.uv]
+dev-dependencies = [
+    "pre-commit>=2.17,<3",
+    "pytest>=7,<8",
+    "pytest-depends>=1.0.1,<2",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"

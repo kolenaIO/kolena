@@ -23,16 +23,16 @@ The following asset types are available:
 - [`PointCloudAsset`][kolena.asset.PointCloudAsset]
 - [`VideoAsset`][kolena.asset.VideoAsset]
 - [`AudioAsset`][kolena.asset.AudioAsset]
+- [`MeshAsset`][kolena.asset.MeshAsset]
 
 """
 from abc import ABCMeta
 from typing import Optional
 
-from pydantic.dataclasses import dataclass
-
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
 
 
@@ -43,6 +43,7 @@ class _AssetType(DataType):
     POINT_CLOUD = "POINT_CLOUD"
     VIDEO = "VIDEO"
     AUDIO = "AUDIO"
+    MESH = "MESH"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -95,6 +96,14 @@ class PointCloudAsset(Asset):
     """
     A three-dimensional point cloud located in a cloud bucket. Points are assumed to be specified in a right-handed,
     Z-up coordinate system with the origin around the sensor that captured the point cloud.
+
+    PointCloudAsset supports the following extensions: `.pcd`, `.npy`, and `.npz`.
+
+    If using an `.npy` or `.npz` file format, PointCloudAsset expects a (N, 3) or (N, 4) shaped numpy array, with each
+    row as a array of `(x, y, z, [intensity])` values.
+
+    If using an `.npz` file, include an `npz_key` when initializing to specify the path field to load as an array:
+    `PointCloudAsset(locator="s3://my-bucket/path/to/my-point-cloud.npz", npz_key="points")`
     """
 
     locator: str
@@ -135,11 +144,16 @@ class VideoAsset(BaseVideoAsset):
     end: Optional[float] = None
     """Optionally specify end time of video snippet, in seconds."""
 
+    frame_rate: Optional[float] = None
+    """Optionally specify the frame rate of video snippet, in frames per second."""
+
     def __post_init__(self) -> None:
         if self.start is not None and self.end is not None and self.start > self.end:
             raise ValueError(f"Specified start time '{self.start}' is after specified end time '{self.end}'")
         if self.start is not None and self.end is not None and (self.start < 0 or self.end < 0):
             raise ValueError(f"Specified start time '{self.start}' and end time '{self.end}' must be non-negative")
+        if self.frame_rate is not None and self.frame_rate <= 0:
+            raise ValueError(f"Specified frame rate '{self.frame_rate}' must be positive")
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
@@ -158,4 +172,29 @@ class AudioAsset(Asset):
         return _AssetType.AUDIO
 
 
-_ASSET_TYPES = [ImageAsset, PlainTextAsset, BinaryAsset, PointCloudAsset, BaseVideoAsset, VideoAsset, AudioAsset]
+@dataclass(frozen=True, config=ValidatorConfig)
+class MeshAsset(Asset):
+    """
+    A 3d mesh file in a cloud bucket or served at a URL.
+
+    Only `.ply` file type is supported.
+    """
+
+    locator: str
+    """The location of this 3d mesh file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-mesh-asset.ply`."""
+
+    @staticmethod
+    def _data_type() -> _AssetType:
+        return _AssetType.MESH
+
+
+_ASSET_TYPES = [
+    ImageAsset,
+    PlainTextAsset,
+    BinaryAsset,
+    PointCloudAsset,
+    BaseVideoAsset,
+    VideoAsset,
+    AudioAsset,
+    MeshAsset,
+]

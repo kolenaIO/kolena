@@ -11,11 +11,11 @@ provide a `figure` field for pose reference.
 
 ## Setup
 
-This project uses [Poetry](https://python-poetry.org/) for packaging and Python dependency management. To get started,
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
-poetry update && poetry install
+uv sync
 ```
 
 ## Usage
@@ -32,7 +32,7 @@ dataset - only person relevant object annotations are used in this example. This
 the person keypoints provided with the coco-2014-val annotations.
 
 ```shell
-$ poetry run python3 person_detection/upload_dataset.py --help
+$ uv run person_detection/upload_dataset.py --help
 usage: upload_dataset.py [-h] [--dataset DATASET]
 
 optional arguments:
@@ -47,7 +47,7 @@ The `upload_results.py` script defines command line arguments to select which mo
 `--help` flag for more information:
 
 ```shell
-$ poetry run python3 person_detection/upload_results.py --help
+$ uv run person_detection/upload_results.py --help
 usage: upload_results.py [-h] [--dataset DATASET] {yolo_r,yolo_x,mask_rcnn,faster_rcnn,yolo_v4s,yolo_v3}
 
 positional arguments:

@@ -2,5 +2,5 @@
 
 set -e
 
-poetry run pip install git+ssh://git@github.com/kolenaIO/mkdocs-material-insiders.git
-poetry run pip install git+ssh://git@github.com/kolenaIO/mkdocstrings-python.git
+uv add git+ssh://git@github.com/kolenaIO/mkdocs-material-insiders.git --dev
+uv add git+ssh://git@github.com/kolenaIO/mkdocstrings-python.git --dev

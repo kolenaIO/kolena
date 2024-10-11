@@ -22,14 +22,17 @@ import pytest
 
 from kolena._api.v2.dataset import CommitData
 from kolena.dataset import download_dataset
+from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
+from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.workflow.annotation import BoundingBox
 from kolena.workflow.annotation import LabeledBoundingBox
 from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
+from tests.integration.helper import upload_extracted_properties
 from tests.integration.helper import with_test_prefix
 
 
@@ -46,9 +49,26 @@ def test__load_dataset_metadata_dataset__not_exist() -> None:
 
 def test__upload_dataset__empty() -> None:
     name = with_test_prefix(f"{__file__}::test__upload_dataset__empty")
-    upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
+    with pytest.raises(InputValidationError):
+        upload_dataset(name, pd.DataFrame(columns=["locator"]), id_fields=["locator"])
 
-    assert download_dataset(name).empty
+
+def test__upload_dataset__empty_iterator() -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__empty_iterator")
+    with pytest.raises(InputValidationError):
+        upload_dataset(name, batch_iterator(pd.DataFrame(columns=["locator"])), id_fields=["locator"])
+
+
+def test__upload_dataset__empty_name() -> None:
+    name = " "
+    with pytest.raises(InputValidationError):
+        upload_dataset(name, pd.DataFrame([dict(locator="0.jpg")], columns=["locator"]), id_fields=["locator"])
+
+
+def test__list_datasets() -> None:
+    name = with_test_prefix(f"{__file__}::test__list_datasets")
+    upload_dataset(name, pd.DataFrame([dict(locator="0.jpg")], columns=["locator"]), id_fields=["locator"])
+    assert name in list_datasets()
 
 
 def test__upload_dataset() -> None:
@@ -146,6 +166,49 @@ def test__upload_dataset_chunks() -> None:
     assert_frame_equal(loaded_datapoints, expected)
 
 
+def test__upload_dataset__append() -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__append")
+    datapoints = [
+        dict(
+            locator=fake_locator(i, name),
+            width=i + 500,
+            height=i + 400,
+            city=random.choice(["new york", "waterloo"]),
+            bboxes=[
+                LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
+                LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
+            ],
+        )
+        for i in range(20)
+    ]
+    expected_datapoints = [
+        dict(
+            locator=dp["locator"],
+            width=dp["width"],
+            height=dp["height"],
+            city=dp["city"],
+            bboxes=[
+                BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
+                for bbox in dp["bboxes"]
+            ],
+        )
+        for dp in datapoints
+    ]
+    columns = ["locator", "width", "height", "city", "bboxes"]
+
+    upload_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"], append_only=True)
+
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    expected = pd.DataFrame(expected_datapoints[:10], columns=columns)
+    assert_frame_equal(loaded_datapoints, expected)
+
+    # append to dataset
+    upload_dataset(name, pd.DataFrame(datapoints[10:], columns=columns), id_fields=["locator"], append_only=True)
+
+    loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
+    assert_frame_equal(loaded_datapoints, pd.DataFrame(expected_datapoints, columns=columns))
+
+
 def test__download_dataset__not_exist() -> None:
     name = with_test_prefix(f"{__file__}::test__download_dataset__not_exist")
     with pytest.raises(NotFoundError):
@@ -234,6 +297,39 @@ def test__download_dataset__versions(with_dataset_commits: Tuple[int, List[Commi
             ignore_index=True,
         )
         assert_frame_equal(loaded_datapoints, expected_datapoints)
+
+
+def test__download_dataset__with_property() -> None:
+    name = with_test_prefix(f"{__file__}::test__download_dataset__with_property")
+    datapoints = pd.DataFrame(
+        [
+            dict(
+                locator=fake_locator(i, name),
+                text=f"dummy text {i}",
+                id=i,
+            )
+            for i in range(20)
+        ],
+    )
+    extracted_property = [{"llm": {"summary": f"dummy text {i}"}} for i in range(20)]
+    upload_dataset(name, datapoints, id_fields=["locator"])
+    dataset_id = _load_dataset_metadata(name).id
+    datapoints["extracted"] = extracted_property
+    upload_extracted_properties(
+        dataset_id,
+        datapoints,
+        id_fields=["locator"],
+    )
+
+    loaded_datapoints = download_dataset(name, include_extracted_properties=True).sort_values("id", ignore_index=True)
+    datapoints["kolena_llm_prompt_extraction"] = [prop["llm"] for prop in extracted_property]
+    datapoints.drop(columns=["extracted"], inplace=True)
+    pd.testing.assert_frame_equal(
+        loaded_datapoints,
+        datapoints[loaded_datapoints.columns],
+        check_like=True,
+        check_dtype=False,
+    )
 
 
 def test__download_dataset__commit_not_exist(with_dataset_commits: Tuple[int, List[CommitData]]) -> None:

@@ -15,9 +15,9 @@ import dataclasses
 from typing import Callable
 from typing import Type
 
-import pydantic
 import pytest
 
+import kolena._utils.pydantic_v1 as pydantic
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.asset import _AssetType
 from kolena.asset import Asset
@@ -60,6 +60,7 @@ def test__serialize__video() -> None:
         "thumbnail": None,
         "start": 0,
         "end": 1,
+        "frame_rate": None,
     }
     assert asset == VideoAsset._from_dict(asset_dict)
 
@@ -72,9 +73,10 @@ def test__instantiate__video(dataclass: Callable) -> None:
 
     locator = "s3://test-bucket/video.mp4"
     thumbnail = ImageAsset(locator="https://example.com/test.png")
-    Tester(locator=locator, thumbnail=thumbnail, start=0, end=1, a=1)
+    Tester(locator=locator, thumbnail=thumbnail, start=0, end=1, a=1, frame_rate=5)
     Tester(locator=locator)
     Tester(locator=locator, start=1, end=1.5)
+    Tester(locator=locator, frame_rate=1)
     Tester(locator=locator, a=1)
 
     with pytest.raises(ValueError):
@@ -85,3 +87,9 @@ def test__instantiate__video(dataclass: Callable) -> None:
 
     with pytest.raises(ValueError):
         Tester(locator=locator, start=-2, end=-1)
+
+    with pytest.raises(ValueError):
+        Tester(locator=locator, frame_rate=0)
+
+    with pytest.raises(ValueError):
+        Tester(locator=locator, frame_rate=-1)

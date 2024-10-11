@@ -65,12 +65,26 @@ supports [`average precision`](../../metrics/average-precision.md), [`precision`
 <figcaption>Task Metrics: Object detection</figcaption>
 </figure>
 
+## Thresholded Object Metrics
+
+Kolena provides the flexibility to calculate and use metrics that are threshold dependent. For more information about
+how to setup thresholded results checkout the [Thresholded Results](../advanced-usage/thresholded-results.md) page.
+
+Once your can uploaded thresholded results, the option to setup thresholded metrics will be available.
+
+<figure markdown>
+![Thresholded Metrics](../../assets/images/thresholded-metrics-dark.gif#only-dark)
+![Thresholded Metrics](../../assets/images/thresholded-metrics-light.gif#only-light)
+
+<figcaption>Task Metrics: Object detection</figcaption>
+</figure>
+
 ## Custom Metrics
 
 Kolena provides out-of-the-box aggregation options for your datapoint level evaluations that
 correspond with your desired metrics. For numeric evaluations you are able to
 select from `count`, `mean`, `median`, `min`, `max`, `stddev` and `sum` aggregations options.
-For categorical evaluations (class lable, boolean, etc) `rate` and `count` aggregation options are available.
+For categorical evaluations (class label, boolean, etc) `rate` and `count` aggregation options are available.
 
 The Kolena web application currently supports [`precision`](../../metrics/precision.md),
 [`recall`](../../metrics/recall.md), [`f1_score`](../../metrics/f1-score.md),

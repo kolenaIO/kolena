@@ -15,6 +15,10 @@ most notably:
 - [**Micro**](#micro-average): global average of per-sample TP, FP, FN scores
 - [**Weighted**](#weighted-average): mean of all per-class scores, weighted by sample sizes for each class
 
+!!!example
+    To see an example of Macro Averaging Method, checkout the
+    [KITTI Vision Benchmark Suite on app.kolena.com/try.](https://app.kolena.io/try/dataset/standards?datasetId=44&models=N4IglgJiBcAcCsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&models=N4IglgJiBcAcAsAaEBjA9gOwGZgOYFcAnAQwBcxMZRIYBGAX3qA&metricGroupVisibilities=N4IgbglgzhBGA2BTEAuALgJwK6IDQgFtFMIBjKVAbVEhgWXW0QF9cbo4lVMdX26ujXm3Ad63JswC6zIA)
+
 ## Example: Multiclass Classification
 
 Let’s consider the following multiclass classification metrics, computed across a total of 10 samples:
@@ -32,6 +36,7 @@ Let’s consider the following multiclass classification metrics, computed acros
 **unweighted** mean of all the per-class scores:
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \begin{align}
 \text{F}_{1 \, \text{macro}} &= \frac{\text{F}_{1 \, \texttt{Airplane}} + \text{F}_{1 \, \texttt{Boat}} + \text{F}_{1 \, \texttt{Car}}}{3} \\[1em]
@@ -39,6 +44,7 @@ $$
 &= 0.58
 \end{align}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 ### Micro Average
@@ -71,6 +77,7 @@ What about **micro F<sub>1</sub>**?
 Plug the micro-averaged values for precision and recall into the standard formula for F<sub>1</sub>-score:
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \begin{align}
 \text{F}_{1 \, \text{micro}} &= 2 \times \frac{\text{Precision}_\text{micro} \times \text{Recall}_\text{micro}}{\text{Precision}_\text{micro} + \text{Recall}_\text{micro}} \\[1em]
@@ -78,6 +85,7 @@ $$
 &= 0.6
 \end{align}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 Note that precision, recall, and F<sub>1</sub>-score all have the same value: $0.6$. This is because micro-averaging essentially
@@ -100,15 +108,17 @@ words, support is the sum of true positive (TP) and false negative (FN) counts. 
 class’s support relative to the sum of all support values:
 
 <!-- markdownlint-disable MD013 -->
+
 $$
 \begin{align}
-\text{F}_{1 \, \text{weighted}} &= \left( \text{F}_{1 \, \texttt{Airplane}} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right)
-- \left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right)
-- \left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
+\text{F}_{1 \, \text{weighted}} &= \left( \text{F}_{1 \, \texttt{Airplane}} \times \tfrac{\text{#}\ \texttt{Airplane}}{\text{# Total}} \right) +
+\left( \text{F}_{1 \, \texttt{Boat}} \times \tfrac{\text{#}\ \texttt{Boat}}{\text{# Total}} \right) +
+\left( \text{F}_{1 \, \texttt{Car}} \times \tfrac{\text{#}\ \texttt{Car}}{\text{# Total}} \right) \\[1em]
 &= \left( 0.67 \times \tfrac{3}{10} \right) + \left( 0.4 \times \tfrac{1}{10} \right) + \left( 0.67 \times \tfrac{6}{10} \right) \\[1em]
 &= 0.64
 \end{align}
 $$
+
 <!-- markdownlint-enable MD013 -->
 
 ## Which Method Should I Use?
