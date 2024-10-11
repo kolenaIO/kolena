@@ -11,9 +11,9 @@ test object detection models.
 
 <div class="grid" markdown>
 <div markdown>
-Object detection is a widely applied computer vision task. Object detection aims to locate and identify objects
+Object detection is a widely applied computer vision task that aims to locate and identify objects
 within an image or video, typically with bounding boxes.
-Object detection has a wide range of applications from self-driving cars, facial recognition,
+Object detection has a wide range of applications such as self-driving cars, facial recognition,
 video surveillance, medical imaging, robotics, and more. Therefore, it is crucial to evaluate object detection
 models to understand their performance and applicability in any real-world situation.
 </div>
@@ -148,7 +148,8 @@ to guarantee compatibility with Kolena's data processing capabilities (`.csv`, `
 
 At minimum, a CSV containing an object detection dataset should include a
 [`locator`](../dataset/advanced-usage/dataset-formatting/computer-vision.md#using-the-locator) column as the ID field,
-and a `ground_truths` column for the dataset's annotations. Additional metadata fields may be useful but optional.
+and a [`ground_truths`](../dataset/advanced-usage/dataset-formatting/computer-vision.md#2d-object-detection)
+column for the dataset's annotations. Additional metadata fields may be useful but optional.
 
 The ground truths are bounding box annotations, defined using
 [`List[LabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.LabeledBoundingBox) from
@@ -157,7 +158,7 @@ the `kolena` SDK. For additional details, see the relevant documentation on
 
 See the
 [`object_detection_2d/upload_dataset.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_dataset.py)
-example script for details on how a multiclass object detection dataset can be generated and formatted into a dataset.
+example script for details on how an object detection dataset can be generated and formatted into a dataset.
 
 ### Step 2: Upload your Object Detection Dataset
 
@@ -205,10 +206,10 @@ within the web app or using the SDK.
     export KOLENA_TOKEN="********"
     ```
 
-    We can now register a new dataset using the provided script:
+    We can now register a new dataset using the [provided script](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d):
 
     ```shell
-    poetry run python3 object_detection_2d/upload_dataset.py
+    uv run object_detection_2d/upload_dataset.py
     ```
 
     After this script has completed, a new dataset named `coco-2014-val` will be created
@@ -219,37 +220,19 @@ within the web app or using the SDK.
 An object detection model will predict the bounding boxes of objects within each image, so there is a list of
 inferences per image:
 [`List[ScoredLabeledBoundingBox]`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox).
-Note that a [`ScoredLabeledBoundingBox`](../reference/annotation.md#kolena.annotation.ScoredLabeledBoundingBox)
-has an extra `score` attribute for the confidence of the model:
-```
-{""top_left"": ... ""label"": ""car"", ""score"": 0.94, ""data_type"":""ANNOTATION/BOUNDING_BOX""}
-```
 
-The expected CSV format for model results should look like the CSV below:
-```
-locator,count_TP,count_FP,count_FN,TP,FP,FN,custom_information
-s3://my-images/intersection_1.png,2,0,0,"[{""top_left"": [538.5, 9.0], ... }, {""top_left"": ... }]","[]","[]",0.88
-s3://my-images/intersection_2.png,0,0,1,"[]","[]","[{""top_left"": ... }]",0.5
-...
-```
+You can either use your own bounding box matcher for relevant metrics by identifying
+[TPs / FPs / FNs](../metrics/tp-fp-fn-tn.md), or you can pass your raw inferences to Kolena's bounding box matcher
+using [`compute_object_detection_results`](../reference/experimental/index.md#kolena._experimental.object_detection.compute_object_detection_results).
+For details on what is recommended within your model results, see the relevant documentation on
+[formatting object detection datasets](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 
-By using a [`locator`](../dataset/advanced-usage/dataset-formatting/computer-vision.md#using-the-locator)
-as a unique reference to an image in the dataset, Kolena can join the model results in the CSV to the correct
-datapoint.
-
-See the
-[`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
-example script for details on how results were generated.
-
-### Step 3: Upload Object Detection Model Results
-
-For this example, we will upload object detection model results
-of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX) for the single class object detection task in the web app,
-and upload the results of [Faster R-CNN](https://github.com/facebookresearch/Detectron) for the
-multiclass object detection task through the SDK.
+### Step 4: Upload Object Detection Model Results
 
 === "Web App"
 
+    We will upload object detection model results of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX)
+    for a single class object detection task.
     To upload new model results, from the `Details` tab of the dataset, click on `Upload Model Results`
     in the upper right.
     Then, select `Upload From Cloud Storage`. Using the explorer, navigate to
@@ -263,9 +246,6 @@ multiclass object detection task through the SDK.
     ![Model Results Upload](../assets/images/task-od-upload-results-dark.gif#only-dark)
     <figcaption markdown>Model Results Upload</figcaption>
     </figure>
-
-    It's also important to note down the evaluation configuration of the model being uploaded, for example:
-    `iou_threshold: 0.5` or `iou_threshold: 0.3`.
 
     <div class="grid" markdown>
     <div markdown>
@@ -286,24 +266,25 @@ multiclass object detection task through the SDK.
 
 === "SDK"
 
+    We will upload object detection model results of [Faster R-CNN](https://github.com/facebookresearch/Detectron) for a
+    multiclass object detection task.
     The example code contains a script
     [`object_detection_2d/upload_results.py`](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/object_detection_2d/object_detection_2d/upload_results.py)
     which will process raw model results from `s3://kolena-public-examples/coco-2014-val/transportation/results/raw/`
     and upload model results using the
-    [`upload_object_detection_results`](../reference/pre-built/object-detection-2d.md#kolena._experimental.object_detection.upload_object_detection_results)
+    [`upload_object_detection_results`](../reference/experimental/index.md#kolena._experimental.object_detection.upload_object_detection_results)
     function to simplify the process in uploading model results.
 
     For details, see the relevant documentation for
     [uploading object detection model results](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 
     ```shell
-    poetry run python3 object_detection_2d/upload_results.py yolo_x
     poetry run python3 object_detection_2d/upload_results.py faster_rcnn
     ```
 
-    Results for two models named `yolo_x` and `faster_rcnn` will appear after the upload is complete.
+    Results for `faster_rcnn` will appear after the upload is complete.
 
-### Step 4: Define Object Detection Quality Standards
+### Step 5: Define Object Detection Quality Standards
 
 Once your dataset and model results are uploaded, comparing models across different scenarios and metrics becomes
 very easy. Simply set up your [Quality Standards](../dataset/core-concepts/index.md#quality-standard) by
@@ -316,9 +297,8 @@ very easy. Simply set up your [Quality Standards](../dataset/core-concepts/index
   <figcaption markdown>Setting up object detection Quality Standards</figcaption>
 </figure>
 
-Rather than uploading raw inferences with metrics yourself, if you upload the
-[TP / FP / FN](../metrics/tp-fp-fn-tn.md) results from your own [bounding box matcher](../metrics/geometry-matching.md)
-as lists of bounding boxes, Kolena makes it very easy to incorporate relevant object detection metrics.
+If [TP / FP / FN](../metrics/tp-fp-fn-tn.md) results are uploaded as lists of bounding
+boxes, Kolena makes it very easy to incorporate relevant object detection metrics.
 
 <div class="grid" markdown>
 <div style="width: 75%" markdown>
@@ -346,7 +326,7 @@ as lists of bounding boxes, Kolena makes it very easy to incorporate relevant ob
 </div>
 </div>
 
-In conclusion, evaluating object detection models is a multifaceted process based on the comparison of ground truths
-and model inferences. Depending on your own project needs, custom metrics and plots should be considered.
-Understanding and effectively applying evaluation metrics are essential for optimizing object detection
+Evaluating object detection models is a multifaceted process based on the comparison of ground truths
+and model inferences. Depending on your own project needs, custom metrics and plots can be considered.
+Kolena makes it easy to understanding and apply evaluation metrics for object detection
 models to meet the demands of real-world applications.
