@@ -10,7 +10,8 @@ problems.
 
 ### Supported File Data Formats
 
-The Kolena SDK supports upload of data in the Pandas [`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
+The Kolena SDK supports uploading of data in the Pandas
+[`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
 
 The Kolena web app supports the following file formats.
 
@@ -41,11 +42,11 @@ To enable this view, include your primary text values in your `.CSV` in a column
 !!! tip
     Use the [`TextSegment`](../../../reference/annotation.md#kolena.annotation.TextSegment) or
     [`LabeledTextSegment`](../../../reference/annotation.md#kolena.annotation.LabeledTextSegment) annotations
-    to highlights parts of your text that is of interest to you.
+    to highlight parts of your text that is of interest to you.
 
 **Tabular mode**: visualizes each text field with its corresponding meta-data in a table with common table functionalities.
 
-To use this view, simply provide the text values in your `.CSV` in any column named other than `text`.
+To use this view, simply provide the text values in your `.CSV` with any column names other than `text`.
 <figure markdown>
 ![Tabular View](../../../assets/images/tabular-text-dark.png#only-dark)
 ![Tabular View](../../../assets/images/tabular-text-light.png#only-light)

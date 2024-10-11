@@ -23,8 +23,8 @@ The return value is a multi-index DataFrame with indices `(stratification, test_
 metric_group, metric)`.
 
 <figure markdown>
-![Quality Standard Result](../../assets/images/‎quality_standard_diagram_light.jpeg#only-light)
-![Quality Standard Result](../../assets/images/‎quality_standard_diagram_dark.jpeg#only-dark)
+![Quality Standard Result](../../assets/images/quality_standard_diagram_light.jpeg#only-light)
+![Quality Standard Result](../../assets/images/quality_standard_diagram_dark.jpeg#only-dark)
 <figcaption>Quality Standard Result</figcaption>
 </figure>
 
@@ -33,7 +33,7 @@ metric_group, metric)`.
 In order to automate deployment decisions with Kolena a team could:
 
 1. Define the metric requirements a model must meet in order to be considered for deployment.
-2. [Upload model results](../../reference/dataset/index.md##kolena.dataset.evaluation.upload_results) as part of a CI/CD
+2. [Upload model results](../../reference/dataset/index.md#kolena.dataset.evaluation.upload_results) as part of a CI/CD
    pipeline.
 3. [Download the dataset's quality standard
    results](../../reference/experimental/index.md#kolena._experimental.quality_standard.download_quality_standard_result)

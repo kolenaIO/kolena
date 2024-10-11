@@ -10,7 +10,8 @@ problems.
 
 ### Supported File Data Formats
 
-The Kolena SDK supports upload of data in the Pandas [`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
+The Kolena SDK supports uploading of data in the Pandas
+[`DataFrame`](https://pandas.pydata.org/docs/reference/frame.html) format.
 
 The Kolena web app supports the following file formats.
 
@@ -31,7 +32,7 @@ Supported file types are:
 ### Using the `locator`
 
 Kolena uses references to files stored in your cloud storage to render them.
-Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/)
+Refer to ["Connecting Cloud Storage"](../../../connecting-cloud-storage/index.md)
 for details on how to configure this.
 
 Computer Vision data is best visualized in Studio using the Gallery mode.
@@ -196,7 +197,7 @@ To render 3D Bounding boxes you can use
 
     If you wish to analyze your model results based on specific characteristics of your bounding boxes
     you can provide values representing those characteristics using additional key value pairs.
-    For example if location of a bounding box is important you can construct your `LabeledBoundingBox3D` like this
+    For example, if location of a bounding box is important you can construct your `LabeledBoundingBox3D` like this
     ```python
     LabeledBoundingBox3D(
         center=(313.02, 12.01, 15.5),

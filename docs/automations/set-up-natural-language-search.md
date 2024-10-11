@@ -14,7 +14,7 @@ or manually extracting and uploading corresponding search embeddings using a Kol
 ??? "Requirements"
     - This feature is currently supported for Amazon S3 integrations.
     - Kolena requires access to the content of your images.
-    Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/) for more details.
+    Read [Connecting Cloud Storage: Amazon S3](../connecting-cloud-storage/amazon-s3.md) for more details.
     - Only account administrators are able to change this setting.
 
 Embedding extractions allow you to find datapoints using natural language or similarity between desired datapoints.
@@ -128,7 +128,7 @@ Once embeddings are extracted for each `locator` on the dataset, we create a dat
 the embeddings.
 
 The dataframe uploaded is required to contain the ID columns of the dataset in order to
-match against the [datapoints](../core-concepts/dataset.md/#datapoints) in the dataset.
+match against the [datapoints](../dataset/core-concepts/index.md#datapoints) in the dataset.
 In this example, the ID column of the dataset is `locator`.
 
 ```{.python .no-copy}
