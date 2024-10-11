@@ -117,9 +117,9 @@ You can use this property to develope a sense for density of bounding boxes and 
 
 **Mean Relative Area** is the average of relative area described above.
 
-### Mean Relative Distance To Image Centre
+### Mean Relative Distance To Image Center
 
-**Mean Relative Distance To Image Centre** is the average of Euclidean distance between the center of each bounding
+**Mean Relative Distance To Image Center** is the average of Euclidean distance between the center of each bounding
 box and the center of the image.
 
 ### Std Aspect Ratio
