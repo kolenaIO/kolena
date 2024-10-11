@@ -23,7 +23,7 @@ and a higher difficulty score indicates that models consistently face problems o
 
     * at least one [Model Result](../dataset/quickstart.md#step-2-upload-model-results) uploaded
     * at least one metric defined in your [Quality Standard](../dataset/core-concepts/index.md#quality-standard)
-    * set the direction of the [metric](../dataset/core-concepts/index.md#define-metrics)
+    * set the direction of the [metric](../dataset/core-concepts/index.md#metrics)
     (`Lower is better` or `Higher is better`)
 
 When one model is selected in [<nobr>:kolena-studio-16: Studio</nobr>](https://app.kolena.com/redirect/studio), the
