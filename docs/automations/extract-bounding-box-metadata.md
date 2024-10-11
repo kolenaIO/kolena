@@ -135,7 +135,7 @@ of bounding boxes.
 
 **Std Relative Area** is the standard deviation of relative area of a bounding box over the image in a list of bounding boxes.
 
-### Std Relative Distance To Image Centre
+### Std Relative Distance To Image Center
 
-**Std Relative Distance To Image Centre** is the standard deviation of Euclidean distance between the center of
+**Std Relative Distance To Image Center** is the standard deviation of Euclidean distance between the center of
 a bounding box to the center of the image in a list of bounding boxes.
