@@ -13,6 +13,7 @@
 # limitations under the License.
 from dataclasses import field
 from enum import Enum
+from typing import Any
 from typing import Dict
 from typing import List
 from typing import Optional
@@ -26,6 +27,9 @@ class Path(str, Enum):
     UPLOAD_RESULTS = "/model/upload-results"
     LOAD_RESULTS = "/model/load-results"
     LOAD_BY_TAG = "/model/load-by-tag"
+    LOAD_EVAL_CONFIG = "/model/load-eval-config"
+    LOAD_BY_NAME = "/model/load"
+    LOAD_BY_DATASET = "/model/load-by-dataset"
 
 
 @dataclass(frozen=True)
@@ -77,3 +81,26 @@ class LoadByTagRequest:
 @dataclass(frozen=True)
 class LoadByTagResponse:
     models: List[EntityData]
+
+
+@dataclass(frozen=True)
+class LoadByDatasetRequest:
+    dataset_id: int
+
+
+@dataclass(frozen=True)
+class LoadEvalConfigRequest:
+    id: Optional[int] = None
+    data: Optional[Dict[str, Any]] = None
+
+
+@dataclass(frozen=True)
+class EvalConfigEntityData:
+    id: int
+    data: Optional[Dict[str, Any]]
+
+
+@dataclass(frozen=True)
+class ModelWithEvalConfig:
+    model_id: int
+    eval_config_id: int
