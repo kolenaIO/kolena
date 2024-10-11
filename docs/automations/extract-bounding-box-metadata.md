@@ -86,7 +86,7 @@ to monitor how your model performance changes when there are a few or many objec
 
 ### Object Type Count
 
-**Object type count** counts the number of labels in a list of bounding boxes. You can use this count to
+**Object Type Count** counts the number of labels in a list of bounding boxes. You can use this count to
 see how your models perform when classifying a few or many different objects in a scene.
 
 ### Combined Area Ratio
