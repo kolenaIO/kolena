@@ -32,12 +32,12 @@ models to understand their performance and applicability in any real-world situa
     [Open Images](https://paperswithcode.com/dataset/open-images-v7),
     and [ImageNet](https://paperswithcode.com/dataset/imagenet).
 
-## Object Detection Model Evaluation
+## Model Evaluation
 
 It is important to understand some core performance metrics and plots that are typically seen when
 evaluating object detection models.
 
-### Object Detection Metrics
+### Metrics
 
 Evaluation of object detection models requires ground truths and model inferences. The ground truths in an image are
 objects outlined by bounding boxes each labeled with a class. The model
@@ -85,7 +85,7 @@ between the ground truth and inference bounding box) is under 0.5.
     Read the [averaging methods](../metrics/averaging-methods.md) guide if you are not familiar with "macro"
     and "micro" terminology.
 
-### Object Detection Plots
+### Plots
 
 Plots can become very powerful ways to gain insights into unexpected model behavior, and a formal way to showcase
 strong model quality. There are several common plots used to analyze the performance of object detection models.
@@ -164,9 +164,11 @@ example script for details on how an object detection dataset can be generated a
 
 ### Step 2: Upload your Object Detection Dataset
 
-Model evaluation on Kolena starts with datasets. Upload your dataset of datapoints (e.g. locators to
+Model evaluation on Kolena starts with [datasets](../dataset/core-concepts/index.md#kolena-dataset-20-dataset).
+Upload your dataset of datapoints (e.g. locators to
 images) with ground truth annotations (e.g. labeled bounding boxes) by importing the dataset file directly
-within the web app or using the SDK.
+within the web app or using the SDK. Extra information can be found on the
+[dataset formatting](../dataset/advanced-usage/dataset-formatting/computer-vision.md#2d-object-detection) page.
 
 === "Web App"
     To upload a dataset, having a properly formatted dataset file is a prerequisite.
@@ -281,7 +283,7 @@ For details on what is recommended within your model results, see the relevant d
     [uploading object detection model results](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 
     ```shell
-    poetry run python3 object_detection_2d/upload_results.py faster_rcnn
+    uv run python3 object_detection_2d/upload_results.py faster_rcnn
     ```
 
     Results for `faster_rcnn` will appear after the upload is complete.
