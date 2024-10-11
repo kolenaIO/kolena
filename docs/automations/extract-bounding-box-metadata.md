@@ -57,7 +57,7 @@ The following properties are available for automatic bounding box property extra
 
 ### Aspect Ratio
 
-**Aspect ratio** measures the ratio of the bounding box width to its height. It can be useful in scenarios
+**Aspect Ratio** measures the ratio of the bounding box width to its height. It can be useful in scenarios
 where the bounding box shape or dimensions impact the analysis or model performance.
 
 $$
