@@ -12,8 +12,9 @@ To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page under the "LLM Integration" section and click "Add Integration", then "Azure OpenAI".
 
-Note: By default, Kolena will make up to 100 concurrent request to your Azure OpenAI deployment to speed things up,
-please make sure your deployment can handle this load.
+!!! Note
+    By default, Kolena will make up to 50 concurrent request to your Azure OpenAI deployment to speed things up,
+    please make sure your deployment can handle this load.
 
 ### Step 1: Create Azure LLM Registration for Kolena
 
