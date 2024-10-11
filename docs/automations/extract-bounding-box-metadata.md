@@ -91,7 +91,7 @@ see how your models perform when classifying a few or many different objects in 
 
 ### Combined Area Ratio
 
-**Combined area ratio** is the sum of area bounding box area ratios (sum(bounding box area/image area)).
+**Combined Area Ratio** is the sum of area bounding box area ratios (sum(bounding box area/image area)).
 
 ### Bbox Intersection
 
