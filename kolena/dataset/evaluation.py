@@ -25,7 +25,11 @@ from typing import Union
 import pandas as pd
 
 from kolena._api.v1.event import EventAPI
+from kolena._api.v2.model import EntityData
+from kolena._api.v2.model import EvalConfigEntityData
 from kolena._api.v2.model import LoadByDatasetRequest
+from kolena._api.v2.model import LoadByNameRequest
+from kolena._api.v2.model import LoadEvalConfigRequest
 from kolena._api.v2.model import LoadResultsRequest
 from kolena._api.v2.model import Path
 from kolena._api.v2.model import UploadResultsRequest
@@ -165,6 +169,19 @@ def _process_result(
     df_result_eval[COL_EVAL_CONFIG] = json.dumps(eval_config) if eval_config is not None else None
     df_result_eval = pd.concat([df_result_eval, df_serialized_datapoint_id_object], axis=1)
     return df_result_eval
+
+
+def _get_eval_config_id(eval_config: EvalConfig) -> int:
+    response = krequests.put(Path.LOAD_EVAL_CONFIG, json=asdict(LoadEvalConfigRequest(data=eval_config)))
+    krequests.raise_for_status(response)
+    eval_config_entity_data = from_dict(EvalConfigEntityData, response.json())
+    return eval_config_entity_data.id
+
+
+def _get_model_id(model: str) -> int:
+    response = krequests.put(Path.LOAD_BY_NAME, json=asdict(LoadByNameRequest(name=model)))
+    krequests.raise_for_status(response)
+    return from_dict(EntityData, response.json()).id
 
 
 def _send_upload_results_request(

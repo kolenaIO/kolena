@@ -282,6 +282,169 @@ def test__download_quality_standard_result__union(
     )
 
 
+def test__download_quality_standard_result_with_performance_delta(
+    datapoints: pd.DataFrame,
+    results: List[Tuple[EvalConfig, pd.DataFrame]],
+) -> None:
+    dataset_name = with_test_prefix("test__download_quality_standard_result_with_performance_delta")
+    model_name = with_test_prefix("test__download_quality_standard_result_with_performance_delta_model")
+    eval_configs = [eval_config for eval_config, _ in results]
+    upload_dataset(dataset_name, datapoints, id_fields=ID_FIELDS)
+    _upload_results(
+        dataset_name,
+        model_name,
+        results,
+    )
+
+    test_case_name = "city"
+    metric_group_name = "test group"
+    max_metric_label = "Max Score"
+    min_metric_label = "Min Score"
+    metric_value_label = "metric_value"
+    performance_delta_label = "performance_delta"
+    quality_standard = dict(
+        name=with_test_prefix("test__download_quality_standard_result__quality_standard"),
+        stratifications=[
+            dict(
+                name=test_case_name,
+                stratify_fields=[dict(source="datapoint", field="city", values=["new york", "waterloo"])],
+                test_cases=[
+                    dict(name="new york", stratification=[dict(value="new york")]),
+                    dict(name="waterloo", stratification=[dict(value="waterloo")]),
+                ],
+            ),
+        ],
+        metric_groups=[
+            dict(
+                name=metric_group_name,
+                metrics=[
+                    dict(
+                        label="Max Score",
+                        source="result",
+                        aggregator="max",
+                        params=dict(key="score"),
+                        highlight=dict(higherIsBetter=True),
+                    ),
+                    dict(
+                        label="Min Score",
+                        source="result",
+                        aggregator="min",
+                        params=dict(key="score"),
+                        highlight=dict(higherIsBetter=False),
+                    ),
+                ],
+            ),
+        ],
+        version="1.0",
+    )
+    create_quality_standard(dataset_name, quality_standard)
+
+    quality_standard_df = download_quality_standard_result(
+        dataset_name,
+        [model_name],
+        confidence_level=0.95,
+        reference_eval_config=eval_configs[0],
+    )
+
+    df_columns: pd.MultiIndex = quality_standard_df.columns
+    assert df_columns.names == ["model", "eval_config", "metric_group", "metric", "type"]
+    assert all(df_columns.levels[0] == [model_name])
+    assert all(df_columns.levels[1] == [json.dumps(eval_config) for eval_config in eval_configs])
+    assert all(df_columns.levels[2] == [metric_group_name])
+    assert all(df_columns.levels[3] == [max_metric_label, min_metric_label])
+    assert all(df_columns.levels[4] == [metric_value_label, performance_delta_label])
+
+    df_index: pd.MultiIndex = quality_standard_df.index
+    assert df_index.names == ["stratification", "test_case"]
+    assert all(df_index.levels[0] == ["Dataset", test_case_name])
+    assert all(df_index.levels[1] == ["new york", "waterloo"])
+
+    for eval_config in eval_configs:
+        json_config = json.dumps(eval_config)
+
+        newyork_maximum = 0.8 * 2 if eval_config else 0.8
+        waterloo_maximum = 0.9 * 2 if eval_config else 0.9
+        dataset_maximum = max(newyork_maximum, waterloo_maximum)
+
+        assert (
+            quality_standard_df.loc[
+                ("Dataset", np.nan),
+                (
+                    model_name,
+                    json_config,
+                    metric_group_name,
+                    max_metric_label,
+                    metric_value_label,
+                ),
+            ]
+            == dataset_maximum
+        )
+        assert (
+            quality_standard_df.loc[
+                ("city", "new york"),
+                (model_name, json_config, metric_group_name, max_metric_label, metric_value_label),
+            ]
+            == newyork_maximum
+        )
+        assert (
+            quality_standard_df.loc[
+                ("city", "waterloo"),
+                (model_name, json_config, metric_group_name, max_metric_label, metric_value_label),
+            ]
+            == waterloo_maximum
+        )
+
+    performance_delta_min_metric = list(
+        quality_standard_df[
+            (
+                model_name,
+                json.dumps(eval_configs[1]),
+                metric_group_name,
+                min_metric_label,
+                performance_delta_label,
+            )
+        ],
+    )
+    assert performance_delta_min_metric == ["similar", "similar", "regressed"]
+    performance_delta_max_metric = list(
+        quality_standard_df[
+            (
+                model_name,
+                json.dumps(eval_configs[1]),
+                metric_group_name,
+                max_metric_label,
+                performance_delta_label,
+            )
+        ],
+    )
+    assert performance_delta_max_metric == ["improved", "improved", "improved"]
+    assert (
+        list(
+            quality_standard_df[
+                (
+                    model_name,
+                    json.dumps(eval_configs[0]),
+                    metric_group_name,
+                    min_metric_label,
+                    performance_delta_label,
+                )
+            ],
+        )
+        == list(
+            quality_standard_df[
+                (
+                    model_name,
+                    json.dumps(eval_configs[0]),
+                    metric_group_name,
+                    max_metric_label,
+                    performance_delta_label,
+                )
+            ],
+        )
+        == ["similar", "similar", "similar"]
+    )
+
+
 def test__copy_quality_standards_from_dataset__dataset_same_as_source() -> None:
     dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__dataset_same_as_source")
     source_dataset_name = dataset_name
