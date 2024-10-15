@@ -12,8 +12,9 @@ To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page under the "LLM Integration" section and click "Add Integration", then "Azure OpenAI".
 
-Note: By default, Kolena will make up to 100 concurrent request to your Azure OpenAI deployment to speed things up,
-please make sure your deployment can handle this load.
+Note: By default, Kolena will make up to 50 concurrent requests to your Azure OpenAI deployment to speed things up. You
+can adjust this limit in `Concurrent Worker Limit` field of the integration setting based on your need and Azure OpenAI
+deployment capacity.
 
 ### Step 1: Create Azure LLM Registration for Kolena
 
@@ -47,12 +48,13 @@ We will assign a role to the App registration created above:
 
 Return to Kolena and fill in the fields for the Integration and then click "Save".
 
-| Field           | Description                                                                                                                       |
-|-----------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Tenant ID       | The Tenant ID of the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)                       |
-| Client ID       | The Application (client) ID of the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)         |
-| Client Secret   | The secret key for the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)                     |
-| Endpoint        | The Azure OpenAI endpoint, it can be find under `Resource Management/Keys and Endpoint` section in Azure OpenAI console           |
-| Model Name      | The Name of the model to be displayed on kolena                                                                                   |
-| Deployment Name | The deployment name for the model to be deployed on Kolena Resource `Management/Model Deployment` section in Azure OpenAI console |
-| Support Image   | Whether this hosted model has vision capabilities                                                                                 |
+| Field                   | Description                                                                                                                       |
+|-------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| Tenant ID               | The Tenant ID of the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)                       |
+| Client ID               | The Application (client) ID of the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)         |
+| Client Secret           | The secret key for the App registration created in [step 1](#step-1-create-azure-llm-registration-for-kolena)                     |
+| Endpoint                | The Azure OpenAI endpoint, it can be find under `Resource Management/Keys and Endpoint` section in Azure OpenAI console           |
+| Model Name              | The Name of the model to be displayed on kolena                                                                                   |
+| Deployment Name         | The deployment name for the model to be deployed on Kolena Resource `Management/Model Deployment` section in Azure OpenAI console |
+| Support Image           | Whether this hosted model has vision capabilities                                                                                 |
+| Concurrent Worker Limit | The number of concurrent API requests we are alloed to make to your hosted LLM endpoint per Prompt Extraction Pipeline run        |
