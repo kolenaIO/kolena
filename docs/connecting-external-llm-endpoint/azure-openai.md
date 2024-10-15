@@ -12,8 +12,9 @@ To get started, ensure you have administrator access within Kolena.
 Navigate to the "Integrations" tab on the [:kolena-organization-16: Organization Settings](https://app.kolena.com/redirect/organization?tab=integrations)
 page under the "LLM Integration" section and click "Add Integration", then "Azure OpenAI".
 
-Note: By default, Kolena will make up to 50 concurrent request to your Azure OpenAI deployment to speed things up,
-please make sure your deployment can handle this load.
+Note: By default, Kolena will make up to 50 concurrent requests to your Azure OpenAI deployment to speed things up. You
+can adjust this limit in `Concurrent Worker Limit` field of the integration setting based on your need and Azure OpenAI
+deployment capacity.
 
 ### Step 1: Create Azure LLM Registration for Kolena
 
@@ -56,4 +57,4 @@ Return to Kolena and fill in the fields for the Integration and then click "Save
 | Model Name              | The Name of the model to be displayed on kolena                                                                                   |
 | Deployment Name         | The deployment name for the model to be deployed on Kolena Resource `Management/Model Deployment` section in Azure OpenAI console |
 | Support Image           | Whether this hosted model has vision capabilities                                                                                 |
-| Concurrent Worker Limit | The number of concurrent API request we can make to your hosted LLM endpoint per Prompt Extraction Pipeline run                   |
+| Concurrent Worker Limit | The number of concurrent API requests we are alloed to make to your hosted LLM endpoint per Prompt Extraction Pipeline run        |
