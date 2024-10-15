@@ -56,4 +56,4 @@ Return to Kolena and fill in the fields for the Integration and then click "Save
 | Model Name              | The Name of the model to be displayed on kolena                                                                                   |
 | Deployment Name         | The deployment name for the model to be deployed on Kolena Resource `Management/Model Deployment` section in Azure OpenAI console |
 | Support Image           | Whether this hosted model has vision capabilities                                                                                 |
-| Concurrent Worker Limit | The number of concurrent API request we can make to your hosted LLM Endpoint per Prompt Extraction Pipeline run                   |
+| Concurrent Worker Limit | The number of concurrent API request we can make to your hosted LLM endpoint per Prompt Extraction Pipeline run                   |
