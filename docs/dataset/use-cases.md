@@ -69,15 +69,15 @@ and run directly:
 
     Multiclass Classification using the [CIFAR-10](https://www.cs.toronto.edu/~kriz/cifar.html) dataset
 
-- [:kolena-comparison-20: Example: Instance Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/instance_segmentation)
+- [:kolena-polygon-20: Example: Instance Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/instance_segmentation)
 
-    ![Example sentence pairs from STS benchmark dataset.](../assets/images/STS-benchmark.jpg)
+    ![Example image from instance segmentation dataset.](../assets/images/use-case-instance-segmentation.png)
 
     ---
 
-    Semantic Textual Similarity using the [STS benchmark](http://ixa2.si.ehu.eus/stswiki/index.php/STSbenchmark) dataset
+    Instance Segmentation using the [COCO](https://cocodataset.org/#overview) dataset
 
-- [:kolena-polygon-20: Example: Semantic Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/semantic_segmentation)
+- [:kolena-polygon-20: Example: Semantic Segmentation ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
 
     ![Example image from COCO-Stuff 10K dataset.](../assets/images/coco-stuff-10k.jpg)
 
