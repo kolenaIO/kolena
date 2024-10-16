@@ -1,5 +1,5 @@
 ---
-icon: kolena-fr-20
+icon: kolena/manual-16
 ---
 
 # :kolena-fr-20: Use Cases
@@ -11,7 +11,7 @@ and run directly:
 
 <div class="grid cards" markdown>
 
-- [:kolena-age-estimation-20: Example: Regression ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/age_estimation)
+- [:kolena-age-estimation-20: Example: Regression ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/age_estimation)
 
     ![Example images from the Labeled Faces in the Wild dataset.](../assets/images/LFW.jpg)
 
@@ -19,7 +19,7 @@ and run directly:
 
     Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
 
-- [:kolena-keypoint-detection-20: Example: Keypoint Detection ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/keypoint_detection)
+- [:kolena-keypoint-detection-20: Example: Keypoint Detection ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/keypoint_detection)
 
     ![Example image and five-point facial keypoints array from the 300 Faces in the Wild dataset.](../assets/images/300-W.jpg)
 
@@ -28,16 +28,7 @@ and run directly:
     Facial Keypoint Detection using the [300 Faces in the Wild (300-W)](https://ibug.doc.ic.ac.uk/resources/300-W/)
     dataset
 
-- [:kolena-text-summarization-20: Example: Text Summarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/text_summarization)
-
-    ![Example articles from the CNN-DailyMail dataset.](../assets/images/CNN-DailyMail.jpg)
-
-    ---
-
-    Text Summarization using [OpenAI GPT-family models](https://platform.openai.com/docs/guides/gpt) and the
-    [CNN-DailyMail](https://paperswithcode.com/dataset/cnn-daily-mail-1) dataset
-
-- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_2d)
+- [:kolena-widget-20: Example: Object Detection (2D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_2d)
 
     ![Example 2D bounding boxes from the COCO dataset.](../assets/images/COCO-transportation.jpeg)
 
@@ -45,7 +36,7 @@ and run directly:
 
     2D Object Detection using the [COCO](https://cocodataset.org/#overview) dataset
 
-- [:kolena-drive-time-20: Example: Object Detection (3D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/object_detection_3d)
+- [:kolena-drive-time-20: Example: Object Detection (3D) ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/object_detection_3d)
 
     ![Example pointcloud and 3D object bounding boxes from the KITTI dataset.](../assets/images/KITTI-pointcloud.png)
 
@@ -53,7 +44,16 @@ and run directly:
 
     3D Object Detection using the [KITTI](https://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d) dataset
 
-- [:kolena-classification-20: Example: Binary Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#binary-classification-on-dogs-vs-cats)
+- [:kolena-diarization-workflow-20: Example: Object Detection in Video ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/crossing_pedestrian_detection)
+
+    ![Example from the Joint Attention in Autonomous Driving (JAAD).](../assets/images/speaker-diarization-example.png)
+
+    ---
+
+    Crossing Pedestrian Detection using the
+    [Joint Attention in Autonomous Driving (JAAD)](https://data.nvision2.eecs.yorku.ca/JAAD_dataset/) dataset
+
+- [:kolena-classification-20: Example: Binary Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/classification)
 
     !["Dog" classification example from the Dogs vs. Cats dataset.](../assets/images/classification-dog.jpg)
 
@@ -61,7 +61,7 @@ and run directly:
 
     Binary Classification of class "Dog" using the [Dogs vs. Cats](https://www.kaggle.com/c/dogs-vs-cats) dataset
 
-- [:kolena-classification-20: Example: Multiclass Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/classification#multiclass-classification-on-cifar-10)
+- [:kolena-classification-20: Example: Multiclass Classification ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/classification)
 
     ![Example images from CIFAR-10 dataset.](../assets/images/CIFAR-10.jpg)
 
@@ -104,13 +104,12 @@ and run directly:
     Automatic speech recognition using the
     [LibriSpeech](https://www.openslr.org/12) dataset
 
-- [:kolena-diarization-workflow-20: Example: Speaker Diarization ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/workflow/speaker_diarization)
+- [:kolena-fr-20: Example: Face Recognition 1:1 ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/face_recognition_11)
 
-    ![Example image from the speaker diarization workflow.](../assets/images/speaker-diarization-example.png)
+    ![Example image from Face Recognition 1:1 Workflow.](../assets/images/fr11.jpg)
 
     ---
 
-    Speaker Diarization using the
-    [ICSI-Corpus](https://groups.inf.ed.ac.uk/ami/icsi/) dataset
+    End-to-end face recognition 1:1 using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset.
 
 </div>
