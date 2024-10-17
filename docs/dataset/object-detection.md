@@ -165,8 +165,9 @@ example script for details on how an object detection dataset can be generated a
 ### Step 2: Upload your Object Detection Dataset
 
 Model evaluation on Kolena starts with [datasets](../dataset/core-concepts/index.md#kolena-dataset-20-dataset).
-Upload your dataset of datapoints (e.g. locators to images) with ground truth annotations (e.g. labeled bounding boxes)
-by importing the dataset file directly within the web app or using the SDK. Extra information can be found on the
+Upload your dataset of datapoints (e.g. locators to
+images) with ground truth annotations (e.g. labeled bounding boxes) by importing the dataset file directly
+within the web app or using the SDK. Extra information can be found on the
 [dataset formatting](../dataset/advanced-usage/dataset-formatting/computer-vision.md#2d-object-detection) page.
 
 === "Web App"
