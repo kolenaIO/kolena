@@ -292,7 +292,7 @@ For details on what is recommended within your model results, see the relevant d
     [uploading object detection model results](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 
     ```shell
-    poetry run python3 object_detection_2d/upload_results.py faster_rcnn
+    uv run python3 object_detection_2d/upload_results.py faster_rcnn
     ```
 
     Results for `faster_rcnn` will appear after the upload is complete.
