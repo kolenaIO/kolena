@@ -65,16 +65,16 @@ export KOLENA_TOKEN="********"
 
 === "`pip`"
 
-    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    Run the following command:
     ```shell
-    pip install --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
+    pip install --extra-index-url="https://${KOLENA_TOKEN}@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 === "`uv`"
 
-    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
+    Run the following command:
     ```shell
-    uv add --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
+    uv add --extra-index-url="https://${KOLENA_TOKEN}@gateway.kolena.cloud/repositories" kolena-embeddings
     ```
 
 This package provides the `kembed.util.extract_embeddings` method that generates
