@@ -17,7 +17,7 @@ and run directly:
 
     ---
 
-    Age Estimation using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset
+    Age Estimation using the [Labeled Faces in the Wild (LFW)](https://vis-www.cs.umass.edu/lfw/) dataset
 
 - [:kolena-keypoint-detection-20: Example: Keypoint Detection ↗](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/keypoint_detection)
 
@@ -92,6 +92,6 @@ and run directly:
 
     ---
 
-    End-to-end face recognition 1:1 using the [Labeled Faces in the Wild (LFW)](http://vis-www.cs.umass.edu/lfw/) dataset.
+    End-to-end face recognition 1:1 using the [Labeled Faces in the Wild (LFW)](https://vis-www.cs.umass.edu/lfw/) dataset.
 
 </div>
