@@ -10,6 +10,7 @@ nav:
     - Quickstart: dataset/quickstart.md
     - Installing <code>kolena</code>: installing-kolena.md
     - Core Concepts: dataset/core-concepts/index.md
+    - Use Cases: dataset/use-cases.md
     - Advanced Usage:
       - Advanced Usage: dataset/advanced-usage/index.md
       - Formatting Datasets:

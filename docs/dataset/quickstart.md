@@ -228,3 +228,5 @@ keypoint detection model.
 
 This example shows us how to quickly and easily integrate test data and evaluate model performance in Kolena,
 and can be arbitrarily extended with additional metrics, plots, visualizations, and data.
+
+For more information tailored to your specific use case, explore our [Use Cases](../dataset/use-cases.md).
