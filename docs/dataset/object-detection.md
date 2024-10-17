@@ -32,12 +32,12 @@ models to understand their performance and applicability in any real-world situa
     [Open Images](https://paperswithcode.com/dataset/open-images-v7),
     and [ImageNet](https://paperswithcode.com/dataset/imagenet).
 
-## Model Evaluation
+## Object Detection Model Evaluation
 
 It is important to understand some core performance metrics and plots that are typically seen when
 evaluating object detection models.
 
-### Metrics
+### Object Detection Metrics
 
 Evaluation of object detection models requires ground truths and model inferences. The ground truths in an image are
 objects outlined by bounding boxes each labeled with a class. The model
@@ -85,7 +85,7 @@ between the ground truth and inference bounding box) is under 0.5.
     Read the [averaging methods](../metrics/averaging-methods.md) guide if you are not familiar with "macro"
     and "micro" terminology.
 
-### Plots
+### Object Detection Plots
 
 Plots can become very powerful ways to gain insights into unexpected model behavior, and a formal way to showcase
 strong model quality. There are several common plots used to analyze the performance of object detection models.
@@ -164,11 +164,9 @@ example script for details on how an object detection dataset can be generated a
 
 ### Step 2: Upload your Object Detection Dataset
 
-Model evaluation on Kolena starts with [datasets](../dataset/core-concepts/index.md#kolena-dataset-20-dataset).
-Upload your dataset of datapoints (e.g. locators to
+Model evaluation on Kolena starts with datasets. Upload your dataset of datapoints (e.g. locators to
 images) with ground truth annotations (e.g. labeled bounding boxes) by importing the dataset file directly
-within the web app or using the SDK. Extra information can be found on the
-[dataset formatting](../dataset/advanced-usage/dataset-formatting/computer-vision.md#2d-object-detection) page.
+within the web app or using the SDK.
 
 === "Web App"
     To upload a dataset, having a properly formatted dataset file is a prerequisite.
@@ -234,10 +232,48 @@ For details on what is recommended within your model results, see the relevant d
 ### Step 4: Upload Object Detection Model Results
 
 !!! Note
-    Uploading model results for object detection is only supported by SDK currently.
-    Follow the steps below to upload your model results. If the ground truths are updated
-    ,please re-upload your model results. Because metrics are calculated during the model
-    result upload on the SDK client side.
+    When uploading model results for object detection, it is generally necessary to use the SDK.
+    This is because the performance metrics are computed on the client side during the upload process.
+    Although the Web App can be used as an example, the actual result calculations are performed
+    via the `upload_object_detection` function in the SDK.
+
+    If any changes are made to the ground truth data, it is important to re-upload your model
+    results to ensure that the metrics are recalculated correctly.
+
+=== "Web App"
+
+    We will upload object detection model results of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX)
+    for a single class object detection task.
+    To upload new model results, from the `Details` tab of the dataset, click on `Upload Model Results`
+    in the upper right.
+    Then, select `Upload From Cloud Storage`. Using the explorer, navigate to
+    `s3://kolena-public-examples/coco-2014-val/person-detection/results/` and select the `yolo_x` CSV.
+
+    You will now see a preview of how Kolena will ingest the model results. Give your model a name,
+    and click `Import` to upload the model results.
+
+    <figure markdown>
+    ![Model Results Upload](../assets/images/task-od-upload-results-light.gif#only-light)
+    ![Model Results Upload](../assets/images/task-od-upload-results-dark.gif#only-dark)
+    <figcaption markdown>Model Results Upload</figcaption>
+    </figure>
+
+    <div class="grid" markdown>
+    <div markdown>
+    <figure markdown>
+        ![Example of a Model Configuration](../assets/images/task-od-model-config-dark.png#only-dark)
+        ![Example of a Model Configuration](../assets/images/task-od-model-config-light.png#only-light)
+        <figcaption>Example of a Model Configuration</figcaption>
+    </figure>
+    </div>
+    <figure markdown>
+    ![Setting Evaluation Configurations](../assets/images/task-od-evaluation-config-dark.gif#only-dark)
+    ![Setting Evaluation Configurations](../assets/images/task-od-evaluation-config-light.gif#only-light)
+    <figcaption>Setting Evaluation Configurations</figcaption>
+    </figure>
+    </div>
+
+    You can repeat the above steps with all the other model files availible.
 
 === "SDK"
 
@@ -254,7 +290,7 @@ For details on what is recommended within your model results, see the relevant d
     [uploading object detection model results](../dataset/advanced-usage/dataset-formatting/computer-vision.md#uploading-model-results).
 
     ```shell
-    uv run python3 object_detection_2d/upload_results.py faster_rcnn
+    poetry run python3 object_detection_2d/upload_results.py faster_rcnn
     ```
 
     Results for `faster_rcnn` will appear after the upload is complete.
