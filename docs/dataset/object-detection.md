@@ -233,40 +233,11 @@ For details on what is recommended within your model results, see the relevant d
 
 ### Step 4: Upload Object Detection Model Results
 
-=== "Web App"
-
-    We will upload object detection model results of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX)
-    for a single class object detection task.
-    To upload new model results, from the `Details` tab of the dataset, click on `Upload Model Results`
-    in the upper right.
-    Then, select `Upload From Cloud Storage`. Using the explorer, navigate to
-    `s3://kolena-public-examples/coco-2014-val/person-detection/results/` and select the `yolo_x` CSV.
-
-    You will now see a preview of how Kolena will ingest the model results. Give your model a name,
-    and click `Import` to upload the model results.
-
-    <figure markdown>
-    ![Model Results Upload](../assets/images/task-od-upload-results-light.gif#only-light)
-    ![Model Results Upload](../assets/images/task-od-upload-results-dark.gif#only-dark)
-    <figcaption markdown>Model Results Upload</figcaption>
-    </figure>
-
-    <div class="grid" markdown>
-    <div markdown>
-    <figure markdown>
-        ![Example of a Model Configuration](../assets/images/task-od-model-config-dark.png#only-dark)
-        ![Example of a Model Configuration](../assets/images/task-od-model-config-light.png#only-light)
-        <figcaption>Example of a Model Configuration</figcaption>
-    </figure>
-    </div>
-    <figure markdown>
-    ![Setting Evaluation Configurations](../assets/images/task-od-evaluation-config-dark.gif#only-dark)
-    ![Setting Evaluation Configurations](../assets/images/task-od-evaluation-config-light.gif#only-light)
-    <figcaption>Setting Evaluation Configurations</figcaption>
-    </figure>
-    </div>
-
-    You can repeat the above steps with all the other model files availible.
+!!! Note
+    Uploading model results for object detection is only supported by SDK currently.
+    Follow the steps below to upload your model results. If the ground truths are updated
+    ,please re-upload your model results. Because metrics are calculated during the model
+    result upload on the SDK client side.
 
 === "SDK"
 
