@@ -23,6 +23,7 @@ nav:
       - Programmatically Compare Models: dataset/advanced-usage/quality-standard-results.md
       - Automatically Extract Text Properties: automations/extract-text-metadata.md
       - Automatically Extract Image Properties: automations/extract-image-metadata.md
+      - Automatically Extract Bounding Box Properties: automations/extract-bounding-box-metadata.md
       - Setting Up Natural Language Search: automations/set-up-natural-language-search.md
       - Object Detection with Kolena: dataset/object-detection.md
       - LLM Powered Data Processing: dataset/advanced-usage/llm-prompt-extraction.md
