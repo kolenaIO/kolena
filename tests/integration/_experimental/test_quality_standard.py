@@ -444,6 +444,38 @@ def test__download_quality_standard_result_with_performance_delta(
         == ["similar", "similar", "similar"]
     )
 
+    quality_standard_df = download_quality_standard_result(
+        dataset_name,
+        [model_name],
+        confidence_level=0.2,
+        reference_eval_config=eval_configs[1],
+    )
+
+    performance_delta_min_metric = list(
+        quality_standard_df[
+            (
+                model_name,
+                json.dumps(eval_configs[0]),
+                metric_group_name,
+                min_metric_label,
+                performance_delta_label,
+            )
+        ],
+    )
+    assert performance_delta_min_metric == ["similar", "similar", "improved"]
+    performance_delta_max_metric = list(
+        quality_standard_df[
+            (
+                model_name,
+                json.dumps(eval_configs[0]),
+                metric_group_name,
+                max_metric_label,
+                performance_delta_label,
+            )
+        ],
+    )
+    assert performance_delta_max_metric == ["regressed", "regressed", "regressed"]
+
 
 def test__copy_quality_standards_from_dataset__dataset_same_as_source() -> None:
     dataset_name = with_test_prefix("test__copy_quality_standards_from_dataset__dataset_same_as_source")
