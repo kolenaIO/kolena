@@ -47,11 +47,11 @@ The following properties are available for automatic bounding box property extra
 | [Mean Aspect Ratio](#mean-aspect-ratio)                                           | The mean of the aspect ratios of a group of bounding boxes                                           | Bounding Box Group Property |
 | [Mean Distance Between Bboxes](#mean-distance-between-bboxes)                     | The mean of the Euclidean distance between each pair of bounding box in the group                    | Bounding Box Group Property |
 | [Mean Relative Area](#mean-relative-area)                                         | The mean of the relative area of bounding boxes in the group                                         | Bounding Box Group Property |
-| [Mean Relative Distance To Image Centre](#mean-relative-distance-to-image-centre) | The mean of the relative distance between each of the bounding box and the image center in the group | Bounding Box Group Property |
+| [Mean Relative Distance To Image Center](#mean-relative-distance-to-image-center) | The mean of the relative distance between each of the bounding box and the image center in the group | Bounding Box Group Property |
 | [Std Aspect Ratio](#std-aspect-ratio)                                             | The standard deviation of the aspect ratios of a group of bounding boxes                             | Bounding Box Group Property |
 | [Std Distance Between Bboxes](#std-distance-between-bboxes)                      | The standard deviation  of the Euclidean distance between each pair of bounding box in the group     | Bounding Box Group Property |
 | [Std Relative Area](#std-relative-area)                                          | The standard deviation of the relative area of bounding boxes in the group                                         | Bounding Box Group Property |
-| [Std Relative Distance To Image Centre](#std-relative-distance-to-image-centre)  | The standard deviation of the relative distance between each of the bounding box and the image center in the group | Bounding Box Group Property |
+| [Std Relative Distance To Image Center](#std-relative-distance-to-image-center)  | The standard deviation of the relative distance between each of the bounding box and the image center in the group | Bounding Box Group Property |
 
 ## Feature Descriptions
 
