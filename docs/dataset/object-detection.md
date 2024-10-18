@@ -233,6 +233,15 @@ For details on what is recommended within your model results, see the relevant d
 
 ### Step 4: Upload Object Detection Model Results
 
+!!! Note
+    When uploading model results for object detection, it is generally necessary to use the SDK.
+    This is because the performance metrics are computed on the client side during the upload process.
+    Although the Web App can be used as an example, the actual result calculations are performed
+    via the `upload_object_detection` function in the SDK.
+
+    If any changes are made to the ground truth data, it is important to re-upload your model
+    results to ensure that the metrics are recalculated correctly.
+
 === "Web App"
 
     We will upload object detection model results of [YOLO X](https://github.com/Megvii-BaseDetection/YOLOX)
