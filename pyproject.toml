@@ -10,8 +10,13 @@ documentation = "https://docs.kolena.com"
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["Kolena", "ML", "testing"]
-classifiers = [# classifiers for license, versions set automatically during Poetry build
+classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "License :: OSI Approved :: Apache Software License",
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
