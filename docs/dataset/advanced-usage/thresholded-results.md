@@ -65,7 +65,7 @@ def generate_thresholded_object():
 df_results["thresholded"] = generate_thresholded_object()
 upload_results("dataset_name", "model_name", df_results, thresholded_fields=["thresholded"])
 ```
-Once you have uploaded your threhsolded results, you can setup [Thresholded Object Metrics](../../dataset/advanced-usage/task-metrics.md#thresholded-object-metrics).
+Once you have uploaded your thresholded results, you can setup [Thresholded Object Metrics](../../dataset/advanced-usage/task-metrics.md#thresholded-object-metrics).
 
 !!! note
     You can upload multiple thresholded object fields if needed.
