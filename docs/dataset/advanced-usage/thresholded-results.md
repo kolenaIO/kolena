@@ -49,7 +49,7 @@ For instance, in a semantic segmentation problem:
 
 !!! note
     The thresholded object should be added to a model result dataframe with at least one column other
-    than the `thresholded` column that contains the threhoslded object.
+    than the `thresholded` column that contains the thresholded object.
 
 ### Uploading Thresholded Results
 
