@@ -156,6 +156,20 @@ by natural language or similar images over the corresponding image data.
 
 In this tutorial, we learned how to extract and upload vector embeddings over your image data automatically and manually.
 
+## Examples
+
+<div class="grid cards" markdown>
+
+- [:kolena-age-estimation-20: Example: Upload Image Embedding ↗](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/search_embeddings/README.md)
+
+    ![Example image from COCO-Stuff 10K dataset.](../assets/images/coco-stuff-10k.jpg)
+
+    ---
+
+    Extraction and uploading image embeddings. Dataset used is [COCO-10k-stuff](https://github.com/nightrome/cocostuff10k).
+
+</div>
+
 ## FAQ
 
 ??? faq "Can I share embeddings with Kolena even if I do not share the underlying images?"
