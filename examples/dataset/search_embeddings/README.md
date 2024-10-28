@@ -9,7 +9,7 @@ this data has already been uploaded to your Kolena platform.
 
 1. Ensure that data for the [`semantic_segmentation`](../semantic_segmentation) dataset has been seeded through calling
 the [`upload_dataset.py`](../semantic_segmentation/semantic_segmentation/upload_dataset.py) script.
-2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.com/dataset/advanced-usage/set-up-natural-language-search/#uv)
+2. Install the kolena-embeddings package via the natural language search [instructions](https://docs.kolena.com/automations/set-up-natural-language-search/#step-1-install-kolena-embeddings-package)
 3. This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. Install project
 dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
