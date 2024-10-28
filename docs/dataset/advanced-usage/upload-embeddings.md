@@ -4,138 +4,62 @@ icon: kolena/classification-16
 
 # :kolena-classification-16: Uploading Custom Embeddings
 
-If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic,
- you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena.
+This guide explains how to upload your own embeddings to Kolena using the Kolena SDK.
+Please ensure you have the SDK installed.
+[Instructions for installing the SDK are available here.](https://docs.kolena.com/installing-kolena/)
 
-## Uploading embeddings manually
+## Step 1: Import the Embedding Upload Function
 
-In this document, we will go over main components of the below
-and steps you need to take to tailor it for your application.
-
-!!! Example
-    The [`Kolena`](https://github.com/kolenaIO/kolena) repository includes a
-    [code example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for
-    extraction and uploading embeddings. It builds on data from the
-    [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
-    example dataset, so ensure the dataset is uploaded to your Kolena environment before running the code example.
-
-Uploading embeddings to Kolena can be done in four simple steps:
-
-- [**Step 1**](#step-1-install-kolena-embeddings-package): installing dependency package
-- [**Step 2**](#step-2-load-dataset-and-model): loading dataset and model to run embedding extraction
-- [**Step 3**](#step-3-load-images-for-extraction): loading images for input to extraction library
-- [**Step 4**](#step-4-extract-and-upload-embeddings): extracting and uploading search embeddings
-
-### Step 1: Install `kolena-embeddings` Package
-
-The package can be installed via `pip` or `uv` and requires use of your kolena token which can be created
-on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
-
-We first [retrieve and set](../../installing-kolena.md) our `KOLENA_TOKEN` environment variable.
-This is used by the uploader for authentication against your Kolena instance.
-
-```shell
-export KOLENA_TOKEN="********"
+To upload embeddings, use the `upload_dataset_embeddings` function from Kolena. You can import
+it with the following code:
+```
+from kolena._experimental.search import upload_dataset_embeddings
 ```
 
-=== "`pip`"
+## Step 2: Prepare the Required DataFrame
 
-    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
-    ```shell
-    pip install --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
-    ```
+The DataFrame you upload should have two columns:
 
-=== "`uv`"
+- Unique Identifier Column: This is typically the locator field, which serves as a unique identifier for each entry.
+- Embedding Column: Each embedding must have the same size across all rows.
 
-    Run the following command, making sure to replace <KOLENA_TOKEN> with the token retrieved from the developer page:
-    ```shell
-    uv add --extra-index-url="https://<KOLENA_TOKEN>@gateway.kolena.cloud/repositories" kolena-embeddings
-    ```
+### Example code
 
-This package provides the `kembed.util.extract_embeddings` method that generates
-embeddings as a numpy array for a given [`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image)
-object.
+Here’s an example where we download the instance-seg dataset from Kolena,
+then add a placeholder embedding (a zero-filled array):
+```
+from kolena.dataset import download_dataset
 
-### Step 2: Load Dataset and Model
+dataset = "instance-seg"
+df = download_dataset(dataset)
+df_embedding = df[id_fields]
+df_embedding["embedding"] = [np.zeros((1,512))] * len(df_embedding)
+```
+!!! Note
+    Replace the placeholder embeddings with embeddings generated from your own embedding model.
 
-Before extracting embeddings on a dataset, we need to load the dataset. The dataset
-seeded in the [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
-example contains image assets referenced by the `locator`
-column, and we load the dataset in to a dataframe.
+## Step 3: Upload the DataFrame using Kolena SDK
 
-The embedding model and its key are obtained via the `load_embedding_model()` method.
+With the DataFrame prepared, use the `upload_dataset_embeddings` function to upload it to Kolena.
 
-```{.python .no-copy}
-kolena.initialize(verbose=True)
-df_dataset = download_dataset("coco-stuff-10k")
-model, model_key = load_embedding_model()
+```
+upload_dataset_embeddings(dataset_name="instance-seg", key="unique-key", df_embedding=df_embedding)
 ```
 
-### Step 3: Load Images for Extraction
+The `dataset_name` parameter specifies the target dataset where the embeddings will be uploaded.
+The key parameter is a unique identifier for the embeddings being uploaded, allowing multiple embeddings
+ to be associated with the same dataset. Finally, `df_embeddings` is the DataFrame object
+ prepared in Step 2 that contains the data you want to upload.
 
-In order to extract embeddings on image data, we must load our image files into a
-[`PIL.Image.Image`](https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image) object.
-In this section, we will load these images from an S3 bucket.
-For other cloud storage services, please refer to your cloud storage's API docs.
+## Step 4: Verify Your Embeddings in Kolena Studio
 
-```{.python .no-copy}
-s3 = boto3.client("s3")
+To confirm the embeddings uploaded successfully:
 
-def load_image_from_accessor(accessor: str) -> Image:
-    bucket_name, *parts = accessor[5:].split("/")
-    file_stream = boto3.resource("s3").Bucket(bucket_name).Object("/".join(parts)).get()["Body"]
-    return Image.open(file_stream)
+- Open Kolena Studio.
+- In the top right corner, click on "Off" beside the embeddings toggle to enable embeddings view.
+- Choose from the visualization options: UMAP, t-SNE, or PCA.
 
-def iter_image_paths(image_accessors: List[str]) -> Iterator[Tuple[str, Image.Image]]:
-    for locator in image_accessors:
-        image = load_image_from_accessor(locator)
-        yield locator, image
-```
+![Enabling Embeddings on Studio](../../assets/images/upload-embeddings-enable.gif)
 
-!!! tip end
-    When processing large scales of images, we recommend using an `Iterator` to limit the number
-    of images loaded into memory at once.
-
-### Step 4: Extract and Upload Embeddings
-
-Once embeddings are extracted for each `locator` on the dataset, we create a dataframe with
-`embedding` and `locator` columns, and use the `upload_dataset_embeddings` method to upload
-the embeddings.
-
-The dataframe uploaded is required to contain the ID columns of the dataset in order to
-match against the [datapoints](../core-concepts/index.md#datapoints) in the dataset.
-In this example, the ID column of the dataset is `locator`.
-
-```{.python .no-copy}
-def extract_image_embeddings(
-    model: StudioModel,
-    locators_and_filepaths: List[Tuple[str, Optional[str]]],
-    batch_size: int = 50,
-) -> List[Tuple[str, np.ndarray]]:
-    """
-    Extract a list of search embeddings corresponding to sample locators.
-    """
-
-locator_and_image_iterator = iter_image_paths(locators)
-locator_and_embeddings = extract_image_embeddings(model, locator_and_image_iterator)
-
-df_embeddings = pd.DataFrame(locator_and_embeddings, columns=["locator", "embedding"])
-upload_dataset_embeddings(dataset_name, model_key, df_embeddings)
-```
-
-Once the upload completes, we can now visit [:kolena-dataset-20: Datasets](https://app.kolena.com/redirect/datasets),
-open the dataset and navigate to the <nobr>:kolena-studio-16: Studio</nobr> tab to search
-by natural language or similar images over the corresponding image data.
-
-## Conclusion
-
-In this tutorial, we learned how to extract and upload vector embeddings over your image data automatically and manually.
-
-## FAQ
-
-??? faq "Can I share embeddings with Kolena even if I do not share the underlying images?"
-    Yes!
-
-    Embeddings extraction is a unidirectional mapping, and used only for natural language search and similarity comparisons.
-    Uploading these embeddings to Kolena does not allow for any reconstruction of these images, nor does it involve
-    sharing these images with Kolena.
+If you encounter issues with creating embeddings, refer to our example code for
+[generating image embeddings and uploading to Kolena](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings).
