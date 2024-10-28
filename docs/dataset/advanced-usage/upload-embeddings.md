@@ -1,24 +1,23 @@
 ---
-icon: kolena/search-around-20
+icon: kolena/classification-16
 ---
 
-# :kolena-search-around-20: Setting up Natural Language Search
-
-## Uploading embeddings manually
+# :kolena-classification-16: Uploading Custom Embeddings
 
 If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic,
  you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena.
 
+## Uploading embeddings manually
+
 In this document, we will go over main components of the below
 and steps you need to take to tailor it for your application.
 
-!!! Note
-    The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
-    [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for
-    embeddings extraction and
-    upload. This builds off the data uploaded in the
+!!! Example
+    The [`Kolena`](https://github.com/kolenaIO/kolena) repository includes a
+    [code example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for
+    extraction and uploading embeddings. It builds on data from the
     [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
-    example dataset, and is best run after this data has been uploaded to your Kolena environment.
+    example dataset, so ensure the dataset is uploaded to your Kolena environment before running the code example.
 
 Uploading embeddings to Kolena can be done in four simple steps:
 
@@ -32,7 +31,7 @@ Uploading embeddings to Kolena can be done in four simple steps:
 The package can be installed via `pip` or `uv` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
-We first [retrieve and set](../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
+We first [retrieve and set](../../installing-kolena.md) our `KOLENA_TOKEN` environment variable.
 This is used by the uploader for authentication against your Kolena instance.
 
 ```shell
@@ -104,7 +103,7 @@ Once embeddings are extracted for each `locator` on the dataset, we create a dat
 the embeddings.
 
 The dataframe uploaded is required to contain the ID columns of the dataset in order to
-match against the [datapoints](../dataset/core-concepts/index.md#datapoints) in the dataset.
+match against the [datapoints](../core-concepts/index.md#datapoints) in the dataset.
 In this example, the ID column of the dataset is `locator`.
 
 ```{.python .no-copy}
@@ -131,20 +130,6 @@ by natural language or similar images over the corresponding image data.
 ## Conclusion
 
 In this tutorial, we learned how to extract and upload vector embeddings over your image data automatically and manually.
-
-## Examples
-
-<div class="grid cards" markdown>
-
-- [:kolena-age-estimation-20: Example: Upload Image Embedding ↗](https://github.com/kolenaIO/kolena/blob/trunk/examples/dataset/search_embeddings/README.md)
-
-    ![Example image from COCO-Stuff 10K dataset.](../assets/images/coco-stuff-10k.jpg)
-
-    ---
-
-    Extraction and uploading image embeddings. Dataset used is [COCO-10k-stuff](https://github.com/nightrome/cocostuff10k).
-
-</div>
 
 ## FAQ
 

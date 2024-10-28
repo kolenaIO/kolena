@@ -28,10 +28,8 @@ Under the "Automations" tab, Enable the Automated Embeddings Extraction by Kolen
 
 Once this setting is enabled, embeddings for new and edited datapoints in your datasets will be automatically extracted.
 
-## Uploading embeddings manually
+## Uploading Custom Embeddings
 
-If your organization does not allow Kolena access to the images, or you have custom embedding extraction logic,
- you may upload those embeddings manually to enable Natural Language and Similar Image search on Kolena.
-
-In this document, we will go over main components of the below
-and steps you need to take to tailor it for your application.
+If your organization restricts Kolena’s access to images, or if you use custom logic for embedding extraction,
+ you can upload embeddings to enable Natural Language and Similar Image search on Kolena. For guidance,
+ refer to the documentation on [Uploading Custom Embeddings](../dataset/advanced-usage/upload-embeddings.md).
