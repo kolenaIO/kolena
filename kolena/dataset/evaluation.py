@@ -339,8 +339,12 @@ def _upload_results(
 
     link = f"{get_platform_url()}/dataset/standards?datasetId={dataset_id}&{models_str}"
     log.info(
-        f"uploaded test results for model '{model}' on dataset '{dataset}': "
-        f"{total_rows} uploaded, {response.n_inserted} inserted, {response.n_updated} updated ({link})",
+        f"Upload Summary for Model '{model}' on Dataset '{dataset}': \n"
+        f"Total Rows Attempted: {total_rows}\n"
+        f"Rows Successfully Inserted: {response.n_inserted}\n"
+        f"Rows Successfully Updated: {response.n_updated}\n"
+        f"Rows Failed to Insert/Update: {total_rows - response.n_inserted - response.n_updated}\n"
+        f"Details: ({link})",
     )
     return response
 
