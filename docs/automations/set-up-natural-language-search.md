@@ -37,12 +37,11 @@ In this document, we will go over main components of the below
 and steps you need to take to tailor it for your application.
 
 !!! Example
-    The [`kolena`](https://github.com/kolenaIO/kolena) repository contains a runnable
-    [example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for
-    embeddings extraction and
-    upload. This builds off the data uploaded in the
+    The [`Kolena`](https://github.com/kolenaIO/kolena) repository includes a
+    [code example](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/search_embeddings) for
+    extraction and uploading embeddings. It builds on data from the
     [semantic_segmentation](https://github.com/kolenaIO/kolena/tree/trunk/examples/dataset/semantic_segmentation)
-    example dataset, and is best run after this data has been uploaded to your Kolena environment.
+    example dataset, so ensure the dataset is uploaded to your Kolena environment before running the code example.
 
 Uploading embeddings to Kolena can be done in four simple steps:
 
@@ -56,7 +55,7 @@ Uploading embeddings to Kolena can be done in four simple steps:
 The package can be installed via `pip` or `uv` and requires use of your kolena token which can be created
 on the [:kolena-developer-16: Developer](https://app.kolena.com/redirect/developer) page.
 
-We first [retrieve and set](../installing-kolena.md#initialization) our `KOLENA_TOKEN` environment variable.
+We first [retrieve and set](../installing-kolena.md) our `KOLENA_TOKEN` environment variable.
 This is used by the uploader for authentication against your Kolena instance.
 
 ```shell
