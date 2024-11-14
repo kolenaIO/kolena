@@ -276,8 +276,8 @@ def _compute_metrics(
         )
         all_thresholds.extend(inf.score for inf in inferences)
 
-    if len(all_thresholds) >= 501:
-        all_thresholds = list(np.linspace(min(all_thresholds), max(all_thresholds), 501))
+    if len(all_thresholds) >= 100:
+        all_thresholds = list(np.linspace(min(all_thresholds), max(all_thresholds), 100))
     else:
         all_thresholds = sorted(all_thresholds)
 
