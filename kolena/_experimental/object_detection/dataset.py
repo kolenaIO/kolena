@@ -431,7 +431,7 @@ def compute_object_detection_results(
     return pd.concat(list(results_iter))
 
 
-def get_object_size(obj):
+def get_object_size(obj: Any) -> int:
     """Get approximate size of a Python object in bytes."""
     return len(json.dumps(str(obj)).encode("utf-8"))
 
