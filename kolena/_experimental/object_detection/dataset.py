@@ -474,6 +474,7 @@ def upload_object_detection_results(
     min_confidence_score: float = 0.01,
     batch_size: int = 10_000,
     required_match_fields: Optional[List[str]] = None,
+    row_limit: bool = False,
 ) -> None:
     """
     Compute metrics and upload results of the model computed by
@@ -502,6 +503,8 @@ def upload_object_detection_results(
         the inference and ground truth for them to be considered a match.
     :return:
     """
+    if row_limit:
+        df = remove_oversized_rows(df)
     eval_config = dict(
         iou_threshold=iou_threshold,
         threshold_strategy=threshold_strategy,
@@ -509,7 +512,7 @@ def upload_object_detection_results(
     )
     results = _iter_object_detection_results(
         dataset_name,
-        remove_oversized_rows(df),
+        df,
         ground_truths_field=ground_truths_field,
         raw_inferences_field=raw_inferences_field,
         gt_ignore_property=gt_ignore_property,
