@@ -343,7 +343,7 @@ def _upload_results(
         f"Total Rows Attempted: {total_rows}\n"
         f"Rows Successfully Inserted: {response.n_inserted}\n"
         f"Rows Successfully Updated: {response.n_updated}\n"
-        f"Rows Failed to Insert/Update: {total_rows - response.n_inserted - response.n_updated}"
+        f"Rows Failed to Insert/Update: {total_rows - response.n_inserted - response.n_updated}\n"
         f"Verify the id fields matches. Unchanged datapoints won't be modified. \n"
         f"Details: {link}",
     )

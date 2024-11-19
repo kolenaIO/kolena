@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import itertools
+import json
 from collections import defaultdict
 from typing import Any
 from typing import cast
@@ -430,6 +431,36 @@ def compute_object_detection_results(
     return pd.concat(list(results_iter))
 
 
+def get_object_size(obj):
+    """Get approximate size of a Python object in bytes."""
+    return len(json.dumps(str(obj)).encode("utf-8"))
+
+
+def remove_oversized_rows(df: pd.DataFrame, size_threshold_mb: float = 16) -> pd.DataFrame:
+    """Remove rows where total inferences size exceeds threshold."""
+    cleaned_df = df.copy()
+
+    rows_to_drop = []
+    for idx, row in cleaned_df.iterrows():
+        inferences_size = sum(get_object_size(inf) for inf in row["raw_inferences"])
+        size_mb = inferences_size / (1024 * 1024)
+
+        if size_mb > size_threshold_mb:
+            rows_to_drop.append(idx)
+            locator = row["locator"]
+            number_of_inferences = len(row["raw_inferences"])
+            print(f"\nDropping row {idx} because greater than {size_threshold_mb} mb: ")
+            print(f"Locator: {locator} ")  # Changed to double quotes
+            print(f"Total size: {size_mb} MB ")
+            print(f"Number of inferences: {number_of_inferences} ")  # Changed to double quotes
+
+    if rows_to_drop:
+        print(f"\nTotal rows dropped: {len(rows_to_drop)}")
+        cleaned_df = cleaned_df.drop(rows_to_drop)
+
+    return cleaned_df
+
+
 def upload_object_detection_results(
     dataset_name: str,
     model_name: str,
@@ -478,7 +509,7 @@ def upload_object_detection_results(
     )
     results = _iter_object_detection_results(
         dataset_name,
-        df,
+        remove_oversized_rows(df),
         ground_truths_field=ground_truths_field,
         raw_inferences_field=raw_inferences_field,
         gt_ignore_property=gt_ignore_property,
