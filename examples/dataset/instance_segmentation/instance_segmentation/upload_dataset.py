@@ -14,6 +14,7 @@
 from argparse import ArgumentParser
 from argparse import Namespace
 from collections import defaultdict
+from datetime import datetime
 from typing import Any
 from typing import Dict
 from typing import List
@@ -47,11 +48,15 @@ def load_data(df_metadata_csv: pd.DataFrame) -> pd.DataFrame:
             color=LABEL_TO_COLOR[record.label],  # type: ignore[call-arg]
         )
         image_to_polygons[record.locator].append(polygon)
+
+        date_captured_epoch = int(datetime.strptime(record.date_captured, "%Y-%m-%d %H:%M:%S").timestamp())
+
         metadata = {
             "locator": str(record.locator),
             "height": float(record.height),
             "width": float(record.width),
             "date_captured": str(record.date_captured),
+            "date_captured_epoch": date_captured_epoch,
             "brightness": float(record.brightness),
         }
         image_to_metadata[record.locator] = metadata
