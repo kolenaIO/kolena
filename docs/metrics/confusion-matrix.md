@@ -23,10 +23,6 @@ Confusion matrices are used in classification workflows with only one class or w
 object detection workflows, too. They help evaluate models by counting classification errors and visualizing class
 imbalances.
 
-<div class="grid cards" markdown>
-- :kolena-manual-16: API Reference: [`ConfusionMatrix` ↗][kolena.workflow.plot.ConfusionMatrix]
-</div>
-
 !!!example
     To see an example of confusion matrix, checkout the
     [CIFAR-10 on app.kolena.com/try.](https://app.kolena.io/try/dataset/debugger?datasetId=20&aggregations=N4IgNghgRgpmIC4QEEDGqCuAnCqCeIANCAM4D22qMiIWMJGYALkSBAObt3sRNlaJQHLjB58BSXJhz5WEAG4wc7AJYA7dgFkYTABZkAJjQC2uLGRABfYgAcIOYyUEguFNQYAqWDHoBiKuCMkVwx3AH0mbz0AOkhYeGJ1ADMlGDUqf0CaVEgSEhUklVReFTI1WOg4Vj06En0wILVGMET0sAwDGDCIDFREJIgwEhhrECT%2BUxYkGyUqNSYOamJdFXZdMFXdKdAVtaUASRIAIR0mJURIjBHiEJsAOQhjaiRtSKKAAgBxcwwbKyA&aggregations=N4IgNghgRgpmIC4QAUBOMDGBLAzlg9gHYAEAFALIQar4CUIANCDvgK6oYyIjo6tgAXRiAgBzUelEQB%2BVIlBiJMKTLlIADumx4iwiADcYqMVkKjyMAQAt8AE24BbKjRABfJuojGHOeSAlshLYAKqis1gBiWHD2SAGsQQD6AmHWAHSQsPBMpgBmRjCEnFEx3BiQOHi5WBjSBIQZ0HDC1rw2YLGE-GA5RWCstjCJEKwYiLkQYDgw7iC5sk5CGkachAJiXExWWKJWYDtWS6Dbu0YAkjgAQpYCRogprDNM8eoAchAOXEgWKTXEAOI0VjqNxAA&aggregations=N4IgNghgRgpmIC4QCUYGMJjAAgBQFkI0AnAewEoQAaEAZ1IFdi0ZERiZaGwAXakCAHNBHQRB6liiUEJEwxEqUg4Ys-CADcYxIQEsAdoPwweAC1IATNgFsiZEAF8aABwg7rtaSBGN9FgCrEDGYAYrpwVkg%2BDH4A%2BjxBZgB0kLDwNAYAZtow%2BixhEWxokLS0upm6GDy6pPop0HD8Zhy05mCR%2BtxgGXlgDBYwsRAMaIiZmLQwTiCZkrZ8SM7aLPo8Qqw0prqCpmDbpgugWzvaAJK0AEImPNqICQxTNNHOAHIQ1qxIxgmV2ADiZAYzkcQA&aggregations=N4IgNghgRgpmIC4QDECMACAygYwPYCcZ0AKAWQm31wEoQAaEAZ1wFd9sZERDGWwAXeiAgBzEYRER%2BBRKFHiYk6fi4AzVAH1GeQkIgA3GPlEBLAHYjSMfgAtcAEy4BbClRABfBgAcIxp41kQcVYzewAVfBZbZBM4RyRgllCNfkjbADpIWHgGc1UjGDMOGLiubEhGRhNVE2wpE1wzTOg4IVseOzB4sz4wXKKwFnsYDQgWbERVCDBGGE8QVQIXQSQvIw4zflFOBhsTERswfZsV0D2DowBJRgAha34jRFSWOYZErwA5CCdOJCtU2roADiVBYXg8QA&models=N4IglgJiBcDMA0IDGB7AdgMzAcwK4CcBDAFzHRlEhgFYBfWoA&plots=N4IgHiBcoM4PYFcBOBjAplES0wQGwBcQAaEAazQE9MU8BDGGASwDMmU6Cm4A7AOnoAjNHhIghIzNlyE%2BtBszYcuvAXWGjSAEyYx1eNFqgs6eGGgC%2BpatBDxk6TFs50ADnCY8ipCjZABzJEQeLQB9AiQEAgALNQ0xCVFIEGcCNw8vPkDgsIio2MSxHT1BAyNIEzNLCyA)
@@ -35,7 +31,26 @@ imbalances.
 
 The implementation of a confusion matrix depends on whether the workflow concerns one or more classes.
 
-### Single-Class
+!!!warning
+    The Confusion Matrix feature in Kolena supports visualizing comparisons
+    between a single predicted value and a single ground truth value. If you're
+    having trouble generating or customizing plots for these visualizations, feel free
+    to reach out to your Implementation Engineer for guidance. Alternatively, you
+    can contact us at [contact@kolena.com](mailto:contact@kolena.com)! for further support.
+
+![Steps To Generate Plot](../assets/images/metrics-confusion-matrix-steps.gif)
+
+**Steps to Generate a Custom Confusion Matrix Plot**:
+
+1. Go to the Debugger page.
+
+2. Add model results with predicted values.
+
+3. Scroll down to Custom Plots.
+
+4. Select the predicted results for the X-Axis and the ground truth for the Y-Axis.
+
+## Single-Class
 
 Single-class confusion matrices are used for binary classification problems. After computing the number of TPs, FPs,
 FNs, and TNs, a confusion matrix would look like this:
@@ -74,7 +89,7 @@ A confusion matrix for this example can be plotted:
 
 </center>
 
-### Multiclass
+## Multiclass
 
 Multiclass confusion matrices, used for multiclass classification problems, outline counts of TPs, FPs, FNs, and TNs for
 every unique pair of actual and predicted labels. A multiclass classification confusion matrix with three classes
@@ -94,7 +109,7 @@ And for example, if we are trying to calculate the counts of TP, FP, FN, and TN 
 | **Actual `Boat`** | <span class="mg-cell-color-negative">False Negative</span> | <span class="mg-cell-color-positive">True Positive</span> | <span class="mg-cell-color-negative">False Negative</span> |
 | **Actual `Car`** | <span class="mg-cell-color-positive">True Negative</span> | <span class="mg-cell-color-negative">False Positive</span> | <span class="mg-cell-color-positive">True Negative</span> |
 
-**Example: Multiclass**
+### Example: Multiclass
 
 Let's take a look at a multiclass classification example and plot a confusion matrix. In this example, we have three
 classes: `Airplane`, `Boat`, and `Car`. The multiclass classifier outputs the following inferences:
@@ -140,7 +155,7 @@ it is incorrect, it has labeled the `Airplane` as a `Boat` or a `Car`.
 
 Whenever there is an actual `Airplane` class, the model never predicts that there is a different transportation object.
 
-### Normalization
+## Normalization
 
 Sometimes it is easier to focus on **class-level behavior** if you are using a normalized confusion matrix. If confusion
 matrices are color-coded, normalizing can also create a better visual representation:
