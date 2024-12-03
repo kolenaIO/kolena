@@ -31,12 +31,11 @@ imbalances.
 
 The implementation of a confusion matrix depends on whether the workflow concerns one or more classes.
 
-!!!warning
+!!!info
     The Confusion Matrix feature in Kolena supports visualizing comparisons
     between a single predicted value and a single ground truth value. If you're
-    having trouble generating or customizing plots for these visualizations, feel free
-    to reach out to your Implementation Engineer for guidance. Alternatively, you
-    can contact us at [contact@kolena.com](mailto:contact@kolena.com)! for further support.
+    having trouble generating or customizing plots for these visualizations,
+    feel free to reach out to the Kolena team for support.
 
 ![Steps To Generate Plot](../assets/images/metrics-confusion-matrix-steps.gif)
 
@@ -64,7 +63,7 @@ FNs, and TNs, a confusion matrix would look like this:
 
 </center>
 
-#### Example: Single-Class
+### Example: Single-Class
 
 Let's consider a simple binary classification example and plot a confusion matrix. The table below shows five samples'
 (three positive and two negative) ground truth labels and inference labels.
