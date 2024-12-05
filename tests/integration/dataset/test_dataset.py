@@ -21,6 +21,8 @@ import pandas as pd
 import pytest
 
 from kolena._api.v2.dataset import CommitData
+from kolena.annotation import BoundingBox
+from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import download_dataset
 from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
@@ -28,8 +30,6 @@ from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
-from kolena.workflow.annotation import BoundingBox
-from kolena.workflow.annotation import LabeledBoundingBox
 from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
 from tests.integration.helper import upload_extracted_properties
