@@ -36,9 +36,11 @@ rendered on top of the image.
 """  # noqa: E501
 import dataclasses
 from abc import ABCMeta
+from datetime import datetime
 from functools import reduce
 from typing import Dict
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 from kolena._utils.datatypes import DataCategory
@@ -62,6 +64,7 @@ class _AnnotationType(DataType):
     TIME_SEGMENT = "TIME_SEGMENT"
     TEXT_SEGMENT = "TEXT_SEGMENT"
     CUSTOM = "CUSTOM"
+    TIMESTAMP = "TIMESTAMP"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -499,6 +502,30 @@ class ScoredLabeledTextSegment(TextSegment):
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
+class Timestamp(Annotation):
+    """
+    !!! note "Experimental"
+
+        Timestamp data type.
+    """
+
+    epoch_time: Optional[float] = None
+    value: Optional[str] = None
+    format: Optional[str] = None
+
+    @staticmethod
+    def _data_type() -> _AnnotationType:
+        return _AnnotationType.TIMESTAMP
+
+    # TODO: unit tests
+    def __post_init__(self) -> None:
+        if self.value:
+            if not self.format:
+                raise ValueError("format needs to be specified for string timestamp")
+            object.__setattr__(self, "epoch_time", datetime.strptime(self.value, self.format).timestamp())
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
 class CustomAnnotation(Annotation):
     """
     !!! note "Experimental"
@@ -549,4 +576,5 @@ _ANNOTATION_TYPES = [
     Keypoints3D,
     Polyline3D,
     CustomAnnotation,
+    Timestamp,
 ]
