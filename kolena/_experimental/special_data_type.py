@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Special data types supported on the Kolena platform.
+
+"""  # noqa: E501
 from abc import ABCMeta
 from datetime import datetime
 from typing import Optional
@@ -27,16 +31,16 @@ class _SpecialDataType(DataType):
 
     @staticmethod
     def _data_category() -> DataCategory:
-        return DataCategory.ANNOTATION
+        return DataCategory.SPECIAL
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class Annotation(TypedDataObject[_SpecialDataType], metaclass=ABCMeta):
+class SpecialDataType(TypedDataObject[_SpecialDataType], metaclass=ABCMeta):
     """The base class for all special data types."""
 
 
 @dataclass(frozen=True, config=ValidatorConfig)
-class Timestamp(Annotation):
+class Timestamp(SpecialDataType):
     """
     !!! note "Experimental"
 
@@ -44,8 +48,13 @@ class Timestamp(Annotation):
     """
 
     epoch_time: Optional[float] = None
+    """The label (e.g. model classification) associated with this bounding box."""
+
     value: Optional[str] = None
+    """The label (e.g. model classification) associated with this bounding box."""
+
     format: Optional[str] = None
+    """The label (e.g. model classification) associated with this bounding box."""
 
     @staticmethod
     def _data_type() -> _SpecialDataType:

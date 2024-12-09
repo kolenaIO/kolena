@@ -21,9 +21,9 @@ import pandas as pd
 import pytest
 
 from kolena._api.v2.dataset import CommitData
+from kolena._experimental.special_data_type import Timestamp
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
-from kolena.annotation import Timestamp
 from kolena.dataset import download_dataset
 from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
