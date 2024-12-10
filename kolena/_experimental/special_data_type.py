@@ -17,6 +17,7 @@ Special data types supported on the Kolena platform.
 """  # noqa: E501
 from abc import ABCMeta
 from datetime import datetime
+from datetime import timezone
 from typing import Optional
 
 from kolena._utils.datatypes import DataCategory
@@ -65,4 +66,8 @@ class Timestamp(SpecialDataType):
         if self.value:
             if not self.format:
                 raise ValueError("format needs to be specified for string timestamp")
-            object.__setattr__(self, "epoch_time", datetime.strptime(self.value, self.format).timestamp())
+            object.__setattr__(
+                self,
+                "epoch_time",
+                datetime.strptime(self.value, self.format).replace(tzinfo=timezone.utc).timestamp(),
+            )
