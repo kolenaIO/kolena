@@ -46,8 +46,9 @@ class SpecialDataType(TypedDataObject[_SpecialDataType], metaclass=ABCMeta):
 class Timestamp(SpecialDataType):
     """
     !!! note "Experimental"
+        This class is considered **experimental**
 
-        Timestamp data type.
+    Timestamp data type.
     """
 
     epoch_time: Optional[float] = None
@@ -69,7 +70,6 @@ class Timestamp(SpecialDataType):
     def _data_type() -> _SpecialDataType:
         return _SpecialDataType.TIMESTAMP
 
-    # TODO: unit tests
     def __post_init__(self) -> None:
         if self.value:
             if not self.format:
