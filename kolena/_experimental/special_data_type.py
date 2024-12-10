@@ -15,9 +15,9 @@
 Special data types supported on the Kolena platform.
 
 """  # noqa: E501
+import os
 from abc import ABCMeta
 from datetime import datetime
-from datetime import timezone
 from typing import Optional
 
 from kolena._utils.datatypes import DataCategory
@@ -25,6 +25,8 @@ from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
+
+os.putenv("TZ", "GMT")
 
 
 class _SpecialDataType(DataType):
@@ -49,13 +51,19 @@ class Timestamp(SpecialDataType):
     """
 
     epoch_time: Optional[float] = None
-    """The label (e.g. model classification) associated with this bounding box."""
+    """The epoch time of the timestamp. If `value` and `format` are specified, the `epoch_time` will be calculated."""
 
     value: Optional[str] = None
-    """The label (e.g. model classification) associated with this bounding box."""
+    """
+    The timestamp in a string representation. If present, the corresponding `format` must be specified too.
+    Note that GMT timezone is assumed unless the offset is specified in the string.
+    """
 
     format: Optional[str] = None
-    """The label (e.g. model classification) associated with this bounding box."""
+    """
+    The format of the `value` string following the
+    [python format codes](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes).
+    """
 
     @staticmethod
     def _data_type() -> _SpecialDataType:
@@ -69,5 +77,5 @@ class Timestamp(SpecialDataType):
             object.__setattr__(
                 self,
                 "epoch_time",
-                datetime.strptime(self.value, self.format).replace(tzinfo=timezone.utc).timestamp(),
+                datetime.strptime(self.value, self.format).timestamp(),
             )
