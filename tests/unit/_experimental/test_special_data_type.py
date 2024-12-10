@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from typing import Any
+from typing import Dict
 from typing import Optional
 
 import pytest
@@ -42,7 +43,7 @@ from kolena._utils.datatypes import DATA_TYPE_FIELD
         ),
     ],
 )
-def test__serde__timestamp(object: Timestamp, json_data: dict[str, Any]) -> None:
+def test__serde__timestamp(object: Timestamp, json_data: Dict[str, Any]) -> None:
     object_dict = object._to_dict()
     assert object_dict == {
         **json_data,
