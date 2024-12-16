@@ -85,6 +85,7 @@ class DataCategory(str, Enum):
     METRICS = "METRICS"
     ASSET = "ASSET"
     ANNOTATION = "ANNOTATION"
+    SPECIAL = "SPECIAL"
 
     def data_category_to_module_name(self) -> str:
         if self == DataCategory.TEST_SAMPLE:
@@ -97,6 +98,8 @@ class DataCategory(str, Enum):
             return "kolena.asset"
         if self == DataCategory.ANNOTATION:
             return "kolena.annotation"
+        if self == DataCategory.SPECIAL:
+            return "kolena._experimental.data_type.special"
         raise ValueError(f"Must specify module name for data category: {self}")
 
 
