@@ -15,7 +15,6 @@
 Special data types supported on the Kolena platform.
 
 """  # noqa: E501
-import os
 from abc import ABCMeta
 from datetime import datetime
 from typing import Optional
@@ -25,8 +24,6 @@ from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.validators import ValidatorConfig
-
-os.putenv("TZ", "GMT")
 
 
 class _SpecialDataType(DataType):
@@ -74,8 +71,15 @@ class Timestamp(SpecialDataType):
         if self.value:
             if not self.format:
                 raise ValueError("format needs to be specified for string timestamp")
+            if "%z" in self.format:
+                time_value = self.value
+                time_format = self.format
+            else:
+                time_value = self.value + " +0000"
+                time_format = self.format + " %z"
+
             object.__setattr__(
                 self,
                 "epoch_time",
-                datetime.strptime(self.value, self.format).timestamp(),
+                datetime.strptime(time_value, time_format).timestamp(),
             )
