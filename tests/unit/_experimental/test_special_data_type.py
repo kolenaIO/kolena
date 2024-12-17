@@ -64,15 +64,31 @@ def test__serde__timestamp(object: Timestamp, json_data: Dict[str, Any]) -> None
         ("Tuesday, December 31, 2024 00:00:00 AM UTC-05:00", "%A, %B %d, %Y %H:%M:%S %p %Z%z", 1735621200),
     ],
 )
-def test__timestamp_epoch_conversion(value: str, format: str, epoch_time: float) -> None:
+def test__timestamp_epoch_conversion_with_format(value: str, format: str, epoch_time: float) -> None:
     timestamp_object = Timestamp(value=value, format=format)
+    assert epoch_time == timestamp_object.epoch_time
+
+
+@pytest.mark.parametrize(
+    "value, epoch_time",
+    [
+        ("2024-12-31", 1735603200),
+        ("2024-12-31 00:00:00", 1735603200),
+        ("2024-12-31 12:00:00+00:00", 1735646400),
+        ("2024-12-31 12:00:00-00:00", 1735646400),
+        ("2024-12-31 12:00:00+05:00", 1735628400),
+        ("2024-12-31 12:00:00-05:00", 1735664400),
+    ],
+)
+def test__timestamp_epoch_conversion_iso(value: str, epoch_time: float) -> None:
+    timestamp_object = Timestamp(value=value)
     assert epoch_time == timestamp_object.epoch_time
 
 
 @pytest.mark.parametrize(
     "value, format",
     [
-        # value without format
+        # value without format and not following ISO 8601 format
         ("12/31/2024, 00:00:00", None),
         # format inconsistent with value
         ("12/31/2024, 00:00:00", "%m/%d/%Y, %s"),

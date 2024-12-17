@@ -19,6 +19,8 @@ from abc import ABCMeta
 from datetime import datetime
 from typing import Optional
 
+import pytz
+
 from kolena._utils.datatypes import DataCategory
 from kolena._utils.datatypes import DataType
 from kolena._utils.datatypes import TypedDataObject
@@ -53,14 +55,16 @@ class Timestamp(SpecialDataType):
 
     value: Optional[str] = None
     """
-    The timestamp in a string representation. If present, the corresponding `format` must be specified too.
-    Note that GMT timezone is assumed unless the offset is specified in the string.
+    The timestamp in a string representation. Note that GMT timezone is assumed unless the offset is specified in the
+    string.
     """
 
     format: Optional[str] = None
     """
     The format of the `value` string following the
-    [python format codes](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes).
+    [python format codes](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes). If not
+    provided, the `value` will be parsed using
+    [python's `fromisoformat()`](https://docs.python.org/3/library/datetime.html#datetime.datetime.fromisoformat).
     """
 
     @staticmethod
@@ -70,16 +74,10 @@ class Timestamp(SpecialDataType):
     def __post_init__(self) -> None:
         if self.value:
             if not self.format:
-                raise ValueError("format needs to be specified for string timestamp")
-            if "%z" in self.format:
-                time_value = self.value
-                time_format = self.format
+                time_obj = datetime.fromisoformat(self.value)
             else:
-                time_value = self.value + " +0000"
-                time_format = self.format + " %z"
-
-            object.__setattr__(
-                self,
-                "epoch_time",
-                datetime.strptime(time_value, time_format).timestamp(),
-            )
+                time_obj = datetime.strptime(self.value, self.format)
+            # assume GMT if timezone is not provided
+            if not time_obj.tzinfo:
+                time_obj = pytz.utc.localize(time_obj)
+            object.__setattr__(self, "epoch_time", time_obj.timestamp())
