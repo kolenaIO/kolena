@@ -21,9 +21,6 @@ import pandas as pd
 import pytest
 
 from kolena._api.v2.dataset import CommitData
-from kolena._experimental.special_data_type import Timestamp
-from kolena.annotation import BoundingBox
-from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import download_dataset
 from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
@@ -31,6 +28,8 @@ from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
+from kolena.workflow.annotation import BoundingBox
+from kolena.workflow.annotation import LabeledBoundingBox
 from tests.integration.helper import assert_frame_equal
 from tests.integration.helper import fake_locator
 from tests.integration.helper import upload_extracted_properties
@@ -84,8 +83,6 @@ def test__upload_dataset() -> None:
                 LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
                 LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
             ],
-            time_str=Timestamp(value=f"12/31/2024, 00:00:{'{:02d}'.format(i)}", format="%m/%d/%Y, %H:%M:%S"),
-            time_num=Timestamp(epoch_time=1735689600 + i),
         )
         for i in range(20)
     ]
@@ -99,12 +96,10 @@ def test__upload_dataset() -> None:
                 BoundingBox(label=bbox.label, top_left=bbox.top_left, bottom_right=bbox.bottom_right)
                 for bbox in dp["bboxes"]
             ],
-            time_str=dp["time_str"],
-            time_num=dp["time_num"],
         )
         for dp in datapoints
     ]
-    columns = ["locator", "width", "height", "city", "bboxes", "time_str", "time_num"]
+    columns = ["locator", "width", "height", "city", "bboxes"]
 
     upload_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"])
 
