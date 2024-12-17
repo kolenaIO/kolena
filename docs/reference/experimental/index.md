@@ -24,6 +24,3 @@
     options:
         members: ["download_results_by_tag"]
         show_root_heading: true
-::: kolena._experimental.special_data_type
-    options:
-        show_root_heading: true
