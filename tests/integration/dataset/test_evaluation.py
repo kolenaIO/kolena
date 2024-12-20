@@ -544,15 +544,31 @@ def test__download_results__dataset_does_not_exist() -> None:
     assert "does not exist" in exc_info_value
 
 
-def test__download_results__model_does_not_exist() -> None:
-    dataset_name = with_test_prefix(f"{__file__}::test__download_results__model_does_not_exist")
+def test__download_results__model_does_not_exist_in_dataset() -> None:
+    dataset_1_name = with_test_prefix(f"{__file__}::test__download_results__model_does_not_exist_1")
+    dataset_2_name = with_test_prefix(f"{__file__}::test__download_results__model_does_not_exist_2")
     model_name = with_test_prefix(f"{__file__}::test__download_results__model_does_not_exist")
     df_dp = get_df_dp()
-    upload_dataset(dataset_name, df_dp, id_fields=ID_FIELDS)
+    upload_dataset(dataset_1_name, df_dp, id_fields=ID_FIELDS)
+    upload_dataset(dataset_2_name, df_dp, id_fields=ID_FIELDS)
+
+    # if the model does not exist in the workspace
     with pytest.raises(NotFoundError) as exc_info:
-        download_results(dataset_name, model_name)
+        download_results(dataset_1_name, model_name)
     exc_info_value = str(exc_info.value)
     assert "no such model" in exc_info_value
+
+    # model only has results on dataset_1 - downloading result on dataset_2 will lead to not found error
+    df_result = get_df_result()
+    _upload_results(
+        dataset_1_name,
+        model_name,
+        df_result,
+    )
+    with pytest.raises(NotFoundError) as exc_info:
+        download_results(dataset_2_name, model_name)
+    exc_info_value = str(exc_info.value)
+    assert "does not exist on dataset" in exc_info_value
 
 
 def test__download_results__reset_dataset() -> None:

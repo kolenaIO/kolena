@@ -59,6 +59,7 @@ from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import IncorrectUsageError
+from kolena.errors import NotFoundError
 
 EvalConfig = Optional[Dict[str, Any]]
 """
@@ -232,6 +233,14 @@ def download_results(
     existing_dataset = _load_dataset_metadata(dataset)
     assert existing_dataset
 
+    # validate that the model exists in the workspace
+    _get_model_id(model)
+
+    # validate that the model has results on the dataset
+    models = _get_models(dataset)
+    if model not in [model_entity.name for model_entity in models]:
+        raise NotFoundError(f"model '{model}' does not exist on dataset '{dataset}'")
+
     id_fields = existing_dataset.id_fields
 
     df = _fetch_results(dataset, model, commit, include_extracted_properties)
@@ -373,6 +382,18 @@ def upload_results(
     _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags)
 
 
+def _get_models(
+    dataset: str,
+) -> List[ModelEntity]:
+    existing_dataset = _load_dataset_metadata(dataset)
+    assert existing_dataset, f"dataset {dataset} not found"
+
+    request = LoadByDatasetRequest(dataset_id=existing_dataset.id)
+    response = krequests.put(Path.LOAD_BY_DATASET, json=asdict(request))
+    krequests.raise_for_status(response)
+    return from_dict(LoadByDatasetResponse, response.json()).models
+
+
 @with_event(EventAPI.Event.GET_MODELS_BY_DATASET)
 def get_models(
     dataset: str,
@@ -384,10 +405,4 @@ def get_models(
 
     :return: A list of models tested on the given dataset.
     """
-    existing_dataset = _load_dataset_metadata(dataset)
-    assert existing_dataset, f"dataset {dataset} not found"
-
-    request = LoadByDatasetRequest(dataset_id=existing_dataset.id)
-    response = krequests.put(Path.LOAD_BY_DATASET, json=asdict(request))
-    krequests.raise_for_status(response)
-    return from_dict(LoadByDatasetResponse, response.json()).models
+    return _get_models(dataset)
