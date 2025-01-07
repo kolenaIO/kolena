@@ -67,7 +67,7 @@ as text. Below table outlines what extensions are supported for optimal visualiz
 | Image          | `jpg`, `jpeg`, `png`, `gif`, `bmp` and other web browser supported image types.       |
 | Audio          | `flac`, `mp3`, `wav`, `acc`, `ogg`, `ra` and other web browser supported audio types. |
 | Video          | `mov`, `mp4`, `mpeg` and other web browser supported video types.                     |
-| Document       | `txt` and `pdf` files.                                                                |
+| Document       | `txt`, `pdf`, `log`, `md` files.                                                      |
 | Point Cloud    | `pcd` files.                                                                          |
 
 **Assets**: allow you to connect multiple referenced files to each datapoint for visualization and analysis.
@@ -81,7 +81,7 @@ Multiple assets can be attached to a single datapoint.
 | [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     | Same as above reference files |
 | [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      | `.pcd`, `.npy`, `.npz`        |
 | [`MeshAsset`](../../reference/asset.md#kolena.asset.MeshAsset)             | Useful for attaching and visualizing 3D mesh files.            | `.ply`                        |
-| [`DocumentAsset`](../../reference/asset.md#kolena.asset.DocumentAsset)     | Useful if you want to attach a document file.                  | `.txt`, `.pdf`                |
+| [`DocumentAsset`](../../reference/asset.md#kolena.asset.DocumentAsset)     | Useful if you want to attach a document file.                  | `.pdf`, `.txt`, `.log`, `.md` |
 
 **Annotations**: allow you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
 We currently support 10 different types of annotations each enabling a specific modality.

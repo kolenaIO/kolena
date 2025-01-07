@@ -195,7 +195,7 @@ class DocumentAsset(Asset):
     """
     A document file in a cloud bucket or served at a URL.
 
-    Only `.txt` and `.pdf` file types are supported.
+    Supported extensions include `.pdf`, `.txt`, `.log`, and `.md`.
     """
 
     locator: str
