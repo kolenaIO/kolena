@@ -62,6 +62,7 @@ class _AnnotationType(DataType):
     TIME_SEGMENT = "TIME_SEGMENT"
     TEXT_SEGMENT = "TEXT_SEGMENT"
     CUSTOM = "CUSTOM"
+    TIMESTAMP = "TIMESTAMP"
 
     @staticmethod
     def _data_category() -> DataCategory:

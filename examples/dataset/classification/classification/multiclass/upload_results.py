@@ -22,9 +22,9 @@ from classification.multiclass.constants import BUCKET
 from classification.multiclass.constants import DATASET
 from classification.multiclass.constants import ID_FIELDS
 
+from kolena.annotation import ScoredClassificationLabel
 from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
-from kolena.workflow.annotation import ScoredClassificationLabel
 
 
 MODELS = ["resnet50v2", "inceptionv3"]
