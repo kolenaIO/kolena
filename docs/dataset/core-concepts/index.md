@@ -81,6 +81,7 @@ Multiple assets can be attached to a single datapoint.
 | [`VideoAsset`](../../reference/asset.md#kolena.asset.VideoAsset)           | Useful if you want to attach a video file.                     | Same as above reference files |
 | [`PointCloudAsset`](../../reference/asset.md#kolena.asset.PointCloudAsset) | Useful for attaching 3D point cloud data.                      | `.pcd`, `.npy`, `.npz`        |
 | [`MeshAsset`](../../reference/asset.md#kolena.asset.MeshAsset)             | Useful for attaching and visualizing 3D mesh files.            | `.ply`                        |
+| [`DocumentAsset`](../../reference/asset.md#kolena.asset.DocumentAsset)     | Useful if you want to attach a document file.                  | `.txt`, `.pdf`                |
 
 **Annotations**: allow you to visualize overlays on top of datapoints through the use of[`annotation`](../../reference/annotation.md).
 We currently support 10 different types of annotations each enabling a specific modality.
