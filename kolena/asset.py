@@ -24,6 +24,7 @@ The following asset types are available:
 - [`VideoAsset`][kolena.asset.VideoAsset]
 - [`AudioAsset`][kolena.asset.AudioAsset]
 - [`MeshAsset`][kolena.asset.MeshAsset]
+- [`DocumentAsset`][kolena.asset.DocumentAsset]
 
 """
 from abc import ABCMeta
@@ -44,6 +45,7 @@ class _AssetType(DataType):
     VIDEO = "VIDEO"
     AUDIO = "AUDIO"
     MESH = "MESH"
+    DOCUMENT = "DOCUMENT"
 
     @staticmethod
     def _data_category() -> DataCategory:
@@ -188,6 +190,22 @@ class MeshAsset(Asset):
         return _AssetType.MESH
 
 
+@dataclass(frozen=True, config=ValidatorConfig)
+class DocumentAsset(Asset):
+    """
+    A document file in a cloud bucket or served at a URL.
+
+    Supported extensions include `.pdf`, `.txt`, `.log`, and `.md`.
+    """
+
+    locator: str
+    """The location of this document file in a cloud bucket, e.g. `s3://my-bucket/path/to/my-document-asset.pdf`."""
+
+    @staticmethod
+    def _data_type() -> _AssetType:
+        return _AssetType.DOCUMENT
+
+
 _ASSET_TYPES = [
     ImageAsset,
     PlainTextAsset,
@@ -197,4 +215,5 @@ _ASSET_TYPES = [
     VideoAsset,
     AudioAsset,
     MeshAsset,
+    DocumentAsset,
 ]
