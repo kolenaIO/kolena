@@ -23,6 +23,13 @@ This project defines three scripts that perform the following operations:
 
 1. [`upload_dataset.py`](retrieval_augmented_generation/upload_dataset.py) creates the Financebench dataset on Kolena
 
+To run it without ground truth, use `s3://kolena-public-examples/financebench/raw/financebench_without_gt.jsonl`
+dataset jsonl file instead:
+
+```shell
+uv run python retrieval_augmented_generation/upload_dataset.py --dataset-jsonl s3://kolena-public-examples/financebench/raw/financebench_without_gt.jsonl
+```
+
 2. [`upload_results.py`](retrieval_augmented_generation/upload_results.py) uploads a RAG system's raw inference
 on the Financebench dataset.
 

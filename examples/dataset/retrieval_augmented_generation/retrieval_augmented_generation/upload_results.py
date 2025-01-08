@@ -13,51 +13,56 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
-from typing import Optional
 
 import pandas as pd
 from retrieval_augmented_generation.constants import DATASET
-from retrieval_augmented_generation.constants import ID_FIELDS
+from retrieval_augmented_generation.constants import MODEL_NAME
 from retrieval_augmented_generation.constants import S3_BUCKET
 from retrieval_augmented_generation.utils import to_locator
 
 from kolena.asset import DocumentAsset
-from kolena.dataset import upload_dataset
+from kolena.dataset import upload_results
 
 
-def to_document(evidence: list[dict[str, str]]) -> Optional[DocumentAsset]:
-    if len(evidence) > 0:
-        return DocumentAsset(to_locator(evidence[0]["doc_name"]))
+def to_documents(retrieved_contents: list[dict[str, str]]) -> list:
+    if not retrieved_contents:
+        return []
 
-    return None
+    documents = []
+    for content in retrieved_contents:
+        documents.append(
+            DocumentAsset(
+                locator=to_locator(content["doc_name"]),
+                content=content["content"],  # type: ignore[call-arg]
+                page_number=content["page_number"],  # type: ignore[call-arg]
+            ),
+        )
 
-
-def get_pages(evidence: list[dict[str, str]]) -> str:
-    pages = [e["evidence_page_num"] for e in evidence]
-    return ", ".join(map(str, pages))
+    return documents
 
 
 def run(args: Namespace) -> None:
-    df_dataset = pd.read_json(args.dataset_jsonl, lines=True)
-    if "evidence" in df_dataset.columns:
-        df_dataset["document"] = df_dataset["evidence"].apply(to_document)
-        df_dataset["relevant_pages"] = df_dataset["evidence"].apply(get_pages)
-    upload_dataset(args.dataset_name, df_dataset, id_fields=ID_FIELDS)
+    model_name = MODEL_NAME[args.model]
+    df_results = pd.read_json(f"{S3_BUCKET}/{DATASET}/results/raw/{model_name}.jsonl", lines=True)
+    df_results["retrieved_contents"] = df_results["retrieved_contents"].apply(to_documents)
+    upload_results(args.dataset_name, model_name, df_results)
 
 
 def main() -> None:
     ap = ArgumentParser()
     ap.add_argument(
-        "--dataset-jsonl",
+        "model",
         type=str,
-        default=f"{S3_BUCKET}/{DATASET}/raw/financebench_open_source.jsonl",
-        help="JSONL file specifying dataset. See default JSONL for details",
+        default="baseline",
+        nargs="?",
+        choices=list(MODEL_NAME.keys()),
+        help="Name of the model to test.",
     )
     ap.add_argument(
         "--dataset-name",
         type=str,
         default=DATASET,
-        help="Optionally specify a name of the dataset",
+        help="Optionally specify a custom dataset name to test.",
     )
     run(ap.parse_args())
 

@@ -11,12 +11,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-S3_BUCKET = "s3://kolena-public-examples"
-DATASET = "financebench"
-TASK = "retrieval-augmented_generation"
-ID_FIELDS = ["financebench_id"]
-MODEL_NAME = {
-    "baseline": "gpt-4o-baseline",
-    "qme": "gpt-4o-qme",
-    "query_decomp": "gpt-4o-qme-query-decomp",
-}
+from retrieval_augmented_generation.constants import DATASET
+from retrieval_augmented_generation.constants import S3_BUCKET
+
+
+def to_locator(filename: str) -> str:
+    return f"{S3_BUCKET}/{DATASET}/data/{filename}.pdf"
