@@ -13,18 +13,21 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Any
 
 import pandas as pd
 from retrieval_augmented_generation.constants import DATASET
 from retrieval_augmented_generation.constants import MODEL_NAME
 from retrieval_augmented_generation.constants import S3_BUCKET
+from retrieval_augmented_generation.metrics import compute_metrics
 from retrieval_augmented_generation.utils import to_locator
 
 from kolena.asset import DocumentAsset
+from kolena.dataset import download_dataset
 from kolena.dataset import upload_results
 
 
-def to_documents(retrieved_contents: list[dict[str, str]]) -> list:
+def to_documents(retrieved_contents: list[dict[str, Any]]) -> list:
     if not retrieved_contents:
         return []
 
@@ -45,6 +48,10 @@ def run(args: Namespace) -> None:
     model_name = MODEL_NAME[args.model]
     df_results = pd.read_json(f"{S3_BUCKET}/{DATASET}/results/raw/{model_name}.jsonl", lines=True)
     df_results["retrieved_contents"] = df_results["retrieved_contents"].apply(to_documents)
+    if args.evaluate:
+        df_dataset = download_dataset(args.dataset_name)
+        df_metrics = compute_metrics(df_dataset, df_results)
+        df_results = pd.concat([df_results, df_metrics], axis=1)
     upload_results(args.dataset_name, model_name, df_results)
 
 
@@ -63,6 +70,11 @@ def main() -> None:
         type=str,
         default=DATASET,
         help="Optionally specify a custom dataset name to test.",
+    )
+    ap.add_argument(
+        "--evaluate",
+        action="store_true",
+        help="Computes metrics on the model results. Requires dataset with ground truth.",
     )
     run(ap.parse_args())
 

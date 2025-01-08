@@ -33,23 +33,28 @@ uv run python retrieval_augmented_generation/upload_dataset.py --dataset-jsonl s
 2. [`upload_results.py`](retrieval_augmented_generation/upload_results.py) uploads a RAG system's raw inference
 on the Financebench dataset.
 
-3. [`evaluate.py`](retrieval_augmented_generation/evaluate.py) tests a RAG system on the Financebench dataset. This
-script requires ground truth annotations. Make sure you have annotated your dataset on Kolena before running this script.
-
-The `upload_results.py` and `evaluate.py` script defines command line arguments to select which model to evaluate — run
+The `upload_results.py` script defines command line arguments to select which model to evaluate — run
 using the `--help` flag for more information:
 
 ```shell
 $ uv run python3 retrieval_augmented_generation/upload_results.py --help
-usage: upload_results.py [-h] [--dataset DATASET] {ann,logreg}
+usage: upload_results.py [-h] [--dataset-name DATASET_NAME] [--evaluate] [{baseline,qme,query_decomp}]
 
 positional arguments:
-  {ann,logreg}       Name of the model to test.
+  {baseline,qme,query_decomp}
+                        Name of the model to test.
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --dataset DATASET  Optionally specify a custom dataset name to test.
+  -h, --help            show this help message and exit
+  --dataset-name DATASET_NAME
+                        Optionally specify a custom dataset name to test.
+  --evaluate            Computes metrics on the model results. Requires dataset with ground truth.
 ```
+
+3. Label your dataset on [Kolena]((https://app.kolena.com/redirect/))
+
+4. Run evaluation by using `--evaluate` option from the `upload_results.py` script. It will compute metrics on the
+model results and upload the model results including the metrics to Kolena.
 
 ## Quality Standards Guide
 
@@ -59,3 +64,9 @@ for details.
 
 Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
 this workflow:
+
+### Metrics
+
+1. rate(`result.is_page_retrieved`=true): page-level retrieval rate
+2. rate(`result.is_doc_retrieved`=true): doc-level retrieval rate
+3. `is_correct` using [LLM prompt](https://docs.kolena.com/dataset/advanced-usage/llm-prompt-extraction/)

@@ -13,6 +13,7 @@
 # limitations under the License.
 from argparse import ArgumentParser
 from argparse import Namespace
+from typing import Any
 from typing import Optional
 
 import pandas as pd
@@ -25,16 +26,16 @@ from kolena.asset import DocumentAsset
 from kolena.dataset import upload_dataset
 
 
-def to_document(evidence: list[dict[str, str]]) -> Optional[DocumentAsset]:
+def to_document(evidence: list[dict[str, Any]]) -> Optional[DocumentAsset]:
     if len(evidence) > 0:
-        return DocumentAsset(to_locator(evidence[0]["doc_name"]))
+        return DocumentAsset(to_locator(str(evidence[0]["doc_name"])))
 
     return None
 
 
-def get_pages(evidence: list[dict[str, str]]) -> str:
-    pages = [e["evidence_page_num"] for e in evidence]
-    return ", ".join(map(str, pages))
+def get_pages(evidence: list[dict[str, Any]]) -> list[int]:
+    pages = [e["evidence_page_num"] + 1 for e in evidence]  # financebench page number starts from 0 index
+    return pages
 
 
 def run(args: Namespace) -> None:
