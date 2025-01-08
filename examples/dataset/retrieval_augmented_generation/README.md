@@ -1,0 +1,54 @@
+# Example Integration: Retrieval Augmented Generation (RAG)
+
+This example integration uses the [Financebench](https://github.com/patronus-ai/financebench) dataset to
+demonstrate testing RAG system on Kolena.
+
+## Setup
+
+This project uses [uv](https://docs.astral.sh/uv/) for packaging and Python dependency management. To get started,
+install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
+
+```shell
+uv sync
+```
+
+## Usage
+
+The data for this example integration lives in the publicly accessible S3 bucket `s3://kolena-public-examples`.
+
+First, ensure that the `KOLENA_TOKEN` environment variable is populated in your environment. See our
+[initialization documentation](https://docs.kolena.com/installing-kolena/#initialization) for details.
+
+This project defines three scripts that perform the following operations:
+
+1. [`upload_dataset.py`](retrieval_augmented_generation/upload_dataset.py) creates the Financebench dataset on Kolena
+
+2. [`upload_results.py`](retrieval_augmented_generation/upload_results.py) uploads a RAG system's raw inference
+on the Financebench dataset.
+
+3. [`evaluate.py`](retrieval_augmented_generation/evaluate.py) tests a RAG system on the Financebench dataset. This
+script requires ground truth annotations. Make sure you have annotated your dataset on Kolena before running this script.
+
+The `upload_results.py` and `evaluate.py` script defines command line arguments to select which model to evaluate — run
+using the `--help` flag for more information:
+
+```shell
+$ uv run python3 retrieval_augmented_generation/upload_results.py --help
+usage: upload_results.py [-h] [--dataset DATASET] {ann,logreg}
+
+positional arguments:
+  {ann,logreg}       Name of the model to test.
+
+optional arguments:
+  -h, --help         show this help message and exit
+  --dataset DATASET  Optionally specify a custom dataset name to test.
+```
+
+## Quality Standards Guide
+
+Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.com/redirect/) to
+test the rain forecast models. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
+for details.
+
+Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
+this workflow:
