@@ -70,3 +70,16 @@ this workflow:
 1. rate(`result.is_page_retrieved`=true): page-level retrieval rate
 2. rate(`result.is_doc_retrieved`=true): doc-level retrieval rate
 3. `is_correct` using [LLM prompt](https://docs.kolena.com/dataset/advanced-usage/llm-prompt-extraction/)
+
+## Citation
+
+```
+@misc{islam2023financebench,
+      title={FinanceBench: A New Benchmark for Financial Question Answering},
+      author={Pranab Islam and Anand Kannappan and Douwe Kiela and Rebecca Qian and Nino Scherrer and Bertie Vidgen},
+      year={2023},
+      eprint={2311.11944},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL}
+}
+```

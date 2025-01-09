@@ -9,9 +9,8 @@ license = "Apache-2.0"
 requires-python = ">=3.8,<3.12"
 
 dependencies = [
-    "fsspec>=2024.12.0",
     "kolena>=1.50.0,<2",
-    "s3fs>=0.6.0",
+    "s3fs>=2024.10.0",
 ]
 
 [tool.uv]
