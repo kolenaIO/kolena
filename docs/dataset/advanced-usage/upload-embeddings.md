@@ -27,7 +27,7 @@ The DataFrame you upload should have:
 ### Example code
 
 Here’s an example where we download the `instance-seg` dataset from Kolena,
-then add a placeholder embedding (a zero-filled array):
+then add a placeholder embedding (a random array):
 ```python
 import numpy as np
 from kolena.dataset import download_dataset
