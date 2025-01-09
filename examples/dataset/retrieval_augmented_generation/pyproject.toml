@@ -21,9 +21,6 @@ dev-dependencies = [
     "pytest-depends>=1.0.1,<8",
 ]
 
-[tool.uv.sources]
-kolena = { path = "../../../" }
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
