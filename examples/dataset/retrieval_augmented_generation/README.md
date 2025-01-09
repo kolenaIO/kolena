@@ -27,11 +27,36 @@ To run it without ground truth, use `s3://kolena-public-examples/financebench/ra
 dataset jsonl file instead:
 
 ```shell
-uv run python retrieval_augmented_generation/upload_dataset.py --dataset-jsonl s3://kolena-public-examples/financebench/raw/financebench_without_gt.jsonl
+uv run python3 retrieval_augmented_generation/upload_dataset.py --dataset-jsonl s3://kolena-public-examples/financebench/raw/financebench_without_gt.jsonl
 ```
 
 2. [`upload_results.py`](retrieval_augmented_generation/upload_results.py) uploads a RAG system's raw inference
 on the Financebench dataset.
+
+There are three example RAG systems (`baseline`, `qme`, and `query_decomp`) from which we have collected inferences.
+The inferences are stored in jsonl format and uploaded to the s3 bucket.
+[Here](https://kolena-public-examples.s3.us-west-2.amazonaws.com/financebench/results/raw/gpt-4o-baseline.jsonl) is a
+link to download `baseline` system's inference jsonl file as an example.
+An inference to a question is formatted in the following JSON:
+```
+{
+  "retrieved_contents":[
+    {
+      "content":"...",
+      "doc_name":"3M_2017_10K",
+      "page_number":48
+    },
+    {
+      "content":"...",
+      "doc_name":"3M_2018_10K",
+      "page_number":47
+    }
+  ],
+  "answer":"Answer from RAG goes here",
+  "query_time":8.1,
+  "financebench_id":"financebench_id_03029"
+}
+```
 
 The `upload_results.py` script defines command line arguments to select which model to evaluate — run
 using the `--help` flag for more information:
@@ -59,7 +84,7 @@ model results and upload the model results including the metrics to Kolena.
 ## Quality Standards Guide
 
 Once the dataset and results have been uploaded to Kolena, visit [Kolena](https://app.kolena.com/redirect/) to
-test the rain forecast models. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
+test the RAG systems. See our [QuickStart](https://docs.kolena.com/dataset/quickstart/) guide
 for details.
 
 Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
