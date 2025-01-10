@@ -27,14 +27,15 @@ The DataFrame you upload should have:
 ### Example code
 
 Here’s an example where we download the `instance-seg` dataset from Kolena,
-then add a placeholder embedding (a zero-filled array):
+then add a placeholder embedding (a random array):
 ```python
+import numpy as np
 from kolena.dataset import download_dataset
 
 dataset = "instance-seg"
 df = download_dataset(dataset)
-df_embedding = df['locator']
-df_embedding["embedding"] = [np.zeros((1,512))] * len(df_embedding)
+df_embedding = df[["locator"]]
+df_embedding["embedding"] = [np.random.random((512,)) for _ in range(len(df_embedding))]
 ```
 !!! Note
     Replace the placeholder embeddings with embeddings generated from your own embedding model.
