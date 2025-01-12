@@ -21,9 +21,9 @@ First, ensure that the `KOLENA_TOKEN` environment variable is populated in your 
 
 This project defines three scripts that perform the following operations:
 
-1. [`upload_dataset.py`](retrieval_augmented_generation/upload_dataset.py) creates the Financebench dataset on Kolena
+1. [`upload_dataset.py`](retrieval_augmented_generation/upload_dataset.py) creates the Financebench dataset with ground truths.
 
-To run it without ground truth, use `s3://kolena-public-examples/financebench/raw/financebench_without_gt.jsonl`
+To run it without ground truths, use `s3://kolena-public-examples/financebench/raw/financebench_without_gt.jsonl`
 dataset jsonl file instead:
 
 ```shell
@@ -92,8 +92,8 @@ this workflow:
 
 ### Metrics
 
-1. rate(`result.is_page_retrieved`=true): page-level retrieval rate
-2. rate(`result.is_doc_retrieved`=true): doc-level retrieval rate
+1. `rate(result.is_page_retrieved=true)`: page-level retrieval rate
+2. `rate(result.is_doc_retrieved=true)`: doc-level retrieval rate
 3. `is_correct` using [LLM prompt](https://docs.kolena.com/dataset/advanced-usage/llm-prompt-extraction/)
 
 ## Citation
