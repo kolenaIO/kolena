@@ -20,7 +20,6 @@ from retrieval_augmented_generation.constants import DATASET
 from retrieval_augmented_generation.constants import MODEL_NAME
 from retrieval_augmented_generation.constants import S3_BUCKET
 from retrieval_augmented_generation.metrics import compute_metrics
-from retrieval_augmented_generation.utils import to_locator
 
 from kolena.asset import DocumentAsset
 from kolena.dataset import download_dataset
@@ -32,12 +31,12 @@ def to_documents(retrieved_contents: list[dict[str, Any]]) -> list:
         return []
 
     documents = []
-    for content in retrieved_contents:
+    for doc in retrieved_contents:
         documents.append(
             DocumentAsset(
-                locator=to_locator(content["doc_name"]),
-                content=content["content"],  # type: ignore[call-arg]
-                page_number=content["page_number"],  # type: ignore[call-arg]
+                locator=doc["locator"],
+                content=doc["content"],  # type: ignore[call-arg]
+                page_number=doc["page_number"],  # type: ignore[call-arg]
             ),
         )
 
