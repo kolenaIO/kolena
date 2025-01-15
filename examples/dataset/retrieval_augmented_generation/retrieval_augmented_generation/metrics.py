@@ -27,7 +27,7 @@ def is_page_retrieved(retrieved_contents: list, doc_names: list, relevant_pages:
     ]
 
     # NOTE: all relevant pages must be retrieved to be considered correct.
-    return set(relevant_pages).issubset(retrieved_pages)
+    return set(relevant_pages).issubset(retrieved_pages) and is_doc_retrieved(retrieved_contents, doc_names)
 
 
 def compute_metrics(df_dataset: pd.DataFrame, df_results: pd.DataFrame) -> pd.DataFrame:

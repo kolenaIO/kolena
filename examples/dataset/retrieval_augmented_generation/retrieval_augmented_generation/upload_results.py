@@ -45,7 +45,10 @@ def to_documents(retrieved_contents: list[dict[str, Any]]) -> list:
 
 def run(args: Namespace) -> None:
     model_name = MODEL_NAME[args.model]
-    df_results = pd.read_json(f"{S3_BUCKET}/{DATASET}/results/raw/{model_name}.jsonl", lines=True)
+    df_results = pd.read_json(
+        f"{S3_BUCKET}/{DATASET}/results/raw/{model_name}.jsonl",
+        lines=True,
+    )
     df_results["retrieved_contents"] = df_results["retrieved_contents"].apply(to_documents)
     if args.evaluate:
         df_dataset = download_dataset(args.dataset_name, include_extracted_properties=True)
