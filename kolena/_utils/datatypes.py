@@ -99,7 +99,7 @@ class DataCategory(str, Enum):
         if self == DataCategory.ANNOTATION:
             return "kolena.annotation"
         if self == DataCategory.SPECIAL:
-            return "kolena._experimental.data_type.special"
+            return "kolena._experimental.special_data_type"
         raise ValueError(f"Must specify module name for data category: {self}")
 
 
