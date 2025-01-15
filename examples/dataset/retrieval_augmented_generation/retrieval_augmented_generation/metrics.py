@@ -16,17 +16,15 @@ from retrieval_augmented_generation.constants import ID_FIELDS
 
 
 def is_doc_retrieved(retrieved_contents: list, doc_names: list) -> bool:
-    # Handle case where doc_names is a list
+    # NOTE: if one doc is retrieved, it is considered correct
     return any(any(doc_name in content.locator for content in retrieved_contents) for doc_name in doc_names)
 
 
 def is_page_retrieved(retrieved_contents: list, doc_names: list, relevant_pages: list) -> bool:
-    # Create pairs of (doc_name, page_number) from retrieved contents
+    # NOTE: if one page of any doc is retrieved, it is considered correct
     retrieved_pairs = [
         (content.locator.split("/")[-1].replace(".pdf", ""), content.page_number) for content in retrieved_contents
     ]
-
-    # Check if any of the relevant page pairs match with retrieved pairs
     return any(pair in retrieved_pairs for pair in relevant_pages)
 
 
