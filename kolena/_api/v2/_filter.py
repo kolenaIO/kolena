@@ -17,15 +17,13 @@ from typing import Dict
 from typing import List
 from typing import Optional
 
-from pydantic import conlist
-from pydantic import model_validator
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v2._api import GeneralFieldFilter
 from kolena._api.v2._api import Range
 from kolena._api.v2._derived_field import DerivedField
 from kolena._api.v2._dsl import Dsl
 from kolena._api.v2._metric import MetricGroup
+from kolena._utils.pydantic_v1 import conlist
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.errors import IncorrectUsageError
 
 
@@ -46,11 +44,9 @@ class ModelFilter:
             ),
         )
 
-    @model_validator(mode="after")
-    def validate_stratify_field_or_filter(self) -> "ModelFilter":
+    def __post_init__(self) -> None:
         if self.result and self.is_null:
             raise ValueError("Conflicting value filter and null filter.")
-        return self
 
 
 @dataclass(frozen=True)
@@ -116,12 +112,12 @@ class CompareFilter:
 
 @dataclass(frozen=True)
 class Filters:
-    dataset_ids: conlist(int, min_length=1)
-    datapoint_ids: Optional[conlist(int, min_length=0)] = None
+    dataset_ids: conlist(int, min_items=1)
+    datapoint_ids: Optional[conlist(int, min_items=0)] = None
     datapoint: Dict[str, GeneralFieldFilter] = field(default_factory=dict)
     models: List[ModelFilter] = field(default_factory=list)
     compare_filters: List[CompareFilter] = field(default_factory=list)
-    human_evaluations: conlist(HumanEvaluationFilter, max_length=1) = field(default_factory=list)
+    human_evaluations: conlist(HumanEvaluationFilter, max_items=1) = field(default_factory=list)
     difficulty_scores: Optional[DifficultyScoreFilter] = None
     dsl: Optional[Dsl] = None
     derived_fields: Optional[List[DerivedField]] = None

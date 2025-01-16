@@ -13,9 +13,9 @@
 # limitations under the License.
 from typing import Optional
 
-from pydantic import conlist
-from pydantic import constr
-from pydantic.dataclasses import dataclass
+from kolena._utils.pydantic_v1 import conlist
+from kolena._utils.pydantic_v1 import constr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 @dataclass(frozen=True)

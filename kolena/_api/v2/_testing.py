@@ -21,16 +21,15 @@ from typing import Optional
 from typing import Tuple
 from typing import Union
 
-from pydantic import conint
-from pydantic import conlist
-from pydantic import constr
-from pydantic import StrictInt
-from pydantic import StrictStr
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v2._filter import Filters
 from kolena._api.v2._scope import Scopes
 from kolena._api.v2._stats import SingleStatsResponse
+from kolena._utils.pydantic_v1 import conint
+from kolena._utils.pydantic_v1 import conlist
+from kolena._utils.pydantic_v1 import constr
+from kolena._utils.pydantic_v1 import StrictInt
+from kolena._utils.pydantic_v1 import StrictStr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.errors import IncorrectUsageError
 
 MAX_BIN_COUNT = 200
@@ -137,7 +136,7 @@ class TypedBucketSplit:
 class StratifyFieldSpec(DatasetField):
     values: Optional[List[Union[StrictStr, StrictInt, bool, None]]] = None
     buckets: Union[
-        conlist(float, min_length=1, max_length=MAX_STRATIFICATION_BUCKET_COUNT),
+        conlist(float, min_items=1, max_items=MAX_STRATIFICATION_BUCKET_COUNT),
         TypedBucketSplit,
         None,
     ] = None

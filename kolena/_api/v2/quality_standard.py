@@ -15,10 +15,9 @@ from datetime import datetime
 from enum import Enum
 from typing import List
 
-from pydantic.v1 import conint
-
 from kolena._api.v2._metric import MetricGroup
 from kolena._api.v2._stratification import Stratification
+from kolena._utils.pydantic_v1 import conint
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
