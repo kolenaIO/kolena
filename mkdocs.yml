@@ -98,6 +98,7 @@ nav:
       - metrics/confusion-matrix.md
       - metrics/f1-score.md
       - metrics/fpr.md
+      - metrics/fnr.md
       - metrics/mean-absolute-error.md
       - metrics/mean-squared-error.md
       - metrics/pearson-correlation.md
