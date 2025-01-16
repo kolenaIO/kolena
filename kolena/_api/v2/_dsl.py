@@ -14,8 +14,8 @@
 from typing import Dict
 from typing import Literal
 
-from pydantic import constr
-from pydantic.dataclasses import dataclass
+from kolena._utils.pydantic_v1 import constr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 @dataclass(frozen=True)

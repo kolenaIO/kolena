@@ -15,13 +15,10 @@ from typing import Dict
 from typing import List
 from typing import Union
 
-from pydantic import field_validator
-from pydantic import model_validator
-from pydantic.dataclasses import dataclass
-
 from kolena._api.v2._api import GeneralFieldFilter
 from kolena._api.v2._testing import SimpleRange
 from kolena._api.v2._testing import StratifyFieldSpec
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -55,15 +52,14 @@ class Stratification:
     test_cases: List[TestCase]
     filters: Union[Dict[str, GeneralFieldFilter], None] = None
 
-    @field_validator("test_cases")
-    @classmethod
-    def test_case_name_unique(cls, test_cases: List[TestCase]) -> List[TestCase]:
-        if len(test_cases) > len({test_case.name for test_case in test_cases}):
-            raise ValueError("Test case name must be unique.")
-        return test_cases
+    def __post_init__(self) -> None:
+        self._check_test_case_name_unique()
+        self._validate_stratify_field_or_filter()
 
-    @model_validator(mode="after")
-    def validate_stratify_field_or_filter(self) -> "Stratification":
+    def _check_test_case_name_unique(self) -> None:
+        if len(self.test_cases) > len({test_case.name for test_case in self.test_cases}):
+            raise ValueError("Test case name must be unique.")
+
+    def _validate_stratify_field_or_filter(self) -> None:
         if not self.stratify_fields and not self.filters:
             raise ValueError("Must provide one of 'stratify_fields' or 'filters'")
-        return self

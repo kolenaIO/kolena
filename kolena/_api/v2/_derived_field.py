@@ -15,10 +15,8 @@ import re
 from typing import Literal
 from typing import Optional
 
-from pydantic import constr
-from pydantic import model_validator
-from pydantic.dataclasses import dataclass
-from typing_extensions import Self
+from kolena._utils.pydantic_v1 import constr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 Source = Literal["datapoint", "result"]
 
@@ -33,12 +31,10 @@ class CreateRequest:
     # This field is intended for internal use and should be set by the system, not included in the request body
     source: Source = "datapoint"
 
-    @model_validator(mode="after")
-    def check_name(self) -> Self:
+    def __post_init__(self) -> None:
         name = self.name
         if not re.fullmatch(VALID_NAME_PATTERN, name):
             raise ValueError(f"Invalid name: {name}")
-        return self
 
 
 @dataclass(frozen=True)
@@ -48,21 +44,18 @@ class UpdateRequest:
     # This field is intended for internal use and should be set by the system, not included in the request body
     source: Optional[Source] = None
 
-    @model_validator(mode="after")
-    def check_name(self) -> Self:
+    def __post_init__(self) -> None:
+        self._check_name()
+        self._check_name_formula()
+
+    def _check_name(self) -> None:
         name = self.name
-        if name is None:
-            return self
-
-        if not re.fullmatch(VALID_NAME_PATTERN, name):
+        if name and not re.fullmatch(VALID_NAME_PATTERN, name):
             raise ValueError(f"Invalid name: {name}")
-        return self
 
-    @model_validator(mode="after")
-    def check_name_formula(self) -> Self:
+    def _check_name_formula(self) -> None:
         if self.name is None and self.formula is None:
             raise ValueError("Invalid request")
-        return self
 
 
 @dataclass(frozen=True)

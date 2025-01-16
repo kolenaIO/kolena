@@ -17,9 +17,9 @@ from typing import List
 from typing import Literal
 from typing import Union
 
-from pydantic import StrictBool
-from pydantic import StrictStr
-from pydantic.dataclasses import dataclass
+from kolena._utils.pydantic_v1 import StrictBool
+from kolena._utils.pydantic_v1 import StrictStr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 @dataclass(frozen=True)

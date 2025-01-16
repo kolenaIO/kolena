@@ -16,10 +16,7 @@ from typing import Literal
 from typing import Optional
 from typing import Union
 
-from pydantic import Field
-from pydantic import field_validator
-from pydantic.dataclasses import dataclass
-from typing_extensions import Annotated
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 MetricFormat = Literal["default", "integer", "decimal", "percentage", "scientific", "dollars", "euros"]
 
@@ -77,12 +74,7 @@ class BinaryClassificationAggregator:
 @dataclass(frozen=True, order=True)
 class MulticlassClassificationAggregator:
     aggregator: Union[Literal["accuracy"], ClassifierAggregator]
-    averagingMethod: Annotated[Union[AveragingMethod, None], Field(validate_default=True)] = None
-
-    @field_validator("averagingMethod")
-    @classmethod
-    def set_null_averaging_method(cls, v: Union[str, None]) -> str:
-        return v or "macro"
+    averagingMethod: AveragingMethod = "macro"
 
 
 @dataclass(frozen=True, order=True)
@@ -109,12 +101,7 @@ class ClassificationMetric(BaseMetric):
 @dataclass(frozen=True, order=True)
 class ObjectDetectionAggregator:
     aggregator: Union[Literal["average_precision"], ClassifierAggregator]
-    averagingMethod: Annotated[Union[AveragingMethod, None], Field(validate_default=True)] = None
-
-    @field_validator("averagingMethod")
-    @classmethod
-    def set_null_averaging_method(cls, v: Union[str, None]) -> str:
-        return v or "macro"
+    averagingMethod: AveragingMethod = "macro"
 
 
 @dataclass(frozen=True, order=True)
@@ -279,12 +266,9 @@ class MetricGroup:
     name: str
     metrics: List[Metric]
 
-    @field_validator("metrics")
-    @classmethod
-    def metric_label_unique(cls, metrics: List[Metric]) -> List[Metric]:
-        if len(metrics) > len({metric.label for metric in metrics}):
+    def __post_init__(self) -> None:
+        if len(self.metrics) > len({metric.label for metric in self.metrics}):
             raise ValueError("Metric labels must be unique.")
-        return metrics
 
     def __hash__(self) -> int:
         return hash(

@@ -12,19 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import math
-from typing import Any
-from typing import Dict
 from typing import List
 from typing import Optional
 from typing import Union
 
-from pydantic import root_validator
-from pydantic import StrictFloat
-from pydantic import StrictInt
-from pydantic.dataclasses import dataclass
-from pydantic.types import StrictBool
-from pydantic.types import StrictStr
 from typing_extensions import Literal
+
+from kolena._utils.pydantic_v1 import StrictBool
+from kolena._utils.pydantic_v1 import StrictFloat
+from kolena._utils.pydantic_v1 import StrictInt
+from kolena._utils.pydantic_v1 import StrictStr
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -33,13 +31,9 @@ class Range:
     max: float = math.inf
     modulo: Optional[int] = None
 
-    @classmethod
-    @root_validator(skip_on_failure=True)
-    def validate_min_max(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        if values["min"] > values["max"]:
+    def __post_init__(self) -> None:
+        if self.min > self.max:
             raise ValueError("Invalid min/max range.")
-
-        return values
 
 
 @dataclass
@@ -86,14 +80,9 @@ class GeneralFieldFilter:
     array_contains: Optional[List[Union[StrictStr, StrictBool, StrictInt, StrictFloat]]] = None
     options: GeneralFieldFilterOptions = GeneralFieldFilterOptions()
 
-    @classmethod
-    @root_validator(skip_on_failure=True)
-    def validate_single_operation(cls, values: Dict[str, Any]) -> Dict[str, Any]:
-        # check exactly one filter operation is specified
-        if sum(1 for value in values.values() if value is not None) != 1:
+    def __post_init__(self) -> None:
+        if sum(1 for value in self.__dict__.values() if value is not None) != 1:
             raise ValueError("Must provide exactly one operation.")
-
-        return values
 
     def __hash__(self) -> int:
         return hash((tuple(self.value_in or []), self.number_range, self.contains, self.null_value))
