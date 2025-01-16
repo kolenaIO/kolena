@@ -15,31 +15,64 @@ import pandas as pd
 from retrieval_augmented_generation.constants import ID_FIELDS
 
 
-def is_doc_retrieved(retrieved_contents: list, doc_name: str) -> bool:
-    return any([doc_name in content.locator for content in retrieved_contents])
+def is_doc_retrieved(retrieved_contents: list, doc_names: list) -> bool:
+    # NOTE: if one doc is retrieved, it is considered correct
+    return any(any(doc_name in content.locator for content in retrieved_contents) for doc_name in doc_names)
 
 
-def is_page_retrieved(retrieved_contents: list, doc_name: str, relevant_pages: list) -> bool:
-    retrieved_pages = [content.page_number for content in retrieved_contents if doc_name in content.locator]
+def is_page_retrieved(retrieved_contents: list, doc_names: list, relevant_pages: list) -> bool:
+    # NOTE: if one page of any doc is retrieved, it is considered correct
+    retrieved_pairs = [
+        (content.locator.split("/")[-1].replace(".pdf", ""), content.page_number) for content in retrieved_contents
+    ]
+    return any(pair in retrieved_pairs for pair in relevant_pages)
 
-    # NOTE: all relevant pages must be retrieved to be considered correct.
-    return set(relevant_pages).issubset(retrieved_pages)
+
+def extract_doc_names(labeling_task: dict) -> list:
+    if labeling_task is None:
+        return []
+    return [
+        content.locator.split("/")[-1].replace(".pdf", "")
+        for content in labeling_task.get("retrieved_contents", []) or []
+    ]
+
+
+def extract_relevant_pages(labeling_task: dict) -> list:
+    if labeling_task is None:
+        return []
+    contents = labeling_task.get("retrieved_contents", []) or []
+    # Create pairs of (doc_name, page_number)
+    return [(content.locator.split("/")[-1].replace(".pdf", ""), content.page_number) for content in contents]
 
 
 def compute_metrics(df_dataset: pd.DataFrame, df_results: pd.DataFrame) -> pd.DataFrame:
-    ground_truth_columns = ["doc_name", "relevant_pages", "financebench_id"]
+    ground_truth_columns = ["doc_names", "relevant_pages", "financebench_id"]
+
+    is_labeled = "labeling_task" in df_dataset.columns
+    if is_labeled:
+        # Extract document names and page numbers from labeling task
+        df_dataset["doc_names"] = df_dataset["labeling_task"].apply(extract_doc_names)
+        df_dataset["relevant_pages"] = df_dataset["labeling_task"].apply(extract_relevant_pages)
+    else:
+        df_dataset["doc_names"] = df_dataset["doc_name"].apply(lambda x: [x])
+        # Create pairs of (doc_name, page_number) for non-labeled data
+        df_dataset["relevant_pages"] = df_dataset.apply(
+            lambda row: [(row["doc_name"], page) for page in row["relevant_pages"]],
+            axis=1,
+        )
     assert set(ground_truth_columns).issubset(
         df_dataset.columns,
     ), f"ground truth columns {ground_truth_columns} cannot be found in dataset dataframe."
-
-    df = df_results.merge(df_dataset[ground_truth_columns], on=ID_FIELDS, how="left")
+    # Include doc_names in the merge
+    columns_to_merge = ground_truth_columns + ["doc_names"]
+    df = df_results.merge(df_dataset[columns_to_merge], on=ID_FIELDS, how="left")
 
     metrics = []
     for record in df.itertuples():
         metrics.append(
             dict(
-                is_doc_retrieved=is_doc_retrieved(record.retrieved_contents, record.doc_name),
-                is_page_retrieved=is_page_retrieved(record.retrieved_contents, record.doc_name, record.relevant_pages),
+                is_doc_retrieved=is_doc_retrieved(record.retrieved_contents, record.doc_names),
+                is_page_retrieved=is_page_retrieved(record.retrieved_contents, record.doc_names, record.relevant_pages),
             ),
         )
 
