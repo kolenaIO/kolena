@@ -128,6 +128,10 @@ nav:
       - metrics/wer-cer-mer.md
     - Kolena Insights:
       - metrics/difficulty-score.md
+      - metrics/density-score.md
+      - metrics/uniqueness-score.md
+      - metrics/representation-score.md
+      - metrics/potential-difficulty-score.md
       - metrics/statistical-significance.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
