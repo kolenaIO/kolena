@@ -129,6 +129,7 @@ nav:
     - Kolena Insights:
       - metrics/difficulty-score.md
       - metrics/density-score.md
+      - metrics/uniqueness-score.md
       - metrics/statistical-significance.md
   - Help & FAQ:
     - Help & FAQ: faq/index.md
