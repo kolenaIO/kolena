@@ -4,7 +4,7 @@ description: How to learn more about your data using the embedding space visuali
 
 # Uniqueness Score
 
-The uniqueness_score measures how distinctive a data point is relative to the rest of the dataset in the original
+The `uniqueness_score` measures how distinctive a data point is relative to the rest of the dataset in the original
 high-dimensional embedding space. It is calculated by determining the average distance from each data point from its
 nearest neighbors (top 50 nearest). The average of these distances serves as the uniqueness_score, where a larger average
 distance indicates that the data point is farther from its neighbors and therefore more unique.
