@@ -17,8 +17,8 @@ distance indicates that the data point is farther from its neighbors and therefo
 
 ## Interpretation
 
-The uniqueness_score identifies data points that are unique or underrepresented within your dataset. A higher
-uniqueness_score suggests that a data point resembles fewer points in the dataset, highlighting rare features. This can
+The `uniqueness_score` identifies data points that are unique or underrepresented within your dataset. A higher
+`uniqueness_score` suggests that a data point resembles fewer points in the dataset, highlighting rare features. This can
 be particularly significant in outlier detection or help enhance the diversity of a dataset. By analyzing data points
-with high uniqueness_score, you can gain ensure that unique patterns are not overlooked, and make informed decisions
+with high `uniqueness_score`, you can gain ensure that unique patterns are not overlooked, and make informed decisions
 regarding special cases.

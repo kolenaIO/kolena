@@ -13,6 +13,10 @@ effectively quantifies the extent to which each training data point lies in regi
 validation/test data.
 
 !!! note
+    To utilize this score, provide the appropriate metadata that indicate if a datapoint is in the training set or not.
+    For example, you can use a `split` property to pass `train` or `test` values and use for this score.
+
+!!! note
     To further assist users with data curation tasks, Kolena automatically calculated a number of metrics
     based on the embedding space details. Enable automatic embedding extractions or
     [upload your own embeddings](../dataset/advanced-usage/upload-embeddings.md) to
