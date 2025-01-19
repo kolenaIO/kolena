@@ -114,3 +114,14 @@ def serialize_models_url(model_id: int, eval_config_id: int) -> str:
             },
         ),
     )
+
+
+def serialize_margin_of_error_controls(confidence_level: float, positive_sample_rate: float = 0.5) -> str:
+    return LZString.compressToBase64(
+        json.dumps(
+            {
+                "confidenceLevel": confidence_level,
+                "positiveSampleRate": positive_sample_rate,
+            },
+        ),
+    )

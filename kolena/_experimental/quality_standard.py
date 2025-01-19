@@ -12,10 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import json
+import math
 from collections import defaultdict
 from dataclasses import asdict
 from typing import Any
 from typing import Dict
+from typing import get_args
 from typing import List
 from typing import Literal
 from typing import Optional
@@ -46,13 +48,18 @@ from kolena._experimental.utils import margin_of_error
 from kolena._experimental.utils import ordinal
 from kolena._utils import krequests_v2 as krequests
 from kolena._utils import log
+from kolena._utils.endpoints import get_platform_url
+from kolena._utils.endpoints import serialize_margin_of_error_controls
+from kolena._utils.endpoints import serialize_models_url
 from kolena._utils.instrumentation import with_event
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.serde import from_dict
+from kolena._utils.validators import ValidatorConfig
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.evaluation import _get_eval_config_id
 from kolena.dataset.evaluation import _get_model_id
 from kolena.errors import IncorrectUsageError
-
+from kolena.errors import NotFoundError
 
 PerformanceDelta = Literal["improved", "regressed", "similar", "unknown"]
 
@@ -388,3 +395,92 @@ def copy_quality_standards_from_dataset(
     metric_groups = response.json().get("metric_groups", [])
     test_cases = response.json().get("stratifications", [])
     return metric_groups, test_cases
+
+
+@dataclass(frozen=True, config=ValidatorConfig)
+class Check:
+    stratification: str
+    test_case: Optional[str]
+    metric_group: str
+    metric: str
+    performance_delta: PerformanceDelta
+
+
+@with_event(event_name=EventAPI.Event.RUN_CHECK)
+def check(
+    dataset: str,
+    check_model: str,
+    reference_model: str,
+    *,
+    metric_groups: Union[List[str], None] = None,
+    intersect_results: bool = True,
+    confidence_level: float = 0.95,
+) -> Tuple[bool, Dict[PerformanceDelta, List[Check]]]:
+    df_result = download_quality_standard_result(
+        dataset,
+        models=[reference_model, check_model],
+        metric_groups=metric_groups,
+        intersect_results=intersect_results,
+        confidence_level=confidence_level,
+        reference_model=reference_model,
+    )
+    try:
+        model_index = df_result.columns.names.index("model")
+        metric_group_index = df_result.columns.names.index("metric_group")
+        metric_index = df_result.columns.names.index("metric")
+        type_index = df_result.columns.names.index("type")
+    except ValueError:
+        raise RuntimeError(
+            "Unexpected format for retrieved DataFrame. Please reach out to the Kolena team for assistance.",
+        )
+    columns = [
+        col for col in df_result.columns if col[model_index] == check_model and col[type_index] == "performance_delta"
+    ]
+    checks = []
+    for col in columns:
+        metric_group = col[metric_group_index]
+        metric = col[metric_index]
+        rows = df_result[col]
+        for row in rows.items():
+            key, performance_delta = row[0], row[1]
+            stratification = key[0]
+            test_case = key[1]
+            if isinstance(test_case, float) and math.isnan(test_case):
+                test_case = None
+            checks.append(
+                Check(
+                    stratification=stratification,
+                    test_case=test_case,
+                    metric_group=metric_group,
+                    metric=metric,
+                    performance_delta=performance_delta,
+                ),
+            )
+    mapping: Dict[PerformanceDelta, List[Check]] = defaultdict(list)
+    for delta_type in get_args(PerformanceDelta):
+        mapping[delta_type] = [c for c in checks if c.performance_delta == delta_type]
+    failed = len(mapping["regressed"]) > 0
+    log.info(
+        f"performed metric comparison on {check_model} against {reference_model}: "
+        f"{len(mapping['improved'])} improved, {len(mapping['regressed'])} regressed, "
+        f"{len(mapping['similar'])} similar, {len(mapping['unknown'])} unknown",
+    )
+    link = _get_results_url(dataset, [reference_model, check_model], confidence_level)
+    if link is not None:
+        log.info(f"detailed breakdown: {link}")
+    return failed, mapping
+
+
+def _get_results_url(dataset: str, models: list[str], confidence_level: float) -> Optional[str]:
+    try:
+        dataset = _load_dataset_metadata(dataset)
+        dataset_id = dataset.id
+        model_ids = [_get_model_id(model) for model in models]
+        eval_config_id = _get_eval_config_id(None)
+        models = [serialize_models_url(model_id, eval_config_id) for model_id in model_ids]
+        models_str = "&".join([f"models={model}" for model in models])
+        moe_str = f"marginOfErrorControls={serialize_margin_of_error_controls(confidence_level)}"
+
+        return f"{get_platform_url()}/dataset/standards?datasetId={dataset_id}&{models_str}&{moe_str}"
+    except NotFoundError:
+        return None
