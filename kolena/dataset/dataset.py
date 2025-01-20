@@ -266,6 +266,7 @@ def _send_upload_dataset_request(
     sources: Optional[List[Dict[str, str]]],
     append_only: bool = False,
     commit_tags: Optional[List[str]] = None,
+    dataset_tags: Optional[List[str]] = None,
 ) -> EntityData:
     request = RegisterRequest(
         name=name,
@@ -274,6 +275,7 @@ def _send_upload_dataset_request(
         sources=sources,
         append_only=append_only,
         tags=commit_tags,
+        dataset_tags=dataset_tags,
     )
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
@@ -289,6 +291,7 @@ def _upload_dataset(
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
     append_only: bool = False,
     commit_tags: Optional[List[str]] = None,
+    dataset_tags: Optional[List[str]] = None,
 ) -> None:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
@@ -299,6 +302,7 @@ def _upload_dataset(
         sources=sources,
         append_only=append_only,
         commit_tags=commit_tags,
+        dataset_tags=dataset_tags,
     )
     log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
@@ -310,6 +314,7 @@ def upload_dataset(
     *,
     id_fields: Optional[List[str]] = None,
     commit_tags: Optional[List[str]] = None,
+    dataset_tags: Optional[List[str]] = None,
     append_only: bool = False,
 ) -> None:
     """
@@ -326,12 +331,20 @@ def upload_dataset(
         within a dataset. When unspecified, a suitable value is inferred from the columns of the provided `df`. Note
         that `id_fields` must be hashable.
     :param commit_tags: Optionally specify a list of tags to associate with the dataset commit.
+    :param dataset_tags: Optionally specify a list of tags to associate with the dataset.
     :param append_only: If `False`, all datapoints in the dataset will be replaced by the ones in the input dataframe,
         and existing datapoints absent from the input dataframe will be removed from the dataset. If `True`, new
         datapoints from the input dataframe will be added, and existing datapoints will be modified if present in the
         input dataframe, but no datapoints will be deleted from the datasets. This behaves like an `UPSERT` operation.
     """
-    _upload_dataset(name, df, id_fields=id_fields, commit_tags=commit_tags, append_only=append_only)
+    _upload_dataset(
+        name,
+        df,
+        id_fields=id_fields,
+        commit_tags=commit_tags,
+        dataset_tags=dataset_tags,
+        append_only=append_only,
+    )
 
 
 @with_event(event_name=EventAPI.Event.LIST_DATASETS)
