@@ -37,6 +37,7 @@ class RegisterRequest:
     sources: Optional[List[Dict[str, str]]]
     append_only: bool = False
     tags: Optional[List[str]] = None
+    dataset_tags: Optional[List[str]] = None
 
 
 @dataclass(frozen=True)
