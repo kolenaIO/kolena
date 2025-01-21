@@ -58,6 +58,7 @@ from kolena._utils.validators import ValidatorConfig
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.evaluation import _get_eval_config_id
 from kolena.dataset.evaluation import _get_model_id
+from kolena.dataset.evaluation import _get_models
 from kolena.errors import IncorrectUsageError
 from kolena.errors import NotFoundError
 
@@ -410,12 +411,24 @@ class Check:
 def check(
     dataset: str,
     check_model: str,
-    reference_model: str,
+    reference_model: Optional[str] = None,
     *,
     metric_groups: Union[List[str], None] = None,
     intersect_results: bool = True,
     confidence_level: float = 0.95,
 ) -> Tuple[bool, Dict[PerformanceDelta, List[Check]]]:
+    if reference_model is None:
+        all_models = _get_models(dataset)
+        found_reference_model = next((m for m in all_models if m.is_default), None)
+        if found_reference_model is None:
+            raise IncorrectUsageError(
+                "reference_model must be specified if dataset does not have a configured default model",
+            )
+        reference_model = found_reference_model.name
+    if reference_model == check_model:
+        raise IncorrectUsageError(
+            "reference_model must differ from check_model",
+        )
     df_result = download_quality_standard_result(
         dataset,
         models=[reference_model, check_model],
@@ -459,7 +472,7 @@ def check(
     mapping: Dict[PerformanceDelta, List[Check]] = defaultdict(list)
     for delta_type in get_args(PerformanceDelta):
         mapping[delta_type] = [c for c in checks if c.performance_delta == delta_type]
-    failed = len(mapping["regressed"]) > 0
+    passed = len(mapping["regressed"]) == 0
     log.info(
         f"performed metric comparison on {check_model} against {reference_model}: "
         f"{len(mapping['improved'])} improved, {len(mapping['regressed'])} regressed, "
@@ -468,7 +481,7 @@ def check(
     link = _get_results_url(dataset, [reference_model, check_model], confidence_level)
     if link is not None:
         log.info(f"detailed breakdown: {link}")
-    return failed, mapping
+    return passed, dict(mapping)
 
 
 def _get_results_url(dataset: str, models: list[str], confidence_level: float) -> Optional[str]:
