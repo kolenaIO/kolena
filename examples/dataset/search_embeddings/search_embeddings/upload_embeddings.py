@@ -32,29 +32,41 @@ from kolena.dataset import download_dataset
 
 
 BUCKET = "kolena-public-examples"
-DATASET = "coco-stuff-10k"
-IMAGE_S3_DIR = f"s3://{BUCKET}/{DATASET}/data/images/"
+DATASET = "coco-2014-val"
+IMAGE_S3_DIR = f"s3://{BUCKET}/{DATASET}/data/images/"  # noqa: E231
 LOCATOR_FIELD = "locator"
+FILE_NAME_FIELD = "file_name"
+FILE_EXTENSION_FIELD = "file_extension"
 
 
 def image_locators_from_s3_path(
-    s3_locators: List[str],
+    df: pd.DataFrame,
     local_dir: Optional[str] = None,
 ) -> List[Tuple[str, Optional[str]]]:
     locators_and_filepaths: List[Tuple[str, Optional[str]]] = []
-    for locator in s3_locators:
+    for _, row in df.iterrows():
+        locator = row[LOCATOR_FIELD]
+        file_name = row[FILE_NAME_FIELD]
+        file_extension = row[FILE_EXTENSION_FIELD]
         if not locator.startswith("s3://"):
             raise ValueError(f"invalid input path: {locator}")
 
         if local_dir is None:
             locators_and_filepaths.append((locator, None))
         else:
-            relative_locator = os.path.relpath(locator[5:], IMAGE_S3_DIR[5:])
-            target = os.path.join(local_dir, relative_locator)
-            if not os.path.exists(target):
-                raise ValueError(f"missing local file: {target}")
-            locators_and_filepaths.append((locator, target))
-
+            # Target is the local filepath to the image
+            if file_name is None or file_extension is None:
+                relative_locator = os.path.relpath(locator[5:], IMAGE_S3_DIR[5:])
+                target = os.path.join(local_dir, relative_locator)
+                if not os.path.exists(target):
+                    raise ValueError(f"Can't find local file using s3 + locator: {target}")
+                locators_and_filepaths.append((locator, target))
+            else:
+                target = os.path.join(local_dir, f"{file_name}{file_extension}")
+                if not os.path.exists(target):
+                    raise ValueError(f"missing local file using file_name + file_extension: {target}")
+                locators_and_filepaths.append((locator, target))
+    # Locators used for S3 remote paths. And filepath is local path.
     return locators_and_filepaths
 
 
@@ -110,13 +122,13 @@ def extract_image_embeddings(
 
 
 def extract_dataset_embedding(model: StudioModel, df: pd.DataFrame, local_path: Optional[str] = None) -> pd.DataFrame:
-    locators_and_filepaths = image_locators_from_s3_path(df[LOCATOR_FIELD].to_list(), local_path)
+    locators_and_filepaths = image_locators_from_s3_path(df, local_path)
     locator_and_embeddings = extract_image_embeddings(model, locators_and_filepaths)
     return pd.DataFrame(locator_and_embeddings, columns=["locator", "embedding"])
 
 
 def load_precomputed_embedding() -> pd.DataFrame:
-    return pd.read_parquet(f"s3://{BUCKET}/{DATASET}/embeddings/default_model/embeddings.parquet")
+    return pd.read_parquet(f"s3://{BUCKET}/{DATASET}/embeddings/default_model/embeddings.parquet")  # noqa: E231
 
 
 def run(run_extraction: bool, dataset_name: str, local_path: str) -> None:
