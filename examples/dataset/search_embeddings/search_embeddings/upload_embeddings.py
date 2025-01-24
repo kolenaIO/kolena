@@ -46,8 +46,8 @@ def image_locators_from_s3_path(
     locators_and_filepaths: List[Tuple[str, Optional[str]]] = []
     for _, row in df.iterrows():
         locator = row[LOCATOR_FIELD]
-        file_name = row[FILE_NAME_FIELD]
-        file_extension = row[FILE_EXTENSION_FIELD]
+        file_name = row.get(FILE_NAME_FIELD, None)
+        file_extension = row.get(FILE_EXTENSION_FIELD, None)
         if not locator.startswith("s3://"):
             raise ValueError(f"invalid input path: {locator}")
 
