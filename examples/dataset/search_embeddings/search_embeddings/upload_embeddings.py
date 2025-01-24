@@ -32,7 +32,7 @@ from kolena.dataset import download_dataset
 
 
 BUCKET = "kolena-public-examples"
-DATASET = "coco-2014-val"
+DATASET = "coco-stuff-10k"
 IMAGE_S3_DIR = f"s3://{BUCKET}/{DATASET}/data/images/"  # noqa: E231
 LOCATOR_FIELD = "locator"
 FILE_NAME_FIELD = "file_name"
