@@ -65,10 +65,10 @@ def datapoint_metrics(
         count_FP=len(fp),
         count_FN=len(fn),
         is_exact_match=len(fp) + len(fn) == 0,
-        precision=precision,
-        recall=recall,
-        f1=f1,
-        jaccard_index=jaccard_index,
+        Precision=precision,
+        Recall=recall,
+        F1_Score=f1,
+        Jaccard_Index=jaccard_index,
     )
 
 
@@ -80,7 +80,9 @@ def _iter_metrics(
 ) -> Iterator[pd.DataFrame]:
     for i in tqdm.tqdm(range(0, pred_df.shape[0], batch_size)):
         metrics = [datapoint_metrics(matches) for matches in all_object_matches[i : i + batch_size]]
-        yield pd.concat([pd.DataFrame(metrics), pred_df.reset_index(drop=True)], axis=1)
+        pred_df = pred_df.reset_index(drop=True)
+        pred_df["multilabel_classification.metrics"] = metrics
+        yield pred_df
 
 
 def _compute_metrics(
@@ -96,8 +98,8 @@ def _compute_metrics(
     Compute metrics for object detection.
 
     :param df: Dataframe for model results.
-    :param ground_truth: Column name for ground truth object annotations
-    :param inference: Column name for inference object annotations
+    :param ground_truth: Column name for ground truth object labels
+    :param inference: Column name for inference object labels
     :param gt_ignore_property: Field on the ground truth labels used to determine if the label should be
     ignored. Labels will be ignored if this field exists and is equal to `True`.
     :param batch_size: number of results to process per iteration.
