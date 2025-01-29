@@ -201,7 +201,7 @@ def _iter_multilabel_classification_results(
     )
 
 
-def compute_multilabel_classification_results(
+def _compute_multilabel_classification_results(
     dataset_name: str,
     df: pd.DataFrame,
     *,
