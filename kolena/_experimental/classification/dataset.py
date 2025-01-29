@@ -189,6 +189,10 @@ def _iter_multilabel_classification_results(
     dataset_df = dataset.download_dataset(dataset_name)
     dataset_df = dataset_df[[*id_fields, ground_truths_field]]
     _validate_column_present(dataset_df, ground_truths_field)
+    while ground_truths_field in df.columns:
+        new_ground_truths_field = f"_kolena.rename.{ground_truths_field}"
+        dataset_df = dataset_df.rename(columns={ground_truths_field: new_ground_truths_field})
+        ground_truths_field = new_ground_truths_field
 
     merged_df = df.merge(dataset_df, on=id_fields)
     return _compute_metrics(
