@@ -223,9 +223,7 @@ def upload_multilabel_classification_results(
     required_match_fields: Optional[List[str]] = None,
 ) -> None:
     """
-    Compute metrics and upload results of the model computed by
-    [`compute_multilabel_classification_results`][kolena._experimental.multilabel_classification.compute_multilabel_classification_results]
-    for the dataset.
+    Compute metrics and upload results of the model for the dataset.
 
     Dataframe `df` should include all id columns that would match to that of corresponding datapoint and
     an `inference` column that should be a list of either `str` or scored / un-scored
