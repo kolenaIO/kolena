@@ -33,13 +33,11 @@ Inf = TypeVar("Inf", bound=Union[str, Label, ScoredLabel])
 @dataclass(frozen=True)
 class InferenceMatches(Generic[GT, Inf]):
     """
-    The result of [`match_inferences`][kolena.metrics.match_inferences], providing lists of matches between
-    ground truth and inference objects, unmatched ground truths, and unmatched inferences. After applying some
-    confidence threshold on returned inference objects, `InferenceMatches` can be used to calculate metrics such as
-    precision and recall.
+    The result of [`match_inferences`][kolena._experimental.classification._matching.match_inferences], providing lists
+    of matches between ground truth and inference objects, unmatched ground truths, and unmatched inferences.
+    `InferenceMatches` can be used to calculate metrics such as precision and recall.
 
-    Objects are of type [`BoundingBox`][kolena.annotation.BoundingBox] or
-    [`Polygon`][kolena.annotation.Polygon], depending on the type of inputs provided to
+    Objects are of type `str` or [`Label`][kolena.annotation.Label], depending on the type of inputs provided to
     [`match_inferences`][kolena.metrics.match_inferences].
     """
 

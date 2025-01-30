@@ -94,7 +94,7 @@ def _compute_metrics(
     required_match_fields: Optional[List[str]] = None,
 ) -> Iterator[pd.DataFrame]:
     """
-    Compute metrics for object detection.
+    Compute metrics for multilabel classification.
 
     :param df: Dataframe for model results.
     :param ground_truth: Column name for ground truth object labels
@@ -206,43 +206,6 @@ def _iter_multilabel_classification_results(
     )
 
 
-def _compute_multilabel_classification_results(
-    dataset_name: str,
-    df: pd.DataFrame,
-    *,
-    ground_truths_field: str = "ground_truths",
-    raw_inferences_field: str = "raw_inferences",
-    gt_ignore_property: Optional[str] = None,
-    batch_size: int = 10_000,
-) -> pd.DataFrame:
-    """
-    Compute metrics of the model for the dataset.
-
-    Dataframe `df` should include all id columns that would match to that of corresponding datapoint and
-    an `inference` column that should be a list of either `str` or [`Labels`][kolena.annotation.Label].
-
-    :param dataset_name: Dataset name.
-    :param df: Dataframe for model results.
-    :param ground_truths_field: Field name in datapoint with ground truth labels,
-    defaulting to `"ground_truths"`.
-    :param raw_inferences_field: Column in model result DataFrame with raw inference labels,
-    defaulting to `"raw_inferences"`.
-    :param gt_ignore_property: Field on the ground truth labels used to determine if the label should be
-    ignored. Labels will be ignored if this field exists and is equal to `True`.
-    :param batch_size: number of results to process per iteration.
-    :return: A `DataFrame` of the computed results
-    """
-    results_iter = _iter_multilabel_classification_results(
-        dataset_name,
-        df,
-        ground_truths_field=ground_truths_field,
-        raw_inferences_field=raw_inferences_field,
-        gt_ignore_property=gt_ignore_property,
-        batch_size=batch_size,
-    )
-    return pd.concat(list(results_iter))
-
-
 def upload_multilabel_classification_results(
     dataset_name: str,
     model_name: str,
@@ -260,7 +223,8 @@ def upload_multilabel_classification_results(
     for the dataset.
 
     Dataframe `df` should include all id columns that would match to that of corresponding datapoint and
-    an `inference` column that should be a list of either `str` or [`Labels`][kolena.annotation.Label].
+    an `inference` column that should be a list of either `str` or scored / un-scored
+    [`Labels`][kolena.annotation.Label].
 
     :param dataset_name: Dataset name.
     :param model_name: Model name.
