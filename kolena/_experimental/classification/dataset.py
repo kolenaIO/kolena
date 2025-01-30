@@ -13,7 +13,6 @@
 # limitations under the License.
 import itertools
 from typing import Any
-from typing import cast
 from typing import Dict
 from typing import Iterable
 from typing import Iterator
@@ -37,9 +36,9 @@ def merge(gt: Union[str, Label, ScoredLabel], inf: Union[str, Label, ScoredLabel
     if isinstance(gt, str) and isinstance(inf, str):
         return gt
     if isinstance(gt, str):
-        return inf
+        return inf._to_dict()
     if isinstance(inf, str):
-        return gt
+        return gt._to_dict()
     return {**gt._to_dict(), **inf._to_dict()}
 
 
@@ -134,7 +133,7 @@ def _compute_metrics(
     pred_df.drop(columns=ground_truth, inplace=True)
     yield from _iter_metrics(
         pred_df,
-        cast(List[InferenceMatches], all_object_matches),
+        all_object_matches,
         batch_size=batch_size,
     )
 
@@ -185,6 +184,8 @@ def _iter_multilabel_classification_results(
     _validate_column_present(df, raw_inferences_field)
 
     dataset_metadata = _load_dataset_metadata(dataset_name)
+    if dataset_metadata is None:
+        raise RuntimeError("error retrieving dataset id fields")
     id_fields = dataset_metadata.id_fields
     dataset_df = dataset.download_dataset(dataset_name)
     dataset_df = dataset_df[[*id_fields, ground_truths_field]]

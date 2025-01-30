@@ -155,7 +155,9 @@ def filter_inferences(
     labels: Optional[Set[str]] = None,
 ) -> List[Union[str, Label, ScoredLabel]]:
     filtered_by_confidence = (
-        [inf for inf in inferences if inf.score >= confidence_score] if confidence_score else inferences
+        [inf for inf in inferences if hasattr(inf, "score") and inf.score >= confidence_score]
+        if confidence_score
+        else inferences
     )
     if labels is None:
         return filtered_by_confidence
