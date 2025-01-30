@@ -32,14 +32,16 @@ from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.errors import IncorrectUsageError
 
 
+def _label_as_dict(raw_label: Union[str, Label, ScoredLabel]) -> Dict[str, Any]:
+    if isinstance(raw_label, str):
+        return dict(label=raw_label)
+    return raw_label._to_dict()
+
+
 def merge(gt: Union[str, Label, ScoredLabel], inf: Union[str, Label, ScoredLabel]) -> Union[str, Dict[str, Any]]:
     if isinstance(gt, str) and isinstance(inf, str):
         return gt
-    if isinstance(gt, str):
-        return inf._to_dict()
-    if isinstance(inf, str):
-        return gt._to_dict()
-    return {**gt._to_dict(), **inf._to_dict()}
+    return {**_label_as_dict(gt), **_label_as_dict(inf)}
 
 
 def datapoint_metrics(
