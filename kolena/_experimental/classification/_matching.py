@@ -43,8 +43,7 @@ class InferenceMatches(Generic[GT, Inf]):
 
     matched: List[Tuple[GT, Inf]]
     """
-    Pairs of matched ground truth and inference objects above the IoU threshold, along with the calculated IoU.
-    Considered as true positive classifications after applying some confidence threshold.
+    Pairs of matched ground truth and inference objects. Considered as true positives.
     """
 
     unmatched_gt: List[GT]
@@ -52,7 +51,7 @@ class InferenceMatches(Generic[GT, Inf]):
 
     unmatched_inf: List[Inf]
     """
-    Unmatched inference objects. Considered as false positives after applying some confidence threshold.
+    Unmatched inference objects. Considered as false positives.
     """
 
 
@@ -74,7 +73,6 @@ def match_inferences(
     ignored_ground_truths: Optional[List[GT]] = None,
     required_match_fields: Optional[List[str]] = None,
 ) -> InferenceMatches[GT, Inf]:
-    inferences = sorted(inferences, key=lambda inf: inf.score if hasattr(inf, "score") else 0, reverse=True)
     if required_match_fields is None or len(required_match_fields) == 0:
         return _match_inferences(
             ground_truths,
@@ -116,6 +114,7 @@ def _match_inferences(
     *,
     ignored_ground_truths: Optional[List[GT]] = None,
 ) -> InferenceMatches[GT, Inf]:
+    inferences = sorted(inferences, key=lambda inf: inf.score if hasattr(inf, "score") else 0, reverse=True)
     matched: List[Tuple[GT, Inf]] = []
     unmatched_inf: List[Inf] = []
     taken_gts: Set[int] = set()
@@ -145,18 +144,3 @@ def get_label(classification: Union[str, Label, ScoredLabel]) -> str:
     if isinstance(classification, str):
         return classification
     return classification.label
-
-
-def filter_inferences(
-    inferences: List[Union[str, Label, ScoredLabel]],
-    confidence_score: Optional[float] = None,
-    labels: Optional[Set[str]] = None,
-) -> List[Union[str, Label, ScoredLabel]]:
-    filtered_by_confidence = (
-        [inf for inf in inferences if hasattr(inf, "score") and inf.score >= confidence_score]
-        if confidence_score
-        else inferences
-    )
-    if labels is None:
-        return filtered_by_confidence
-    return [inf for inf in filtered_by_confidence if get_label(inf) in labels]

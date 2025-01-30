@@ -38,16 +38,19 @@ def _label_as_dict(raw_label: Union[str, Label, ScoredLabel]) -> Dict[str, Any]:
     return raw_label._to_dict()
 
 
-def merge(gt: Union[str, Label, ScoredLabel], inf: Union[str, Label, ScoredLabel]) -> Union[str, Dict[str, Any]]:
+def _merge_labels(
+    gt: Union[str, Label, ScoredLabel],
+    inf: Union[str, Label, ScoredLabel],
+) -> Union[str, Dict[str, Any]]:
     if isinstance(gt, str) and isinstance(inf, str):
         return gt
     return {**_label_as_dict(gt), **_label_as_dict(inf)}
 
 
-def datapoint_metrics(
+def _datapoint_metrics(
     object_matches: InferenceMatches,
 ) -> Dict[str, Any]:
-    tp = [merge(gt, inf) for gt, inf in object_matches.matched]
+    tp = [_merge_labels(gt, inf) for gt, inf in object_matches.matched]
     fp = object_matches.unmatched_inf
     fn = object_matches.unmatched_gt
     count_tp = len(tp)
@@ -80,7 +83,7 @@ def _iter_metrics(
     batch_size: int = 10_000,
 ) -> Iterator[pd.DataFrame]:
     for i in tqdm.tqdm(range(0, pred_df.shape[0], batch_size)):
-        metrics = [datapoint_metrics(matches) for matches in all_object_matches[i : i + batch_size]]
+        metrics = [_datapoint_metrics(matches) for matches in all_object_matches[i : i + batch_size]]
         pred_df = pred_df.reset_index(drop=True)
         pred_df["multilabel_classification.metrics"] = metrics
         yield pred_df
@@ -234,7 +237,8 @@ def upload_multilabel_classification_results(
     :param ground_truths_field: Field name in datapoint with ground truth labels,
     defaulting to `"ground_truths"`.
     :param raw_inferences_field: Column in model result DataFrame with raw inference labels,
-    defaulting to `"raw_inferences"`.
+    defaulting to `"raw_inferences"`. These inferences will be directly matched against the ground truths, and
+    should be pre-filtered for any disqualifying factors, such as confidence.
     :param gt_ignore_property: Name of a property on the ground truth labels used to determine if the label
     should be ignored. Labels will be ignored if this property exists and is equal to `True`.
     :param batch_size: number of results to process per iteration.
