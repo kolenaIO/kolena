@@ -267,6 +267,7 @@ def _send_upload_dataset_request(
     append_only: bool = False,
     commit_tags: Optional[List[str]] = None,
     dataset_tags: Optional[List[str]] = None,
+    description: Optional[str] = None,
 ) -> EntityData:
     request = RegisterRequest(
         name=name,
@@ -276,6 +277,7 @@ def _send_upload_dataset_request(
         append_only=append_only,
         tags=commit_tags,
         dataset_tags=dataset_tags,
+        description=description,
     )
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
@@ -292,6 +294,7 @@ def _upload_dataset(
     append_only: bool = False,
     commit_tags: Optional[List[str]] = None,
     dataset_tags: Optional[List[str]] = None,
+    description: Optional[str] = None,
 ) -> None:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
@@ -303,6 +306,7 @@ def _upload_dataset(
         append_only=append_only,
         commit_tags=commit_tags,
         dataset_tags=dataset_tags,
+        description=description,
     )
     log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
 
@@ -316,6 +320,7 @@ def upload_dataset(
     commit_tags: Optional[List[str]] = None,
     dataset_tags: Optional[List[str]] = None,
     append_only: bool = False,
+    description: Optional[str] = None,
 ) -> None:
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
@@ -336,6 +341,7 @@ def upload_dataset(
         and existing datapoints absent from the input dataframe will be removed from the dataset. If `True`, new
         datapoints from the input dataframe will be added, and existing datapoints will be modified if present in the
         input dataframe, but no datapoints will be deleted from the datasets. This behaves like an `UPSERT` operation.
+    :param description: Optionally specify the description of the dataset.
     """
     _upload_dataset(
         name,
@@ -344,6 +350,7 @@ def upload_dataset(
         commit_tags=commit_tags,
         dataset_tags=dataset_tags,
         append_only=append_only,
+        description=description,
     )
 
 
