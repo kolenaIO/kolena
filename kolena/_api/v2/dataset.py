@@ -38,6 +38,7 @@ class RegisterRequest:
     append_only: bool = False
     tags: Optional[List[str]] = None
     dataset_tags: Optional[List[str]] = None
+    description: Optional[str] = None
 
 
 @dataclass(frozen=True)

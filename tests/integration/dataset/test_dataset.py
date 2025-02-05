@@ -389,3 +389,36 @@ def test__download_dataset__preserve_none() -> None:
     assert fetched_df_dp["a"][0] is None
     assert np.isinf(fetched_df_dp["a"][1])
     assert np.isnan(fetched_df_dp["a"][2])
+
+
+def test__upload_dataset__with_description() -> None:
+    name = with_test_prefix(f"{__file__}::test__upload_dataset__with_description")
+    datapoints = [dict(locator=fake_locator(i, name), value=i + 100) for i in range(20)]
+    columns = ["locator", "value"]
+    description_v1 = "description version 1"
+
+    # create a dataset with description
+    upload_dataset(name, pd.DataFrame(datapoints, columns=columns), id_fields=["locator"], description=description_v1)
+    dataset = _load_dataset_metadata(name)
+    assert dataset.description == description_v1
+
+    # update the dataset along with its description
+    description_v2 = "description version 2"
+    upload_dataset(
+        name,
+        pd.DataFrame(datapoints[:-1], columns=columns),
+        id_fields=["locator"],
+        description=description_v2,
+    )
+    dataset = _load_dataset_metadata(name)
+    assert dataset.description == description_v2
+
+    # update the dataset while keeping the description unchanged
+    upload_dataset(
+        name,
+        pd.DataFrame(datapoints[:-2], columns=columns),
+        id_fields=["locator"],
+        description=description_v2,
+    )
+    dataset = _load_dataset_metadata(name)
+    assert dataset.description == description_v2
