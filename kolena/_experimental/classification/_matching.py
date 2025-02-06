@@ -21,8 +21,7 @@ from typing import Tuple
 from typing import TypeVar
 from typing import Union
 
-from pydantic.dataclasses import dataclass
-
+from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena.annotation import Label
 from kolena.annotation import ScoredLabel
 
