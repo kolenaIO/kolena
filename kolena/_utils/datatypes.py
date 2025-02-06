@@ -292,6 +292,8 @@ class DataObject(metaclass=ABCMeta):
 
 
 def _serialize_dataobject(x: Any) -> Any:
+    if isinstance(x, dict):
+        return {k: _serialize_dataobject(v) for k, v in x.items()}
     if isinstance(x, list):
         return [item._to_dict() if isinstance(item, DataObject) else item for item in x]
 
