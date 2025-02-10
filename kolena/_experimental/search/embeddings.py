@@ -11,19 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import warnings
+
 import pandas as pd
 
-from kolena._api.v1.event import EventAPI
-from kolena._utils.instrumentation import with_event
 from kolena.dataset.search import upload_dataset_embeddings as new_upload_dataset_embeddings
 
 
-@with_event(event_name=EventAPI.Event.UPLOAD_DATASET_EMBEDDINGS)
 def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
     """
     Upload a list of search embeddings for a dataset.
 
-    .. deprecated:: 1.54.2
+    .. deprecated:: 1.55.0
         Use :func:`kolena.dataset.search.upload_dataset_embeddings` instead.
 
     :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
@@ -34,4 +33,10 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises NotFoundError: The given dataset does not exist.
     :raises InputValidationError: The provided input is not valid.
     """
+    warnings.warn(
+        "kolena._experimental.search.upload_dataset_embeddings is deprecated. "
+        "Use kolena.dataset.search.upload_dataset_embeddings instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
     new_upload_dataset_embeddings(dataset_name, key, df_embedding)

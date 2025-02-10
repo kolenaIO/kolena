@@ -4,10 +4,6 @@
 ::: kolena._experimental.quality_standard
     options:
         show_root_heading: true
-::: kolena._experimental.search
-    options:
-        show_root_heading: true
-        members: ["upload_dataset_embeddings"]
 ::: kolena._experimental.classification
     options:
         members: ["upload_multilabel_classification_results"]
