@@ -394,12 +394,12 @@ workflows:
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
       - integration-test:
-          name: integration-test-experimental-embedding-<< matrix.python-version >>-<< matrix.extras >>
+          name: integration-test-dataset-search-embedding-<< matrix.python-version >>-<< matrix.extras >>
           matrix:
             parameters:
               python-version: [ "3.9.18" ]
               extras: [ "none" ]
-          pytest-group: _experimental/search
+          pytest-group: dataset/search
           enabled: true
           requires:
             - ci-base-<< matrix.python-version >>-<< matrix.extras >>
