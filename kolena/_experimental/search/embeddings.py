@@ -32,8 +32,8 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises InputValidationError: The provided input is not valid.
     """
     warnings.warn(
-        "\n kolena._experimental.search.upload_dataset_embeddings is deprecated. \n"
-        " Use kolena.dataset.search.upload_dataset_embeddings instead.",
+        "\n kolena._experimental.search.upload_dataset_embeddings is deprecated."
+        "\n Use kolena.dataset.search.upload_dataset_embeddings instead.",
         DeprecationWarning,
         stacklevel=2,
     )
