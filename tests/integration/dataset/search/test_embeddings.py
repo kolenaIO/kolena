@@ -17,8 +17,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from kolena._experimental.search import upload_embeddings
 from kolena.dataset import upload_dataset
-from kolena.dataset.search import upload_embeddings
 from kolena.dataset.search.embeddings import _upload_dataset_embeddings
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
