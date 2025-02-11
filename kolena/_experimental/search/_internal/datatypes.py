@@ -30,22 +30,3 @@ class LocatorEmbeddingsDataFrameSchema(pa.DataFrameModel):
     """
     Embedding vector (base64-encoded string of `np.ndarray`) corresponding to a searchable representation of the sample.
     """
-
-
-class DatasetEmbeddingsDataFrameSchema(pa.DataFrameModel):
-    key: Series[pa.typing.String] = pa.Field(coerce=True)
-    """
-    Unique key corresponding  to the embedding vectors. This can be, for example, the name of the embedding model along
-    with the column with which the embedding was extracted, such as "resnet50-image_locator".
-    """
-
-    datapoint_id_object: Series[pa.typing.String] = pa.Field(coerce=True)
-    """
-    String representation of the serialized datapoint id object from the dataset's id fields.
-    """
-
-    embedding: Series[pa.typing.String] = pa.Field(coerce=True)
-    """
-    Embedding vector (base64-encoded string of `np.ndarray`) corresponding to a searchable representation of the
-        datapoint.
-    """

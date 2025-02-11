@@ -16,21 +16,18 @@ import json
 import pickle
 from base64 import b64encode
 from typing import Any
-from typing import List
 from typing import Set
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
+import pandera as pa
 from dacite import from_dict
+from pandera.typing import Series
 
 from kolena._api.v1.event import EventAPI
-from kolena._api.v1.generic import Search as API
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
-from kolena._experimental.search._internal.datatypes import DatasetEmbeddingsDataFrameSchema
-from kolena._experimental.search._internal.datatypes import LocatorEmbeddingsDataFrameSchema
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import init_upload
@@ -44,39 +41,28 @@ from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import InputValidationError
 
+# Ensure check method is registered or else would get SchemaInitError
+# noreorder
+from kolena._utils.dataframes.validators import _validate_locator  # noqa: F401
 
-def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> None:
+
+class DatasetEmbeddingsDataFrameSchema(pa.DataFrameModel):
+    key: Series[pa.typing.String] = pa.Field(coerce=True)
     """
-    Upload a list of search embeddings corresponding to sample locators.
-
-    :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
-        This is typically a locator.
-    :param embeddings: List of locator-embedding pairs, as tuples. Locators should be string values, while embeddings
-        should be an `numpy.typing.ArrayLike` of numeric values.
-    :raises InputValidationError: The provided embeddings input is not of a valid format
+    Unique key corresponding  to the embedding vectors. This can be, for example, the name of the embedding model along
+    with the column with which the embedding was extracted, such as "resnet50-image_locator".
     """
-    init_response = init_upload()
-    locators, search_embeddings = [], []
-    for locator, embedding in embeddings:
-        if not np.issubdtype(embedding.dtype, np.number):
-            raise InputValidationError("unexpected non-numeric embedding dtype")
-        locators.append(locator)
-        search_embeddings.append(b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8"))
-    df_embeddings = pd.DataFrame(dict(key=[key] * len(embeddings), locator=locators, embedding=search_embeddings))
-    df_validated = validate_df_schema(df_embeddings, LocatorEmbeddingsDataFrameSchema)
 
-    log.info(f"uploading embeddings for key '{key}'")
-    upload_data_frame(df=df_validated, load_uuid=init_response.uuid)
-    request = API.UploadEmbeddingsRequest(
-        uuid=init_response.uuid,
-    )
-    res = krequests.post(
-        endpoint_path=API.Path.EMBEDDINGS.value,
-        data=json.dumps(dataclasses.asdict(request)),
-    )
-    krequests.raise_for_status(res)
-    data = from_dict(data_class=API.UploadEmbeddingsResponse, data=res.json())
-    log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
+    datapoint_id_object: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    String representation of the serialized datapoint id object from the dataset's id fields.
+    """
+
+    embedding: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    Embedding vector (base64-encoded string of `np.ndarray`) corresponding to a searchable representation of the
+        datapoint.
+    """
 
 
 def _upload_dataset_embeddings(

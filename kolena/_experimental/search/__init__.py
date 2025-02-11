@@ -14,7 +14,9 @@
 
 # noreorder
 from .embeddings import upload_dataset_embeddings
+from .embeddings import upload_embeddings
 
 __all__ = [
     "upload_dataset_embeddings",
+    "upload_embeddings",
 ]
