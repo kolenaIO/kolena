@@ -20,13 +20,14 @@ from typing import Set
 
 import numpy as np
 import pandas as pd
+import pandera as pa
 from dacite import from_dict
+from pandera.typing import Series
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
-from kolena._experimental.search._internal.datatypes import DatasetEmbeddingsDataFrameSchema
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import init_upload
@@ -39,6 +40,29 @@ from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import InputValidationError
+
+# Ensure check method is registered or else would get SchemaInitError
+# noreorder
+from kolena._utils.dataframes.validators import _validate_locator  # noqa: F401
+
+
+class DatasetEmbeddingsDataFrameSchema(pa.DataFrameModel):
+    key: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    Unique key corresponding  to the embedding vectors. This can be, for example, the name of the embedding model along
+    with the column with which the embedding was extracted, such as "resnet50-image_locator".
+    """
+
+    datapoint_id_object: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    String representation of the serialized datapoint id object from the dataset's id fields.
+    """
+
+    embedding: Series[pa.typing.String] = pa.Field(coerce=True)
+    """
+    Embedding vector (base64-encoded string of `np.ndarray`) corresponding to a searchable representation of the
+        datapoint.
+    """
 
 
 def _upload_dataset_embeddings(
