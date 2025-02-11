@@ -29,6 +29,8 @@ from kolena._api.v1.generic import Search as API
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
+from kolena._experimental.search._internal.datatypes import DatasetEmbeddingsDataFrameSchema
+from kolena._experimental.search._internal.datatypes import LocatorEmbeddingsDataFrameSchema
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import init_upload
@@ -40,8 +42,6 @@ from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_serialized_dataframe
-from kolena.dataset.search._internal.datatypes import DatasetEmbeddingsDataFrameSchema
-from kolena.dataset.search._internal.datatypes import LocatorEmbeddingsDataFrameSchema
 from kolena.errors import InputValidationError
 
 

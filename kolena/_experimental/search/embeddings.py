@@ -15,8 +15,6 @@ import warnings
 
 import pandas as pd
 
-from kolena.dataset.search import upload_dataset_embeddings as new_upload_dataset_embeddings
-
 
 def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
     """
@@ -34,9 +32,12 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises InputValidationError: The provided input is not valid.
     """
     warnings.warn(
-        "kolena._experimental.search.upload_dataset_embeddings is deprecated. "
-        "Use kolena.dataset.search.upload_dataset_embeddings instead.",
+        "\n kolena._experimental.search.upload_dataset_embeddings is deprecated. \n"
+        " Use kolena.dataset.search.upload_dataset_embeddings instead.",
         DeprecationWarning,
         stacklevel=2,
     )
+    # Import here to avoid circular dependency
+    from kolena.dataset.search import upload_dataset_embeddings as new_upload_dataset_embeddings
+
     new_upload_dataset_embeddings(dataset_name, key, df_embedding)
