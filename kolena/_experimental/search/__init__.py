@@ -13,8 +13,10 @@
 # limitations under the License.
 
 # noreorder
+from .embeddings import upload_embeddings
 from .embeddings import upload_dataset_embeddings
 
 __all__ = [
+    "upload_embeddings",
     "upload_dataset_embeddings",
 ]
