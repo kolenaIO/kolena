@@ -14,41 +14,29 @@
 import dataclasses
 import json
 import pickle
+import warnings
 from base64 import b64encode
-from typing import Any
 from typing import List
-from typing import Set
 from typing import Tuple
 
 import numpy as np
 import pandas as pd
 from dacite import from_dict
 
-from kolena._api.v1.event import EventAPI
 from kolena._api.v1.generic import Search as API
-from kolena._api.v2.search import Path as PATH_V2
-from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
-from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
-from kolena._experimental.search._internal.datatypes import DatasetEmbeddingsDataFrameSchema
 from kolena._experimental.search._internal.datatypes import LocatorEmbeddingsDataFrameSchema
 from kolena._utils import krequests
 from kolena._utils import log
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.dataframes.validators import validate_df_schema
-from kolena._utils.instrumentation import with_event
-from kolena._utils.state import API_V2
-from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
-from kolena.dataset._common import validate_dataframe_ids
-from kolena.dataset.dataset import _load_dataset_metadata
-from kolena.dataset.dataset import _to_serialized_dataframe
+from kolena.dataset import upload_dataset_embeddings as new_upload_dataset_embeddings
 from kolena.errors import InputValidationError
 
 
 def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> None:
     """
     Upload a list of search embeddings corresponding to sample locators.
-
     :param key: String value uniquely corresponding to the model used to extract the embedding vectors.
         This is typically a locator.
     :param embeddings: List of locator-embedding pairs, as tuples. Locators should be string values, while embeddings
@@ -79,62 +67,12 @@ def upload_embeddings(key: str, embeddings: List[Tuple[str, np.ndarray]]) -> Non
     log.success(f"uploaded embeddings for key '{key}' on {data.n_samples} samples")
 
 
-def _upload_dataset_embeddings(
-    dataset_name: str,
-    key: str,
-    df_embedding: pd.DataFrame,
-    run_embedding_reduction_pipeline: bool = True,
-) -> None:
-    dataset_entity_data = _load_dataset_metadata(dataset_name)
-    assert dataset_entity_data
-    embedding_lengths: Set[int] = set()
-
-    def encode_embedding(embedding: Any) -> str:
-        if not np.issubdtype(embedding.dtype, np.number):
-            raise InputValidationError("unexpected non-numeric embedding dtype")
-        embedding_lengths.add(len(embedding))
-        return b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8")
-
-    # encode embeddings to string
-    df_embedding["embedding"] = df_embedding["embedding"].apply(encode_embedding)
-    if len(embedding_lengths) > 1:
-        raise InputValidationError(f"embeddings are not of the same size, found {embedding_lengths}")
-
-    id_fields = dataset_entity_data.id_fields
-    dataset_name = dataset_entity_data.name
-    validate_dataframe_ids(df_embedding, id_fields)
-    df_serialized_datapoint_id_object = _to_serialized_dataframe(
-        df_embedding[sorted(id_fields)],
-        column=COL_DATAPOINT_ID_OBJECT,
-    )
-    df_embedding = pd.concat([df_embedding, df_serialized_datapoint_id_object], axis=1)
-
-    df_embedding["key"] = key
-    df_embedding = df_embedding[[COL_DATAPOINT_ID_OBJECT, "key", "embedding"]]
-    df_validated = validate_df_schema(df_embedding, DatasetEmbeddingsDataFrameSchema)
-
-    log.info(f"uploading embeddings for dataset '{dataset_name}' and key '{key}'")
-    init_response = init_upload()
-    upload_data_frame(df=df_validated, load_uuid=init_response.uuid)
-    request = UploadDatasetEmbeddingsRequest(
-        uuid=init_response.uuid,
-        name=dataset_name,
-        run_embedding_reduction=run_embedding_reduction_pipeline,
-    )
-    res = krequests.post(
-        endpoint_path=PATH_V2.EMBEDDINGS.value,
-        api_version=API_V2,
-        data=json.dumps(dataclasses.asdict(request)),
-    )
-    krequests.raise_for_status(res)
-    data = from_dict(data_class=UploadDatasetEmbeddingsResponse, data=res.json())
-    log.success(f"uploaded embeddings for dataset '{dataset_name}' and key '{key}' on {data.n_datapoints} datapoints")
-
-
-@with_event(event_name=EventAPI.Event.UPLOAD_DATASET_EMBEDDINGS)
 def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.DataFrame) -> None:
     """
     Upload a list of search embeddings for a dataset.
+
+    .. deprecated:: 1.55.1
+        Use :func:`kolena.dataset.search.upload_dataset_embeddings` instead.
 
     :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
     :param key: String value uniquely corresponding to the embedding vectors. For example, this can be the name of the
@@ -144,4 +82,11 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises NotFoundError: The given dataset does not exist.
     :raises InputValidationError: The provided input is not valid.
     """
-    _upload_dataset_embeddings(dataset_name, key, df_embedding)
+    warnings.warn(
+        "\n kolena._experimental.search.upload_dataset_embeddings is deprecated."
+        "\n Use kolena.dataset.search.upload_dataset_embeddings instead.",
+        DeprecationWarning,
+        stacklevel=2,
+    )
+
+    new_upload_dataset_embeddings(dataset_name, key, df_embedding)

@@ -18,8 +18,8 @@ import pandas as pd
 import pytest
 
 from kolena._experimental.search import upload_embeddings
-from kolena._experimental.search.embeddings import _upload_dataset_embeddings
 from kolena.dataset import upload_dataset
+from kolena.dataset.embeddings import _upload_dataset_embeddings
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.workflow import define_workflow
@@ -84,7 +84,7 @@ def test__upload_embeddings__bad_embedding(embedding: np.ndarray) -> None:
 
 @pytest.fixture(scope="module", autouse=True)
 def dataset_name() -> str:
-    name = with_test_prefix(f"{__file__}::test__embedding_dataset {uuid.uuid4()}")
+    name = with_test_prefix(f"{__file__}::test__embedding_dataset {uuid.uuid4()}")  # noqa: E231
     datapoints = [dict(locator=f"locator-{i}", value=i) for i in range(N_DATAPOINTS)]
     upload_dataset(name, pd.DataFrame(datapoints), id_fields=["locator"])
     return name
@@ -143,7 +143,7 @@ def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:
 def test__upload_dataset_embeddings__dataset_does_not_exist() -> None:
     with pytest.raises(NotFoundError):
         _upload_dataset_embeddings(
-            dataset_name=f"{__file__}::test__embedding_dataset_does_not_exist {uuid.uuid4()}",
+            dataset_name=f"{__file__}::test__embedding_dataset_does_not_exist {uuid.uuid4()}",  # noqa: E231
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"locator": [], "embedding": []},
