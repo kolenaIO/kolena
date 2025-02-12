@@ -7,4 +7,7 @@
 
 ::: kolena.dataset.dataset
 ::: kolena.dataset.evaluation
-::: kolena.dataset.search
+::: kolena.dataset.embeddings
+    options:
+        members: ["upload_dataset_embeddings"]
+        show_root_heading: false

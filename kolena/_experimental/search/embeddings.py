@@ -30,6 +30,7 @@ from kolena._utils import log
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
 from kolena._utils.dataframes.validators import validate_df_schema
+from kolena.dataset import upload_dataset_embeddings as new_upload_dataset_embeddings
 from kolena.errors import InputValidationError
 
 
@@ -70,7 +71,7 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     """
     Upload a list of search embeddings for a dataset.
 
-    .. deprecated:: 1.55.0
+    .. deprecated:: 1.55.1
         Use :func:`kolena.dataset.search.upload_dataset_embeddings` instead.
 
     :param dataset_name: String value indicating the name of the dataset for which the embeddings will be uploaded.
@@ -87,7 +88,5 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
         DeprecationWarning,
         stacklevel=2,
     )
-    # Import here to avoid circular dependency
-    from kolena.dataset.search import upload_dataset_embeddings as new_upload_dataset_embeddings
 
     new_upload_dataset_embeddings(dataset_name, key, df_embedding)

@@ -20,7 +20,7 @@ from kolena.dataset.evaluation import EvalConfigResults
 from kolena.dataset.dataset import list_datasets
 from kolena.dataset.evaluation import ModelEntity
 from kolena.dataset.evaluation import get_models
-from kolena.dataset.search import upload_dataset_embeddings
+from kolena.dataset.embeddings import upload_dataset_embeddings
 
 __all__ = [
     "upload_dataset",
