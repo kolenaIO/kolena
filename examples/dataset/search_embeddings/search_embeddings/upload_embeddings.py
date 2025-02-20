@@ -27,13 +27,13 @@ from kembed.util import load_embedding_model
 from PIL import Image
 from tqdm import tqdm
 
-from kolena._experimental.search import upload_dataset_embeddings
 from kolena.dataset import download_dataset
+from kolena.dataset import upload_dataset_embeddings
 
 
 BUCKET = "kolena-public-examples"
 DATASET = "coco-stuff-10k"
-IMAGE_S3_DIR = f"s3://{BUCKET}/{DATASET}/data/images/"
+IMAGE_S3_DIR = f"s3://{BUCKET}/{DATASET}/data/images/"  # noqa: E231
 LOCATOR_FIELD = "locator"
 
 
@@ -41,7 +41,7 @@ def image_locators_from_s3_path(
     s3_locators: List[str],
     local_dir: Optional[str] = None,
 ) -> List[Tuple[str, Optional[str]]]:
-    locators_and_filepaths: List[Tuple[str, Optional[str]]] = []
+    locators_and_filepaths: List[Tuple[str, Optional[str]]] = []  # noqa: E231
     for locator in s3_locators:
         if not locator.startswith("s3://"):
             raise ValueError(f"invalid input path: {locator}")
@@ -116,7 +116,7 @@ def extract_dataset_embedding(model: StudioModel, df: pd.DataFrame, local_path: 
 
 
 def load_precomputed_embedding() -> pd.DataFrame:
-    return pd.read_parquet(f"s3://{BUCKET}/{DATASET}/embeddings/default_model/embeddings.parquet")
+    return pd.read_parquet(f"s3://{BUCKET}/{DATASET}/embeddings/default_model/embeddings.parquet")  # noqa: E231
 
 
 def run(run_extraction: bool, dataset_name: str, local_path: str) -> None:
