@@ -92,6 +92,8 @@ class ModelEntity:
     """Unique name of the model."""
     tags: List[str]
     """Tags associated with the model."""
+    is_default: bool = False
+    """If the model has been specified as the default for a given dataset."""
 
 
 @dataclass(frozen=True)

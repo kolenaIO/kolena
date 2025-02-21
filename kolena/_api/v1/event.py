@@ -69,6 +69,7 @@ class EventAPI:
         # quality-standard
         FETCH_QUALITY_STANDARD_RESULT = "sdk-quality-standard-result-fetched"
         COPY_QUALITY_STANDARD_FROM_DATASET = "sdk-quality-standard-copied-from-dataset"
+        RUN_CHECK = "sdk-quality-standard-run-check"
 
         # dataset search
         UPLOAD_DATASET_EMBEDDINGS = "sdk-dataset-embeddings-uploaded"
