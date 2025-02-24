@@ -81,7 +81,8 @@ Kolena's sync interval with the Directory Sync Provider is approximately 3 minut
 but Workspace may introduce additional delays (up to 15 minutes or more) before sending events to the provider.
 
 !!! note
-    If users don't appear in Kolena after adding them to a group, wait at least 15 minutes to account for sync frequency.
+    If users don't appear in Kolena after adding them to a group. Check sync frequency on Directory Sync Provider.
+    For example, Google Cloud Identifier defaults to 30 minutes for sync frequency.
     Check group naming if the issue persists.
 
 ## User Permissions and Access Management
