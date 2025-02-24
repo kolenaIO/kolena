@@ -1,14 +1,14 @@
 ---
-icon: kolena/key-16
+icon: kolena/fr-20
 ---
 
-# Authentication Integrations
+# :kolena-fr-20:  Authentication Integrations
 
 Learn how to integrate Kolena with various authentication providers and manage user access:
 
 <div class="grid cards" markdown>
 
-- [:kolena-key-16: SCIM Setup](scim-setup.md)
+- [:kolena-fr-20: SCIM Setup](scim-setup.md)
 
     ---
 
