@@ -733,3 +733,29 @@ def test__download_results__with_properties() -> None:
         check_like=True,
         check_dtype=False,
     )
+
+
+def test__upload_results__with_tags() -> None:
+    dataset_name = with_test_prefix(f"{__file__}::test__upload_results__with_tags")
+    model_name = with_test_prefix(f"{__file__}::test__upload_results__with_tags")
+    df_dp = get_df_dp()
+    dp_columns = [JOIN_COLUMN, "locator", "width", "height", "city"]
+    upload_dataset(dataset_name, df_dp[3:10][dp_columns], id_fields=ID_FIELDS)
+
+    model_tags = ["model-tag-1", "model-tag-n"]
+    df_result = get_df_result()
+    response = _upload_results(
+        dataset_name,
+        model_name,
+        df_result,
+        tags=model_tags,
+    )
+    assert response.n_inserted == 7
+    assert response.n_updated == 0
+    assert response.model_id is not None
+    assert response.eval_config_id is not None
+
+    models = get_models(dataset_name)
+    assert len(models) == 1
+    assert models[0].name == model_name
+    assert set(models[0].tags) == set(model_tags)
