@@ -39,6 +39,9 @@ nav:
     - Connecting External LLM Endpoint:
         - Connecting External LLM Endpoint: connecting-external-llm-endpoint/index.md
         - Connecting Azure OpenAI deployment: connecting-external-llm-endpoint/azure-openai.md
+    - Authentication Integrations:
+      - Authentication Integrations: authentication-integrations/index.md
+      - SCIM Setup: authentication-integrations/scim-setup.md
     - Archive:
       - Workflows:
         - Workflows: workflow/index.md
