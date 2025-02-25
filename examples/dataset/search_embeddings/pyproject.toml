@@ -9,7 +9,7 @@ license = "Apache-2.0"
 requires-python = ">=3.8,<3.12"
 
 dependencies = [
-    "kolena>=1.23.0,<2",
+    "kolena>=1.55.1,<2",
     "s3fs>=2023.5.0,<2024",
     "numpy>=1.19,<2",
     "kolena-embeddings >= 0.6.0 @ https://gateway.kolena.cloud/repositories",

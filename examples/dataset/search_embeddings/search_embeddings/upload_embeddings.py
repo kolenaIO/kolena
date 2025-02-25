@@ -27,8 +27,8 @@ from kembed.util import load_embedding_model
 from PIL import Image
 from tqdm import tqdm
 
-from kolena._experimental.search import upload_dataset_embeddings
 from kolena.dataset import download_dataset
+from kolena.dataset import upload_dataset_embeddings
 
 
 BUCKET = "kolena-public-examples"

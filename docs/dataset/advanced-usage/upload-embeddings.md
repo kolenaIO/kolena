@@ -13,7 +13,7 @@ Please ensure you have the SDK installed.
 To upload embeddings, use the `upload_dataset_embeddings` function from Kolena. You can import
 it with the following code:
 ```python
-from kolena._experimental.search import upload_dataset_embeddings
+from kolena.dataset import upload_dataset_embeddings
 ```
 
 ## Step 2: Prepare the Required DataFrame
@@ -47,7 +47,6 @@ With the DataFrame prepared, use the `upload_dataset_embeddings` function to upl
 ```python
 upload_dataset_embeddings(dataset_name="instance-seg", key="my-embedding-model", df_embedding=df_embedding)
 ```
-
 The `dataset_name` parameter specifies the target dataset where the embeddings will be uploaded.
 The key parameter is a unique identifier for the embeddings being uploaded, allowing multiple embeddings
  to be associated with the same dataset. Finally, `df_embeddings` is the DataFrame object
