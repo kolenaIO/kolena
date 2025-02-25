@@ -49,6 +49,7 @@ uv run direct_video_embedding_extractor.py --model_path ./viclip_model --video_d
 ```
 
 Command line arguments:
+
 - `--model_path`: Path to the downloaded ViCLIP model
 - `--video_dir`: Directory containing video files to process
 - `--output_file`: Path to save the embeddings pickle file
@@ -65,9 +66,8 @@ uv run upload_embeddings_to_kolena.py --embeddings_file ./embeddings.pkl --video
 ```
 
 Command line arguments:
+
 - `--embeddings_file`: Path to the pickle file containing video embeddings
 - `--video_dir`: Directory containing the video files (for verification)
 - `--dataset_name`: Name of the existing Kolena dataset to upload embeddings to
 - `--embedding_key`: Unique identifier for these embeddings
-Here are our [Quality Standards](https://docs.kolena.com/dataset/core-concepts/quality-standard/) recommendations for
-video embedding analysis:

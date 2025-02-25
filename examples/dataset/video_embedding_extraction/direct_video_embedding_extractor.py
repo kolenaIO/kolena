@@ -22,6 +22,7 @@ The script creates a temporary package structure to handle relative imports in t
 loads the model weights directly from the safetensors file, and processes videos to extract
 embeddings.
 """
+import argparse
 import json
 import os
 import pickle
@@ -206,7 +207,10 @@ class DirectViCLIPExtractor:
                 break
 
     def frames2tensor(
-        self, vid_list: List[np.ndarray], fnum: int = 8, target_size: Tuple[int, int] = (224, 224)
+        self,
+        vid_list: List[np.ndarray],
+        fnum: int = 8,
+        target_size: Tuple[int, int] = (224, 224),
     ) -> torch.Tensor:
         """
         Convert frames to tensor format required by ViCLIP.
