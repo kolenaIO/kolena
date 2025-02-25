@@ -78,7 +78,7 @@ Ensure the SCIM connection is re-established if you rename groups.
 
 Changes to group membership (e.g., adding or removing users) are synced automatically.
 Kolena's sync interval with the Directory Sync Provider is approximately 3 minutes,
-but Workspace may introduce additional delays (up to 15 minutes or more) before sending events to the provider.
+but Workspace may introduce additional delays (up to 30 minutes or more) before sending events to the provider.
 
 !!! note
     If users don't appear in Kolena after adding them to a group. Check sync frequency on Directory Sync Provider.
@@ -104,7 +104,7 @@ they are granted the highest permission level (in this case, admin).
 
 To revoke a user's access to Kolena, remove them from the relevant group(s) in Workspace.
 This triggers a `GROUP_USER_REMOVED` event, which Kolena syncs to disable the user's account.
-The change will reflect in Kolena after the sync delay (up to 15 minutes or more).
+The change will reflect in Kolena after the sync delay (up to 30 minutes or more).
 
 !!! warning
     Disabling a user's account might not immediately revoke their Kolena access, as this event may not be visible to the
