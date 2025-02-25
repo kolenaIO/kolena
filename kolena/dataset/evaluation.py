@@ -43,6 +43,9 @@ from kolena._utils.consts import BatchSize
 from kolena._utils.endpoints import get_platform_url
 from kolena._utils.endpoints import serialize_models_url
 from kolena._utils.instrumentation import with_event
+from kolena._utils.pydantic_v1 import StrictFloat
+from kolena._utils.pydantic_v1 import StrictInt
+from kolena._utils.pydantic_v1 import StrictStr
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 from kolena._utils.serde import from_dict
 from kolena._utils.state import API_V2
@@ -92,6 +95,8 @@ class ModelEntity:
     """Unique name of the model."""
     tags: List[str]
     """Tags associated with the model."""
+    metadata: Optional[Dict[str, Union[StrictInt, StrictFloat, StrictStr, None]]] = None
+    """Metadata associated with the model."""
 
 
 @dataclass(frozen=True)
@@ -191,6 +196,7 @@ def _send_upload_results_request(
     dataset_id: int,
     sources: Optional[List[Dict[str, str]]],
     tags: List[str] = [],
+    metadata: Optional[Dict[str, Union[StrictInt, StrictFloat, StrictStr, None]]] = None,
 ) -> UploadResultsResponse:
     request = UploadResultsRequest(
         model=model,
@@ -198,6 +204,7 @@ def _send_upload_results_request(
         dataset_id=dataset_id,
         sources=sources,
         tags=tags,
+        metadata=metadata,
     )
     response = krequests.post(Path.UPLOAD_RESULTS, json=asdict(request))
     krequests.raise_for_status(response)
@@ -336,10 +343,11 @@ def _upload_results(
     sources: Optional[List[Dict[str, str]]] = DEFAULT_SOURCES,
     thresholded_fields: Optional[List[str]] = None,
     tags: List[str] = [],
+    metadata: Optional[Dict[str, Union[StrictInt, StrictFloat, StrictStr, None]]] = None,
 ) -> UploadResultsResponse:
     load_uuid, dataset_id, total_rows = _prepare_upload_results_request(dataset, results, thresholded_fields, tags)
 
-    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources, tags=tags)
+    response = _send_upload_results_request(model, load_uuid, dataset_id, sources=sources, tags=tags, metadata=metadata)
     if isinstance(response.eval_config_id, list):
         models = [serialize_models_url(response.model_id, eval_config_id) for eval_config_id in response.eval_config_id]
     else:
@@ -366,6 +374,7 @@ def upload_results(
     results: Union[DataFrame, List[EvalConfigResults]],
     thresholded_fields: Optional[List[str]] = None,
     tags: List[str] = [],
+    metadata: Optional[Dict[str, Union[StrictInt, StrictFloat, StrictStr, None]]] = None,
 ) -> None:
     """
     This function is used for uploading the results from a specified model on a given dataset.
@@ -376,10 +385,11 @@ def upload_results(
     :param thresholded_fields: Optional columns in result DataFrame containing data associated with different
      thresholds.
     :param tags: Optional list of tags to be associated with the model.
+    :param metadata: Optional dictionary of string key to values tobe associated with the model.
 
     :return: None
     """
-    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags)
+    _upload_results(dataset, model, results, thresholded_fields=thresholded_fields, tags=tags, metadata=metadata)
 
 
 def _get_models(
