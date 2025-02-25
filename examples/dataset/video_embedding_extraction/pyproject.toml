@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video_embedding_extraction"
+version = "0.1.0"
+description = "Extract video embeddings using ViCLIP and upload to Kolena"
+readme = "README.md"
+requires-python = ">=3.8,<3.12"
+license = {text = "MIT"}
+dependencies = [
+    "torch==1.13.1",
+    "transformers>=4.30.0",
+    "opencv-python>=4.8.0",
+    "numpy>=1.24.0",
+    "tqdm>=4.65.0",
+    "einops>=0.6.0",
+    "timm>=0.9.0",
+    "ftfy>=6.1.1",
+    "regex>=2023.0.0",
+    "kolena>=1.55.0",
+    "pandas>=2.0.0",
+    "requests>=2.28.0",
+    "setuptools>=42.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black>=23.0.0",
+    "isort>=5.12.0",
+]
+
+[tool.setuptools]
+py-modules = []
+
+[tool.setuptools.packages.find]
+include = []
+exclude = ["videos*", "viclip_model*", ".venv*"]
