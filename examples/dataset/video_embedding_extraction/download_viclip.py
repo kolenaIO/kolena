@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import argparse
 import os
 import shutil
@@ -22,7 +21,7 @@ from transformers import AutoConfig
 from transformers import AutoModel
 
 
-def download_vocab_file(output_dir):
+def download_vocab_file(output_dir: str) -> None:
     """
     Download the BPE vocabulary file required by ViCLIP.
 
@@ -52,7 +51,7 @@ def download_vocab_file(output_dir):
         sys.exit(1)
 
 
-def download_model_locally(output_dir):
+def download_model_locally(output_dir: str) -> None:
     """
     Download the ViCLIP model locally.
 
@@ -78,7 +77,7 @@ def download_model_locally(output_dir):
         sys.exit(1)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Download ViCLIP model and vocabulary file for video embedding extraction",
     )

@@ -11,10 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 import argparse
 import os
 import pickle
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -25,7 +25,7 @@ from kolena.dataset import upload_dataset_embeddings
 S3_LOCATOR_PREFIX = "s3://kolena-public-datasets/JAAD/JAAD_clips/"
 
 
-def load_embeddings(pickle_path):
+def load_embeddings(pickle_path: str) -> Dict[str, np.ndarray]:
     """
     Load embeddings from pickle file.
 
@@ -40,7 +40,11 @@ def load_embeddings(pickle_path):
     return embeddings
 
 
-def create_embeddings_dataframe(embeddings, video_dir, s3_prefix=S3_LOCATOR_PREFIX):
+def create_embeddings_dataframe(
+    embeddings: Dict[str, np.ndarray],
+    video_dir: str,
+    s3_prefix: str = S3_LOCATOR_PREFIX,
+) -> pd.DataFrame:
     """
     Create a DataFrame with video locators and their embeddings.
 
@@ -72,13 +76,13 @@ def create_embeddings_dataframe(embeddings, video_dir, s3_prefix=S3_LOCATOR_PREF
             {
                 "locator": s3_locator,
                 "embedding": embedding,
-            }
+            },
         )
 
     return pd.DataFrame.from_records(records)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Upload video embeddings to Kolena dataset",
     )

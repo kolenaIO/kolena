@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Copyright 2021-2025 Kolena Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """
 Direct ViCLIP Video Embedding Extractor
 
@@ -31,7 +29,9 @@ import shutil
 import sys
 import tempfile
 import warnings
-from pathlib import Path
+from typing import Generator
+from typing import List
+from typing import Tuple
 
 import cv2
 import numpy as np
@@ -68,7 +68,7 @@ class DirectViCLIPExtractor:
         self._check_vocabulary_file()
         self._load_model()
 
-    def _check_vocabulary_file(self):
+    def _check_vocabulary_file(self) -> None:
         """Check if vocabulary file exists and copy it if needed."""
         vocab_file = os.path.join(self.model_path, "bpe_simple_vocab_16e6.txt.gz")
         if not os.path.exists(vocab_file):
@@ -82,7 +82,7 @@ class DirectViCLIPExtractor:
                     "Make sure to download it using download_viclip.py first.",
                 )
 
-    def _load_model(self):
+    def _load_model(self) -> None:
         """Load the ViCLIP model from the local directory."""
         try:
             print(f"Loading model directly from {self.model_path}...")
@@ -126,7 +126,7 @@ class DirectViCLIPExtractor:
             print("Make sure you have downloaded the model using download_viclip.py first.")
             sys.exit(1)
 
-    def _load_model_weights(self):
+    def _load_model_weights(self) -> None:
         """Load model weights from safetensors file."""
         weights_path = os.path.join(self.model_path, "model.safetensors")
         if os.path.exists(weights_path):
@@ -138,7 +138,7 @@ class DirectViCLIPExtractor:
         else:
             raise FileNotFoundError(f"Model weights not found at {weights_path}")
 
-    def _setup_temp_package(self):
+    def _setup_temp_package(self) -> None:
         """Create a temporary package to handle relative imports."""
         # Create a temporary directory for our package
         self.temp_dir = tempfile.mkdtemp()
@@ -169,19 +169,35 @@ class DirectViCLIPExtractor:
         if self.debug:
             print("Temporary package setup complete")
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Clean up temporary directory when the object is destroyed."""
         if hasattr(self, "temp_dir") and os.path.exists(self.temp_dir):
             shutil.rmtree(self.temp_dir)
             if self.debug:
                 print(f"Removed temporary directory: {self.temp_dir}")
 
-    def normalize(self, data):
-        """Normalize image data."""
+    def normalize(self, data: np.ndarray) -> np.ndarray:
+        """
+        Normalize image data.
+
+        Args:
+            data (np.ndarray): Input image data
+
+        Returns:
+            np.ndarray: Normalized image data
+        """
         return (data / 255.0 - self.v_mean) / self.v_std
 
-    def _frame_from_video(self, video):
-        """Extract frames from video."""
+    def _frame_from_video(self, video) -> Generator[np.ndarray, None, None]:
+        """
+        Extract frames from video.
+
+        Args:
+            video: OpenCV video capture object
+
+        Yields:
+            np.ndarray: Video frames
+        """
         while video.isOpened():
             success, frame = video.read()
             if success:
@@ -189,7 +205,9 @@ class DirectViCLIPExtractor:
             else:
                 break
 
-    def frames2tensor(self, vid_list, fnum=8, target_size=(224, 224)):
+    def frames2tensor(
+        self, vid_list: List[np.ndarray], fnum: int = 8, target_size: Tuple[int, int] = (224, 224)
+    ) -> torch.Tensor:
         """
         Convert frames to tensor format required by ViCLIP.
 
@@ -218,7 +236,7 @@ class DirectViCLIPExtractor:
 
         return vid_tube
 
-    def get_vid_feat(self, frames):
+    def get_vid_feat(self, frames: torch.Tensor) -> torch.Tensor:
         """
         Get video features using ViCLIP.
 
@@ -232,7 +250,7 @@ class DirectViCLIPExtractor:
             features = self.model.get_vid_features(frames)
         return features
 
-    def extract_video_embedding(self, video_path, fnum=8):
+    def extract_video_embedding(self, video_path: str, fnum: int = 8) -> np.ndarray:
         """
         Extract embedding for a single video file.
 
@@ -262,7 +280,7 @@ class DirectViCLIPExtractor:
         except Exception as e:
             raise Exception(f"Error processing video {video_path}: {str(e)}")
 
-    def process_video_folder(self, folder_path, output_pickle, fnum=8):
+    def process_video_folder(self, folder_path: str, output_pickle: str, fnum: int = 8) -> None:
         """
         Process all videos in a folder and save their embeddings.
 
@@ -292,8 +310,13 @@ class DirectViCLIPExtractor:
         print(f"Embeddings successfully saved to {output_pickle}")
 
 
-def parse_arguments():
-    """Parse command line arguments."""
+def parse_arguments() -> argparse.Namespace:
+    """
+    Parse command line arguments.
+
+    Returns:
+        argparse.Namespace: Parsed command line arguments
+    """
     import argparse
 
     parser = argparse.ArgumentParser(
@@ -337,7 +360,7 @@ def parse_arguments():
     return parser.parse_args()
 
 
-def main():
+def main() -> None:
     """Main function to run the script."""
     args = parse_arguments()
 
