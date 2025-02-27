@@ -93,7 +93,11 @@ def test__download_viclip__smoke(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @patch("os.path.exists", return_value=True)
-def test__upload_embeddings_with_mocks(mock_exists: MagicMock, dataset_name: str, monkeypatch: pytest.MonkeyPatch) -> None:
+def test__upload_embeddings_with_mocks(
+    mock_exists: MagicMock,
+    dataset_name: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test upload_embeddings_to_kolena with mocked dependencies"""
     from video_embedding_extraction.upload_embeddings_to_kolena import main
     import pandas as pd
