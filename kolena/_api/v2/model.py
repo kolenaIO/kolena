@@ -20,6 +20,9 @@ from typing import Optional
 from typing import Union
 
 from kolena._api.v1.batched_load import BatchedLoad
+from kolena._utils.pydantic_v1 import StrictFloat
+from kolena._utils.pydantic_v1 import StrictInt
+from kolena._utils.pydantic_v1 import StrictStr
 from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 
@@ -57,6 +60,7 @@ class UploadResultsRequest:
     dataset_id: int
     sources: Optional[List[Dict[str, str]]]
     tags: List[str] = field(default_factory=list)
+    metadata: Optional[Dict[str, Union[StrictInt, StrictFloat, StrictStr, None]]] = None
 
 
 @dataclass(frozen=True)
