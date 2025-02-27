@@ -41,7 +41,6 @@ def download_vocab_file(output_dir: str) -> None:
 
         print(f"Vocabulary file saved to {vocab_path}")
 
-        # Also create a symlink in the current directory for compatibility
         if not os.path.exists("./bpe_simple_vocab_16e6.txt.gz"):
             print("Creating symlink to vocabulary file in current directory...")
             os.symlink(vocab_path, "./bpe_simple_vocab_16e6.txt.gz")
@@ -60,7 +59,6 @@ def download_model_locally(output_dir: str) -> None:
     """
     print("Downloading ViCLIP model...")
     try:
-        # First download the config to check if it works
         config = AutoConfig.from_pretrained("OpenGVLab/ViCLIP-L-14-hf", trust_remote_code=True)
         print("Successfully downloaded model configuration")
 
@@ -90,13 +88,10 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # Create output directory if it doesn't exist
     os.makedirs(args.output_dir, exist_ok=True)
 
-    # Download vocabulary file first
     download_vocab_file(args.output_dir)
 
-    # Then download the model
     download_model_locally(args.output_dir)
 
     print("\nDownload complete! You can now use the model with video_embedding_extractor.py")

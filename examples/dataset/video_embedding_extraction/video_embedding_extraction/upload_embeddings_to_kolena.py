@@ -59,16 +59,13 @@ def create_embeddings_dataframe(
     records = []
 
     for video_name, embedding in tqdm(embeddings.items(), desc="Creating embedding records"):
-        # Verify the video exists locally first
         if video_name not in os.listdir(video_dir):
             print(f"Warning: Video file {video_name} not found in {video_dir}")
             continue
 
-        # Convert embedding to the correct format if needed
         if isinstance(embedding, np.ndarray):
             embedding = embedding.squeeze()  # Remove any extra dimensions
 
-        # Create S3 locator by appending video name to prefix
         s3_locator = os.path.join(s3_prefix, video_name)
 
         records.append(
@@ -118,18 +115,15 @@ def main() -> None:
 
     args = parser.parse_args()
 
-    # Validate paths
     if not os.path.exists(args.embeddings_file):
         raise FileNotFoundError(f"Embeddings file not found: {args.embeddings_file}")
 
     if not os.path.exists(args.video_dir):
         raise FileNotFoundError(f"Video directory not found: {args.video_dir}")
 
-    # Load embeddings
     print(f"Loading embeddings from {args.embeddings_file}")
     embeddings = load_embeddings(args.embeddings_file)
 
-    # Create DataFrame with embeddings
     print("Creating embeddings DataFrame...")
     df_embeddings = create_embeddings_dataframe(embeddings, args.video_dir, args.s3_prefix)
 
@@ -137,7 +131,6 @@ def main() -> None:
         print("No valid embeddings found. Please check your video directory and embeddings file.")
         return
 
-    # Upload embeddings to Kolena
     print(
         f"Uploading {len(df_embeddings)} embeddings to dataset "
         f"'{args.dataset_name}' with key '{args.embedding_key}'",

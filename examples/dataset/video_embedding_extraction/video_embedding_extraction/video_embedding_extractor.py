@@ -62,11 +62,9 @@ class DirectViCLIPExtractor:
         self.model_path = model_path
         self.debug = debug
 
-        # Image normalization constants
         self.v_mean = np.array([0.485, 0.456, 0.406]).reshape(1, 1, 3)
         self.v_std = np.array([0.229, 0.224, 0.225]).reshape(1, 1, 3)
 
-        # Check vocabulary file and load model
         self._check_vocabulary_file()
         self._load_model()
 
@@ -89,30 +87,23 @@ class DirectViCLIPExtractor:
         try:
             print(f"Loading model directly from {self.model_path}...")
 
-            # Create a temporary package to handle relative imports
             self._setup_temp_package()
 
-            # Load the configuration
             with open(os.path.join(self.model_path, "config.json")) as f:
                 config_dict = json.load(f)
 
             if self.debug:
                 print(f"Config: {config_dict}")
 
-            # Import the model
             from viclip_temp_package.viclip import ViCLIP
             from transformers import PretrainedConfig
 
-            # Create the config
             config = PretrainedConfig.from_dict(config_dict)
 
-            # Set the tokenizer path
             config.tokenizer_path = os.path.join(self.model_path, "bpe_simple_vocab_16e6.txt.gz")
 
-            # Create the model
             self.model = ViCLIP(config)
 
-            # Load the weights
             self._load_model_weights()
 
             self.model.to(self.device)
@@ -142,21 +133,17 @@ class DirectViCLIPExtractor:
 
     def _setup_temp_package(self) -> None:
         """Create a temporary package to handle relative imports."""
-        # Create a temporary directory for our package
         self.temp_dir = tempfile.mkdtemp()
 
         if self.debug:
             print(f"Created temporary directory: {self.temp_dir}")
 
-        # Create the package directory
         package_dir = os.path.join(self.temp_dir, "viclip_temp_package")
         os.makedirs(package_dir, exist_ok=True)
 
-        # Create an empty __init__.py file to make it a package
         with open(os.path.join(package_dir, "__init__.py"), "w") as f:
             f.write("# Temporary package for ViCLIP model\n")
 
-        # Copy all Python files from the model directory to our package
         for file in os.listdir(self.model_path):
             if file.endswith(".py"):
                 src = os.path.join(self.model_path, file)
@@ -165,7 +152,6 @@ class DirectViCLIPExtractor:
                 if self.debug:
                     print(f"Copied {src} to {dst}")
 
-        # Add the temporary directory to the Python path
         sys.path.insert(0, self.temp_dir)
 
         if self.debug:
@@ -220,11 +206,9 @@ class DirectViCLIPExtractor:
         """
         assert len(vid_list) >= fnum, f"Video has only {len(vid_list)} frames, but {fnum} are required"
 
-        # Sample frames evenly
         step = len(vid_list) // fnum
         vid_list = vid_list[::step][:fnum]
 
-        # Resize and convert to RGB
         vid_list = [cv2.resize(x[:, :, ::-1], target_size) for x in vid_list]
 
         # Normalize and convert to tensor
@@ -257,7 +241,6 @@ class DirectViCLIPExtractor:
             numpy.ndarray: Video embedding
         """
         try:
-            # Open video and extract frames
             video = cv2.VideoCapture(video_path)
             frames = [frame for frame in self._frame_from_video(video)]
             video.release()
@@ -378,10 +361,8 @@ def main() -> None:
     if not os.path.exists(args.video_dir):
         raise FileNotFoundError(f"Video directory not found: {args.video_dir}")
 
-    # Create output directory if it doesn't exist
     os.makedirs(os.path.dirname(os.path.abspath(args.output_file)), exist_ok=True)
 
-    # Initialize extractor and process videos
     print(f"Initializing DirectViCLIPExtractor with model from {args.model_path}")
     extractor = DirectViCLIPExtractor(args.model_path, debug=debug_mode)
 
