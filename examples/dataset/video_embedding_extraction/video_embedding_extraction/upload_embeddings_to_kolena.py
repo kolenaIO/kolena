@@ -60,8 +60,7 @@ def create_embeddings_dataframe(
 
     for video_name, embedding in tqdm(embeddings.items(), desc="Creating embedding records"):
         # Verify the video exists locally first
-        video_path = os.path.join(video_dir, video_name)
-        if not os.path.exists(video_path):
+        if video_name not in os.listdir(video_dir):
             print(f"Warning: Video file {video_name} not found in {video_dir}")
             continue
 
@@ -139,7 +138,10 @@ def main() -> None:
         return
 
     # Upload embeddings to Kolena
-    print(f"Uploading {len(df_embeddings)} embeddings to dataset '{args.dataset_name}' with key '{args.embedding_key}'")
+    print(
+        f"Uploading {len(df_embeddings)} embeddings to dataset "
+        f"'{args.dataset_name}' with key '{args.embedding_key}'",
+    )
     try:
         upload_dataset_embeddings(
             dataset_name=args.dataset_name,

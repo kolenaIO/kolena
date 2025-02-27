@@ -13,11 +13,9 @@
 # limitations under the License.
 """
 Direct ViCLIP Video Embedding Extractor
-
 This script extracts video embeddings using a locally downloaded ViCLIP model without
 relying on the Hugging Face loading mechanism. It's designed to work around configuration
 class mismatch errors that can occur with the standard loading approach.
-
 The script creates a temporary package structure to handle relative imports in the model files,
 loads the model weights directly from the safetensors file, and processes videos to extract
 embeddings.
@@ -43,15 +41,18 @@ from tqdm import tqdm
 class DirectViCLIPExtractor:
     """
     A class for extracting video embeddings using a locally downloaded ViCLIP model.
-
     This extractor creates a temporary package structure to handle relative imports
     in the model files and loads the model weights directly from the safetensors file.
     """
 
-    def __init__(self, model_path, device="cuda" if torch.cuda.is_available() else "cpu", debug=False):
+    def __init__(
+        self,
+        model_path: str,
+        device: str = "cuda" if torch.cuda.is_available() else "cpu",
+        debug: bool = False,
+    ) -> None:
         """
         Initialize the DirectViCLIPExtractor with a local ViCLIP model.
-
         Args:
             model_path (str): Path to the local ViCLIP model directory
             device (str): Device to run the model on ('cuda' or 'cpu')
@@ -180,22 +181,18 @@ class DirectViCLIPExtractor:
     def normalize(self, data: np.ndarray) -> np.ndarray:
         """
         Normalize image data.
-
         Args:
             data (np.ndarray): Input image data
-
         Returns:
             np.ndarray: Normalized image data
         """
         return (data / 255.0 - self.v_mean) / self.v_std
 
-    def _frame_from_video(self, video) -> Generator[np.ndarray, None, None]:
+    def _frame_from_video(self, video: cv2.VideoCapture) -> Generator[np.ndarray, None, None]:
         """
         Extract frames from video.
-
         Args:
             video: OpenCV video capture object
-
         Yields:
             np.ndarray: Video frames
         """
@@ -214,12 +211,10 @@ class DirectViCLIPExtractor:
     ) -> torch.Tensor:
         """
         Convert frames to tensor format required by ViCLIP.
-
         Args:
             vid_list (list): List of video frames
             fnum (int): Number of frames to sample
             target_size (tuple): Target size for resizing frames
-
         Returns:
             torch.Tensor: Tensor of frames in the format expected by ViCLIP
         """
@@ -243,10 +238,8 @@ class DirectViCLIPExtractor:
     def get_vid_feat(self, frames: torch.Tensor) -> torch.Tensor:
         """
         Get video features using ViCLIP.
-
         Args:
             frames (torch.Tensor): Tensor of video frames
-
         Returns:
             torch.Tensor: Video embedding features
         """
@@ -257,11 +250,9 @@ class DirectViCLIPExtractor:
     def extract_video_embedding(self, video_path: str, fnum: int = 8) -> np.ndarray:
         """
         Extract embedding for a single video file.
-
         Args:
             video_path (str): Path to the video file
             fnum (int): Number of frames to use for embedding
-
         Returns:
             numpy.ndarray: Video embedding
         """
@@ -287,7 +278,6 @@ class DirectViCLIPExtractor:
     def process_video_folder(self, folder_path: str, output_pickle: str, fnum: int = 8) -> None:
         """
         Process all videos in a folder and save their embeddings.
-
         Args:
             folder_path (str): Path to folder containing videos
             output_pickle (str): Path to save the embeddings pickle file
@@ -317,7 +307,6 @@ class DirectViCLIPExtractor:
 def parse_arguments() -> argparse.Namespace:
     """
     Parse command line arguments.
-
     Returns:
         argparse.Namespace: Parsed command line arguments
     """
