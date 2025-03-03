@@ -17,6 +17,10 @@ import shutil
 import sys
 
 import requests
+from constants import BPE_VOCAB_FILE
+from constants import DEFAULT_MODEL_OUTPUT_DIR
+from constants import VICLIP_MODEL_NAME
+from constants import VICLIP_VOCAB_URL
 from transformers import AutoConfig
 from transformers import AutoModel
 
@@ -28,8 +32,8 @@ def download_vocab_file(output_dir: str) -> None:
     Args:
         output_dir (str): Directory to save the vocabulary file
     """
-    vocab_url = "https://openaipublic.azureedge.net/clip/bpe_simple_vocab_16e6.txt.gz"
-    vocab_path = os.path.join(output_dir, "bpe_simple_vocab_16e6.txt.gz")
+    vocab_url = VICLIP_VOCAB_URL
+    vocab_path = os.path.join(output_dir, BPE_VOCAB_FILE)
 
     print(f"Downloading vocabulary file from {vocab_url}...")
     try:
@@ -41,9 +45,9 @@ def download_vocab_file(output_dir: str) -> None:
 
         print(f"Vocabulary file saved to {vocab_path}")
 
-        if not os.path.exists("./bpe_simple_vocab_16e6.txt.gz"):
+        if not os.path.exists(f"./{BPE_VOCAB_FILE}"):
             print("Creating symlink to vocabulary file in current directory...")
-            os.symlink(vocab_path, "./bpe_simple_vocab_16e6.txt.gz")
+            os.symlink(vocab_path, f"./{BPE_VOCAB_FILE}")
             print("Symlink created")
     except Exception as e:
         print(f"Error downloading vocabulary file: {e}")
@@ -59,12 +63,12 @@ def download_model_locally(output_dir: str) -> None:
     """
     print("Downloading ViCLIP model...")
     try:
-        config = AutoConfig.from_pretrained("OpenGVLab/ViCLIP-L-14-hf", trust_remote_code=True)
+        config = AutoConfig.from_pretrained(VICLIP_MODEL_NAME, trust_remote_code=True)
         print("Successfully downloaded model configuration")
 
         # Then download the model
         model = AutoModel.from_pretrained(
-            "OpenGVLab/ViCLIP-L-14-hf",
+            VICLIP_MODEL_NAME,
             trust_remote_code=True,
             config=config,
         )
@@ -82,8 +86,8 @@ def main() -> None:
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="./viclip_model",
-        help="Directory to save the model and vocabulary file (default: ./viclip_model)",
+        default=DEFAULT_MODEL_OUTPUT_DIR,
+        help="Directory to save the model and vocabulary file",
     )
 
     args = parser.parse_args()

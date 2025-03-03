@@ -35,6 +35,11 @@ from typing import Tuple
 import cv2
 import numpy as np
 import torch
+from constants import BPE_VOCAB_FILE
+from constants import DEFAULT_EMBEDDINGS_FILE
+from constants import DEFAULT_FRAME_COUNT
+from constants import DEFAULT_MODEL_OUTPUT_DIR
+from constants import DEFAULT_VIDEO_DIR
 from tqdm import tqdm
 
 
@@ -70,12 +75,12 @@ class DirectViCLIPExtractor:
 
     def _check_vocabulary_file(self) -> None:
         """Check if vocabulary file exists and copy it if needed."""
-        vocab_file = os.path.join(self.model_path, "bpe_simple_vocab_16e6.txt.gz")
+        vocab_file = os.path.join(self.model_path, BPE_VOCAB_FILE)
         if not os.path.exists(vocab_file):
             # Check if it exists in the current directory
-            if os.path.exists("./bpe_simple_vocab_16e6.txt.gz"):
+            if os.path.exists(f"./{BPE_VOCAB_FILE}"):
                 print("Found vocabulary file in current directory, copying to model directory...")
-                shutil.copy("./bpe_simple_vocab_16e6.txt.gz", vocab_file)
+                shutil.copy(f"./{BPE_VOCAB_FILE}", vocab_file)
             else:
                 raise FileNotFoundError(
                     f"Vocabulary file not found at {vocab_file} or in current directory. "
@@ -100,7 +105,7 @@ class DirectViCLIPExtractor:
 
             config = PretrainedConfig.from_dict(config_dict)
 
-            config.tokenizer_path = os.path.join(self.model_path, "bpe_simple_vocab_16e6.txt.gz")
+            config.tokenizer_path = os.path.join(self.model_path, BPE_VOCAB_FILE)
 
             self.model = ViCLIP(config)
 
@@ -301,35 +306,37 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--model_path",
         type=str,
-        default="./viclip_model",
-        help="Path to the local ViCLIP model directory (default: ./viclip_model)",
+        default=DEFAULT_MODEL_OUTPUT_DIR,
+        help="Path to the local ViCLIP model directory",
     )
     parser.add_argument(
         "--video_dir",
         type=str,
-        default="./video_embedding_extraction/videos",
-        help="Directory containing videos to process (default: ./video_embedding_extraction/videos)",
+        default=DEFAULT_VIDEO_DIR,
+        help="Directory containing videos to process",
     )
     parser.add_argument(
         "--output_file",
         type=str,
-        default="./video_embedding_extraction/embeddings.pkl",
-        help="Output pickle file path for embeddings (default: ./video_embedding_extraction/embeddings.pkl)",
+        default=DEFAULT_EMBEDDINGS_FILE,
+        help="Output pickle file path for embeddings",
     )
     parser.add_argument(
         "--num_frames",
         type=int,
-        default=8,
-        help="Number of frames to sample from each video (default: 8)",
+        default=DEFAULT_FRAME_COUNT,
+        help="Number of frames to sample from each video",
     )
     parser.add_argument(
         "--show_warnings",
         action="store_true",
-        help="Show all warnings (including deprecation warnings from dependencies)",
+        default=False,
+        help="Show all warnings",
     )
     parser.add_argument(
         "--debug",
         action="store_true",
+        default=False,
         help="Enable debug mode with more verbose output",
     )
 

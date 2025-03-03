@@ -5,16 +5,16 @@ video embeddings using the [ViCLIP](https://github.com/OpenGVLab/ViCLIP) model
 and upload them to Kolena for video retrieval and analysis tasks.
 
 ## Setup
-
-This project uses [uv](https://docs.astral.sh/uv/) for packaging and
+1. Ensure that data for the [`crossing pedestrian detection`](../crossing_pedestrian_detection) dataset has been seeded through calling
+the [`upload_dataset.py`](../crossing_pedestrian_detection/crossing_pedestrian_detection/upload_dataset.py) script.
+2. This project uses [uv](https://docs.astral.sh/uv/) for packaging and
 Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
 
 ```shell
 uv sync
 ```
-
-[Rcommended] Download test videos to a locap ath for faster embedding extraction:
+3. Download test videos to a local path for faster embedding extraction:
 
 ```shell
 mkdir -p video_embedding_extraction/videos
@@ -44,44 +44,37 @@ from video files using the ViCLIP model.
 First, download the ViCLIP model and vocabulary files:
 
 ```shell
-uv run video_embedding_extraction/download_viclip.py --output_dir ./viclip_model
+uv run video_embedding_extraction/download_viclip.py
 ```
+
+Optional command line arguments:
+
+- `--output_dir`: Path to save the viclip model to
 
 ### Step 2: Extract Video Embeddings
 
 Extract embeddings from a folder of video files using one of the extractor scripts:
 
 ```shell
-uv run video_embedding_extraction/video_embedding_extractor.py \
-    --model_path ./viclip_model \
-    --video_dir ./video_embedding_extraction/videos \
-    --output_file ./video_embedding_extraction/embeddings.pkl \
-    --num_frames 8
+uv run video_embedding_extraction/video_embedding_extractor.py
 ```
 
-Command line arguments:
+Optional command line arguments:
 
 - `--model_path`: Path to the downloaded ViCLIP model
 - `--video_dir`: Directory containing video files to process
 - `--output_file`: Path to save the embeddings pickle file
 - `--num_frames`: Number of frames to sample from each video (default: 8)
-- `--show_warnings`: Show all warnings (including deprecation warnings from dependencies)
-- `--debug`: Enable debug mode with more verbose output
-    (only available in direct_video_embedding_extractor.py)
 
 ### Step 3: Upload Embeddings to Kolena
 
 Upload the extracted embeddings to a Kolena dataset:
 
 ```shell
-uv run video_embedding_extraction/upload_embeddings_to_kolena.py \
-    --embeddings_file ./video_embedding_extraction/embeddings.pkl \
-    --video_dir ./video_embedding_extraction/videos \
-    --dataset_name "Joint Attention in Autonomous Driving (JAAD)" \
-    --embedding_key "viclip-embeddings"
+uv run video_embedding_extraction/upload_embeddings_to_kolena.py
 ```
 
-Command line arguments:
+Optional command line arguments:
 
 - `--embeddings_file`: Path to the pickle file containing video embeddings
 - `--video_dir`: Directory containing the video files (for verification)

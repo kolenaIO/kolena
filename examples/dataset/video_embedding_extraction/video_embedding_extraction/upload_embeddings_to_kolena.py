@@ -18,11 +18,14 @@ from typing import Dict
 
 import numpy as np
 import pandas as pd
+from constants import DATASET_NAME
+from constants import DEFAULT_EMBEDDINGS_FILE
+from constants import DEFAULT_VIDEO_DIR
+from constants import EMBEDDING_KEY
+from constants import S3_LOCATOR_PREFIX
 from tqdm import tqdm
 
 from kolena.dataset import upload_dataset_embeddings
-
-S3_LOCATOR_PREFIX = "s3://kolena-public-datasets/JAAD/JAAD_clips/"
 
 
 def load_embeddings(pickle_path: str) -> Dict[str, np.ndarray]:
@@ -85,25 +88,25 @@ def main() -> None:
     parser.add_argument(
         "--embeddings_file",
         type=str,
-        default="./video_embedding_extraction/embeddings.pkl",
+        default=DEFAULT_EMBEDDINGS_FILE,
         help="Path to the pickle file containing video embeddings",
     )
     parser.add_argument(
         "--video_dir",
         type=str,
-        default="./video_embedding_extraction/videos",
+        default=DEFAULT_VIDEO_DIR,
         help="Directory containing the video files (for verification)",
     )
     parser.add_argument(
         "--dataset_name",
         type=str,
-        default="Joint Attention in Autonomous Driving (JAAD)",
+        default=DATASET_NAME,
         help="Name of the existing Kolena dataset to upload embeddings to",
     )
     parser.add_argument(
         "--embedding_key",
         type=str,
-        default="viclip-embeddings",
+        default=EMBEDDING_KEY,
         help="Unique identifier for these embedding",
     )
     parser.add_argument(
