@@ -82,8 +82,8 @@ def main() -> None:
     parser.add_argument(
         "--output_dir",
         type=str,
-        required=True,
-        help="Directory to save the model and vocabulary file",
+        default="./viclip_model",
+        help="Directory to save the model and vocabulary file (default: ./viclip_model)",
     )
 
     args = parser.parse_args()

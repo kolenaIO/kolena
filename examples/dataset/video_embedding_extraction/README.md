@@ -14,6 +14,13 @@ install project dependencies from [`pyproject.toml`](./pyproject.toml) by runnin
 uv sync
 ```
 
+[Rcommended] Download test videos to a locap ath for faster embedding extraction:
+
+```shell
+mkdir -p video_embedding_extraction/videos
+aws s3 cp --recursive s3://kolena-public-datasets/JAAD/JAAD_clips_sample/ video_embedding_extraction/videos
+```
+
 ## Usage
 
 First, ensure that the `KOLENA_TOKEN` environment variable is populated

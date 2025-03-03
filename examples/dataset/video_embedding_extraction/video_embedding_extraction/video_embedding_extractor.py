@@ -301,20 +301,20 @@ def parse_arguments() -> argparse.Namespace:
     parser.add_argument(
         "--model_path",
         type=str,
-        required=True,
-        help="Path to the local ViCLIP model directory",
+        default="./viclip_model",
+        help="Path to the local ViCLIP model directory (default: ./viclip_model)",
     )
     parser.add_argument(
         "--video_dir",
         type=str,
-        required=True,
-        help="Directory containing videos to process",
+        default="./video_embedding_extraction/videos",
+        help="Directory containing videos to process (default: ./video_embedding_extraction/videos)",
     )
     parser.add_argument(
         "--output_file",
         type=str,
-        required=True,
-        help="Output pickle file path for embeddings",
+        default="./video_embedding_extraction/embeddings.pkl",
+        help="Output pickle file path for embeddings (default: ./video_embedding_extraction/embeddings.pkl)",
     )
     parser.add_argument(
         "--num_frames",

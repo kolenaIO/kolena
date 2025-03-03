@@ -85,32 +85,32 @@ def main() -> None:
     parser.add_argument(
         "--embeddings_file",
         type=str,
-        required=True,
+        default="./video_embedding_extraction/embeddings.pkl",
         help="Path to the pickle file containing video embeddings",
     )
     parser.add_argument(
         "--video_dir",
         type=str,
-        required=True,
+        default="./video_embedding_extraction/videos",
         help="Directory containing the video files (for verification)",
     )
     parser.add_argument(
         "--dataset_name",
         type=str,
-        required=True,
+        default="Joint Attention in Autonomous Driving (JAAD)",
         help="Name of the existing Kolena dataset to upload embeddings to",
     )
     parser.add_argument(
         "--embedding_key",
         type=str,
-        required=True,
-        help="Unique identifier for these embeddings (e.g., 'viclip-video-embeddings')",
+        default="viclip-embeddings",
+        help="Unique identifier for these embedding",
     )
     parser.add_argument(
         "--s3_prefix",
         type=str,
         default=S3_LOCATOR_PREFIX,
-        help=f"S3 prefix for video locators (default: {S3_LOCATOR_PREFIX})",
+        help="S3 prefix for video locators",
     )
 
     args = parser.parse_args()

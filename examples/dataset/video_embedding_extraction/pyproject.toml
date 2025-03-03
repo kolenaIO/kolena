@@ -23,6 +23,7 @@ dependencies = [
     "pandas>=2.0.0",
     "requests>=2.28.0",
     "setuptools>=42.0.0",
+    "fvcore>=0.1.5",
 ]
 
 [project.optional-dependencies]
