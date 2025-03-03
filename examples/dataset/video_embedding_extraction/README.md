@@ -5,8 +5,11 @@ video embeddings using the [ViCLIP](https://github.com/OpenGVLab/ViCLIP) model
 and upload them to Kolena for video retrieval and analysis tasks.
 
 ## Setup
-1. Ensure that data for the [`crossing pedestrian detection`](../crossing_pedestrian_detection) dataset has been seeded through calling
-the [`upload_dataset.py`](../crossing_pedestrian_detection/crossing_pedestrian_detection/upload_dataset.py) script.
+
+1. Ensure that data for the [`crossing pedestrian detection`](../crossing_pedestrian_detection)
+dataset has been seeded through calling
+the [`upload_dataset.py`](../crossing_pedestrian_detection/crossing_pedestrian_detection/upload_dataset.py)
+ script.
 2. This project uses [uv](https://docs.astral.sh/uv/) for packaging and
 Python dependency management. To get started,
 install project dependencies from [`pyproject.toml`](./pyproject.toml) by running:
@@ -14,11 +17,12 @@ install project dependencies from [`pyproject.toml`](./pyproject.toml) by runnin
 ```shell
 uv sync
 ```
+
 3. Download test videos to a local path for faster embedding extraction:
 
 ```shell
 mkdir -p video_embedding_extraction/videos
-aws s3 cp --recursive s3://kolena-public-datasets/JAAD/JAAD_clips_sample/ video_embedding_extraction/videos
+aws s3 cp --recursive s3://kolena-public-examples/JAAD/data/sample_videos/ video_embedding_extraction/videos
 ```
 
 ## Usage
