@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # Dataset and upload constants
-S3_LOCATOR_PREFIX = "s3://kolena-public-datasets/JAAD/JAAD_clips/"
-DATASET_NAME = "Joint Attention in Autonomous Driving (JAAD)"
+S3_LOCATOR_PREFIX = "s3://kolena-public-examples/JAAD/data/videos/"
+DATASET_NAME = "JAAD [crossing-pedestrian-detection]"
 EMBEDDING_KEY = "viclip-embeddings"
 
 # ViCLIP model constants
