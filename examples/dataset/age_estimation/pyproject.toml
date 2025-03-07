@@ -9,11 +9,14 @@ license = "Apache-2.0"
 requires-python = ">=3.9,<3.12"
 
 dependencies = [
-    "kolena>=1.23.0,<2",
+    "kolena",
     "s3fs>=2023.5.0,<2024",
     "fsspec>=2023.5.0,<2024",
-    "numpy>=1.19,<2",
+    "numpy>=2",
 ]
+
+[tool.uv.sources]
+kolena = { path = "../../.." }
 
 [tool.uv]
 dev-dependencies = [
