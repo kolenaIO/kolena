@@ -1,7 +1,7 @@
 # Example Integration: Video Embedding Extraction
 
 This example integration demonstrates how to extract
-video embeddings using the [ViCLIP](https://github.com/OpenGVLab/ViCLIP) model
+video embeddings using the [ViCLIP](https://huggingface.co/OpenGVLab/ViCLIP) model
 and upload them to Kolena for video retrieval and analysis tasks.
 
 ## Setup
