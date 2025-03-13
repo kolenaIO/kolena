@@ -21,9 +21,13 @@ from kolena.dataset.dataset import list_datasets
 from kolena.dataset.evaluation import ModelEntity
 from kolena.dataset.evaluation import get_models
 from kolena.dataset.embeddings import upload_dataset_embeddings
+from kolena._api.v2.dataset import Filters
+from kolena._api.v2.dataset import GeneralFieldFilter
 
 __all__ = [
     "upload_dataset",
+    "Filters",
+    "GeneralFieldFilter",
     "download_dataset",
     "upload_results",
     "download_results",

@@ -31,6 +31,7 @@ import requests
 from kolena._api.v1.event import EventAPI
 from kolena._api.v2.dataset import CommitData
 from kolena._api.v2.dataset import EntityData
+from kolena._api.v2.dataset import Filters
 from kolena._api.v2.dataset import ListCommitHistoryRequest
 from kolena._api.v2.dataset import ListCommitHistoryResponse
 from kolena._api.v2.dataset import ListDatasetsResponse
@@ -368,6 +369,7 @@ def _iter_dataset_raw(
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
     include_extracted_properties: bool = False,
+    filters: Optional[Filters] = None,
 ) -> Iterator[pd.DataFrame]:
     validate_batch_size(batch_size)
     init_request = LoadDatapointsRequest(
@@ -375,6 +377,7 @@ def _iter_dataset_raw(
         commit=commit,
         batch_size=batch_size,
         include_extracted_properties=include_extracted_properties,
+        filters=filters,
     )
     yield from _BatchedLoader.iter_data(
         init_request=init_request,
@@ -389,11 +392,12 @@ def _iter_dataset(
     commit: Optional[str] = None,
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
     include_extracted_properties: bool = False,
+    filters: Optional[Filters] = None,
 ) -> Iterator[pd.DataFrame]:
     """
     Get an iterator over datapoints in the dataset.
     """
-    for df_batch in _iter_dataset_raw(name, commit, batch_size, include_extracted_properties):
+    for df_batch in _iter_dataset_raw(name, commit, batch_size, include_extracted_properties, filters):
         yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
 
 
@@ -403,6 +407,7 @@ def download_dataset(
     *,
     commit: Optional[str] = None,
     include_extracted_properties: bool = False,
+    filters: Optional[Filters] = None,
 ) -> pd.DataFrame:
     """
     Download an entire dataset given its name.
@@ -411,9 +416,10 @@ def download_dataset(
     :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
     :param include_extracted_properties: If True, include kolena extracted properties from automated extractions
      in the dataset as separate columns
+    :param filters: [Experimental] Optional filter to specify which datapoints should be downloaded.
     :return: A DataFrame containing the specified dataset.
     """
-    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value, include_extracted_properties))
+    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value, include_extracted_properties, filters))
     log.info(f"downloaded dataset '{name}'")
     df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
     return df_dataset
