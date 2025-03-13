@@ -53,7 +53,7 @@ class GeneralFieldFilter:
     Generic representation of a filter on Kolena
     """
 
-    value_in: Optional[list[Union[StrictStr, StrictBool]]] = None
+    value_in: Optional[List[Union[StrictStr, StrictBool]]] = None
     """A list of desired categorical values."""
     null_value: Optional[Literal[True]] = None
     """Whether to filter for cases where the field has null value or the field name does not exist."""
@@ -66,7 +66,7 @@ class Filters:
      in `download_dataset`.
     """
 
-    datapoint: dict[str, GeneralFieldFilter] = field(default_factory=dict)
+    datapoint: Dict[str, GeneralFieldFilter] = field(default_factory=dict)
     """Dictionary of a field name of the datapoint to the filter to be applied on the field."""
 
 
