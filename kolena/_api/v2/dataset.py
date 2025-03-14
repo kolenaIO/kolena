@@ -50,7 +50,7 @@ class RegisterRequest:
 @dataclass(frozen=True)
 class GeneralFieldFilter:
     """
-    Generic representation of a filter on Kolena
+    Generic representation of a filter on Kolena.
     """
 
     value_in: Optional[List[Union[StrictStr, StrictBool]]] = None
@@ -63,11 +63,16 @@ class GeneralFieldFilter:
 class Filters:
     """
     Filters to be applied on the dataset during the operation. Currently only used as an optional argument
-     in `download_dataset`.
+     in [`download_dataset`][kolena.dataset.download_dataset].
     """
 
     datapoint: Dict[str, GeneralFieldFilter] = field(default_factory=dict)
-    """Dictionary of a field name of the datapoint to the filter to be applied on the field."""
+    """
+    Dictionary of a field name of the datapoint to the [`GeneralFieldFilter`][kolena.dataset.GeneralFieldFilter] to be
+    applied on the field. In case of nested objects, use `.` as the delimiter to separate the keys. For example, if you
+    have a `ground_truth` column of [`Label`][kolena.annotation.Label] type, you can use `ground_truth.label` as the key
+    to query for the class label.
+    """
 
 
 @dataclass(frozen=True)
