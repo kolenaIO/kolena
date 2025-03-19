@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import random
+from typing import Dict
 from typing import Iterator
 from typing import List
+from typing import Optional
 from typing import Tuple
 
 import numpy as np
@@ -25,6 +27,8 @@ from kolena._experimental.special_data_type import Timestamp
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
 from kolena.dataset import download_dataset
+from kolena.dataset import Filters
+from kolena.dataset import GeneralFieldFilter
 from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
@@ -422,3 +426,65 @@ def test__upload_dataset__with_description() -> None:
     )
     dataset = _load_dataset_metadata(name)
     assert dataset.description == description_v2
+
+
+@pytest.fixture(scope="module")
+def download_datapoints_with_filters_data() -> Tuple[str, List[str], List[Dict]]:
+    name = with_test_prefix(f"{__file__}::test__download_dataset__with_filters")
+    id_fields = ["value"]
+    n_datapoints = 10
+    columns = ["value", "str", "nested"]
+    datapoints = [
+        dict(
+            value=i,
+            str=f"str-{i}",
+            nested={
+                "bool ean": i % 2 == 0,
+                "optional_col": str(i) if i % 5 > 0 else None,
+            },
+        )
+        for i in range(n_datapoints)
+    ]
+    df_datapoints = pd.DataFrame(datapoints, columns=["value", "str", "nested"])
+
+    upload_dataset(
+        name,
+        df_datapoints,
+        id_fields=id_fields,
+    )
+    return name, columns, datapoints
+
+
+@pytest.mark.parametrize(
+    "filters, expected_datapoint_inds",
+    [
+        (None, list(range(10))),
+        (Filters(datapoint={"str": GeneralFieldFilter(value_in=["str-0", "str-1"])}), [0, 1]),
+        (Filters(datapoint={"value": GeneralFieldFilter(value_in=["2", "3"])}), [2, 3]),
+        (Filters(datapoint={'nested."bool ean"': GeneralFieldFilter(value_in=[True])}), [0, 2, 4, 6, 8]),
+        (Filters(datapoint={"nested.optional_col": GeneralFieldFilter(value_in=["7"], null_value=True)}), [0, 5, 7]),
+        (
+            Filters(
+                datapoint={
+                    "str": GeneralFieldFilter(value_in=["str-0", "str-1", "str-2", "str-5"]),
+                    "nested.optional_col": GeneralFieldFilter(value_in=["0", "3"], null_value=True),
+                },
+            ),
+            [0, 5],
+        ),
+    ],
+)
+def test__download_dataset__with_filters(
+    download_datapoints_with_filters_data: Tuple[str, List[str], List[Dict]],
+    filters: Optional[Filters],
+    expected_datapoint_inds: List[int],
+) -> None:
+    name, columns, datapoints = download_datapoints_with_filters_data
+    expected_datapoints = (
+        pd.DataFrame([datapoints[ind] for ind in expected_datapoint_inds], columns=columns)
+        .sort_values(by="value")
+        .reset_index(drop=True)
+    )
+    loaded_datapoints = download_dataset(name, filters=filters)
+    loaded_datapoints = loaded_datapoints.sort_values(by="value").reset_index(drop=True)
+    assert_frame_equal(loaded_datapoints, expected_datapoints, columns)

@@ -11,3 +11,7 @@
     options:
         members: ["upload_dataset_embeddings"]
         show_root_heading: false
+::: kolena._api.v2.dataset
+    options:
+        members: ["Filters", "GeneralFieldFilter"]
+        show_root_heading: false
