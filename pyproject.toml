@@ -8,7 +8,7 @@ authors = [
 homepage = "https://kolena.com"
 documentation = "https://docs.kolena.com"
 readme = "README.md"
-license = { expression = "Apache-2.0" }
+license = { text = "Apache-2.0" }
 keywords = ["Kolena", "ML", "testing"]
 classifiers = [
     "Programming Language :: Python :: 3",
