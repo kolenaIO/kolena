@@ -64,7 +64,7 @@ metrics = [
 kolena = 'kolena._utils.cli:run'
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling<=1.25.0"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.sdist]
