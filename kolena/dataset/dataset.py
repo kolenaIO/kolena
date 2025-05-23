@@ -296,7 +296,7 @@ def _upload_dataset(
     commit_tags: Optional[List[str]] = None,
     dataset_tags: Optional[List[str]] = None,
     description: Optional[str] = None,
-) -> None:
+) -> int:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
     data = _send_upload_dataset_request(
@@ -310,6 +310,7 @@ def _upload_dataset(
         description=description,
     )
     log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
+    return data.id
 
 
 @with_event(event_name=EventAPI.Event.REGISTER_DATASET)
@@ -322,7 +323,7 @@ def upload_dataset(
     dataset_tags: Optional[List[str]] = None,
     append_only: bool = False,
     description: Optional[str] = None,
-) -> None:
+) -> int:
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
 
@@ -343,8 +344,10 @@ def upload_dataset(
         datapoints from the input dataframe will be added, and existing datapoints will be modified if present in the
         input dataframe, but no datapoints will be deleted from the datasets. This behaves like an `UPSERT` operation.
     :param description: Optionally specify the description of the dataset.
+
+    :return: The integer ID of the uploaded dataset.
     """
-    _upload_dataset(
+    return _upload_dataset(
         name,
         df,
         id_fields=id_fields,

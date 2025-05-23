@@ -110,7 +110,8 @@ def test__upload_dataset() -> None:
     ]
     columns = ["locator", "width", "height", "city", "bboxes", "time_str", "time_num"]
 
-    upload_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"])
+    dataset_id = upload_dataset(name, pd.DataFrame(datapoints[:10], columns=columns), id_fields=["locator"])
+    assert dataset_id == _load_dataset_metadata(name).id
 
     loaded_datapoints = download_dataset(name).sort_values("width", ignore_index=True).reindex(columns=columns)
     expected = pd.DataFrame(expected_datapoints[:10], columns=columns)
