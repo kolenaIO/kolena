@@ -13,5 +13,5 @@
         show_root_heading: false
 ::: kolena._api.v2.dataset
     options:
-        members: ["Filters", "GeneralFieldFilter"]
+        members: ["Filters", "GeneralFieldFilter", "DatasetEntity"]
         show_root_heading: false
