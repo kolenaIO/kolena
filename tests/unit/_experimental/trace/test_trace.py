@@ -15,7 +15,7 @@ import uuid
 from unittest.mock import Mock
 from unittest.mock import patch
 
-from kolena._api.v2.dataset import EntityData
+from kolena._api.v2.dataset import DatasetEntity
 from kolena._experimental.trace import kolena_trace
 from kolena._experimental.trace.trace import _Trace
 
@@ -126,7 +126,7 @@ def test__kolena_trace_failure(mock_push_data: Mock) -> None:
         assert str(e) == "Id Field request_id cannot be None in datapoint input"
 
     with patch("kolena._experimental.trace.trace._load_dataset_metadata") as mock_load_dataset_metadata:
-        mock_load_dataset_metadata.return_value = EntityData(
+        mock_load_dataset_metadata.return_value = DatasetEntity(
             id=1,
             name=dataset_name,
             description="test",

@@ -30,7 +30,7 @@ import requests
 
 from kolena._api.v1.event import EventAPI
 from kolena._api.v2.dataset import CommitData
-from kolena._api.v2.dataset import EntityData
+from kolena._api.v2.dataset import DatasetEntity
 from kolena._api.v2.dataset import Filters
 from kolena._api.v2.dataset import ListCommitHistoryRequest
 from kolena._api.v2.dataset import ListCommitHistoryResponse
@@ -189,7 +189,7 @@ def _upload_dataset_chunk(df: pd.DataFrame, load_uuid: str, id_fields: List[str]
     upload_data_frame(df=df_serialized, load_uuid=load_uuid)
 
 
-def _load_dataset_metadata(name: str, raise_error_if_not_found: bool = True) -> Optional[EntityData]:
+def _load_dataset_metadata(name: str, raise_error_if_not_found: bool = True) -> Optional[DatasetEntity]:
     """
     Load the metadata of a given dataset.
 
@@ -210,13 +210,13 @@ def _load_dataset_metadata(name: str, raise_error_if_not_found: bool = True) -> 
             return None
     response.raise_for_status()
 
-    return from_dict(EntityData, response.json())
+    return from_dict(DatasetEntity, response.json())
 
 
 def _resolve_id_fields(
     df: pd.DataFrame,
     id_fields: Optional[List[str]],
-    existing_dataset: Optional[EntityData],
+    existing_dataset: Optional[DatasetEntity],
 ) -> List[str]:
     existing_id_fields = []
     if existing_dataset:
@@ -269,7 +269,7 @@ def _send_upload_dataset_request(
     commit_tags: Optional[List[str]] = None,
     dataset_tags: Optional[List[str]] = None,
     description: Optional[str] = None,
-) -> EntityData:
+) -> DatasetEntity:
     request = RegisterRequest(
         name=name,
         id_fields=id_fields,
@@ -282,8 +282,8 @@ def _send_upload_dataset_request(
     )
     response = krequests.post(Path.REGISTER, json=asdict(request))
     krequests.raise_for_status(response)
-    data = from_dict(EntityData, response.json())
-    return data
+    dataset_entity = from_dict(DatasetEntity, response.json())
+    return dataset_entity
 
 
 def _upload_dataset(
@@ -296,10 +296,10 @@ def _upload_dataset(
     commit_tags: Optional[List[str]] = None,
     dataset_tags: Optional[List[str]] = None,
     description: Optional[str] = None,
-) -> int:
+) -> DatasetEntity:
     prepared_id_fields, load_uuid = _prepare_upload_dataset_request(name, df, id_fields=id_fields)
 
-    data = _send_upload_dataset_request(
+    dataset_entity = _send_upload_dataset_request(
         name,
         prepared_id_fields,
         load_uuid,
@@ -309,8 +309,8 @@ def _upload_dataset(
         dataset_tags=dataset_tags,
         description=description,
     )
-    log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=data.id)})")
-    return data.id
+    log.info(f"uploaded dataset '{name}' ({get_dataset_url(dataset_id=dataset_entity.id)})")
+    return dataset_entity
 
 
 @with_event(event_name=EventAPI.Event.REGISTER_DATASET)
@@ -323,7 +323,7 @@ def upload_dataset(
     dataset_tags: Optional[List[str]] = None,
     append_only: bool = False,
     description: Optional[str] = None,
-) -> int:
+) -> DatasetEntity:
     """
     Create or update a dataset with the contents of the provided DataFrame `df`.
 
@@ -345,7 +345,7 @@ def upload_dataset(
         input dataframe, but no datapoints will be deleted from the datasets. This behaves like an `UPSERT` operation.
     :param description: Optionally specify the description of the dataset.
 
-    :return: The integer ID of the uploaded dataset.
+    :return: The dataset as a [`DatasetEntity`][kolena.dataset.DatasetEntity] object.
     """
     return _upload_dataset(
         name,

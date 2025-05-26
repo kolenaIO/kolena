@@ -20,7 +20,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_frame_equal
 
-from kolena._api.v2.dataset import EntityData
+from kolena._api.v2.dataset import DatasetEntity
 from kolena._utils.datatypes import DATA_TYPE_FIELD
 from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_RESULT
@@ -357,7 +357,7 @@ def test__infer_id_fields__error(input_df: pd.DataFrame) -> None:
 
 def test__resolve_id_fields() -> None:
     df = pd.DataFrame(dict(user_dp=["a", "b", "c"], new_user_dp=["d", "e", "f"]))
-    dataset = EntityData(id=1, name="foo", description="", id_fields=["user_dp"])
+    dataset = DatasetEntity(id=1, name="foo", description="", id_fields=["user_dp"])
     inferrable_df = pd.DataFrame(dict(locator=["x", "y", "z"]))
 
     # new dataset without id_fields
@@ -371,7 +371,7 @@ def test__resolve_id_fields() -> None:
     assert _resolve_id_fields(
         inferrable_df,
         None,
-        EntityData(id=1, name="foo", description="", id_fields=["locator"]),
+        DatasetEntity(id=1, name="foo", description="", id_fields=["locator"]),
     ) == ["locator"]
 
     # new dataset with explicit id_fields should resolve to explicit id_fields

@@ -90,11 +90,19 @@ class LoadDatasetByNameRequest:
 
 
 @dataclass(frozen=True)
-class EntityData:
+class DatasetEntity:
+    """
+    The descriptor of a dataset on Kolena.
+    """
+
     id: int
+    """ID of the dataset."""
     name: str
+    """Name of the dataset."""
     description: str
+    """Description of the dataset."""
     id_fields: List[str]
+    """ID fields of the dataset."""
 
 
 @dataclass(frozen=True)
