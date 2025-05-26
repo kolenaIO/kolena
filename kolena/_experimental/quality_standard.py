@@ -35,7 +35,7 @@ from kolena._api.v2._testing import StratificationType
 from kolena._api.v2._testing import StratifyFieldSpec
 from kolena._api.v2._testing import TestingRequest
 from kolena._api.v2._testing import TestingResponse
-from kolena._api.v2.dataset import EntityData
+from kolena._api.v2.dataset import DatasetEntity
 from kolena._api.v2.model import ModelWithEvalConfig
 from kolena._api.v2.quality_standard import CopyQualityStandardRequest
 from kolena._api.v2.quality_standard import Path
@@ -150,7 +150,7 @@ def _download_quality_standard(
 
 def _calculate_moe_map(
     qs_result: pd.DataFrame,
-    dataset_entity: EntityData,
+    dataset_entity: DatasetEntity,
     confidence_level: float,
     qs: QualityStandardResponse,
 ) -> Dict[Tuple[str, Any], float]:
