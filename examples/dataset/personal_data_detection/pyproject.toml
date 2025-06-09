@@ -1,0 +1,27 @@
+[project]
+name = "personal_data_detection"
+version = "0.1.0"
+description = "Example Kolena integration for personal data detection"
+authors = [
+    { name = "Kolena Engineering", email = "eng@kolena.com" }
+]
+license = "Apache-2.0"
+requires-python = ">=3.9,<3.12"
+
+dependencies = [
+    "kolena>=1.64.0,<2",
+    "torch>=2.7.1",
+    "transformers>=4.52.4",
+]
+
+[tool.uv]
+dev-dependencies = [
+    "pre-commit>=2.17,<3",
+    "pytest>=7,<8",
+    "pytest-depends>=1.0.1,<2",
+    "setuptools>=80.9.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
