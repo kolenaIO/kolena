@@ -15,17 +15,15 @@ from argparse import ArgumentParser
 from argparse import Namespace
 
 import pandas as pd
-from personal_data_detection.constants import BUCKET
-from personal_data_detection.constants import IMDB_DATASET
-from personal_data_detection.constants import TASK
+from personal_data_detection.constants import DATA_FILEPATH
+from personal_data_detection.constants import DATASET
 from personal_data_detection.utils import detect_pii_in_dataframe
 
 from kolena.dataset import upload_dataset
 
 
 def run(args: Namespace) -> None:
-    filelpath = f"s3://{BUCKET}/{TASK}/{IMDB_DATASET}.csv"
-    df = pd.read_csv(filelpath)
+    df = pd.read_csv(DATA_FILEPATH)
     if not detect_pii_in_dataframe(df, allowed_pii_types=args.allowed_pii_types):
         upload_dataset(args.dataset, df)
 
@@ -35,7 +33,7 @@ def main() -> None:
     ap.add_argument(
         "--dataset",
         type=str,
-        default=IMDB_DATASET,
+        default=DATASET,
         help="Optionally specify a custom name for the dataset.",
     )
     ap.add_argument(

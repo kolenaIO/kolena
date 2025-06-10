@@ -14,5 +14,6 @@
 
 BUCKET = "kolena-public-examples"
 TASK = "personal-data-detection"
+DATASET = "imdb_dataset"
 
-IMDB_DATASET = "imdb_dataset"
+DATA_FILEPATH = f"s3://{BUCKET}/{TASK}/{DATASET}.csv"

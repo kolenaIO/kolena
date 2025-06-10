@@ -41,6 +41,12 @@ from personal_data_detection.utils import detect_pii_in_string
             True,
             "[I-EMAIL] data detected:  kaola@kolena.com",
         ),
+        (
+            "s3://kolena-public-examples/coco-2014-val/data/COCO_val2014_000000215244.jpg",
+            {},
+            True,
+            "[I-USERNAME] data detected: coco-2014-v",
+        ),
     ],
 )
 def test__detect_pii_in_string(
