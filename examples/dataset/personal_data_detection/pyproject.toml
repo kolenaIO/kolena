@@ -10,6 +10,7 @@ requires-python = ">=3.9,<3.12"
 
 dependencies = [
     "kolena>=1.64.0,<2",
+    "s3fs>=2025.5.1",
     "torch>=2.7.1",
     "transformers>=4.52.4",
 ]

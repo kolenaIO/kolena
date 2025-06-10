@@ -34,6 +34,13 @@ from personal_data_detection.utils import detect_pii_in_string
         ),
         ("ninja", {"I-USERNAME"}, False, None),
         ("ninja", {}, True, "[I-USERNAME] data detected: ninja"),
+        ("800-820-8820", {}, True, "[I-TELEPHONENUM] data detected: 800-820-8820"),
+        (
+            "I can be reached at kaola@kolena.com or 800-555-6789",
+            {},
+            True,
+            "[I-EMAIL] data detected:  kaola@kolena.com",
+        ),
     ],
 )
 def test__detect_pii_in_string(
