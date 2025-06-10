@@ -16,7 +16,9 @@ from typing import Optional
 from typing import Set
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
+from personal_data_detection.utils import detect_pii_in_dataframe
 from personal_data_detection.utils import detect_pii_in_string
 
 
@@ -62,3 +64,17 @@ def test__detect_pii_in_string(
     assert is_pii == expected_is_pii
     if expected_printed_message:
         assert expected_printed_message in printed_message
+
+
+def test__detect_pii_in_dataframe__no_pii() -> None:
+    with patch("personal_data_detection.utils.detect_pii_in_string", return_value=False):
+        assert not detect_pii_in_dataframe(df=pd.DataFrame())
+
+
+def test__detect_pii_in_dataframe__has_pii() -> None:
+    column_name = "name"
+    with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
+        with patch("personal_data_detection.utils.detect_pii_in_string", return_value=True):
+            assert detect_pii_in_dataframe(df=pd.DataFrame([{column_name: "kolena"}]))
+            printed_message = mock_stdout.getvalue()
+            assert f"pii data found in column '{column_name}'" in printed_message
