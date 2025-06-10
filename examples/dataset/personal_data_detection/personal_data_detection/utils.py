@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from typing import Set
+
 import torch
 from transformers import AutoModelForTokenClassification
 from transformers import AutoTokenizer
@@ -27,7 +29,7 @@ def detect_pii_in_dataframe() -> None:
     pass
 
 
-def detect_pii_in_string(text: str) -> bool:
+def detect_pii_in_string(text: str, allowed_pii_types: Set[str] = set()) -> bool:
     # Tokenize input text
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True)
     inputs = {k: v.to(device) for k, v in inputs.items()}
@@ -52,9 +54,9 @@ def detect_pii_in_string(text: str) -> bool:
         if start == end:  # Special token
             continue
 
-        label = predictions[0][i].item()
-        if label != model.config.label2id["O"]:  # Non-O label
-            current_pii_type = model.config.id2label[label]
+        pred_id = predictions[0][i].item()
+        if pred_id != model.config.label2id["O"] and model.config.id2label[pred_id] not in allowed_pii_types:
+            current_pii_type = model.config.id2label[pred_id]
             if not is_pii:
                 is_pii = True
                 pii_data_start = start
