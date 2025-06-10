@@ -49,6 +49,12 @@ from personal_data_detection.utils import detect_pii_in_string
             True,
             "[I-USERNAME] data detected: coco-2014-v",
         ),
+        (
+            "She lives in San Francisco and is 50 years old",
+            {},
+            True,
+            "[I-CITY] data detected:  San Francisco",
+        ),
     ],
 )
 def test__detect_pii_in_string(

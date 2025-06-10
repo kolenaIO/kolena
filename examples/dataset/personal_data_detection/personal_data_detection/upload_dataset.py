@@ -40,7 +40,8 @@ def main() -> None:
         "--allowed_pii_types",
         nargs="+",
         default=[],
-        help="Types of PII data to allow in the upload.",
+        help="Types of PII data to allow in the upload. For instance, to allow given names and surnames,"
+        " use '--allowed_pii_types I-GIVENNAME I-SURNAME'",
     )
     run(ap.parse_args())
 
