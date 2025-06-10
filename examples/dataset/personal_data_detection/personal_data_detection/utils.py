@@ -13,6 +13,7 @@
 # limitations under the License.
 from typing import Set
 
+import pandas as pd
 import torch
 from transformers import AutoModelForTokenClassification
 from transformers import AutoTokenizer
@@ -25,8 +26,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
 
 
-def detect_pii_in_dataframe() -> None:
-    pass
+def detect_pii_in_dataframe(df: pd.DataFrame, allowed_pii_types: Set[str] = set()) -> bool:
+    for datapoint in df.to_dict(orient="records"):
+        for key in datapoint:
+            if detect_pii_in_string(str(datapoint[key]), allowed_pii_types=allowed_pii_types):
+                print(f"pii data found in column '{key}'")
+                return True
+    return False
 
 
 def detect_pii_in_string(text: str, allowed_pii_types: Set[str] = set()) -> bool:
