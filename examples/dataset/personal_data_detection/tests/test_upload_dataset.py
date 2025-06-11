@@ -13,7 +13,9 @@
 # limitations under the License.
 import uuid
 from argparse import Namespace
+from io import StringIO
 from typing import List
+from unittest.mock import patch
 
 import pytest
 from personal_data_detection.upload_dataset import run as upload_dataset_main
@@ -35,7 +37,12 @@ from kolena.dataset import list_datasets
 def test__upload_dataset(allowed_pii_types: List[str], should_upload: bool) -> None:
     dataset_name = str(uuid.uuid4())
     args = Namespace(dataset=dataset_name, allowed_pii_types=allowed_pii_types)
-    upload_dataset_main(args)
 
-    existing_datasets = list_datasets()
-    assert (dataset_name in existing_datasets) == should_upload
+    with patch("sys.stdout", new_callable=StringIO) as mock_stdout:
+        upload_dataset_main(args)
+
+        existing_datasets = list_datasets()
+        assert (dataset_name in existing_datasets) == should_upload
+        if not should_upload:
+            printed_message = mock_stdout.getvalue()
+            assert "Skipped uploading the dataset to Kolena because PII data was detected." in printed_message

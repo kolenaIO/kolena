@@ -26,6 +26,8 @@ def run(args: Namespace) -> None:
     df = pd.read_csv(DATA_FILEPATH)
     if not detect_pii_in_dataframe(df, allowed_pii_types=args.allowed_pii_types):
         upload_dataset(args.dataset, df)
+    else:
+        print("Skipped uploading the dataset to Kolena because PII data was detected.")
 
 
 def main() -> None:
