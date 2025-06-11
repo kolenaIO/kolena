@@ -20,7 +20,7 @@ from transformers import AutoTokenizer
 
 PII_MODEL_NAME = "iiiorg/piiranha-v1-detect-personal-information"
 
-tokenizer = AutoTokenizer.from_pretrained(PII_MODEL_NAME)
+tokenizer = AutoTokenizer.from_pretrained(PII_MODEL_NAME, model_max_length=512)
 model = AutoModelForTokenClassification.from_pretrained(PII_MODEL_NAME)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model.to(device)
