@@ -432,11 +432,13 @@ def delete_dataset(name: str) -> None:
     Deletes an entire dataset given its name. The deletion will cascade to all datapoints within the dataset as well as
     embeddings and model results for those datapoints.
 
+    Please be careful when deleting a dataset programmatically. This operation can not be undone.
+
     :param name: The name of the dataset.
     """
     dataset_entity = _load_dataset_metadata(name)
     if not dataset_entity:
-        raise IncorrectUsageError(f"The dataset with name '{name}' not found")
+        raise IncorrectUsageError(f"The dataset with name '{name}' was not found")
     response = krequests.put(Path.MARK_DELETION, json=dict(id=dataset_entity.id))
     krequests.raise_for_status(response)
     log.info(f"deleted dataset '{name}'")
