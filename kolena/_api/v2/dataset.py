@@ -33,6 +33,7 @@ class Path(str, Enum):
     LOAD_DATASET = "/dataset/load-by-name"
     LIST_COMMITS = "/dataset/list-commits"
     LIST_DATASETS = "/dataset/list-datasets"
+    MARK_DELETION = "/dataset/mark-deletion"
 
 
 @dataclass(frozen=True)
