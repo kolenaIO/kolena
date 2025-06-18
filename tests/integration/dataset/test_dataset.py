@@ -497,9 +497,9 @@ def test__delete_dataset() -> None:
     upload_dataset(name, pd.DataFrame(datapoints), id_fields=["locator"])
     delete_dataset(name)
 
-    metadata = _load_dataset_metadata(name)
-    assert metadata is None
     datasets = list_datasets()
     assert name not in datasets
+    with pytest.raises(NotFoundError):
+        _load_dataset_metadata(name)
     with pytest.raises(NotFoundError):
         download_dataset(name)
