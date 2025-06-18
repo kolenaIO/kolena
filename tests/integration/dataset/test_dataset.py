@@ -33,6 +33,7 @@ from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
+from kolena.dataset.dataset import delete_dataset
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from tests.integration.helper import assert_frame_equal
@@ -488,3 +489,17 @@ def test__download_dataset__with_filters(
     loaded_datapoints = download_dataset(name, filters=filters)
     loaded_datapoints = loaded_datapoints.sort_values(by="value").reset_index(drop=True)
     assert_frame_equal(loaded_datapoints, expected_datapoints, columns)
+
+
+def test__delete_dataset() -> None:
+    name = with_test_prefix(f"{__file__}::test__delete_dataset")
+    datapoints = [dict(locator=fake_locator(i, name)) for i in range(5)]
+    upload_dataset(name, pd.DataFrame(datapoints), id_fields=["locator"])
+    delete_dataset(name)
+
+    metadata = _load_dataset_metadata(name)
+    assert metadata is None
+    datasets = list_datasets()
+    assert name not in datasets
+    with pytest.raises(NotFoundError):
+        download_dataset(name)
