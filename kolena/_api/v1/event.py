@@ -59,6 +59,7 @@ class EventAPI:
         FETCH_DATASET = "sdk-dataset-fetched"
         FETCH_DATASET_HISTORY = "sdk-dataset-history-fetched"
         LIST_DATASETS = "sdk-datasets-listed"
+        DELETE_DATASET = "sdk-dataset-deleted"
 
         # dataset evaluation
         FETCH_DATASET_MODEL_RESULT = "sdk-dataset-model-result-fetched"

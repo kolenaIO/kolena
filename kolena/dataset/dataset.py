@@ -60,6 +60,7 @@ from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset._common import validate_dataframe_not_empty
 from kolena.dataset._common import validate_name_not_empty
+from kolena.errors import IncorrectUsageError
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.io import _dataframe_object_serde
@@ -426,6 +427,25 @@ def download_dataset(
     log.info(f"downloaded dataset '{name}'")
     df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
     return df_dataset
+
+
+@with_event(event_name=EventAPI.Event.DELETE_DATASET)
+def delete_dataset(name: str) -> None:
+    """
+    Deletes an entire dataset given its name. The deletion will cascade to all datapoints within the dataset as well as
+    embeddings and model results for those datapoints.
+
+    Please be careful when deleting a dataset programmatically. This operation can not be undone.
+
+    :param name: The name of the dataset.
+    """
+    dataset_entity = _load_dataset_metadata(name)
+    if not dataset_entity:
+        raise IncorrectUsageError(f"The dataset with name '{name}' was not found")
+    response = krequests.put(Path.MARK_DELETION, json=dict(id=dataset_entity.id))
+    krequests.raise_for_status(response)
+    log.info(f"deleted dataset '{name}'")
+    return
 
 
 def _list_commits(name: str, descending: bool = False, offset: int = 0, limit: int = 50) -> ListCommitHistoryResponse:
