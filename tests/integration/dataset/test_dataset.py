@@ -26,6 +26,7 @@ from kolena._api.v2.dataset import CommitData
 from kolena._experimental.special_data_type import Timestamp
 from kolena.annotation import BoundingBox
 from kolena.annotation import LabeledBoundingBox
+from kolena.dataset import delete_dataset
 from kolena.dataset import download_dataset
 from kolena.dataset import Filters
 from kolena.dataset import GeneralFieldFilter
@@ -33,7 +34,6 @@ from kolena.dataset import list_datasets
 from kolena.dataset import upload_dataset
 from kolena.dataset.dataset import _fetch_dataset_history
 from kolena.dataset.dataset import _load_dataset_metadata
-from kolena.dataset.dataset import delete_dataset
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from tests.integration.helper import assert_frame_equal
