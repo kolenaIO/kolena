@@ -405,12 +405,9 @@ def _iter_dataset(
     """
     for df_batch in _iter_dataset_raw(name, commit, batch_size, include_extracted_properties, filters):
         df = _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
-        if not include_datapoint_id:
-            yield df
-        else:
-            datapoint_ids = df_batch[_FIELD_ID]
-            df[_FIELD_KOLENA_DATAPOINT_ID] = datapoint_ids
-            yield df
+        if include_datapoint_id:
+            df[_FIELD_KOLENA_DATAPOINT_ID] = df_batch[_FIELD_ID]
+        yield df
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
