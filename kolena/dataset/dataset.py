@@ -70,6 +70,7 @@ _FIELD_ID = "id"
 _FIELD_LOCATOR = "locator"
 _FIELD_FILE_EXTENSION = "file_extension"
 _FIELD_TEXT = "text"
+_FIELD_KOLENA_DATAPOINT_ID = "kolena_datapoint_id"
 
 
 class DatapointType(str, Enum):
@@ -397,12 +398,16 @@ def _iter_dataset(
     batch_size: int = BatchSize.LOAD_SAMPLES.value,
     include_extracted_properties: bool = False,
     filters: Optional[Filters] = None,
+    include_datapoint_id: bool = False,
 ) -> Iterator[pd.DataFrame]:
     """
     Get an iterator over datapoints in the dataset.
     """
     for df_batch in _iter_dataset_raw(name, commit, batch_size, include_extracted_properties, filters):
-        yield _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
+        df = _to_deserialized_dataframe(df_batch, column=COL_DATAPOINT)
+        if include_datapoint_id:
+            df[_FIELD_KOLENA_DATAPOINT_ID] = df_batch[_FIELD_ID]
+        yield df
 
 
 @with_event(event_name=EventAPI.Event.FETCH_DATASET)
@@ -412,6 +417,7 @@ def download_dataset(
     commit: Optional[str] = None,
     include_extracted_properties: bool = False,
     filters: Optional[Filters] = None,
+    include_datapoint_id: bool = False,
 ) -> pd.DataFrame:
     """
     Download an entire dataset given its name.
@@ -419,11 +425,22 @@ def download_dataset(
     :param name: The name of the dataset.
     :param commit: The commit hash for version control. Get the latest commit when this value is `None`.
     :param include_extracted_properties: If True, include kolena extracted properties from automated extractions
-     in the dataset as separate columns
+     in the dataset as separate columns.
     :param filters: [Experimental] Optional filter to specify which datapoints should be downloaded.
+    :param include_datapoint_id: If True, include the internal Kolena datapoint ID as a separate column named
+    `kolena_datapoint_id`.
     :return: A DataFrame containing the specified dataset.
     """
-    df_batches = list(_iter_dataset(name, commit, BatchSize.LOAD_SAMPLES.value, include_extracted_properties, filters))
+    df_batches = list(
+        _iter_dataset(
+            name,
+            commit,
+            BatchSize.LOAD_SAMPLES.value,
+            include_extracted_properties,
+            filters,
+            include_datapoint_id,
+        ),
+    )
     log.info(f"downloaded dataset '{name}'")
     df_dataset = pd.concat(df_batches, ignore_index=True) if df_batches else pd.DataFrame()
     return df_dataset

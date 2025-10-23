@@ -89,7 +89,7 @@ def test__upload_dataset() -> None:
                 LabeledBoundingBox(label="cat", top_left=[i, i], bottom_right=[i + 10, i + 10]),
                 LabeledBoundingBox(label="dog", top_left=[i + 5, i + 5], bottom_right=[i + 20, i + 20]),
             ],
-            time_str=Timestamp(value=f"12/31/2024, 00:00:{'{:02d}'.format(i)}", format="%m/%d/%Y, %H:%M:%S"),
+            time_str=Timestamp(value=f"12/31/2024, 00:00:{f'{i:02d}'}", format="%m/%d/%Y, %H:%M:%S"),
             time_num=Timestamp(epoch_time=1735689600 + i),
         )
         for i in range(20)
@@ -491,6 +491,56 @@ def test__download_dataset__with_filters(
     loaded_datapoints = download_dataset(name, filters=filters)
     loaded_datapoints = loaded_datapoints.sort_values(by="value").reset_index(drop=True)
     assert_frame_equal(loaded_datapoints, expected_datapoints, columns)
+
+
+def test__download_dataset__include_datapoint_id() -> None:
+    name = with_test_prefix(f"{__file__}::test__download_dataset__include_datapoint_id")
+    datapoints = [
+        dict(
+            locator=fake_locator(i, name),
+            width=i + 200,
+            height=i - 100,
+            city=random.choice(["new york", "waterloo"]),
+        )
+        for i in range(20)
+    ]
+    columns = ["locator", "width", "height", "city"]
+
+    partial_dataset_size = 7
+    upload_dataset(name, pd.DataFrame(datapoints[:partial_dataset_size], columns=columns), id_fields=["locator"])
+
+    df_downloaded = download_dataset(name, include_datapoint_id=True).sort_values("width", ignore_index=True)
+    loaded_datapoints = df_downloaded.reindex(columns=columns)
+    expected = pd.DataFrame(datapoints[:partial_dataset_size], columns=columns)
+    assert_frame_equal(loaded_datapoints, expected)
+    datapoint_ids_v1 = set(df_downloaded["kolena_datapoint_id"].tolist())
+    # datapoint ids should be unique
+    assert len(datapoint_ids_v1) == partial_dataset_size
+
+    # replaces the dataset
+    upload_dataset(name, pd.DataFrame(datapoints[partial_dataset_size:], columns=columns), id_fields=["locator"])
+    df_downloaded = download_dataset(name, include_datapoint_id=True).sort_values("width", ignore_index=True)
+    loaded_datapoints = df_downloaded.reindex(columns=columns)
+    expected = pd.DataFrame(datapoints[partial_dataset_size:], columns=columns)
+    assert_frame_equal(loaded_datapoints, expected)
+    datapoint_ids_v2 = set(df_downloaded["kolena_datapoint_id"].tolist())
+    assert len(datapoint_ids_v2) == len(datapoints) - partial_dataset_size
+    assert not datapoint_ids_v2.intersection(datapoint_ids_v1)
+    # datapoint ids of new upload should be greater than previous upload
+    assert max(datapoint_ids_v1) < min(datapoint_ids_v2)
+
+    # add back datapoints
+    upload_dataset(name, pd.DataFrame(datapoints, columns=columns), id_fields=["locator"])
+    df_downloaded = download_dataset(name, include_datapoint_id=True).sort_values("width", ignore_index=True)
+    loaded_datapoints = df_downloaded.reindex(columns=columns)
+    expected = pd.DataFrame(datapoints, columns=columns)
+    assert_frame_equal(loaded_datapoints, expected)
+    datapoint_ids_v3 = set(df_downloaded["kolena_datapoint_id"].tolist())
+    assert len(datapoint_ids_v3) == len(datapoints)
+    assert datapoint_ids_v2.issubset(datapoint_ids_v3)
+    assert not datapoint_ids_v3.intersection(datapoint_ids_v1)
+    datapoint_ids_v3_newly_added = datapoint_ids_v3 - datapoint_ids_v2
+    assert max(datapoint_ids_v2) < min(datapoint_ids_v3_newly_added)
 
 
 def test__delete_dataset() -> None:
