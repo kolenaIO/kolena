@@ -84,6 +84,7 @@ def _upload_dataset_embeddings(
     df_embedding: pd.DataFrame,
     run_embedding_reduction_pipeline: bool = True,
 ) -> None:
+    df_embedding = df_embedding.copy(deep=True)
     dataset_entity_data = _load_dataset_metadata(dataset_name)
     assert dataset_entity_data
     embedding_lengths: Set[int] = set()
@@ -189,7 +190,6 @@ def download_dataset_embeddings(dataset_name: str, key: str) -> pd.DataFrame:
     df_embeddings = pd.concat(
         [
             _to_deserialized_dataframe(df, column=COL_DATAPOINT)[id_fields],
-            df[COL_EMBEDDING_KEY],
             df[COL_EMBEDDING].apply(lambda s: pickle.loads(b64decode(s))),
         ],
         axis=1,
@@ -224,6 +224,6 @@ def _fetch_embeddings(dataset_name: str, key: str) -> pd.DataFrame:
         pd.concat(df_result_batch)
         if df_result_batch
         else pd.DataFrame(
-            columns=["datapoint_id", COL_DATAPOINT, COL_EMBEDDING_KEY, COL_EMBEDDING],
+            columns=["datapoint_id", COL_DATAPOINT, COL_EMBEDDING],
         )
     )
