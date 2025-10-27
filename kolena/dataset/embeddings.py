@@ -183,7 +183,7 @@ def download_dataset_embeddings(dataset_name: str, key: str) -> pd.DataFrame:
     :param key: String value uniquely corresponding to the embedding vectors.
     :return: df_embedding: Dataframe containing id fields for identifying datapoints in the dataset and the associated
         embeddings as `numpy.typing.ArrayLike` of numeric values.
-    :raises NotFoundError: The given dataset does not exist.
+    :raises NotFoundError: The given dataset or embedding key does not exist.
     """
 
     log.info(f"downloading embeddings from dataset '{dataset_name}' with key '{key}'")
