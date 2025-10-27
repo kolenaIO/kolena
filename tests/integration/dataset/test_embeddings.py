@@ -20,6 +20,8 @@ import pytest
 from kolena._experimental.search import upload_embeddings
 from kolena.dataset import upload_dataset
 from kolena.dataset.embeddings import _upload_dataset_embeddings
+from kolena.dataset.embeddings import download_dataset_embeddings
+from kolena.dataset.embeddings import get_dataset_embedding_keys
 from kolena.errors import InputValidationError
 from kolena.errors import NotFoundError
 from kolena.workflow import define_workflow
@@ -39,6 +41,27 @@ DUMMY_WORKFLOW, TestCase, TestSuite, Model = define_workflow(
 )
 
 N_DATAPOINTS = 20
+
+
+def is_embedding_df_equal(
+    df_uploaded: pd.DataFrame,
+    df_downloaded: pd.DataFrame,
+    sort_column: str,
+    columns: list[str],
+) -> bool:
+    if len(df_uploaded) != len(df_downloaded):
+        return False
+    df_uploaded_sorted = df_uploaded.sort_values(by=sort_column).reset_index(drop=True)[columns]
+    df_downloaded_sorted = df_downloaded.sort_values(by=sort_column).reset_index(drop=True)[columns]
+    for row_ind in range(len(df_uploaded)):
+        embedding_uploaded = df_uploaded_sorted["embedding"].iloc[row_ind]
+        embedding_downloaded = df_downloaded_sorted["embedding"].iloc[row_ind]
+        if len(embedding_uploaded) != len(embedding_downloaded) or not np.allclose(
+            embedding_uploaded,
+            embedding_downloaded,
+        ):
+            return False
+    return True
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -100,43 +123,91 @@ def dataset_name() -> str:
     ],
 )
 def test__upload_dataset_embeddings(embedding: np.ndarray, dataset_name: str) -> None:
-    _upload_dataset_embeddings(
-        dataset_name,
-        key="s3://model-bucket/embeddings-model.pt",
-        df_embedding=pd.DataFrame(
-            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding] * N_DATAPOINTS},
-        ),
-        run_embedding_reduction_pipeline=False,
+    locator_column = "locator"
+    columns = ["locator", "embedding"]
+
+    key_1 = "s3://model-bucket/embeddings-model.pt"
+    df_embedding_1 = pd.DataFrame(
+        {locator_column: [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding] * N_DATAPOINTS},
     )
     _upload_dataset_embeddings(
         dataset_name,
-        key="my_model-left_image",
-        df_embedding=pd.DataFrame(
-            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 2] * N_DATAPOINTS},
-        ),
+        key=key_1,
+        df_embedding=df_embedding_1,
         run_embedding_reduction_pipeline=False,
+    )
+    assert key_1 in get_dataset_embedding_keys(dataset_name)
+    df_embedding_downloaded_1 = download_dataset_embeddings(dataset_name, key_1)
+    assert is_embedding_df_equal(
+        df_uploaded=df_embedding_1,
+        df_downloaded=df_embedding_downloaded_1,
+        sort_column=locator_column,
+        columns=columns,
+    )
+
+    key_2 = "my_model-left_image"
+    df_embedding_2 = pd.DataFrame(
+        {locator_column: [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 2] * N_DATAPOINTS},
     )
     _upload_dataset_embeddings(
         dataset_name,
-        key="my_model-right_image",
-        df_embedding=pd.DataFrame(
-            {"locator": [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 3] * N_DATAPOINTS},
-        ),
+        key=key_2,
+        df_embedding=df_embedding_2,
         run_embedding_reduction_pipeline=False,
+    )
+    assert key_2 in get_dataset_embedding_keys(dataset_name)
+    df_embedding_downloaded_2 = download_dataset_embeddings(dataset_name, key_2)
+    assert is_embedding_df_equal(
+        df_uploaded=df_embedding_2,
+        df_downloaded=df_embedding_downloaded_2,
+        sort_column=locator_column,
+        columns=columns,
+    )
+
+    key_3 = "my_model-right_image"
+    df_embedding_3 = pd.DataFrame(
+        {locator_column: [f"locator-{i}" for i in range(N_DATAPOINTS)], "embedding": [embedding * 3] * N_DATAPOINTS},
+    )
+    _upload_dataset_embeddings(
+        dataset_name,
+        key=key_3,
+        df_embedding=df_embedding_3,
+        run_embedding_reduction_pipeline=False,
+    )
+    assert key_3 in get_dataset_embedding_keys(dataset_name)
+    df_embedding_downloaded_3 = download_dataset_embeddings(dataset_name, key_3)
+    assert is_embedding_df_equal(
+        df_uploaded=df_embedding_3,
+        df_downloaded=df_embedding_downloaded_3,
+        sort_column=locator_column,
+        columns=columns,
     )
 
 
 def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:
+    key = "s3://model-bucket/partial-embeddings-model.pt"
+    locator_column = "locator"
+    columns = ["locator", "embedding"]
+    df_embedding = pd.DataFrame(
+        {
+            "locator": [f"locator-{i}" for i in range(N_DATAPOINTS // 2)],
+            "embedding": [np.array([1, 2, 3, 4], dtype=np.int32)] * (N_DATAPOINTS // 2),
+        },
+    )
     _upload_dataset_embeddings(
         dataset_name,
-        key="s3://model-bucket/embeddings-model.pt",
-        df_embedding=pd.DataFrame(
-            {
-                "locator": [f"locator-{i}" for i in range(N_DATAPOINTS // 2)],
-                "embedding": [np.array([1, 2, 3, 4], dtype=np.int32)] * (N_DATAPOINTS // 2),
-            },
-        ),
+        key=key,
+        df_embedding=df_embedding,
         run_embedding_reduction_pipeline=False,
+    )
+
+    assert key in get_dataset_embedding_keys(dataset_name)
+    df_embedding_downloaded_3 = download_dataset_embeddings(dataset_name, key)
+    assert is_embedding_df_equal(
+        df_uploaded=df_embedding,
+        df_downloaded=df_embedding_downloaded_3,
+        sort_column=locator_column,
+        columns=columns,
     )
 
 
