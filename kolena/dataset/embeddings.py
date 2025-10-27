@@ -14,8 +14,11 @@
 import dataclasses
 import json
 import pickle
+from base64 import b64decode
 from base64 import b64encode
 from typing import Any
+from typing import Iterator
+from typing import List
 from typing import Set
 
 import numpy as np
@@ -25,19 +28,29 @@ from dacite import from_dict
 from pandera.typing import Series
 
 from kolena._api.v1.event import EventAPI
+from kolena._api.v2.search import DownloadDatasetEmbeddingsRequest
+from kolena._api.v2.search import GetEmbeddingKeysRequest
+from kolena._api.v2.search import GetEmbeddingKeysResponse
 from kolena._api.v2.search import Path as PATH_V2
 from kolena._api.v2.search import UploadDatasetEmbeddingsRequest
 from kolena._api.v2.search import UploadDatasetEmbeddingsResponse
 from kolena._utils import krequests
 from kolena._utils import log
+from kolena._utils.batched_load import _BatchedLoader
 from kolena._utils.batched_load import init_upload
 from kolena._utils.batched_load import upload_data_frame
+from kolena._utils.consts import BatchSize
 from kolena._utils.dataframes.validators import validate_df_schema
 from kolena._utils.instrumentation import with_event
 from kolena._utils.state import API_V2
+from kolena.dataset._common import COL_DATAPOINT
 from kolena.dataset._common import COL_DATAPOINT_ID_OBJECT
+from kolena.dataset._common import COL_EMBEDDING
+from kolena.dataset._common import COL_EMBEDDING_KEY
+from kolena.dataset._common import validate_batch_size
 from kolena.dataset._common import validate_dataframe_ids
 from kolena.dataset.dataset import _load_dataset_metadata
+from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import InputValidationError
 
@@ -82,7 +95,7 @@ def _upload_dataset_embeddings(
         return b64encode(pickle.dumps(embedding.astype(np.float32))).decode("utf-8")
 
     # encode embeddings to string
-    df_embedding["embedding"] = df_embedding["embedding"].apply(encode_embedding)
+    df_embedding[COL_EMBEDDING] = df_embedding[COL_EMBEDDING].apply(encode_embedding)
     if len(embedding_lengths) > 1:
         raise InputValidationError(f"embeddings are not of the same size, found {embedding_lengths}")
 
@@ -95,8 +108,8 @@ def _upload_dataset_embeddings(
     )
     df_embedding = pd.concat([df_embedding, df_serialized_datapoint_id_object], axis=1)
 
-    df_embedding["key"] = key
-    df_embedding = df_embedding[[COL_DATAPOINT_ID_OBJECT, "key", "embedding"]]
+    df_embedding[COL_EMBEDDING_KEY] = key
+    df_embedding = df_embedding[[COL_DATAPOINT_ID_OBJECT, COL_EMBEDDING_KEY, COL_EMBEDDING]]
     df_validated = validate_df_schema(df_embedding, DatasetEmbeddingsDataFrameSchema)
 
     log.info(f"uploading embeddings for dataset '{dataset_name}' and key '{key}'")
@@ -131,3 +144,86 @@ def upload_dataset_embeddings(dataset_name: str, key: str, df_embedding: pd.Data
     :raises InputValidationError: The provided input is not valid.
     """
     _upload_dataset_embeddings(dataset_name, key, df_embedding)
+
+
+@with_event(event_name=EventAPI.Event.GET_DATASET_EMBEDDING_KEYS)
+def get_dataset_embedding_keys(dataset_name: str) -> List[str]:
+    """
+    Get the list of embedding keys for a dataset.
+
+    :param dataset_name: String value indicating the name of the dataset.
+    :return: Set of embedding keys associated with the dataset.
+    :raises NotFoundError: The given dataset does not exist.
+    """
+    log.info(f"fetching embedding keys for dataset '{dataset_name}'")
+    _load_dataset_metadata(dataset_name)
+
+    request = GetEmbeddingKeysRequest(dataset_identifier=dataset_name)
+    response = krequests.put(
+        PATH_V2.GET_EMBEDDING_KEYS,
+        api_version=API_V2,
+        json=dataclasses.asdict(request),
+    )
+    krequests.raise_for_status(response)
+    return from_dict(GetEmbeddingKeysResponse, response.json()).model_keys
+
+
+@with_event(event_name=EventAPI.Event.FETCH_DATASET_EMBEDDINGS)
+def download_dataset_embeddings(dataset_name: str, key: str) -> pd.DataFrame:
+    """
+    Download search embeddings for a dataset.
+
+    :param dataset_name: String value indicating the name of the dataset for which the embeddings will be .
+    :param key: String value uniquely corresponding to the embedding vectors.
+    :return: df_embedding: Dataframe containing id fields for identifying datapoints in the dataset and the associated
+        embeddings as `numpy.typing.ArrayLike` of numeric values.
+    :raises NotFoundError: The given dataset does not exist.
+    """
+
+    log.info(f"downloading embeddings from dataset '{dataset_name}' with key '{key}'")
+    existing_dataset = _load_dataset_metadata(dataset_name)
+    assert existing_dataset
+    id_fields = existing_dataset.id_fields
+
+    df = _fetch_embeddings(dataset_name, key)
+    df_embeddings = pd.concat(
+        [
+            _to_deserialized_dataframe(df, column=COL_DATAPOINT)[id_fields],
+            df[COL_EMBEDDING_KEY],
+            df[COL_EMBEDDING].apply(lambda s: pickle.loads(b64decode(s))),
+        ],
+        axis=1,
+    )
+    return df_embeddings
+
+
+def _iter_embeddings_raw(dataset_name: str, key: str, batch_size: int) -> Iterator[pd.DataFrame]:
+    validate_batch_size(batch_size)
+    init_request = DownloadDatasetEmbeddingsRequest(
+        dataset=dataset_name,
+        model_key=key,
+        batch_size=batch_size,
+    )
+    yield from _BatchedLoader.iter_data(
+        init_request=init_request,
+        endpoint_path=PATH_V2.LOAD_EMBEDDINGS.value,
+        df_class=None,
+        endpoint_api_version=API_V2,
+    )
+
+
+def _fetch_embeddings(dataset_name: str, key: str) -> pd.DataFrame:
+    df_result_batch = list(
+        _iter_embeddings_raw(
+            dataset_name,
+            key,
+            batch_size=BatchSize.LOAD_RECORDS,
+        ),
+    )
+    return (
+        pd.concat(df_result_batch)
+        if df_result_batch
+        else pd.DataFrame(
+            columns=["datapoint_id", COL_DATAPOINT, COL_EMBEDDING_KEY, COL_EMBEDDING],
+        )
+    )

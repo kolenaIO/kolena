@@ -73,6 +73,8 @@ class EventAPI:
 
         # dataset search
         UPLOAD_DATASET_EMBEDDINGS = "sdk-dataset-embeddings-uploaded"
+        FETCH_DATASET_EMBEDDINGS = "sdk-dataset-embeddings-fetched"
+        GET_DATASET_EMBEDDING_KEYS = "sdk-dataset-embedding-keys-fetched"
 
     @dataclass(frozen=True)
     class RecordEventRequest:
