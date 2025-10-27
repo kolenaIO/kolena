@@ -214,12 +214,35 @@ def test__upload_dataset_embeddings__partial_dataset(dataset_name: str) -> None:
 def test__upload_dataset_embeddings__dataset_does_not_exist() -> None:
     with pytest.raises(NotFoundError):
         _upload_dataset_embeddings(
-            dataset_name=f"{__file__}::test__embedding_dataset_does_not_exist {uuid.uuid4()}",  # noqa: E231
+            dataset_name=f"test__embedding_dataset_does_not_exist {uuid.uuid4()}",  # noqa: E231
             key="s3://model-bucket/embeddings-model.pt",
             df_embedding=pd.DataFrame(
                 {"locator": [], "embedding": []},
             ),
             run_embedding_reduction_pipeline=False,
+        )
+
+
+def test__get_dataset_embedding_keys__dataset_does_not_exist() -> None:
+    with pytest.raises(NotFoundError):
+        get_dataset_embedding_keys(
+            dataset_name=f"test__get_dataset_embedding_keys__dataset_does_not_exist {uuid.uuid4()}",  # noqa: E231
+        )
+
+
+def test__download_dataset_embeddings__dataset_does_not_exist() -> None:
+    with pytest.raises(NotFoundError):
+        download_dataset_embeddings(
+            dataset_name=f"test__download_dataset_embeddings__dataset_does_not_exist {uuid.uuid4()}",  # noqa: E231
+            key="some-key",
+        )
+
+
+def test__download_dataset_embeddings__key_does_not_exist(dataset_name: str) -> None:
+    with pytest.raises(NotFoundError):
+        download_dataset_embeddings(
+            dataset_name=dataset_name,
+            key=f"test__download_dataset_embeddings__key_does_not_exist {uuid.uuid4()}",  # noqa: E231
         )
 
 

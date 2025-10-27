@@ -53,6 +53,7 @@ from kolena.dataset.dataset import _load_dataset_metadata
 from kolena.dataset.dataset import _to_deserialized_dataframe
 from kolena.dataset.dataset import _to_serialized_dataframe
 from kolena.errors import InputValidationError
+from kolena.errors import NotFoundError
 
 # Ensure check method is registered or else would get SchemaInitError
 # noreorder
@@ -157,6 +158,10 @@ def get_dataset_embedding_keys(dataset_name: str) -> List[str]:
     :raises NotFoundError: The given dataset does not exist.
     """
     log.info(f"fetching embedding keys for dataset '{dataset_name}'")
+    return _get_dataset_embedding_keys(dataset_name)
+
+
+def _get_dataset_embedding_keys(dataset_name: str) -> List[str]:
     _load_dataset_metadata(dataset_name)
 
     request = GetEmbeddingKeysRequest(dataset_identifier=dataset_name)
@@ -185,6 +190,11 @@ def download_dataset_embeddings(dataset_name: str, key: str) -> pd.DataFrame:
     existing_dataset = _load_dataset_metadata(dataset_name)
     assert existing_dataset
     id_fields = existing_dataset.id_fields
+
+    if key not in _get_dataset_embedding_keys(dataset_name):
+        raise NotFoundError(
+            f"embedding key '{key}' does not exist for dataset '{dataset_name}'",
+        )
 
     df = _fetch_embeddings(dataset_name, key)
     df_embeddings = pd.concat(
