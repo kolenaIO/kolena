@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from enum import Enum
+from typing import List
 
 from kolena._api.v1.batched_load import BatchedLoad
 from kolena._utils.pydantic_v1.dataclasses import dataclass
@@ -19,6 +20,8 @@ from kolena._utils.pydantic_v1.dataclasses import dataclass
 
 class Path(str, Enum):
     EMBEDDINGS = "/search/embeddings"
+    GET_EMBEDDING_KEYS = "/search/get-embedding-model-keys"
+    LOAD_EMBEDDINGS = "/search/load-embeddings"
 
 
 @dataclass(frozen=True)
@@ -30,3 +33,19 @@ class UploadDatasetEmbeddingsRequest(BatchedLoad.WithLoadUUID):
 @dataclass(frozen=True)
 class UploadDatasetEmbeddingsResponse:
     n_datapoints: int
+
+
+@dataclass(frozen=True)
+class DownloadDatasetEmbeddingsRequest(BatchedLoad.BaseInitDownloadRequest):
+    dataset: str
+    model_key: str
+
+
+@dataclass(frozen=True)
+class GetEmbeddingKeysRequest:
+    dataset_identifier: str
+
+
+@dataclass(frozen=True)
+class GetEmbeddingKeysResponse:
+    model_keys: List[str]

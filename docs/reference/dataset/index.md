@@ -9,7 +9,7 @@
 ::: kolena.dataset.evaluation
 ::: kolena.dataset.embeddings
     options:
-        members: ["upload_dataset_embeddings"]
+        members: ["upload_dataset_embeddings", "get_dataset_embedding_keys", "download_dataset_embeddings"]
         show_root_heading: false
 ::: kolena._api.v2.dataset
     options:

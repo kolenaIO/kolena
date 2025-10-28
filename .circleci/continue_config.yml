@@ -443,12 +443,6 @@ workflows:
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
-          matrix:
-            parameters:
-              subproject: [ text_summarization ]
-              resource-class: [ large ]
-              python-version: [ "3.9.18" ]
-      - example-test-workflow:
           context:
             - aws
           matrix:
