@@ -45,7 +45,6 @@ def construct_studio_url(tenant: str, dataset_id: int, datapoint_field: str, val
     filter_string = f"{field_name}:{compressed}:c"
     encoded_filter = quote(filter_string, safe="")
 
-    # Step 7: Build the complete URL
     base_url = f"https://app.kolena.com/{tenant}/dataset/studio"
     full_url = f"{base_url}?datasetId={dataset_id}&filters={encoded_filter}"
 
