@@ -9,7 +9,7 @@ license = "Apache-2.0"
 requires-python = ">=3.9,<3.12"
 
 dependencies = [
-    "kolena<2",
+    "lzstring>=1",
 ]
 
 [tool.uv]
