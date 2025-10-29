@@ -439,7 +439,7 @@ workflows:
             - aws
           matrix:
             parameters:
-              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, semantic_textual_similarity, person_detection, crossing_pedestrian_detection, named_entity_recognition ]
+              subproject: [ age_estimation, automatic_speech_recognition, classification, keypoint_detection, question_answering, rain_forecast, semantic_segmentation, speaker_diarization, semantic_textual_similarity, person_detection, crossing_pedestrian_detection, named_entity_recognition, construct_studio_url ]
               resource-class: [ small ]
               python-version: [ "3.9.18" ]
       - example-test-workflow:
