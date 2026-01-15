@@ -114,6 +114,9 @@ def _infer_datatype_value_from_url(url: str) -> str:
             return datatype
     elif url.endswith(".pcd"):
         return DatapointType.POINT_CLOUD.value
+    # Explicit handling for formats not consistently in Python's built-in mimetypes
+    elif url.lower().endswith((".flac", ".ogg", ".opus", ".aac", ".m4a")):
+        return DatapointType.AUDIO.value
 
     return DatapointType.TABULAR.value
 
